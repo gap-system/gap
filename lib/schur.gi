@@ -733,7 +733,7 @@ InstallMethod(EpimorphismNonabelianExteriorSquare, "Naive method", true,
 ##
 #P  IsCentralFactor(<G>)
 ##
-##  Dertermines if $G$ is a central factor of some group $H$ or not.
+##  Determines if $G$ is a central factor of some group $H$ or not.
 ##
 InstallMethod(IsCentralFactor, "Naive method", true, [IsGroup], 0,
     G -> IsTrivial(Epicentre(G)));

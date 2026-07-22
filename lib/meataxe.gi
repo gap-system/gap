@@ -206,7 +206,7 @@ end);
 #F  WedgeGModule( module ) . . . . . wedge product of a G-module
 ##
 ## WedgeGModule calculates the wedge product of a G-module.
-## That is the action on antisymmetrix tensors.
+## That is the action on antisymmetric tensors.
 ##
 InstallGlobalFunction(WedgeGModule, function(module)
    local mats, mat, newmat, row, F, gens, dim, nmats, i, j, k, m, n, x;
@@ -335,7 +335,7 @@ SMTX.SetDegreeFieldExt:=SMTX.Setter("degreeFieldExt");
 
 #############################################################################
 ##
-#F  SMTX.OrthogonalVector( subbasis ) single vector othogonal to a submodule,
+#F  SMTX.OrthogonalVector( subbasis ) single vector orthogonal to a submodule,
 ##  N.B. subbasis is assumed to consist of normed vectors,
 ##  submodule is assumed proper.
 ##
@@ -786,7 +786,7 @@ end;
 ## where smodule is the submodule and qmodule the quotient module.
 ## The matrices of nmodule have the form  A  0  where  A  and  B  are the
 ##                                        C  B
-## corresponding matrices of smodule and qmodule resepctively.
+## corresponding matrices of smodule and qmodule respectively.
 ## If sub is not the basis of a submodule then fail is returned.
 SMTX.InducedAction:=function(module, sub, typ...)
 local ans,erg;
@@ -1391,7 +1391,7 @@ local matrices, M, mat,  N, newgenlist, coefflist,
 
       Info(InfoMeatAxe,4,"Evaluated characteristic polynomial. Time = ",
            Runtime()-rt0,".");
-      # That is necessary in case p is defined over a smaller field that F.
+      # That is necessary in case p is defined over a smaller field than F.
       oldpol:=pol;
       # Now we extract the irreducible factors of pol starting with those
       # of low degree
@@ -2094,7 +2094,7 @@ SMTX.Distinguish:=function(cf, i)
       # First evaluate on cf[i][1].
       M:=ImmutableMatrix(F,Sum([1..ngens], k ->  el[2][k] * matsi[k]));
       p:=CharacteristicPolynomialMatrixNC(F,M,1);
-      # That is necessary in case p is defined over a smaller field that F.
+      # That is necessary in case p is defined over a smaller field than F.
       oldp:=p;
       # extract irreducible factors
       deg:=0;
@@ -3114,7 +3114,7 @@ end;
 ##
 #F  BasisInOrbit( module ) . . . .
 ##
-## Find a basis of the irrecucible GModule module that is contained in
+## Find a basis of the irreducible GModule module that is contained in
 ## an orbit of the action of G.
 ## The code is similar to that of SpinnedBasis.
 SMTX.BasisInOrbit:=function(module)

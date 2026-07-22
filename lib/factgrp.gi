@@ -731,7 +731,7 @@ totalcnt, interrupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i,hard;
 
   simple:=HasIsNonabelianSimpleGroup(G) and IsNonabelianSimpleGroup(G) and Size(N)=2;
   uc:=TrivialSubgroup(G);
-  # look if it is worth to look at action on N
+  # look if it is worth looking at action on N
   # if not abelian: later replace by abelian Normal subgroup
   if IsAbelian(N) and (Size(N)>50 or IndexNC(G,N)<Factorial(Size(N)))
       and Size(N)<50000 then
@@ -855,7 +855,7 @@ totalcnt, interrupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i,hard;
       if Size(cor)>Size(N) and IsSubset(cor,N) and not cor in badcores then
         Add(badcores,cor);
       fi;
-      # store known information(we do't act, just store the subgroup).
+      # store known information(we don't act, just store the subgroup).
       # Thus this is fairly cheap
       pool.dotriv:=true;
       zzz:=AddNaturalHomomorphismsPool(G,cor,u,IndexNC(G,u));
@@ -1148,7 +1148,7 @@ local gimg,img,dom,b,improve,bp,bb,i,k,bestdeg,subo,op,bc,bestblock,bdom,
           Info(InfoFactor,2,"try all seeds");
           # if the degree is not too big or if we are desperate then go for
           # all blocks
-          # greedy approach: take always locally best one (otherwise there
+          # greedy approach: always take the locally best one (otherwise there
           # might be too much work to do)
           bestdeg:=Length(dom);
           bp:=[]; #Blocks pool
@@ -1503,7 +1503,7 @@ local pool, dom, bestdeg, blocksdone, o, s, badnormals, cnt, v, u, oo, m,
       fi;
     fi;
 
-    # then we should look at the orbits of the normal subgroup to see,
+    # then we should look at the orbits of the normal subgroup to see
     # whether anything stabilizing can be of use
     o:=Filtered(OrbitsDomain(N,dom),i->Length(Orbit(G,i[1]))>Length(i));
     Apply(o,Set);
@@ -1659,7 +1659,7 @@ local proj,h,pool;
     return IdentityMapping(G);
   fi;
 
-  # check, whether we already know a factormap
+  # check whether we already know a factormap
   pool:=NaturalHomomorphismsPool(G);
   h:=PositionSet(pool.ker,N);
   if h<>fail and IsGeneralMapping(pool.ops[h]) then
@@ -1702,7 +1702,7 @@ local proj,h,pool;
         Length(MovedPoints(Range(h)))," found");
     else
       Error("I don't know how to find a natural homomorphism for <N> in <G>");
-      # nothing had been found, Desperately one could try again, but that
+      # nothing had been found, desperately one could try again, but that
       # would create a possible infinite loop.
       h:= NaturalHomomorphismByNormalSubgroup( G, N );
     fi;

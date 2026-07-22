@@ -588,7 +588,7 @@ function( R, I )
   # SNF gives R*M*C=D, so $R^-1*D*C^-1*(x,y)^T=0$, implying that D are
   # relations that hold amongst C^-1*(x,y). Thus:
   # The rows of C^-1 express the new generators in terms of the old, i.e.
-  # are base chance new-> old as row vectors.
+  # are base change new-> old as row vectors.
   # the rows of C convert old->new
   # Thus the rows of C give coefficients for images of old generators
 

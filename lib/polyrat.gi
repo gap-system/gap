@@ -1009,7 +1009,7 @@ local pol,n,nalpha,d,dis,rb,bound,a,i,j,k,l,w,bin,lm,bea,polc,ro,rbpow;
   # we want an upper bound of the root, RootInt will give a lower
   # bound. So we compute the root of w-1 (in case w is a perfect square)
   # and add 1. As we nowhere selected a specific galois representative,
-  # this bound (which is rational!) will bound all conjugactes as well.
+  # this bound (which is rational!) will bound all conjugates as well.
   lm:=(RootInt(Int(w)-1,2)+1);
   for k in [1..DegreeOfLaurentPolynomial(pol)] do
 

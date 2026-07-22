@@ -12,7 +12,7 @@
 ##  representation.
 ##
 ##  Currently,  there are four  representations for objects with the external
-##  representation as list of generators  numbers and exponents (so not  only
+##  representation as list of generator  numbers and exponents (so not  only
 ##  for  associative  words but  perhaps  also for   elements  in a  finitely
 ##  presented group).
 ##
@@ -24,7 +24,7 @@
 ##  internal data.
 ##
 ##  The    result of an arithmetic    operation  with  objects   of the  same
-##  representation  will be also of that  representation if this is possible.
+##  representation  will also be of that  representation if this is possible.
 ##  The  result  of  an  arithmetic   operation  with  objects  of  different
 ##  representations  will be the bigger  one of the two  if this is possible.
 ##  Otherwise `ObjByExtRep' will choose the smallest possible representation.
@@ -106,8 +106,8 @@ BindGlobal( "InfBits_AssocWord", function( Type, list )
 end );
 
 
-# code for printing words in factored form. This pattern searching clearly
-# is improvable
+# code for printing words in factored form. This pattern searching is clearly
+# improvable
 BindGlobal("FindSubstringPowers",function(l,n)
 local new,t,i,step,lstep,z,zz,j,a,k,good,bad,lim,plim;
   new:=0;
@@ -222,7 +222,7 @@ local a,n,t,
     if Length(l)>0 and n=infinity then
       n:=2*(Maximum(List(l,AbsInt))+1);
     fi;
-    a:=FindSubstringPowers(l,n+Length(tseed)); # tseed numbers are used already
+    a:=FindSubstringPowers(l,n+Length(tseed)); # tseed numbers are already used
   else
     a:=[l,[]];
   fi;
@@ -759,7 +759,7 @@ BindGlobal( "InfBits_Less", function( u, v )
     local   lu, lv,      # length of u/v as a list
             len,         # difference in length of u/v as words
             i,           # loop variable
-            lexico;      # flag for the lexicoghraphic ordering of u and v
+            lexico;      # flag for the lexicographic ordering of u and v
 
     u := u![1]; lu := Length(u);
     v := v![1]; lv := Length(v);
@@ -988,7 +988,7 @@ InstallOtherMethod( ObjByExtRep,
 ##  does the administrative work in the construction of free semigroups,
 ##  free monoids, and free groups.
 ##
-##  <F> is the family of objects, <names> is a list of generators names,
+##  <F> is the family of objects, <names> is a list of generator names,
 ##  and <req> is the required category for the elements, that is,
 ##  `IsAssocWord', `IsAssocWordWithOne', or `IsAssocWordWithInverse'.
 ##
@@ -1152,7 +1152,7 @@ InstallMethod( Position,
     local digits, pos, i;
 
     # Check whether `obj' is in the initial segment, and if not,
-    # whether `obj' matches the names in the rest of the list..
+    # whether `obj' matches the names in the rest of the list.
     pos:= Position( list![2], obj );
     if pos <> fail then
       return pos;

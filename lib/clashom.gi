@@ -208,7 +208,7 @@ local clT,        # classes T
     # we have taken a permutation representation that  prolongates to autT!
     oci:=CycleStructurePerm(clT[i][1]);
 
-    # we have tested already the smaller-# classes
+    # we have already tested the smaller-# classes
     pfus:=Filtered([i+1..lcl],j->CycleStructurePerm(clT[j][1])=oci and
       Size(clT[j][2])=sci);
     pfus:=Difference(pfus,fus[i]);
@@ -793,7 +793,7 @@ local clT,        # classes T
                 elif not stabtrue then
                   # we have an element that stabilizes the conjugacy class.
                   # correct this to an element that fixes the representative.
-                  # (As we have taken already the centralizer in
+                  # (As we have already taken the centralizer in
                   # centralizers_r, it is sufficient to correct by
                   # centralizers_r-conjugation.)
                   con:=trans[orpo]*gen;
@@ -1077,7 +1077,7 @@ local cs,       # chief series of G
       hom,      # G->G/cs[i]
       M,        # cs[i-1]
       N,        # cs[i]
-      subN,     # maximan normal in M over N
+      subN,     # maximal normal in M over N
       csM,      # orbit of nt in M under G
       n,        # Length(csM)
       T,        # List of T_i
@@ -1102,7 +1102,7 @@ local cs,       # chief series of G
       genimages,# G.generators Fhom
       img,      # gQhom
       gimg,     # gFhom
-      act,      # component permcation to 1
+      act,      # component permutation to 1
       j,k,      # loop
       clF,      # classes of F
       ncl,      # new classes
@@ -1126,7 +1126,7 @@ local cs,       # chief series of G
   # classes by lifts via nonabelian factors and can disregard all abelian
   # factors.
 
-  # we will give classes always by their representatives in G and
+  # we will always give classes by their representatives in G and
   # centralizers by their full preimages in G.
 
   cs:= ChiefSeriesThrough( G,[Socle(G)] );
@@ -1896,7 +1896,7 @@ local  classes,            # classes to be constructed, the result
 
     Assert(1,solvsz=stabrsubsz*Length(orb));
 
-    #nosolvable part
+    #nonsolvable part
     orblock:=Length(orb);
     vp:=1;
     stabfacgens:=[];
@@ -2837,7 +2837,7 @@ local r,        #radical
     r:=ValueOption("candidatenums");
     if r<>fail and HasConjugacyClasses(G) then
       # candidatenums gives the numbers of some classes in G that should be
-      # tried first (as they likely contain the element). Us this to reduce
+      # tried first (as they likely contain the element). Use this to reduce
       # conjugacy test in factor.
       if not IsBound(G!.radicalfactorclassmap) then
         G!.radicalfactorclassmap:=[];

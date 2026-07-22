@@ -1336,7 +1336,7 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
         cnt:=cnt-1;
 
         # compute orbit and stabilizers for the next step
-        # own Orbitalgorithm and stabilizer computation
+        # own orbit algorithm and stabilizer computation
 
         #while blist[posi] do posi:=posi+1;od;
         posi:=Position(blist,false,posi);

@@ -122,7 +122,7 @@ DeclareProperty( "IsWordDecompHomomorphism",IsGroupGeneralMappingByImages);
 ##  <Attr Name="CosetTableFpHom" Arg='hom'/>
 ##
 ##  <Description>
-##  returns an augmented coset table for an homomorphism from an fp group,
+##  returns an augmented coset table for a homomorphism from an fp group,
 ##  corresponding to the !.generators component. The component
 ##  <C>.secondaryImages</C> of this table will give the images of all (primary
 ##  and secondary) subgroup generators under <A>hom</A>.
@@ -348,7 +348,7 @@ DeclareGlobalFunction("LargerQuotientBySubgroupAbelianization");
 ##  form of <A>G</A> itself being a permutation/matrix or fp group. It also can
 ##  be if <A>G</A> is finitely presented but (its family) has an
 ##  <C>FPFaithHom</A>. (However it will not apply if <A>G</A> is a subgroup
-##  of an fp group.) The result of this is make higher level calculations in
+##  of an fp group.) The result of this is to make higher level calculations in
 ##  <A>F</A> more efficient.
 ##  This is an internal function that does not test its arguments and the
 ##  result is undefined if calling the function on any other object.

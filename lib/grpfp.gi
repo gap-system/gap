@@ -810,7 +810,7 @@ BindGlobal("HasFullColumnRankIntMatDestructive",function( mat )
     fi;
   od;
   if rb<n-1 then
-    # the modulo calculation gesses rank `rb'. If this is the rank, then rb+1
+    # the modulo calculation guesses rank `rb'. If this is the rank, then rb+1
     # columns should be dependent!
     r:=[1..rb+1];
     mp:=List(mat,x->x{r});
@@ -1030,7 +1030,7 @@ end );
 #M                                                     do a coset enumeration
 ##
 ##  'CosetTableFromGensAndRels'  is the workhorse  for computing  a coset
-##  table of H in G where G is a finitley presented group, H is a subgroup of
+##  table of H in G where G is a finitely presented group, H is a subgroup of
 ##  G,  and  G  is the whole group of  H.  It applies a Felsch strategy Todd-
 ##  Coxeter coset enumeration. The expected parameters are
 ##
@@ -1049,7 +1049,7 @@ end );
 ##    enumeration does not finish with this number of cosets, an error is
 ##    raised and the user is asked whether she wants to continue
 ##
-##    `silent'  & if set to `true' the algorithm will not rais the error
+##    `silent'  & if set to `true' the algorithm will not raise the error
 ##    mentioned under option `max' but silently return `fail'. This can be
 ##    useful if an enumeration is only wanted unless it becomes too big.
 ##  \enditems
@@ -1901,7 +1901,7 @@ function ( G, H )
         return G;
     fi;
 
-    # its worth to check inclusion first
+    # it's worth checking inclusion first
     if IndexInWholeGroup(G)<=IndexInWholeGroup(H) and IsSubset(G,H) then
       return H;
     elif IndexInWholeGroup(H)<=IndexInWholeGroup(G) and IsSubset(H,G) then
@@ -1976,7 +1976,7 @@ InstallMethod(Intersection2,"subgroups of fp group by quotient",IsIdenticalObj,
 function ( G, H )
 local d,A,B,e1,e2,Ag,Bg,s,sg,u,v,map,sz;
 
-  # it is not worth to check inclusion first since we're reducing afterwards
+  # it is not worth checking inclusion first since we're reducing afterwards
   #if IndexInWholeGroup(G)<=IndexInWholeGroup(H) and IsSubset(G,H) then
   #  return H;
   #elif IndexInWholeGroup(H)<=IndexInWholeGroup(G) and IsSubset(H,G) then
@@ -3953,7 +3953,7 @@ InstallMethod(Size, "for finitely presented groups", true,
 
 #############################################################################
 ##
-#M  Size( <H> )  . . . . . . size of s subgroup of a finitely presented group
+#M  Size( <H> )  . . . . . . size of a subgroup of a finitely presented group
 ##
 InstallMethod(Size,"subgroups of finitely presented groups",true,
     [ IsSubgroupFpGroup ], 0,

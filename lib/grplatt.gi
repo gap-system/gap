@@ -2346,9 +2346,9 @@ local n,i,s;
   if Size(G)=1 then return G;fi;
 
   # force an IsNilpotent check
-  # should have and IsSolvable check, as well,
+  # should have an IsSolvable check, as well,
   # but methods for solvable groups are only in CRISP
-  # which aggeressively checks for solvability, anyway
+  # which aggressively checks for solvability, anyway
   if (not HasIsNilpotentGroup(G) and IsNilpotentGroup(G)) then
     return Socle(G);
   fi;
@@ -2395,7 +2395,7 @@ local rt,op,a,l,i,j,u,max,subs;
 
   # compute inclusion information among sets
   SortBy(a, Length);
-  # this is n^2 but I hope will not dominate everything.
+  # this is n^2 but I hope it will not dominate everything.
   subs:=List([1..l],i->Filtered([1..i-1],j->IsSubset(a[i],a[j])));
       # List the sets we know to be contained in each set
 

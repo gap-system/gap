@@ -44,7 +44,7 @@ InstallGlobalFunction( IsDxLargeGroup, G -> Size(G) > DXLARGEGROUPORDER );
 ##  classes are in earlier positions,making the active columns those to
 ##  smaller classes,reducing the work for calculating class matrices!
 ##  Additionally galois conjugated classes are together,thus increasing the
-##  chance,that with one columns of them active to be several acitive,
+##  chance,that with one columns of them active to be several active,
 ##  reducing computation time !
 ##
 InstallGlobalFunction( ClassComparison, function(c,d)
@@ -444,7 +444,7 @@ end );
 #F  DxLinearCharacters(<D>) . . . .   calculate characters of G of degree 1
 ##
 ##  These characters are computed as characters of G/G'. This can be done
-##  easily by using the fact,that an abelian group is direct product of
+##  easily by using the fact,that an abelian group is a direct product of
 ##  cyclic groups. Thus we get the characters as "direct products" of the
 ##  characters of cyclic groups,which can be easily computed. They are
 ##  lifted afterwards back to G.
@@ -809,8 +809,8 @@ InstallGlobalFunction(SplitStep,function(D,bestMat)
                 # extra dimension of the larger space might somehow get
                 # lost. Therefore we can't be that tricky as the following
                 # argument supposes.
-                  # In characteristic p the split may be
-                  # not as well,as in characteristic 0. In this
+                  # In characteristic p the split may not be as good
+                  # as in characteristic 0. In this
                   # case,we may find a smaller image in another space.
                   # As character morphisms are a group we will also
                   # have the inverse image of the complement, we can
@@ -1408,7 +1408,7 @@ local n,i,val,b,requiredCols,splitBases,wert,nu,r,rs,rc,bn,bw,split,
 
       # only take classes small enough
       if D.classiz[n]<=lim and
-      # dont start with central classes in small groups!
+      # don't start with central classes in small groups!
       (D.classiz[n]>ksl or IsBound(D.maycent)) then
         for i in [1..Length(D.raeume)] do
           r:=D.raeume[i];
@@ -1471,7 +1471,7 @@ local n,i,val,b,requiredCols,splitBases,wert,nu,r,rs,rc,bn,bw,split,
           od;
 
           wert[n]:=wert[n]*D.centralizers[n] # *G/|K|
-                  /(Length(rc)); # We count -mistakening - also the first
+                  /(Length(rc)); # We count -mistakenly - also the first
             # column,that is available for free. Its "costs" are meant to
             # compensate for the splitting process.
         fi;
@@ -2236,7 +2236,7 @@ local C,u,irr;
   # Sort the characters by degrees.
   irr:=SortedCharacters(C,irr);
 
-  # Throw away not any longer used components of the Dixon record.
+  # Throw away components of the Dixon record that are no longer used.
   for u in Difference(RecNames(D),
     ["ClassElement","centmulCandidates","centmulMults","characterTable",
     "classMap","facs","fingerprintCandidates",

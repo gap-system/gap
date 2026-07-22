@@ -130,7 +130,7 @@ end);
 # if groups are fully conjugated)
 # gps (groups already conjugates so the action is reduced to acts for each
 # cluster)
-# conjugators (for subgroups in list, elements conjugationg to gps)
+# conjugators (for subgroups in list, elements conjugating to gps)
 # normalizers: if not `false` normalizers of cluster rep in gps
 #
 
