@@ -289,7 +289,9 @@ true
 # Test IsomorphismPartialPermMonoid for a partial perm semigroup
 gap> S := Semigroup(PartialPerm([2], [2]), PartialPerm([1], [1]));;
 gap> IsomorphismPartialPermMonoid(S);
-Error, the argument must be a semigroup with a multiplicative neutral element
+MappingByFunction( <partial perm monoid of rank 2 with 2 generators>, 
+<partial perm monoid of rank 2 with 2 generators>
+ , function( object ) ... end, function( object ) ... end )
 gap> S := Semigroup(PartialPerm([2, 1]));;
 gap> IsomorphismPartialPermMonoid(S);;
 gap> IsMonoid(Range(last));
