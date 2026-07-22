@@ -1227,8 +1227,10 @@ local cs,i,j,pre,post,c,new,rev;
         fi;
         i:=i+1;
       until Size(c)=Size(cs[post]);
+
+      # change cs only if pre<post
+      cs:=Concatenation(new,cs{[post+1..Length(cs)]});
     fi;
-    cs:=Concatenation(new,cs{[post+1..Length(cs)]});
   od;
   return cs;
 end);
