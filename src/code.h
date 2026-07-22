@@ -83,12 +83,8 @@ typedef struct CodeState CodeState;
 **  'FILENAME_BODY' is a string containing the file of a function.
 **  'STARTLINE_BODY' is the line number where a function starts.
 **  'ENDLINE_BODY' is the line number where a function ends.
-**  'LOCATION_BODY' is a string describing the location of a function.
-**  Typically this will be the name of a C function implementing it.
 **
 **  These each have a 'GET' and a 'SET' variant, to read or set the value.
-**  Note that STARTLINE_BODY and LOCATION_BODY are stored in the same place,
-**  so writing one will overwrite the other.
 **
 **  All of these variables may be 0, if the information is not known,
 */
@@ -99,12 +95,9 @@ typedef struct {
     // of the filename inside FilenameCache
     Obj filename_or_id;
 
-    // if non-zero, this is either an immediate integer encoding the
-    // line number where a function starts, or string describing the
-    // location of a function. Typically this will be the name of a C
-    // function implementing it. See also `SetupFuncInfo` which derives
-    // it from the "cookie" associated to functions.
-    Obj startline_or_location;
+    // if non-zero, this is an immediate integer encoding the line
+    // number where a function starts
+    Obj startline;
 
     // if non-zero, this is an immediate integer encoding the line
     // number where a function ends
@@ -128,13 +121,6 @@ void SET_FILENAME_BODY(Obj body, Obj val);
 UInt GET_GAPNAMEID_BODY(Obj body);
 void SET_GAPNAMEID_BODY(Obj body, UInt val);
 
-// see documentation of `startline_or_location` for more information about the
-// "location" of a body
-Obj  GET_LOCATION_BODY(Obj body);
-void SET_LOCATION_BODY(Obj body, Obj val);
-
-// see documentation of `startline_or_location` for more information about the
-// "startline" of a body
 UInt GET_STARTLINE_BODY(Obj body);
 void SET_STARTLINE_BODY(Obj body, UInt val);
 UInt GET_ENDLINE_BODY(Obj body);
