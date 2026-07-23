@@ -18,7 +18,6 @@ true
 gap> GroupGeneralMappingByImagesNC( G, G, gens, gens );;
 #I  use the global option 'Run_In_GGMBI' not the global variable 'RUN_IN_GGMBI', see '?Run_In_GGMBI'
 gap> RUN_IN_GGMBI:= fail;;
-`Run_In_GGMBI` (#6442))
 
 # - Run some examples where the option gets set,
 #   and where no other tests were available.

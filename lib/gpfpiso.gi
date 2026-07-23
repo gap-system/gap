@@ -249,7 +249,7 @@ InstallGlobalFunction(IsomorphismFpGroupByChiefSeriesFactor,
 function(g,str,N)
   local ser, ab, homs, gens, idx, start, pcgs, hom, f, fgens, auts, sf, orb,
   tra, j, a, ad, lad, n, fg, free, rels, fp, vals, dec, still, lgens, ngens,
-  nrels, nvals, p, dodecomp, decomp, hogens, di, i, k, l,
+  nrels, nvals, p, dodecomp, decomp, hogens, di, i, k, l,ser1,
   m,abelianlimit,locallim,abpow,needgens,fampcgs,rad;
 
   abelianlimit:=ValueOption("abelianlimit");
@@ -276,6 +276,12 @@ function(g,str,N)
       hom:=NaturalHomomorphismByNormalSubgroupNC(g,rad);
       f:=Image(hom);
       ser:=ShallowCopy(DirectFactorsFittingFreeSocle(f));
+
+      ser1:=Filtered(ser,x->not IsNormal(f,x));
+      if Length(ser1) > 0 then
+        ser:=Filtered(ser,x->IsNormal(f,x));
+      fi;
+
       gens:=Concatenation(List(ser,SmallGeneratingSet));
       j:=SubgroupNC(f,gens);
       for i in GeneratorsOfGroup(f) do
@@ -288,7 +294,8 @@ function(g,str,N)
       for i in [Length(ser)-1,Length(ser)-2..1] do
         ser[i]:=ClosureGroup(ser[i+1],ser[i]);
       od;
-      if Size(ser[1])<Size(f) then
+
+      if Length(ser1)>0 or Size(ser[1])<Size(f) then
         ser:=ChiefSeriesThrough(f,ser);
         gens:=Union(gens,Union(List(ser,SmallGeneratingSet)));
       fi;
@@ -298,6 +305,7 @@ function(g,str,N)
       fi;
       # change generators to make split
       ser:=List(ser,x->ClosureGroup(rad,Filtered(gens,y->y in x)));
+
     else
       rad:=g;
     fi;

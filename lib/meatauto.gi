@@ -757,7 +757,7 @@ local nv, nw, F, zero, minusone, zeroW, gV, gW, k, U, echu, r, homs, s, work, an
       od;
       imv0c:=EchResidueCoeffs(M, echm, imv0,1);
       for l in [1..Length(v)] do
-        if Length(imv0c)=0 then image:=[];
+        if Length(imv0c)=0 then image:= ZeroMutable( Uhom[1] );
         else image:=imv0c * a[l];fi;
         if r > 0 then
           AddVector(image, EchResidueCoeffs(U, echu, u[l],1) * Uhom);
