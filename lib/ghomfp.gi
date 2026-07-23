@@ -1118,32 +1118,25 @@ local m,s,g,i,j,gen,img,hom,d,pos;
 end);
 
 InstallMethod(MaximalAbelianQuotient,
-        "for subgroups of finitely presented groups, through new fp",
-        true, [IsSubgroupFpGroup], -1,
-function(U)
-local phi, m;
-  # do cheaper Tietze (and thus do not store)
-  phi:=AttributeValueNotSet(IsomorphismFpGroup,U:
-    eliminationsLimit:=50,
-    generatorsLimit:=Length(GeneratorsOfGroup(Parent(U)))*LogInt(IndexInWholeGroup(U),2),
-    cheap);
-  m:=MaximalAbelianQuotient(Image(phi));
-  SetAbelianInvariants(U,AbelianInvariants(Image(phi)));
-  return phi*m;
-end);
-
-InstallMethod(MaximalAbelianQuotient,
-        "subgroups of fp., rewrite", true, [IsSubgroupFpGroup], 2,
+        "subgroups of fp., rewrite", true, [IsSubgroupFpGroup], 0,
 function(u)
-local iso;
+local iso, m;
   if (HasIsWholeFamily(u) and IsWholeFamily(u))
   # catch trivial case of rank 0 group
    or Length(GeneratorsOfGroup(FamilyObj(u)!.wholeGroup))=0 then
-    TryNextMethod();
+    # do cheaper Tietze (and thus do not store)
+    iso:=AttributeValueNotSet(IsomorphismFpGroup,u:
+      eliminationsLimit:=50,
+      generatorsLimit:=Length(GeneratorsOfGroup(Parent(u)))
+                       *LogInt(IndexInWholeGroup(u),2),
+      cheap);
+  else
+    iso:=IsomorphismFpGroup(u);
   fi;
 
-  iso:=IsomorphismFpGroup(u);
-  return iso*MaximalAbelianQuotient(Range(iso));
+  m:=MaximalAbelianQuotient(Range(iso));
+  SetAbelianInvariants(u,AbelianInvariants(Range(iso)));
+  return iso*m;
 end);
 
 
