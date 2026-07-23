@@ -576,16 +576,31 @@ InstallMethod( ImagesRepresentative,
 
 #############################################################################
 ##
+#M  PreImagesRepresentativeNC( <map>, <elm> ) . . . . .  for algebra g.m.b.i.
 #M  PreImagesRepresentative( <map>, <elm> ) . . . . . .  for algebra g.m.b.i.
 ##
+InstallMethod( PreImagesRepresentativeNC,
+    "for algebra g.m.b.i., and element",
+    FamRangeEqFamElm,
+    [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep,
+      IsObject ],
+    function( map, elm )
+    return PreImagesRepresentativeNC(
+               AsLeftModuleGeneralMappingByImages(map), elm );
+    end );
+
 InstallMethod( PreImagesRepresentative,
     "for algebra g.m.b.i., and element",
     FamRangeEqFamElm,
     [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep,
       IsObject ],
     function( map, elm )
-    return PreImagesRepresentative( AsLeftModuleGeneralMappingByImages(map),
-                                    elm );
+      if not ( elm in Range( map ) ) then
+        Error( "<elm> is not in the range of <map>" );
+      elif not ( elm in Image( map ) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentativeNC( map, elm );
     end );
 
 
@@ -902,6 +917,7 @@ InstallMethod( ImagesRepresentative,
 
 #############################################################################
 ##
+#M  PreImagesRepresentativeNC( <ophom>, <mat> )
 #M  PreImagesRepresentative( <ophom>, <mat> )
 ##
 BindGlobal( "PreImagesRepresentativeOperationAlgebraHomomorphism", function( ophom, mat )
@@ -915,12 +931,24 @@ BindGlobal( "PreImagesRepresentativeOperationAlgebraHomomorphism", function( oph
     return mat;
 end );
 
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
     "for an operation algebra homomorphism, and an element",
     FamRangeEqFamElm,
     [ IsOperationAlgebraHomomorphismDefaultRep, IsMatrix ],
     PreImagesRepresentativeOperationAlgebraHomomorphism );
 
+InstallMethod( PreImagesRepresentative,
+    "for an operation algebra homomorphism, and an element",
+    FamRangeEqFamElm,
+    [ IsOperationAlgebraHomomorphismDefaultRep, IsMatrix ],
+    function( ophom, mat )
+    if not ( mat in Range( ophom ) ) then
+        Error( "<mat> not in the range of mapping <ophom>" );
+    elif not ( mat in Image( ophom ) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentativeOperationAlgebraHomomorphism( ophom, mat );
+end );
 
 #############################################################################
 ##
@@ -1076,14 +1104,27 @@ InstallMethod( ImagesRepresentative,
 
 #############################################################################
 ##
+#M  PreImagesRepresentativeNC( <ophom>, <mat> )
 #M  PreImagesRepresentative( <ophom>, <mat> )
 ##
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
     "for an alg. hom. from f. p. algebra, and an element",
     FamRangeEqFamElm,
     [ IsAlgebraHomomorphismFromFpRep, IsMatrix ],
     PreImagesRepresentativeOperationAlgebraHomomorphism );
 
+InstallMethod( PreImagesRepresentative,
+    "for an alg. hom. from f. p. algebra, and an element",
+    FamRangeEqFamElm,
+    [ IsAlgebraHomomorphismFromFpRep, IsMatrix ],
+    function( ophom, mat );
+    if not ( mat in Range( ophom ) ) then
+        Error( "<mat> is not in the range of mapping <ophom>" );
+    elif not ( mat in Image( ophom ) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentativeOperationAlgebraHomomorphism( ophom, mat );
+    end );
 
 #############################################################################
 ##

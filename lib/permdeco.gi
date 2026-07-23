@@ -314,7 +314,7 @@ local tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
   for i in GeneratorsOfGroup(G) do
     a:=One(d);
     for j in [1..Length(stabs)] do
-      a:=a*Image(Embedding(d,j),PreImagesRepresentative(outs[j],i));
+      a:=a*Image(Embedding(d,j),PreImagesRepresentativeNC(outs[j],i));
     od;
     Add(p,a);
   od;
@@ -360,7 +360,7 @@ local G,H,tg,th,hom, tga, Gemb, C, outs, auts, ar, Hemb;
             i->GroupHomomorphismByImagesNC(tg,tg,
                GeneratorsOfGroup(tg),
                List(GeneratorsOfGroup(tg),
-                    j->Image(hom,PreImagesRepresentative(hom,j)^i))));
+                    j->Image(hom,PreImagesRepresentativeNC(hom,j)^i))));
 
   Gemb:=fail;
   if ForAll(tga,IsConjugatorAutomorphism) then
@@ -442,7 +442,7 @@ local cs,i,k,u,o,norm,T,Thom,autos,ng,a,Qhom,Q,Ehom,genimages,
     autos:=List(ng,i->GroupHomomorphismByImagesNC(T,T,
                         GeneratorsOfGroup(T),
                         List(GeneratorsOfGroup(T),
-                          j->Image(Thom,PreImagesRepresentative(Thom,j)^i))));
+                          j->Image(Thom,PreImagesRepresentativeNC(Thom,j)^i))));
     a:=AutomorphismRepresentingGroup(T,autos);
     Thom:=GroupHomomorphismByImagesNC(norm,a[1],ng,a[3]);
     a:=a[1];
@@ -455,7 +455,7 @@ local cs,i,k,u,o,norm,T,Thom,autos,ng,a,Qhom,Q,Ehom,genimages,
 
   # define isomorphisms between the components
   reps:=List([1..n],i->
-          PreImagesRepresentative(Qhom,RepresentativeAction(Q,1,i)));
+          PreImagesRepresentativeNC(Qhom,RepresentativeAction(Q,1,i)));
 
   genimages:=[];
   for i in GeneratorsOfGroup(G) do
@@ -539,7 +539,7 @@ local limit, r, pcgs, ser, ind, m, p, l, l2, good, i, j,nser,hom;
       ser:=InvariantElementaryAbelianSeries(p, List( GeneratorsOfGroup( G ),
               i -> GroupHomomorphismByImagesNC(p,p,GeneratorsOfGroup(p),
                      List(GeneratorsOfGroup(p),
-                          j->Image(m,PreImagesRepresentative(m,j)^i)))),
+                          j->Image(m,PreImagesRepresentativeNC(m,j)^i)))),
               TrivialSubgroup(p),true);
       ser:=List(ser,i->PreImage(m,i));
     else

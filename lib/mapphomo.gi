@@ -330,9 +330,10 @@ InstallMethod( ImagesSet,
 
 #############################################################################
 ##
-#M  PreImagesElm( <map>, <elm> )  .  for s.p. gen. mapping resp. mult. & inv.
+#M  PreImagesElmNC( <map>, <elm> ) . for s.p. gen. mapping resp. mult. & inv.
+#M  PreImagesElm( <map>, <elm> ) . . for s.p. gen. mapping resp. mult. & inv.
 ##
-InstallMethod( PreImagesElm,
+InstallMethod( PreImagesElmNC,
     "method for s.p. general mapping respecting mult. & inv., and element",
     FamRangeEqFamElm,
     [ IsSPGeneralMapping and RespectsMultiplication and RespectsInverses,
@@ -340,7 +341,7 @@ InstallMethod( PreImagesElm,
       function( map, elm )
     local   pre;
 
-    pre:= PreImagesRepresentative( map, elm );
+    pre:= PreImagesRepresentativeNC( map, elm );
     if pre = fail then
       return [];
     else
@@ -348,12 +349,26 @@ InstallMethod( PreImagesElm,
     fi;
     end );
 
+InstallMethod( PreImagesElm,
+    "method for s.p. general mapping respecting mult. & inv., and element",
+    FamRangeEqFamElm,
+    [ IsSPGeneralMapping and RespectsMultiplication and RespectsInverses,
+      IsObject ],
+function( map, elm )
+  if not ( elm in Range( map ) ) then
+    Error( "<elm> is not in the range of <map>" );
+  elif not ( elm in Image( map ) ) then
+    return fail;
+  fi;
+  return PreImagesElmNC( map, elm );
+end );
+
 
 #############################################################################
 ##
-#M  PreImagesSet( <map>, <elms> ) .  for s.p. gen. mapping resp. mult. & inv.
+#M  PreImagesSetNC( <map>, <elms> ) . for s.p. gen. mapping resp. mult. & inv.
 ##
-InstallMethod( PreImagesSet,
+InstallMethod( PreImagesSetNC,
     "method for s.p. general mapping respecting mult. & inv., and group",
     CollFamRangeEqFamElms,
     [ IsSPGeneralMapping and RespectsMultiplication and RespectsInverses,
@@ -367,7 +382,7 @@ InstallMethod( PreImagesSet,
     fi;
 
     genpreimages:= List(genpreimages,
-                      gen -> PreImagesRepresentative( map, gen ) );
+                      gen -> PreImagesRepresentativeNC( map, gen ) );
     if fail in genpreimages then
       TryNextMethod();
     fi;
@@ -385,6 +400,19 @@ InstallMethod( PreImagesSet,
     end );
 
 InstallMethod( PreImagesSet,
+    "method for s.p. general mapping respecting mult. & inv., and group",
+    CollFamRangeEqFamElms,
+    [ IsSPGeneralMapping and RespectsMultiplication and RespectsInverses,
+      IsGroup ],
+  function( map, elms )
+    if not IsSubset( Range( map ), elms ) then
+      Error( "<elms> is not a subset of the range of <map>" );
+    fi;
+    return PreImagesSetNC( map, Intersection( elms, Image( map ) ) );
+  end );
+
+
+InstallMethod( PreImagesSetNC,
     "method for injective s.p. mapping respecting mult. & inv., and group",
     CollFamRangeEqFamElms,
     [ IsSPGeneralMapping and IsMapping and IsInjective and
@@ -395,9 +423,22 @@ InstallMethod( PreImagesSet,
 
     pre := SubgroupNC( Source( map ),
                     List( GeneratorsOfMagmaWithInverses( elms ),
-                          gen -> PreImagesRepresentative( map, gen ) ) );
+                          gen -> PreImagesRepresentativeNC( map, gen ) ) );
     UseIsomorphismRelation( elms, pre );
     return pre;
+    end );
+
+InstallMethod( PreImagesSet,
+    "method for injective s.p. mapping respecting mult. & inv., and group",
+    CollFamRangeEqFamElms,
+    [ IsSPGeneralMapping and IsMapping and IsInjective and
+      RespectsMultiplication and RespectsInverses,
+      IsGroup ],
+    function( map, elms )
+      if not IsSubset( Range( map ), elms ) then
+        Error( "<elms> is not a subset of the range of <map>" );
+      fi;
+      return PreImagesSetNC( map, Intersection( elms, Image( map ) ) );
     end );
 
 
@@ -684,9 +725,10 @@ InstallMethod( ImagesSet,
 
 #############################################################################
 ##
-#M  PreImagesElm( <map>, <elm> )  for s.p. gen. mapping resp. add. & add.inv.
+#M  PreImagesElmNC( <map>, <elm> )  for s.p. gen. mapping resp. add. & add.inv.
+#M  PreImagesElm( <map>, <elm> )  . for s.p. gen. mapping resp. add. & add.inv.
 ##
-InstallMethod( PreImagesElm,
+InstallMethod( PreImagesElmNC,
     "method for s.p. gen. mapping respecting add. & add.inv., and element",
     FamRangeEqFamElm,
     [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses,
@@ -694,7 +736,7 @@ InstallMethod( PreImagesElm,
       function( map, elm )
     local   pre;
 
-    pre:= PreImagesRepresentative( map, elm );
+    pre:= PreImagesRepresentativeNC( map, elm );
     if pre = fail then
       return [];
     else
@@ -702,12 +744,27 @@ InstallMethod( PreImagesElm,
     fi;
     end );
 
+InstallMethod( PreImagesElm,
+    "method for s.p. gen. mapping respecting add. & add.inv., and element",
+    FamRangeEqFamElm,
+    [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses,
+      IsObject ],
+    function( map, elm )
+      if not ( elm in Range( map ) ) then
+        Error( "<elm> is not in the range of <map>" );
+      elif not ( elm in Image( map ) ) then
+        return fail;
+      fi;
+      return PreImagesElmNC( map, elm );
+    end );
+
 
 #############################################################################
 ##
-#M  PreImagesSet( <map>, <elms> ) for s.p. gen. mapping resp. add. & add.inv.
+#M  PreImagesSetNC( <map>, <elms> ) for s.p. gen. mapp. resp. add. & add.inv.
+#M  PreImagesSet( <map>, <elms> ) . for s.p. gen. mapp. resp. add. & add.inv.
 ##
-InstallMethod( PreImagesSet,
+InstallMethod( PreImagesSetNC,
     "method for s.p. gen. mapping resp. add. & add.inv., and add. group",
     CollFamRangeEqFamElms,
     [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses,
@@ -715,15 +772,26 @@ InstallMethod( PreImagesSet,
     function( map, elms )
     local genpreimages;
     genpreimages:= List( GeneratorsOfAdditiveGroup( elms ),
-                      gen -> PreImagesRepresentative( map, gen ) );
+                      gen -> PreImagesRepresentativeNC( map, gen ) );
     if fail in genpreimages then
       TryNextMethod();
     fi;
-
     return SubadditiveGroupNC( Source( map ), Concatenation(
                GeneratorsOfAdditiveGroup(
                    KernelOfAdditiveGeneralMapping( map ) ),
                genpreimages ) );
+    end );
+
+InstallMethod( PreImagesSet,
+    "method for s.p. gen. mapping resp. add. & add.inv., and add. group",
+    CollFamRangeEqFamElms,
+    [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses,
+      IsAdditiveGroup ],
+    function( map, elms )
+      if not IsSubset( Range( map ), elms ) then
+        Error( "<elms> is not a subset of the range of <map>" );
+      fi;
+    return PreImagesSetNC( map, Intersection( elms, Image( map ) ) );
     end );
 
 
@@ -890,9 +958,10 @@ InstallMethod( ImagesSet,
 
 #############################################################################
 ##
+#M  PreImagesSetNC( <map>, <elms> ) . . .  for linear mapping and left module
 #M  PreImagesSet( <map>, <elms> ) . . . .  for linear mapping and left module
 ##
-InstallMethod( PreImagesSet,
+InstallMethod( PreImagesSetNC,
     "method for linear mapping and left module",
     CollFamRangeEqFamElms,
     [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses
@@ -901,15 +970,27 @@ InstallMethod( PreImagesSet,
     function( map, elms )
     local genpreimages;
     genpreimages:= List( GeneratorsOfLeftModule( elms ),
-                         gen -> PreImagesRepresentative( map, gen ) );
+                         gen -> PreImagesRepresentativeNC( map, gen ) );
     if fail in genpreimages then
       TryNextMethod();
     fi;
-
     return SubmoduleNC( Source( map ), Concatenation(
                GeneratorsOfLeftModule(
                    KernelOfAdditiveGeneralMapping( map ) ),
                genpreimages ) );
+    end );
+
+InstallMethod( PreImagesSet,
+    "method for linear mapping and left module",
+    CollFamRangeEqFamElms,
+    [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses
+          and RespectsScalarMultiplication,
+      IsLeftModule ],
+    function( map, elms )
+      if not IsSubset( Range( map ), elms ) then
+        Error( "<elms> is not a subset of the range of <map>" );
+      fi;
+      return PreImagesSetNC( map, Intersection( elms, Image( map ) ) );
     end );
 
 
@@ -984,9 +1065,10 @@ InstallMethod( ImagesSet,
 
 #############################################################################
 ##
+#M  PreImagesSetNC( <map>, <elms> ) . . . . . . . for algebra hom. and FLMLOR
 #M  PreImagesSet( <map>, <elms> ) . . . . . . . . for algebra hom. and FLMLOR
 ##
-InstallMethod( PreImagesSet,
+InstallMethod( PreImagesSetNC,
     "method for algebra hom. and FLMLOR",
     CollFamRangeEqFamElms,
     [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses
@@ -995,11 +1077,10 @@ InstallMethod( PreImagesSet,
     function( map, elms )
     local genpreimages;
     genpreimages:= List( GeneratorsOfLeftOperatorRing( elms ),
-                         gen -> PreImagesRepresentative( map, gen ) );
+                         gen -> PreImagesRepresentativeNC( map, gen ) );
     if fail in genpreimages then
       TryNextMethod();
     fi;
-
     return SubFLMLORNC( Source( map ), Concatenation(
                GeneratorsOfLeftOperatorRing(
                    KernelOfAdditiveGeneralMapping( map ) ),
@@ -1007,12 +1088,26 @@ InstallMethod( PreImagesSet,
 #T handle the case of ideals!
     end );
 
+InstallMethod( PreImagesSet,
+    "method for algebra hom. and FLMLOR",
+    CollFamRangeEqFamElms,
+    [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses
+          and RespectsScalarMultiplication and RespectsMultiplication,
+      IsFLMLOR ],
+    function( map, elms )
+      if not IsSubset( Range( map ), elms ) then
+        Error( "<elms> is not a subset of the range of <map>" );
+      fi;
+    return PreImagesSetNC( map, Intersection( elms, Image( map ) ) );
+    end );
+
 
 #############################################################################
 ##
-#M  PreImagesSet( <map>, <elms> )  for alg.-with-one hom. and FLMLOR-with-one
+#M  PreImagesSetNC( <map>, <elms> ) for alg-with-one hom. and FLMLOR-with-one
+#M  PreImagesSet( <map>, <elms> ) . for alg-with-one hom. and FLMLOR-with-one
 ##
-InstallMethod( PreImagesSet,
+InstallMethod( PreImagesSetNC,
     "method for algebra-with-one hom. and FLMLOR-with-one",
     CollFamRangeEqFamElms,
     [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses
@@ -1022,16 +1117,29 @@ InstallMethod( PreImagesSet,
     function( map, elms )
     local genpreimages;
     genpreimages:= List( GeneratorsOfLeftOperatorRingWithOne( elms ),
-                         gen -> PreImagesRepresentative( map, gen ) );
+                         gen -> PreImagesRepresentativeNC( map, gen ) );
     if fail in genpreimages then
       TryNextMethod();
     fi;
-
     return SubFLMLORNC( Source( map ), Concatenation(
                GeneratorsOfLeftOperatorRingWithOne(
                    KernelOfAdditiveGeneralMapping( map ) ),
                genpreimages ) );
 #T handle the case of ideals!
+    end );
+
+InstallMethod( PreImagesSet,
+    "method for algebra-with-one hom. and FLMLOR-with-one",
+    CollFamRangeEqFamElms,
+    [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses
+          and RespectsScalarMultiplication and RespectsMultiplication
+          and RespectsOne,
+      IsFLMLORWithOne ],
+    function( map, elms )
+      if not IsSubset( Range( map ), elms ) then
+        Error( "<elms> is not a subset of the range of <map>" );
+      fi;
+    return PreImagesSetNC( map, Intersection( elms, Image( map ) ) );
     end );
 
 

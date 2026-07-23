@@ -11,9 +11,10 @@
 
 #############################################################################
 ##
-#M  PreImagesSet( <map>, <elms> ) .  for s.p. gen. mapping resp. mult. & inv.
+#M  PreImagesSetNC( <map>, <elms> ) . for s.p. gen. mapping resp. mult. & inv.
+#M  PreImagesSet( <map>, <elms> ) . . for s.p. gen. mapping resp. mult. & inv.
 ##
-InstallMethod( PreImagesSet,
+InstallMethod( PreImagesSetNC,
     "method for permgroup homs",
     CollFamRangeEqFamElms,
     [ IsPermGroupHomomorphism, IsGroup ],
@@ -22,7 +23,7 @@ local genpreimages,  pre,kg,sz,ol,orb,pos,dom,one;
   genpreimages:=GeneratorsOfMagmaWithInverses( elms );
 
   genpreimages:= List(genpreimages,
-                    gen -> PreImagesRepresentative( map, gen ) );
+                    gen -> PreImagesRepresentativeNC( map, gen ) );
   if fail in genpreimages then
     TryNextMethod();
   fi;
@@ -76,6 +77,17 @@ local genpreimages,  pre,kg,sz,ol,orb,pos,dom,one;
     fi;
   fi;
   return pre;
+end );
+
+InstallMethod( PreImagesSet,
+    "method for permgroup homs",
+    CollFamRangeEqFamElms,
+    [ IsPermGroupHomomorphism, IsGroup ],
+function( map, elms )
+    if not IsSubset( Range( map ), elms ) then
+        Error( "<elms> is not a subset of the range of <map>" );
+    fi;
+    return PreImagesSetNC( map, Intersection( elms, Image( map ) ) );
 end );
 
 #############################################################################
@@ -1152,7 +1164,7 @@ local r, fgens, gens, kg;
   fi;
   fgens:=ShallowCopy(GeneratorsOfGroup(r));
   gens:=List(fgens,
-             i->PreImagesRepresentative(hom2,PreImagesRepresentative(hom1,i)));
+        i->PreImagesRepresentativeNC(hom2,PreImagesRepresentativeNC(hom1,i)));
   kg:=GeneratorsOfGroup(KernelOfMultiplicativeGeneralMapping(hom2));
   Append(gens,kg);
   Append(fgens,List(kg,i->One(r)));
@@ -1162,13 +1174,26 @@ end);
 
 #############################################################################
 ##
+#M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . .  for perm group range
 #M  PreImagesRepresentative( <hom>, <elm> ) . . . . . .  for perm group range
 ##
-InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
+InstallMethod( PreImagesRepresentativeNC, FamRangeEqFamElm,
         [ IsToPermGroupGeneralMappingByImages,
           IsMultiplicativeElementWithInverse ], 0,
     function( hom, elm )
     return ImagesRepresentative( RestrictedInverseGeneralMapping( hom ), elm );
+end );
+
+InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
+        [ IsToPermGroupGeneralMappingByImages,
+          IsMultiplicativeElementWithInverse ], 0,
+    function( hom, elm )
+    if not ( elm in Range( hom ) ) then
+        Error( "<elm> is not in the range of mapping <hom>" );
+    elif not ( elm in Image( hom ) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentativeNC( hom, elm );
 end );
 
 #############################################################################
@@ -1562,9 +1587,10 @@ InstallMethod( ImagesSource,"constituent homomorphism",true,
 
 #############################################################################
 ##
+#M  PreImagesRepresentativeNC( <hom>, <elm> )
 #M  PreImagesRepresentative( <hom>, <elm> )
 ##
-InstallMethod( PreImagesRepresentative,"constituent homomorphism",
+InstallMethod( PreImagesRepresentativeNC,"constituent homomorphism",
   FamRangeEqFamElm,[IsConstituentHomomorphism,IsPerm], 0,
 function( hom, elm )
 local D,DP;
@@ -1577,11 +1603,23 @@ local D,DP;
   return RepresentativeAction(Source(hom),D,DP,OnTuples);
 end);
 
+InstallMethod( PreImagesRepresentative,"constituent homomorphism",
+  FamRangeEqFamElm,[IsConstituentHomomorphism,IsPerm], 0,
+function( hom, elm )
+    if not ( elm in Range( hom ) ) then
+        Error( "<elm> is not in the range of mapping <hom>" );
+    elif not ( elm in Image( hom ) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentativeNC( hom, elm );
+end );
+
 #############################################################################
 ##
+#M  PreImagesSetNC( <hom>, <I> )  . . . . . . . . . . . . . . . for const hom
 #M  PreImagesSet( <hom>, <I> )  . . . . . . . . . . . . . . . . for const hom
 ##
-InstallMethod( PreImagesSet, "constituent homomorphism",CollFamRangeEqFamElms,
+InstallMethod( PreImagesSetNC, "constituent homomorphism",CollFamRangeEqFamElms,
         [ IsConstituentHomomorphism, IsPermGroup ], 0,
     function( hom, I )
     local   H,          # preimage of <I>, result
@@ -1594,7 +1632,7 @@ InstallMethod( PreImagesSet, "constituent homomorphism",CollFamRangeEqFamElms,
     # create the preimage group
     H := EmptyStabChain( [  ], One( Source( hom ) ) );
     S := ConjugateStabChain( StabChainMutable( I ), H, x ->
-                 PreImagesRepresentative( hom, x ), hom!.conperm ^ -1 );
+                 PreImagesRepresentativeNC( hom, x ), hom!.conperm ^ -1 );
     T := H;
     while IsBound( T.stabilizer )  do
         AddGeneratorsExtendSchreierTree( T, GeneratorsOfGroup( K ) );
@@ -1608,6 +1646,15 @@ InstallMethod( PreImagesSet, "constituent homomorphism",CollFamRangeEqFamElms,
     od;
 
     return GroupStabChain( Source( hom ), H, true );
+end );
+
+InstallMethod( PreImagesSet, "constituent homomorphism",CollFamRangeEqFamElms,
+        [ IsConstituentHomomorphism, IsPermGroup ], 0,
+    function( hom, I )
+    if not IsSubset( Range( hom ), I ) then
+        Error( "<I> is not a subset of the range of mapping <hom>" );
+    fi;
+    return PreImagesSetNC( hom, Intersection( I, Image( hom ) ) );
 end );
 
 #############################################################################
@@ -1817,9 +1864,10 @@ end );
 
 #############################################################################
 ##
+#M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . . . . .  for blocks hom
 #M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . .  for blocks hom
 ##
-InstallMethod( PreImagesRepresentative, "blocks homomorphism",
+InstallMethod( PreImagesRepresentativeNC, "blocks homomorphism",
         FamRangeEqFamElm,
         [ IsBlocksHomomorphism, IsMultiplicativeElementWithInverse ], 0,
     function( hom, elm )
@@ -1867,17 +1915,39 @@ InstallMethod( PreImagesRepresentative, "blocks homomorphism",
     return pre;
 end) ;
 
+InstallMethod( PreImagesRepresentative, "blocks homomorphism",
+        FamRangeEqFamElm,
+        [ IsBlocksHomomorphism, IsMultiplicativeElementWithInverse ], 0,
+    function( hom, elm )
+    if not ( elm in Range( hom ) ) then
+        Error( "<elm> is not in the range of mapping <hom>" );
+    elif not ( elm in Image( hom ) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentativeNC( hom, elm );
+end );
+
 #############################################################################
 ##
+#M  PreImagesSetNC( <hom>, <I> )  . . . . . . . . . . . . . .  for blocks hom
 #M  PreImagesSet( <hom>, <I> )  . . . . . . . . . . . . . . .  for blocks hom
 ##
-InstallMethod( PreImagesSet, CollFamRangeEqFamElms,
+InstallMethod( PreImagesSetNC, CollFamRangeEqFamElms,
         [ IsBlocksHomomorphism, IsPermGroup ], 0,
     function( hom, I )
     local   H;          # preimage of <I> under <hom>, result
 
     H := PreImageSetStabBlocksHomomorphism( hom, StabChainMutable( I ) );
     return GroupStabChain( Source( hom ), H, true );
+end );
+
+InstallMethod( PreImagesSet, CollFamRangeEqFamElms,
+        [ IsBlocksHomomorphism, IsPermGroup ], 0,
+    function( hom, I )
+    if not IsSubset( Range( hom ), I ) then
+        Error( "<I> is not a subset of the range of mapping <hom>" );
+    fi;
+    return PreImagesSetNC( hom, Intersection( I, Image( hom ) ) );
 end );
 
 #############################################################################
@@ -1905,7 +1975,7 @@ InstallGlobalFunction( PreImageSetStabBlocksHomomorphism, function( hom, I )
         H := PreImageSetStabBlocksHomomorphism( hom, I.stabilizer );
         ChangeStabChain( H, [ pnt ], false );
         for gen  in I.generators  do
-            pre := PreImagesRepresentative( hom, gen );
+            pre := PreImagesRepresentativeNC( hom, gen );
             if not IsBound( H.translabels[ pnt ^ pre ] )  then
                 AddGeneratorsExtendSchreierTree( H, [ pre ] );
             fi;

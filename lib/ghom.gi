@@ -253,9 +253,10 @@ end );
 
 #############################################################################
 ##
+#M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . . . . . . .  via images
 #M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . . .  via images
-##
-InstallMethod( PreImagesRepresentative, "for PBG-Hom", FamRangeEqFamElm,
+
+InstallMethod( PreImagesRepresentativeNC, "for PBG-Hom", FamRangeEqFamElm,
   [ IsPreimagesByAsGroupGeneralMappingByImages,
     IsMultiplicativeElementWithInverse ], 0,
 function( hom, elm )
@@ -264,8 +265,20 @@ function( hom, elm )
     # group
     return ImagesRepresentative( RestrictedInverseGeneralMapping( hom ), elm );
   else
-    return PreImagesRepresentative( AsGroupGeneralMappingByImages( hom ), elm );
+    return PreImagesRepresentativeNC( AsGroupGeneralMappingByImages( hom ), elm );
   fi;
+end );
+
+InstallMethod( PreImagesRepresentative, "for PBG-Hom", FamRangeEqFamElm,
+  [ IsPreimagesByAsGroupGeneralMappingByImages,
+    IsMultiplicativeElementWithInverse ], 0,
+function( hom, elm )
+  if not ( elm in Range( hom ) ) then
+    Error( "<elm> is not in the range of mapping <hom>" );
+  elif not ( elm in Image( hom ) ) then
+    return fail;
+  fi;
+  return PreImagesRepresentativeNC( hom, elm );
 end );
 
 InstallAttributeMethodByGroupGeneralMappingByImages( CoKernelOfMultiplicativeGeneralMapping );
@@ -875,9 +888,10 @@ InstallMethod( ImagesRepresentative,
 
 #############################################################################
 ##
+#M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . . . . . . . .  for GHBI
 #M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . . . .  for GHBI
 ##
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
     "for GHBI and mult.-elm.-with-inverse",
     FamRangeEqFamElm,
     [ IsGroupGeneralMappingByImages,
@@ -890,6 +904,19 @@ InstallMethod( PreImagesRepresentative,
     fi;
 end );
 
+InstallMethod( PreImagesRepresentative,
+    "for GHBI and mult.-elm.-with-inverse",
+    FamRangeEqFamElm,
+    [ IsGroupGeneralMappingByImages,
+          IsMultiplicativeElementWithInverse ], 0,
+function( hom, elm )
+  if not ( elm in Range( hom ) ) then
+    Error( "<elm> is not in the range of mapping <hom>" );
+  elif not ( elm in Image( hom ) ) then
+    return fail;
+  fi;
+  return PreImagesRepresentativeNC( hom, elm );
+end );
 
 #############################################################################
 ##
@@ -1225,9 +1252,10 @@ InstallMethod( ImagesSet,
 
 #############################################################################
 ##
+#M  PreImagesRepresentativeNC( <hom>, <g> ) . . .  for conjugator isomorphism
 #M  PreImagesRepresentative( <hom>, <g> ) . . . .  for conjugator isomorphism
 ##
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
     "for conjugator isomorphism",
     FamRangeEqFamElm,
     [ IsConjugatorIsomorphism, IsMultiplicativeElementWithInverse ], 0,
@@ -1235,18 +1263,43 @@ InstallMethod( PreImagesRepresentative,
     return g ^ ( ConjugatorOfConjugatorIsomorphism( hom ) ^ -1 );
     end );
 
+InstallMethod( PreImagesRepresentative,
+    "for conjugator isomorphism",
+    FamRangeEqFamElm,
+    [ IsConjugatorIsomorphism, IsMultiplicativeElementWithInverse ], 0,
+function( hom, g )
+  if not ( g in Range( hom ) ) then
+    Error( "<g> is not in the range of mapping <hom>" );
+  elif not ( g in Image( hom ) ) then
+    return fail;
+  fi;
+  return PreImagesRepresentativeNC( hom, g );
+end );
+
 
 #############################################################################
 ##
+#M  PreImagesSetNC( <hom>, <U> )  . . . . . . . .  for conjugator isomorphism
 #M  PreImagesSet( <hom>, <U> )  . . . . . . . . .  for conjugator isomorphism
 ##
-InstallMethod( PreImagesSet,
+InstallMethod( PreImagesSetNC,
     "for conjugator isomorphism, and group",
     CollFamRangeEqFamElms,
     [ IsConjugatorIsomorphism, IsGroup ], 0,
     function( hom, U )
     return U ^ ( ConjugatorOfConjugatorIsomorphism( hom ) ^ -1 );
     end );
+
+InstallMethod( PreImagesSet,
+    "for conjugator isomorphism, and group",
+    CollFamRangeEqFamElms,
+    [ IsConjugatorIsomorphism, IsGroup ], 0,
+function( hom, U )
+  if not IsSubset( Range( hom ), U ) then
+    Error( "<U> is not a subset of the range of mapping <hom>" );
+  fi;
+  return PreImagesSetNC( hom, Intersection( U, Image( hom ) ) );
+end );
 
 
 #############################################################################
