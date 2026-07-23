@@ -1152,8 +1152,8 @@ local cs,       # chief series of G
     N:=cs[i];
 
     Info(InfoHomClass,1,i,":",Index(M,N),";  ",Size(N));
-    if HasAbelianFactorGroup(M,N) then
-      Info(InfoHomClass,2,"abelian factor ignored");
+    if HasSolvableFactorGroup(M,N) or IsSubset(N,Socle(G)) then
+      Info(InfoHomClass,2,"solvable/top factor ignored");
     else
       # nonabelian factor. Now it means real work.
 
