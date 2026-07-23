@@ -21,7 +21,7 @@
 ##  construct one.
 ##  The default method for `NaturalHomomorphismByNormalSubgroupOp' then uses
 ##  two other operations: `DoCheapActionImages' computes actions that come
-##  naturally from a groups representation (for example permutation action
+##  naturally from a group's representation (for example permutation action
 ##  on orbits and blocks) and can be computed quickly. This is intended
 ##  as a first test to avoid hard work for homomorphisms that are easy to
 ##  get.
@@ -43,7 +43,7 @@
 ##  <Description>
 ##  computes natural actions for <A>G</A> and stores the resulting
 ##  <C>NaturalHomomorphismByNormalSubgroup</C>. The type of the natural actions
-##  varies with the representation of <A>G</A>, for permutation groups it are for
+##  varies with the representation of <A>G</A>, for permutation groups these are for
 ##  example constituent and block homomorphisms.
 ##  A method for <C>DoCheapActionImages</C> must register all found actions with
 ##  <C>AddNaturalHomomorphismsPool</C> so they become available.
@@ -100,12 +100,12 @@ DeclareInfoClass("InfoFactor");
 ##    <C>ops</C> is a list which gives the best know actions for each normal
 ##          subgroup. Its entries are either Homomorphisms from G or
 ##  generator lists (G.generators images) or lists of integers. In the
-##  latter case the factor is subdirect product of the factors with
+##  latter case the factor is a subdirect product of the factors with
 ##  the given numbers.
-##    <C>cost</C> gives the difficulty for each actions (degree of permgroup). It
-##           is used to check whether a new actions is better.
+##    <C>cost</C> gives the difficulty for each action (degree of permgroup). It
+##           is used to check whether a new action is better.
 ##    <C>lock</C> is a bitlist, which indicates whether certain actions are
-##  locked. If this happens, a better new actions is not entered.
+##  locked. If this happens, a better new action is not entered.
 ##  This allows a computation to access the pool several times and to
 ##  be guaranteed to be returned the same object. Usually a routine
 ##  initially locks and finally unlocks.
@@ -114,7 +114,7 @@ DeclareInfoClass("InfoFactor");
 ##              already
 ##    <C>intersects</C> is a list of all intersections that have already been
 ##              formed.
-##    <C>blocksdone</C> indicates if the actions already has been improved
+##    <C>blocksdone</C> indicates if the action already has been improved
 ##         using blocks
 ##    <C>in_code</C> can be set by the code to avoid addition of new actions
 ##              (and thus resorting)

@@ -1029,7 +1029,7 @@ local nam,e,efactors,par,expo,prime,result,aut,i,classical,classaut,shortname,
   classical:=fail;
   if id.series="Spor" then
     nam:=id.name;
-    # deal wirth stupid names in identification
+    # deal with stupid names in identification
 
     if nam in ["M(11)","M(12)","M(22)","M(23)","M(24)","J(1)","J(3)",
                "J(4)","Co(3)","Co(2)","Fi(22)","Fi(23)"] then

@@ -176,7 +176,7 @@ local fam,notuniv,cannot,num,den,hasden,indn,col,dcol,val,i,j,nud,pos;
   fi;
 
   col:=[];
-  nud:=1; # last position isto which we can assign without holes
+  nud:=1; # last position up to which we can assign without holes
   # now process the numerator
   for i in [2,4..Length(num)] do
 
@@ -224,7 +224,7 @@ local fam,notuniv,cannot,num,den,hasden,indn,col,dcol,val,i,j,nud,pos;
 
   if hasden then
     dcol:=[];
-    nud:=1; # last position isto which we can assign without holes
+    nud:=1; # last position up to which we can assign without holes
     # because we have a special hook above for laurent polynomials, we know
     # it cannot be a laurent polynomial any longer.
 
@@ -321,7 +321,7 @@ local f;
     fi;
   fi;
 
-  # slightly better to do this after the Length id determined
+  # slightly better to do this after the Length is determined
   if IsFFECollection(ncof) and IS_PLIST_REP(ncof) then
     ConvertToVectorRep(ncof);
   fi;

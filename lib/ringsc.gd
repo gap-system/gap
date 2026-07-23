@@ -9,7 +9,7 @@
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 ##  This file contains declarations for elements of rings, given as Z-modules
-##  with structure constants for multiplication. Is is based on algsc.gd
+##  with structure constants for multiplication. It is based on algsc.gd
 ##
 
 #############################################################################
@@ -66,10 +66,10 @@ DeclareGlobalFunction( "RingByStructureConstants" );
 #F  StandardGeneratorsSubringSCRing( <S> )
 ##
 ##  for a subring <S> of an SC ring <R> this command returns a list of length 3.
-##  The first entry are generators for <S> as addive group, given with
+##  The first entries are generators for <S> as additive group, given with
 ##  respect to the additive group basis for <R> and being in hermite normal
 ##  form. The second entries are pivot positions for these generators. The third
-##  entry are the generators as actual ring elements.
+##  entries are the generators as actual ring elements.
 DeclareAttribute("StandardGeneratorsSubringSCRing",IsSubringSCRing);
 
 #############################################################################

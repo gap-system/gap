@@ -136,7 +136,7 @@ BindGlobal( "MappedExpressionForElementOfFreeAssociativeAlgebra",
       mapped:= MappedWord( expr[1] );
     fi;
 
-    # Avoid to multiply explicitly with 1 in order to avoid deep trees.
+    # Avoid multiplying explicitly with 1 in order to avoid deep trees.
     if expr[2] <> one then
       mapped:= expr[2] * mapped;
     fi;

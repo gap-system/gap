@@ -272,7 +272,7 @@ DeclareGlobalFunction("CorestEval");
 ##  <Func Name="RelatorFixedMultiplier" Arg='hom,p'/>
 ##
 ##  <Description>
-##  Let <A>hom</A> an epimorphism from an fp group onto a finite group <A>G</A>. This
+##  Let <A>hom</A> be an epimorphism from an fp group onto a finite group <A>G</A>. This
 ##  function returns an epimorphism onto the <A>p</A>-Sylow subgroup of <A>G</A>,
 ##  whose kernel is the largest quotient of the multiplier, that can lift
 ##  <A>hom</A> to a larger quotient. (The source of this map thus is <M>M_R(B)</M>

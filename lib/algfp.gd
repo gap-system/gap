@@ -94,7 +94,7 @@ DeclareOperation( "MappedExpression",
 #F  FactorFreeAlgebraByRelators( <F>, <rels> )  . . .  factor of free algebra
 ##
 ##  is an f.p.~algebra $A$ isomorphic to the factor of the free (associative)
-##  algebra(-with-one) <F> by the two-sided ideasl spanned by the relators
+##  algebra(-with-one) <F> by the two-sided ideals spanned by the relators
 ##  in the list <rels>.
 ##
 ##  If <F> is an algebra-with-one then the generators in the list

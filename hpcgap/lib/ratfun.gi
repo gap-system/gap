@@ -8,7 +8,7 @@
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
-##  This file  contains    methods  for    rational  functions,  laurent
+##  This file  contains    methods  for    rational  functions,  Laurent
 ##  polynomials and polynomials and their families.
 ##
 
@@ -596,7 +596,7 @@ end);
 ##
 #M  PrintObj( <rat-fun> )
 ##
-##  This method is installed for all  rational function.
+##  This method is installed for all  rational functions.
 ##
 InstallMethod( String,"rational function", [ IsRationalFunction ],
 function( obj )
@@ -823,7 +823,7 @@ function( efam )
   SetOne( fam, PolynomialByExtRepNC(fam,[[],fam!.oneCoefficient]));
 
   # we will store separate `one's for univariate polynomials. This will
-  # allow to keep univariate calculations in this one indeterminate.
+  # allow us to keep univariate calculations in this one indeterminate.
   fam!.univariateOnePolynomials:=MakeWriteOnceAtomic([]);
   fam!.univariateZeroPolynomials:=MakeWriteOnceAtomic([]);
 
@@ -835,8 +835,8 @@ function( efam )
 
 end );
 
-# this method is only to get a reasonable error message in case the ring does
-# not know to be a UFD.
+# this method is only to get a reasonable error message in case the ring is
+# not known to be a UFD.
 InstallOtherMethod( RationalFunctionsFamily,"not UFD ring", true,
     [ IsObject ],
     0,
@@ -1081,7 +1081,7 @@ end);
 ##
 InstallMethod( \*, "coeff * rat-fun", IsCoeffsElms,
     [ IsRingElement, IsPolynomialFunction ],
-    3, # so we dont call  positive integer * additive element
+    3, # so we don't call  positive integer * additive element
 function(c, r)
   return ProdCoefRatfun(c,r);
 end);
@@ -1093,7 +1093,7 @@ end);
 ##
 InstallMethod( \*, "rat-fun * coeff", IsElmsCoeffs,
     [ IsPolynomialFunction, IsRingElement ],
-    3, # so we dont call  positive integer * additive element
+    3, # so we don't call  positive integer * additive element
 function(r, c)
   return ProdCoefRatfun(c,r);
 end);
@@ -1711,7 +1711,7 @@ local fam,tw,res,m,n,mn,r,e,s,d,dr,px,x,y,onepol,stop;
   fi;
 
   if n>m then
-    # force f to be of larger degee
+    # force f to be of larger degree
     res:=(onepol)^(n*m);
     tw:=f; f:=g; g:=tw;
     tw:=m; m:=n; n:=tw;
@@ -1724,7 +1724,7 @@ local fam,tw,res,m,n,mn,r,e,s,d,dr,px,x,y,onepol,stop;
     return ConstantInBaseRingPol(res*g^m,ind);
   fi;
 
-  # and now we may start really, subresultant algorithm: S_j+1=g, S_j+2=f
+  # and now we may really start the subresultant algorithm: S_j+1=g, S_j+2=f
 
   x:=fam!.oneCoefficient;
   y:=x;
@@ -1759,7 +1759,7 @@ local fam,tw,res,m,n,mn,r,e,s,d,dr,px,x,y,onepol,stop;
     n:=dr;
 
     f:=g;
-#    was: g:=r/(x*y^mn) However the double division seems more gently;
+#    was: g:=r/(x*y^mn) However the double division seems more gentle;
     g:=r/x/y^mn;
     x:=LeadingCoefficient(f,ind);
     y:=x^mn/y^(mn-1);
@@ -1839,7 +1839,7 @@ end);
 #
 #  11-15-04,  WDJ and AH
 
-# n is the number of terms in m. n1 is the number of variable occurring
+# n is the number of terms in m. n1 is the number of variables occurring
 # in each monomial term of m. returns the degrees of each variable in the
 # monomial m.
 BindGlobal("MVFactorDegreeMonomialTerm",function(m)

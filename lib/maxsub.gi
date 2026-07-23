@@ -368,7 +368,7 @@ local  c, maxs,sel,reps;
   reps:=reps{sel};
   SortBy(reps, Size);
 
-  # nor go by descending order through the representatives. Always eliminate
+  # now go by descending order through the representatives. Always eliminate
   # all remaining proper subgroups of conjugates. What remains must be
   # maximal.
   maxs:=[];

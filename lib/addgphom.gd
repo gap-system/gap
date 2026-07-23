@@ -27,7 +27,7 @@
 ##  and <R>, and the preimage of each element <r> of <R> is given by
 ##  `<invfun>( <r> )', where <invfun> is a {\GAP}  function.
 ##
-##  No test is performed on whether the functions actually give an
+##  No test is performed on whether the functions actually give a
 ##  homomorphism between both groups because this would require testing the
 ##  full multiplication table.
 ##

@@ -2074,7 +2074,7 @@ local a,b,x,i;
 end);
 
 # maximal subgroups routine.
-# precomputed data up to degree 50 (so it will be quick is most cases).
+# precomputed data up to degree 50 (so it will be quick in most cases).
 # (As there is no independent check for the primitive groups of degree >50,
 # we rather do not refer to them, but only use them in a calculation.)
 BindGlobal("SNMAXPRIMS", MakeImmutable([[],[],[],[],[],[2],[],[5],[],[7],[],[4],

@@ -58,7 +58,7 @@ local modu, modus,gens,v,subs,sub,ser,i,j,a,si,dims,cf,mats,clos,bas,rad;
     elif IsAbelian(G) then
       if IsPrimeField(F) then
         if CanEasilyComputePcgs(G) then
-          # call `IrreducibleMethods` again;
+          # call `IrreducibleModules` again;
           # we assume that now another method is applicable
           return IrreducibleModules(G, F, 1);
         else

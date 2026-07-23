@@ -21,7 +21,7 @@ MORPHEUSELMS := 50000;
 # orders of group elements in factors of this series under action of `hom`.
 # Every time an orbit length is found, `hom` is replaced by the appropriate
 # power. Initially small chief factors are preferred. In the end all
-# generators are used while stepping through the series descendingly, thus
+# generators are used while stepping through the series in descending order, thus
 # ensuring the proper order is found.
 InstallMethod(Order,"for automorphisms",true,[IsGroupHomomorphism],0,
 function(hom)
@@ -123,7 +123,7 @@ local map,phi,o,lo,i,j,start,img,d,nat,ser,jord,first;
       od;
     od;
 
-    # if iterating make `jord` standard to we don't skip generators
+    # if iterating make `jord` standard so we don't skip generators
     jord:=[2..Length(ser)];
     first:=false;
   od;
@@ -423,7 +423,7 @@ local hom, gens, c, ran, r, cen, img, u, orbs,
     finish(hom); return;
   fi;
 
-  # if no centre and all automorphism conjugator, try to extend exiting permrep
+  # if no centre and all automorphism conjugator, try to extend existing permrep
   if Size(Centre(g))=1 and IsPermGroup(g) and
      ForAll(GeneratorsOfGroup(au),IsConjugatorAutomorphism) then
     ran:= Group( List( GeneratorsOfGroup( au ),
@@ -449,7 +449,7 @@ local hom, gens, c, ran, r, cen, img, u, orbs,
           if not img in ran then
             # There is still something centralizing left.
             if not img in r then
-              # get the cenralizing bit
+              # get the centralizing bit
               r:=ClosureGroup(r,img);
               cen:=Centralizer(r,g);
             fi;
@@ -1712,7 +1712,7 @@ end);
 #############################################################################
 ##
 #F  MorFindGeneratingSystem(<G>,<cl>) . .  find generating system with as few
-##                      as possible generators from the first classes in <cl>
+##                      generators as possible from the first classes in <cl>
 ##
 InstallGlobalFunction(MorFindGeneratingSystem,function(arg)
 local G,cl,lcl,len,comb,combc,com,a,alltwo;
@@ -1754,10 +1754,10 @@ end);
 ##
 #F  Morphium(<G>,<H>,<DoAuto>) . . . . . . . .Find isomorphisms between G and H
 ##       modulo inner automorphisms. DoAuto indicates whether all
-##       automorphism are to be found
+##       automorphisms are to be found
 ##       This function thus does the main combinatoric work for creating
 ##       Iso- and Automorphisms.
-##       It needs, that both groups are not cyclic.
+##       It requires that both groups are not cyclic.
 ##
 InstallGlobalFunction(Morphium,function(G,H,DoAuto)
 local combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
@@ -1837,7 +1837,7 @@ local combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
     return [];
   fi;
 
-  # now test, whether it is worth, to compute a finer congruence
+  # now test whether it is worth computing a finer congruence
   # then ALSO COMPUTE NEW GEN SYST!
   # [...]
 
@@ -2442,7 +2442,7 @@ InstallGlobalFunction(AutomorphismGroupFittingFree,function(g)
     # get a set of elements that uniquely describes the point p
     s:=SmallGeneratingSet(Stabilizer(ge,p));
     if ForAny(Difference(i,[p]),j->ForAll(s,x->j^x=j)) then
-      # try once more -- there is some randomeness involved
+      # try once more -- there is some randomness involved
       if count<10 then
         return AutomorphismGroupFittingFree(g:count:=count+1);
       fi;
@@ -2490,7 +2490,7 @@ end);
 InstallMethod(AutomorphismGroup,"finite groups",true,[IsGroup and IsFinite],0,
 function(G)
 local A;
-  # since the computation is expensive, it is worth to test some properties first,
+  # since the computation is expensive, it is worth testing some properties first,
   # instead of relying on the method selection
   if IsAbelian(G) then
     A:=AutomorphismGroupAbelianGroup(G);
@@ -3001,7 +3001,7 @@ local Fgens,    # generators of F
       fak,      # multiplication factor
       cnt;      # countdown for finish
 
-  # if we have a pontentially infinite fp group we cannot be clever
+  # if we have a potentially infinite fp group we cannot be clever
   if IsSubgroupFpGroup(F) and
     (not HasSize(F) or Size(F)=infinity) then
     TryNextMethod();

@@ -1458,7 +1458,7 @@ function ( G )
     # re-enable it for e.g. pc groups, but I am not sure whether it is
     # worth the hassle.
 #   elif not HasIsNilpotentGroup(G) and IsNilpotentGroup(G) then
-#     # Redispatch to give the special methods for nilpotents groups a chance.
+#     # Redispatch to give the special methods for nilpotent groups a chance.
 #     return IsomorphismPermGroup( G );
   fi;
   return RegularActionHomomorphism( G );

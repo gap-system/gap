@@ -213,9 +213,9 @@ InstallGlobalFunction(OCAddGenerators,function(ocr,G)
   ocr.generatorsAdded:=true;
 
   # though using the method selection would be nicer,here the decisions are
-  # that involved we actually have to use a dispatcher
+  # so involved that we actually have to use a dispatcher
   if IsBound(ocr.inPcComplement) # the pc complement routines interface
-                                 # directly,giving generators that form an
+                                 # directly,giving generators that form a
                                  # pcgs
      or ((IsPcGroup(G) or
        (IsBound(ocr.generators) and IsGeneralPcgs(ocr.generators)))
@@ -368,7 +368,7 @@ local   base, dim, gens;
             end;
         else
 
-            # Get  the correcting list. The nongenerator correction are given
+            # Get  the correcting list. The nongenerator corrections are given
             # by  m_i + n_1*C_ij+... for i a nongenerator index and j a
             # generator index.  m_i  is  stored in<bigVectors>and C_ij is
             # stored in<bigMatrices>.
@@ -859,7 +859,7 @@ local   mat, i, j, v, vv;
         od;
     od;
 
-    # if<r>  has an entry   'conjugated'  the records  is  no relator for a
+    # if<r>  has an entry   'conjugated'  the record  is  not a relator for a
     # presentation,but belongs to relation
     #         (g_i n_i)^s_j = r
     # which is used to determinate  normal  complements.  [i,j]  is bound  to
@@ -994,7 +994,7 @@ local   mat, i, j, v, vv;
         od;
     od;
 
-    # If<r>  has an entry  <conjugated> the records  is  no relator for a
+    # If<r>  has an entry  <conjugated> the record  is  not a relator for a
     # presentation,but belongs to relation
     #         (g_i n_i)^s_j =<r>
     # which is  used to determinate  normal complements.   [i,j] is  bound to
@@ -1015,7 +1015,7 @@ end);
 InstallGlobalFunction(OCEquationVector,function(ocr,r)
 local n,i;
 
-  # If <r> has   an entry 'conjugated'   the records is  no relator  for  a
+  # If <r> has   an entry 'conjugated'   the record is  not a relator  for  a
   # presentation,but belongs to relation
   #       (g_i n_i)^s_j =<r>
   # which is  used to determinate  normal  complements.   [i,j] is bound to
@@ -1045,7 +1045,7 @@ end);
 InstallGlobalFunction(OCSmallEquationVector,function(ocr,r)
 local   n, a, i, nonSmall, v, vv, j;
 
-    # if<r>has  an entry 'conjugated'  the  records  is no relator   for  a
+    # if<r>has  an entry 'conjugated'  the  record  is not a relator   for  a
     # presentation,but belongs to relation
     #     (g_i n_i)^s_j =<r>
     # which is used to determinate normal complements.  [i,j] is bound  to
@@ -1136,7 +1136,7 @@ end);
 ##
 #F  OCOneCocycles(<ocr>,<onlySplit>) . . . . . . one cocycles main routine
 ##
-##  If<onlySplit>,'OCOneCocycles' returns 'false' as soon  as  possibly  if
+##  If<onlySplit>,'OCOneCocycles' returns 'false' as soon  as  possible  if
 ##  the extension does not split.
 ##
 InstallGlobalFunction(OCOneCocycles,function(ocr,onlySplit)
@@ -1170,7 +1170,7 @@ local   cobounds,cocycles,    # base of one coboundaries and cocycles
     # matrices and vectors.
     cobounds:=BasisVectors(Basis(OCOneCoboundaries(ocr)));
 
-    # If  we  are only want normal complements,the group of cobounds must be
+    # If  we  only want normal complements,the group of cobounds must be
     # trivial,  otherwise  there  are  no  normal  ones  as  the  conjugated
     # complements correspond with the cobounds.
     if IsBound(ocr.normalIn) and cobounds<>[]  then
@@ -1187,7 +1187,7 @@ local   cobounds,cocycles,    # base of one coboundaries and cocycles
         OCAddBigMatrices(ocr,ocr.generators);
     fi;
 
-    # Now initialize  a  matrix  with  will  hold the triangulized system of
+    # Now initialize  a  matrix  which  will  hold the triangulized system of
     # linear  equations.  If  'smallGeneratingSet'  is  given  use  this, if
     # 'pPrimeSet' is given do not use those.
     dim:=Length(ocr.modulePcgs);
@@ -1248,7 +1248,7 @@ local   cobounds,cocycles,    # base of one coboundaries and cocycles
 
         fi;
 
-        # The is a system for x M = v so transpose.
+        # This is a system for x M = v so transpose.
         RS:=MutableTransposedMat(RS);
 
         # Now append this to the triangulized system.
@@ -1280,7 +1280,7 @@ local   cobounds,cocycles,    # base of one coboundaries and cocycles
     od;
 
     # Now remove all  entries above the  diagonal.  Let's see  if a  solution
-    # exist.  As system <S> is triangulized all we have to do,is to check if
+    # exists.  As system <S> is triangulized all we have to do,is to check if
     # right side <R> is null,where the diagonal is null.
     Info(InfoCoh,2,"OCOneCocycles: computing nullspace and solution");
     for i in [1 .. Length(S)] do

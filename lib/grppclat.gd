@@ -147,7 +147,7 @@ DeclareGlobalFunction(
 ##  elementary abelian subgroup <A>G</A> of <A>P</A>. Returns
 ##  a list [<A>subspaces</A>,<A>action</A>], where <A>subspaces</A> is a list of all the
 ##  subspaces and <A>action</A> a homomorphism from <A>P</A> in a permutation group,
-##  which is equal to the action homomrophism for the action of <A>P</A> on
+##  which is equal to the action homomorphism for the action of <A>P</A> on
 ##  <A>subspaces</A>. If <A>dims</A> is given, only subspaces of dimension <A>dims</A> are
 ##  considered.
 ##  </Description>

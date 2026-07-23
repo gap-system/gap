@@ -101,7 +101,7 @@ end );
 
 # If M<=Frat(C_G(M)), try to find relators for C/M that in G evaluate to
 # generators of M and for which exponent sums are multiples of p. In this
-# case the values of the relators on pre-images in G do not depend on choice
+# case the values of the relators on pre-images in G do not depend on the choice
 # of representatives and can be used to deduce the module automorphism
 # belonging to a factor group automorphism.
 BindGlobal("AGSRFindRels",function(nat,newgens)
@@ -318,10 +318,10 @@ local
        # relator powers)
   i;   # loop index over the relator's generators
 
-  # If <r> has   an entry 'conjugated'   the records is  no relator  for  a
+  # If <r> has   an entry 'conjugated'   the record is  not a relator  for  a
   # presentation,but belongs to relation
   #       (g_i n_i) ^ s_j =<r>
-  # which is  used to determinate  normal  complements.   [i,j] is bound to
+  # which is  used to determine  normal  complements.   [i,j] is bound to
   # <conjugated>.
   if IsBound(r.conjugated)  then
     Error("not yet implemented");
@@ -363,7 +363,7 @@ BindGlobal("AGSRAutomLift",function(ocr,nat,fhom,miso)
     s,          # NOTE: multi-role -- exponent matrices from the trick
                 # relators, then the linear solution vector, then the list of
                 # module elements from cocycleToList
-    ws,         # words expresing hom image in generators
+    ws,         # words expressing hom image in generators
     t,          # NOTE: two roles -- (1) the trickrels record, and (2) the
                 # coboundary vector being assembled for cocycleToList
     l,          # NOTE: two roles -- (1) exponent lists/matrices from the
@@ -389,7 +389,7 @@ BindGlobal("AGSRAutomLift",function(ocr,nat,fhom,miso)
   #for ep in Enumerator(ocr.moduleauts) do
   if ocr.trickrels<>fail then
     # special case for M<=Frat(C_G(M)). Use special relators for factor that
-    # allow to deduce corresponding module aut.
+    # allow deducing corresponding module aut.
     t:=ocr.trickrels;
     phom:=IdentityMapping(ocr.moduleauts);
 
@@ -620,7 +620,7 @@ local
 
 
   # now run over all Zuppos (Conjugates of class representatives) in factor  that do
-  # not intersect (the image of) avoid. These, that saisfy, will span the correct subgroup.
+  # not intersect (the image of) avoid. These, that satisfy, will span the correct subgroup.
   i:=1;
   while worked<>fail and i<=Length(c) do
 
@@ -722,7 +722,7 @@ local
 
 end);
 
-# Same syntax as `SubgroupProperty`, but assumption that the tests are
+# Same syntax as `SubgroupProperty`, but assuming that the tests are
 # expensive. Thus minimize number of tests by doing more group calculations
 InstallGlobalFunction(SubgroupConditionAbove,function(G,cond,Sorig)
 local
@@ -748,7 +748,7 @@ local
 
 
   # first, try to find a few elements that work (and catch the case that the
-  # subgroup has small index. Ensure we test at least once for each possible
+  # subgroup has small index). Ensure we test at least once for each possible
   # step.
   nr:=2^LogInt(Size(G),1000)+Length(Factors(Size(G)));
   u:=[];
@@ -863,7 +863,7 @@ local
   pools,  # the resulting classes (pools) of normal subgroups (return value)
   sel,    # indices of the subgroups sharing the current fingerprint
   # -- loop counter --
-  i;      # loop variable over the distinct fingerprints fingerprint
+  i;      # loop variable over the distinct fingerprints
   fp:=function(x)
   local
     l;   # the fingerprint list being assembled (size, class data, abelian
@@ -895,7 +895,7 @@ local
   return pools;
 end);
 
-# form a characterististic series through radical with elab factors
+# form a characteristic series through radical with elab factors
 InstallGlobalFunction(AGSRCharacteristicSeries,function(G,r)
 local
   # -- the series being built --
@@ -1629,7 +1629,7 @@ local
       j:=j+1;
     od;
 
-    # remove redundant generators. Note that Aperm could be to big, thus
+    # remove redundant generators. Note that Aperm could be too big, thus
     # make group from Apa
     ac:=AGSRReducedGens(SubgroupNC(Parent(sub),Apa),Apa,A);
     if ac<>fail then
@@ -2041,7 +2041,7 @@ local
   SortBy(cg,x->-Size(x));
   SortBy(ch,x->-Size(x));
 
-  # find list of properties, tryign to match them up
+  # find list of properties, trying to match them up
   pg:=List(cg,props);
   ph:=List(ch,props);
 
@@ -2263,10 +2263,10 @@ local
       # GxG. It is thus sufficient, if we find the subgroup Aut(G)\wr 2.
 
 
-      # We now found that G and H have two characteristic subgroups A<B with
+      # We have now found that G and H have two characteristic subgroups A<B with
       # [B:A]=2. An isomorphism swapping G and H will need to map B to B and
       # A to A. Furthermore, in the factor modulo A_G xA_H, a generator of
-      # B_G must be swappes with a generator of B_H.
+      # B_G must be swapped with a generator of B_H.
       # This implies that A_G\times A_H, together with the diagonal of B is
       # characteristic in Aut(A)\wr 2. We thus may add this subgroup as
       # ``characteristic'' to improve the series.

@@ -24,7 +24,7 @@
 ##  <P/>
 ##  Called with a group <M>G</M>, the function
 ##  <Ref Oper="CharacterTable" Label="for a group"/> returns a character
-##  table object that stores already information such as class lengths,
+##  table object that already stores information such as class lengths,
 ##  but not the irreducible characters.
 ##  The routines that compute the irreducibles may use the information that
 ##  is already contained in this table object.
@@ -160,10 +160,10 @@ DeclareOperation("DxPreparation",[IsGroup,IsRecord]);
 ##  Comparison is based first on the size of the class and then on the
 ##  order of the representatives.
 ##  Thus the class containing the identity element is in the first position,
-##  as required. Since sorting is primary by the class sizes,smaller
+##  as required. Since sorting is primarily by the class sizes,smaller
 ##  classes are in earlier positions, making the active columns those to
 ##  smaller classes, thus reducing the work for calculating class matrices.
-##  Additionally, galois conjugated classes are kept together, thus increasing
+##  Additionally, Galois conjugated classes are kept together, thus increasing
 ##  the chance,that with one columns of them active to be several active,
 ##  again reducing computation time.
 ##  </Description>
@@ -266,7 +266,7 @@ DeclareGlobalFunction("DxOnedimCleanout");
 ##
 ##  <Description>
 ##  returns the number of the class sum matrix that is assumed to yield the
-##  best (cost/earning ration) split. This matrix then will be the next one
+##  best (cost/earning ratio) split. This matrix then will be the next one
 ##  computed and used.
 ##  <P/>
 ##  The global option <C>maxclasslen</C>

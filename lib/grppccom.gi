@@ -139,7 +139,7 @@ local tau, phi, mats;
 
   # Get  the  matrices describing the affine operations. The linear  part
   # of the  operation  is just conjugation of the entries of cocycle. The
-  # translation are  commuators  with the  generators.  So check if <ocr>
+  # translations are  commutators  with the  generators.  So check if <ocr>
   # has a small generating set. Use only these to form the commutators.
 
   # Translation: (.. h ..) -> (.. [h,c] ..)
@@ -1066,7 +1066,7 @@ local G,N,M,keep,H,K,f,primes,p,A,S,L,hom,c,cn,nc,ncn,lnc,lncn,q,qs,qn,ser,
           genpos:=PositionProperty(acterlist,x->a=x[1]);
           if genpos=fail then
             if IsOne(a) then
-              # the action test always does the identity, so its worth
+              # the action test always does the identity, so it's worth
               # catching this as we have many short orbits
               return cy;
             else

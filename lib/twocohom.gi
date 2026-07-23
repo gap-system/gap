@@ -14,7 +14,7 @@
 #F  CollectedWordSQ( C, u, v )
 ##
 ##  The tail of  a conjugate  i^j  (i>j) or a   power i^p (i=j) is  stored at
-##  posiition (i^2-i)/2+j
+##  position (i^2-i)/2+j
 ##
 InstallGlobalFunction( CollectedWordSQ, function( C, u, v )
     local   w, p, c, m, g, n, i, j, x, mx, l1, l2, l;
@@ -833,7 +833,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
   # tails.
   hastail:=[];
   rules:=[];
-  genkill:=[]; # relations that kill generators. Needed for presenation.
+  genkill:=[]; # relations that kill generators. Needed for presentation.
   for r in tzrules do
     if Length(r[1])>=2 then
       Add(rules,r);
@@ -1304,7 +1304,7 @@ local hom,mats,m,i,j,mo,bas,a,l,ugens,gi,r,cy,act,k,it,p;
   k:=Length(module.generators);
   hom:=GroupHomomorphismByImagesNC(G,Group(module.generators),
     GeneratorsOfGroup(G),module.generators);
-  # we allow do go immediately to normal subgroup of index up to 4.
+  # we allow to go immediately to normal subgroup of index up to 4.
   # This reduces search space
   it:=DescSubgroupIterator(G:skip:=LogInt(Size(G),2));
   repeat
@@ -1710,7 +1710,7 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,sim,
       fi;
       it:=fail;
       while Size(p)<Size(fp) do
-        # we allow do go immediately to normal subgroup of index up to 4.
+        # we allow to go immediately to normal subgroup of index up to 4.
         # This reduces search space
         repeat
           if it=fail then
