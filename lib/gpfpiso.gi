@@ -277,11 +277,9 @@ function(g,str,N)
       f:=Image(hom);
       ser:=ShallowCopy(DirectFactorsFittingFreeSocle(f));
 
-      if not ForAll(ser,x->IsNormal(f,x)) then
-        ser1:=Filtered(ser,x->not IsNormal(f,x));
+      ser1:=Filtered(ser,x->not IsNormal(f,x));
+      if Length(ser1) > 0 then
         ser:=Filtered(ser,x->IsNormal(f,x));
-      else
-        ser1:=[];
       fi;
 
       gens:=Concatenation(List(ser,SmallGeneratingSet));
