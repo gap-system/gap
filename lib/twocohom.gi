@@ -1439,7 +1439,7 @@ end);
 InstallGlobalFunction(FpGroupCocycle,function(arg)
 local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,sim,
       it,hom,trysy,prime,mindeg,fps,ei,mgens,mwrd,nn,newfree,mfpi,mmats,sub,
-      tab,tab0,evalprod,gensmrep,invsmrep,zerob,simi,simiq,wasbold,
+      tab,tab0,evalprod,gensmrep,invsmrep,zerob,simi,simiq,#wasbold,
       #step,
       mon,ord,mn,melmvec,killgens,frew,fffam,ofgens,rws,formalinverse;
 
@@ -1671,7 +1671,7 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,sim,
   fp:=f/rels;
   SetSize(fp,Size(r.group)*prime^r.module.dimension);
   simi:=fail;
-  wasbold:=false;
+  #wasbold:=false;
 
   if mon<>fail then
     rels:=MakeFpGroupToMonoidHomType1(fp,mon);
@@ -1728,7 +1728,7 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,sim,
             it:=DescSubgroupIterator(m:skip:=LogInt(Size(p),2));
           fi;
 
-          wasbold:=false;
+          #wasbold:=false;
           m:=NextIterator(it);
           # catch case of large permdegree, try naive first
           if Index(p,m)=1 and IsPermGroup(p)
@@ -1741,9 +1741,9 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,sim,
             fi;
             if IndexNC(p,m)>10*NrMovedPoints(p) then
               m:=p; # after all..
-              wasbold:=false;
+              #wasbold:=false;
             else
-              wasbold:=true;
+              #wasbold:=true;
             fi;
           fi;
           Info(InfoExtReps,3,"Found index ",Index(p,m));
@@ -1990,7 +1990,7 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,sim,
     fi;
     # if we used factor perm rep, be bolder
     if IsPermGroup(p) then
-      new:=new*SmallerDegreePermutationRepresentation(p:cheap:=wasbold<>true);
+      new:=new*SmallerDegreePermutationRepresentation(p:cheap);
       SetIsomorphismPermGroup(fp,new);
     elif IsPcGroup(p) then
       SetIsomorphismPcGroup(fp,new);

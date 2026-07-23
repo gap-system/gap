@@ -1118,32 +1118,25 @@ local m,s,g,i,j,gen,img,hom,d,pos;
 end);
 
 InstallMethod(MaximalAbelianQuotient,
-        "for subgroups of finitely presented groups, fallback",
-        true, [IsSubgroupFpGroup], -1,
-function(U)
-local phi, m;
-  # do cheaper Tietze (and thus do not store)
-  phi:=AttributeValueNotSet(IsomorphismFpGroup,U:
-    eliminationsLimit:=50,
-    generatorsLimit:=Length(GeneratorsOfGroup(Parent(U)))*LogInt(IndexInWholeGroup(U),2),
-    cheap);
-  m:=MaximalAbelianQuotient(Image(phi));
-  SetAbelianInvariants(U,AbelianInvariants(Image(phi)));
-  return phi*m;
-end);
-
-InstallMethod(MaximalAbelianQuotient,
         "subgroups of fp., rewrite", true, [IsSubgroupFpGroup], 0,
 function(u)
-local iso;
+local iso, m;
   if (HasIsWholeFamily(u) and IsWholeFamily(u))
   # catch trivial case of rank 0 group
    or Length(GeneratorsOfGroup(FamilyObj(u)!.wholeGroup))=0 then
-    TryNextMethod();
+    # do cheaper Tietze (and thus do not store)
+    iso:=AttributeValueNotSet(IsomorphismFpGroup,u:
+      eliminationsLimit:=50,
+      generatorsLimit:=Length(GeneratorsOfGroup(Parent(u)))
+                       *LogInt(IndexInWholeGroup(u),2),
+      cheap);
+  else
+    iso:=IsomorphismFpGroup(u);
   fi;
 
-  iso:=IsomorphismFpGroup(u);
-  return iso*MaximalAbelianQuotient(Range(iso));
+  m:=MaximalAbelianQuotient(Range(iso));
+  SetAbelianInvariants(u,AbelianInvariants(Range(iso)));
+  return iso*m;
 end);
 
 
@@ -1245,12 +1238,20 @@ end);
 # u must be a subgroup of the image of home
 InstallGlobalFunction(
 LargerQuotientBySubgroupAbelianization,function(hom,u)
-local v,aiu,aiv,G,primes,irrel,ma,mau,a,k,gens,imgs,q,dec,deco,piv,co;
+local v,aiu,aiv,G,primes,irrel,ma,mao,mau,a,k,gens,imgs,q,dec,deco,piv,co;
   v:=PreImage(hom,u);
   aiu:=AbelianInvariants(u);
 
-  G:= FamilyObj(v)!.wholeGroup;
-  aiv:=AbelianInvariantsSubgroupFpGroup( G, v:cheap:=false );
+  if IsBound(FamilyObj(v)!.wholeGroup) then
+    G:= FamilyObj(v)!.wholeGroup;
+  else
+    G:=Source(hom);
+  fi;
+  if IsFpGroup(v) then
+    aiv:=AbelianInvariantsSubgroupFpGroup( G, v:cheap:=false );
+  else
+    aiv:=AbelianInvariants(v);
+  fi;
   if aiv=fail then
     ma:=MaximalAbelianQuotient(v);
     aiv:=AbelianInvariants(Image(ma,v));
@@ -1265,14 +1266,22 @@ local v,aiu,aiv,G,primes,irrel,ma,mau,a,k,gens,imgs,q,dec,deco,piv,co;
 
   Info(InfoFpGroup,1,"Larger by factor ",Product(aiv)/Product(aiu));
   ma:=MaximalAbelianQuotient(v);
-  mau:=MaximalAbelianQuotient(u);
+  mao:=ma; # keep original one, as preimage of subgroup will be easier.
   a:=Image(ma);
+  k:=List(GeneratorsOfGroup(v),x->ImagesRepresentative(ma,x));
+
+  # rebuild on standard generators, to avoid word length explosion
+  ma:=GroupHomomorphismByImagesNC(v,a,GeneratorsOfGroup(v),k);
+
+  mau:=MaximalAbelianQuotient(u);
   k:=TrivialSubgroup(a);
   for primes in irrel do
     k:=ClosureGroup(k,GeneratorsOfGroup(SylowSubgroup(a,primes)));
   od;
   if Size(k)>1 then
-    ma:=ma*NaturalHomomorphismByNormalSubgroup(a,k);
+    k:=NaturalHomomorphismByNormalSubgroup(a,k);
+    ma:=ma*k;
+    mao:=mao*k;
     a:=Image(ma);
     k:=TrivialSubgroup(Image(mau));
     for primes in irrel do
@@ -1314,7 +1323,7 @@ local v,aiu,aiv,G,primes,irrel,ma,mau,a,k,gens,imgs,q,dec,deco,piv,co;
     co:=ClosureSubgroup(co,gens{piv{[1..Length(piv)-1]}});
   fi;
   Info(InfoFpGroup,2,"Degree larger ",Index(a,co));
-  return PreImage(ma,co);
+  return PreImage(mao,co);
 end);
 
 DeclareRepresentation("IsModuloPcgsFpGroupRep",
