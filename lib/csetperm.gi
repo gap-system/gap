@@ -44,7 +44,7 @@ end );
 ##
 MAX_SIZE_TRANSVERSAL := 100000; # try to keep transversals shorter than this
 BITLIST_LIMIT_TRANSVERSAL:=10^8; # absolutely must keep transversals
- # shorter, as otheriwse too long bit lists might be produced
+ # shorter, as otherwise too long bit lists might be produced
 
 # so far only orbits and perm groups -- TODO: Other deduced actions
 InstallGlobalFunction(ActionRefinedSeries,function(G,U)

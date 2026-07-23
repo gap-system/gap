@@ -937,7 +937,7 @@ local i, mapped, exp,ex2,p,fameq,invimg,sel,elm;
       exp:= List( ex2, i -> i[2] );
       ex2:= List( ex2, i -> i[1] );
       mapped:= [];
-      # to be quick, we need there are no duplications among the images:
+      # to be quick, we need there to be no duplications among the images:
       if Length(ex2)=Length(Set(ex2)) and not fameq then
         for i in [ 2, 4 .. Length( x ) ] do
           p:= Position( gens1, x[ i-1 ] );
@@ -1019,7 +1019,7 @@ InstallMethod( MappedWord,
 ##
 ##  returns the length of the longest common prefix of two
 ##  assoc words.
-##  This is here because will be used by both
+##  This is here because it will be used by both
 ##  the BasicWreathProductOrdering and the
 ##  WreathProductOrdering
 BindGlobal("LengthOfLongestCommonPrefixOfTwoAssocWords",

@@ -235,8 +235,8 @@ DeclareRepresentation( "IsGroupGeneralMappingByAsGroupGeneralMappingByImages",
 ##
 ##  <Description>
 ##  If <A>map</A> is a mapping from one group to another this attribute
-##  returns a group general mapping that which implements the same abstract
-##  mapping. (Some operations can be performed more effective in this
+##  returns a group general mapping that implements the same abstract
+##  mapping. (Some operations can be performed more effectively in this
 ##  representation, see
 ##  also&nbsp;<Ref Filt="IsGroupGeneralMappingByAsGroupGeneralMappingByImages"/>.)
 ##  <Example><![CDATA[

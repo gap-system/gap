@@ -730,7 +730,7 @@ local stabilizergen,st,stabrsub,stabrsubsz,ratio,subsz,sz,vp,stabrad,
             #if IsBound(reps[vp+j]) then
             #  Add(reps,reps[vp+j]*gens[genum]);
             #fi;
-            # repwordslso needs to change!
+            # repwords also needs to change!
             Add(repwords,Concatenation(repwords[vp+j],[genum]));
             b[p]:=true;
           od;
@@ -1540,7 +1540,7 @@ local ff,i,j,c,q,a,b,prev,sub,m,k;
     a:=LinearActionLayer(G,m);
     a:=GModuleByMats(a,GF(RelativeOrders(m)[1]));
     b:=MTX.BasesSubmodules(a);
-    b:=b{[2..Length(b)-1]}; # only intermnediate ones
+    b:=b{[2..Length(b)-1]}; # only intermediate ones
     if Length(b)>0 then
       for j in Reversed(b) do
         Add(c,ClosureSubgroupNC(k,List(j,x->PcElementByExponents(m,x))));

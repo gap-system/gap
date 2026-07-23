@@ -1705,7 +1705,7 @@ local fam,tw,res,m,n,mn,r,e,s,d,dr,px,x,y,onepol,stop;
   fi;
 
   if n>m then
-    # force f to be of larger degee
+    # force f to be of larger degree
     res:=(onepol)^(n*m);
     tw:=f; f:=g; g:=tw;
     tw:=m; m:=n; n:=tw;
@@ -1753,7 +1753,7 @@ local fam,tw,res,m,n,mn,r,e,s,d,dr,px,x,y,onepol,stop;
     n:=dr;
 
     f:=g;
-#    was: g:=r/(x*y^mn) However the double division seems more gently;
+#    was: g:=r/(x*y^mn) However the double division seems gentler;
     g:=r/x/y^mn;
     x:=LeadingCoefficient(f,ind);
     y:=x^mn/y^(mn-1);
@@ -1833,7 +1833,7 @@ end);
 #
 #  11-15-04,  WDJ and AH
 
-# n is the number of terms in m. n1 is the number of variable occurring
+# n is the number of terms in m. n1 is the number of variables occurring
 # in each monomial term of m. returns the degrees of each variable in the
 # monomial m.
 BindGlobal("MVFactorDegreeMonomialTerm",function(m)

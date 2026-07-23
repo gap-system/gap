@@ -410,7 +410,7 @@ DeclareGlobalFunction("MorClassLoop");
 ##
 ##  <Description>
 ##  tries to find generating system with as few as possible generators
-##  which will be taken preferraby from the first classes in <A>cl</A>
+##  which will be taken preferably from the first classes in <A>cl</A>
 ##  </Description>
 ##  </ManSection>
 ##
@@ -429,7 +429,7 @@ DeclareGlobalFunction("MorFindGeneratingSystem");
 ##  isomorphisms between <A>G</A> and <A>H</A> or the automorphism group of <A>G</A> (in which
 ##  case <A>G</A> must equal <A>H</A>). The boolean flag <A>DoAuto</A> indicates if all
 ##  automorphisms should be found.
-##  The function requires, that both groups are not cyclic!
+##  The function requires that both groups are not cyclic!
 ##  </Description>
 ##  </ManSection>
 ##

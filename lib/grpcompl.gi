@@ -87,7 +87,7 @@ local G,N,K,s, h, q, fpi, factorpres, com, comgens, cen, ocrels, fpcgs, ncom,
   # construct a presentation
   h:=NaturalHomomorphismByNormalSubgroup(G,N);
 
-  # AH still: Try to find a more simple presentation if available.
+  # AH still: Try to find a simpler presentation if available.
 
   if Source(h)=G then
     q:=ImagesSource(h);

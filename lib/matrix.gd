@@ -2430,7 +2430,7 @@ DeclareOperation("FieldOfMatrixList",[IsListOrCollection]);
 ##  <M>R</M> such that all entries of the matrices lie in <M>R</M>. If
 ##  <M>R</M> has a quotient field that can be represented, this quotient
 ##  field is returned instead.
-##  In general <M>R</R> is not chosen to be as small as possible, but to
+##  In general <M>R</M> is not chosen to be as small as possible, but to
 ##  be determined quickly without being unnecessarily large
 ##  (see <Ref Attr="DefaultFieldOfMatrix"/>).
 ##  </Description>

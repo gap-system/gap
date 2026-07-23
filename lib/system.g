@@ -560,7 +560,7 @@ end );
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL("ARCH_IS_WINDOWS",function()
-  # Exit early is we are not in Cygwin
+  # Exit early if we are not in Cygwin
   if POSITION_SUBSTRING (GAPInfo.Architecture, "cygwin", 0) = fail then
     return false;
   fi;

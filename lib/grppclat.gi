@@ -42,7 +42,7 @@ local G,morph,N,s,p,e,i,j,k,ise,fine,cor;
   i:=2;
   while i<=Length(e) do
     # intersect all images of normal subgroup to obtain invariant one
-    # as G is invariant, we dont have to deal with special cases
+    # as G is invariant, we don't have to deal with special cases
     ise:=[e[i]];
     cor:=e[i];
     for j in ise do
@@ -254,7 +254,7 @@ end);
 ##  elementary abelian subgroup <G> of <P>. Returns
 ##  a list [<subspaces>,<action>], where <subspaces> is a list of all the
 ##  subspaces (as groups) and <action> a homomorphism from <P> in a
-##  permutation group, which is equal to the action homomrophism for the
+##  permutation group, which is equal to the action homomorphism for the
 ##  action of <P> on <subspaces>. If <dims> is given, only subspaces of
 ##  dimension <dims> are considered.  Instead of <G> also a (modulo) pcgs
 ##  may be given, in this case <subspaces> are pre-images of the subspaces.
@@ -659,7 +659,7 @@ local g,        # group
     fi;
   fi;
 
-#  # check, if the series is compatible with the AgSeries and if g is a
+#  # check if the series is compatible with the AgSeries and if g is a
 #  # parent group. If not, enforce this
 #  if not(IsParent(g) and ForAll(e,IsElementAgSeries)) then
 #    Info(InfoPcSubgroup,1,"  computing better series");
@@ -888,14 +888,14 @@ Assert(1,ForAll(bs,i->ForAll(efunc,j->Image(j,i)=i)));
         for bpos in [1..Length(bs)] do
           b:=bs[bpos];
           Assert(2,IsNormal(a,b));
-          # test, whether we'll have to consider this case
+          # test whether we'll have to consider this case
 
 # this test has basically be done before the orbit calculation already
 #         if consider<>false and consider(a,n,b,e[i])=false then
 #           Info(InfoPcSubgroup,2,"  Ignoring case");
 #           s:=[];
 
-          # test, whether b is invariant
+          # test whether b is invariant
           if Length(efunc)>0 then
             # extend to dcs of bnormalizer
             s:=RightTransversal(no,bsnorms[bpos]);
@@ -903,7 +903,7 @@ Assert(1,ForAll(bs,i->ForAll(efunc,j->Image(j,i)=i)));
             s:=Concatenation(List(s,i->List(t,j->i*j)));
             z:=Length(s);
             #NOCH: Fusion
-            # test, which ones are usable at all
+            # test which ones are usable at all
             s:=Filtered(s,i->HasInvariantConjugateSubgroup(b,i,efunc));
             Info(InfoPcSubgroup,2,"  |s|=",nag,"-(m)>",z,"-(i)>",Length(s));
           else

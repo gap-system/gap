@@ -96,7 +96,7 @@ InstallMethod( CompositionMapping2, "method for two pc group automorphisms",
 function( hom1, hom2 )
 local fam,hom, pcgs, pcgsimgs, G;
 
-  # is it automorphism?
+  # is it an automorphism?
   if Range(hom1)<>Source(hom2) then
     TryNextMethod();
   fi;
@@ -288,7 +288,7 @@ BindGlobal( "InversePcgs", function( hom )
     # if it is known then return
     if IsBound( hom!.rangePcgs ) then return; fi;
 
-    # if it is from an pc group
+    # if it is from a pc group
     if IsBound( hom!.sourcePcgs ) then
 
         idR := Identity( Range( hom ) );

@@ -269,7 +269,7 @@ local tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
   fi;
 
   # test the automorphisms that are not inner. (The conjugator automorphisms
-  # have no reason to be normal in all automoirphisms, so this will not
+  # have no reason to be normal in all automorphisms, so this will not
   # work.)
   seln:=Filtered(sel,x->not IsInnerAutomorphism(autos[x]));
 

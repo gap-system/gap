@@ -78,7 +78,7 @@ DeclareGlobalFunction("DirectSumGModule");
 #F  WedgeGModule ( module ) . . . . . wedge product of a G-module
 ##
 ## WedgeGModule calculates the wedge product of a G-module.
-## That is the action on antisymmetrix tensors.
+## That is the action on antisymmetric tensors.
 ##
 DeclareGlobalFunction("WedgeGModule");
 

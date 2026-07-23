@@ -173,7 +173,7 @@ local si,sw,i,ug,tt,p;
       if p<>fail then
         Add(si,aug.homgenims[p]);
       else
-        # its not. We must map the image from the primary generators images.
+        # it's not. We must map the image from the primary generators images.
         # For this we use that their images must be given already in `si', as
         # the primary generators come first.
         Add(si,MappedWord(tt[i],aug.primarySubgroupGenerators,
@@ -982,7 +982,7 @@ end );
 #M                                                     Tietze transformations
 ##
 ##  `SimplifiedFpGroup'  returns a group  isomorphic to the given one  with a
-##  presentation which has been tried to simplify via Tietze transformations.
+##  presentation which we have tried to simplify via Tietze transformations.
 ##
 InstallGlobalFunction( SimplifiedFpGroup, function ( G )
   return Range(IsomorphismSimplifiedFpGroup(G:easy));
