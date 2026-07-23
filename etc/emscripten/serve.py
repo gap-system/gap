@@ -18,6 +18,9 @@ class CrossOriginIsolatedHandler(http.server.SimpleHTTPRequestHandler):
     def end_headers(self):
         self.send_header("Cross-Origin-Opener-Policy", "same-origin")
         self.send_header("Cross-Origin-Embedder-Policy", "require-corp")
+        # Without this, browsers cache the UI files heuristically and
+        # edits to web-example/ don't show up on reload.
+        self.send_header("Cache-Control", "no-cache")
         super().end_headers()
 
 

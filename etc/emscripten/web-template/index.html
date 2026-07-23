@@ -3,71 +3,320 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>GAP in the browser</title>
+    <meta name="description"
+          content="GAP — Groups, Algorithms, Programming — running entirely in your browser via WebAssembly.">
+    <title>GAP in your browser</title>
+    <link rel="icon" href="vendor/favicon.svg" type="image/svg+xml">
+    <script>
+      // Configure coi-serviceworker (see below): everything this site
+      // loads is same-origin, so plain COEP require-corp suffices.
+      // Requesting "credentialless" first would break the first load on
+      // WebKit (Safari/iOS), which doesn't support that COEP value.
+      window.coi = { coepCredentialless: () => false };
+    </script>
     <script src="coi-serviceworker.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.17.0/css/xterm.css">
+    <link rel="stylesheet" href="vendor/xterm.css">
     <style>
+      /* Fonts and colours follow www.gap-system.org (Ubuntu fonts,
+         crimson #dc143c accents; dark palette from its darkgap scheme). */
+      @font-face {
+        font-family: "Ubuntu";
+        font-style: normal; font-weight: 400; font-display: swap;
+        src: url("vendor/fonts/Ubuntu-Regular.woff2") format("woff2");
+      }
+      @font-face {
+        font-family: "Ubuntu";
+        font-style: normal; font-weight: 700; font-display: swap;
+        src: url("vendor/fonts/Ubuntu-Bold.woff2") format("woff2");
+      }
+      @font-face {
+        font-family: "Ubuntu";
+        font-style: italic; font-weight: 400; font-display: swap;
+        src: url("vendor/fonts/Ubuntu-Italic.woff2") format("woff2");
+      }
+      @font-face {
+        font-family: "Ubuntu Mono";
+        font-style: normal; font-weight: 400; font-display: swap;
+        src: url("vendor/fonts/UbuntuMono-Regular.woff2") format("woff2");
+      }
+      @font-face {
+        font-family: "Ubuntu Mono";
+        font-style: normal; font-weight: 700; font-display: swap;
+        src: url("vendor/fonts/UbuntuMono-Bold.woff2") format("woff2");
+      }
+
+      :root {
+        --gap-crimson: #dc143c;
+        --bg: #ffffff;
+        --bg-soft: #f7f7f7;
+        --card: #ffffff;
+        --border: #d2d2d7;
+        --text: #27262b;
+        --text-soft: #57565c;
+        --link: #205caa;
+        --logo-chip: transparent;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #19181b;
+          --bg-soft: #232227;
+          --card: #232227;
+          --border: #44434a;
+          --text: #e9e6cc;
+          --text-soft: #b4b1a0;
+          --link: #8ab4e8;
+          --logo-chip: #f7f7f7;
+        }
+      }
+
+      * { box-sizing: border-box; }
       body {
         margin: 0;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        font-family: "Ubuntu", -apple-system, "Segoe UI", Roboto,
                      "Helvetica Neue", Arial, sans-serif;
-        color: #1d1d1f;
-        background: #f5f5f7;
+        color: var(--text);
+        background: var(--bg-soft);
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
       }
-      header, footer {
-        padding: 12px 20px;
-        background: #fff;
-        border-color: #d2d2d7;
-        border-style: solid;
+      a { color: var(--link); }
+      code {
+        font-family: "Ubuntu Mono", Menlo, Consolas, monospace;
+        background: var(--bg-soft);
+        border: 1px solid var(--border);
+        padding: 0 4px;
+        border-radius: 3px;
       }
-      header { border-width: 0 0 1px 0; }
-      footer { border-width: 1px 0 0 0; font-size: 13px; color: #555; }
-      header h1 { margin: 0 0 4px 0; font-size: 20px; }
-      header p   { margin: 0; font-size: 14px; max-width: 90ch; color: #444; }
-      header a, footer a { color: #0066cc; }
+
+      header.site-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 10px 20px;
+        background: var(--card);
+        border-bottom: 2px solid var(--gap-crimson);
+      }
+      .site-logo {
+        height: 46px;
+        background: var(--logo-chip);
+        border-radius: 6px;
+        padding: 2px 4px;
+      }
+      .site-title h1 { margin: 0; font-size: 20px; font-weight: 700; }
+      .site-title p { margin: 2px 0 0 0; font-size: 13px; color: var(--text-soft); }
+      .header-spacer { flex: 1; }
+      .gap-button {
+        font: inherit;
+        font-size: 14px;
+        color: var(--gap-crimson);
+        background: transparent;
+        border: 1px solid var(--gap-crimson);
+        border-radius: 4px;
+        padding: 6px 14px;
+        cursor: pointer;
+      }
+      .gap-button:hover { background: var(--gap-crimson); color: #fff; }
+
       .notice {
-        margin: 12px 20px;
-        padding: 12px 16px;
-        background: #fff;
-        border: 1px solid #d2d2d7;
+        margin: 12px 20px 0 20px;
+        padding: 10px 16px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--gap-crimson);
         border-radius: 4px;
         font-size: 14px;
       }
       #unsupported { display: none; color: #b00020; border-color: #b00020; }
-      details.about {
-        margin: 12px 20px;
-        padding: 10px 16px;
-        background: #fff;
-        border: 1px solid #d2d2d7;
-        border-radius: 4px;
+
+      main {
+        flex: 1;
+        display: flex;
+        align-items: stretch;
+        gap: 16px;
+        padding: 12px 20px;
+        min-height: 0;
+      }
+      #terminal-wrap {
+        flex: 1;
+        min-width: 0;
+        background: #1d1d1d;
+        padding: 8px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        min-height: 320px;
+      }
+      #terminal, #terminal .xterm { height: 100%; }
+      /* xterm's scrollbar otherwise renders as a bright white strip on
+         the dark terminal background. */
+      #terminal .xterm-viewport { scrollbar-color: #555 #1d1d1d; }
+      #terminal .xterm-viewport::-webkit-scrollbar { width: 10px; }
+      #terminal .xterm-viewport::-webkit-scrollbar-track { background: #1d1d1d; }
+      #terminal .xterm-viewport::-webkit-scrollbar-thumb {
+        background: #555;
+        border-radius: 5px;
+      }
+
+      #side-panel {
+        width: 290px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .panel {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 12px 14px;
         font-size: 14px;
       }
-      details.about summary { cursor: pointer; font-weight: 600; }
-      details.about[open] summary { margin-bottom: 8px; }
-      details.about p { margin: 8px 0; line-height: 1.45; }
-      details.about a { color: #0066cc; }
-      #terminal-wrap {
-        display: inline-block;
-        margin: 12px 20px;
-        background: #000;
-        padding: 6px;
-        border-radius: 4px;
+      .panel h2 {
+        margin: 0 0 8px 0;
+        font-size: 14px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--gap-crimson);
       }
-      code { background: #eee; padding: 1px 4px; border-radius: 3px; }
+      .panel p.hint { margin: 8px 0 0 0; font-size: 12.5px; color: var(--text-soft); }
+      #files-empty { margin: 4px 0; font-size: 13px; color: var(--text-soft); }
+      #file-list, #example-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      #file-list li {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 0;
+        border-top: 1px solid var(--border);
+      }
+      #file-list li:first-child { border-top: none; }
+      .file-text { flex: 1; min-width: 0; }
+      .file-name {
+        display: block;
+        font-family: "Ubuntu Mono", monospace;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .file-meta { display: block; font-size: 12px; color: var(--text-soft); }
+      .icon-button {
+        font: inherit;
+        font-size: 15px;
+        line-height: 1;
+        color: var(--gap-crimson);
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 4px 7px;
+        cursor: pointer;
+      }
+      .icon-button:hover { border-color: var(--gap-crimson); }
+      #example-list li { padding: 2px 0; }
+      .example-button {
+        font: inherit;
+        font-size: 13.5px;
+        width: 100%;
+        text-align: left;
+        color: var(--text);
+        background: transparent;
+        border: none;
+        border-radius: 4px;
+        padding: 5px 6px;
+        cursor: pointer;
+      }
+      .example-button:hover { background: var(--bg-soft); color: var(--gap-crimson); }
+
+      details.about {
+        margin: 0 20px 12px 20px;
+        padding: 10px 16px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font-size: 14px;
+      }
+      details.about summary { cursor: pointer; font-weight: 700; }
+      details.about[open] summary { margin-bottom: 8px; }
+      details.about p { margin: 8px 0; line-height: 1.45; max-width: 95ch; }
+
+      footer.site-footer {
+        padding: 12px 20px;
+        background: var(--card);
+        border-top: 1px solid var(--border);
+        font-size: 13px;
+        color: var(--text-soft);
+      }
+
+      @media (max-width: 820px) {
+        main { flex-direction: column; }
+        #terminal-wrap { height: 60vh; }
+        #side-panel { width: auto; }
+      }
     </style>
   </head>
   <body>
-    <header>
-      <h1>GAP in the browser</h1>
-      <p>
-        A WebAssembly build of <a href="https://www.gap-system.org">GAP</a>
-        running entirely in your browser — useful for trying things out
-        without installing. Not all packages work, working memory is
-        capped, and performance is reduced compared to a native build.
-        For real work, install GAP from
-        <a href="https://www.gap-system.org">www.gap-system.org</a>.
-      </p>
+    <header class="site-header">
+      <a href="https://www.gap-system.org" title="www.gap-system.org">
+        <img class="site-logo" src="vendor/gaplogo.svg"
+             alt="GAP — Groups, Algorithms, Programming">
+      </a>
+      <div class="site-title">
+        <h1>GAP in your browser</h1>
+        <p>A WebAssembly build of GAP running entirely in your browser —
+           no installation. For real work, performance and memory,
+           <a href="https://www.gap-system.org/install/">install GAP</a>.</p>
+      </div>
+      <div class="header-spacer"></div>
+      <button id="restart" class="gap-button"
+              title="Stop GAP and start a fresh session (the only way to interrupt a runaway computation)">
+        Restart GAP
+      </button>
     </header>
+
+    <div id="loading" class="notice">Loading GAP…</div>
+
+    <div id="unsupported" class="notice">
+      This page needs <code>SharedArrayBuffer</code>, which is only
+      available when the page is served with the headers
+      <code>Cross-Origin-Opener-Policy: same-origin</code> and
+      <code>Cross-Origin-Embedder-Policy: require-corp</code>. The
+      bundled service worker handles this on hosts where you can't set
+      headers (e.g. GitHub Pages) — its first activation needs a reload,
+      so if you see this message, try reloading once. For local hosting
+      use <code>etc/emscripten/serve.py</code>.
+    </div>
+
+    <main>
+      <div id="terminal-wrap">
+        <div id="terminal"></div>
+      </div>
+
+      <aside id="side-panel">
+        <section class="panel">
+          <h2>Files</h2>
+          <button id="upload-button" class="gap-button">⬆ Upload file…</button>
+          <input id="upload-input" type="file" multiple hidden>
+          <p id="files-empty">Files you upload, or create from GAP (e.g.
+            with <code>PrintTo</code> or <code>LogTo</code>), appear
+            here.</p>
+          <ul id="file-list"></ul>
+          <p class="hint">↳ inserts <code>Read("file");</code> at the
+            prompt (press Enter to run it); ⬇ downloads the file. New
+            files show up when GAP next waits for input. Files live only
+            in this session — download anything you want to keep.</p>
+        </section>
+
+        <section class="panel">
+          <h2>Examples</h2>
+          <ul id="example-list"></ul>
+          <p class="hint">Inserts the command at the prompt; press Enter
+            to run it.</p>
+        </section>
+      </aside>
+    </main>
 
     <details class="about">
       <summary>What is this? &middot; Licensing</summary>
@@ -78,108 +327,49 @@
         WebAssembly build, served as a static site and run inside a
         Web Worker; you interact with it through an
         <a href="https://github.com/mame/xterm-pty">xterm-pty</a>
-        terminal in the page below.
+        terminal.
       </p>
       <p>
         To get started, try <code>1+1;</code>,
-        <code>Factorial(20);</code>, or <code>SymmetricGroup(5);</code>.
-        The full <a href="https://www.gap-system.org/doc/">GAP
-        manuals</a> apply, with two caveats: some packages won't load
-        (anything that needs a native compiler or system library), and
-        anything that wants the local filesystem won't work.
+        <code>Factorial(20);</code>, or <code>SymmetricGroup(5);</code> —
+        or use the examples menu. The full
+        <a href="https://www.gap-system.org/doc/">GAP manuals</a> apply,
+        with some caveats: some packages won't load (anything that needs
+        a native compiler or system library), working memory is capped,
+        performance is reduced compared to a native build, and a running
+        computation cannot be interrupted — the Restart button is the
+        only way out of a loop.
       </p>
       <p>
         Files downloaded on first visit are cached in your browser's
         IndexedDB, so subsequent visits start much faster. Clear the
-        site data to reset the cache.
+        site data to reset the cache. Files you create in a session are
+        <em>not</em> kept across reloads or restarts beyond the panel's
+        download cache.
       </p>
       <p>
         GAP is free software, distributed under the
         <a href="LICENSE">GNU General Public License</a> (version 2 or
         later). See the <a href="COPYRIGHT">copyright notice</a> for
-        the full statement.
+        the full statement. The Ubuntu fonts are distributed under the
+        <a href="vendor/fonts/UFL.txt">Ubuntu Font Licence</a>.
       </p>
     </details>
 
-    <div id="loading" class="notice">
-      Loading GAP… The first visit downloads several tens of megabytes;
-      subsequent visits are cached in your browser and load much faster.
-    </div>
-
-    <div id="unsupported" class="notice">
-      This page needs <code>SharedArrayBuffer</code>, which is only
-      available when the page is served with the headers
-      <code>Cross-Origin-Opener-Policy: same-origin</code> and
-      <code>Cross-Origin-Embedder-Policy: require-corp</code>. The
-      bundled service worker handles this on hosts where you can't set
-      headers (e.g. GitHub Pages); for local hosting use
-      <code>etc/emscripten/serve.py</code>.
-    </div>
-
-    <div id="terminal-wrap">
-      <div id="terminal"></div>
-    </div>
-
-    <footer>
+    <footer class="site-footer">
       <a href="https://www.gap-system.org">GAP main site</a> ·
       <a href="https://www.gap-system.org/doc/">Documentation</a> ·
-      <a href="https://github.com/gap-system/gap">Source on GitHub</a>
+      <a href="https://www.gap-system.org/install/">Installation</a> ·
+      <a href="https://github.com/gap-system/gap">Source on GitHub</a> ·
+      <a href="https://www.gap-system.org/copyright/">Copyright</a> ·
+      <a href="#" id="reset-site"
+         title="Discard the browser's cached GAP files and service worker, then reload — use this if the page is stuck or broken">Reset
+        cached data</a>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/xterm@4.17.0/lib/xterm.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xterm-pty@0.9.4/index.js"></script>
-    <script>
-      const loadingEl = document.getElementById("loading");
-      const unsupportedEl = document.getElementById("unsupported");
-
-      // Without SharedArrayBuffer the worker can't talk to the page
-      // synchronously; xterm-pty would stall on every read.
-      if (typeof SharedArrayBuffer === "undefined") {
-        loadingEl.style.display = "none";
-        unsupportedEl.style.display = "block";
-      } else {
-        const xterm = new Terminal({
-          cols: 85,
-          rows: 40,
-          fontFamily: "Menlo, Consolas, monospace",
-          fontSize: 14,
-          cursorBlink: true,
-          theme: { background: "#000000", foreground: "#e6e6e6" },
-        });
-        xterm.open(document.getElementById("terminal"));
-
-        const { master, slave } = openpty();
-        xterm.loadAddon(master);
-
-        const worker = new Worker("gap-worker.js");
-
-        // Capture URLs reported by gap-fs.js's fetch/XHR instrumentation,
-        // for rebuilding startup_manifest.json. Exposed on window so it
-        // can be inspected/copied from the devtools console:
-        //     copy(JSON.stringify(fetchedUrls))
-        // Use addEventListener so xterm-pty's TtyServer (which sets
-        // worker.onmessage) keeps working alongside our listener.
-        window.fetchedUrls = [];
-        const fetchedSet = new Set();
-        worker.addEventListener("message", (e) => {
-          const data = e.data;
-          if (data && data.type === "gap-fetched" && !fetchedSet.has(data.url)) {
-            fetchedSet.add(data.url);
-            window.fetchedUrls.push(data.url);
-          }
-        });
-
-        // Hide the loading notice as soon as GAP's banner appears.
-        let firstOutput = false;
-        xterm.onRender(() => {
-          if (!firstOutput) {
-            firstOutput = true;
-            loadingEl.style.display = "none";
-          }
-        });
-
-        new TtyServer(slave).start(worker);
-      }
-    </script>
+    <script src="vendor/xterm.min.js"></script>
+    <script src="vendor/xterm-addon-fit.min.js"></script>
+    <script src="vendor/xterm-pty/index.js"></script>
+    <script src="gap-ui.js"></script>
   </body>
 </html>

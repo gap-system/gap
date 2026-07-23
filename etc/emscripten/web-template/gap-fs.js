@@ -30,6 +30,13 @@ self.Module.preRun = self.Module.preRun || [];
 self.Module.preRun.push(function() {
     addRunDependency('gap_fs_init');
 
+    // GAP starts in /home/web_user, which stays empty here, so anything
+    // under it is user-created (uploads, PrintTo output, ...). That keeps
+    // user files cleanly apart from the GAP tree at /; gap-worker.js
+    // passes "-l /" so GAP still finds its root.
+    FS.mkdirTree('/home/web_user');
+    FS.chdir('/home/web_user');
+
     async function initFS() {
         try {
             const mapRes = await fetch('gap-fs.json');
@@ -51,14 +58,52 @@ self.Module.preRun.push(function() {
             FS.mount(IDBFS, {}, '/gap_idb_cache');
 
             FS.syncfs(true, async function(err) {
+                var needsSave = false;
+
+                // Discard the cache when the site was redeployed: a
+                // library file cached from one build must never be
+                // paired with the kernel of another. build-id is
+                // written by assemble-website.sh; a site without one
+                // (e.g. hand-assembled) keeps its cache indefinitely.
+                var storedId = null;
+                try {
+                    storedId = new TextDecoder().decode(
+                        FS.readFile('/gap_idb_cache/.build-id'));
+                } catch (e) {}
+                var buildId = null;
+                try {
+                    const idRes = await fetch('build-id', { cache: 'no-cache' });
+                    if (idRes.ok) buildId = (await idRes.text()).trim();
+                } catch (e) {}
+                if (buildId === null) {
+                    console.info("gap-fs: no build-id served; reusing any cached files");
+                } else if (storedId !== buildId) {
+                    if (storedId !== null) {
+                        console.info("gap-fs: site updated (" + storedId +
+                            " -> " + buildId + "); discarding cached files");
+                    }
+                    (function wipe(dir) {
+                        FS.readdir(dir).forEach(function(name) {
+                            if (name === '.' || name === '..') return;
+                            var p = dir + '/' + name;
+                            if (FS.isDir(FS.stat(p).mode)) {
+                                wipe(p);
+                                FS.rmdir(p);
+                            } else {
+                                FS.unlink(p);
+                            }
+                        });
+                    })('/gap_idb_cache');
+                    FS.writeFile('/gap_idb_cache/.build-id', buildId);
+                    needsSave = true;
+                }
+
                 fileList.forEach(function(appPath) {
                     var parts = appPath.split('/');
                     parts.pop();
                     var parentDir = '/' + parts.join('/');
                     try { FS.mkdirTree('/gap_idb_cache' + parentDir); } catch(e) {}
                 });
-
-                var needsSave = false;
                 var startupSet = new Set();
 
                 try {
