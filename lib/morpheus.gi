@@ -208,7 +208,8 @@ local gens, inn,out, nonperm, syno, orb, orbi, perms, free, rep, i, maxl, gen,
   free:=FreeGroup(Length(nonperm));
   rep:=[One(free)];
   i:=1;
-  maxl:=NrMovedPoints(g);
+  # degree ^2/3 many images
+  maxl:=Maximum(20,RootInt(NrMovedPoints(g)^2,3));
   while i<=Length(orb) and Length(orb)<maxl do
     for w in [1..Length(nonperm)] do
       gen:=nonperm[w];
@@ -767,6 +768,7 @@ local hom, gens, c, ran, r, cen, img, u, orbs,
 
   # try to embed into wreath according to non-conjugator
   if IsPermGroup(g) then
+    Info(InfoMorph,2,"Try Wreath Embedding");
     img:=AutomorphismWreathEmbedding(au,g);
   else
     img:=fail;
