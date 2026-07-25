@@ -4764,10 +4764,40 @@ end);
 # (a companion matrix), could still be improved, maybe with kernel functions
 # for compact matrices (FL)
 BindGlobal("POW_MAT_INT", function(mat, n)
-  local d, addb, trafo, value, t, ti, mm, pol, ind;
+  local d, k, limit, f, addb, trafo, value, t, ti, mm, pol, ind;
   d := NrRows(mat);
-  # finding a better break even point probably also depends on q
-  if n < 2^QuoInt(3*d,4) or not IsField(DefaultFieldOfMatrix(mat)) then
+  # Decide between repeated squaring (POW_OBJ_INT, about Log2(n) matrix
+  # multiplications) and the method below, which has a considerable fixed
+  # overhead (base change, characteristic polynomial, about d matrix
+  # multiplications) but afterwards only needs about Log2(n) polynomial
+  # multiplications modulo the characteristic polynomial, which are much
+  # cheaper than matrix multiplications when d is large.
+  # The break even points below were determined experimentally, on the basis
+  # that both costs grow linearly in Log2(n) for a fixed matrix; see the
+  # discussion in https://github.com/gap-system/gap/pull/6293 for details.
+  # They depend on the representation: for compressed matrices over small
+  # finite fields multiplication is very fast compared to the (partially
+  # interpreted) overhead of the method below, and for compressed matrices
+  # over GF(2) it is so fast that the overhead only pays off for huge
+  # exponents.
+  k := LogInt(n, 2);
+  if IsGF2MatrixRep(mat) then
+    limit := 64;
+  elif Is8BitMatrixRep(mat) then
+    limit := 8 + QuoInt(768, d);
+  else
+    # everything else, e.g. plain lists of plain lists, matrix objects, and
+    # matrices over rings of characteristic 0; here polynomial
+    # multiplications are not that much cheaper than matrix multiplications,
+    # in particular for small d
+    limit := Maximum(64, QuoInt(8192, d));
+  fi;
+  if k < limit then
+    return POW_OBJ_INT(mat, n);
+  fi;
+  # the method below requires the entries to lie in a field
+  f := DefaultFieldOfMatrix(mat);
+  if f = fail or not IsField(f) then
     return POW_OBJ_INT(mat, n);
   fi;
   # helper function to build up a semi-echelon basis
