@@ -62,7 +62,7 @@ leave the <C>Pager</C> and <C>PagerOptions</C> preferences empty."
     local str, sp, pager, options;
     if IsBound(GAPInfo.KernelInfo.ENVIRONMENT.PAGER) then
       str := GAPInfo.KernelInfo.ENVIRONMENT.PAGER;
-      sp := SplitStringInternal(str, "", " \n\t\r");
+      sp := SplitStringInternal(str, "", CHARS_WHITESPACE);
       if Length(sp) > 0 then
         pager:= sp[1];
         options:= sp{ [ 2 .. Length( sp ) ] };
@@ -70,7 +70,7 @@ leave the <C>Pager</C> and <C>PagerOptions</C> preferences empty."
         if "less" in SplitStringInternal(sp[1], "", "/\\") then
           if IsBound(GAPInfo.KernelInfo.ENVIRONMENT.LESS) then
             str := GAPInfo.KernelInfo.ENVIRONMENT.LESS;
-            sp := SplitStringInternal(str, "", " \n\t\r");
+            sp := SplitStringInternal(str, "", CHARS_WHITESPACE);
             Append( options, sp );
           fi;
           # make sure -r is used
@@ -79,7 +79,7 @@ leave the <C>Pager</C> and <C>PagerOptions</C> preferences empty."
           if IsBound(GAPInfo.KernelInfo.ENVIRONMENT.MORE) then
             # similarly for 'more'
             str := GAPInfo.KernelInfo.ENVIRONMENT.MORE;
-            sp := SplitStringInternal(str, "", " \n\t\r");
+            sp := SplitStringInternal(str, "", CHARS_WHITESPACE);
             Append( options, sp );
           fi;
           # make sure -f is used

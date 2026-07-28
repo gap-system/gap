@@ -245,5 +245,39 @@ gap> UserHomeShorten(1234);
 1234
 gap> if hadHome then GAPInfo.UserHome := savedHome; else Unbind(GAPInfo.UserHome); fi;;
 
+# _FormatParagraph
+gap> Print(_FormatParagraph(
+>         "the quick brown fox jumps over the lazy dog", 20, "", ""));
+the quick brown fox
+jumps over the lazy
+dog
+
+# whitespace is normalized
+gap> Print(_FormatParagraph(
+>         "  the quick   brown\nfox\tjumps over the lazy dog  ", 20, "", ""));
+the quick brown fox
+jumps over the lazy
+dog
+gap> _FormatParagraph("", 20, "", "");
+""
+gap> _FormatParagraph("  \n\t ", 20, "", "");
+""
+
+# a word which does not fit into a line is not broken
+gap> Print(_FormatParagraph(
+>         "supercalifragilisticexpialidocious and more", 20, "", ""));
+supercalifragilisticexpialidocious
+and more
+
+# <prefix> and <suffix> are put around each line and count towards the
+# line length
+gap> Print(_FormatParagraph(
+>         "the quick brown fox jumps over the lazy dog", 20, "##  ", ""));
+##  the quick brown
+##  fox jumps over
+##  the lazy dog
+gap> Print(_FormatParagraph("a b", 20, "<", ">"));
+<a b>
+
 #
 gap> STOP_TEST("strings.tst");

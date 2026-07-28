@@ -136,7 +136,7 @@ InstallGlobalFunction( RECORDS_FILE, function( name )
       if pos <> fail then
         r:= r{ [ 1 .. pos-1 ] };
       fi;
-      Append( recs, SplitString( r, "", " \n\t\r" ) );
+      Append( recs, SplitString( r, "", CHARS_WHITESPACE ) );
     od;
     return List( recs, LowercaseString );
     end );
@@ -3492,7 +3492,7 @@ Unbind( NamesUserGVars );
 ##
 InstallGlobalFunction( ShowPackageVariables, function( arg )
     local version, arec, pkgname, info, show, documented, undocumented,
-          private, result, len, format, entry, first, subentry, str;
+          private, result, len, entry, first, subentry, str;
 
     # Get and check the arguments.
     version:= "";
@@ -3534,11 +3534,6 @@ InstallGlobalFunction( ShowPackageVariables, function( arg )
     # Render the relevant data.
     result:= "";
     len:= SizeScreen()[1] - 2;
-    if IsBoundGlobal( "FormatParagraph" ) then
-      format:= ValueGlobal( "FormatParagraph" );
-    else
-      format:= function( arg ) return Concatenation( arg[1], "\n" ); end;
-    fi;
     for entry in info do
       if entry[1] in show then
         first:= true;
@@ -3558,7 +3553,7 @@ InstallGlobalFunction( ShowPackageVariables, function( arg )
             Append( result, "\n" );
             if Length( subentry[1] ) = 4 and not IsEmpty( subentry[1][4] ) then
               Append( result,
-                      format( subentry[1][4], len, "left", [ "    ", "" ] ) );
+                      _FormatParagraph( subentry[1][4], len, "    ", "" ) );
             fi;
           fi;
         od;

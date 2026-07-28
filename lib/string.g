@@ -402,6 +402,7 @@ BIND_GLOBAL("CHARS_ALPHA",
   MakeImmutable(LIST_SORTED_LIST("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")));
 BIND_GLOBAL("CHARS_SYMBOLS",
   MakeImmutable(LIST_SORTED_LIST(" !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~")));
+BIND_GLOBAL("CHARS_WHITESPACE", MakeImmutable(LIST_SORTED_LIST(" \n\t\r")));
 
 
 #############################################################################
@@ -453,6 +454,74 @@ BIND_GLOBAL("_StripEscapeSequences", function(str)
         i := p;
       fi;
     fi;
+  od;
+  return res;
+end);
+
+
+#############################################################################
+##
+#F  _FormatParagraph( <str>, <len>, <prefix>, <suffix> )  reformat a paragraph
+##
+##  This is a heavily simplified variant of GAPDoc's `FormatParagraph`,
+##  adapted from there, so that the GAP library can format text without
+##  loading GAPDoc.
+##
+##  The words in <str> are redistributed into lines of at most <len>
+##  characters, flush left. Each line starts with <prefix> and ends with
+##  <suffix>, both of which count towards <len>. Note that GAPDoc's version
+##  instead treats them as escape sequences of width zero.
+##
+##  The alternative alignments "both", "right" and "center" offered by
+##  GAPDoc's version are not supported, and neither are escape sequences
+##  (which GAPDoc's version copies verbatim and treats as having length
+##  zero). Line lengths are counted in bytes, that is, a multibyte character
+##  counts more than once; GAPDoc's version can be handed `WidthUTF8String`
+##  to avoid this.
+##
+BIND_GLOBAL("_FormatParagraph", function(str, len, prefix, suffix)
+  local words, l, i, j, lw, s, res;
+
+  # <prefix> and <suffix> are part of each line, hence count towards <len>
+  len := len - Length(prefix) - Length(suffix);
+
+  # scan the string for words, stored as ranges of positions in <str>
+  words := [];
+  i := 1;
+  l := Length(str);
+  while i <= l do
+    if str[i] in CHARS_WHITESPACE then
+      i := i+1;
+    else
+      j := i+1;
+      while j <= l and not str[j] in CHARS_WHITESPACE do
+        j := j+1;
+      od;
+      Add(words, [i..j-1]);
+      i := j;
+    fi;
+  od;
+
+  # distribute the words onto lines
+  res := "";
+  lw := Length(words);
+  i := 1;
+  while i <= lw do
+    # the first word of a line is always added, even if it is too long
+    Append(res, prefix);
+    Append(res, str{words[i]});
+    s := Length(words[i]);
+    i := i+1;
+    # further words are added as long as they fit, line breaks only
+    # happen at whitespace
+    while i <= lw and s + 1 + Length(words[i]) <= len do
+      Add(res, ' ');
+      Append(res, str{words[i]});
+      s := s + 1 + Length(words[i]);
+      i := i+1;
+    od;
+    Append(res, suffix);
+    Add(res, '\n');
   od;
   return res;
 end);

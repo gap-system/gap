@@ -325,7 +325,7 @@ TEST.transformFunctions.removenl := function(a)
 end;
 TEST.transformFunctions.removewhitespace := function(a)
   a := ReplacedString(ShallowCopy(a), "\\\n", "");
-  RemoveCharacters(a, " \n\t\r");
+  RemoveCharacters(a, CHARS_WHITESPACE);
   return a;
 end;
 
