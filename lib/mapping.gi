@@ -299,14 +299,11 @@ end );
 
 #############################################################################
 ##
-#F  PreImages(<map>)
-#F  PreImagesNC(<map>)  . . . set of preimages of the range of a gen. mapping
-#F  PreImages(<map>,<elm>)
-#F  PreImagesNC(<map>,<elm>)  set of preimages of an elm under a gen. mapping
-#F  PreImages(<map>,<coll>)
-#F  PreImagesNC(<map>,<coll>) set of preimages of a coll. under a gen. mapping
+#F  PreImages( <map> )  . . . set of preimages of the range of a gen. mapping
+#F  PreImages(<map>,<elm>)  . set of preimages of an elm under a gen. mapping
+#F  PreImages(<map>,<coll>)  set of preimages of a coll. under a gen. mapping
 ##
-InstallGlobalFunction( PreImagesNC, function ( arg )
+InstallGlobalFunction( PreImages, function ( arg )
 
     local   map,        # mapping <map>, first argument
             img;        # element <img>, second argument
@@ -321,69 +318,28 @@ InstallGlobalFunction( PreImagesNC, function ( arg )
         map := arg[1];
         img := arg[2];
 
-        # preimage of a single element <img> under <map>
-        if FamRangeEqFamElm( FamilyObj( map ), FamilyObj( img ) ) then
-            return PreImagesElmNC( map, img );
-
-        # preimage of a collection of elements <img> under <map>
-        elif CollFamRangeEqFamElms( FamilyObj( map ), FamilyObj( img ) ) then
-          if IsDomain( img ) or IsSSortedList( img ) then
-            return PreImagesSetNC( map, img );
-          elif IsHomogeneousList( img ) then
-            return PreImagesSetNC( map, Set( img ) );
-          fi;
-
-        # preimage of the empty list
-        elif IsList( img ) and IsEmpty( img ) then
-        fi;
-    fi;
-    ErrorNoReturn( "usage: PreImagesNC(<map>), PreImagesNC(<map>,<img>), ",
-                   "PreImagesNC(<map>,<coll>)" );
-end );
-
-InstallGlobalFunction( PreImages, function ( arg )
-
-    local   map,        # mapping <map>, first argument
-            img,        # element <img>, second argument
-            rng;        # the range of map
-
-    if Length( arg ) > 0 and not IsGeneralMapping( arg[1] ) then
-      ErrorNoReturn( "<map> must be a general mapping" );
-    fi;
-
-    # preimage of the range under <map>
-    if Length( arg ) = 1  then
-
-        return PreImagesRange( arg[1] );
-
-    elif Length( arg ) = 2 then
-
-        map := arg[1];
-        img := arg[2];
-        rng := Range( map );
-
         if not IsGeneralMapping( map ) then
           ErrorNoReturn( "<map> must be a general mapping" );
         fi;
 
         # preimage of a single element <img> under <map>
         if     FamRangeEqFamElm( FamilyObj( map ), FamilyObj( img ) ) then
-            if not img in rng then
+            if not img in Range( map ) then
                 ErrorNoReturn( "<elm> must be an element of Range(<map>)" );
             fi;
             return PreImagesElm( map, img );
 
         # preimage of a collection of elements <img> under <map>
         elif CollFamRangeEqFamElms( FamilyObj( map ), FamilyObj( img ) ) then
-          if not IsSubset( rng, img ) then
+          if not IsSubset( Range( map ), img ) then
             ErrorNoReturn( "the collection <elm> must be contained in ",
                            "Range(<map>)" );
           fi;
 
           if IsDomain( img ) or IsSSortedList( img ) then
-            return PreImagesSetNC( map, Intersection( img, Image( map ) ) );
+            return PreImagesSet( map, img );
           elif IsHomogeneousList( img ) then
-            return PreImagesSetNC( map, Intersection( Set( img ), Image( map ) ) );
+            return PreImagesSet( map, Set( img ) );
           fi;
 
         # preimage of the empty list

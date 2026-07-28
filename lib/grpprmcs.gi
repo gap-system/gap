@@ -1873,7 +1873,7 @@ InstallMethod( Centre,
         else
            order := Size( centr );
            cent := IntersectionNormalClosurePermGroup(GG,centr,order*Size(GG));
-           cent:= PreImagesNC(tchom,cent);
+           cent:= PreImages(tchom,cent);
            Assert( 1, IsAbelian( cent ) );
            SetIsAbelian( cent, true );
            return cent;
@@ -1917,7 +1917,7 @@ InstallMethod( Centre,
         cent := IntersectionNormalClosurePermGroup
                  ( GG, GroupByGenerators(hgens,()), order*Size(GG) );
         if n <> len then
-          cent:= PreImagesNC( tchom, cent );
+          cent:= PreImages( tchom, cent );
         fi;
         Assert( 1, IsAbelian( cent ) );
         SetIsAbelian( cent, true );
@@ -2012,7 +2012,7 @@ InstallGlobalFunction( CentralizerNormalCSPG, function(G,N)
     # handle case of transitive GG directly
     if Length(significant) = 1  then
         centrnorm := CentralizerNormalTransCSPG(GG,NN);
-        return PreImagesNC(tchom,centrnorm);
+        return PreImages(tchom,centrnorm);
     fi;
 
     # case of intransitive GG
@@ -2054,7 +2054,7 @@ InstallGlobalFunction( CentralizerNormalCSPG, function(G,N)
     if n = len then
        return central;
     else
-       return PreImagesNC(tchom,central);
+       return PreImages(tchom,central);
     fi;
 end );
 

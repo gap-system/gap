@@ -250,7 +250,7 @@ InstallMethod( IsSymmetricBinaryRelation,
                       List(Enumerator(UnderlyingRelation(m)),x->[x[1],x[2]])));
 
         for e in el do
-            if not PreImagesNC(m,e)=Images(m,e) then
+            if not PreImages(m,e)=Images(m,e) then
                 return false;
             fi;
         od;
@@ -312,7 +312,7 @@ InstallMethod( IsAntisymmetricBinaryRelation,
                   List(Enumerator(UnderlyingRelation(rel)),x->[x[1],x[2]])));
 
         for e in el do
-            i := IntersectionSet(PreImagesNC(rel,e),Images(rel,e));
+            i := IntersectionSet(PreImages(rel,e),Images(rel,e));
             if not IsEmpty(i) and not i=[e] then
                 return false;
             fi;
@@ -376,7 +376,7 @@ function(rel)
   for a in Source(rel) do
     for b in Source(rel) do
       # intersecting downsets
-      intersection := Intersection(PreImagesNC(rel,b),PreImagesNC(rel,a));
+      intersection := Intersection(PreImages(rel,b),PreImages(rel,a));
       # new relation on the intersection induced by the original relation
       nrel := PartialOrderByOrderingFunction(
                       Domain(intersection),

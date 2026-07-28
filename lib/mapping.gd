@@ -1127,52 +1127,51 @@ DeclareGlobalFunction( "PreImage" );
 #############################################################################
 ##
 #F  PreImages( <map> )  . . . set of preimages of the range of a gen. mapping
-#F  PreImagesNC( <map> )  . . set of preimages of the range of a gen. mapping
 #F  PreImages(<map>,<elm>)  . set of preimages of an elm under a gen. mapping
-#F  PreImagesNC(<map>,<elm>)  set of preimages of an elm under a gen. mapping
-#F  PreImages(<map>,<coll>)   set of preimages of a coll. under a gen. mapping
-#F  PreImagesNC(<map>,<coll>) set of preimages of a coll. under a gen. mapping
+#F  PreImages(<map>,<coll>)  set of preimages of a coll. under a gen. mapping
 ##
 ##  <#GAPDoc Label="PreImages">
 ##  <ManSection>
 ##  <Heading>PreImages</Heading>
 ##  <Func Name="PreImages" Arg='map'
 ##   Label="set of preimages of the range of a general mapping"/>
-##  <Func Name="PreImagesNC" Arg='map'
-##   Label="set of preimages of the range of a general mapping"/>
 ##  <Func Name="PreImages" Arg='map, elm'
-##   Label="set of preimages of an elm under a general mapping"/>
-##  <Func Name="PreImagesNC" Arg='map, elm'
 ##   Label="set of preimages of an elm under a general mapping"/>
 ##  <Func Name="PreImages" Arg='map, coll'
 ##   Label="set of preimages of a collection under a general mapping"/>
-##  <Func Name="PreImagesNC" Arg='map, coll'
-##   Label="set of preimages of a collection under a general mapping"/>
 ##
 ##  <Description>
-##  <C>PreImages</C> is a global function with three delegations.
-##  It delegates to <Ref Attr="PreImagesRange"/> when called with one argument,
+##  <C>PreImages( <A>map</A> )</C> is the preimage of the general mapping
+##  <A>map</A>, i.e., the subset of elements of the source of <A>map</A>
+##  that have actually values under <A>map</A>.
+##  <P/>
+##  <C>PreImages( <A>map</A>, <A>elm</A> )</C> is the set of preimages of the
+##  element <A>elm</A> of the range of the general mapping <A>map</A> under
+##  <A>map</A>, i.e., the set of elements of the source which <A>map</A> maps
+##  to <A>elm</A>.
+##  <P/>
+##  <C>PreImages( <A>map</A>, <A>coll</A> )</C> is the set of images of the
+##  subset <A>coll</A> of the range of the general mapping <A>map</A> under
+##  <A>map</A>, i.e., the subset of the source which <A>map</A> maps to
+##  elements of <A>coll</A>.
+##  <A>coll</A> may be a proper set or a domain.
+##  The result will be either a proper set or a domain.
+##  (If <A>coll</A> and the result are lists then the positions of
+##  entries do in general <E>not</E> correspond.)
+##  <P/>
+##  <Ref Func="PreImages" Label="set of preimages of the range of a general mapping"/>
+##  delegates to <Ref Attr="PreImagesRange"/> when
+##  called with one argument,
 ##  and to <Ref Oper="PreImagesElm"/> resp. <Ref Oper="PreImagesSet"/> when
 ##  called with two arguments.
 ##  <P/>
-##  From &GAP; version 4.16.1 <C>PreImages</C>
-##  has been renamed <C>PreImagesNC</C> throughout the library,
-##  and the new <C>PreImages</C> checks that <A>elm</A> or <A>coll</A>
-##  belong to the image before calling <C>PreImagesNC</C>.
-##  If <A>elm</A> or <A>coll</A> are contained in the range but not in the
-##  image then <A>fail</A> is returned.
-##  If <A>elm</A> or <A>coll</A> are not contained in the range
-##  then an error is signalled.
-##  <P/>
-##  When using <C>PreImagesNC</C> anything may happen if <A>elm</A>
-##  or <A>coll</A> do not belong to the image of <A>map</A>.
-##  <P/>
+##  If the second argument is not an element or a subset of the range of
+##  the first argument, an error is signalled.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "PreImages" );
-DeclareGlobalFunction( "PreImagesNC" );
 
 
 #############################################################################

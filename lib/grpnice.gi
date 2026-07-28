@@ -801,7 +801,7 @@ local mon,cl,clg,c,i;
    for i in cl do
      c:=RationalClass(g,PreImagesRepresentativeNC(mon,Representative(i)));
      if HasStabilizerOfExternalSet(i) then
-       SetStabilizerOfExternalSet(c,PreImagesNC(mon,StabilizerOfExternalSet(i)));
+       SetStabilizerOfExternalSet(c,PreImages(mon,StabilizerOfExternalSet(i)));
      fi;
      if HasGaloisGroup(i) then
        SetGaloisGroup(c,GaloisGroup(i));

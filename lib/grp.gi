@@ -2418,7 +2418,7 @@ InstallMethod( UpperCentralSeriesOfGroup,
         Add( S, C );
         Info( InfoGroup, 2, "UpperCentralSeriesOfGroup: step ", Length(S) );
         hom := NaturalHomomorphismByNormalSubgroupNC( G, C );
-        C := PreImagesNC( hom, Centre( Image( hom ) ) );
+        C := PreImages( hom, Centre( Image( hom ) ) );
     od;
 
     if Last(S) = G then
