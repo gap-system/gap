@@ -347,7 +347,7 @@ local mon,cl,clg,c,i;
     c:=ConjugacyClass(g,PreImagesRepresentativeNC(mon,Representative(i)));
     c!.niceClass:=i;
     if HasStabilizerOfExternalSet(i) then
-      SetStabilizerOfExternalSet(c,PreImagesNC(mon,StabilizerOfExternalSet(i)));
+      SetStabilizerOfExternalSet(c,PreImages(mon,StabilizerOfExternalSet(i)));
     fi;
     Add(clg,c);
   od;
