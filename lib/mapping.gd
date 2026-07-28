@@ -1013,7 +1013,8 @@ DeclareOperation( "PreImagesElmNC", [ IsGeneralMapping, IsObject ] );
 ##  <Ref Oper="PreImageElm"/> returns the unique preimage of <A>elm</A> under
 ##  <A>map</A>.
 ##  <P/>
-##  Anything may happen if <A>elm</A> is not an element of the image of
+##  If <A>elm</A> is not an element of the image of <A>map</A>
+##  then an error message is returned.
 ##  <A>map</A>.
 ##  </Description>
 ##  </ManSection>

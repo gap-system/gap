@@ -1069,7 +1069,7 @@ InstallMethod( PreImageElm,
     "for inj. & surj. general mapping, and element",
     FamRangeEqFamElm,
     [ IsGeneralMapping and IsInjective and IsSurjective, IsObject ], 0,
-    PreImagesRepresentativeNC  );
+    PreImagesRepresentative  );
 
 
 #############################################################################

@@ -1911,8 +1911,12 @@ InstallMethod( PreImageElm,
     [ IsFieldHomomorphism and IsBijective and IsANFAutomorphismRep,
       IsScalar ],
     function ( aut, elm )
-    return GaloisCyc( elm, ( 1 / aut!.galois )
-                           mod Conductor( Range( aut ) ) );
+    if not ( elm in Image( aut ) ) then
+      Error( "<elm> is not in the image of <aut>" );
+    else
+      return GaloisCyc( elm, ( 1 / aut!.galois )
+                             mod Conductor( Range( aut ) ) );
+    fi;
     end );
 
 

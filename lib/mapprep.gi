@@ -707,7 +707,11 @@ InstallMethod( PreImageElm,
     FamRangeEqFamElm,
     [ IsMappingByFunctionWithInverseRep, IsObject ], 0,
     function ( map, elm )
-    return map!.invFun( elm );
+    if not ( elm in Image( map ) ) then
+      Error( "<elm> is not in the image of <map>" );
+    else
+      return map!.invFun( elm );
+    fi;
     end );
 
 
@@ -1130,7 +1134,11 @@ InstallMethod( PreImageElm,
     [ IsGeneralMapping and IsInverseGeneralMappingRep
                        and IsInjective and IsSurjective, IsObject ], 0,
     function ( inv, elm )
-    return ImageElm( InverseGeneralMapping( inv ), elm );
+    if not ( elm in Image( inv ) ) then
+      Error( "<elm> is not in the image of <inv>" );
+    else
+      return ImageElm( InverseGeneralMapping( inv ), elm );
+    fi;
     end );
 
 
@@ -1409,7 +1417,11 @@ InstallMethod( PreImageElm,
     [ IsGeneralMapping and IsOne, IsObject ],
     SUM_FLAGS, # can't do better
   function ( id, elm )
-    return elm;
+    if not ( elm in Image( id ) ) then
+      Error( "<elm> is not in the image of <id>" );
+    else
+      return elm;
+    fi;
   end );
 
 
