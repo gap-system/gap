@@ -17,6 +17,12 @@ gap> List( res2[2], r -> [ r.field, r.dimension ] );
 [ [ GF(2), 1 ] ]
 
 # Test that the delegation between methods for 'IrreducibleModules' works.
+gap> G1:= TrivialGroup();;
+gap> res1:= IrreducibleModules( G1, GF(2), 1 );;
+gap> res1[1] = Pcgs( G1 );
+true
+gap> Length( res1[2] ) = 1;
+true
 gap> Length( IrreducibleModules( AlternatingGroup(5), GF(3), 1 )[2] ) = 1;
 true
 gap> Length( IrreducibleModules( Group( (1,2), (1,2) ), GF(3), 1 )[2] ) = 2;
