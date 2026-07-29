@@ -1038,7 +1038,7 @@ DeclareOperation( "PreImageElm",
 ##  <A>map</A> then <Ref Oper="PreImagesRepresentative"/> returns a
 ##  representative of the set of preimages of <A>elm</A> under <A>map</A>.
 ##  <P/>
-##  From &GAP; version 4.16.1 ther operation <C>PreImagesRepresentative</C>
+##  From &GAP; version 4.16.1 the operation <C>PreImagesRepresentative</C>
 ##  was renamed <C>PreImagesRepresentativeNC</C> throughout the library,
 ##  and the new <C>PreImagesRepresentative</C> checks that <A>elm</A> is an
 ##  element of the image before calling <C>PreImagesRepresentativeNC</C>.
