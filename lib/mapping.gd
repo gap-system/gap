@@ -751,8 +751,8 @@ DeclareAttribute( "ImagesSource", IsGeneralMapping );
 ##  <Description>
 ##  is the set of preimages of the range of the general mapping <A>map</A>.
 ##  <P/>
-##  <Ref Attr="PreImagesRange"/> delegates to <Ref Oper="PreImagesSetNC"/>,
-##  it is introduced only to store the preimage of <A>map</A> as attribute
+##  <Ref Attr="PreImagesRange"/> delegates to <Ref Oper="PreImagesSetNC"/>.
+##  It is introduced only to store the preimage of <A>map</A> as an attribute
 ##  value.
 ##  </Description>
 ##  </ManSection>
@@ -1015,7 +1015,6 @@ DeclareOperation( "PreImagesElmNC", [ IsGeneralMapping, IsObject ] );
 ##  <P/>
 ##  If <A>elm</A> is not an element of the image of <A>map</A>
 ##  then an error message is returned.
-##  <A>map</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1112,9 +1111,10 @@ DeclareOperation( "PreImagesSetNC", [ IsGeneralMapping, IsListOrCollection ] );
 ##  <Description>
 ##  <C>PreImage</C> is a global function with three delegations.
 ##  It delegates to <Ref Attr="PreImagesRange"/> when
-##  called with one argument,
-##  and to <Ref Oper="PreImageElm"/> resp. <Ref Oper="PreImagesSet"/> when
-##  called with two arguments.
+##  called with one argument.
+##  In the second form it delegates to <Ref Oper="PreImageElm"/>,
+##  so that <A>map</A> should be injective and surjective.
+##  In the third form it delegates to <Ref Oper="PreImagesSet"/>.
 ##  <P/>
 ##  If the second argument is not an element or a subset of the image of
 ##  the first argument, an error is signalled.
@@ -1142,29 +1142,11 @@ DeclareGlobalFunction( "PreImage" );
 ##   Label="set of preimages of a collection under a general mapping"/>
 ##
 ##  <Description>
-##  <C>PreImages( <A>map</A> )</C> is the preimage of the general mapping
-##  <A>map</A>, i.e., the subset of elements of the source of <A>map</A>
-##  that have actually values under <A>map</A>.
-##  <P/>
-##  <C>PreImages( <A>map</A>, <A>elm</A> )</C> is the set of preimages of the
-##  element <A>elm</A> of the range of the general mapping <A>map</A> under
-##  <A>map</A>, i.e., the set of elements of the source which <A>map</A> maps
-##  to <A>elm</A>.
-##  <P/>
-##  <C>PreImages( <A>map</A>, <A>coll</A> )</C> is the set of images of the
-##  subset <A>coll</A> of the range of the general mapping <A>map</A> under
-##  <A>map</A>, i.e., the subset of the source which <A>map</A> maps to
-##  elements of <A>coll</A>.
-##  <A>coll</A> may be a proper set or a domain.
-##  The result will be either a proper set or a domain.
-##  (If <A>coll</A> and the result are lists then the positions of
-##  entries do in general <E>not</E> correspond.)
-##  <P/>
-##  <Ref Func="PreImages" Label="set of preimages of the range of a general mapping"/>
-##  delegates to <Ref Attr="PreImagesRange"/> when
-##  called with one argument,
-##  and to <Ref Oper="PreImagesElm"/> resp. <Ref Oper="PreImagesSet"/> when
-##  called with two arguments.
+##  <C>PreImages</C> is a global function with three delegations.
+##  It delegates to <Ref Attr="PreImagesRange"/> when
+##  called with one argument.
+##  In the second form it delegates to <Ref Oper="PreImagesElm"/>,
+##  and in the third form it delegates to <Ref Oper="PreImagesSet"/>.
 ##  <P/>
 ##  If the second argument is not an element or a subset of the range of
 ##  the first argument, an error is signalled.

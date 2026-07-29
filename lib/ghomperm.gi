@@ -84,8 +84,8 @@ InstallMethod( PreImagesSet,
     CollFamRangeEqFamElms,
     [ IsPermGroupHomomorphism, IsGroup ],
 function( map, elms )
-    if not IsSubset( Range( map ), elms ) then
-        Error( "<elms> is not a subset of the range of <map>" );
+    if not IsSubgroup( Range( map ), elms ) then
+        Error( "<elms> is not a subgroup of the range of <map>" );
     fi;
     return PreImagesSetNC( map, Intersection( elms, Image( map ) ) );
 end );
