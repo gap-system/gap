@@ -37,8 +37,7 @@ git push origin v${VER}
 7. Next either manually dispatch the “[Sync](https://github.com/gap-system/GapWWW/actions/workflows/sync.yml)” GitHub Actions workflow on `gap-system/GapWWW`, or wait overnight for it to happen on schedule.
     - This workflow creates a pull request to `gap-system/GapWWW`, which updates the GAP website according to the release data hosted on `gap-system/gap`.  Check that the result is sensible.
 8. When it is time to publicise the new GAP release, merge the pull request to GapWWW.
-9. There are currently additional steps required for the new manual to appear on <https://docs.gap-system.org>, and to add a copy of the new release files to <https://files.gap-system.org>.
-These could and should be automated in the future but are currently not. Details are described in steps 10 and following below.
+9. Nothing further is needed for the new manual to appear on <https://docs.gap-system.org>, or for the release files to appear on <https://files.gap-system.org>: both hosts mirror new releases by themselves, usually within an hour of step 6 above. See step 10 of the detailed guide below for how to check on them, or to trigger them early.
 
 
 ## The release process for GAP -- the more detailed guide
@@ -92,22 +91,35 @@ Before starting the release process, the scripts have the following dependencies
    - Fetches the GitHub releases data from `gap-system/gap`.
    - Deletes, modifies, and adds various JSON and HTML files according to this data.
 9. Inspect the changes, and commit and push them to the master branch to `gap-system/GapWWW`.
-10. Log into `docs.gap-system.org` via SSH, then download and extract the new release tarball into the home directory. Then run the `extract_manuals.py` script, and move the result to the appropriate location.
-```
-ssh gap-docs                        # assumes gap-docs is set up in ~/.ssh/config
+10. Nothing needs to be done for <https://docs.gap-system.org> and
+    <https://files.gap-system.org>. Both hosts check GitHub hourly and pick up
+    any release they do not have yet: the manuals are built and installed by
+    `etc/mirror-manuals.py` from `gap-system/GapWWW`, and the release archives
+    are mirrored by the scripts in <https://github.com/gap-system/gap-files>.
 
-# then on the docs host
-./download_manuals.sh X.Y.Z   # e.g. 4.14.0
+    Both only consider proper releases, so nothing happens until the release has
+    been switched from "pre-release" to "latest release" in step 6 above. Once it
+    has, allow an hour; building the manuals then takes about another ten
+    minutes.
+
+    To publish immediately rather than waiting for the next hourly run:
 ```
-11. Check that <https://docs.gap-system.org> is functioning as expected.
-12. Log into `files.gap-system.org` via SSH, then download the files in appropriate places:
-```
-# assumes gap-files is set up in ~/.ssh/config
+# both assume the host aliases are set up in ~/.ssh/config
+
+ssh gap-docs
+systemctl --user start gap-docs-manuals.service
+journalctl --user -u gap-docs-manuals.service -n 20
+
 ssh gap-files
-
-# then on the files host
-./download_release.sh X.Y.Z   # e.g. 4.14.0
+systemctl --user start gap-files-releases.service
+journalctl --user -u gap-files-releases.service -n 20
 ```
+    Should the automation be broken, the scripts that used to do this by hand,
+    `./download_manuals.sh X.Y.Z` and `./download_release.sh X.Y.Z`, are still
+    present in the home directory on the respective host.
+
+11. Check that <https://docs.gap-system.org> shows the new manuals, and that
+    <https://files.gap-system.org> has the new archives.
 
 
 ## Post-release instructions
