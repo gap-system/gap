@@ -1487,18 +1487,26 @@ InstallMethod( ElementaryAbelianSeries,
 #M  ElementaryAbelianSeries( <G> )  . .  elementary abelian series of a group
 ##
 BindGlobal( "DoEASLS", function( S )
-local   N,I,i,L;
+local   N,I,i,last,L;
 
   N:=ElementaryAbelianSeries(S);
   # remove spurious factors
   L:=[N[1]];
   I:=N[1];
   i:=2;
+  last:=1;
   repeat
     while i<Length(N) and HasElementaryAbelianFactorGroup(I,N[i+1])
       and (IsIdenticalObj(I,N[i]) or not N[i] in S) do
       i:=i+1;
     od;
+    if i=last then
+      # we did not advance, that is the factor N[i]/N[i+1] is not elementary
+      # abelian. Bail out instead of looping forever.
+      ErrorNoReturn("ElementaryAbelianSeries did not return an elementary ",
+                    "abelian series");
+    fi;
+    last:=i;
     I:=N[i];
     Add(L,I);
   until Size(I)=1;
