@@ -311,7 +311,7 @@ function( G )
     fi;
 
     Hnice := NiceMonomorphism(H);
-    H := NiceObject(H);
+    H := GroupWithGenerators( List( GeneratorsOfGroup( H ), x -> x^Hnice ) );
 
     # evaluate relators
     phi := IsomorphismFpGroupByGeneratorsNC(H, GeneratorsOfGroup( H ) : method := "fast");
