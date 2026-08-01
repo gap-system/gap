@@ -14,6 +14,7 @@
 ##  or in package files.
 ##
 
+
 #############################################################################
 ##
 #F  DeclareUserPreference( <record> )
@@ -449,20 +450,16 @@ BindGlobal( "DataOfUserPreference", function( pkgname, name )
 #F  StringUserPreference( <data>, <ignorecurrent> )
 ##
 BindGlobal( "StringUserPreference", function( data, ignorecurrent )
-    local string, width, format, paragraph, line;
+    local string, paragraph, line;
 
     if data = fail then
       return "";
     fi;
 
     string:= [];
-    width:= SizeScreen()[1] - 6;
-    format:= ValueGlobal( "FormatParagraph" );
     for paragraph in data.description do
-      Append( string, format( paragraph, width, "left", [ "##  ", "" ] ) );
-    # Append( string, "##  " );
-    # Append( string, line );
-    # Append( string, "\n" );
+      # the file is written with a fixed width of 78 characters
+      Append( string, _FormatParagraph( paragraph, 78, "##  ", "" ) );
     od;
     for line in data.values do
       if ignorecurrent then
@@ -527,15 +524,16 @@ BindGlobal( "StripMarkupFromUserPreferenceDescription", function( str )
 #F  ShowStringUserPreference( <data> )
 ##
 BindGlobal( "ShowStringUserPreference", function( data )
-    local string, width, format, line, paragraph, suff;
+    local string, width, line, paragraph, suff;
 
     if data = fail then
       return "";
     fi;
 
+    width:= SizeScreen()[1] - 2;
+
     # Show the name(s), with indent 2.
     string:= [];
-    width:= SizeScreen()[1] - 6;
     Append( string, "  " );
     for line in data.values do
       Append( string, line[2] );
@@ -545,10 +543,9 @@ BindGlobal( "ShowStringUserPreference", function( data )
     string[ Length( string ) ]:= '\n';
 
     # Show the formatted description, with indent 4.
-    format:= ValueGlobal( "FormatParagraph" );
     for paragraph in List( data.description,
                            StripMarkupFromUserPreferenceDescription ) do
-      Append( string, format( paragraph, width, "left", [ "    ", "" ] ) );
+      Append( string, _FormatParagraph( paragraph, width, "    ", "" ) );
     od;
 
     # Show the default value(s), with indent 6.
@@ -720,7 +717,7 @@ BindGlobal( "ShowUserPreferences", function(arg)
 ##  GAP Reference Manual.
 ##
 BindGlobal( "XMLForUserPreferences", function( pkgname )
-    local stringOfValue, pref, str, done, format, width, name, data, names,
+    local stringOfValue, pref, str, done, name, data, names,
           default;
 
     stringOfValue:= function( val )
@@ -738,8 +735,6 @@ BindGlobal( "XMLForUserPreferences", function( pkgname )
     str:= "";
     done:= [];
     if IsRecord( pref.( pkgname ) ) then
-      format:= ValueGlobal( "FormatParagraph" );
-      width:= ValueGlobal( "WidthUTF8String" );
       for name in Set( RecNames( pref.( pkgname ) ) ) do
         if not name in done then
           data:= First( GAPInfo.DeclarationsOfUserPreferences,
@@ -772,7 +767,7 @@ BindGlobal( "XMLForUserPreferences", function( pkgname )
             # Show the description, which may contain GAPDoc markup.
             Append( str, JoinStringsWithSeparator(
                            List( data.description,
-                                 para -> format( para, "left", width ) ),
+                                 para -> _FormatParagraph( para, 78, "", "" ) ),
                            "<P/>\n" ) );
 
             # Show admissible values if applicable.

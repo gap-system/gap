@@ -960,7 +960,7 @@ GAPInfo.CommandLineEditFunctions.Functions.Completion := function(l)
   wordplace := [pos+1, l[4]-1];
   word := l[3]{[wordplace[1]..wordplace[2]]};
   # see if we are in the case of a component name
-  while pos > 0 and l[3][pos] in " \n\t\r" do
+  while pos > 0 and l[3][pos] in CHARS_WHITESPACE do
     pos := pos-1;
   od;
   idbnd := IDENTS_BOUND_GVARS();

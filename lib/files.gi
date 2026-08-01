@@ -240,7 +240,7 @@ leave the <C>Editor</C> and <C>EditorOptions</C> preferences empty."
     local str, sp;
     if IsBound(GAPInfo.KernelInfo.ENVIRONMENT.EDITOR) then
       str := GAPInfo.KernelInfo.ENVIRONMENT.EDITOR;
-      sp := SplitStringInternal(str, "", " \n\t\r");
+      sp := SplitStringInternal(str, "", CHARS_WHITESPACE);
       if Length(sp) > 0 then
         return [ sp[1], sp{[2..Length(sp)]} ];
       fi;
