@@ -738,6 +738,8 @@ void SortHandlers( UInt byWhat )
   HandlerSortingStatus = byWhat;
 }
 
+#endif
+
 static const Char * CookieOfHandler(ObjFunc hdlr)
 {
     UInt                i, top, bottom, middle;
@@ -764,6 +766,8 @@ static const Char * CookieOfHandler(ObjFunc hdlr)
         return (Char *)0;
     }
 }
+
+#ifdef USE_GASMAN
 
 static ObjFunc HandlerOfCookie(const Char * cookie)
 {
@@ -795,6 +799,8 @@ static ObjFunc HandlerOfCookie(const Char * cookie)
       return (ObjFunc)0;
     }
 }
+
+#endif
 
 static ObjFunc SourceHandlerOfFunction(Obj func)
 {
@@ -1040,8 +1046,6 @@ static UInt FindKernelFunctionStartLine(Obj func)
     SET_STARTLINE_BODY(BODY_FUNC(func), line);
     return line;
 }
-
-#endif
 
 
 /****************************************************************************
