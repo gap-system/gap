@@ -987,7 +987,8 @@ local field,fp,fpg,gens,hom,mats,fm,mon,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
   #eqs:=Filtered(TriangulizedMat(eqs),x->not IsZero(x));
   eqs:=ShallowCopy(BasisVectors(eqs));
   if Length(eqs)=0 then
-    eqs:=IdentityMat(Length(rules),field);
+    # no conditions, so the whole space of tail vectors consists of cocycles
+    eqs:=IdentityMat(nvars,field);
   else
     eqs:=ImmutableMatrix(field,eqs);
     eqs:=NullspaceMat(TransposedMat(eqs)); # basis of cocycles
