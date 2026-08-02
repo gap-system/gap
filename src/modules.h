@@ -494,6 +494,18 @@ void InitHdlrFuncsFromTable(const StructGVarFunc * tab);
 
 /****************************************************************************
 **
+*F  ShortFilenameFromCookie( <cookie>, <len> ) . shorten a source file name
+**
+**  Given a handler <cookie> of the form "PATH/TO/FILE.c:FUNCNAME", return a
+**  pointer to the start of the last two '/'-separated components of the path
+**  before the colon, e.g. "src/calls.c", and store its length in <len>.
+**  The <cookie> must contain a colon.
+*/
+const Char * ShortFilenameFromCookie(const Char * cookie, UInt * len);
+
+
+/****************************************************************************
+**
 *F  ImportGVarFromLibrary( <name>, <address> )  . . .  import global variable
 */
 void ImportGVarFromLibrary(const Char * name, Obj * address);

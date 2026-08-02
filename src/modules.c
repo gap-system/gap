@@ -608,33 +608,35 @@ void InitGVarOpersFromTable(const StructGVarOper * tab)
     }
 }
 
+const Char * ShortFilenameFromCookie(const Char * cookie, UInt * len)
+{
+    const Char * pos = strchr(cookie, ':');
+    GAP_ASSERT(pos != 0);
+
+    // walk back over the last two '/'-separated components
+    const Char * start = pos;
+    while (start > cookie && *(start - 1) != '/')
+        start--;
+    if (start > cookie) {
+        start--;
+        while (start > cookie && *(start - 1) != '/')
+            start--;
+    }
+
+    *len = pos - start;
+    return start;
+}
+
 static void SetupFuncInfo(Obj func, const Char * cookie)
 {
     // The string <cookie> usually has the form "PATH/TO/FILE.c:FUNCNAME".
     // We check if that is the case, and if so, extract the file path before
     // the colon. In addition, the file path is cut to only contain the last
     // two '/'-separated components.
-    const Char * pos = strchr(cookie, ':');
-    if (pos) {
-        Obj          filename;
-        const Char * start = pos;
-
-        while (start > cookie && *(start - 1) != '/')
-            start--;
-        if (start > cookie) {
-            start--;
-            while (start > cookie && *(start - 1) != '/')
-                start--;
-        }
-
-        if (cookie[0] == '/') {
-            filename = MakeImmStringWithLen(start, pos - start);
-        }
-        else {
-            filename = MakeString("GAPROOT/");
-            AppendCStr(filename, start, pos - start);
-            MakeImmutableNoRecurse(filename);
-        }
+    if (strchr(cookie, ':')) {
+        UInt         len;
+        const Char * start = ShortFilenameFromCookie(cookie, &len);
+        Obj          filename = MakeImmStringWithLen(start, len);
 
         Obj body_bag = NewFunctionBody();
         SET_FILENAME_BODY(body_bag, filename);

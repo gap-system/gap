@@ -813,72 +813,96 @@ static ObjFunc SourceHandlerOfFunction(Obj func)
     return HDLR_FUNC(func, (0 <= narg && narg <= 6) ? narg : 7);
 }
 
-static const Char * CookieOfFunc(Obj func)
+// Returns the part of a handler <cookie> following the colon, i.e. the name of
+// the C function implementing the corresponding GAP function.
+static const Char * CFuncNameOfCookie(const Char * cookie)
 {
-    return CookieOfHandler(SourceHandlerOfFunction(func));
+    return strchr(cookie, ':') + 1;
 }
 
-
-static const Char * CookieSuffix(const Char * cookie)
+// Returns whether <str> is a plain C identifier. We use this to tell apart
+// cookies set up for kernel functions, which end in the name of the C
+// function implementing them, from those the GAP compiler `gac` produces,
+// which end in something like "HdlrFunc1(3f52e1a0)".
+static BOOL IsCIdentifier(const Char * str)
 {
-    if (!cookie)
-        return NULL;
-    const Char * pos = strchr(cookie, ':');
-    return pos ? pos + 1 : NULL;
-}
-
-static BOOL IsStandardKernelCookieSuffix(const char * suffix)
-{
-    if (!suffix || !*suffix)
+    if (!str || !(isalpha((unsigned char)*str) || *str == '_'))
         return FALSE;
-
-    while (*suffix) {
-        if (!isalnum((unsigned char)*suffix) && *suffix != '_')
+    for (str++; *str; str++) {
+        if (!isalnum((unsigned char)*str) && *str != '_')
             return FALSE;
-        suffix++;
     }
     return TRUE;
 }
 
-static BOOL ResolveKernelCookiePath(const Char * cookie,
-                                    Char *       path,
-                                    size_t       size)
+// Returns the handler cookie of <func> if it describes the C function
+// implementing this kernel function, i.e. if it has the form
+// "PATH/TO/FILE.c:FUNCNAME"; returns 0 otherwise.
+//
+// We also verify that the function body is still exactly what `SetupFuncInfo`
+// created for this cookie. That excludes code compiled by `gac`, which stores
+// the GAP source it was generated from, as well as function bodies made up by
+// kernel extensions such as those of GAP.jl and Semigroups, which put their
+// own description into the filename.
+static const Char * CookieOfKernelFunc(Obj func)
 {
-    // Handler cookies store the original source path; keep relative paths
-    // working by resolving them against the GAP root search path.
-    const Char * pos = strchr(cookie, ':');
-    if (!pos)
-        return FALSE;
+    Obj body = BODY_FUNC(func);
+    if (!body)
+        return 0;
 
-    size_t len = pos - cookie;
-    if (len == 0 || len >= size)
-        return FALSE;
+    const Char * cookie = CookieOfHandler(SourceHandlerOfFunction(func));
+    if (!cookie || !strchr(cookie, ':') ||
+        !IsCIdentifier(CFuncNameOfCookie(cookie)))
+        return 0;
 
-    memcpy(path, cookie, len);
-    path[len] = 0;
+    UInt         len;
+    const Char * shortname = ShortFilenameFromCookie(cookie, &len);
+    Obj          filename = GET_FILENAME_BODY(body);
+    if (!filename || GET_LEN_STRING(filename) != len ||
+        memcmp(CONST_CSTR_STRING(filename), shortname, len) != 0)
+        return 0;
 
-    if (SyIsReadableFile(path) == 0)
-        return TRUE;
-
-    if (len > 8 && strncmp(path, "GAPROOT/", 8) == 0) {
-        Char resolved[GAP_PATH_MAX];
-        if (SyFindGapRootFile(path + 8, resolved, sizeof(resolved))) {
-            if (gap_strlcpy(path, resolved, size) < size)
-                return TRUE;
-        }
-        return FALSE;
-    }
-
-    Char resolved[GAP_PATH_MAX];
-    if (SyFindGapRootFile(path, resolved, sizeof(resolved))) {
-        if (gap_strlcpy(path, resolved, size) < size)
-            return TRUE;
-    }
-
-    return FALSE;
+    return cookie;
 }
 
-static const char * SkipCTrivia(const char * p, UInt * line)
+// Determine the path of the source file recorded in a handler <cookie> of the
+// form "PATH/TO/FILE.c:FUNCNAME", and store it in <path>. Returns whether a
+// readable file was found.
+static BOOL ResolveCookiePath(const Char * cookie, Char * path, UInt size)
+{
+    UInt len = strchr(cookie, ':') - cookie;
+
+    // An absolute path (as recorded by out-of-tree builds) can be used as is.
+    if (cookie[0] == '/') {
+        if (len >= size)
+            return FALSE;
+        memcpy(path, cookie, len);
+        path[len] = 0;
+        return SyIsReadableFile(path) == 0;
+    }
+
+    // Otherwise look for the shortened file name, e.g. "src/calls.c", in the
+    // GAP root directories.
+    UInt         shortlen;
+    const Char * shortname = ShortFilenameFromCookie(cookie, &shortlen);
+    Char         buf[GAP_PATH_MAX];
+    if (shortlen >= sizeof(buf))
+        return FALSE;
+    memcpy(buf, shortname, shortlen);
+    buf[shortlen] = 0;
+    if (SyFindGapRootFile(buf, path, size))
+        return TRUE;
+
+    // As a last resort, try the path as recorded, relative to the current
+    // working directory.
+    if (len >= size)
+        return FALSE;
+    memcpy(path, cookie, len);
+    path[len] = 0;
+    return SyIsReadableFile(path) == 0;
+}
+
+static const Char * SkipCTrivia(const Char * p, UInt * line)
 {
     while (*p) {
         if (*p == ' ' || *p == '\t' || *p == '\r' || *p == '\f' ||
@@ -915,7 +939,7 @@ static const char * SkipCTrivia(const char * p, UInt * line)
     return p;
 }
 
-static const char * SkipCStringLiteral(const char * p, UInt * line, char quote)
+static const Char * SkipCStringLiteral(const Char * p, UInt * line, Char quote)
 {
     GAP_ASSERT(*p == quote);
     p++;
@@ -933,9 +957,9 @@ static const char * SkipCStringLiteral(const char * p, UInt * line, char quote)
     return p;
 }
 
-static BOOL ParseBalancedParens(const char ** pp, UInt * line)
+static BOOL ParseBalancedParens(const Char ** pp, UInt * line)
 {
-    const char * p = *pp;
+    const Char * p = *pp;
     int          depth = 0;
 
     GAP_ASSERT(*p == '(');
@@ -963,24 +987,23 @@ static BOOL ParseBalancedParens(const char ** pp, UInt * line)
     return FALSE;
 }
 
-// Locate a real C function definition by looking for the identifier token,
-// parsing the following parameter list, and requiring a '{' before any ';'.
-// This skips prototypes, call sites, and matches inside comments or strings.
-static BOOL FindKernelDefinitionLine(const char * path,
-                                     Obj          symbol,
-                                     UInt *       line_out)
+// Scan the C source <code> for the definition of the function <symbol> and
+// store the line it starts on in <line_out>. Returns whether it was found.
+//
+// This deliberately is not a C parser: it only tokenizes far enough to tell a
+// definition apart from the other places a function name can show up. It skips
+// comments and string literals, and only accepts an occurrence of <symbol> as
+// a complete token which is followed by a balanced parameter list and then an
+// opening brace. That rules out prototypes, call sites, and mentions in the
+// `*F  FuncFOO( ... )` comment blocks preceding many kernel functions. It does
+// not resolve the preprocessor, so functions defined by a macro -- such as the
+// `MAKEMATHPRIMITIVE` ones in `macfloat.c` -- are simply not found.
+static BOOL FindCFunctionDefinition(const Char * code,
+                                    const Char * symbol,
+                                    UInt *       line_out)
 {
-    BOOL found = FALSE;
-    Int  fid = SyFopen(path, "r", TRUE);
-    if (fid == -1)
-        return FALSE;
-
-    Obj string = SyReadStringFid(fid);
-    if (SyFclose(fid) == -1 || !string)
-        return FALSE;
-
-    const size_t symbol_len = GET_LEN_STRING(symbol);
-    const char * p = CONST_CSTR_STRING(string);
+    const UInt   symbol_len = strlen(symbol);
+    const Char * p = code;
     UInt         line = 1;
 
     while (*p) {
@@ -993,54 +1016,69 @@ static BOOL FindKernelDefinitionLine(const char * path,
             continue;
         }
 
-        if (isalpha((unsigned char)*p) || *p == '_') {
-            const char * token = p;
-            UInt         token_line = line;
-            while (isalnum((unsigned char)*p) || *p == '_')
-                p++;
-
-            if ((size_t)(p - token) == symbol_len &&
-                strncmp(token, CONST_CSTR_STRING(symbol), symbol_len) == 0) {
-                UInt         parse_line = line;
-                const char * after = SkipCTrivia(p, &parse_line);
-                if (*after == '(' && ParseBalancedParens(&after, &parse_line)) {
-                    after = SkipCTrivia(after, &parse_line);
-                    if (*after == '{') {
-                        *line_out = token_line;
-                        found = TRUE;
-                        break;
-                    }
-                }
-            }
+        if (!(isalpha((unsigned char)*p) || *p == '_')) {
+            p++;
             continue;
         }
 
-        p++;
+        const Char * token = p;
+        UInt         token_line = line;
+        while (isalnum((unsigned char)*p) || *p == '_')
+            p++;
+
+        if ((UInt)(p - token) != symbol_len ||
+            strncmp(token, symbol, symbol_len) != 0)
+            continue;
+
+        UInt         parse_line = line;
+        const Char * after = SkipCTrivia(p, &parse_line);
+        if (*after != '(' || !ParseBalancedParens(&after, &parse_line))
+            continue;
+        if (*SkipCTrivia(after, &parse_line) != '{')
+            continue;
+
+        *line_out = token_line;
+        return TRUE;
     }
 
-    return found;
+    return FALSE;
 }
 
-static UInt FindKernelFunctionStartLine(Obj func)
+// Determine the line at which the C function implementing the kernel function
+// <func> is defined; returns 0 if it cannot be determined. The result is
+// cached in the function body, so each source file is scanned at most once
+// per function.
+static UInt KernelStartlineOfFunc(Obj func)
 {
-    UInt line = 0;
-    if (!BODY_FUNC(func))
+    Obj body = BODY_FUNC(func);
+    if (!body)
         return 0;
-    line = GET_STARTLINE_BODY(BODY_FUNC(func));
+
+    // Already known? This is the case for code compiled with `gac`, which
+    // records the line of the GAP source it was generated from, and for
+    // kernel functions we resolved before.
+    UInt line = GET_STARTLINE_BODY(body);
     if (line)
         return line;
 
-    const Char * cookie = CookieOfFunc(func);
-    const Char * suffix = CookieSuffix(cookie);
-    if (!IsStandardKernelCookieSuffix(suffix))
+    const Char * cookie = CookieOfKernelFunc(func);
+    if (!cookie)
         return 0;
 
     Char path[GAP_PATH_MAX];
-    if (!ResolveKernelCookiePath(cookie, path, sizeof(path)))
+    if (!ResolveCookiePath(cookie, path, sizeof(path)))
         return 0;
 
-    Obj symbol = MakeImmString(suffix);
-    if (!FindKernelDefinitionLine(path, symbol, &line))
+    Int fid = SyFopen(path, "r", TRUE);
+    if (fid == -1)
+        return 0;
+    Obj code = SyReadStringFid(fid);
+    SyFclose(fid);
+    if (!code)
+        return 0;
+
+    if (!FindCFunctionDefinition(CONST_CSTR_STRING(code),
+                                 CFuncNameOfCookie(cookie), &line))
         return 0;
 
     SET_STARTLINE_BODY(BODY_FUNC(func), line);
@@ -1333,18 +1371,24 @@ void PrintKernelFunction(Obj func)
     Obj body = BODY_FUNC(func);
     Obj filename = body ? GET_FILENAME_BODY(body) : 0;
     if (filename) {
-        UInt startline = FindKernelFunctionStartLine(func);
-        if (startline) {
-            const Char * cookie = CookieOfFunc(func);
-            if (IsStandardKernelCookieSuffix(CookieSuffix(cookie)))
-                Pr("<<kernel code>> from %g:%d", (Int)filename, startline);
-            else
-                Pr("<<compiled GAP code>> from %g:%d", (Int)filename,
-                   startline);
-        }
-        else {
-            Pr("<<kernel or compiled code>> from %g", (Int)filename, 0);
-        }
+        // When compiling GAP code into C code, the GAP compiler ("gac")
+        // attaches the filename and line number of the GAP code from which
+        // the C code was produced; that is the `!cookie` case below. For
+        // actual kernel functions we instead look up the line at which the C
+        // function implementing them is defined; if that fails -- e.g.
+        // because the function is generated by a macro -- we fall back to
+        // naming that C function.
+        UInt         startline = KernelStartlineOfFunc(func);
+        const Char * cookie = CookieOfKernelFunc(func);
+        if (startline && !cookie)
+            Pr("<<compiled GAP code>> from %g:%d", (Int)filename, startline);
+        else if (startline)
+            Pr("<<kernel code>> from %g:%d", (Int)filename, startline);
+        else if (cookie)
+            Pr("<<kernel code>> from %g:%s", (Int)filename,
+               (Int)CFuncNameOfCookie(cookie));
+        else
+            Pr("<<kernel code>> from %g", (Int)filename, 0);
     }
     else {
         // Some kernel code produces custom kernel functions (via direct calls
@@ -1707,7 +1751,7 @@ static Obj FuncFILENAME_FUNC(Obj self, Obj func)
 static Obj FuncSTARTLINE_FUNC(Obj self, Obj func)
 {
     RequireFunction(SELF_NAME, func);
-    UInt startline = FindKernelFunctionStartLine(func);
+    UInt startline = KernelStartlineOfFunc(func);
     return startline ? INTOBJ_INT(startline) : Fail;
 }
 
@@ -1721,6 +1765,16 @@ static Obj FuncENDLINE_FUNC(Obj self, Obj func)
             return INTOBJ_INT(el);
     }
     return Fail;
+}
+
+// Returns the name of the C function implementing the kernel function <func>,
+// or `fail`. This is only used as a fallback for functions whose definition we
+// cannot locate in the source, and by the test suite.
+static Obj FuncLOCATION_FUNC(Obj self, Obj func)
+{
+    RequireFunction(SELF_NAME, func);
+    const Char * cookie = CookieOfKernelFunc(func);
+    return cookie ? MakeImmString(CFuncNameOfCookie(cookie)) : Fail;
 }
 
 /****************************************************************************
@@ -1940,6 +1994,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_1ARGS(UNPROFILE_FUNC, func),
     GVAR_FUNC_1ARGS(IsKernelFunction, func),
     GVAR_FUNC_1ARGS(FILENAME_FUNC, func),
+    GVAR_FUNC_1ARGS(LOCATION_FUNC, func),
     GVAR_FUNC_1ARGS(STARTLINE_FUNC, func),
     GVAR_FUNC_1ARGS(ENDLINE_FUNC, func),
 

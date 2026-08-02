@@ -514,6 +514,13 @@ BIND_GLOBAL("PageSource", function ( fun, nr... )
           l := STARTLINE_FUNC( fun );
           if l <> fail then
               l := Maximum(l-5, 1);
+          else
+              # for kernel functions whose definition we cannot locate in the
+              # source, let the pager search for the C function implementing it
+              l := LOCATION_FUNC( fun );
+              if l <> fail then
+                  l := Concatenation("Obj ", l);
+              fi;
           fi;
         fi;
     fi;

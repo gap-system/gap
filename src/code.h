@@ -126,6 +126,14 @@ void SET_STARTLINE_BODY(Obj body, UInt val);
 UInt GET_ENDLINE_BODY(Obj body);
 void SET_ENDLINE_BODY(Obj body, UInt val);
 
+// Deprecated, only kept for backwards compatibility with kernel extensions
+// such as those in GAP.jl and Semigroups: they used this to record the name
+// of the C resp. Julia function implementing a kernel function, so that it
+// shows up when printing that function. This information is now simply
+// appended to the body's filename, which produces the same output. Must only
+// be called after `SET_FILENAME_BODY`.
+void SET_LOCATION_BODY(Obj body, Obj val);
+
 Obj GET_VALUE_FROM_CURRENT_BODY(Int ix);
 
 EXPORT_INLINE Obj VALUES_BODY(Obj body)

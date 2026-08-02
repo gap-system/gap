@@ -223,6 +223,18 @@ void SET_ENDLINE_BODY(Obj body, UInt val)
     BODY_HEADER(body)->endline = val ? INTOBJ_INT(val) : 0;
 }
 
+// location (deprecated, see code.h)
+
+void SET_LOCATION_BODY(Obj body, Obj val)
+{
+    GAP_ASSERT(IS_STRING_REP(val));
+    Obj filename = GET_FILENAME_BODY(body);
+    Obj combined = filename ? CopyToStringRep(filename) : MakeString("");
+    AppendCStr(combined, ":", 1);
+    AppendString(combined, val);
+    SET_FILENAME_BODY(body, combined);
+}
+
 Obj GET_VALUE_FROM_CURRENT_BODY(Int ix)
 {
     Obj values = ((BodyHeader *)STATE(PtrBody))->values;
