@@ -473,7 +473,7 @@ end);
 ##  </ManSection>
 ##  <#/GAPDoc>
 BIND_GLOBAL("PageSource", function ( fun, nr... )
-    local f, n, l, s, ss, locs;
+    local f, n, l, locs;
 
     if Length(nr) > 0 and IsPosInt(nr[1]) then
       n := nr[1];
