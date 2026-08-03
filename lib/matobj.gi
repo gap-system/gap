@@ -328,6 +328,69 @@ InstallOtherMethod( ZeroVector, "for an integer and a plain list",
 
 #############################################################################
 ##
+#M  StandardBasisVector( <filt>, <R>, <len>, <i> )
+#M  StandardBasisVector( <R>, <len>, <i> )
+#M  StandardBasisVector( <len>, <v>, <i> )
+#M  StandardBasisVector( <len>, <M>, <i> )
+##
+InstallMethod( StandardBasisVector,
+  [ IsOperation, IsSemiring, IsPosInt, IsPosInt ],
+  function( rep, basedomain, len, i )
+    local v;
+    if len < i then
+      Error( "<i> cannot be larger than <len>" );
+    fi;
+    v:= ZeroVector( rep, basedomain, len );
+    v[i]:= One( basedomain );
+    return v;
+  end );
+
+InstallMethod( StandardBasisVector,
+  [ IsSemiring, IsPosInt, IsPosInt ],
+  function( basedomain, len, i )
+    return StandardBasisVector( DefaultVectorRepForBaseDomain( basedomain ),
+               basedomain, len, i );
+  end );
+
+InstallMethod( StandardBasisVector,
+  "for length, vector object, and position",
+  [ IsPosInt, IsVectorObj, IsPosInt ],
+  { len, v, i } -> StandardBasisVector( ConstructingFilter( v ),
+                       BaseDomain( v ), len, i ) );
+
+InstallMethod( StandardBasisVector,
+  "for length, matrix or matrix object, and position",
+  [ IsPosInt, IsMatrixOrMatrixObj, IsPosInt ],
+  { len, M, i } -> StandardBasisVector( CompatibleVectorFilter( M ),
+                       BaseDomain( M ), len, i ) );
+
+# Support plain lists.
+InstallOtherMethod( StandardBasisVector,
+  "for a positive integer, a plain list, and a positive integer",
+  [ IsPosInt, IsPlistRep, IsPosInt ], -1, # rank lower than default
+  function( len, list, i )
+    local v;
+    v:= ListWithIdenticalEntries( len, ZeroOfBaseDomain( list ) );
+    v[i]:= OneOfBaseDomain( list );
+    return v;
+  end);
+
+# Show meaningful error messages if length or position are not positive.
+InstallOtherMethod( StandardBasisVector,
+  [ IsOperation, IsSemiring, IsInt, IsInt ],
+  { rep, R, len, i } -> Error( "length and position must be positive" ) );
+
+InstallOtherMethod( StandardBasisVector,
+  [ IsSemiring, IsInt, IsInt ],
+  { R, len, i } -> Error( "length and position must be positive" ) );
+
+InstallOtherMethod( StandardBasisVector,
+  [ IsInt, IsObject, IsInt ],
+  { len, v, i } -> Error( "length and position must be positive" ) );
+
+
+#############################################################################
+##
 #M  Matrix( <filt>, <R>, <list>, <ncols> )
 #M  Matrix( <filt>, <R>, <list> )
 #M  Matrix( <filt>, <R>, <M> )
