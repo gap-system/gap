@@ -58,6 +58,7 @@ More can be added as soon as there is need for them.
 <#Include Label="NewVector">
 <#Include Label="Vector">
 <#Include Label="VectorObj_ZeroVector">
+<#Include Label="StandardBasisVector">
 <#Include Label="NewMatrix">
 <#Include Label="MatObj_Matrix">
 <#Include Label="MatObj_ZeroMatrix">

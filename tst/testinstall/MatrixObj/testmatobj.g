@@ -34,6 +34,26 @@ TestZeroMatrix := function(filt, ring, rows, cols)
   return mat;
 end;
 
+TestStandardBasisVector := function(filt, ring, len, k)
+  local i, vec, vec2;
+  vec := StandardBasisVector(filt, ring, len, k);
+  Assert(0, filt(vec) = true);
+  Assert(0, BaseDomain(vec) = ring);
+  Assert(0, Length(vec) = len);
+  for i in [1..len] do
+    if i = k then
+      if not IsOne(vec[i]) then
+        Error("entry ", i," is ", vec[i], " and not one");
+      fi;
+    elif not IsZero(vec[i]) then
+      Error("entry ", i," is ", vec[i], " and not zero");
+    fi;
+  od;
+  vec2 := StandardBasisVector(len, vec, k);
+  if vec <> vec2 then Error("StandardBasisVector(len, vec) differs"); fi;
+  return vec;
+end;
+
 TestIdentityMatrix := function(filt, ring, degree)
   local i, j, mat, mat2;
   mat := IdentityMatrix(filt, ring, degree);

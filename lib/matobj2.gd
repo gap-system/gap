@@ -603,6 +603,77 @@ DeclareOperation( "ZeroVector", [ IsInt, IsVecOrMatObj ] );
 #DeclareOperation( "ZeroVector", [ IsInt, IsMatrixOrMatrixObj ] );
 
 
+############################################################################
+##
+#O  StandardBasisVector( <filt>, <R>, <len>, <i> )
+#O  StandardBasisVector( <R>, <len>, <i> )
+#O  StandardBasisVector( <len>, <v>, <i> )
+#O  StandardBasisVector( <len>, <M>, <i> )
+##
+##  <#GAPDoc Label="StandardBasisVector">
+##  <ManSection>
+##  <Oper Name="StandardBasisVector" Arg="filt,R,len,i"
+##   Label="for filter, base domain, length, and position"/>
+##  <Oper Name="StandardBasisVector" Arg="R,len,i"
+##   Label="for base domain, length, and position"/>
+##  <Oper Name="StandardBasisVector" Arg="len,v,i"
+##   Label="for length and vector object"/>
+##  <Oper Name="StandardBasisVector" Arg="len,M,i"
+##   Label="for length and matrix object"/>
+##
+##  <Returns>a vector object</Returns>
+##  <Description>
+##  For a filter <A>filt</A>, a semiring <A>R</A>, and positive integers
+##  <A>len</A> and <A>i</A>,
+##  this operation returns a new vector object of length <A>len</A> over
+##  <A>R</A> in the representation <A>filt</A>,
+##  containing zeros at the positions different from <A>i</A>
+##  and containing the identity at position <A>i</A>.
+##  <P/>
+##  If only <A>R</A>, <A>len</A>, and <A>i</A> are given,
+##  then &GAP; guesses a suitable representation.
+##  <P/>
+##  If a vector object <A>v</A> is given,
+##  this operation returns a new standard basis vector of length <A>len</A>
+##  in the same representation as <A>v</A>.
+##  <P/>
+##  For a matrix object <A>M</A> and a positive integer <A>len</A>,
+##  this operation returns a new standard basis vector of length
+##  <A>len</A> in the representation given by the
+##  <Ref Attr="CompatibleVectorFilter" Label="for a matrix object"/> value
+##  of <A>M</A>, provided that such a representation exists.
+##  <P/>
+##  If the <Ref Attr="ConstructingFilter" Label="for a vector object"/>
+##  value of the result implies <Ref Filt="IsCopyable"/> then the result is
+##  mutable.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> v:= StandardBasisVector( IsZmodnZVectorRep, Integers mod 6, 5, 3 );
+##  <vector mod 6: [ 0, 0, 1, 0, 0 ]>
+##  gap> StandardBasisVector( 4, v, 1 );
+##  <vector mod 6: [ 1, 0, 0, 0 ]>
+##  gap> v:= StandardBasisVector( IsPlistRep, GF(2), 5, 3 );
+##  [ 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2) ]
+##  gap> StandardBasisVector( 4, v, 1 );
+##  [ Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2) ]
+##  gap> v:= StandardBasisVector( Integers, 5, 3 );
+##  <plist vector over Integers of length 5>
+##  gap> StandardBasisVector( 4, v, 1 );
+##  <plist vector over Integers of length 4>
+##  gap> StandardBasisVector( 3, IdentityMatrix( GF(4), 2 ), 1 );
+##  [ Z(2)^0, 0*Z(2), 0*Z(2) ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "StandardBasisVector",
+    [ IsOperation, IsSemiring, IsPosInt, IsPosInt ] );
+DeclareOperation( "StandardBasisVector", [ IsSemiring, IsPosInt, IsPosInt ] );
+DeclareOperation( "StandardBasisVector",
+    [ IsPosInt, IsVecOrMatObj, IsPosInt ] );
+
+
 #############################################################################
 ##
 #O  Vector( <filt>, <R>, <list> )
