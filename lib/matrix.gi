@@ -4826,20 +4826,32 @@ BindGlobal("POW_MAT_INT", function(mat, n)
       return false;
     fi;
   end;
-  # this returns a base change matrix such that t*m*t^-1 is block triangular
-  # with companion matrices along the diagonal
-  # (could/should? be improved to return t^-1, t*m*t^-1 and the
-  # characteristic polynomial of m at the same time)
+  # This computes a base change matrix t such that mm := t*m*t^-1 is block
+  # triangular with companion matrices along the diagonal, and returns the
+  # triple [ t, t^-1, mm ].
+  #
+  # The rows v_1, ..., v_d of t are obtained by spinning up standard basis
+  # vectors, so that within one such Krylov chain we have v_{i+1} = v_i*m.
+  # Now the i-th row of mm is the coordinate vector of v_i*m with respect to
+  # v_1, ..., v_d, hence it is the standard basis vector e_{i+1} for every i
+  # inside a chain, and only at the end of a chain is there anything to
+  # compute -- and the image needed there is exactly the vector on which the
+  # spinning stopped. So rather than multiplying out t*m*t^-1, which costs
+  # two matrix multiplications, we assemble mm from what the spinning has
+  # produced anyway, using one vector-matrix product per chain.
   trafo := function(m)
-    local id, b, t, r, a;
+    local id, rows, b, t, r, a, ends, images, ti, mm, j;
     id := m^0;
-    b := rec(vectors := [], pivots := [], heads := []);
-    t := [];
-    # maybe better start with a random vector?
-    for a in RowsOfMatrix( id ) do
 #TODO: 'RowsOfMatrix' is not what we want to call here.
 #      In fact, we should better create standard basis vectors
 #      as we need them, instead of creating 'id' .
+    rows := RowsOfMatrix( id );
+    b := rec(vectors := [], pivots := [], heads := []);
+    t := [];
+    ends := [];
+    images := [];
+    # maybe better start with a random vector?
+    for a in rows do
       r := addb(b,a);
       if r = true then
         repeat
@@ -4847,10 +4859,21 @@ BindGlobal("POW_MAT_INT", function(mat, n)
           a := a*m;
           r := addb(b,a);
         until r <> true;
+        # a is the image of the last vector of this chain, and is a linear
+        # combination of the vectors collected so far
+        Add(ends, Length(t));
+        Add(images, a);
       fi;
     od;
     t := Matrix(t, m);
-    return t;
+    ti := t^-1;
+    # all rows but those ending a chain are standard basis vectors, so start
+    # from the identity matrix shifted up by one row and patch the rest
+    mm := rows{[2..NrRows(m)]};
+    for j in [1..Length(ends)] do
+      mm[ends[j]] := images[j] * ti;
+    od;
+    return [ t, ti, Matrix(mm, m) ];
   end;
   # compared to standard method, we avoid some zero or identity matrices
   # and we multiply with mat from left to take advantage of sparseness of mat
@@ -4887,8 +4910,9 @@ BindGlobal("POW_MAT_INT", function(mat, n)
     return val;
   end;
   t := trafo(mat);
-  ti := t^-1;
-  mm := t * mat * ti;
+  ti := t[2];
+  mm := t[3];
+  t := t[1];
   pol := CharacteristicPolynomial(mm);
   ind := IndeterminateOfUnivariateRationalFunction(pol);
   pol := PowerMod(ind, n, pol);
