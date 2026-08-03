@@ -363,7 +363,10 @@ BIND_GLOBAL( "LocationFunc", function(func)
         APPEND_LIST(ret, line);
         return ret;
     fi;
-    return fail;
+    # if all we know is the file, report just that; e.g. kernel extensions may
+    # set up a function body which only records a descriptive name
+    APPEND_LIST(ret, nam);
+    return ret;
 end);
 
 

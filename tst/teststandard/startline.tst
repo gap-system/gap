@@ -7,12 +7,16 @@
 # independently verifying that the reported line really is the one on which
 # that C function is defined.
 #
+# This lives in `teststandard` rather than `testinstall` because it iterates
+# over all global variables, which has side effects once packages are loaded.
+#
 #@local Sources, cache, funcs, nam, val, sym
 #@local resolved, unresolved, mentionedBefore, misreported
-gap> START_TEST("kernel/startline.tst");
+gap> START_TEST("startline.tst");
 
 # Return the lines of a kernel source file, or `fail` if it is not available,
-# e.g. when testing an installed GAP shipped without its sources.
+# e.g. when testing an installed GAP shipped without its sources, or for the
+# kernel extension of a package.
 gap> cache := rec();;
 gap> Sources := function(file)
 >      local path, key;
@@ -29,24 +33,21 @@ gap> Sources := function(file)
 >    end;;
 
 # Collect all kernel functions for which we know the name of the C function
-# implementing them, as triples [ function, C function name, file name ].
+# implementing them and can read that source file, as triples
+# [ function, C function name, file name ].
 gap> funcs := [];;
 gap> for nam in NamesGVars() do
 >      if not IsBoundGlobal(nam) then continue; fi;
 >      val := ValueGlobal(nam);
 >      if not IsFunction(val) then continue; fi;
 >      sym := LOCATION_FUNC(val);
->      if sym <> fail then
+>      if sym <> fail and Sources(FilenameFunc(val)) <> fail then
 >        Add(funcs, [val, sym, FilenameFunc(val)]);
 >      fi;
 >    od;
 gap> Length(funcs) > 500;
 true
-
-# Each of them records a readable C or C++ source file.
 gap> ForAll(funcs, f -> EndsWith(f[3], ".c") or EndsWith(f[3], ".cc"));
-true
-gap> ForAll(funcs, f -> Sources(f[3]) <> fail);
 true
 
 #
@@ -106,4 +107,4 @@ gap> ForAll(unresolved,
 true
 
 #
-gap> STOP_TEST("kernel/startline.tst");
+gap> STOP_TEST("startline.tst");
