@@ -548,10 +548,16 @@ local m,id,epi,H,ids,ft;
     if ids.series="A" then
       Info(InfoPerformance,1,"Alternating recognition needed!");
       H:=AlternatingGroup(ids.parameter);
-      m:=MaximalSubgroupClassReps(H); # library, natural
-      epi:=IsomorphismGroups(G,H);
-      m:=List(m,x->PreImage(epi,x));
-      return m;
+      # Do not call `MaximalSubgroupClassReps` here: if the calculation for
+      # the natural alternating group is not possible (e.g. because the
+      # primitive groups library is unavailable), it would end up calling
+      # this very method again, resulting in an infinite recursion.
+      m:=MaximalSubgroupsSymmAlt(H,false); # library, natural
+      if m<>fail then
+        epi:=IsomorphismGroups(G,H);
+        m:=List(m,x->PreImage(epi,x));
+        return m;
+      fi;
     elif IsBound(ids.parameter) and IsList(ids.parameter)
       and Length(ids.parameter)=2 and ForAll(ids.parameter,IsInt) then
 
