@@ -2459,6 +2459,23 @@
   <howpublished><URL>http://www.math.rwth-aachen.de/~MOC/CoMoChaT/</URL></howpublished>
 </misc></entry>
 
+<entry id="Holt85"><article>
+  <author>
+    <name><first>Derek F.</first><last>Holt</last></name>
+  </author>
+  <title>The mechanical computation of first and second cohomology
+              groups</title>
+  <journal><value key="jsymc"/></journal>
+  <year>1985</year>
+  <volume>1</volume>
+  <number>4</number>
+  <pages>351&ndash;361</pages>
+  <issn>0747-7171</issn>
+  <mrnumber>849041 (87j:20087)</mrnumber>
+  <mrclass>20J06 (20-04)</mrclass>
+  <other type="fjournal">Journal of Symbolic Computation</other>
+</article></entry>
+
 <entry id="Holt94"><incollection>
   <author>
     <name><first>Derek F.</first><last>Holt</last></name>
