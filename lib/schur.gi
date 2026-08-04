@@ -147,21 +147,23 @@ InstallMethod(EpimorphismSchurCover,"generic, via fp group",true,[IsGroup],-1,
 
 ##  Schur cover of a non-trivial p-group <G>, as a pc group. `SchurCoverFP' of
 ##  a power-commutator presentation is again a finite p-group, so the
-##  p-quotient algorithm turns it back into a pc group -- no Tietze
-##  transformations and no coset enumeration.
+##  p-quotient algorithm turns it back into a pc group, avoiding the coset
+##  enumeration that `EpimorphismSchurCoverFP' needs to make its result usable.
 BindGlobal("EpimorphismSchurCoverPGroup",function(G)
-local pcgs,n,D,gens,epi,cov,mul,pco;
+local pcgs,n,D,gens,iso,pq,img,epi,cov,mul,pco;
   pcgs:=Pcgs(G);
   n:=Length(pcgs);
   D:=SchurCoverFP(Image(IsomorphismFpGroupByPcgs(pcgs,"f")));
   gens:=GeneratorsOfGroup(D);
-  epi:=EpimorphismPGroup(D,PrimePGroup(G));
-  cov:=Range(epi);
-  # `SchurCoverFP' appends one generator per relator; these generate the
-  # kernel of D -> G
-  mul:=SubgroupNC(cov,
-         List(gens{[n+1..Length(gens)]},i->ImagesRepresentative(epi,i)));
-  pco:=List(gens{[1..n]},i->ImagesRepresentative(epi,i));
+  # `SchurCoverFP' introduces one generator per relator; simplifying first
+  # pays for itself several times over in the p-quotient
+  iso:=IsomorphismSimplifiedFpGroup(D);
+  pq:=EpimorphismPGroup(Image(iso),PrimePGroup(G));
+  cov:=Range(pq);
+  img:=i->ImagesRepresentative(pq,ImagesRepresentative(iso,i));
+  # the generators of D beyond the first n generate the kernel of D -> G
+  mul:=SubgroupNC(cov,List(gens{[n+1..Length(gens)]},img));
+  pco:=List(gens{[1..n]},img);
   Append(pco,Pcgs(mul));
   pco:=PcgsByPcSequenceNC(FamilyObj(One(cov)),pco);
   epi:=GroupHomomorphismByImagesNC(cov,G,pco,
@@ -199,12 +201,12 @@ local iso,F;
             r->List(FreeGeneratorsOfFpGroup(F),i->ExponentSumWord(r,i)))));
 end);
 
-# Images of a generating set of H_2(Q) under cor^P_{Q^g} o (c_g)_*, as
+# Images of a generating set of H_2(Q) under cor^P_{Q^act} o act_*, as
 # elements of the kernel of <epi>. <data> comes from `SCHUR_FusionSetup' for
-# Q; <g> must conjugate Q into P.
-BindGlobal("SCHUR_CorestrictionValues",function(epi,data,g)
+# Q; <act> is a function mapping Q into P by conjugation.
+BindGlobal("SCHUR_CorestrictionValues",function(epi,data,act)
 local lift,val,res,a,i,x;
-  lift:=List(data.gens,i->PreImagesRepresentative(epi,i^g));
+  lift:=List(data.gens,i->PreImagesRepresentative(epi,act(i)));
   val:=List(data.rels,r->MappedWord(r,data.free,lift));
   res:=[];
   for a in data.null do
@@ -220,7 +222,7 @@ local lift,val,res,a,i,x;
 end);
 
 InstallGlobalFunction(SchuMu,function(g,p)
-local s,pcgs,n,cov,pco,i,d,q,data,base,img,
+local s,iso,S,pcgs,n,cov,pco,i,d,q,data,base,img,
       rels,epi,mul,hom,dc;
   s:=SylowSubgroup(g,p);
   if IsCyclic(s) then
@@ -228,10 +230,18 @@ local s,pcgs,n,cov,pco,i,d,q,data,base,img,
     return InverseGeneralMapping(IsomorphismPcGroup(s));
   fi;
 
-  pcgs:=Pcgs(s);
+  # Do the work inside an isomorphic pc group: building the presentations
+  # below is an order of magnitude cheaper there than in, say, a matrix group.
+  if IsPcGroup(s) then
+    iso:=IdentityMapping(s);
+  else
+    iso:=IsomorphismPcGroup(s);
+  fi;
+  S:=Image(iso);
+  pcgs:=Pcgs(S);
   n:=Normalizer(g,s);
 
-  epi:=EpimorphismSchurCoverPGroup(s);
+  epi:=EpimorphismSchurCoverPGroup(S);
   cov:=Source(epi);
   mul:=KernelOfMultiplicativeGeneralMapping(epi);
   Info(InfoSchur,1,"multiplier of Sylow subgroup: ",AbelianInvariants(mul));
@@ -243,10 +253,11 @@ local s,pcgs,n,cov,pco,i,d,q,data,base,img,
   # we also use the full action of n on s: if x=a*d*b with a,b in n, the
   # fusion induced by x is the composite of the fusions induced by a, d, b.
   rels:=TrivialSubgroup(cov);
-  data:=SCHUR_FusionSetup(s);
-  base:=SCHUR_CorestrictionValues(epi,data,One(s));
+  data:=SCHUR_FusionSetup(S);
+  base:=SCHUR_CorestrictionValues(epi,data,x->x);
   for i in GeneratorsOfGroup(n) do
-    img:=SCHUR_CorestrictionValues(epi,data,i);
+    img:=SCHUR_CorestrictionValues(epi,data,
+           x->ImagesRepresentative(iso,PreImagesRepresentative(iso,x)^i));
     rels:=ClosureGroup(rels,List([1..Length(base)],j->base[j]/img[j]));
   od;
   Info(InfoSchur,2,"normalizer fusion leaves ",Index(mul,rels));
@@ -262,10 +273,12 @@ local s,pcgs,n,cov,pco,i,d,q,data,base,img,
     # the double coset of the identity is already dealt with above
     if not d in n then
       q:=Intersection(s,ConjugateSubgroup(s,d^-1));
-      if Size(q)>1 then
-        data:=SCHUR_FusionSetup(q);
-        base:=SCHUR_CorestrictionValues(epi,data,One(s));
-        img:=SCHUR_CorestrictionValues(epi,data,d);
+      # cyclic groups have trivial multiplier, so contribute no relations
+      if not IsCyclic(q) then
+        data:=SCHUR_FusionSetup(Image(iso,q));
+        base:=SCHUR_CorestrictionValues(epi,data,x->x);
+        img:=SCHUR_CorestrictionValues(epi,data,
+               x->ImagesRepresentative(iso,PreImagesRepresentative(iso,x)^d));
         rels:=ClosureGroup(rels,List([1..Length(base)],j->base[j]/img[j]));
       fi;
     fi;
@@ -273,7 +286,8 @@ local s,pcgs,n,cov,pco,i,d,q,data,base,img,
   od;
   Info(InfoSchur,1,"p-part of the multiplier has order ",Index(mul,rels));
 
-  # form the quotient, make it the new cover and the new multiplicator.
+  # form the quotient, make it the new cover and the new multiplicator; the
+  # result must map onto the Sylow subgroup of g, not onto its pc copy
   hom:=NaturalHomomorphismByNormalSubgroupNC(cov,rels);
   pco:=List(pcgs,i->Image(hom,PreImagesRepresentative(epi,i)));
   mul:=Image(hom,mul);
@@ -281,7 +295,8 @@ local s,pcgs,n,cov,pco,i,d,q,data,base,img,
   Append(pco,Pcgs(mul));
   pco:=PcgsByPcSequenceNC(FamilyObj(One(cov)),pco);
   epi:=GroupHomomorphismByImagesNC(cov,s,pco,
-         Concatenation(pcgs,List(Pcgs(mul),i->One(s))));
+         Concatenation(List(pcgs,i->PreImagesRepresentative(iso,i)),
+                       List(Pcgs(mul),i->One(s))));
   SetKernelOfMultiplicativeGeneralMapping(epi,mul);
   return epi;
 
@@ -304,6 +319,11 @@ local a,i;
   if IsSubgroupFpGroup(G) then
     # we have no Sylow subgroup machinery for these
     TryNextMethod();
+  fi;
+  if IsMatrixGroup(G) then
+    # the Sylow subgroup and double coset computations below delegate to a
+    # permutation image anyway; going there once is markedly faster
+    return AbelianInvariantsMultiplier(Image(IsomorphismPermGroup(G)));
   fi;
   a:=[];
   for i in Filtered(Collected(Factors(Size(G))),i->i[2]>1) do
