@@ -141,8 +141,7 @@ BindGlobal("EpimorphismSchurCoverFP",
   return hom;
 end);
 
-# negative rank: last resort, the methods below are faster where they apply
-InstallMethod(EpimorphismSchurCover,"generic, via fp group",true,[IsGroup],-1,
+InstallMethod(EpimorphismSchurCover,"generic, via fp group",true,[IsGroup],0,
   EpimorphismSchurCoverFP);
 
 ##  Schur cover of a non-trivial p-group <G>, as a pc group. `SchurCoverFP' of
@@ -302,26 +301,15 @@ local s,iso,S,pcgs,n,cov,pco,i,d,q,data,base,img,
 
 end);
 
-# negative rank: computing a whole Schur cover just for the invariants is
-# wasteful, but it is the only thing that always works
 InstallMethod(AbelianInvariantsMultiplier,"generic: via Schur cover",true,
-  [IsGroup],-1,
+  [IsGroup],0,
   G->AbelianInvariants(KernelOfMultiplicativeGeneralMapping(
        EpimorphismSchurCover(G))));
 
-InstallMethod(AbelianInvariantsMultiplier,"via Sylow subgroups",true,
-  [IsGroup and IsFinite],
-  # only just above the generic method, so that representation specific
-  # methods (e.g. those of the polycyclic package) still win
-  {} -> RankFilter(IsGroup)-RankFilter(IsGroup and IsFinite)+1,
-function(G)
+BindGlobal("SCHUR_MultiplierBySylow",function(G)
 local a,i;
-  if IsSubgroupFpGroup(G) then
-    # we have no Sylow subgroup machinery for these
-    TryNextMethod();
-  fi;
-  if IsMatrixGroup(G) then
-    # the Sylow subgroup and double coset computations below delegate to a
+  if not (IsPermGroup(G) or IsPcGroup(G)) then
+    # the Sylow subgroup and double coset computations below work through a
     # permutation image anyway; going there once is markedly faster
     return AbelianInvariantsMultiplier(Image(IsomorphismPermGroup(G)));
   fi;
@@ -333,6 +321,21 @@ local a,i;
   Sort(a);
   return a;
 end);
+
+##  `SchuMu' needs Sylow subgroups, their normalizers and double cosets, so
+##  install it for the representations which supply these rather than for all
+##  finite groups. Groups shipping their own methods -- pcp groups in the
+##  polycyclic package, say -- then keep them without any need to fiddle with
+##  method ranks.
+InstallMethod(AbelianInvariantsMultiplier,"via Sylow subgroups",true,
+  [IsPermGroup],0,SCHUR_MultiplierBySylow);
+
+InstallMethod(AbelianInvariantsMultiplier,"via Sylow subgroups",true,
+  [IsPcGroup],0,SCHUR_MultiplierBySylow);
+
+InstallMethod(AbelianInvariantsMultiplier,"via Sylow subgroups",true,
+  [IsGroup and IsFinite and IsHandledByNiceMonomorphism],0,
+  SCHUR_MultiplierBySylow);
 
 # <hom> is a homomorphism from a finite group onto an fp group. It returns
 # an isomorphism from the same group onto an isomorphic fp group <F>, such
@@ -708,7 +711,7 @@ local G,pl,iso,hom,D,gens,ker;
     fi;
     Error("EpimorphismSchurCover for a prescribed set of primes is not ",
           "supported for finitely presented groups");
-  elif IsMatrixGroup(G) then
+  elif not (IsPermGroup(G) or IsPcGroup(G)) then
     # `CorestEval' runs over a transversal of a Sylow subgroup, which is far
     # cheaper in a permutation image; transport the cover back afterwards
     iso:=IsomorphismPermGroup(G);
@@ -726,11 +729,16 @@ local G,pl,iso,hom,D,gens,ker;
   return SCHUR_CoverForPrimes(G,pl);
 end );
 
+# installed for the same filters as the method for AbelianInvariantsMultiplier,
+# see the comment there
 InstallMethod(EpimorphismSchurCover,"Holt's algorithm",true,
-  [IsGroup and IsFinite],
-  # see the comment on the rank of the method for AbelianInvariantsMultiplier
-  {} -> RankFilter(IsGroup)-RankFilter(IsGroup and IsFinite)+1,
-  DoMulExt);
+  [IsPermGroup],0,DoMulExt);
+
+InstallMethod(EpimorphismSchurCover,"Holt's algorithm",true,
+  [IsPcGroup],0,DoMulExt);
+
+InstallMethod(EpimorphismSchurCover,"Holt's algorithm",true,
+  [IsGroup and IsFinite and IsHandledByNiceMonomorphism],0,DoMulExt);
 
 InstallOtherMethod(EpimorphismSchurCover,"Holt's algorithm, primes",true,
   [IsGroup,IsList],0,DoMulExt);
