@@ -71,6 +71,14 @@ true
 gap> check(SmallGroup(48,48));
 true
 
+# matrix groups are handled via a permutation image
+gap> check(SL(2,5));
+true
+gap> check(SL(3,2));
+true
+gap> check(GL(2,3));
+true
+
 # restricting to a set of primes
 gap> epi:=EpimorphismSchurCover(AlternatingGroup(6),[2]);;
 gap> AbelianInvariants(Kernel(epi));
