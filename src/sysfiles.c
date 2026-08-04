@@ -447,34 +447,23 @@ void syWinPut (
 
 /****************************************************************************
 **
-*F  SyWinCmd( <str>, <len> )  . . . . . . . . . . . . .  execute a window cmd
+*F  SyWinSendCmd( <str> ) . . . . . . . send a window command, no answer read
 **
-**  'SyWinCmd' send   the  command <str> to  the   window  handler (<len>  is
-**  ignored).  In the string <str> '@' characters are duplicated, and control
-**  characters  are converted to  '@<chr>', e.g.,  <newline> is converted  to
-**  '@J'.  Then  'SyWinCmd' waits for  the window handlers answer and returns
-**  that string.
+**  'SyWinSendCmd' sends the command <str> to the window handler as
+**  '@w<len>+<str>', duplicating '@' characters and converting control
+**  characters to '@<chr>' as 'syWinPut' does.  The answer is read separately
+**  by 'SyWinBeginAnswer' and the entry readers below, so that the caller can
+**  allocate each result at its known size.
 */
-static Char WinCmdBuffer[8000];
-
-const Char * SyWinCmd (
-    const Char *        str,
-    UInt                len )
+void SyWinSendCmd (
+    const Char *        str )
 {
     Char                buf [130];      // temporary buffer
     const Char *        s;              // pointer into the string
-    const Char *        bb;             // pointer into the temporary
     Char *              b;              // pointer into the temporary
-    UInt                i;              // loop variable
-#ifdef SYS_IS_CYGWIN32
-    UInt                len1;           // temporary storage for len
-#endif
+    UInt                len;            // length of the expanded string
 
-    // if not running under a window handler, don't do nothing
-    if ( ! SyWindow )
-        return "I1+S52+No Window Handler Present";
-
-    // compute the length of the (expanded) string (and ignore argument)
+    // compute the length of the (expanded) string
     len = 0;
     for ( s = str; *s != '\0'; s++ )
         len += 1 + (*s == '@' || (CTR('A') <= *s && *s <= CTR('Z')));
@@ -490,61 +479,241 @@ const Char * SyWinCmd (
 
     // send the string to the window handler
     syWinPut( 1, "", str );
+}
 
-    // read the length of the answer
-    b = WinCmdBuffer;
-    i = 3;
-    while ( 0 < i ) {
-        len = read( 0, b, i );
-        i  -= len;
-        b  += len;
-    }
-    if ( WinCmdBuffer[0] != '@' || WinCmdBuffer[1] != 'a' )
-        return "I1+S41+Illegal Answer";
-    b = WinCmdBuffer+2;
-    for ( i=1,len=0; '0' <= *b && *b <= '9';  i *= 10 ) {
-        len += (*b-'0')*i;
-        while ( read( 0, b, 1 ) != 1 )  ;
-    }
 
-    // read the arguments of the answer
-    b = WinCmdBuffer;
-    i = len;
-#ifdef SYS_IS_CYGWIN32
-    len1 = len;
-    while ( 0 < i ) {
-        len = read( 0, b, i );
-        b += len;
-        i  -= len;
-        s  += len;
-    }
-    len = len1;
-#else
-    while ( 0 < i ) {
-        len = read( 0, b, i );
-        i  -= len;
-        s  += len;
-    }
-#endif
+/****************************************************************************
+**
+**  A window handler answers a command with '@a<len>+<data>', where <len> is
+**  the number of (still '@'-escaped) payload bytes and <data> is a sequence
+**  of entries.  Each entry is either 'I<digits><sign>', an integer with
+**  <sign> '+' or '-', or 'S<digits>+<bytes>', a string of the given
+**  un-escaped length.  Every <digits> run in this protocol, here and in the
+**  header, is written least significant digit first, so "52" means 25.
+*/
 
-    // shrink '@@' into '@'
-    for ( bb = b = WinCmdBuffer;  0 < len;  len-- ) {
-        if ( *bb == '@' ) {
-            bb++;
-            if ( *bb == '@' )
-                *b++ = '@';
-            else if ( 'A' <= *bb && *bb <= 'Z' )
-                *b++ = CTR(*bb);
-            bb++;
+// The payload is read in bulk into a small fixed buffer and served from there
+// one still-escaped byte at a time, as 'syGetchNonTerm' serves terminal
+// input.  'syWinAnswerRemaining' counts payload bytes not yet read from the
+// input, the buffer holds bytes read but not yet served.  Every refill is
+// bounded by 'syWinAnswerRemaining', so a read never runs past the answer
+// into whatever follows it on the stream.  The size only decides how many
+// reads a long answer costs; short reads are handled anyway.
+#define SYS_WIN_BUF_SIZE 512
+static Int          syWinAnswerRemaining;
+static UChar        syWinBuf [SYS_WIN_BUF_SIZE];
+static Int          syWinBufStart;      // next byte to serve
+static Int          syWinBufLen;        // number of valid bytes in the buffer
+
+// payload bytes still to serve: buffered but unserved, plus not yet read
+static Int syWinAnswerLeft ( void )
+{
+    return syWinAnswerRemaining + (syWinBufLen - syWinBufStart);
+}
+
+// read one byte from the input, retrying on EINTR and EAGAIN; -1 on EOF/error
+static Int syWinGetch ( void )
+{
+    UChar               c;              // the byte read
+    Int                 ret;            // return value of 'SyRead'
+
+    do {
+        ret = SyRead( 0, &c, 1 );
+    } while ( ret == -1 && (errno == EINTR || errno == EAGAIN) );
+    return ( ret == 1 ) ? (Int)c : -1;
+}
+
+// serve one still-escaped payload byte, refilling the buffer; -1 at the end
+static Int syWinAnswerRaw ( void )
+{
+    Int                 want;           // bytes to ask for
+    Int                 got;            // bytes actually read
+
+    if ( syWinBufStart >= syWinBufLen ) {
+        if ( syWinAnswerRemaining <= 0 )
+            return -1;
+        want = ( syWinAnswerRemaining < SYS_WIN_BUF_SIZE )
+                   ? syWinAnswerRemaining : SYS_WIN_BUF_SIZE;
+        do {
+            got = SyRead( 0, syWinBuf, want );
+        } while ( got == -1 && (errno == EINTR || errno == EAGAIN) );
+        if ( got <= 0 ) {               // EOF/error: no more answer to read
+            syWinAnswerRemaining = 0;
+            return -1;
         }
-        else {
-            *b++ = *bb++;
-        }
+        syWinBufStart = 0;
+        syWinBufLen   = got;
+        syWinAnswerRemaining -= got;
     }
-    *b = 0;
+    return syWinBuf[syWinBufStart++];
+}
 
-    // return the string
-    return WinCmdBuffer;
+// read one un-escaped ('@@' -> '@', '@X' -> ctrl) payload byte; -1 at the end
+static Int syWinAnswerByte ( void )
+{
+    Int                 c;              // byte of the payload
+    Int                 d;              // byte following an '@'
+
+    // Decoding is sequential by nature: an escape turns two input bytes into
+    // one, so the input and output counts advance independently.  The old
+    // reader conflated them and read past the payload as soon as an answer
+    // contained an escape; serving a byte at a time makes that impossible.
+    for (;;) {
+        c = syWinAnswerRaw();
+        if ( c < 0 )
+            return -1;
+        if ( c != '@' )
+            return c;
+        d = syWinAnswerRaw();
+        if ( d < 0 )
+            return -1;
+        if ( d == '@' )
+            return '@';
+        if ( 'A' <= d && d <= 'Z' )
+            return CTR(d);
+        // a malformed '@<chr>': drop both bytes and keep scanning
+    }
+}
+
+
+/****************************************************************************
+**
+*F  SyWinBeginAnswer() . . . . . . . . . .  read the '@a<len>+' answer header
+**
+**  Read and validate the answer header and arm the entry readers.  Returns
+**  'TRUE' on success, 'FALSE' if the header is not a well-formed '@a<len>+'.
+*/
+BOOL SyWinBeginAnswer ( void )
+{
+    Int                 c;              // byte of the header
+    UInt                len;            // declared payload length
+    UInt                place;          // power of ten for the digits
+
+    // start from a clean slate: bytes left over from an answer that was
+    // abandoned part way through are not part of this one
+    syWinAnswerRemaining = 0;
+    syWinBufStart = syWinBufLen = 0;
+
+    // the header is not payload, so it is read past the buffer
+    if ( syWinGetch() != '@' )  return FALSE;
+    if ( syWinGetch() != 'a' )  return FALSE;
+
+    len = 0;  place = 1;
+    while ( '0' <= (c = syWinGetch()) && c <= '9' ) {
+        len   += (UInt)(c - '0') * place;
+        place *= 10;
+    }
+    if ( c != '+' )  return FALSE;
+    if ( (Int)len < 0 )  return FALSE;  // length too big for Int: illegal
+
+    syWinAnswerRemaining = (Int)len;
+    return TRUE;
+}
+
+
+/****************************************************************************
+**
+*F  SyWinReadEntryKind() . . . . . . . . . .  read the kind of the next entry
+**
+**  Return the kind of the next entry, 'I' or 'S' in a well-formed answer, or
+**  -1 once the answer is exhausted.  Anything else the caller must reject.
+*/
+Int SyWinReadEntryKind ( void )
+{
+    return syWinAnswerByte();
+}
+
+
+/****************************************************************************
+**
+*F  SyWinReadInt() . . . . . . . . . . . . . . . . . . . .  read an 'I' entry
+**
+**  Read '<digits><sign>'; the 'I' has already been read as the entry kind.
+**  As everywhere in this protocol, the digits come least significant first.
+*/
+Int SyWinReadInt ( void )
+{
+    Int                 c;              // byte of the entry
+    Int                 n;              // the integer read so far
+    UInt                place;          // power of ten for the digits
+
+    n = 0;  place = 1;
+    while ( '0' <= (c = syWinAnswerByte()) && c <= '9' ) {
+        n     += (c - '0') * (Int)place;
+        place *= 10;
+    }
+    if ( c == '-' )
+        n = -n;
+    return n;
+}
+
+
+/****************************************************************************
+**
+*F  SyWinReadStrLen() . . . . . . . . . . . . read the length of an 'S' entry
+**
+**  Read the '<digits>+' length prefix; the 'S' has already been read as the
+**  entry kind.  The caller allocates a result of that length and then calls
+**  'SyWinReadStr' to fill it.
+*/
+UInt SyWinReadStrLen ( void )
+{
+    Int                 c;              // byte of the entry
+    UInt                n;              // the length read so far
+    UInt                place;          // power of ten for the digits
+
+    n = 0;  place = 1;
+    while ( '0' <= (c = syWinAnswerByte()) && c <= '9' ) {
+        n     += (UInt)(c - '0') * place;
+        place *= 10;
+    }
+    // the loop has consumed the '+' terminator (or the end of the answer).
+    // An un-escaped string cannot be longer than the escaped payload bytes
+    // still to come, so clamp to those: that also keeps the length in range
+    // for NEW_STRING, whose parameter is a signed Int.
+    if ( n > (UInt) syWinAnswerLeft() )
+        n = (UInt) syWinAnswerLeft();
+    return n;
+}
+
+
+/****************************************************************************
+**
+*F  SyWinReadStr( <dst>, <n> )  . . . . read <n> un-escaped bytes of a string
+**
+**  Fill <dst> with <n> un-escaped bytes of the current 'S' entry.  On a short
+**  or truncated answer the remainder is zero-filled rather than read past.
+*/
+void SyWinReadStr (
+    UChar *             dst,
+    UInt                n )
+{
+    UInt                k;              // loop variable
+    Int                 c;              // byte of the string
+
+    for ( k = 0; k < n; k++ ) {
+        c = syWinAnswerByte();
+        if ( c < 0 )
+            break;
+        dst[k] = (UChar)c;
+    }
+    while ( k < n )
+        dst[k++] = '\0';
+}
+
+
+/****************************************************************************
+**
+*F  SyWinEndAnswer() . . . . . . . . . discard any unread bytes of the answer
+**
+**  Consume and drop any payload bytes not yet read, so that the input stream
+**  stays in sync when the caller stops parsing an answer early, e.g. a
+**  malformed one.  A fully-parsed answer leaves nothing, so this is a no-op.
+*/
+void SyWinEndAnswer ( void )
+{
+    while ( 0 <= syWinAnswerRaw() )
+        ;
 }
 
 
