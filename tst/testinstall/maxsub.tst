@@ -18,13 +18,14 @@ gap> SortedList(List(msc, IndexInParent));
 [ 3, 5, 6, 10 ]
 #@fi
 
-#
+#@if IsPackageMarkedForLoading( "perfgrp", "" )
 gap> G := GL(2,5);;
 gap> msc := MaximalSubgroupClassReps(G);;
 gap> ForAll(msc, H -> Parent(H) = G);
 true
 gap> SortedList(List(msc, IndexInParent));
 [ 2, 5, 6, 10 ]
+#@fi
 
 #
 #@if IsPackageMarkedForLoading( "primgrp", "" )

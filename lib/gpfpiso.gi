@@ -77,8 +77,11 @@ InstallOtherMethod( IsomorphismFpGroup,"for nonabelian simple permutation groups
   true, [IsPermGroup and IsNonabelianSimpleGroup,IsString],0,
 function(G,str)
 local l,iso,fp,stbc,gens;
-  # use the perfect groups library (as far as hand-created)
-  PerfGrpLoad(Size(G));
+  # use the perfect groups library (as far as hand-created), if the PerfGrp
+  # package providing it is available
+  if IsPackageMarkedForLoading("perfgrp","") then
+    PerfGrpLoad(Size(G));
+  fi;
   if Size(G)<10^6 and IsRecord(PERFRec) and
      ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true and
      not Size(G) in PERFRec.notKnown then
