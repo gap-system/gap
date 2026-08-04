@@ -60,5 +60,13 @@ true
 gap> check(PSL(2,11));
 true
 
+# matrix groups are handled via a permutation image; the cover is a finitely
+# presented group, so anything beyond its order is expensive to verify here
+gap> epi:=EpimorphismSchurCover(SP(6,2));;
+gap> Size(Kernel(epi));
+2
+gap> Size(Source(epi))=2*Size(SP(6,2));
+true
+
 #
 gap> STOP_TEST("schur.tst");

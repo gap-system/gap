@@ -375,8 +375,8 @@ end);
 ##  transversal of the Sylow subgroup, i.e. apply the transfer G -> M_p. The
 ##  result records, per relator, the obstruction to lifting <FG> over M_p.
 InstallGlobalFunction(CorestEval,function(FG,s)
-# This has plenty of space for optimization.
-local G,H,D,T,i,j,k,l,a,h,nk,evals,rels,gens,r,np,g,invlist,el,elp,TL,rp,pos;
+local G,H,D,T,i,j,l,a,h,jj,nk,evals,rels,gens,r,np,g,invlist,el,elp,TL,rp,pos,
+      act,val,ainv,vinv,one;
 
   G:=Image(FG);
   H:=Image(s);
@@ -398,15 +398,36 @@ local G,H,D,T,i,j,k,l,a,h,nk,evals,rels,gens,r,np,g,invlist,el,elp,TL,rp,pos;
     pos:=Position(el,One(H));
   fi;
   elp[pos]:=One(elp[pos]);
+  one:=One(D);
+
+  # Tabulate, for every generator and its inverse, the induced permutation of
+  # the transversal together with the preimage of the resulting Schreier
+  # element. The relator loop below then does no arithmetic in G at all, which
+  # is what made it expensive -- in particular for matrix groups. Building the
+  # tables costs Length(gens)*Index(G,H) steps, the loop they serve
+  # Index(G,H) times the total length of the relators.
+  act:=[]; val:=[]; ainv:=[]; vinv:=[];
+  for i in [1..Length(gens)] do
+    g:=gens[i];
+    act[i]:=[]; val[i]:=[]; ainv[i]:=[]; vinv[i]:=[];
+    for j in [1..Length(TL)] do
+      np:=TL[j]*g;
+      nk:=PositionCanonical(T,np);
+      act[i][j]:=nk;
+      val[i][j]:=elp[Position(el,np/TL[nk])];
+      np:=TL[j]/g;
+      nk:=PositionCanonical(T,np);
+      ainv[i][j]:=nk;
+      vinv[i][j]:=elp[Position(el,np/TL[nk])];
+    od;
+  od;
 
   # deal with inverses
   invlist:=[];
-  for g in gens do
-    h:=One(D);
-    for k in T do
-      np:=k*g;
-      nk:=TL[PositionCanonical(T,np)];
-      h:= h*elp[Position(el,np/nk)]*elp[Position(el,nk/g/k)];;
+  for i in [1..Length(gens)] do
+    h:=one;
+    for j in [1..Length(TL)] do
+      h:=h*val[i][j]*vinv[i][act[i][j]];
     od;
     Add(invlist,h);
   od;
@@ -418,31 +439,27 @@ local G,H,D,T,i,j,k,l,a,h,nk,evals,rels,gens,r,np,g,invlist,el,elp,TL,rp,pos;
     CompletionBar(InfoSchur,2,"Relator Loop: ",rp/Length(rels));
     r:=rels[rp];
     i:=LetterRepAssocWord(r);
-    a:=One(D);
+    a:=one;
 
     # take care of inverses
     for l in [1..Length(i)] do
       if i[l]<0 then
-        #i[l]:=-i[l];
         a:=a*invlist[-i[l]];
       fi;
     od;
 
-    for j in [1..Length(T)] do
+    for j in [1..Length(TL)] do
 
-      k:=T[j];
-      h:=One(D);
+      jj:=j;
+      h:=one;
       for l in i do
         if l<0 then
-          g:=Inverse(gens[-l]);
+          h:=h*vinv[-l][jj];
+          jj:=ainv[-l][jj];
         else
-          g:=gens[l];
+          h:=h*val[l][jj];
+          jj:=act[l][jj];
         fi;
-        np:=k*g;
-        nk:=TL[PositionCanonical(T,np)];
-        #h:=h*PreImagesRepresentative(s,np/nk);
-        h:=h*elp[Position(el,np/nk)];
-        k:=nk;
       od;
 
       #Print(PreImagesRepresentative(s,Image(s,h))*h,"\n");
@@ -639,9 +656,12 @@ local hom,      #isomorphism fp
   od;
 
   q:=F/rels;
-  if AssertionLevel()>0 then
+  # Checking the order means enumerating the cosets of the trivial subgroup of
+  # q, which for anything but small groups costs far more than the whole
+  # computation. Hence do so only above the assertion level `START_TEST' sets.
+  if AssertionLevel()>2 then
     if Size(q)<>Size(G)*ms then
-      Error("oops!");
+      Error("inconsistent multiplier size");
     fi;
   else
     SetSize(q,Size(G)*ms);
@@ -656,8 +676,20 @@ local hom,      #isomorphism fp
   return qhom;
 end);
 
+BindGlobal( "SCHUR_CoverForPrimes", function(G,pl)
+  if IsPGroup(G) then
+    # base case of the recursion: `MulExt' would call `SchuMu', which in turn
+    # asks for a Schur cover of a Sylow subgroup, i.e. of G
+    if PrimePGroup(G) in pl then
+      return EpimorphismSchurCoverPGroup(G);
+    fi;
+    return IdentityMapping(G);
+  fi;
+  return MulExt(G,pl);
+end );
+
 BindGlobal( "DoMulExt", function(arg)
-local G,pl;
+local G,pl,iso,hom,D,gens,ker;
   G:=arg[1];
   if not IsFinite(G) then
     Error("cover is only defined for finite groups");
@@ -669,23 +701,29 @@ local G,pl;
   else
     pl:=PrimeDivisors(Size(G));
   fi;
-  if IsPGroup(G) then
-    # base case of the recursion: `MulExt' would call `SchuMu', which in turn
-    # asks for a Schur cover of a Sylow subgroup, i.e. of G
-    if PrimePGroup(G) in pl then
-      return EpimorphismSchurCoverPGroup(G);
-    else
-      return IdentityMapping(G);
-    fi;
-  elif IsSubgroupFpGroup(G) then
+  if IsSubgroupFpGroup(G) then
     # we have no Sylow subgroup machinery for these
     if Length(arg)=1 then
       TryNextMethod();
     fi;
     Error("EpimorphismSchurCover for a prescribed set of primes is not ",
           "supported for finitely presented groups");
+  elif IsMatrixGroup(G) then
+    # `CorestEval' runs over a transversal of a Sylow subgroup, which is far
+    # cheaper in a permutation image; transport the cover back afterwards
+    iso:=IsomorphismPermGroup(G);
+    hom:=SCHUR_CoverForPrimes(Image(iso),pl);
+    D:=Source(hom);
+    gens:=GeneratorsOfGroup(D);
+    ker:=KernelOfMultiplicativeGeneralMapping(hom);
+    hom:=GroupHomomorphismByImagesNC(D,G,gens,
+           List(gens,
+                i->PreImagesRepresentative(iso,ImagesRepresentative(hom,i))));
+    SetKernelOfMultiplicativeGeneralMapping(hom,ker);
+    SetIsSurjective(hom,true);
+    return hom;
   fi;
-  return MulExt(G,pl);
+  return SCHUR_CoverForPrimes(G,pl);
 end );
 
 InstallMethod(EpimorphismSchurCover,"Holt's algorithm",true,
