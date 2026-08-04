@@ -4840,18 +4840,22 @@ BindGlobal("POW_MAT_INT", function(mat, n)
   # two matrix multiplications, we assemble mm from what the spinning has
   # produced anyway, using one vector-matrix product per chain.
   trafo := function(m)
-    local id, rows, b, t, r, a, ends, images, ti, mm, j;
-    id := m^0;
-#TODO: 'RowsOfMatrix' is not what we want to call here.
-#      In fact, we should better create standard basis vectors
-#      as we need them, instead of creating 'id' .
-    rows := RowsOfMatrix( id );
+    local d, b, t, r, a, ends, images, i, ti, mm, j;
+    d := NrRows(m);
     b := rec(vectors := [], pivots := [], heads := []);
     t := [];
     ends := [];
     images := [];
+    # Spin up standard basis vectors, created one at a time as they are
+    # needed, until they span the whole space. Stopping as soon as that
+    # happens matters: any further vector would still be reduced against the
+    # complete basis, which for a cyclic matrix amounts to as much work again
+    # as the spinning itself.
     # maybe better start with a random vector?
-    for a in rows do
+    i := 0;
+    while Length(t) < d do
+      i := i + 1;
+      a := StandardBasisVector(d, m, i);
       r := addb(b,a);
       if r = true then
         repeat
@@ -4867,9 +4871,8 @@ BindGlobal("POW_MAT_INT", function(mat, n)
     od;
     t := Matrix(t, m);
     ti := t^-1;
-    # all rows but those ending a chain are standard basis vectors, so start
-    # from the identity matrix shifted up by one row and patch the rest
-    mm := rows{[2..NrRows(m)]};
+    # all rows but those ending a chain are standard basis vectors
+    mm := List([2..d], k -> StandardBasisVector(d, m, k));
     for j in [1..Length(ends)] do
       mm[ends[j]] := images[j] * ti;
     od;
