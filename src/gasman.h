@@ -366,7 +366,18 @@ EXPORT_INLINE void CHANGED_BAG(Bag bag)
 
 #elif defined(USE_JULIA_GC)
 
-void CHANGED_BAG(Bag bag);
+#ifdef __cplusplus
+extern "C++" {
+#endif
+#include <julia.h>
+#ifdef __cplusplus
+}
+#endif
+
+EXPORT_INLINE void CHANGED_BAG(Bag bag)
+{
+    jl_gc_wb_back(BAG_HEADER(bag));
+}
 
 BOOL IsGapObj(void *);
 
