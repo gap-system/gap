@@ -35,5 +35,14 @@ gap> SortedList(List(msc, H -> Index(G, H)));
 [ 5, 6, 10 ]
 #@fi
 
+# used to run into an infinite recursion without the primitive groups library
+gap> oldlevel := InfoLevel(InfoPerformance);;
+gap> SetInfoLevel(InfoPerformance, 0);
+gap> G := AlternatingGroup(6);;
+gap> msc := MaximalSubgroupClassReps(G);;
+gap> SetInfoLevel(InfoPerformance, oldlevel);
+gap> SortedList(List(msc, H -> Index(G, H)));
+[ 6, 6, 10, 15, 15 ]
+
 #
 gap> STOP_TEST("maxsub.tst");
