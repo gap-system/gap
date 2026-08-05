@@ -123,10 +123,12 @@ jobs:
             test-suites: "testbuildsys testmockpkg testinstall"
             extra: "NO_COVERAGE=1 ABI=32 BUILDDIR=out-of-tree CONFIGFLAGS=\"\""
 
-          # test Julia integration
+          # test Julia integration; this also runs testmockpkg, to verify
+          # packages can still be compiled (recall that src/gasman.h includes
+          # julia.h, so packages need the Julia headers, too)
           - os: ubuntu-22.04
             shell: bash
-            test-suites: "testinstall"
+            test-suites: "testmockpkg testinstall"
             extra: "JULIA=yes CONFIGFLAGS=\"--enable-debug\""
 
           - os: windows-2022

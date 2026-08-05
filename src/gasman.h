@@ -366,6 +366,9 @@ EXPORT_INLINE void CHANGED_BAG(Bag bag)
 
 #elif defined(USE_JULIA_GC)
 
+// Julia's headers include C++ headers when compiled as C++; since our own
+// headers may be included from within an `extern "C"` block, we must ensure
+// julia.h is not affected by that.
 #ifdef __cplusplus
 extern "C++" {
 #endif
@@ -376,7 +379,16 @@ extern "C++" {
 
 EXPORT_INLINE void CHANGED_BAG(Bag bag)
 {
-    jl_gc_wb_back(BAG_HEADER(bag));
+    // The following is a copy of Julia's write barrier `jl_gc_wb_back` and
+    // must be kept in sync with it. We cannot just call `jl_gc_wb_back`, as
+    // Julia declares it `static inline`, and C forbids referencing an
+    // identifier with internal linkage from an inline function with external
+    // linkage. Marking `CHANGED_BAG` as `static inline` instead is not an
+    // option either, as it is used by other `EXPORT_INLINE` functions (such
+    // as `PushPlist`), which then would run into the very same problem.
+    void * p = BAG_HEADER(bag);
+    if (__unlikely(jl_astaggedvalue(p)->bits.gc == 3 /* GC_OLD_MARKED */))
+        jl_gc_queue_root((jl_value_t *)p);
 }
 
 BOOL IsGapObj(void *);
