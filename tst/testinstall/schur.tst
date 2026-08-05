@@ -48,6 +48,16 @@ gap> G:=G/ParseRelators(G,"a2,b3,(ab)5");;
 gap> AbelianInvariantsMultiplier(G);
 [ 2 ]
 
+# `SchurCover' is the source of `EpimorphismSchurCover', for every group
+gap> IsIdenticalObj(SchurCover(G),Source(EpimorphismSchurCover(G)));
+true
+gap> G:=SmallGroup(16,3);;
+gap> IsIdenticalObj(SchurCover(G),Source(EpimorphismSchurCover(G)));
+true
+gap> G:=SymmetricGroup(4);;
+gap> IsIdenticalObj(SchurCover(G),Source(EpimorphismSchurCover(G)));
+true
+
 # groups for which the Sylow subgroup based algorithm returned wrong results
 # before it was disabled in GAP 4.5
 gap> AbelianInvariantsMultiplier(SmallGroup(48,30));

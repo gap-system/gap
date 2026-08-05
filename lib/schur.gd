@@ -31,10 +31,10 @@ DeclareInfoClass( "InfoSchur" );
 ##  <Attr Name="SchurCover" Arg='G'/>
 ##
 ##  <Description>
-##  returns one (of possibly several) Schur covers of the group <A>G</A>.
-##  Except for finitely presented <A>G</A>, this is the
-##  <Ref Attr="Source"/> value of <Ref Attr="EpimorphismSchurCover"/>,
-##  and in particular no specific representation is guaranteed.
+##  returns one (of possibly several) Schur covers of the group <A>G</A>,
+##  namely the <Ref Attr="Source"/> value of
+##  <Ref Attr="EpimorphismSchurCover"/>; in particular no specific
+##  representation is guaranteed.
 ##  <P/>
 ##  If also the relation to <A>G</A> is needed,
 ##  <Ref Attr="EpimorphismSchurCover"/> should be used.
