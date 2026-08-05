@@ -32,12 +32,9 @@ DeclareInfoClass( "InfoSchur" );
 ##
 ##  <Description>
 ##  returns one (of possibly several) Schur covers of the group <A>G</A>.
-##  <P/>
-##  For a general finite group this cover is represented as a finitely
-##  presented group, and <Ref Attr="IsomorphismPermGroup"/> would be needed
-##  to convert it to a permutation group; see
-##  <Ref Attr="EpimorphismSchurCover"/> for the cases in which other
-##  representations are returned.
+##  Except for finitely presented <A>G</A>, this is the
+##  <Ref Attr="Source"/> value of <Ref Attr="EpimorphismSchurCover"/>,
+##  and in particular no specific representation is guaranteed.
 ##  <P/>
 ##  If also the relation to <A>G</A> is needed,
 ##  <Ref Attr="EpimorphismSchurCover"/> should be used.
@@ -88,16 +85,14 @@ DeclareAttribute( "SchurCover", IsGroup );
 ##  If <A>pl</A> is given as a list of primes,
 ##  only the multiplier part for these primes is realized.
 ##  <P/>
-##  No particular representation of <M>D</M> is guaranteed. The methods for
-##  a general finite group return a finitely presented group, but there are
-##  special methods which return other representations, for example matrix
-##  groups for natural symmetric and alternating groups (see
-##  <Ref Oper="SchurCoverOfSymmetricGroup"/>), or pcp groups if the
-##  <Package>Polycyclic</Package> package is loaded. Moreover, if the
-##  multiplier of <A>G</A> is trivial (or if <A>pl</A> contains no relevant
-##  prime), the returned map may simply be the identity mapping of <A>G</A>.
-##  If a finitely presented group is required, use
-##  <Ref Attr="IsomorphismFpGroup"/> on the source of the returned map.
+##  No particular representation of <M>D</M> is guaranteed: for a
+##  <M>p</M>-group it is a pc group, for a natural symmetric or alternating
+##  group a matrix group (see
+##  <Ref Oper="SchurCoverOfSymmetricGroup"/>), for a pcp group a pcp group if
+##  the <Package>Polycyclic</Package> package is loaded, and a finitely
+##  presented group otherwise. Moreover, if the multiplier of <A>G</A> is
+##  trivial (or if <A>pl</A> contains no relevant prime), the returned map may
+##  simply be the identity mapping of <A>G</A>.
 ##  <P/>
 ##  The default method for finite groups which are not <M>p</M>-groups uses
 ##  a Sylow subgroup based algorithm due
