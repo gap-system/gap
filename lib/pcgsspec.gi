@@ -599,8 +599,15 @@ function( pcgs )
         # change to complement base
         Info(InfoSpecPcgs, 1, "exhibit complement system");
         pcgssys := PcgsSystemWithComplementSystem( pcgssys );
-        if IsBound(pcgssys.pcgs!.LGWeights) then
-          # pcgs is reused -- force new one
+        if IsBound(pcgssys.pcgs!.LGWeights)
+           or HasIndicesEANormalSteps(pcgssys.pcgs)
+           or HasIndicesChiefNormalSteps(pcgssys.pcgs)
+           or HasIndicesCentralNormalSteps(pcgssys.pcgs)
+           or HasIndicesPCentralNormalStepsPGroup(pcgssys.pcgs) then
+          # pcgs is reused and already carries series indices which might be
+          # incompatible with the LG series -- force new one. (Setting an
+          # attribute that is already set is silently ignored, so reusing such
+          # a pcgs would leave it in an inconsistent state.)
           pcgssys.pcgs:=PcgsByPcSequence(FamilyObj(OneOfPcgs(pcgs)),
             pcgssys.pcgs!.pcSequence);
         fi;
