@@ -406,6 +406,11 @@ local ag, p1iso, agp, p2iso, DP, p1, p2, gens, genimgs, triso,s,i,u,opt,
           fi;
           #Print("rep ",Size(u)," ",s,"\n");
         until Size(u)=s;
+        # the stabilizer chain of <u> reached the known order <s>, hence it is
+        # correct despite being computed randomly. Record that: otherwise the
+        # `random' value is inherited by every stabilizer chain computed later
+        # on inside <u>, where no such limit is known to validate the result.
+        StabChainOptions(u).random:=DefaultStabChainOptions.random;
         agp:=u;
       else
         gens:=GeneratorsOfGroup(agp);
