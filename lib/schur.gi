@@ -92,9 +92,6 @@ local g, i, m, n, r, D, M, M2,fgens,rels,gens,Drels,nam;
   return D;
 end);
 
-InstallMethod(SchurCover,"of fp group",true,[IsSubgroupFpGroup],0,
-  SchurCoverFP);
-
 ##  Works for any finite group, but Tietze simplification of the cover makes
 ##  it practical only for small ones.
 BindGlobal("EpimorphismSchurCoverFP",
