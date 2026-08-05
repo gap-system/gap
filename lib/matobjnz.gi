@@ -1519,7 +1519,7 @@ end );
 
 InstallOtherMethod( MinimalPolynomial, "ZModnZ, spinning over field",
     IsElmsCollsX,
-    [ IsField and IsFinite, IsMatrixObj, IsPosInt ],
+    [ IsField and IsFinite, IsZmodnZMatrixRep, IsPosInt ],
 function( fld, mat, ind )
     local i, n, base, vec, one, fam,
           mp, dim, span,op,w, piv,j;
@@ -1583,7 +1583,7 @@ end);
 
 InstallOtherMethod( CharacteristicPolynomialMatrixNC, "zmodnz spinning over field",
     IsElmsCollsX,
-    [ IsField, IsMatrixObj, IsPosInt ], function( fld, mat, ind)
+    [ IsField, IsZmodnZMatrixRep, IsPosInt ], function( fld, mat, ind)
 local i, n, base, imat, vec, one,cp,op,zero,fam;
     Info(InfoMatrix,1,"Characteristic Polynomial called on ",
     NrRows(mat)," x ",NrCols(mat)," matrix over ",fld);
