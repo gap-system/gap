@@ -1641,6 +1641,58 @@ local m;
     return m;
 end);
 
+InstallMethod( FrattiniSubgroup, "for Frattini-free groups",
+            [ IsGroup and IsFrattiniFree ], SUM_FLAGS,
+            TrivialSubgroup );
+
+
+#############################################################################
+##
+#M  IsFrattiniFree( <G> ) . . . . . . .  is the Frattini subgroup trivial ?
+##
+InstallMethod( IsFrattiniFree, "for groups with known Frattini subgroup",
+            [ IsGroup and HasFrattiniSubgroup ], SUM_FLAGS,
+            G -> IsTrivial( FrattiniSubgroup( G ) ) );
+
+InstallMethod( IsFrattiniFree, "for finite nilpotent groups",
+            [ IsGroup and IsFinite and IsNilpotentGroup ],
+function(G)
+    # A finite nilpotent group is the direct product of its Sylow subgroups,
+    # and for a finite p-group P we have Phi(P) = P'P^p. Hence Phi(G) is
+    # trivial if and only if all Sylow subgroups of G are elementary abelian,
+    # i.e., if and only if G is abelian of squarefree exponent.
+    return IsAbelian(G) and IsDuplicateFree(FactorsInt(Exponent(G)));
+end);
+
+InstallMethod( IsFrattiniFree, "generic method for finite groups",
+            [ IsGroup and IsFinite ],
+function(G)
+local n, F;
+    # A group of squarefree order is Frattini-free.
+    n := Size(G);
+    if IsDuplicateFree(FactorsInt(n)) then
+      return true;
+    fi;
+
+    # If N is normal in G then Phi(N) <= Phi(G). Applied to the nilpotent
+    # normal subgroup F = F(G) this shows that G can only be Frattini-free if
+    # F is abelian of squarefree exponent. Deciding this usually is much
+    # cheaper than computing Phi(G).
+    F := FittingSubgroup(G);
+    if not (IsAbelian(F) and IsDuplicateFree(FactorsInt(Exponent(F)))) then
+      return false;
+    fi;
+
+    # if G = F(G), i.e., if G is nilpotent, this criterion is also sufficient
+    if Size(F) = n then
+      return true;
+    fi;
+
+    return IsTrivial(FrattiniSubgroup(G));
+end);
+
+RedispatchOnCondition( IsFrattiniFree, true, [IsGroup], [IsFinite], 0);
+
 
 #############################################################################
 ##
