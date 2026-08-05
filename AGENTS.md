@@ -144,7 +144,6 @@ already be written this way.
 Pull requests should normally target `master`. Changes intended only for the
 current stable release series may target `stable-4.X` when appropriate.
 
-
 ## Pull request labels
 
 The script `dev/releases/release_notes.py` generates the release notes from the
@@ -167,9 +166,30 @@ first matching label, so consult that list to see which label wins. Labels are
 matched by their exact name, so take them from there or from `gh label list`
 rather than guessing.
 
-
 ## Changelog
 
 This project keeps a changelog in `CHANGES.md` but that is automatically
 updated by scripts, based on pull request titles. So you don't need to
 update it.
+
+## Prose: say it once, then stop
+
+**Be terse.** This applies to comments, commit messages, documentation, and
+anything a reader of the site sees. It is the note most often needed.
+
+The failure mode is not being wrong, it is being long: three sentences where
+one would do, a restatement of what the code plainly says, a second example
+that adds nothing, a clause defending a decision nobody questioned.
+
+- Say why, not what. `# the list is sorted` earns its place; a paragraph
+  narrating a loop does not.
+- One example, not three. One reason, not every reason.
+- Do not explain a thing twice in one file, and do not repeat in a comment
+  what the identifier already says.
+- Numbers and specifics beat adjectives. "160 orders" is worth more than
+  "relatively few orders".
+- Cut throat-clearing: no "it is worth noting that", "the point here is",
+  "deliberately", "the whole point of".
+
+Existing comments in this repository are longer than this in places. That is
+history, not a licence.
