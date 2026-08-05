@@ -1372,7 +1372,7 @@ BindGlobal("PerfGrpFallback",function(G,name)
   if IsSolvableGroup(G) then
     return [TrivialSubgroup(G)];
   fi;
-  Error("computing ",name," requires the library of perfect groups,\n",
+  ErrorNoReturn("computing ",name," requires the library of perfect groups,\n",
         "which is provided by the PerfGrp package. Please load it via\n",
         "  LoadPackage(\"perfgrp\");\n",
         "and try again");
