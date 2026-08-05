@@ -51,7 +51,7 @@ gap> AbelianInvariantsMultiplier(G);
 # `SchurCover' is the source of `EpimorphismSchurCover', for every group
 gap> IsIdenticalObj(SchurCover(G),Source(EpimorphismSchurCover(G)));
 true
-gap> G:=SmallGroup(16,3);;
+gap> G:=DihedralGroup(8);;
 gap> IsIdenticalObj(SchurCover(G),Source(EpimorphismSchurCover(G)));
 true
 gap> G:=SymmetricGroup(4);;
@@ -59,10 +59,12 @@ gap> IsIdenticalObj(SchurCover(G),Source(EpimorphismSchurCover(G)));
 true
 
 # groups for which the Sylow subgroup based algorithm returned wrong results
-# before it was disabled in GAP 4.5
-gap> AbelianInvariantsMultiplier(SmallGroup(48,30));
+# before it was disabled in GAP 4.5, namely SmallGroup(48,30) = A4 : C4 and
+# SmallGroup(48,48) = C2 x S4
+gap> G:=Group((1,2,3),(1,2)(3,4),(1,2)(5,6,7,8));;
+gap> AbelianInvariantsMultiplier(G);
 [ 2 ]
-gap> AbelianInvariantsMultiplier(SmallGroup(48,48));
+gap> AbelianInvariantsMultiplier(Group((1,2),(3,4,5,6),(3,4)));
 [ 2, 2 ]
 
 #
@@ -70,15 +72,15 @@ gap> check(TrivialGroup(IsPermGroup));
 true
 gap> check(CyclicGroup(6));
 true
-gap> check(SmallGroup(16,3));
+gap> check(DihedralGroup(8));
 true
 gap> check(SymmetricGroup(4));
 true
 gap> check(AlternatingGroup(5));
 true
-gap> check(SmallGroup(48,30));
+gap> check(Group((1,2,3),(1,2)(3,4),(1,2)(5,6,7,8)));
 true
-gap> check(SmallGroup(48,48));
+gap> check(Group((1,2),(3,4,5,6),(3,4)));
 true
 
 # matrix groups are handled via a permutation image
@@ -99,7 +101,7 @@ gap> AbelianInvariants(Kernel(epi));
 gap> epi:=EpimorphismSchurCover(AlternatingGroup(6),[5,7]);;
 gap> AbelianInvariants(Kernel(epi));
 [  ]
-gap> epi:=EpimorphismSchurCover(SmallGroup(16,3),[3]);;
+gap> epi:=EpimorphismSchurCover(DihedralGroup(8),[3]);;
 gap> AbelianInvariants(Kernel(epi));
 [  ]
 
