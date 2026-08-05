@@ -64,6 +64,19 @@ make bootstrap-pkg-minimal
 make bootstrap-pkg-full
 ```
 
+### Working in a git worktree
+
+A `git worktree` checkout has no `pkg` directory, so GAP started from it cannot
+find any packages -- including the ones it needs in order to start at all. Do
+not bootstrap a second package bundle for it; instead symlink the `pkg`
+directory of your main GAP checkout, for example:
+
+```sh
+ln -s /path/to/your/main/gap/pkg pkg
+```
+
+This is needed in addition to the usual `./configure && make`.
+
 ### Build the manual
 
 ```sh
