@@ -127,12 +127,45 @@ the test plan unless it differs from the instructions in this file. If the
 change fixes one or more issues, add `Fixes #...` at the end of the commit
 message body, not in the title.
 
-Pull requests should follow the same style: a short summary up top, concise
-prose describing the change, issue references when applicable, and an explicit
-AI-disclosure note if AI tools were used.
+Pull request descriptions should follow the same style: a short summary up top,
+concise prose describing the change, issue references when applicable, and an
+explicit AI-disclosure note if AI tools were used.
+
+A pull request *title*, however, is not a commit title: for pull requests
+labelled `release notes: use title` it is used verbatim as their release notes
+entry. Write it as a self-contained sentence describing the change from a user
+perspective, and in particular do not use the `component:` prefix there. See
+`CHANGES.md` for the expected style, for example "Add `IsSquareMat` and
+`IsAntisymmetricMat`" or "Speed up `IsSubset` for cyclotomic domains". Note
+that GitHub derives the title of a pull request from the commit title if the
+branch contains a single commit, so in that case the commit title should
+already be written this way.
 
 Pull requests should normally target `master`. Changes intended only for the
 current stable release series may target `stable-4.X` when appropriate.
+
+
+## Pull request labels
+
+The script `dev/releases/release_notes.py` generates the release notes from the
+merged pull requests and their labels, so every pull request should be labelled:
+
+- exactly one `release notes: ...` label, stating what should happen with it:
+  `use title` if its title can be used as the release notes entry as-is,
+  `not needed` for changes irrelevant to users, `to be added` if an entry is
+  needed but the title does not suffice, and additionally `highlight` for
+  changes prominent enough to be listed at the very top;
+- a `kind: ...` label, such as `kind: new feature`, `kind: enhancement` or one
+  of the `kind: bug...` labels;
+- one or more `topic: ...` labels naming the affected part of GAP, such as
+  `topic: library`, `topic: kernel`, `topic: documentation` or
+  `topic: performance`.
+
+The `prioritylist` in `dev/releases/release_notes.py` maps labels to release
+notes sections; a pull request is listed only in the section belonging to the
+first matching label, so consult that list to see which label wins. Labels are
+matched by their exact name, so take them from there or from `gh label list`
+rather than guessing.
 
 
 ## Changelog
