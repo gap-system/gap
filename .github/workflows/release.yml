@@ -66,6 +66,11 @@ jobs:
     timeout-minutes: 60
     outputs:
       gap-build-version: ${{ steps.get-build.outputs.name }}
+    env:
+      # Ubuntu only ships autoconf 2.71, but we need 2.72 for compatibility
+      # with GCC 14 & recent clang versions, so we build it ourselves.
+      AUTOCONF_VERSION: "2.72"
+      AUTOCONF_SHA256: "ba885c1319578d6c94d46e9b0dceb4014caafe2490e437a0dbca3f270a223f5a"
 
     steps:
       # We need to force fetch tags on the repository in the next step, which
@@ -92,14 +97,46 @@ jobs:
           git fetch https://github.com/gap-system/gap --tags --force
           git fetch --tags --force
 
-      - name: "Install autoconf 2.72"   # for compatibility with GCC 14 & clang versions
+      # Downloading the autoconf tarball from the GNU file servers regularly
+      # fails with 5xx errors. So we keep a copy of it in the GitHub Actions
+      # cache: as long as this workflow keeps running (it does so daily), the
+      # cache never expires, and we hardly ever bother the GNU servers again.
+      - name: "Cache the autoconf ${{ env.AUTOCONF_VERSION }} tarball"
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/gnu
+          key: autoconf-${{ env.AUTOCONF_VERSION }}.tar.xz
+
+      - name: "Install autoconf ${{ env.AUTOCONF_VERSION }}"
         run: |
-          wget https://ftpmirror.gnu.org/gnu/autoconf/autoconf-2.72.tar.xz
-          tar xvf autoconf-2.72.tar.xz
-          cd autoconf-2.72
+          set -e
+          TARBALL="autoconf-${AUTOCONF_VERSION}.tar.xz"
+          mkdir -p ~/.cache/gnu
+          if [ ! -f ~/.cache/gnu/"${TARBALL}" ] ; then
+            # ftpmirror.gnu.org redirects to a nearby mirror and hence is what
+            # GNU asks us to use; ftp.gnu.org is the master server, so only
+            # resort to it if all else fails.
+            for url in "https://ftpmirror.gnu.org/gnu/autoconf/${TARBALL}" \
+                       "https://mirrors.kernel.org/gnu/autoconf/${TARBALL}" \
+                       "https://ftp.gnu.org/gnu/autoconf/${TARBALL}" ; do
+              echo "Fetching ${url}"
+              wget --tries=3 --timeout=30 --retry-connrefused \
+                   --retry-on-http-error=429,500,502,503,504 \
+                   -O "${TARBALL}" "${url}" && break
+            done
+            # verify before caching, so that a failed or truncated download
+            # cannot poison the cache
+            echo "${AUTOCONF_SHA256}  ${TARBALL}" | sha256sum --check --strict
+            mv "${TARBALL}" ~/.cache/gnu/"${TARBALL}"
+          fi
+          # verify again, as this time the tarball may have come from the cache
+          echo "${AUTOCONF_SHA256}  ${HOME}/.cache/gnu/${TARBALL}" | sha256sum --check --strict
+          tar xf ~/.cache/gnu/"${TARBALL}"
+          cd "autoconf-${AUTOCONF_VERSION}"
           ./configure
-          make
+          make -j$(nproc)
           sudo make install
+          autoconf --version
 
       - name: "Set up Python"
         uses: actions/setup-python@v6
