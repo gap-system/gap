@@ -361,7 +361,11 @@ local ag, p1iso, agp, p2iso, DP, p1, p2, gens, genimgs, triso,s,i,u,opt,
       SetSize(ag,s);
     fi;
     IsGroupOfAutomorphismsFiniteGroup(ag);
-    p1iso:=IsomorphismPermGroup(ag);
+    # go nice route to avoid an abelian method getting in the way
+    p1iso:=NiceMonomorphism(ag);
+    if not IsPermGroup(Image(p1iso)) then
+      p1iso:=IsomorphismPermGroup(ag);
+    fi;
     agp:=Image(p1iso);
 
     # are both groups solvable?
@@ -839,7 +843,8 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
             tmp := StabilizerOp( D, rec(hashfun:= lst->lst*pows),tup,
               gens,newimgs, f );
           else
-            tmp := Stabilizer( D, tup,gens,genimgs, f );
+            #tmp := Stabilizer( D, tup,gens,genimgs, f );
+            tmp := SubnormalOrbitExtension( D, false, tup,gens,genimgs, f );
           fi;
         else
           tmp := Stabilizer( D, tup,gens,genimgs, f );
