@@ -185,6 +185,8 @@ UInt4 nextrandMT_int32(UInt4* mt)
 integrate with GAP  SL*/
 
 
+// Julia's headers also define FORCE_INLINE, so get rid of that first
+#undef FORCE_INLINE
 #define FORCE_INLINE static inline
 
 #ifndef SYS_IS_64_BIT
