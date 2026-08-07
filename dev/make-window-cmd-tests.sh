@@ -251,10 +251,18 @@ WriteLongStringTest := function(name)
 end;;
 
 ##  The entry test: the small shapes an answer entry can take, which
-##  'FuncWindowCmd' has to turn into GAP objects.  The cases up to the first
-##  error all stay inside their declared payload, so the input stream is still
-##  in sync afterwards and they can simply follow one another.  Results are
-##  printed as they stand, which is both the check and the documentation.
+##  'FuncWindowCmd' has to turn into GAP objects.  Every case stays inside its
+##  declared payload, so the input stream is still in sync afterwards and they
+##  can simply follow one another.  Results are printed as they stand, which is
+##  both the check and the documentation.
+##
+##  Several cases raise an error on purpose.  The test turns 'BreakOnError'
+##  off, so that those print their message and carry on rather than opening a
+##  break loop.  That keeps the expected output to the error messages this
+##  code is responsible for, instead of also pinning GAP's break loop banner
+##  and stack trace, which are nothing to do with reading an answer and whose
+##  wording has changed between releases.  It also means an error case need
+##  not be last, and needs no 'quit;' after it.
 
 WriteEntryTest := function(name)
   local  out, cases, ctrl, i, c, payload;
@@ -307,6 +315,7 @@ WriteEntryTest := function(name)
   out := OutputTextFile(name, false);
 
   WriteAll(out, WCHeader("#  The shapes an answer entry can take, in package mode.\n"));
+  WriteAll(out, "BreakOnError := false;;\n");
 
   for c in cases do
     WriteAll(out, "got := WindowCmd([\"TST\"]);;\n");
@@ -338,20 +347,23 @@ WriteEntryTest := function(name)
 
   # A status entry of 1 is how a window handler reports a failure back to GAP,
   # and is the form every real front end uses; the entries after it become the
-  # arguments of 'Error'.  This raises an error, so 'quit;' is needed to leave
-  # the break loop, as elsewhere in this directory.
+  # arguments of 'Error'.
   WriteAll(out, "got := WindowCmd([\"TST\"]);;\n");
   payload := Concatenation(WCInt(1), WCStr("bad news"));
   WriteAll(out, Concatenation("@a", WCRev(Length(payload)), "+", payload));
   WriteAll(out, "\n");
-  WriteAll(out, "quit;\n");
 
   # A header that is not '@a<digits>+' at all.  Writing it as a bare '@a'
   # means the newline ending the line is what fails the check, so nothing is
-  # left over to be mistaken for input.  This raises an error too, and is put
-  # last so that the break loop it opens is simply ended by the harness.
+  # left over to be mistaken for input -- which the answer read afterwards
+  # confirms.
   WriteAll(out, "got := WindowCmd([\"TST\"]);;\n");
   WriteAll(out, "@a\n");
+  WriteAll(out, "got := WindowCmd([\"TST\"]);;\n");
+  payload := Concatenation(WCInt(0), WCStr("still here"));
+  WriteAll(out, Concatenation("@a", WCRev(Length(payload)), "+", payload));
+  WriteAll(out, "\n");
+  WriteAll(out, "Print(\"in sync after bad header = \", got, \"\\n\");\n");
 
   CloseStream(out);
 end;;

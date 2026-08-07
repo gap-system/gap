@@ -67,7 +67,11 @@ half an escape is carried across.
 integers, `S+` and `S0+`, the whole `@A` .. `@Z` escape table, mixed kinds, a
 malformed `@<chr>`, an entry after a refill, an unknown entry kind and the
 drain that keeps the stream in sync after it, a status of `1`, and a header
-that is not `@a<digits>+` at all.
+that is not `@a<digits>+` at all.  It turns `BreakOnError` off, so that the
+cases which raise an error print their message and carry on instead of
+opening a break loop.  That keeps the expected output to the messages this
+code is responsible for, rather than also pinning GAP's break loop banner and
+stack trace, whose wording has changed between releases.
 
 `window-cmd-truncated.g` -- answers that come up short: an entry claiming
 more bytes than the payload holds, which is clamped; and a payload the input
