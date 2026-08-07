@@ -447,7 +447,7 @@ InstallMethod( ImagesElm,
     return [ LieObject( elm ) ];
     end );
 
-InstallMethod( PreImagesElm,
+InstallMethod( PreImagesElmNC,
     "for Lie embedding and Lie object in default representation",
     FamRangeEqFamElm,
     [ IsGeneralMapping and IsLieEmbeddingRep,
@@ -456,6 +456,19 @@ InstallMethod( PreImagesElm,
     return [ elm![1] ];
     end );
 
+InstallMethod( PreImagesElm,
+    "for Lie embedding and Lie object in default representation",
+    FamRangeEqFamElm,
+    [ IsGeneralMapping and IsLieEmbeddingRep,
+      IsLieObject and IsPackedElementDefaultRep ], 0,
+    function( emb, elm )
+    if not ( elm in Range(emb) ) then
+        Error( "<elm> is not in the range of mapping <emb>" );
+    elif not ( elm in Image(emb) ) then
+        return fail;
+    fi;
+    return PreImagesElmNC( emb, elm );
+    end );
 
 #############################################################################
 ##
