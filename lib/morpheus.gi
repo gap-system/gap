@@ -475,6 +475,11 @@ local hom, gens, c, ran, r, cen, img, u, orbs,
       Error("illegal actbase given!");
     fi;
     baddegree:=RootInt(Sum(actbase,Size)^2,3);
+    if IsPcGroup(g) then
+      # for pc groups action and storage is cheaper, and there are more
+      # classes
+      baddegree:=Maximum(List(actbase,Size));
+    fi;
   else
     baddegree:=RootInt(Size(g)^3,4);
   fi;
