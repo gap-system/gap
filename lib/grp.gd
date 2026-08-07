@@ -1834,6 +1834,7 @@ DeclareAttribute( "PrefrattiniSubgroup", IsGroup );
 ##  <Description>
 ##  The Frattini subgroup of a group <A>G</A> is the intersection of all
 ##  maximal subgroups of <A>G</A>.
+##  See also <Ref Prop="IsFrattiniFree"/>.
 ##  <Example><![CDATA[
 ##  gap> FrattiniSubgroup(g);
 ##  Group(())
@@ -1843,6 +1844,60 @@ DeclareAttribute( "PrefrattiniSubgroup", IsGroup );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "FrattiniSubgroup", IsGroup );
+
+
+#############################################################################
+##
+#P  IsFrattiniFree( <G> )
+##
+##  <#GAPDoc Label="IsFrattiniFree">
+##  <ManSection>
+##  <Prop Name="IsFrattiniFree" Arg='G'/>
+##
+##  <Description>
+##  A group is called <E>Frattini-free</E> if its Frattini subgroup
+##  (see <Ref Attr="FrattiniSubgroup"/>) is trivial.
+##  <P/>
+##  Methods for this property are only installed for finite groups.
+##  Note that a finite nilpotent group is Frattini-free if and only if all
+##  of its Sylow subgroups are elementary abelian, and that a finite group
+##  of squarefree order is always Frattini-free.
+##  <Example><![CDATA[
+##  gap> IsFrattiniFree( SymmetricGroup( 4 ) );
+##  true
+##  gap> IsFrattiniFree( CyclicGroup( 6 ) );
+##  true
+##  gap> IsFrattiniFree( CyclicGroup( 4 ) );
+##  false
+##  gap> IsFrattiniFree( QuaternionGroup( 8 ) );
+##  false
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareProperty( "IsFrattiniFree", IsGroup );
+
+InstallIsomorphismMaintenance( IsFrattiniFree, IsGroup, IsGroup );
+
+InstallTrueMethod( IsFrattiniFree, IsGroup and IsTrivial );
+
+# In an (infinite dimensional) vector space over a field with p elements the
+# hyperplanes intersect trivially.
+InstallTrueMethod( IsFrattiniFree, IsGroup and IsElementaryAbelian );
+
+# A nontrivial finite group has a maximal subgroup, hence its Frattini
+# subgroup is a proper normal subgroup and thus trivial if the group
+# is simple.
+InstallTrueMethod( IsFrattiniFree, IsGroup and IsFinite and IsSimpleGroup );
+
+# For a finite p-group P we have Phi(P) = P'P^p, hence P is Frattini-free
+# if and only if it is elementary abelian; a finite nilpotent group is the
+# direct product of its Sylow subgroups.
+InstallTrueMethod( IsElementaryAbelian,
+    IsGroup and IsFinite and IsPGroup and IsFrattiniFree );
+InstallTrueMethod( IsCommutative,
+    IsGroup and IsFinite and IsNilpotentGroup and IsFrattiniFree );
 
 
 #############################################################################

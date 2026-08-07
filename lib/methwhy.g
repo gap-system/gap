@@ -318,6 +318,14 @@ end);
 ##  +IsFinitelyGeneratedGroup
 ##     IsPolycyclicGroup
 ##
+##  +IsFinite
+##  +IsMagmaWithInverses
+##  +IsAssociative
+##  +IsFrattiniFree
+##     IsCommutative
+##     IsMonomialGroup
+##     IsPolycyclicGroup
+##
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

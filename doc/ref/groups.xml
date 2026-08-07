@@ -332,6 +332,7 @@ as they depend on a parameter.
 
 <#Include Label="IsCyclic">
 <#Include Label="IsElementaryAbelian">
+<#Include Label="IsFrattiniFree">
 <#Include Label="IsNilpotentGroup">
 <#Include Label="NilpotencyClassOfGroup">
 <#Include Label="IsPerfectGroup">
