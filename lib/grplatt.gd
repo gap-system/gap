@@ -535,6 +535,9 @@ DeclareSynonym("EmbeddingConjugates",ContainingConjugates);
 ##  positive integer <M>n=\mu(G)</M> such that <A>G</A> is isomorphic to a
 ##  subgroup of the symmetric group of degree <M>n</M>.
 ##  This can require calculating the whole subgroup lattice.
+##  In case you know that <A>G</A> is simple or semi-simple, you can use
+##  <C>MinimalFaithfulPermutationDegreeOfSimpleGroup</C> and
+##  <C>MinimalFaithfulPermutationDegreeOfSemiSimpleGroup</C> instead.
 ##  The operation
 ##  <Ref Oper="MinimalFaithfulPermutationRepresentation"/>
 ##  returns a
@@ -556,6 +559,7 @@ DeclareSynonym("EmbeddingConjugates",ContainingConjugates);
 DeclareOperation("MinimalFaithfulPermutationDegree",[IsGroup and IsFinite]);
 DeclareOperation("MinimalFaithfulPermutationRepresentation",
   [IsGroup and IsFinite]);
+DeclareGlobalFunction("MinimalFaithfulPermutationDegreeOfFittingFreeGroup");
 
 #############################################################################
 ##
