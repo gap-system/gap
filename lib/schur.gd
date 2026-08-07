@@ -31,18 +31,17 @@ DeclareInfoClass( "InfoSchur" );
 ##  <Attr Name="SchurCover" Arg='G'/>
 ##
 ##  <Description>
-##  returns one (of possibly several) Schur covers of the group <A>G</A>.
-##  <P/>
-##  At the moment this cover is represented as a finitely presented group
-##  and <Ref Attr="IsomorphismPermGroup"/> would be needed to convert it to a
-##  permutation group.
+##  returns one (of possibly several) Schur covers of the group <A>G</A>,
+##  namely the <Ref Attr="Source"/> value of
+##  <Ref Attr="EpimorphismSchurCover"/>; in particular no specific
+##  representation is guaranteed.
 ##  <P/>
 ##  If also the relation to <A>G</A> is needed,
 ##  <Ref Attr="EpimorphismSchurCover"/> should be used.
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,2,3,4),(1,2));;
 ##  gap> epi:=EpimorphismSchurCover(g);
-##  [ F1, F2, F3 ] -> [ (1,2), (2,3), (3,4) ]
+##  [ f1, f2, f3, f4 ] -> [ (1,2), (2,3), (3,4), () ]
 ##  gap> Size(Source(epi));
 ##  48
 ##  gap> f:=FreeGroup("a","b");;
@@ -75,13 +74,43 @@ DeclareAttribute( "SchurCover", IsGroup );
 ##
 ##  <Description>
 ##  returns an epimorphism <M>epi</M> from a group <M>D</M> onto <A>G</A>.
-##  The group <M>D</M> is one (of possibly several) Schur covers of <A>G</A>.
+##  The group <M>D</M> is one (of possibly several) Schur covers of <A>G</A>,
+##  that is, a central extension of the Schur multiplier of <A>G</A> by
+##  <A>G</A> in which the kernel is contained in the derived subgroup of
+##  <M>D</M>.
 ##  The group <M>D</M> can be obtained as the <Ref Attr="Source"/> value of
 ##  <A>epi</A>.
-##  The kernel of <M>epi</M> is the Schur multiplier of <A>G</A>.
+##  The kernel of <M>epi</M> is (isomorphic to) the Schur multiplier of
+##  <A>G</A>.
 ##  If <A>pl</A> is given as a list of primes,
 ##  only the multiplier part for these primes is realized.
-##  At the moment, <M>D</M> is represented as a finitely presented group.
+##  <P/>
+##  No particular representation of <M>D</M> is guaranteed: for a
+##  <M>p</M>-group it is a pc group, for a natural symmetric or alternating
+##  group a matrix group (see
+##  <Ref Oper="SchurCoverOfSymmetricGroup"/>), for a pcp group a pcp group if
+##  the <Package>Polycyclic</Package> package is loaded, and a finitely
+##  presented group otherwise. Moreover, if the multiplier of <A>G</A> is
+##  trivial (or if <A>pl</A> contains no relevant prime), the returned map may
+##  simply be the identity mapping of <A>G</A>.
+##  <P/>
+##  The default method for finite groups which are not <M>p</M>-groups uses
+##  a Sylow subgroup based algorithm due
+##  to&nbsp;<Cite Key="Holt85"/>; see also
+##  <Ref Attr="AbelianInvariantsMultiplier"/> if only the isomorphism type
+##  of the multiplier is of interest, as that is usually much cheaper to
+##  compute.
+##  <Example><![CDATA[
+##  gap> epi:=EpimorphismSchurCover(MathieuGroup(11));;
+##  gap> Size(Kernel(epi));
+##  1
+##  gap> epi:=EpimorphismSchurCover(SymmetricGroup(4));;
+##  gap> Size(Source(epi));
+##  48
+##  gap> epi:=EpimorphismSchurCover(SymmetricGroup(4),[3]);;
+##  gap> Size(Source(epi));
+##  24
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -102,8 +131,17 @@ DeclareAttribute( "EpimorphismSchurCover", IsGroup );
 ##  returns a list of the abelian invariants of the Schur multiplier of
 ##  <A>G</A>.
 ##  <P/>
-##  At the moment, this operation will not give any information about how to
-##  extend the multiplier to a Schur Cover.
+##  This operation will not give any information about how to
+##  extend the multiplier to a Schur cover;
+##  use <Ref Attr="EpimorphismSchurCover"/> if such information is needed.
+##  <P/>
+##  For a finite group <A>G</A> which is not a <M>p</M>-group, the multiplier
+##  is computed one prime at a time: for each prime <M>p</M> dividing the
+##  order of <A>G</A>, the <M>p</M>-part of the multiplier is obtained as a
+##  quotient of the multiplier of a Sylow <M>p</M>-subgroup <M>P</M> of
+##  <A>G</A>, by imposing the relations that come from the fusion of
+##  subgroups of <M>P</M> in <A>G</A>, following&nbsp;<Cite Key="Holt85"/>.
+##  This is usually much faster than computing a Schur cover.
 ##  <Example><![CDATA[
 ##  gap> AbelianInvariantsMultiplier(g);
 ##  [ 2 ]
@@ -115,18 +153,15 @@ DeclareAttribute( "EpimorphismSchurCover", IsGroup );
 ##  [ 2 ]
 ##  gap> AbelianInvariantsMultiplier(PSU(4,2));
 ##  [ 2 ]
+##  gap> AbelianInvariantsMultiplier(MathieuGroup(22));
+##  [ 3, 4 ]
 ##  ]]></Example>
-##  (Note that the last command from the example will take some time.)
 ##  <P/>
-##  The &GAP;&nbsp;4.4.12 manual contained examples for larger groups e.g.
-##  <M>M_{22}</M>. However, some issues that may very rarely (and not
-##  easily reproducibly) lead to wrong results were discovered in the code
-##  capable of handling larger groups, and in &GAP;&nbsp;4.5 it was replaced
-##  by a more reliable basic method. To deal with larger groups, one can use
-##  the function <Ref BookName="cohomolo" Func="SchurMultiplier"/> from the
-##  <Package>cohomolo</Package> package. Also, additional methods for
-##  <Ref Attr="AbelianInvariantsMultiplier"/> are installed in the
-##  <Package>Polycyclic</Package> package for pcp-groups.
+##  Additional methods for <Ref Attr="AbelianInvariantsMultiplier"/> are
+##  installed in the <Package>Polycyclic</Package> package for pcp groups.
+##  An independent implementation for permutation groups is available as
+##  <Ref BookName="cohomolo" Func="SchurMultiplier"/> in the
+##  <Package>cohomolo</Package> package.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -235,9 +270,10 @@ DeclareProperty("IsCentralFactor", IsGroup);
 ##  extension is <E>not</E> necessarily isomorphic to a Sylow subgroup of a
 ##  Darstellungsgruppe!) onto p-Sylow, the
 ##  kernel is the p-part of the multiplier.
-##  The implemented algorithm is based on section 7 in Derek Holt's paper.
-##  However we use some of the general homomorphism setup to avoid having to
-##  remember certain relations.
+##  The implemented algorithm is based on section 7
+##  of&nbsp;<Cite Key="Holt85"/>: the p-part of the multiplier of <A>G</A>
+##  is the largest quotient of the multiplier of a Sylow p-subgroup <M>P</M>
+##  on which the fusion of subgroups of <M>P</M> in <A>G</A> acts trivially.
 ##  </Description>
 ##  </ManSection>
 ##
