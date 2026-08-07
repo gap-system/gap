@@ -473,7 +473,7 @@ end);
 ##  </ManSection>
 ##  <#/GAPDoc>
 BIND_GLOBAL("PageSource", function ( fun, nr... )
-    local f, n, l, s, ss, locs;
+    local f, n, l, locs;
 
     if Length(nr) > 0 and IsPosInt(nr[1]) then
       n := nr[1];
@@ -514,15 +514,12 @@ BIND_GLOBAL("PageSource", function ( fun, nr... )
           l := STARTLINE_FUNC( fun );
           if l <> fail then
               l := Maximum(l-5, 1);
-          elif IsKernelFunction(fun) then
-              # page correct C source file and try to find line in C
-              # source starting `Obj Func<fun>`
-              s := String(fun);
-              ss:=SplitString(s,""," <>");
-              s := First(ss, a-> ':' in a);
-              if s <> fail then
-                ss := SplitString(s,":","");
-                l := Concatenation("Obj Func", ss[2]);
+          else
+              # for kernel functions whose definition we cannot locate in the
+              # source, let the pager search for the C function implementing it
+              l := LOCATION_FUNC( fun );
+              if l <> fail then
+                  l := Concatenation("Obj ", l);
               fi;
           fi;
         fi;
