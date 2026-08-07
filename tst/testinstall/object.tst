@@ -4,7 +4,7 @@
 gap> START_TEST("object.tst");
 
 # test some standard object types
-gap> r := Objectify(TYPE_KERNEL_OBJECT, rec());
+gap> r := [];; SET_TYPE_DATOBJ(r,TYPE_KERNEL_OBJECT);
 <kernel object>
 gap> KnownAttributesOfObject(r);
 [  ]
