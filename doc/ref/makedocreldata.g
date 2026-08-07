@@ -14,7 +14,6 @@ GAPInfo.ManualDataRef:= rec(
     "../../grp/basic.gd",
     "../../grp/classic.gd",
     "../../grp/conformal.gd",
-    "../../grp/perf.gd",
     "../../grp/ree.gd",
     "../../grp/suzuki.gd",
     "../../lib/addmagma.gd",

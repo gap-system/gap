@@ -321,6 +321,14 @@ end;
 IdGroup:=NONAVAILABLE_FUNC("Small Groups identification");
 SmallGroup:=NONAVAILABLE_FUNC("Small Groups library");
 PrimitiveGroup:=NONAVAILABLE_FUNC("Primitive Groups library");
+PerfectGroup:=NONAVAILABLE_FUNC("Perfect Groups library");
+PerfectIdentification:=NONAVAILABLE_FUNC("Perfect Groups library");
+PerfGrpLoad:=NONAVAILABLE_FUNC("Perfect Groups library");
+NumberPerfectGroups:=NONAVAILABLE_FUNC("Perfect Groups library");
+NrPerfectGroups:=NumberPerfectGroups;
+
+# indicator that the perfect groups library data is not loaded
+PERFRec := fail;
 
 #############################################################################
 ##
