@@ -705,7 +705,12 @@ class Inline:
             "<": "&lt;", ">": "&gt;",
         }
         if name in simple:
-            self._emit(simple[name])
+            if self.mode == "math" and name in "{}$%#_&":
+                # In math these are literal characters: an unescaped "{"
+                # would open a group and swallow the rest of the formula.
+                self._emit("\\" + xml_escape(name))
+            else:
+                self._emit(simple[name])
             return
 
         if name in ENTITY_MACROS:
@@ -812,7 +817,7 @@ class Inline:
             return
 
         if name in ("dots", "ldots", "cdots"):
-            self._emit("..." if self.mode != "math" else "\\ldots")
+            self._emit("\\" + name if self.mode == "math" else "...")
             return
 
         if name in DROP_MACROS:
@@ -885,9 +890,44 @@ class Inline:
         body = re.sub(r"\\sb\b\s*", "_", body)
         body = re.sub(r"(?<![\\A-Za-z])(" + "|".join(MATH_OPERATORS) + r")(?![A-Za-z])",
                       r"\\\1", body)
+        body = self._detex_alignment(body)
         inner = self._sub().run(body, "math")
         tag = "Display" if display else "M"
         self._emit(f"<{tag}>{inner}</{tag}>")
+
+    def _detex_alignment(self, body: str) -> str:
+        """Rewrite plain TeX's \\eqalign and \\cr for GAPDoc's LaTeX.
+
+        GAPDoc loads amssymb but not amsmath, so there is no `aligned`
+        environment; a two-column `array` is the nearest thing plain LaTeX has.
+        """
+        while True:
+            i = body.find(r"\eqalign")
+            j = body.find("{", i) if i >= 0 else -1
+            if j < 0:
+                break
+            depth, k = 0, j
+            while k < len(body):
+                if body[k] == "{":
+                    depth += 1
+                elif body[k] == "}":
+                    depth -= 1
+                    if depth == 0:
+                        break
+                k += 1
+            if k >= len(body):
+                break
+            inner = body[j + 1:k].replace(r"\cr", r"\\")
+            inner = re.sub(r"\\\\\s*$", "", inner.strip())
+            body = (body[:i] + r"\begin{array}{rl}" + inner + r"\end{array}"
+                    + body[k + 1:])
+
+        body = body.replace(r"\cr", r"\\")
+        for macro in ("matrix", "pmatrix", "cases", "over", "atop"):
+            if re.search(r"\\" + macro + r"\b", body):
+                self.notes.add("plain-TeX math construct needs rewriting",
+                               f"\\{macro} has no equivalent without amsmath")
+        return body
 
     def _quote(self) -> None:
         end = self.s.find("''", self.i + 2)
