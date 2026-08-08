@@ -1819,6 +1819,32 @@ def select_sources(doc: str, info: dict, notes: Notes) -> tuple[list[str], list[
     return chosen, skipped
 
 
+#: A rendered declaration element, for the duplicate-label check.
+DECL_ELEMENT = re.compile(
+    r'<(Func|Oper|Attr|Prop|Meth|Filt|Var|InfoClass|Constr|Fam)\s+'
+    r'Name="([^"]*)"(?:\s+Label="([^"]*)")?')
+
+
+def report_duplicate_labels(pieces: dict[str, str], notes: Notes) -> None:
+    """Report a name declared twice with no Label to tell the copies apart.
+
+    GAPDoc derives a label from each declaration's name, book-wide, and
+    otherwise reports "Label multiply defined" and resolves references to it
+    arbitrarily.  merge_overloads only sees one ManSection at a time, so it
+    cannot catch a name documented in two of them -- liepring documents
+    LiePRingsByLibrary once with a prime and once without.  The right label
+    says why the forms differ, so leave it to a human.
+    """
+    seen: dict[tuple[str, str, str], list[str]] = {}
+    for fn, xml in pieces.items():
+        for el, name, label in DECL_ELEMENT.findall(xml):
+            seen.setdefault((el, name, label), []).append(fn)
+    for (el, name, _label), files in sorted(seen.items()):
+        if len(files) > 1:
+            notes.add("name declared more than once, needs a Label",
+                      f"{name} ({el}) in {', '.join(sorted(set(files)))}")
+
+
 def validate(xml: str, label: str, notes: Notes) -> bool:
     """Parse the fragment (with entities neutralised) to catch malformed XML."""
     probe = re.sub(r"&[A-Za-z][\w.\-]*;", "ENT", xml)
@@ -1896,6 +1922,7 @@ def convert_package(pkgdir: str, outdir: str | None, notes: Notes) -> int:
                 if k not in ENTITY_MACROS and re.fullmatch(r"[A-Za-z][\w]*", k)}
 
     written: list[str] = []
+    pieces: dict[str, str] = {}
     for src in sources:
         conv = Converter(six, notes, book, entities, decls)
         xml = conv.convert_file(os.path.join(doc, src))
@@ -1905,7 +1932,9 @@ def convert_package(pkgdir: str, outdir: str | None, notes: Notes) -> int:
         with open(target, "w", encoding="utf8") as fh:
             fh.write(xml)
         written.append(stem + ".xml")
+        pieces[stem + ".xml"] = xml
         print(f"  {src:24s} -> {stem + '.xml':24s} {'ok' if ok else 'MALFORMED XML'}")
+    report_duplicate_labels(pieces, notes)
 
     # makedoc.g
     pkgname = info["package"] or os.path.basename(pkgdir)
@@ -1971,6 +2000,7 @@ def survey(pkgdirs: Iterable[str]) -> int:
         entities = {k for k in harvest_macros(doc, ["manual.tex"] + sources)
                     if k not in ENTITY_MACROS}
         bad = 0
+        pieces: dict[str, str] = {}
         for src in sources:
             conv = Converter(six, notes, book, entities, decls)
             try:
@@ -1979,8 +2009,10 @@ def survey(pkgdirs: Iterable[str]) -> int:
                 notes.add("converter crash", f"{src}: {exc}")
                 bad += 1
                 continue
+            pieces[src] = xml
             if not validate(xml, src, notes):
                 bad += 1
+        report_duplicate_labels(pieces, notes)
         for k, v in notes.counts.items():
             total.counts[k] = total.counts.get(k, 0) + v
         flag = f"  {bad} malformed" if bad else ""
