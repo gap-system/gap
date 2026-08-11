@@ -393,25 +393,11 @@ InstallGlobalFunction(RemoveDirectoryRecursively,
     return Dowork(dirname);
   end );
 
-InstallGlobalFunction( HexSHA256,
-function(str)
-    local s, res;
+BindGlobal( "GAP_SHA256_HexOfWords",
+function(words)
+    local res;
 
-    if IsString(str) then
-        str := CopyToStringRep(str);
-    elif IsInputStream(str) then
-        str := ReadAll(str);
-        # TODO: instead o reading the complete stream at once (which might be
-        # huge), it would be better to read it in chunks, say 16kb at a time.
-        # Alas, our streams API currently offers no way to do that.
-    else
-        ErrorNoReturn("<str> has to be a string or an input stream");
-    fi;
-
-    s := GAP_SHA256_INIT();
-    GAP_SHA256_UPDATE(s, str);
-    res := GAP_SHA256_FINAL(s);
-    res := Sum([0..7], i -> res[8-i]*2^(32*i));;
+    res := Sum([0..7], i -> words[8-i]*2^(32*i));
     res := LowercaseString(HexStringInt(res));
     # HexStringInt drops leading zero digits, but a SHA256 digest is always
     # 256 bits = 64 hex digits, so left-pad with '0' if the top byte(s) were 0.
@@ -419,4 +405,52 @@ function(str)
         res := Concatenation(ListWithIdenticalEntries(64 - Length(res), '0'), res);
     fi;
     return res;
+end);
+
+InstallGlobalFunction( HexSHA256,
+function(str)
+    local s, chunk;
+
+    s := GAP_SHA256_INIT();
+    if IsString(str) then
+        GAP_SHA256_UPDATE(s, CopyToStringRep(str));
+    elif IsInputStream(str) then
+        # read in chunks: the stream may deliver more than fits in memory
+        repeat
+            chunk := ReadAll(str, 65536);
+            if IsString(chunk) and Length(chunk) > 0 then
+                GAP_SHA256_UPDATE(s, CopyToStringRep(chunk));
+            fi;
+        until not IsString(chunk) or Length(chunk) = 0;
+    else
+        ErrorNoReturn("<str> has to be a string or an input stream");
+    fi;
+
+    return GAP_SHA256_HexOfWords(GAP_SHA256_FINAL(s));
+end);
+
+InstallGlobalFunction( HexSHA256File,
+function(args...)
+    local filename, decompress, res;
+
+    if Length(args) = 0 or 2 < Length(args) then
+        ErrorNoReturn("usage: HexSHA256File( <filename>[, <decompress>] )");
+    fi;
+    filename := args[1];
+    if not IsString(filename) then
+        ErrorNoReturn("<filename> must be a string");
+    fi;
+    decompress := false;
+    if Length(args) = 2 then
+        if not args[2] in [ true, false ] then
+            ErrorNoReturn("<decompress> must be 'true' or 'false'");
+        fi;
+        decompress := args[2];
+    fi;
+
+    res := GAP_SHA256_FILE(UserHomeExpand(filename), decompress);
+    if res = fail then
+        return fail;
+    fi;
+    return GAP_SHA256_HexOfWords(res);
 end);
