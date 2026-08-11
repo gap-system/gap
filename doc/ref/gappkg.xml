@@ -313,6 +313,10 @@ The following components of the record are <E>optional</E>.
   <Item>
     a string,
   </Item>
+  <Mark><C>GitHubUsername</C></Mark>
+  <Item>
+    a string containing a GitHub username, without <C>@</C> or a URL.
+  </Item>
   </List>
   If the <C>IsMaintainer</C> value is <K>true</K> then also one of the
   following components is mandatory, otherwise these components are optional.

@@ -2220,8 +2220,8 @@ InstallGlobalFunction( DeclareAutoreadableVariables,
 ##
 InstallGlobalFunction( ValidatePackageInfo, function( info )
     local record, pkgdir, i, IsStringList, IsRecordList, IsProperBool, IsURL,
-          IsFilename, IsFilenameList, result, TestOption, TestMandat, subrec,
-          list, CheckDateValidity;
+          IsGitHubUsername, IsFilename, IsFilenameList, result, TestOption,
+          TestMandat, subrec, list, CheckDateValidity;
 
     if IsString( info ) then
       if IsReadableFile( info ) then
@@ -2258,6 +2258,8 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
           ( x[1] <> '/' and IsReadableFile( Concatenation( pkgdir, x ) ) ) );
     IsFilenameList:= x -> IsList( x ) and ForAll( x, IsFilename );
     IsURL := x -> ForAny(["http://","https://","ftp://"], s -> StartsWith(x,s));
+    IsGitHubUsername := x -> IsString( x ) and not IsURL( x )
+        and Length( x ) > 0 and x[1] <> '@';
 
     result:= true;
 
@@ -2374,6 +2376,8 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
         TestOption( subrec, "PostalAddress", IsString, "a string" );
         TestOption( subrec, "Place", IsString, "a string" );
         TestOption( subrec, "Institution", IsString, "a string" );
+        TestOption( subrec, "GitHubUsername", IsGitHubUsername,
+            "a string containing a GitHub username, without `@' or a URL" );
       od;
     fi;
 
