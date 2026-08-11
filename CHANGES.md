@@ -1942,7 +1942,7 @@ following five new packages:
   - **walrus** by Markus Pfeiffer, providing methods for proving
     hyperbolicity of finitely presented groups in polynomial time.
 
-  - **YangBaxter** by Leandro Vendramin and Alexander Konovalov, which
+  - **YangBaxter** by Leandro Vendramin and Olexandr Konovalov, which
     provides functionality to construct classical and skew braces, and
     also includes a database of classical and skew braces of small
     orders.
@@ -4452,7 +4452,7 @@ GAP 4.6.5 release:
     result, it is now much easier to install and use it with the current
     GAP release.
 
-  - **Wedderga** package by Osnel Broche Cristo, Allen Herman, Alexander
+  - **Wedderga** package by Osnel Broche Cristo, Allen Herman, Olexandr
     Konovalov, Aurora Olivieri, Gabriela Olteanu, Ángel del Río and
     Inneke Van Gelder has been extended to include functions for
     calculating local and global Schur indices of ordinary irreducible
@@ -4752,7 +4752,7 @@ release of GAP 4.5.4 are:
   - **AutoDoc** package by S. Gutsche, providing tools for automated
     generation of **GAPDoc** manuals.
 
-  - **Congruence** package by A. Konovalov, which provides functions to
+  - **Congruence** package by O. Konovalov, which provides functions to
     construct various canonical congruence subgroups in SL_2(ℤ), and
     also intersections of a finite number of such subgroups, implements
     the algorithm for generating Farey symbols for congruence subgroups
@@ -5355,7 +5355,7 @@ available. These include:
     and its packages from source provided by M. Neunhöffer.
 
   - The [GAP installer for Windows](https://www.gap-system.org/ukrgap/wininst/),
-    provided by Alexander Konovalov.
+    provided by Olexandr Konovalov.
 
 In the near future, we also hope to have a binary distribution for Mac
 OS X.
@@ -5583,7 +5583,7 @@ release of GAP 4.4.12 are:
     constructive recognition of groups (mostly intended for permutation
     groups, matrix groups and projective groups).
 
-  - **SCSCP** package by A. Konovalov and S. Linton, implementing the
+  - **SCSCP** package by O. Konovalov and S. Linton, implementing the
     Symbolic Computation Software Composability Protocol
     [**SCSCP**](http://www.symbolic-computation.org/scscp) for GAP, which
     provides interfaces to link a GAP instance with another copy of GAP or
@@ -5624,7 +5624,7 @@ GAP 4.4.12 release:
         statistical efficiency measures of a 1-(v,k,r) design, using
         exact algebraic computation.
 
-  - **Example** package by W. Nickel, G. Gamble and A. Konovalov has a
+  - **Example** package by W. Nickel, G. Gamble and O. Konovalov has a
     more detailed and up-to-date guidance on developing a GAP
     package.
 
@@ -5724,7 +5724,7 @@ GAP 4.4.12 release:
     **MPINU** library which is still supplied with the package (thanks
     to P. Smith for upgrading **ParGAP** build process).
 
-  - **OpenMath** package by M. Costantini, A. Konovalov, M. Nicosia and
+  - **OpenMath** package by M. Costantini, O. Konovalov, M. Nicosia and
     A. Solomon now supports much more OpenMath symbols to facilitate
     communication by the remote procedure call protocol implemented in
     the **SCSCP** package. Also, a third-party external library to
@@ -5804,7 +5804,7 @@ Finally, the following packages are withdrawn:
 
   - **IF** package by M. Costantini is unmaintained and no longer
     usable. More advanced functionality for interfaces to other computer
-    algebra systems is now available in the **SCSCP** package by A.
+    algebra systems is now available in the **SCSCP** package by O.
     Konovalov and S. Linton.
 
   - **Monoid** package by J. Mitchell is superseded by the **Citrus**
@@ -6316,7 +6316,7 @@ Finally, the following packages are withdrawn:
     vectors/matrices easier. Nothing of this should be visible.
 
   - Corrected some details in the documentation of the GAP language.
-    (Reported by Alexander Konovalov)
+    (Reported by Olexandr Konovalov)
 
   - Now `PositionSorted` is much faster on long mutable plain lists. (The
     former operation is substituted by a function and a new operation
@@ -6429,7 +6429,7 @@ Finally, the following packages are withdrawn:
 
   - Up to now, it was possible to create a group object from a semigroup
     of cyclotomics using `AsGroup`, although groups of cyclotomics are
-    not admissible. (Reported by Alexander Konovalov)
+    not admissible. (Reported by Olexandr Konovalov)
 
   - The documentation of `CharacteristicPolynomial(F,mat)` was ambiguous
     if `FieldOfMatrix(mat) <= F < DefaultFieldOfMatrix(mat)`. In
@@ -6800,7 +6800,7 @@ discuss until the next update how to improve this feature.
     Schmidt)
 
   - Some methods for computing the sum of ideals returned the first
-    summand instead of the sum. (Reported by Alexander Konovalov)
+    summand instead of the sum. (Reported by Olexandr Konovalov)
 
   - Wrong result in `Intersection` for pc groups.
 
@@ -6830,7 +6830,7 @@ discuss until the next update how to improve this feature.
   - A bug which caused `InducedPcgs` to return a pcgs which is not
     induced wrt. the parent pcgs of `pcgs`. This may cause
     unpredictable behaviour, e. g. when `SiftedPcElement` is used
-    subsequently. (Reported by Alexander Konovalov)
+    subsequently. (Reported by Olexandr Konovalov)
 
   - Fixed a bug in `SmallGroupsInformation(512)`.
 
@@ -7225,7 +7225,7 @@ The following new Packages have been accepted.
 
   - [**LAGUNA**: Computing with Lie Algebras and Units of Group
     Algebras.](https://www.gap-system.org/Packages/laguna.html) By V.
-    Bovdi, A. Konovalov, R. Rossmanith, C. Schneider.
+    Bovdi, O. Konovalov, R. Rossmanith, C. Schneider.
 
   - [**NQ**: The ANU Nilpotent Quotient
     Algorithm.](https://www.gap-system.org/Packages/nq.html) By W.
