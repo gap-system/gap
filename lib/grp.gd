@@ -1902,6 +1902,51 @@ InstallTrueMethod( IsCommutative,
 
 #############################################################################
 ##
+#P  IsFittingFree( <G> )
+##
+##  <#GAPDoc Label="IsFittingFree">
+##  <ManSection>
+##  <Prop Name="IsFittingFree" Arg='G'/>
+##
+##  <Description>
+##  A group is called <E>Fitting-free</E> if its Fitting subgroup
+##  (see <Ref Attr="FittingSubgroup"/>) is trivial. For a finite group this
+##  is the case if and only if its solvable radical
+##  (see <Ref Attr="SolvableRadical"/>) is trivial, which is why such groups
+##  are also called groups with trivial Fitting subgroup, or TF-groups.
+##  <P/>
+##  Methods for this property are only installed for finite groups.
+##  A nontrivial finite solvable group is never Fitting-free, while every
+##  finite nonabelian simple group is.
+##  <Example><![CDATA[
+##  gap> IsFittingFree( SymmetricGroup( 5 ) );
+##  true
+##  gap> IsFittingFree( SymmetricGroup( 4 ) );
+##  false
+##  gap> IsFittingFree( SL( 2, 5 ) );
+##  false
+##  gap> IsFittingFree( PSL( 2, 5 ) );
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareProperty( "IsFittingFree", IsGroup );
+
+InstallIsomorphismMaintenance( IsFittingFree, IsGroup, IsGroup );
+
+InstallTrueMethod( IsFittingFree, IsGroup and IsTrivial );
+
+# a nonabelian simple group has no nontrivial proper normal subgroup at all
+InstallTrueMethod( IsFittingFree, IsGroup and IsFinite and IsNonabelianSimpleGroup );
+
+# for a finite group G we have Phi(G) <= F(G)
+InstallTrueMethod( IsFrattiniFree, IsGroup and IsFinite and IsFittingFree );
+
+
+#############################################################################
+##
 #A  InvariantForm( <D> )
 ##
 ##  <ManSection>
