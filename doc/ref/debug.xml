@@ -444,6 +444,10 @@ hour/minute format.
 that has passed since some fixed, but unspecified time in the past.
 
 This function is appropriate for doing wallclock time measurements.
+Only differences between two of its values are meaningful: despite the
+name, the values are not counted from 1-Jan-1970, and on most systems not
+from any particular date at all.  To find out what the current date and
+time are, use <Ref Func="CurrentSecondsSinceEpoch"/> instead.
 
 The actual resolution depends on the system that &GAP; is run on.
 Information about the used timers can be obtained by calling

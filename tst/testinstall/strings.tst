@@ -2,7 +2,7 @@
 ##
 ##  This file tests output methods (mainly for strings)
 ##
-#@local hadHome, len, savedHome, str, x
+#@local hadHome, len, savedHome, str, x, secs
 gap> START_TEST("strings.tst");
 
 # FFE
@@ -278,6 +278,25 @@ gap> Print(_FormatParagraph(
 ##  the lazy dog
 gap> Print(_FormatParagraph("a b", 20, "<", ">"));
 <a b>
+
+# CurrentSecondsSinceEpoch
+gap> secs := CurrentSecondsSinceEpoch();;
+gap> IsInt(secs);
+true
+
+# Any roughly correct clock lands in this window, while a monotonic timer
+# counting from boot -- which is what NanosecondsSinceEpoch returns -- does
+# not.  1600000000 is Sep 2020, 4000000000 is Oct 2096.
+gap> 1600000000 < secs and secs < 4000000000;
+true
+
+# It uses the same time scale as the other calendar functions.
+gap> SecondsDMYhms(DMYhmsSeconds(secs)) = secs;
+true
+gap> DMYhmsSeconds(secs)[3] >= 2020;
+true
+gap> CurrentSecondsSinceEpoch() >= secs;
+true
 
 #
 gap> STOP_TEST("strings.tst");

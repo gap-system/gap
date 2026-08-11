@@ -43,6 +43,24 @@
 #include <sys/time.h>
 #endif
 
+// Pick the source for the wall clock, see FuncCurrentSecondsSinceEpoch.
+// POSIX fixes the epoch of the first two to 1970-01-01 00:00:00 UTC; the
+// fallback needs converting, so it is named separately.
+#if defined(HAVE_CLOCK_GETTIME) && defined(CLOCK_REALTIME)
+#define GAP_WALLCLOCK_CLOCK_GETTIME
+#elif defined(HAVE_GETTIMEOFDAY)
+#define GAP_WALLCLOCK_GETTIMEOFDAY
+#else
+#define GAP_WALLCLOCK_TIME
+#endif
+
+// 'time' is in C89 and thus always available, unlike the monotonic timer,
+// which needs whatever the platform happens to offer.
+#include <time.h>
+#ifdef GAP_WALLCLOCK_GETTIMEOFDAY
+#include <sys/time.h>
+#endif
+
 
 /****************************************************************************
 **
@@ -254,6 +272,93 @@ static Obj FuncNanosecondsSinceEpoch(Obj self)
 }
 
 
+#ifdef GAP_WALLCLOCK_TIME
+
+/****************************************************************************
+**
+*F  SyUnixEpochSecondsFromTimeT( <t> )
+**
+**  Convert a 'time_t' to the number of seconds since 1970-01-01 00:00:00 UTC.
+**
+**  ISO C leaves the epoch of 'time_t' implementation defined, so a value from
+**  'time' cannot simply be returned as is.  Breaking it down with 'gmtime'
+**  and counting from the fields is independent of whatever epoch the system
+**  uses.  Returns -1 if the conversion fails.
+**
+**  Only correct for dates from 1970 onwards, which is all we need: the input
+**  is the current time.
+*/
+static Int8 SyUnixEpochSecondsFromTimeT(time_t t)
+{
+    struct tm * bd;
+    Int8        year, days, leaps;
+
+    bd = gmtime(&t);
+    if (bd == NULL)
+        return -1;
+
+    year = (Int8)bd->tm_year + 1900;
+    if (year < 1970)
+        return -1;
+
+    // leap days completed between 1970-01-01 and 1 January of <year>
+    leaps = (year - 1) / 4 - (year - 1) / 100 + (year - 1) / 400 -
+            (1969 / 4 - 1969 / 100 + 1969 / 400);
+    days = (year - 1970) * 365 + leaps + bd->tm_yday;
+
+    return ((days * 24 + bd->tm_hour) * 60 + bd->tm_min) * 60 + bd->tm_sec;
+}
+
+#endif    // GAP_WALLCLOCK_TIME
+
+
+/****************************************************************************
+**
+*F  FuncCurrentSecondsSinceEpoch( <self> )
+**
+**  'FuncCurrentSecondsSinceEpoch' returns the number of seconds that have
+**  passed since 1970-01-01 00:00:00 UTC, ignoring leap seconds, or 'fail' if
+**  the system clock cannot be read.  That epoch is guaranteed, whatever the
+**  system happens to count from.
+**
+**  Note that this is a different quantity from the one returned by
+**  'SyNanosecondsSinceEpoch', which counts from an unspecified point and is
+**  monotonic where possible.  That makes it right for measuring durations
+**  and useless for recording when something happened, which is what this is
+**  for.
+*/
+static Obj FuncCurrentSecondsSinceEpoch(Obj self)
+{
+    Int8 secs;
+
+    // POSIX pins both of these to 1970-01-01 00:00:00 UTC, so their seconds
+    // field is already the value we promise.
+#if defined(GAP_WALLCLOCK_CLOCK_GETTIME)
+    struct timespec ts;
+
+    if (clock_gettime(CLOCK_REALTIME, &ts) != 0)
+        return Fail;
+    secs = (Int8)ts.tv_sec;
+#elif defined(GAP_WALLCLOCK_GETTIMEOFDAY)
+    struct timeval tv;
+
+    if (gettimeofday(&tv, NULL) != 0)
+        return Fail;
+    secs = (Int8)tv.tv_sec;
+#else
+    time_t t = time(NULL);
+
+    if (t == (time_t)-1)
+        return Fail;
+    secs = SyUnixEpochSecondsFromTimeT(t);
+    if (secs < 0)
+        return Fail;
+#endif
+
+    return ObjInt_Int8(secs);
+}
+
+
 /****************************************************************************
 **
 *F  FuncNanosecondsSinceEpochInfo( <self> )
@@ -356,6 +461,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_0ARGS(RUNTIMES),
     GVAR_FUNC_0ARGS(NanosecondsSinceEpoch),
     GVAR_FUNC_0ARGS(NanosecondsSinceEpochInfo),
+    GVAR_FUNC_0ARGS(CurrentSecondsSinceEpoch),
 
     GVAR_FUNC_1ARGS(Sleep, secs),
     GVAR_FUNC_1ARGS(MicroSleep, msecs),
