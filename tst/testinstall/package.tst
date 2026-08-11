@@ -343,17 +343,42 @@ true
 gap> info.Persons[1].GitHubUsername := 4784;;
 gap> ValidatePackageInfo(info);
 #E  component `GitHubUsername', if present, must be bound to a string containi\
-ng a GitHub username, without `@' or a URL
+ng a valid GitHub username
 false
 gap> info.Persons[1].GitHubUsername := "https://github.com/gap-maintainer";;
 gap> ValidatePackageInfo(info);
 #E  component `GitHubUsername', if present, must be bound to a string containi\
-ng a GitHub username, without `@' or a URL
+ng a valid GitHub username
 false
 gap> info.Persons[1].GitHubUsername := "@gap-maintainer";;
 gap> ValidatePackageInfo(info);
 #E  component `GitHubUsername', if present, must be bound to a string containi\
-ng a GitHub username, without `@' or a URL
+ng a valid GitHub username
+false
+gap> info.Persons[1].GitHubUsername := "gap--maintainer";;
+gap> ValidatePackageInfo(info);
+#E  component `GitHubUsername', if present, must be bound to a string containi\
+ng a valid GitHub username
+false
+gap> info.Persons[1].GitHubUsername := "-gap-maintainer";;
+gap> ValidatePackageInfo(info);
+#E  component `GitHubUsername', if present, must be bound to a string containi\
+ng a valid GitHub username
+false
+gap> info.Persons[1].GitHubUsername := "gap-maintainer-";;
+gap> ValidatePackageInfo(info);
+#E  component `GitHubUsername', if present, must be bound to a string containi\
+ng a valid GitHub username
+false
+gap> info.Persons[1].GitHubUsername := "gap_maintainer";;
+gap> ValidatePackageInfo(info);
+#E  component `GitHubUsername', if present, must be bound to a string containi\
+ng a valid GitHub username
+false
+gap> info.Persons[1].GitHubUsername := "1234567890123456789012345678901234567890";;
+gap> ValidatePackageInfo(info);
+#E  component `GitHubUsername', if present, must be bound to a string containi\
+ng a valid GitHub username
 false
 
 #

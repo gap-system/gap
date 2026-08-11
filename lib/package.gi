@@ -2258,8 +2258,19 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
           ( x[1] <> '/' and IsReadableFile( Concatenation( pkgdir, x ) ) ) );
     IsFilenameList:= x -> IsList( x ) and ForAll( x, IsFilename );
     IsURL := x -> ForAny(["http://","https://","ftp://"], s -> StartsWith(x,s));
-    IsGitHubUsername := x -> IsString( x ) and not IsURL( x )
-        and Length( x ) > 0 and x[1] <> '@';
+    IsGitHubUsername := function( x )
+      local len;
+      if not IsString( x ) then
+        return false;
+      fi;
+      len := Length( x );
+      return 0 < len and len <= 39
+          and x[1] <> '-' and x[len] <> '-'
+          and ForAll( x, c -> IsAlphaChar( c ) or IsDigitChar( c )
+                             or c = '-' )
+          and not ForAny( [ 1 .. len - 1 ],
+                          i -> x[i] = '-' and x[i+1] = '-' );
+    end;
 
     result:= true;
 
@@ -2377,7 +2388,7 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
         TestOption( subrec, "Place", IsString, "a string" );
         TestOption( subrec, "Institution", IsString, "a string" );
         TestOption( subrec, "GitHubUsername", IsGitHubUsername,
-            "a string containing a GitHub username, without `@' or a URL" );
+            "a string containing a valid GitHub username" );
       od;
     fi;
 
