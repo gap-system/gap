@@ -1885,6 +1885,76 @@ def report_duplicate_labels(pieces: dict[str, str], notes: Notes) -> None:
                       f"{name} ({el}) in {', '.join(sorted(set(files)))}")
 
 
+SECTION_LABEL = re.compile(r'<(Chapter|Section) Label="([^"]*)">')
+REF_TARGET = re.compile(r'<Ref [^>]*?(?:Sect|Chap|Subsect)="([^"]*)"')
+
+
+def drop_colliding_section_labels(pieces: dict[str, str],
+                                  notes: Notes) -> dict[str, str]:
+    """Unlabel a section named after the one function it documents.
+
+    gapmacro kept section and declaration labels apart; GAPDoc has a single
+    namespace, so `\\Section{CHR}` wrapping `\\>CHR(...)` becomes "Label
+    multiply defined" and a reference resolves to whichever came last. grape
+    does this 73 times.
+
+    Where the section wraps exactly that one declaration, the section label is
+    redundant: drop it, and point any reference at the declaration instead --
+    it lands the reader in the same place. Anything less clear-cut is left
+    alone and reported.
+    """
+    # which declarations does each section contain?
+    sole: dict[str, str] = {}      # label -> element of its single declaration
+    multi: set[str] = set()
+    for xml in pieces.values():
+        for chunk in re.split(r"(?=<(?:Chapter|Section)[ >])", xml):
+            m = SECTION_LABEL.match(chunk)
+            if not m:
+                continue
+            found = DECL_ELEMENT.findall(chunk)
+            names = {f[1] for f in found}
+            if names == {m.group(2)} and len(found) == 1:
+                sole[m.group(2)] = found[0][0]
+            else:
+                multi.add(m.group(2))
+
+    decls = {f[1] for xml in pieces.values() for f in DECL_ELEMENT.findall(xml)}
+
+    dropped = retargeted = 0
+    out = {}
+    for fn, xml in pieces.items():
+        def fix_section(m: re.Match) -> str:
+            nonlocal dropped
+            label = m.group(2)
+            if label in decls and label in sole and label not in multi:
+                dropped += 1
+                return f"<{m.group(1)}>"
+            if label in decls:
+                notes.add("section shares a label with a declaration",
+                          f"{label} in {fn} -- section holds more than that "
+                          f"declaration, so left alone")
+            return m.group(0)
+
+        def fix_ref(m: re.Match) -> str:
+            nonlocal retargeted
+            label = m.group(2)
+            if label in sole and label not in multi:
+                retargeted += 1
+                return m.group(0).replace(f'{m.group(1)}="{label}"',
+                                          f'{sole[label]}="{label}"')
+            return m.group(0)
+
+        xml = re.sub(r'<Ref [^>]*?(Sect|Chap|Subsect)="([^"]*)"[^>]*/>',
+                     fix_ref, xml)
+        out[fn] = SECTION_LABEL.sub(fix_section, xml)
+
+    if dropped:
+        notes.add("section label dropped, clashed with its own declaration",
+                  f"{dropped} section(s); {retargeted} reference(s) retargeted "
+                  f"at the declaration")
+    return out
+
+
 def validate(xml: str, label: str, notes: Notes) -> bool:
     """Parse the fragment (with entities neutralised) to catch malformed XML."""
     probe = re.sub(r"&[A-Za-z][\w.\-]*;", "ENT", xml)
@@ -1961,20 +2031,24 @@ def convert_package(pkgdir: str, outdir: str | None, notes: Notes) -> int:
     entities = {k: v for k, v in macros.items()
                 if k not in ENTITY_MACROS and re.fullmatch(r"[A-Za-z][\w]*", k)}
 
-    written: list[str] = []
+    # Convert everything first: the label checks below need the whole book.
     pieces: dict[str, str] = {}
     for src in sources:
         conv = Converter(six, notes, book, entities, decls)
-        xml = conv.convert_file(os.path.join(doc, src))
+        pieces[src[:-4] + ".xml"] = conv.convert_file(os.path.join(doc, src))
+
+    pieces = drop_colliding_section_labels(pieces, notes)
+    report_duplicate_labels(pieces, notes)
+
+    written: list[str] = []
+    for src in sources:
         stem = src[:-4]
-        target = os.path.join(out, stem + ".xml")
+        xml = pieces[stem + ".xml"]
         ok = validate(xml, stem + ".xml", notes)
-        with open(target, "w", encoding="utf8") as fh:
+        with open(os.path.join(out, stem + ".xml"), "w", encoding="utf8") as fh:
             fh.write(xml)
         written.append(stem + ".xml")
-        pieces[stem + ".xml"] = xml
         print(f"  {src:24s} -> {stem + '.xml':24s} {'ok' if ok else 'MALFORMED XML'}")
-    report_duplicate_labels(pieces, notes)
 
     # makedoc.g
     pkgname = info["package"] or os.path.basename(pkgdir)
@@ -2052,6 +2126,7 @@ def survey(pkgdirs: Iterable[str]) -> int:
             pieces[src] = xml
             if not validate(xml, src, notes):
                 bad += 1
+        pieces = drop_colliding_section_labels(pieces, notes)
         report_duplicate_labels(pieces, notes)
         for k, v in notes.counts.items():
             total.counts[k] = total.counts.get(k, 0) + v
