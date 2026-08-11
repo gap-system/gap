@@ -24,8 +24,22 @@ true
 # solvable group
 gap> G:=DihedralGroup(100);
 <pc group of size 100 with 4 generators>
+gap> IsFrattiniFree(G);
+false
 gap> AutomorphismGroup(G);
 <group of size 1000 with 4 generators>
+
+# solvable Frattini-free groups, handled by AutomorphismGroupFrattFreeGroup
+gap> G:=SymmetricGroup(4);;
+gap> IsFrattiniFree(G);
+true
+gap> Size(AutomorphismGroup(G));
+24
+gap> Size(AutomorphismGroup(SymmetricGroup(IsPcGroup,4)));
+24
+gap> G:=Group((1,2,3,4,5),(2,3,5,4));;  # Frobenius group of order 20
+gap> Size(AutomorphismGroup(G));
+20
 
 #
 gap> STOP_TEST("AutomorphismGroup.tst");
