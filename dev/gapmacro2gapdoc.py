@@ -2033,16 +2033,25 @@ def convert_package(pkgdir: str, outdir: str | None, notes: Notes) -> int:
 
     # Convert everything first: the label checks below need the whole book.
     pieces: dict[str, str] = {}
+    stems: dict[str, str] = {}
     for src in sources:
+        stem = src[:-4]
+        if stem in ("main", "title") or stem.startswith("_"):
+            # AutoDoc writes doc/main.xml, doc/title.xml and doc/_*.xml itself
+            # and would overwrite the chapter without saying so.
+            stem = f"{book}_{stem}"
+            notes.add("chapter renamed to keep clear of AutoDoc's scaffold",
+                      f"{src} -> {stem}.xml")
+        stems[src] = stem
         conv = Converter(six, notes, book, entities, decls)
-        pieces[src[:-4] + ".xml"] = conv.convert_file(os.path.join(doc, src))
+        pieces[stem + ".xml"] = conv.convert_file(os.path.join(doc, src))
 
     pieces = drop_colliding_section_labels(pieces, notes)
     report_duplicate_labels(pieces, notes)
 
     written: list[str] = []
     for src in sources:
-        stem = src[:-4]
+        stem = stems[src]
         xml = pieces[stem + ".xml"]
         ok = validate(xml, stem + ".xml", notes)
         with open(os.path.join(out, stem + ".xml"), "w", encoding="utf8") as fh:
