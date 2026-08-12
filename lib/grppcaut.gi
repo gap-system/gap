@@ -1306,7 +1306,9 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
         B := NormalizingReducedGL( spec, s, n, M,B );
         # A and B will not be used later, so it is no problem to
         # replace them by other groups with fewer generators
-        B:=SubgroupNC(B,SmallGeneratingSet(B));
+        if Length(GeneratorsOfGroup(B))>4 then
+          B:=SubgroupNC(B,SmallGeneratingSet(B));
+        fi;
 
         if weights[s][2] = 1 then
             #Info( InfoAutGrp, 2,"compute reduced gl ");
@@ -1515,8 +1517,14 @@ InstallGlobalFunction(AutomorphismGroupFrattFreeGroup,function( G )
 
     # go over to perm rep
     Info( InfoAutGrp, 2, "compute perm rep ");
-    iso := IsomorphismPermGroup( A );
+    if Length(AbelianInvariants(F))>4 then
+      # likely the element action is best anyhow
+      iso := ActionHomomorphism(A,Elements(Group(gensF)),"surjective");;
+    else
+      iso := IsomorphismPermGroup( A );
+    fi;
     P   := Image( iso );
+    if HasSize(A) then SetSize(P,Size(A));fi;
 
     # compute subgroup
     Info( InfoAutGrp, 2, "compute subgroup ");
@@ -1525,7 +1533,7 @@ InstallGlobalFunction(AutomorphismGroupFrattFreeGroup,function( G )
         imgs := List( gensF, y -> y ^ k );
         aut := GroupHomomorphismByImagesNC( F, F, gensF, imgs );
         # CheckAuto( aut );
-        Add( gensU, Image( iso, aut ) );
+        Add( gensU, ImagesRepresentative( iso, aut ) );
     od;
     U := SubgroupNC( P, gensU );
     hom := GroupHomomorphismByImagesNC( K, U, gensK, gensU );
