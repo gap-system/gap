@@ -38,6 +38,14 @@ DeclareInfoClass("InfoFitFree");
 ##  <Ref Attr="FittingFreeLiftSetup"/> is available for <A>grp</A>.
 ##  Note that this filter may change its value from <K>false</K> to
 ##  <K>true</K>.
+##  <Example><![CDATA[
+##  gap> G:=PerfectGroup(1080,1);
+##  A6 3^1
+##  gap> CanComputeFittingFree(G);
+##  true
+##  gap> CanComputeFittingFree(FreeGroup(2));
+##  false
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -69,6 +77,14 @@ InstallTrueMethod(CanComputeFittingFree, IsPcGroup);
 ##  The kind of problem is described by the string <A>task</A>.
 ##  Currently the only supported value is <C>"CENT"</C>, for centralizer
 ##  and element conjugacy calculations.
+##  <P/>
+##  In the following example the group is small enough that a backtrack
+##  search is preferable, so the heuristic advises against the TF approach.
+##  <Example><![CDATA[
+##  gap> G:=PerfectGroup(1080,1);;
+##  gap> AttemptPermRadicalMethod(G,"CENT");
+##  false
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -126,6 +142,24 @@ DeclareGlobalFunction("AttemptPermRadicalMethod");
 ##  <P/>
 ##  The record may hold further components that are germane to the
 ##  recognition setup. None of the components may be modified by user code.
+##  <P/>
+##  In the following example <A>G</A> is a central extension
+##  <M>3.A_6</M>, so its radical is the centre of order <M>3</M> and the
+##  factor group modulo the radical is simple.
+##  <Example><![CDATA[
+##  gap> G:=PerfectGroup(1080,1);;
+##  gap> ffs:=FittingFreeLiftSetup(G);;
+##  gap> Size(ffs.radical);
+##  3
+##  gap> ffs.depths;
+##  [ 1, 2 ]
+##  gap> Length(ffs.pcgs);
+##  1
+##  gap> Size(Image(ffs.factorhom));
+##  360
+##  gap> IsSimpleGroup(Image(ffs.factorhom));
+##  true
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -177,6 +211,27 @@ InstallTrueMethod(CanComputeFittingFree,HasFittingFreeLiftSetup);
 ##  <P/>
 ##  The record may hold further components that are germane to the
 ##  recognition setup. None of the components may be modified by user code.
+##  <P/>
+##  In the following example <A>U</A> is a Sylow <M>3</M>-subgroup of
+##  <M>3.A_6</M>; it meets the radical in the centre of order <M>3</M> and
+##  therefore has an image of order <M>9</M> in the factor group.
+##  <Example><![CDATA[
+##  gap> G:=PerfectGroup(1080,1);;
+##  gap> U:=SylowSubgroup(G,3);;
+##  gap> Size(U);
+##  27
+##  gap> sub:=FittingFreeSubgroupSetup(G,U);;
+##  gap> Size(sub.ker);
+##  3
+##  gap> Length(sub.pcgs);
+##  1
+##  gap> sub.serdepths;
+##  [ 1, 2 ]
+##  gap> Size(Image(sub.rest));
+##  9
+##  gap> sub.parentffs=FittingFreeLiftSetup(G);
+##  true
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -206,6 +261,23 @@ DeclareAttribute("RecogDecompinfoHomomorphism",IsMapping,"mutable");
 ##  Here <A>ipcgs</A> must be an induced pcgs for <M>U\cap Rad(G)</M> with
 ##  respect to the pcgs stored in <C>ffs</C>, and <A>imgs</A> must be the
 ##  list of images of <A>gens</A> under <C>ffs.factorhom</C>.
+##  <P/>
+##  The data required here are exactly those provided by
+##  <Ref Func="FittingFreeSubgroupSetup"/>, so a subgroup can be rebuilt
+##  from them:
+##  <Example><![CDATA[
+##  gap> G:=PerfectGroup(1080,1);;
+##  gap> ffs:=FittingFreeLiftSetup(G);;
+##  gap> U:=SylowSubgroup(G,3);;
+##  gap> sub:=FittingFreeSubgroupSetup(G,U);;
+##  gap> gens:=GeneratorsOfGroup(U);;
+##  gap> imgs:=List(gens,x->ImagesRepresentative(ffs.factorhom,x));;
+##  gap> V:=SubgroupByFittingFreeData(G,gens,imgs,sub.pcgs);;
+##  gap> Size(V);
+##  27
+##  gap> V=U;
+##  true
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -226,24 +298,35 @@ DeclareGlobalFunction("OrbitMinimumMultistage");
 
 #############################################################################
 ##
-#F  FittingFreeElementarySeries( <G>[, <A>[, <wholesocle>]] )
+#F  FittingFreeElementarySeries( <G>[, <A>, <wholesocle>] )
 ##
 ##  <#GAPDoc Label="FittingFreeElementarySeries">
 ##  <ManSection>
-##  <Func Name="FittingFreeElementarySeries" Arg='G[, A[, wholesocle]]'/>
+##  <Func Name="FittingFreeElementarySeries" Arg='G[, A, wholesocle]'/>
 ##
 ##  <Description>
 ##  Let <A>G</A> be a finite group for which the record <C>ffs</C> returned
 ##  by <Ref Attr="FittingFreeLiftSetup"/> has been computed. This function
-##  returns a subgroup series of <A>G</A> with elementary factors that is
-##  compatible with the subgroups stored in <C>ffs</C>, namely the radical,
-##  the socle factor and <C>pker</C>.
+##  returns a descending subgroup series of <A>G</A> with elementary
+##  factors that is compatible with the subgroups determined by <C>ffs</C>,
+##  namely the radical, the socle of the factor group modulo the radical,
+##  and the kernel of the action of that factor group on the direct factors
+##  of its socle.
 ##  <P/>
-##  If the group <A>A</A> is given, then every subgroup in the returned
-##  series is invariant under the action of <A>A</A>.
-##  <P/>
-##  If <A>wholesocle</A> is given and is <K>true</K>, then the socles are
-##  not split up according to isomorphism type, but are kept whole.
+##  The arguments <A>A</A> and <A>wholesocle</A> must be given together.
+##  <A>A</A> is a group of automorphisms of <A>G</A>, and every subgroup in
+##  the returned series is invariant under <A>A</A>; if a subgroup of
+##  <A>G</A> is given instead, the corresponding inner automorphisms are
+##  used. If <A>wholesocle</A> is <K>true</K>, the socle is not split up
+##  according to the orbits on its direct factors, but is kept whole.
+##  <Example><![CDATA[
+##  gap> G:=PerfectGroup(1080,1);;
+##  gap> ser:=FittingFreeElementarySeries(G);;
+##  gap> List(ser,Size);
+##  [ 1080, 3, 1 ]
+##  gap> List(FittingFreeElementarySeries(G,G,true),Size);
+##  [ 1080, 3, 1 ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -262,6 +345,17 @@ DeclareGlobalFunction("FittingFreeElementarySeries");
 ##  For a finite Fitting-free group <A>G</A>, this attribute returns a list
 ##  of the direct factors of the socle of <A>G</A>. If <A>G</A> is not
 ##  Fitting-free, then <K>fail</K> is returned.
+##  <P/>
+##  The group <M>3.A_6</M> below has a non-trivial radical, but its factor
+##  group modulo the radical is Fitting-free with simple socle:
+##  <Example><![CDATA[
+##  gap> G:=PerfectGroup(1080,1);;
+##  gap> DirectFactorsFittingFreeSocle(G);
+##  fail
+##  gap> f:=Image(FittingFreeLiftSetup(G).factorhom);;
+##  gap> List(DirectFactorsFittingFreeSocle(f),Size);
+##  [ 360 ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -279,6 +373,11 @@ DeclareAttribute("DirectFactorsFittingFreeSocle",IsGroup);
 ##  <Description>
 ##  A chief series for <A>G</A> that is compatible with the data stored in
 ##  <Ref Attr="FittingFreeLiftSetup"/>.
+##  <Example><![CDATA[
+##  gap> G:=PerfectGroup(1080,1);;
+##  gap> List(ChiefSeriesTF(G),Size);
+##  [ 1080, 3, 1 ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
