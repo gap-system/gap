@@ -1321,6 +1321,49 @@ class Converter:
         groups = [g for g in re.split(r"\n[ \t]*\n(?=gap>)", text) if g.strip()]
         return "\n".join(f"<Example><![CDATA[\n{g}\n]]></Example>" for g in groups)
 
+    @staticmethod
+    def _ends_statement(stmt: str) -> bool:
+        """Does this input line finish its statement?
+
+        A trailing comment does not make it unfinished, so cut at the first
+        "#" that is not inside a string or character literal.
+        """
+        quote = None
+        for i, ch in enumerate(stmt):
+            if quote:
+                if ch == "\\":
+                    continue
+                if ch == quote:
+                    quote = None
+            elif ch in "\"'":
+                quote = ch
+            elif ch == "#":
+                stmt = stmt[:i]
+                break
+        return stmt.rstrip().endswith(";")
+
+    def _check_continuations(self, text: str) -> None:
+        """Report a "gap>" line that does not finish its statement.
+
+        GAP would prompt "> " and read the next line as input, so the extracted
+        test reads the manual's *output* as part of the command. Either the
+        statement really is spread over several lines and the continuations
+        need their "> " prompts (modisom writes a rec() that way), or the
+        semicolon is simply missing (rds has "gap> d1=d2"). Adding the prompts
+        automatically would paper over the second case, so report instead.
+        """
+        prev = None
+        for line in text.split("\n"):
+            if line.startswith("gap> "):
+                if not self._ends_statement(line[5:]):
+                    prev = line
+                    continue
+            elif prev is not None and not line.startswith(("gap>", "> ")):
+                self.notes.add(
+                    "gap> line does not end in ';', so the next line reads as input",
+                    prev.strip()[:70])
+            prev = None
+
     def stash_verbatim(self, text: str) -> str:
         """Replace nested verbatim regions with placeholders.
 
@@ -1331,6 +1374,8 @@ class Converter:
         def stash(m: re.Match) -> str:
             tag = "Example" if m.group(1) == "example" else "Log"
             body = m.group(2).strip("\n").replace("]]>", "]]]]><![CDATA[>")
+            if tag == "Example":
+                self._check_continuations(body)
             self._verb.append(self._verbatim(tag, body))
             return self._PLACEHOLDER.format(len(self._verb) - 1)
 
@@ -1404,6 +1449,8 @@ class Converter:
                 self._flush(out)
                 text = "\n".join(body).strip("\n")
                 text = text.replace("]]>", "]]]]><![CDATA[>")
+                if tag == "Example":
+                    self._check_continuations(text)
                 out.append(self._verbatim(tag, text))
                 seen_content = True
                 continue
