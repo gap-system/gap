@@ -149,6 +149,8 @@ TEX_SPECIALS = {
     "aa": "å", "AA": "Å", "ae": "æ", "AE": "Æ", "oe": "œ", "OE": "Œ",
     "i": "i", "j": "j",          # dotless forms; the accent is applied around
     "copyright": "©", "pounds": "£", "dag": "†", "ddag": "‡",
+    # gapmacro.tex spells a few characters as macros to dodge its own catcodes.
+    "pif": "'", "excl": "!",
 }
 
 #: GAP's manuals used ``\accent127`` for a diaeresis and ``\accent23`` for a
@@ -842,7 +844,8 @@ class Inline:
                 self._emit(self._sub().run(body, self.mode))
             return
 
-        if name in ("label", "nameddest", "setbookmark", "definecolor"):
+        if name in ("label", "nameddest", "setbookmark", "definecolor",
+                    "hyphenation"):
             # Discard the macro and its arguments.  _balanced_group returns None
             # without advancing when the braces do not close, so stop on that or
             # the loop spins forever.
