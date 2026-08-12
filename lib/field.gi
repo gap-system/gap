@@ -1315,15 +1315,16 @@ InstallMethod( ImagesSet,
 
 #############################################################################
 ##
-#M  PreImagesElm( <hom>, <elm> )  . . . . . . . . . . . .  preimage of an elm
+#M  PreImagesElmNC( <hom>, <elm> )  . . . . . . . . . . . .  preimage of an elm
+#M  PreImagesElm( <hom>, <elm> )  . . . . . . . . . . . . .  preimage of an elm
 ##
-InstallMethod( PreImagesElm,
+InstallMethod( PreImagesElmNC,
     "for field homomorphism and element",
     FamRangeEqFamElm,
     [ IsFieldHomomorphism, IsObject ],
     function ( hom, elm )
     if IsInjective( hom ) = 1 then
-      return [ PreImagesRepresentative( hom, elm ) ];
+      return [ PreImagesRepresentativeNC( hom, elm ) ];
     elif IsZero( elm ) then
       return Source( hom );
     else
@@ -1331,18 +1332,42 @@ InstallMethod( PreImagesElm,
     fi;
     end );
 
+InstallMethod( PreImagesElm,
+    "for field homomorphism and element",
+    FamRangeEqFamElm,
+    [ IsFieldHomomorphism, IsObject ],
+    function ( hom, elm )
+    if not (elm in Range(hom)) then
+      Error( "<elm> is not in the range of <hom>" );
+    elif not (elm in Image(hom)) then
+      return fail;
+    fi;
+    return PreImagesElmNC( hom, elm );
+    end );
 
 #############################################################################
 ##
-#M  PreImagesSet( <hom>, <elm> )  . . . . . . . . . . . . . preimage of a set
+#M  PreImagesSetNC
+#M  PreImagesSet
 ##
-InstallMethod( PreImagesSet,
+InstallMethod( PreImagesSetNC,
     "for field homomorphism and field",
     CollFamRangeEqFamElms,
     [ IsFieldHomomorphism, IsField ],
     function ( hom, elms )
     elms:= FieldByGenerators( List( GeneratorsOfField( elms ),
-               gen -> PreImagesRepresentative( hom, gen ) ) );
+               gen -> PreImagesRepresentativeNC( hom, gen ) ) );
     UseSubsetRelation( Source( hom ), elms );
     return elms;
+    end );
+
+InstallMethod( PreImagesSet,
+    "for field homomorphism and field",
+    CollFamRangeEqFamElms,
+    [ IsFieldHomomorphism, IsField ],
+    function ( hom, elms )
+    if not IsSubset( Range(hom), elms ) then
+        Error( "<elms> is not a subset of the range of <hom>" );
+    fi;
+    return PreImagesSetNC( hom, Intersection( elms, Image( hom ) ) );
     end );
