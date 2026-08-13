@@ -62,40 +62,36 @@ gap> HexSHA256(InputTextString(""));
 gap> dir := DirectoryTemporary();;
 gap> name := Filename(dir, "test.txt");;
 gap> FileString(name, "abcd");;
-gap> HexSHA256File(name);
+gap> HexSHA256File(name, false);
 "88d4266fd4e6338d13b845fcf289579d209c897823b9217da3e161936f031589"
 gap> FileString(Filename(dir, "empty.txt"), "");;
-gap> HexSHA256File(Filename(dir, "empty.txt"));
+gap> HexSHA256File(Filename(dir, "empty.txt"), false);
 "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 
 # larger than the read buffer, so that more than one chunk gets hashed
 gap> str := Concatenation(List([1 .. 5000], i -> "0123456789"));;
 gap> FileString(Filename(dir, "big.txt"), str);;
-gap> HexSHA256File(Filename(dir, "big.txt")) = HexSHA256(str);
+gap> HexSHA256File(Filename(dir, "big.txt"), false) = HexSHA256(str);
 true
 
 # a file that is not there
-gap> HexSHA256File(Filename(dir, "no-such-file"));
+gap> HexSHA256File(Filename(dir, "no-such-file"), false);
 fail
 
-# '.gz' files are hashed as they are on disk unless asked otherwise
+# the two answers a '.gz' file has
 gap> gzname := Filename(dir, "compressed.txt.gz");;
 gap> out := OutputGzipFile(gzname, false);;
 gap> WriteAll(out, "abcd");;
 gap> CloseStream(out);
-gap> HexSHA256File(gzname) = HexSHA256("abcd");
+gap> HexSHA256File(gzname, false) = HexSHA256("abcd");
 false
 gap> HexSHA256File(gzname, true) = HexSHA256("abcd");
 true
-gap> HexSHA256File(gzname, false) = HexSHA256File(gzname);
-true
 
 # argument checking
-gap> HexSHA256File();
-Error, usage: HexSHA256File( <filename>[, <decompress>] )
-gap> HexSHA256File(name, true, true);
-Error, usage: HexSHA256File( <filename>[, <decompress>] )
-gap> HexSHA256File(42);
+gap> HexSHA256File(name);
+Error, Function: number of arguments must be 2 (not 1)
+gap> HexSHA256File(42, false);
 Error, <filename> must be a string
 gap> HexSHA256File(name, "yes");
 Error, <decompress> must be 'true' or 'false'

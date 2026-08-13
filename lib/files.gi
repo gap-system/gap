@@ -430,22 +430,13 @@ function(str)
 end);
 
 InstallGlobalFunction( HexSHA256File,
-function(args...)
-    local filename, decompress, res;
+function(filename, decompress)
+    local res;
 
-    if Length(args) = 0 or 2 < Length(args) then
-        ErrorNoReturn("usage: HexSHA256File( <filename>[, <decompress>] )");
-    fi;
-    filename := args[1];
     if not IsString(filename) then
         ErrorNoReturn("<filename> must be a string");
-    fi;
-    decompress := false;
-    if Length(args) = 2 then
-        if not args[2] in [ true, false ] then
-            ErrorNoReturn("<decompress> must be 'true' or 'false'");
-        fi;
-        decompress := args[2];
+    elif not decompress in [ true, false ] then
+        ErrorNoReturn("<decompress> must be 'true' or 'false'");
     fi;
 
     res := GAP_SHA256_FILE(UserHomeExpand(filename), decompress);
