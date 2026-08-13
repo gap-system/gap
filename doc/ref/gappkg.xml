@@ -315,8 +315,7 @@ The following components of the record are <E>optional</E>.
   </Item>
   <Mark><C>GitHubUsername</C></Mark>
   <Item>
-    a string containing a GitHub username. It may contain letters, digits,
-    and single hyphens, but must not start or end with a hyphen.
+    a string containing a GitHub username.
   </Item>
   </List>
   If the <C>IsMaintainer</C> value is <K>true</K> then also one of the
