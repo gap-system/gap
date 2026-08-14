@@ -332,6 +332,54 @@ gap> info.PackageDoc := rec(
 >   );;
 gap> ValidatePackageInfo(info);
 true
+gap> info.Persons := [ rec(
+>     LastName := "Maintainer",
+>     IsMaintainer := true,
+>     Email := "maintainer@gap-system.org",
+>     GitHubUsername := "gap-maintainer",
+>   ) ];;
+gap> ValidatePackageInfo(info);
+true
+gap> info.Persons[1].GitHubUsername := 4784;;
+gap> ValidatePackageInfo(info);
+#E  component `GitHubUsername', if present, must be bound to a string containi\
+ng a valid GitHub username
+false
+gap> info.Persons[1].GitHubUsername := "https://github.com/gap-maintainer";;
+gap> ValidatePackageInfo(info);
+#E  component `GitHubUsername', if present, must be bound to a string containi\
+ng a valid GitHub username
+false
+gap> info.Persons[1].GitHubUsername := "@gap-maintainer";;
+gap> ValidatePackageInfo(info);
+#E  component `GitHubUsername', if present, must be bound to a string containi\
+ng a valid GitHub username
+false
+gap> info.Persons[1].GitHubUsername := "gap--maintainer";;
+gap> ValidatePackageInfo(info);
+#E  component `GitHubUsername', if present, must be bound to a string containi\
+ng a valid GitHub username
+false
+gap> info.Persons[1].GitHubUsername := "-gap-maintainer";;
+gap> ValidatePackageInfo(info);
+#E  component `GitHubUsername', if present, must be bound to a string containi\
+ng a valid GitHub username
+false
+gap> info.Persons[1].GitHubUsername := "gap-maintainer-";;
+gap> ValidatePackageInfo(info);
+#E  component `GitHubUsername', if present, must be bound to a string containi\
+ng a valid GitHub username
+false
+gap> info.Persons[1].GitHubUsername := "gap_maintainer";;
+gap> ValidatePackageInfo(info);
+#E  component `GitHubUsername', if present, must be bound to a string containi\
+ng a valid GitHub username
+false
+gap> info.Persons[1].GitHubUsername := "1234567890123456789012345678901234567890";;
+gap> ValidatePackageInfo(info);
+#E  component `GitHubUsername', if present, must be bound to a string containi\
+ng a valid GitHub username
+false
 
 #
 # Deal with mock package
