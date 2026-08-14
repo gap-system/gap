@@ -38,9 +38,9 @@ from utils import (
     working_directory,
 )
 
-# Insist on Python >= 3.6 for f-strings and other goodies
-if sys.version_info < (3, 6):
-    error("Python 3.6 or newer is required")
+# Insist on Python >= 3.11, the version our CI uses
+if sys.version_info < (3, 11):
+    error("Python 3.11 or newer is required")
 
 
 # helper for extracting values of variables set in the GAP Makefiles.rules
