@@ -4947,6 +4947,11 @@ InstallMethod( GroupWithGenerators,
     [ IsCollection ],
 function( gens )
 
+  if IsList( gens ) and IsEmpty( gens ) then
+    ErrorNoReturn("the identity element must be given as second argument ",
+                  "if the list of generators is empty");
+  fi;
+
   if IsGroup(gens) then
     Info( InfoPerformance, 1,
       "Calling `GroupWithGenerators' on a group usually is very inefficient.");
@@ -4982,6 +4987,24 @@ local fam;
   fam:= CollectionsFamily( FamilyObj( id ) );
 
   return MakeGroupyObj(fam, IsGroup, empty, id);
+end );
+
+InstallOtherMethod( GroupWithGenerators,"method for empty string and element",
+  [ IsStringRep, IsMultiplicativeElementWithInverse ],
+  function( empty, id )
+
+  if not IsEmpty( empty ) then
+    TryNextMethod();
+  fi;
+
+  return GroupWithGenerators( [], id );
+end );
+
+InstallOtherMethod( GroupWithGenerators,"method for empty list",
+  [ IsList and IsEmpty ],
+  function( empty )
+  ErrorNoReturn("the identity element must be given as second argument ",
+                "if the list of generators is empty");
 end );
 
 
@@ -5025,6 +5048,16 @@ InstallMethod( GroupByGenerators,
 InstallMethod( GroupByGenerators,
     "delegate to `GroupWithGenerators'",
     [ IsList and IsEmpty, IsMultiplicativeElementWithInverse ],
+    GroupWithGenerators );
+
+InstallOtherMethod( GroupByGenerators,
+    "delegate to `GroupWithGenerators'",
+    [ IsStringRep, IsMultiplicativeElementWithInverse ],
+    GroupWithGenerators );
+
+InstallOtherMethod( GroupByGenerators,
+    "delegate to `GroupWithGenerators'",
+    [ IsList and IsEmpty ],
     GroupWithGenerators );
 
 
@@ -5095,8 +5128,13 @@ InstallGlobalFunction( Group, function( arg )
                            and IsGeneratorsOfMagmaWithInverses( arg ) then
       return GroupByGenerators( arg );
 
+    elif Length( arg ) = 1 and IsList( arg[1] ) and IsEmpty( arg[1] ) then
+      ErrorNoReturn(
+          "Group(<gens>) with an empty list <gens> is not supported, ",
+          "use Group(<gens>,<id>) to specify the identity element <id>");
+
     # list of generators
-    elif Length( arg ) = 1 and IsList( arg[1] ) and not IsEmpty( arg[1] )
+    elif Length( arg ) = 1 and IsList( arg[1] )
                            and IsGeneratorsOfMagmaWithInverses( arg[1] ) then
       return GroupByGenerators( arg[1] );
 
