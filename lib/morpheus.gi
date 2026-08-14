@@ -2552,7 +2552,9 @@ local A;
     #LoadPackage("autpgrp"); # try to load the package if it exists
     A:=AutomorphismGroupNilpotentGroup(G);
   elif IsSolvableGroup(G) then
-    if HasIsFrattiniFree(G) and IsFrattiniFree(G) then
+    # AutomorphismGroupFrattFreeGroup needs a pcgs for subgroups of G, which
+    # is not available for example for finitely presented groups
+    if CanEasilyComputePcgs(G) and IsFrattiniFree(G) then
       A:=AutomorphismGroupFrattFreeGroup(G);
     else
       # currently autactbase does not work well, as the representation might
