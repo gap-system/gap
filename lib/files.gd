@@ -850,5 +850,44 @@ DeclareGlobalFunction( "Edit" );
 ##
 DeclareGlobalFunction("HexSHA256");
 
+
+##  <#GAPDoc Label="HexSHA256File">
+##  <ManSection>
+##  <Func Name="HexSHA256File" Arg='filename, decompress'/>
+##
+##  <Description>
+##  <Index>hash function</Index>
+##  <Index>checksum</Index>
+##  Return the SHA-256 cryptographic checksum of the contents of the file
+##  <A>filename</A>, as a string with 64 lowercase hexadecimal digits,
+##  or <K>fail</K> if the file cannot be read.
+##  <P/>
+##  The file is read as binary data, so the result always describes the bytes
+##  on disk, also on systems which distinguish text and binary mode and would
+##  otherwise translate line endings.  It is read in chunks, so the size of
+##  the file is not limited by the available memory.
+##  <P/>
+##  <A>decompress</A> must be <K>true</K> or <K>false</K>, and says which of
+##  two different checksums is wanted: with <K>true</K>, a file whose name
+##  ends in <C>.gz</C> is decompressed while reading, so that the checksum
+##  describes the data as <Ref Func="StringFile" BookName="gapdoc"/> would
+##  read it; with <K>false</K>, it describes the bytes on disk, which is what
+##  one wants in order to compare against a checksum published alongside a
+##  file.  There is no default, because everything else in &GAP; decompresses
+##  and silently doing the opposite would be a trap.
+##  <Log><![CDATA[
+##  gap> name := Filename(DirectoryTemporary(), "test.txt");;
+##  gap> FileString(name, "abcd");;
+##  gap> HexSHA256File(name, false);
+##  "88d4266fd4e6338d13b845fcf289579d209c897823b9217da3e161936f031589"
+##  gap> HexSHA256File("/no/such/file", false);
+##  fail
+##  ]]></Log>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("HexSHA256File");
+
 BIND_GLOBAL("GAP_SHA256_State_Type",
            NewType(NewFamily("GAP_SHA256_State_Family"), IsObject) );

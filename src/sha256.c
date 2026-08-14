@@ -17,6 +17,7 @@
 #include "objects.h"
 #include "plist.h"
 #include "stringobj.h"
+#include "sysfiles.h"
 
 #include "config.h"
 
@@ -295,6 +296,44 @@ Obj FuncGAP_SHA256_FINAL(Obj self, Obj state)
     return result;
 }
 
+Obj FuncGAP_SHA256_FILE(Obj self, Obj filename, Obj decompress)
+{
+    Obj            result;
+    sha256_state_t st;
+    Int            fid, len;
+    int            i;
+    UChar          buf[16384];
+
+    RequireStringRep(SELF_NAME, filename);
+    RequireTrueOrFalse(SELF_NAME, decompress);
+
+    // Mode "rb" rather than "r" so that no line ending translation happens;
+    // the digest has to describe the bytes on disk.  With <decompress> set,
+    // a file whose name ends in '.gz' is hashed as its decompressed content
+    // instead, matching what 'InputTextFile' would read.
+    fid = SyFopen(CONST_CSTR_STRING(filename), "rb", decompress == True);
+    if (fid == -1)
+        return Fail;
+
+    sha256_init(&st);
+    while ((len = SyRead(fid, buf, sizeof(buf))) > 0) {
+        sha256_update(&st, buf, len);
+    }
+    SyFclose(fid);
+    if (len < 0)
+        return Fail;
+
+    sha256_final(&st);
+
+    result = NEW_PLIST(T_PLIST, 8);
+    SET_LEN_PLIST(result, 8);
+    for (i = 0; i < 8; i++) {
+        SET_ELM_PLIST(result, i + 1, ObjInt_UInt(st.r[i]));
+        CHANGED_BAG(result);
+    }
+    return result;
+}
+
 Obj FuncGAP_SHA256_HMAC(Obj self, Obj key, Obj text)
 {
     UInt           i, klen;
@@ -355,6 +394,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_0ARGS(GAP_SHA256_INIT),
     GVAR_FUNC_2ARGS(GAP_SHA256_UPDATE, state, bytes),
     GVAR_FUNC_1ARGS(GAP_SHA256_FINAL, state),
+    GVAR_FUNC_2ARGS(GAP_SHA256_FILE, filename, decompress),
     GVAR_FUNC_2ARGS(GAP_SHA256_HMAC, key, text),
 
     { 0 }    // Finish with an empty entry

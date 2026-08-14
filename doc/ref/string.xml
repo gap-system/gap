@@ -691,6 +691,7 @@ gap> HexStringInt(last);
 <#Include Label="EvalString">
 <#Include Label="CrcString">
 <#Include Label="HexSHA256">
+<#Include Label="HexSHA256File">
 <#Include Label="Pluralize">
 
 </Section>
