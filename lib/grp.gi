@@ -1704,6 +1704,40 @@ RedispatchOnCondition( IsFrattiniFree, true, [IsGroup], [IsFinite], 0);
 
 #############################################################################
 ##
+#M  IsFittingFree( <G> )  . . . . . . . .  is the Fitting subgroup trivial ?
+##
+InstallMethod( IsFittingFree, "for groups with known Fitting subgroup",
+            [ IsGroup and HasFittingSubgroup ], SUM_FLAGS,
+            G -> IsTrivial( FittingSubgroup( G ) ) );
+
+InstallMethod( IsFittingFree, "for finite solvable groups",
+            [ IsGroup and IsFinite and IsSolvableGroup ],
+            # a nontrivial solvable group has a nontrivial Fitting subgroup
+            IsTrivial );
+
+InstallMethod( IsFittingFree, "for groups allowing the TF approach",
+            [ IsGroup and CanComputeFittingFree ],
+            # F(G) is trivial if and only if the solvable radical is, and the
+            # latter is directly available from the TF setup
+            G -> IsTrivial( SolvableRadical( G ) ) );
+
+InstallMethod( IsFittingFree, "generic method for finite groups",
+            [ IsGroup and IsFinite ],
+            G -> IsTrivial( FittingSubgroup( G ) ) );
+
+RedispatchOnCondition( IsFittingFree, true, [IsGroup], [IsFinite], 0);
+
+InstallMethod( FittingSubgroup, "for Fitting free groups",
+            [ IsGroup and IsFittingFree ], SUM_FLAGS,
+            TrivialSubgroup );
+
+InstallMethod( SolvableRadical, "for Fitting free groups",
+            [ IsGroup and IsFittingFree ], SUM_FLAGS,
+            TrivialSubgroup );
+
+
+#############################################################################
+##
 #M  JenningsSeries( <G> ) . . . . . . . . . . .  jennings series of a p-group
 ##
 InstallMethod( JenningsSeries,
