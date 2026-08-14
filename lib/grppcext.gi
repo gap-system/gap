@@ -361,8 +361,12 @@ local ag, p1iso, agp, p2iso, DP, p1, p2, gens, genimgs, triso,s,i,u,opt,
       SetSize(ag,s);
     fi;
     IsGroupOfAutomorphismsFiniteGroup(ag);
-    p1iso:=IsomorphismPermGroup(ag);
-    agp:=Image(p1iso);
+    # go nice route to avoid an abelian method getting in the way
+    p1iso:=NiceMonomorphism(ag);
+    if not IsPermGroup(Image(p1iso)) then
+      p1iso:=IsomorphismPermGroup(ag);
+    fi;
+    agp:=Image(p1iso,ag);
 
     # are both groups solvable?
     p2iso:=IsomorphismPermGroup(DirectProductInfo(D).groups[2]);
@@ -502,7 +506,8 @@ end);
 InstallGlobalFunction( CompatiblePairs, function( arg )
 local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
   K2, f, tmp, Ggens, pcgs, l, idx, u, tup,Dos,elmlist,preimlist,pows,
-  baspt,newimgs,i,j,basicact,neu,K1nontriv,epi,hf,pool,modulehom,test;
+  baspt,newimgs,i,j,basicact,neu,K1nontriv,epi,hf,pool,modulehom,test,
+  direct;
 
     # catch arguments
     if Length(arg)>2 and IsGroupOfAutomorphismsFiniteGroup(arg[1]) and
@@ -517,9 +522,10 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
     Mgrp := GroupByGenerators( M.generators );
     Ggens:=Pcgs(G);
     oper:=fail;
-    if IsPcgs(Ggens) and Length(Ggens)=Length(M.generators) then
-      oper := GroupHomomorphismByImagesNC( G, Mgrp, Ggens, M.generators );
-    elif Length(arg)=2 then
+
+    direct:=false;
+
+    if A=fail and Length(arg)=2 then
       # search through automorphism group for projection image and reps,
       # then add module automorphisms
       gens:=GeneratorsOfGroup(G);
@@ -527,10 +533,37 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
         Info( InfoCompPairs, 1, "    CompP: compute aut group");
         A:=AutomorphismGroup(G);
       fi;
-      triso:=IsomorphismPermGroup(A);
+      u:=fail;
+      if Size(A)>1 then
+        direct:=true;
+      fi;
+
+    elif A=fail and Length(arg)=3 and HasDirectProductInfo(arg[3])
+      and IsGroupOfAutomorphismsFiniteGroup(Image(Projection(arg[3],1))) then
+
+      A:=Image(Projection(arg[3],1));
+      B:=Image(Projection(arg[3],2));
+      u:=B;
+      gens:=GeneratorsOfGroup(G);
+      if Size(A)>1 and Size(B)>1 and Size(A)*Size(B)>1000 then
+        direct:=true;
+      fi;
+
+    elif IsPcgs(Ggens) and Length(Ggens)=Length(M.generators) then
+      oper := GroupHomomorphismByImagesNC( G, Mgrp, Ggens, M.generators );
+    fi;
+
+    if direct then
+      triso:=NiceMonomorphism(A:autactbase:=fail);
+      if not IsPermGroup(Image(triso)) then
+        triso:=IsomorphismPermGroup(A:autactbase:=fail);
+      fi;
+
       pool:=[];
       modulehom:=GroupHomomorphismByImages(G,Group(M.generators),
         gens,M.generators);
+      M.isMTXModule:=true;
+      M.IsOverFiniteField:=true;
       test:=function(perm)
       local aut,imgs,mat;
         aut:=PreImagesRepresentative(triso,perm);
@@ -569,13 +602,27 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
         A:=GroupWithGenerators(pool);
         SetSize(A,Size(K)*Size(B));
       fi;
-      return A;
+
+      # make sure the B-part is OK
+      if u<>fail then
+        B:=List(GeneratorsOfGroup(A),x->x[2]);
+        B:=Group(B);
+        if not IsSubset(u,B) then
+          Info(InfoCompPairs,1," projection wrong, go normal");
+        else
+          return A;
+        fi;
+      else
+        return A;
+      fi;
+
     fi;
 
     if oper=fail then
       Ggens:=GeneratorsOfGroup(G);
       oper := GroupHomomorphismByImagesNC( G, Mgrp, Ggens, M.generators );
     fi;
+
 
     # automorphism groups of G and M
     if Length( arg ) = 2 then
@@ -839,7 +886,8 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
             tmp := StabilizerOp( D, rec(hashfun:= lst->lst*pows),tup,
               gens,newimgs, f );
           else
-            tmp := Stabilizer( D, tup,gens,genimgs, f );
+            #tmp := Stabilizer( D, tup,gens,genimgs, f );
+            tmp := SubnormalOrbitExtension( D, false, tup,gens,genimgs, f );
           fi;
         else
           tmp := Stabilizer( D, tup,gens,genimgs, f );

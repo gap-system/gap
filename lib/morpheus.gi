@@ -475,6 +475,11 @@ local hom, gens, c, ran, r, cen, img, u, orbs,
       Error("illegal actbase given!");
     fi;
     baddegree:=RootInt(Sum(actbase,Size)^2,3);
+    if IsPcGroup(g) then
+      # for pc groups action and storage is cheaper, and there are more
+      # classes
+      baddegree:=Maximum(List(actbase,Size));
+    fi;
   else
     baddegree:=RootInt(Size(g)^3,4);
   fi;
@@ -1926,12 +1931,67 @@ local combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
     fi;
     result.inner:=inns;
   else
+    dat:=ValueOption("costlimit");
+    if IsInt(dat) and Product(List(combi,x->Sum(x,Size)))>dat then
+      Info(InfoMorph,2,"Morpheus seems to be to costly: ",
+        Product(List(combi,x->Sum(x,Size)))," vs ",dat);
+      return -1; # not fail, as this is valid
+    fi;
     result:=MorClassLoop(H,combi,result,7);
   fi;
 
   return result;
 
 end);
+
+
+#############################################################################
+##
+#F  AutOrderAbelian( <L> ) . . order of Aut(A), A the abelian group with
+##                             cyclic factors given by the prime powers <L>
+##
+##  function written by claude, based on formula in HillarRhea07,
+##  DOI 10.1080/00029890.2007.11920485
+##
+AutOrderAbelian := function( L )
+local total, primes, p, q, exps, e, f, power, num, den, c, t;
+
+  for q in L do
+    if not IsInt( q ) or q <= 1 or not IsPrimePowerInt( q ) then
+      Error( "<L> must be a list of prime powers" );
+    fi;
+  od;
+
+  total  := 1;
+  primes := Set( List( L, q -> FactorsInt( q )[1] ) );
+
+  for p in primes do
+
+    # exponents of the p-primary part
+    exps := List( Filtered( L, q -> q mod p = 0 ), q -> LogInt( q, p ) );
+
+    # |End(A_p)| = p^( sum_{i,j} min(e_i,e_j) )
+    power := 0;
+    for e in exps do
+      for f in exps do
+        power := power + Minimum( e, f );
+      od;
+    od;
+
+    # times prod_k |GL_{m_k}(F_p)| / p^{m_k^2}, kept integral throughout
+    num := p^power;
+    den := 1;
+    for c in Collected( exps ) do        # c = [ exponent, multiplicity ]
+      for t in [ 1 .. c[2] ] do
+        num := num * ( p^t - 1 );
+        den := den * p^t;
+      od;
+    od;
+    total := total * ( num / den );
+  od;
+
+  return total;
+end;
 
 #############################################################################
 ##
@@ -2050,6 +2110,7 @@ local i,j,k,l,m,o,nl,nj,max,r,e,au,p,gens,offs;
     SetIsGroupOfAutomorphismsFiniteGroup(au,true);
   fi;
 
+  SetSize(au,AutOrderAbelian(List(gens,Order)));
   return au;
 end);
 
@@ -2932,6 +2993,19 @@ local m;
       or Size(SolvableRadical(G))^2>Size(G)
       or ValueOption("forcetest")=true) and
       ValueOption("forcetest")<>"old" then
+
+    # catch 2-generator groups with few images
+    if Length(SmallGeneratingSet(G))=2 then
+      # 2^28 is an experimental limit from some examples
+      m:=Morphium(G,H,false:costlimit:=Minimum(Size(G)^2,2^28));
+      if IsList(m) and Length(m)=0 then
+        return fail;
+      elif m<>-1 then
+        # otherwise it just failed
+        return m;
+      fi;
+    fi;
+
     # In place until a proper implementation of Cannon/Holt isomorphism is
     # done
     return PatheticIsomorphism(G,H);
