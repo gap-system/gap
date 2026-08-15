@@ -587,7 +587,7 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
           B:=Difference(B,[i]);
         fi;
       od;
-      K:=Group(GeneratorsOfGroup(K){B});
+      K:=Group(GeneratorsOfGroup(K){B}, One(K));
       pool:=pool{B};
 
       B:=MTX.ModuleAutomorphisms(M);
