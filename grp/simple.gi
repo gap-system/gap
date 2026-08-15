@@ -796,8 +796,19 @@ InstallGlobalFunction(SimpleGroupsIterator,function(arg)
     stack:=a[3];
     a:=a[2];
   until SizeL2Q(b)>=start;
-  if start>=10^18 then LOADSIMPLE2(); fi;
-  pos:=First([1..Length(SIMPLEGPSNONL2)],x->SIMPLEGPSNONL2[x][1]>=start);
+  # Running off the end of the first list is what says the second one is
+  # needed. Testing `start' against a fixed bound instead left a window between
+  # the largest order in the first list and 10^18 in which nothing was loaded
+  # and `pos' stayed `fail'.
+  pos:=PositionProperty(SIMPLEGPSNONL2,x->x[1]>=start);
+  if pos=fail then
+    LOADSIMPLE2();
+    pos:=PositionProperty(SIMPLEGPSNONL2,x->x[1]>=start);
+    if pos=fail then
+      Error("List of simple groups only available up to order ",
+        SIMPLE_GROUPS_ITERATOR_RANGE);
+    fi;
+  fi;
   return IteratorByFunctions(rec(
     IsDoneIterator:=IsDoneIterator_SimGp,
     NextIterator:=NextIterator_SimGp,
