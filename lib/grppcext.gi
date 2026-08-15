@@ -370,12 +370,12 @@ local ag, p1iso, agp, p2iso, DP, p1, p2, gens, genimgs, triso,s,i,u,opt,
 
     # are both groups solvable?
     p2iso:=IsomorphismPermGroup(DirectProductInfo(D).groups[2]);
-    gp2:=ImagesSource(p2iso);
+    gp2:=Image(p2iso,DirectProductInfo(D).groups[2]);
     if IsSolvableGroup(gp2) and IsSolvableGroup(agp) then
       # both groups are solvable -- go solvable
       pc1:=IsomorphismPcGroup(agp);
       pc2:=IsomorphismPcGroup(gp2);
-      DP:=DirectProduct(ImagesSource(pc1),ImagesSource(pc2));
+      DP:=DirectProduct(Image(pc1,agp),Image(pc2,gp2));
       p1:=Projection(DP,1);
       p2:=Projection(DP,2);
       gens:=Pcgs(DP);
@@ -528,7 +528,6 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
     if A=fail and Length(arg)=2 then
       # search through automorphism group for projection image and reps,
       # then add module automorphisms
-      gens:=GeneratorsOfGroup(G);
       if A=fail then
         Info( InfoCompPairs, 1, "    CompP: compute aut group");
         A:=AutomorphismGroup(G);
@@ -538,22 +537,22 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
         direct:=true;
       fi;
 
-    elif A=fail and Length(arg)=3 and HasDirectProductInfo(arg[3])
-      and IsGroupOfAutomorphismsFiniteGroup(Image(Projection(arg[3],1))) then
+    elif A=fail and Length(arg)=3 and HasDirectProductInfo(arg[3]) then
 
-      A:=Image(Projection(arg[3],1));
-      B:=Image(Projection(arg[3],2));
-      u:=B;
-      gens:=GeneratorsOfGroup(G);
-      if Size(A)>1 and Size(B)>1 and Size(A)*Size(B)>1000 then
+      A:=DirectProductInfo(arg[3]).groups[1];
+      B:=DirectProductInfo(arg[3]).groups[2];
+
+      if IsGroupOfAutomorphismsFiniteGroup(A) and Size(A)>1 and Size(B)>1 and Size(A)*Size(B)>1000 then
         direct:=true;
+        u:=B;
+      else
+        A:=fail;
       fi;
 
-    elif IsPcgs(Ggens) and Length(Ggens)=Length(M.generators) then
-      oper := GroupHomomorphismByImagesNC( G, Mgrp, Ggens, M.generators );
     fi;
 
     if direct then
+      gens:=GeneratorsOfGroup(G);
       triso:=NiceMonomorphism(A:autactbase:=fail);
       if not IsPermGroup(Image(triso)) then
         triso:=IsomorphismPermGroup(A:autactbase:=fail);
@@ -586,7 +585,7 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
           B:=Difference(B,[i]);
         fi;
       od;
-      K:=Group(GeneratorsOfGroup(K){B});
+      K:=Group(GeneratorsOfGroup(K){B}, One(K));
       pool:=pool{B};
 
       B:=MTX.ModuleAutomorphisms(M);
@@ -616,6 +615,8 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
         return A;
       fi;
 
+    elif IsPcgs(Ggens) and Length(Ggens)=Length(M.generators) then
+      oper := GroupHomomorphismByImagesNC( G, Mgrp, Ggens, M.generators );
     fi;
 
     if oper=fail then
