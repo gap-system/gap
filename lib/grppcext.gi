@@ -537,18 +537,16 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
         direct:=true;
       fi;
 
-    elif A=fail and Length(arg)=3 and HasDirectProductInfo(arg[3])
-      and IsGroupOfAutomorphismsFiniteGroup(DirectProductInfo(arg[3]).groups[1]) then
+    elif A=fail and Length(arg)=3 and HasDirectProductInfo(arg[3]) then
 
-      tmp:=A; # cache
       A:=DirectProductInfo(arg[3]).groups[1];
       B:=DirectProductInfo(arg[3]).groups[2];
-      u:=B;
 
-      if Size(A)>1 and Size(B)>1 and Size(A)*Size(B)>1000 then
+      if IsGroupOfAutomorphismsFiniteGroup(A) and Size(A)>1 and Size(B)>1 and Size(A)*Size(B)>1000 then
         direct:=true;
+        u:=B;
       else
-        A:=tmp;
+        A:=fail;
       fi;
 
     fi;
