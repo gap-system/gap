@@ -702,12 +702,12 @@ local G,pl,iso,hom,D,gens,ker;
     pl:=PrimeDivisors(Size(G));
   fi;
   if IsSubgroupFpGroup(G) then
-    # we have no Sylow subgroup machinery for these
+    # the generic method below simplifies the presentation of the cover, but
+    # only exists for one argument
     if Length(arg)=1 then
       TryNextMethod();
     fi;
-    Error("EpimorphismSchurCover for a prescribed set of primes is not ",
-          "supported for finitely presented groups");
+    return SCHUR_CoverForPrimes(G,pl);
   elif not (IsPermGroup(G) or IsPcGroup(G)) then
     # `CorestEval' runs over a transversal of a Sylow subgroup, which is far
     # cheaper in a permutation image; transport the cover back afterwards
