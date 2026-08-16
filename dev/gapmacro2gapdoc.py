@@ -2087,6 +2087,10 @@ def validate(xml: str, label: str, notes: Notes) -> bool:
         return False
 
 
+#: ``autodoc``/``gapdoc`` are left at ``true`` rather than pinned to a record:
+#: the package is then ready for AutoDoc comments in its source without another
+#: edit, and AutoDoc names the document it scaffolds ``_main``, so one
+#: ``/doc/_main.*`` line covers every LaTeX by-product in .gitignore.
 MAKEDOC_TEMPLATE = '''#############################################################################
 ##
 ##  makedoc.g
@@ -2099,8 +2103,8 @@ LoadPackage("AutoDoc");
 
 # Run this from the package's root directory: gap makedoc.g
 AutoDoc(rec(
-    autodoc := rec(scan_dirs := []),
-    gapdoc := rec(main := "main", files := []),
+    autodoc := true,
+    gapdoc := true,
     extract_examples := true,
     scaffold := rec(
         includes := [
@@ -2184,6 +2188,14 @@ def convert_package(pkgdir: str, outdir: str | None, notes: Notes) -> int:
     pkgname = info["package"] or os.path.basename(pkgdir)
     includes = ",\n".join(f'            "{w}"' for w in written)
     bibs = [f for f in os.listdir(doc) if f.endswith(".bib")]
+    # A bibliography called manual.bib says nothing; name it after the package,
+    # as the packages already converted by hand do.
+    if bibs == ["manual.bib"] and outdir is None:
+        want = f"{book}.bib"
+        if not os.path.exists(os.path.join(doc, want)):
+            os.rename(os.path.join(doc, "manual.bib"), os.path.join(doc, want))
+            print(f"  renamed doc/manual.bib -> doc/{want}")
+            bibs = [want]
     bibline = f'        bib := "{bibs[0]}",\n' if bibs else ""
     if not bibs:
         cited = sorted({m.group(1) for w in written
