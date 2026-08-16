@@ -597,6 +597,14 @@ class Inline:
             if c == "<" and self.mode == "code":
                 if self._try_arg():
                     return
+            if c == "{" and self.mode == "code" and not self._brace_is_gap():
+                # TeX grouping that happens to sit in a code span: cryst writes
+                # the setting names as `\pif{1}\pif', which is '1', and \^{} is
+                # how plain TeX spells a bare caret.
+                body = self._balanced_group()
+                if body is not None:
+                    self._emit(self._sub().run(body, "code"))
+                    return
             self._emit(xml_escape(c))
             self.i += 1
             return
@@ -672,6 +680,20 @@ class Inline:
         self.i += 1
 
     # -- constructs ---------------------------------------------------------
+
+    def _brace_is_gap(self) -> bool:
+        """Is the "{" at the cursor GAP syntax rather than TeX grouping?
+
+        GAP only writes "{" after something it can subscript -- an identifier,
+        ")" or "]", as in ``l{[1..3]}``.  What matters is the character already
+        emitted, not the one in the source: ``\\pif{1}`` ends in "f" but has
+        produced "'".
+        """
+        for chunk in reversed(self.out):
+            if chunk:
+                prev = chunk[-1]
+                return prev.isalnum() or prev in "_)]"
+        return False
 
     def _balanced_group(self) -> str | None:
         """Read a ``{...}`` group at the cursor, honouring nesting."""
@@ -891,6 +913,9 @@ class Inline:
         # such macros, and its HTML output shows them verbatim.
         body = re.sub(r"\\sp\b\s*", "^", body)
         body = re.sub(r"\\sb\b\s*", "_", body)
+        # gapmacro.tex made * active, so the sources spell it \* even inside
+        # maths, where LaTeX has no such macro and stops with "Missing {".
+        body = body.replace("\\*", "*")
         body = re.sub(r"(?<![\\A-Za-z])(" + "|".join(MATH_OPERATORS) + r")(?![A-Za-z])",
                       r"\\\1", body)
         body = self._detex_alignment(body)
@@ -1300,6 +1325,29 @@ class Converter:
     _PLACEHOLDER = "\x00g2gverb{}\x00"
 
     @staticmethod
+    def _dedent(text: str) -> str:
+        """Strip the indentation the old sources used to set a session off.
+
+        AutoDoc extracts <Example> verbatim, and GAP's test format only sees a
+        prompt at the start of a line -- an indented "gap>" is read as expected
+        output instead, so a whole indented block fails as one chunk against
+        START_TEST.  sonata indented every one of its examples.  Only the
+        common prefix goes, so continuation lines keep their relative layout.
+
+        Only <Example> is dedented.  <Log> and <Listing> are never extracted,
+        and their indentation is deliberate -- cryst centres two matrices in a
+        \\begintt block.
+        """
+        lines = text.split("\n")
+        real = [l for l in lines if l.strip()]
+        if not real:
+            return text
+        pad = min(len(l) - len(l.lstrip(" \t")) for l in real)
+        if not pad:
+            return text
+        return "\n".join(l[pad:] if l.strip() else l for l in lines)
+
+    @staticmethod
     def _verbatim(tag: str, text: str) -> str:
         """Emit a verbatim block, splitting <Example> at blank lines.
 
@@ -1345,6 +1393,19 @@ class Converter:
                 break
         return stmt.rstrip().endswith(";")
 
+    def _check_indent(self, text: str) -> None:
+        """Report a "gap>" still indented after the block was dedented.
+
+        Only the common prefix is stripped, so a block that indents some of its
+        prompts but not others keeps them -- sonata has one.  GAP would read
+        the indented line as expected output, so say so rather than guess which
+        lines were meant to line up.
+        """
+        for line in text.split("\n"):
+            if re.match(r"[ \t]+gap> ", line):
+                self.notes.add("indented gap> line, reads as output not input",
+                               line.strip()[:70])
+
     def _check_continuations(self, text: str) -> None:
         """Report a "gap>" line that does not finish its statement.
 
@@ -1378,6 +1439,8 @@ class Converter:
             tag = "Example" if m.group(1) == "example" else "Log"
             body = m.group(2).strip("\n").replace("]]>", "]]]]><![CDATA[>")
             if tag == "Example":
+                body = self._dedent(body)
+                self._check_indent(body)
                 self._check_continuations(body)
             self._verb.append(self._verbatim(tag, body))
             return self._PLACEHOLDER.format(len(self._verb) - 1)
@@ -1453,6 +1516,8 @@ class Converter:
                 text = "\n".join(body).strip("\n")
                 text = text.replace("]]>", "]]]]><![CDATA[>")
                 if tag == "Example":
+                    text = self._dedent(text)
+                    self._check_indent(text)
                     self._check_continuations(text)
                 out.append(self._verbatim(tag, text))
                 seen_content = True
