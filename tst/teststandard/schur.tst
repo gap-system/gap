@@ -1,4 +1,4 @@
-#@local G,epi,p,check
+#@local G,epi,p,lev,check
 gap> START_TEST("schur.tst");
 
 # `EpimorphismSchurCover' must return a stem extension of the right size
@@ -36,7 +36,7 @@ gap> AbelianInvariantsMultiplier(PSL(3,4));
 [ 3, 4, 4 ]
 gap> AbelianInvariantsMultiplier(PSU(4,2));
 [ 2 ]
-gap> AbelianInvariantsMultiplier(SP(6,2));
+gap> AbelianInvariantsMultiplier(Sp(6,2));
 [ 2 ]
 gap> AbelianInvariantsMultiplier(SuzukiGroup(8));
 [ 2, 2 ]
@@ -60,12 +60,16 @@ true
 gap> check(PSL(2,11));
 true
 
-# matrix groups are handled via a permutation image; the cover is a finitely
-# presented group, so anything beyond its order is expensive to verify here
-gap> epi:=EpimorphismSchurCover(SP(6,2));;
+# matrix groups are handled via a permutation image. With assertions on
+# `MulExt' checks the order of the cover, enumerating all 2903040 cosets of
+# its trivial subgroup; that costs minutes against 1.2s for the cover itself.
+gap> lev:=AssertionLevel();;
+gap> SetAssertionLevel(0);
+gap> epi:=EpimorphismSchurCover(Sp(6,2));;
+gap> SetAssertionLevel(lev);
 gap> Size(Kernel(epi));
 2
-gap> Size(Source(epi))=2*Size(SP(6,2));
+gap> Size(Source(epi))=2*Size(Sp(6,2));
 true
 
 #

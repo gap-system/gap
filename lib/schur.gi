@@ -657,9 +657,8 @@ local hom,      #isomorphism fp
 
   q:=F/rels;
   # Checking the order means enumerating the cosets of the trivial subgroup of
-  # q, which for anything but small groups costs far more than the whole
-  # computation. Hence do so only above the assertion level `START_TEST' sets.
-  if AssertionLevel()>2 then
+  # q, which for larger groups costs far more than the whole computation.
+  if AssertionLevel()>0 then
     if Size(q)<>Size(G)*ms then
       Error("inconsistent multiplier size");
     fi;
