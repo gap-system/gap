@@ -1793,9 +1793,15 @@ class Converter:
         return "\n".join(parts)
 
     def _list(self, block: list[str]) -> str:
-        """``\\beginlist`` with ``\\item{MARK} BODY`` entries."""
+        """``\\beginlist`` with ``\\item{MARK} BODY`` entries.
+
+        ``\\itemitem`` is plain TeX's second-level item.  GAPDoc lists do not
+        nest that way and the old manuals only ever used it for a single flat
+        list, so it counts as an item too -- splitting on ``\\item`` alone left
+        the second "item" in the body and lost the mark with it.
+        """
         text = self.stash_verbatim("\n".join(block).strip("\n"))
-        chunks = re.split(r"\\item", text)
+        chunks = re.split(r"\\item(?:item)?", text)
         lead = chunks[0].strip()
         parts = []
         if lead:
