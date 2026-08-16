@@ -1397,10 +1397,12 @@ DeclareAttribute( "PerfectResiduum", IsGroup );
 ##  <Description>
 ##  returns a list of conjugacy representatives of perfect (respectively
 ##  simple) subgroups of <A>G</A>.
-##  This uses the library of perfect groups
-##  (see <Ref Func="PerfectGroup" Label="for group order (and index)"/>),
-##  thus it will issue an error if the library is insufficient to determine
-##  all perfect subgroups.
+##  This uses the library of perfect groups provided by the
+##  <Package>PerfGrp</Package> package
+##  (see <Ref BookName="perfgrp" Func="PerfectGroup"
+##  Label="for group order (and index)"/>),
+##  thus that package must be loaded, and it will issue an error if the
+##  library is insufficient to determine all perfect subgroups.
 ##  <Example><![CDATA[
 ##  gap> m11:=TransitiveGroup(11,6);
 ##  M(11)
