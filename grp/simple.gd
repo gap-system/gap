@@ -76,8 +76,10 @@ DeclareGlobalFunction("EpimorphismFromClassical");
 ##
 ##  <Description>
 ##  This function returns an iterator that will run over all nonabelian simple groups, starting
-##  at order <A>start</A> if specified, up to order <M>10^{27}</M> (or -- if specified
-##  -- order <A>end</A>). If the option <A>NOPSL2</A> is given, groups of type
+##  at order <A>start</A> if specified, and stopping at order <A>end</A> if specified.
+##  Only orders up to <M>10^{27}</M> are available, and asking for more is an error,
+##  whether through <A>start</A> or by iterating that far.
+##  If the option <A>NOPSL2</A> is given, groups of type
 ##  <M>PSL_2(q)</M> are omitted.
 ##  <Example><![CDATA[
 ##  gap> it:=SimpleGroupsIterator(20000);
