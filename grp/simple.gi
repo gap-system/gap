@@ -787,6 +787,19 @@ InstallGlobalFunction(SimpleGroupsIterator,function(arg)
   fi;
   nopsl2:=ValueOption("NOPSL2")=true or ValueOption("nopsl2")=true;
 
+  # The non-L2 orders come in two lists, the second loaded on demand.
+  # We do so early, so that a `start' beyond the data is rejected at
+  # once rather than after searching for it.
+  pos:=PositionProperty(SIMPLEGPSNONL2,x->x[1]>=start);
+  if pos=fail then
+    LOADSIMPLE2();
+    pos:=PositionProperty(SIMPLEGPSNONL2,x->x[1]>=start);
+    if pos=fail then
+      Error("simple groups of order > ",SIMPLE_GROUPS_ITERATOR_RANGE,
+        " are not available");
+    fi;
+  fi;
+
   # find relevant L2 order
   a:=RootInt(start,3)-1;
   stack:=fail;
@@ -796,8 +809,6 @@ InstallGlobalFunction(SimpleGroupsIterator,function(arg)
     stack:=a[3];
     a:=a[2];
   until SizeL2Q(b)>=start;
-  if start>=10^18 then LOADSIMPLE2(); fi;
-  pos:=First([1..Length(SIMPLEGPSNONL2)],x->SIMPLEGPSNONL2[x][1]>=start);
   return IteratorByFunctions(rec(
     IsDoneIterator:=IsDoneIterator_SimGp,
     NextIterator:=NextIterator_SimGp,
