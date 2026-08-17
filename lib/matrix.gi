@@ -4897,11 +4897,11 @@ BindGlobal("POW_MAT_INT_VALUE", function(pol, mat)
 end);
 
 # helper function for POW_MAT_INT: spin a single random vector and return the
-# degree of its order polynomial, or 'fail' if that degree exceeds <bound>.
-# That order polynomial divides the minimal polynomial of <mat>, and equals it
-# with high probability. Costs O(<bound> * d^2) field operations.
+# coefficients of its order polynomial, or 'fail' if its degree exceeds
+# <bound>. That order polynomial divides the minimal polynomial of <mat>, and
+# equals it with high probability. Costs O(<bound> * d^2) field operations.
 BindGlobal("POW_MAT_INT_PROBE", function(f, mat, bound)
-  local vec, i, op;
+  local vec, i;
   # a fixed vector has systematic bad cases: the all ones vector is fixed by
   # every permutation matrix. ZeroVector to match the representation of <mat>.
   vec := ZeroVector(NrCols(mat), mat);
@@ -4909,18 +4909,43 @@ BindGlobal("POW_MAT_INT_PROBE", function(f, mat, bound)
     vec[i] := Random(f);
   od;
   MakeImmutable(vec);
-  op := Matrix_OrderPolynomialInner(f, mat, vec, [], bound);
-  if op = fail then
-    return fail;
+  return Matrix_OrderPolynomialInner(f, mat, vec, [], bound);
+end);
+
+# helper function for POW_MAT_INT: does the polynomial with coefficient list
+# <coeffs> annihilate <mat>? Horner, costing Length(<coeffs>)-2 matrix
+# multiplications.
+BindGlobal("POW_MAT_INT_ANNIHILATES", function(coeffs, mat)
+  local i, val, j;
+  i := Length(coeffs);
+  val := coeffs[i] * mat;
+  if IsMatrixObj(val) and not IsRowListMatrix(val) then
+    # no access to the rows, so mutability is that of the matrix itself
+    if not IsMutable(val) then
+      val := MutableCopyMatrix(val);
+    fi;
+  elif not IsMutable(val[1]) then
+    val := MutableCopyMatrix(val);
   fi;
-  return Length(op) - 1;
+  i := i-1;
+  for j in [1..NrRows(mat)] do
+    val[j,j] := val[j,j]+coeffs[i];
+  od;
+  while 1 < i  do
+    val := mat * val;
+    i := i - 1;
+    for j in [1..NrRows(mat)] do
+      val[j,j] := val[j,j]+coeffs[i];
+    od;
+  od;
+  return IsZero(val);
 end);
 
 # next iteration, conjugate matrix such that it is often very sparse
 # (a companion matrix), could still be improved, maybe with kernel functions
 # for compact matrices (FL)
 BindGlobal("POW_MAT_INT", function(mat, n)
-  local d, k, limit, ratio, f, e, pol, ind, t, ti, mm;
+  local d, k, limit, ratio, f, op, e, pol, ind, t, ti, mm;
   d := NrRows(mat);
   # Decide between repeated squaring (POW_OBJ_INT, about Log2(n) matrix
   # multiplications) and the methods below, which have a considerable fixed
@@ -4957,55 +4982,62 @@ BindGlobal("POW_MAT_INT", function(mat, n)
     return POW_OBJ_INT(mat, n);
   fi;
 
-  # If the minimal polynomial has degree e, both the Log2(n) polynomial
-  # multiplications and the final evaluation work with degree e instead of
-  # degree d, which is worth a factor of 2 to 60. The break even point depends
-  # on the representation: matrix multiplication is cheap for compressed
-  # matrices and expensive for everything else, so those need 6*e <= d and
-  # 2*e <= d respectively.
-  # Computing the minimal polynomial of a dense matrix costs about as much as
-  # the whole characteristic polynomial method, so first probe with a single
-  # random vector, which is a fraction of one spinning: its order polynomial
-  # divides the minimal polynomial, so giving up on it settles the question.
+  # Any polynomial annihilating mat can serve as the modulus, not just the
+  # characteristic one. If mat has one of degree e, both the Log2(n)
+  # polynomial multiplications and the final evaluation work with degree e
+  # instead of degree d. The break even point depends on the representation:
+  # matrix multiplication is cheap for compressed matrices and expensive for
+  # everything else, so those need 6*e <= d and 2*e <= d respectively.
+  # Spin a single random vector: its order polynomial divides the minimal
+  # polynomial, and equals it unless the vector was unlucky, which Horner
+  # settles for e-1 matrix multiplications. Computing the minimal polynomial
+  # outright instead costs more than this whole method.
   if IsGF2MatrixRep(mat) or Is8BitMatrixRep(mat) then
     ratio := 6;
   else
     ratio := 2;
   fi;
-  e := fail;
+  op := fail;
   if d >= ratio then
-    e := POW_MAT_INT_PROBE(f, mat, QuoInt(d, ratio));
+    op := POW_MAT_INT_PROBE(f, mat, QuoInt(d, ratio));
   fi;
-  if e <> fail then
-    pol := MinimalPolynomial(f, mat, 1);
-    e := DegreeOfLaurentPolynomial(pol);
-    # the probe only gives a lower bound for e, so check again; if the minimal
-    # polynomial is large after all, fall through to the method below
-    if ratio*e <= d then
+  t := fail;
+  if op <> fail and 1 < Length(op) then
+    e := Length(op) - 1;
+    # Verifying and evaluating at mat costs 2*e dense multiplications. The
+    # base change below makes both sparse and thus much cheaper, but has to
+    # be computed first; and it is needed by the fallback anyway, so nothing
+    # is lost if the verification fails. Use mat directly only while 2*e
+    # stays below the cost of the base change, measured in dense
+    # multiplications -- which over GF(2) is much further.
+    if IsGF2MatrixRep(mat) then
+      limit := 60;
+    else
+      limit := 6;
+    fi;
+    if limit < e then
+      t := POW_MAT_INT_TRAFO(mat);
+      # conjugate matrices have the same annihilating polynomials
+      mm := t[3];
+    else
+      mm := mat;
+    fi;
+    if POW_MAT_INT_ANNIHILATES(op, mm) then
+      pol := UnivariatePolynomialByCoefficients(ElementsFamily(FamilyObj(f)),
+                                                op, 1);
       ind := IndeterminateOfUnivariateRationalFunction(pol);
       pol := PowerMod(ind, n, pol);
-      # Evaluating at mat costs e dense multiplications, the base change
-      # below turns those into sparse ones but has to be computed. So use mat
-      # directly while e stays below the cost of that base change, measured in
-      # dense multiplications -- which over GF(2) is much further.
-      if IsGF2MatrixRep(mat) then
-        limit := 125;
-      else
-        limit := 12;
-      fi;
-      if e <= limit then
-        return POW_MAT_INT_VALUE(pol, mat);
-      fi;
-      t := POW_MAT_INT_TRAFO(mat);
-      ti := t[2];
-      mm := t[3];
-      t := t[1];
       mm := POW_MAT_INT_VALUE(pol, mm);
-      return ti * mm * t;
+      if t = fail then
+        return mm;
+      fi;
+      return t[2] * mm * t[1];
     fi;
   fi;
 
-  t := POW_MAT_INT_TRAFO(mat);
+  if t = fail then
+    t := POW_MAT_INT_TRAFO(mat);
+  fi;
   ti := t[2];
   mm := t[3];
   t := t[1];

@@ -291,6 +291,24 @@ gap> [ NrRows(m), DegreeOfLaurentPolynomial(MinimalPolynomial(m)) ];
 gap> check(m);
 true
 
+# a polynomial annihilates a matrix iff it is a multiple of its minimal
+# polynomial; a proper divisor of the latter does not
+gap> b := comp(One(GF(5))*[1,1,1,1,1,1], GF(5));;
+gap> POW_MAT_INT_ANNIHILATES(One(GF(5))*[1,1,1,1,1,1], b);
+true
+gap> POW_MAT_INT_ANNIHILATES(One(GF(5))*[1,1,1,1,1,1,1], b);
+false
+gap> POW_MAT_INT_ANNIHILATES(One(GF(5))*[4,1], b);
+false
+
+# a tiny minimal polynomial next to a large dimension: here computing the
+# minimal polynomial outright would cost far more than the whole method
+gap> m := ImmutableMatrix(GF(2), PermutationMat((1,2,3,4), 120, GF(2)));;
+gap> [ NrRows(m), DegreeOfLaurentPolynomial(MinimalPolynomial(m)) ];
+[ 120, 4 ]
+gap> check(m);
+true
+
 # scalar and unipotent matrices
 gap> m := ImmutableMatrix(GF(9), Z(9)*IdentityMat(20, GF(9)));;
 gap> DegreeOfLaurentPolynomial(MinimalPolynomial(m));
