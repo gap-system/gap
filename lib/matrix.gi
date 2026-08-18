@@ -254,7 +254,14 @@ InstallMethod( IsLowerTriangularMatrix,
 ##
 InstallMethod( IsSquareMatrix,
     "for a matrix",
-    [ IsMatrixOrMatrixObj ],
+    [ IsMatrix ],
+    function( mat )
+    return IsRectangularTable( mat ) and NrRows( mat ) = NrCols( mat );
+    end );
+
+InstallMethod( IsSquareMatrix,
+    "for a matrix object",
+    [ IsMatrixObj ],
     function( mat )
     return NrRows( mat ) = NrCols( mat );
     end );
