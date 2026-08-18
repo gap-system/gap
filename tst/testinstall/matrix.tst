@@ -141,6 +141,8 @@ gap> IsSquareMat(NullMat(3, 2));
 false
 gap> IsSquareMat([[1,2,3],[4,5,6]]);
 false
+gap> IsSquareMat([[1,2],[4,5,6]]);
+false
 
 #
 gap> IsSymmetricMat(empty_0x2);
