@@ -193,21 +193,21 @@ local pcgs,pcgsimg,r,i,j,k,o,elm,img,exp,sp,mapi;
     od;
   od;
 
-  # we still need to test any additional generators. (This could happen
-  # easily, if the mapping is a general inverse.)
+  # The images of the pcgs need not agree with the images prescribed for the
+  # generators, so test these as well. (Testing only generators with a new
+  # image is not enough: an inconsistent image may coincide with the image of
+  # some other generator.)
   mapi:=MappingGeneratorsImages(map);
   for i in [1..Length(mapi[1])] do
-    if not mapi[2][i] in pcgsimg then
-      exp:=ExponentsOfPcElement(pcgs,mapi[1][i]);
-      img  := o;
-      for k in [1..Length(pcgsimg)] do
-        if exp[k]>0 then
-          img := img * sp[k][exp[k]];
-        fi;
-      od;
-      if img<>mapi[2][i] then
-        return false; # the extra generator would be mapped inconsistently.
+    exp:=ExponentsOfPcElement(pcgs,mapi[1][i]);
+    img  := o;
+    for k in [1..Length(pcgsimg)] do
+      if exp[k]>0 then
+        img := img * sp[k][exp[k]];
       fi;
+    od;
+    if img<>mapi[2][i] then
+      return false; # the generator would be mapped inconsistently.
     fi;
   od;
 
@@ -255,21 +255,21 @@ local pcgs,pcgsimg,r,i,j,k,o,elm,img,exp,sp,C,mapi;
     od;
   od;
 
-  # we still need to test any additional generators. (This could happen
-  # easily, if the mapping is a general inverse.)
+  # The images of the pcgs need not agree with the images prescribed for the
+  # generators, so take these into account as well. (Restricting to
+  # generators with a new image is not enough: a deviating image may coincide
+  # with the image of some other generator.)
   mapi:=MappingGeneratorsImages(map);
   for i in [1..Length(mapi[1])] do
-    if not mapi[2][i] in pcgsimg then
-      exp:=ExponentsOfPcElement(pcgs,mapi[1][i]);
-      img  := o;
-      for k in [1..Length(pcgsimg)] do
-        if exp[k]>0 then
-          img := img * sp[k][exp[k]];
-        fi;
-      od;
-      #NC is safe (init with Triv(range))
-      C:=ClosureSubgroupNC(C,img/mapi[2][i]);
-    fi;
+    exp:=ExponentsOfPcElement(pcgs,mapi[1][i]);
+    img  := o;
+    for k in [1..Length(pcgsimg)] do
+      if exp[k]>0 then
+        img := img * sp[k][exp[k]];
+      fi;
+    od;
+    #NC is safe (init with Triv(range))
+    C:=ClosureSubgroupNC(C,img/mapi[2][i]);
   od;
 
   C:=NormalClosure(ImagesSource(map),C);
