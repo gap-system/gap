@@ -407,9 +407,46 @@ function(words)
     return res;
 end);
 
+InstallGlobalFunction( SHA256State, GAP_SHA256_INIT );
+
+InstallMethod( PrintObj, "for a SHA256 state", [ IsSHA256State ],
+function(state)
+    Print("<SHA256 state>");
+end);
+
+InstallGlobalFunction( UpdateSHA256,
+function(state, string)
+    if not IsSHA256State(state) then
+        ErrorNoReturn("<state> must be a SHA256 state");
+    elif not IsString(string) then
+        ErrorNoReturn("<string> must be a string");
+    fi;
+
+    # CopyToStringRep: the kernel converts its argument to a string in place,
+    # which would retype a list of characters belonging to the caller.
+    GAP_SHA256_UPDATE(state, CopyToStringRep(string));
+end);
+
+InstallGlobalFunction( UpdateSHA256File,
+function(state, filename, decompress)
+    if not IsSHA256State(state) then
+        ErrorNoReturn("<state> must be a SHA256 state");
+    elif not IsString(filename) then
+        ErrorNoReturn("<filename> must be a string");
+    elif not decompress in [ true, false ] then
+        ErrorNoReturn("<decompress> must be 'true' or 'false'");
+    fi;
+
+    return GAP_SHA256_UPDATE_FILE(state, UserHomeExpand(filename), decompress);
+end);
+
 InstallGlobalFunction( HexSHA256,
 function(str)
     local s, chunk;
+
+    if IsSHA256State(str) then
+        return GAP_SHA256_HexOfWords(GAP_SHA256_DIGEST(str));
+    fi;
 
     s := GAP_SHA256_INIT();
     if IsString(str) then
@@ -423,25 +460,20 @@ function(str)
             fi;
         until not IsString(chunk) or Length(chunk) = 0;
     else
-        ErrorNoReturn("<str> has to be a string or an input stream");
+        ErrorNoReturn("<str> has to be a string, an input stream, or a ",
+                      "SHA256 state");
     fi;
 
-    return GAP_SHA256_HexOfWords(GAP_SHA256_FINAL(s));
+    return GAP_SHA256_HexOfWords(GAP_SHA256_DIGEST(s));
 end);
 
 InstallGlobalFunction( HexSHA256File,
 function(filename, decompress)
-    local res;
+    local s;
 
-    if not IsString(filename) then
-        ErrorNoReturn("<filename> must be a string");
-    elif not decompress in [ true, false ] then
-        ErrorNoReturn("<decompress> must be 'true' or 'false'");
-    fi;
-
-    res := GAP_SHA256_FILE(UserHomeExpand(filename), decompress);
-    if res = fail then
+    s := SHA256State();
+    if UpdateSHA256File(s, filename, decompress) = fail then
         return fail;
     fi;
-    return GAP_SHA256_HexOfWords(res);
+    return HexSHA256(s);
 end);

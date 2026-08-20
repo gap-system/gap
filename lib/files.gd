@@ -828,6 +828,7 @@ DeclareGlobalFunction( "Edit" );
 ##  <ManSection>
 ##  <Func Name="HexSHA256" Arg='string'/>
 ##  <Func Name="HexSHA256" Arg='stream' Label="for a stream"/>
+##  <Func Name="HexSHA256" Arg='state' Label="for a SHA256 state"/>
 ##
 ##  <Description>
 ##  <Index>hash function</Index>
@@ -836,6 +837,10 @@ DeclareGlobalFunction( "Edit" );
 ##  resp. of the data in the input stream object <A>stream</A>
 ##  (see Chapter&nbsp;<Ref Chap="Streams"/> to learn about streams)
 ##  when read from the current position until EOF (end-of-file).
+##  <P/>
+##  Given a SHA-256 state (see <Ref Func="SHA256State"/>), return the checksum
+##  of everything accumulated in it so far.  Reading it does not consume the
+##  state: it may be read again, and fed more data afterwards.
 ##  <P/>
 ##  The checksum is returned as string with 64 lowercase hexadecimal digits.
 ##  <Example><![CDATA[
@@ -889,5 +894,91 @@ DeclareGlobalFunction("HexSHA256");
 ##
 DeclareGlobalFunction("HexSHA256File");
 
+##  <#GAPDoc Label="IsSHA256State">
+##  <ManSection>
+##  <Filt Name="IsSHA256State" Arg='obj' Type='Category'/>
+##
+##  <Description>
+##  The category of SHA-256 states, as returned by
+##  <Ref Func="SHA256State"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareCategory("IsSHA256State", IsObject);
+
+BIND_GLOBAL("GAP_SHA256_State_Family", NewFamily("GAP_SHA256_State_Family"));
+
 BIND_GLOBAL("GAP_SHA256_State_Type",
-           NewType(NewFamily("GAP_SHA256_State_Family"), IsObject) );
+           NewType(GAP_SHA256_State_Family, IsSHA256State) );
+
+
+##  <#GAPDoc Label="SHA256State">
+##  <ManSection>
+##  <Func Name="SHA256State" Arg=''/>
+##
+##  <Description>
+##  <Index>hash function</Index>
+##  <Index>checksum</Index>
+##  Return a new SHA-256 state, which accumulates data fed to it with
+##  <Ref Func="UpdateSHA256"/> and <Ref Func="UpdateSHA256File"/>.  Its digest
+##  is read with <Ref Func="HexSHA256"/>.
+##  <Log><![CDATA[
+##  gap> s := SHA256State();;
+##  gap> UpdateSHA256(s, "ab");;
+##  gap> UpdateSHA256(s, "cd");;
+##  gap> HexSHA256(s) = HexSHA256("abcd");
+##  true
+##  ]]></Log>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("SHA256State");
+
+
+##  <#GAPDoc Label="UpdateSHA256">
+##  <ManSection>
+##  <Func Name="UpdateSHA256" Arg='state, string'/>
+##
+##  <Description>
+##  Append <A>string</A> to the data accumulated in <A>state</A>.
+##  <A>string</A> is left untouched.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("UpdateSHA256");
+
+
+##  <#GAPDoc Label="UpdateSHA256File">
+##  <ManSection>
+##  <Func Name="UpdateSHA256File" Arg='state, filename, decompress'/>
+##
+##  <Description>
+##  Append the contents of the file <A>filename</A> to the data accumulated in
+##  <A>state</A>. Return <K>true</K> on success, or <K>fail</K> if the file
+##  cannot be read, in which case <A>state</A> is left as it was.
+##  <P/>
+##  The file is read as binary data, so the result always describes the bytes
+##  on disk, also on systems which distinguish text and binary mode and would
+##  otherwise translate line endings.  It is read in chunks, so the size of
+##  the file is not limited by the available memory.
+##  <P/>
+##  <A>decompress</A> means what it does for
+##  <Ref Func="HexSHA256File"/>, and is likewise required.
+##  <Log><![CDATA[
+##  gap> name := Filename(DirectoryTemporary(), "test.txt");;
+##  gap> FileString(name, "cd");;
+##  gap> s := SHA256State();;
+##  gap> UpdateSHA256(s, "ab");
+##  gap> UpdateSHA256File(s, name, false);
+##  true
+##  gap> HexSHA256(s) = HexSHA256("abcd");
+##  true
+##  ]]></Log>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("UpdateSHA256File");
