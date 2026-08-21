@@ -30,6 +30,7 @@ fi;
 
 # same behaviour as with unbound functions
 PrintPromptHook := CPROMPT;
+PreInputHook := function() end;
 EndLineHook := function() end;
 
 ############################################################################
@@ -130,7 +131,7 @@ EndLineHook := function() end;
 ##  <#/GAPDoc>
 ##
 BindGlobal( "ColorPrompt", function(arg)
-  local b, r, a;
+  local b, r, a, promptshown;
   b := arg[1];
   r := rec(
          MarkupStdPrompt := "\033[1m\033[34m",
@@ -148,6 +149,7 @@ BindGlobal( "ColorPrompt", function(arg)
 
   if b <> true then
     Unbind(PrintPromptHook);
+    Unbind(PreInputHook);
     Unbind(EndLineHook);
     return;
   fi;
@@ -183,7 +185,17 @@ BindGlobal( "ColorPrompt", function(arg)
     # use this instead of Print such that the column counter for the
     # command line editor is correct
     PRINT_CPROMPT(r.TextPrompt());
-    # another color for input
+    promptshown := true;
+  end;
+  # Another color for input. This is not done in 'PrintPromptHook' because
+  # readline may still redraw parts of the prompt afterwards, which then would
+  # use the input color (see https://github.com/gap-system/gap/issues/5419).
+  promptshown := false;
+  PreInputHook := function()
+    if not promptshown then
+      return;
+    fi;
+    promptshown := false;
     WriteAll(STDOut, "\033[0m");
     if IsString(r.MarkupInput) then
       WriteAll(STDOut, r.MarkupInput);

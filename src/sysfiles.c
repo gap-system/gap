@@ -88,6 +88,19 @@
 // If not bound, nothing is done.
 static Obj EndLineHook = 0;
 
+// 'PreInputHook' is a GAP-level variable which can be set to a function to be
+// called once the line editor is ready to accept input. If not bound, nothing
+// is done. 'ColorPrompt' uses it to switch to the color for user input, which
+// must not happen earlier: readline may redraw parts of the prompt when it
+// starts up, and those redraws have to use the prompt color.
+static Obj PreInputHook = 0;
+
+static void CallPreInputHook(void)
+{
+    if (PreInputHook)
+        Call0ArgsInNewReader(PreInputHook);
+}
+
 /****************************************************************************
 **
 *V  syBuf . . . . . . . . . . . . . .  buffer and other info for files, local
@@ -2041,6 +2054,12 @@ static int charreadhook_rl(void)
   return 0;
 }
 
+static int preInputHook_rl(void)
+{
+  CallPreInputHook();
+  return 0;
+}
+
 static void initreadline(void)
 {
 
@@ -2060,6 +2079,8 @@ static void initreadline(void)
   rl_add_defun( "handled-by-GAP", GAP_rl_func, -1 );
 
   rl_bind_keyseq("\\C-x\\C-g", GAP_set_macro);
+
+  rl_pre_input_hook = preInputHook_rl;
 
   // disable bracketed paste mode by default: it interferes with our handling
   // of pastes of data involving REPL prompts "gap>"
@@ -2176,6 +2197,7 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
     /* no line editing if the user disabled it
        or we can't make it into raw mode */
     if ( SyLineEdit == 0 || ! syBeginEdit(fid) ) {
+        CallPreInputHook();
         p = syFgetsNoEdit(line, length, fid, block );
         return p;
     }
@@ -2195,6 +2217,9 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
         return line;
     }
 #endif
+
+    // with readline this is done by 'preInputHook_rl'
+    CallPreInputHook();
 
     /* In line editing mode 'length' is not allowed bigger than the
       yank buffer (= length of line buffer for input files).*/
@@ -3285,6 +3310,7 @@ static Int InitKernel(
 #endif
 
     InitCopyGVar("EndLineHook", &EndLineHook);
+    InitCopyGVar("PreInputHook", &PreInputHook);
 
     return 0;
 }
