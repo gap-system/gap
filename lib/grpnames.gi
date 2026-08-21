@@ -2087,7 +2087,8 @@ BindGlobal( "StructureDescriptionForFiniteGroups", # for finite groups
       return SD_insertsep([StructureDescription(FrattiniSubgroup(G)),
                            StructureDescription(G/FrattiniSubgroup(G))],
                           " . ","x:.");
-    elif IsPosInt(NrPerfectGroups(Size(G))) then
+    elif IsPackageMarkedForLoading("perfgrp","")
+         and IsPosInt(NrPerfectGroups(Size(G))) then
       id := PerfectIdentification(G);
       return Concatenation("PerfectGroup(",String(id[1]),",",
                                            String(id[2]),")");
