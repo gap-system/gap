@@ -1488,12 +1488,57 @@ InstallPcgsSeriesFromIndices(PCentralNormalSeriesByPcgsPGroup,
 
 #############################################################################
 ##
-#M  IndicesEANormalStepsBounded( <pcgs>,<bound> )
+#M  PcgsElementaryAbelianSeriesInfo( <G> ) . . . . pcgs and its own indices
+#M  PcgsCentralSeriesInfo( <G> )
+#M  PcgsPCentralSeriesPGroupInfo( <G> )
+#M  PcgsChiefSeriesInfo( <G> )
+#M  PcgsSeriesInfo( <filt>, <G> )
+##
+##  Each kind asks for the indices belonging to *its own* series, rather
+##  than for `IndicesEANormalSteps' which a pcgs may carry for a different
+##  series it also belongs to.
+##
+BindGlobal( "InstallPcgsSeriesInfo", function( info, pcgsattr, indices, filt )
+
+  InstallMethod( info, "from pcgs and its indices", [ IsGroup ],
+  function( G )
+  local pcgs;
+    pcgs:= pcgsattr( G );
+    return rec( pcgs:= pcgs, indices:= indices( pcgs ) );
+  end );
+
+  InstallTagBasedMethod( PcgsSeriesInfo, filt, { f, G } -> info( G ) );
+
+end );
+
+InstallPcgsSeriesInfo( PcgsElementaryAbelianSeriesInfo,
+  PcgsElementaryAbelianSeries, IndicesEANormalSteps,
+  IsPcgsElementaryAbelianSeries );
+InstallPcgsSeriesInfo( PcgsCentralSeriesInfo,
+  PcgsCentralSeries, IndicesCentralNormalSteps, IsPcgsCentralSeries );
+InstallPcgsSeriesInfo( PcgsPCentralSeriesPGroupInfo,
+  PcgsPCentralSeriesPGroup, IndicesPCentralNormalStepsPGroup,
+  IsPcgsPCentralSeriesPGroup );
+InstallPcgsSeriesInfo( PcgsChiefSeriesInfo,
+  PcgsChiefSeries, IndicesChiefNormalSteps, IsPcgsChiefSeries );
+
+InstallTagBasedMethod( PcgsSeriesInfo, function( filt, G )
+  Error( "no method for series kind ", NameFunction( filt ),
+         " installed for `PcgsSeriesInfo'" );
+end );
+
+#############################################################################
+##
+#F  IndicesNormalStepsBounded( <pcgs>,<ind>,<bound> )
+#F  IndicesEANormalStepsBounded( <pcgs>,<bound> )
 ##
 InstallGlobalFunction(IndicesEANormalStepsBounded,function(pcgs,bound)
-local rel,ind,gp,i,j,try;
+  return IndicesNormalStepsBounded(pcgs,IndicesEANormalSteps(pcgs),bound);
+end);
+
+InstallGlobalFunction(IndicesNormalStepsBounded,function(pcgs,ind,bound)
+local rel,gp,i,j,try;
   rel:=RelativeOrders(pcgs);
-  ind:=IndicesEANormalSteps(pcgs);
   gp:=GroupOfPcgs(pcgs);
   i:=2;
   while i<=Length(ind) do

@@ -718,6 +718,88 @@ DeclareAttribute( "IndicesNormalSteps", IsPcgs );
 ##
 DeclareAttribute( "NormalSeriesByPcgs", IsPcgs);
 
+
+#############################################################################
+##
+#A  PcgsElementaryAbelianSeriesInfo( <G> )
+#A  PcgsCentralSeriesInfo( <G> )
+#A  PcgsPCentralSeriesPGroupInfo( <G> )
+#A  PcgsChiefSeriesInfo( <G> )
+#O  PcgsSeriesInfo( <filt>, <G> )
+##
+##  <#GAPDoc Label="PcgsSeriesInfo">
+##  <ManSection>
+##  <Heading>Pcgs together with the indices of its series</Heading>
+##  <Attr Name="PcgsElementaryAbelianSeriesInfo" Arg='G'/>
+##  <Attr Name="PcgsCentralSeriesInfo" Arg='G'/>
+##  <Attr Name="PcgsPCentralSeriesPGroupInfo" Arg='G'/>
+##  <Attr Name="PcgsChiefSeriesInfo" Arg='G'/>
+##  <Oper Name="PcgsSeriesInfo" Arg='filt, G'/>
+##
+##  <Description>
+##  These attributes return a record with the components <C>pcgs</C>, a pcgs
+##  for <A>G</A> refining a normal series of the kind in question, and
+##  <C>indices</C>, the list of indices in this pcgs at which the steps of
+##  that series start, as described for
+##  <Ref Attr="IndicesEANormalSteps"/>.
+##  <P/>
+##  Obtaining both from one call is preferable to obtaining the pcgs and
+##  then asking it for its indices: a pcgs can belong to several series, and
+##  the indices stored on it need not be the ones of the series that was
+##  asked for.
+##  <P/>
+##  <Ref Oper="PcgsSeriesInfo"/> dispatches on <A>filt</A>, which must be one
+##  of the properties <Ref Prop="IsPcgsElementaryAbelianSeries"/>,
+##  <Ref Prop="IsPcgsCentralSeries"/>,
+##  <Ref Prop="IsPcgsPCentralSeriesPGroup"/> or
+##  <Ref Prop="IsPcgsChiefSeries"/>, and returns what the corresponding
+##  attribute returns. It is a tag based operation
+##  (see <Ref Func="DeclareTagBasedOperation"/>), so a package can support
+##  further kinds of series by installing a method for its own property.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> G := DihedralGroup( 16 );;
+##  gap> info := PcgsSeriesInfo( IsPcgsCentralSeries, G );;
+##  gap> info.indices = PcgsCentralSeriesInfo( G ).indices;
+##  true
+##  gap> info.indices = IndicesCentralNormalSteps( info.pcgs );
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute( "PcgsElementaryAbelianSeriesInfo", IsGroup );
+DeclareAttribute( "PcgsCentralSeriesInfo", IsGroup );
+DeclareAttribute( "PcgsPCentralSeriesPGroupInfo", IsGroup );
+DeclareAttribute( "PcgsChiefSeriesInfo", IsGroup );
+
+DeclareTagBasedOperation( "PcgsSeriesInfo", [ IsOperation, IsGroup ] );
+
+
+#############################################################################
+##
+#F  IndicesNormalStepsBounded( <pcgs>, <indices>, <bound> )
+##
+##  <#GAPDoc Label="IndicesNormalStepsBounded">
+##  <ManSection>
+##  <Func Name="IndicesNormalStepsBounded" Arg='pcgs, indices, bound'/>
+##
+##  <Description>
+##  Let <A>indices</A> be the indices of the steps of a normal series
+##  refined by <A>pcgs</A>. This function returns a refinement of
+##  <A>indices</A>, aiming to ensure that no factor of the series is larger
+##  than <A>bound</A>, without changing <A>pcgs</A>.
+##  <P/>
+##  <Ref Func="IndicesEANormalStepsBounded"/> is the special case in which
+##  the indices are taken from <Ref Attr="IndicesEANormalSteps"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "IndicesNormalStepsBounded" );
+
+
 #############################################################################
 ##
 #P  IsPrimeOrdersPcgs( <pcgs> )
