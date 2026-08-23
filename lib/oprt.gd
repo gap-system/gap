@@ -1709,7 +1709,11 @@ OrbitsishOperation( "Transitivity", OrbitsishReq, false, NewAttribute );
 ##  <Ref Oper="IsTransitive" Label="for a group, an action domain, etc."/>)
 ##  action of <A>G</A> on <A>Omega</A>.
 ##  If <A>seed</A> is not given and the action is imprimitive,
-##  a minimal nontrivial block system will be found.
+##  a minimal nontrivial block system will be found,
+##  that is, the blocks are minimal among the blocks with more than one
+##  element.
+##  If the action is primitive, the block system <C>[ <A>Omega</A> ]</C>
+##  consisting of the single block <A>Omega</A> is returned.
 ##  If <A>seed</A> is given, a block system in which <A>seed</A>
 ##  is the subset of one block is computed.
 ##  <P/>
@@ -1721,6 +1725,8 @@ OrbitsishOperation( "Transitivity", OrbitsishReq, false, NewAttribute );
 ##  [ [ 1, 8 ], [ 2, 3 ], [ 4, 5 ], [ 6, 7 ] ]
 ##  gap> Blocks(g,[1..8],[1,4]);
 ##  [ [ 1, 4 ], [ 2, 7 ], [ 3, 6 ], [ 5, 8 ] ]
+##  gap> Blocks(MathieuGroup(11),[1..11]);   # this action is primitive
+##  [ [ 1 .. 11 ] ]
 ##  ]]></Example>
 ##  <P/>
 ##  (See Section&nbsp;<Ref Sect="Basic Actions"/>
@@ -1752,10 +1758,16 @@ OrbitishFO( "Blocks",
 ##   Label="for an external set"/>
 ##
 ##  <Description>
-##  returns a block system that is maximal (i.e., blocks are maximal with
-##  respect to inclusion) for the transitive (see
+##  returns a maximal block system for the transitive (see
 ##  <Ref Oper="IsTransitive" Label="for a group, an action domain, etc."/>)
-##  action of <A>G</A> on <A>Omega</A>.
+##  action of <A>G</A> on <A>Omega</A>,
+##  that is, the blocks are maximal among the blocks that are proper subsets
+##  of <A>Omega</A>.
+##  Equivalently, the action induced by <A>G</A> on the returned block system
+##  is primitive.
+##  If the action of <A>G</A> on <A>Omega</A> is already primitive, then the
+##  block system <C>[ <A>Omega</A> ]</C> consisting of the single block
+##  <A>Omega</A> is returned.
 ##  If <A>seed</A> is given, a block system is computed in which <A>seed</A>
 ##  is a subset of one block.
 ##  <P/>
@@ -1763,6 +1775,10 @@ OrbitishFO( "Blocks",
 ##  <Example><![CDATA[
 ##  gap> MaximalBlocks(g,[1..8]);
 ##  [ [ 1, 2, 3, 8 ], [ 4 .. 7 ] ]
+##  gap> Blocks(g,[1..8]);   # the minimal block system is finer
+##  [ [ 1, 8 ], [ 2, 3 ], [ 4, 5 ], [ 6, 7 ] ]
+##  gap> MaximalBlocks(MathieuGroup(11),[1..11]);   # primitive action
+##  [ [ 1 .. 11 ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
