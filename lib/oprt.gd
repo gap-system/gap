@@ -699,11 +699,12 @@ end );
 
 #############################################################################
 ##
-#F  OrbitishFO( <name>, <reqs>, <famrel>, <usetype>, <realenum> )
+#F  OrbitishFO( <name>, <reqs>, <famrel>, <usetype>, <realenum>[, <usage>] )
 ##
 ##  <#GAPDoc Label="OrbitishFO">
 ##  <ManSection>
-##  <Func Name="OrbitishFO" Arg='name, reqs, famrel, usetype, realenum'/>
+##  <Func Name="OrbitishFO"
+##   Arg='name, reqs, famrel, usetype, realenum[, usage]'/>
 ##
 ##  <Description>
 ##  is used to create operations like <Ref Oper="Orbit"/>.
@@ -743,12 +744,29 @@ end );
 ##  should use the enumerator, otherwise it uses the
 ##  <Ref Attr="HomeEnumerator"/> value. This will
 ##  make a difference for external orbits as part of a larger domain.
+##  <P/>
+##  The optional 6th argument <A>usage</A> is the error message that is shown
+##  if the wrapper function is called with arguments it cannot make sense of.
+##  It defaults to a message describing the calling conventions of
+##  <Ref Oper="Orbit"/>, and must be given for operations that deviate from
+##  them, such as <Ref Oper="Blocks"
+##  Label="for a group, an action domain, etc."/>,
+##  whose third argument is an optional list.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-BindGlobal( "OrbitishFO", function( name, reqs, famrel, usetype,realenum )
-local str, orbish, func,isnotest;
+BindGlobal( "OrbitishFO",
+    function( name, reqs, famrel, usetype, realenum, usage... )
+local str, orbish, func, isnotest, usagestr;
+
+    # <pnt> is a single mandatory point unless the caller says otherwise
+    if Length( usage ) = 1 then
+      usagestr:= usage[1];
+    else
+      usagestr:= Concatenation( "usage: ", name, "(<xset>,<pnt>)\n",
+              "or ", name, "(<G>[,<Omega>],<pnt>[,<gens>,<acts>][,<act>])" );
+    fi;
 
     # Create the operation.
     str:= SHALLOW_COPY_OBJ( name );
@@ -760,15 +778,13 @@ local str, orbish, func,isnotest;
 
     # Create the wrapper function.
     func := function( arg )
-    local le, usage, xset, pnt, G, D, gens, acts, act, attrG, result;
+    local le, xset, pnt, G, D, gens, acts, act, attrG, result;
 
       le:= Length( arg );
-      usage:= Concatenation( "usage: ", name, "(<xset>,<pnt>)\n",
-              "or ", name, "(<G>[,<Omega>],<pnt>[,<gens>,<acts>][,<act>])" );
 
       # Get the arguments.
       if le = 0 then
-        Error( usage );
+        Error( usagestr );
       elif le <= 2 and IsExternalSet( arg[ 1 ] )  then
           xset := arg[ 1 ];
           if Length(arg)>1 then
@@ -830,7 +846,13 @@ local str, orbish, func,isnotest;
           acts:= arg[ le ];
         fi;
       else
-        Error( usage );
+        Error( usagestr );
+      fi;
+
+      # <pnt> must be acceptable for the operation, otherwise the call would
+      # end in a `no method found' error further down.
+      if not ( reqs[2]( pnt ) or reqs[3]( pnt ) ) then
+        Error( usagestr );
       fi;
 
       if not IsBound( gens )  then
@@ -1295,7 +1317,9 @@ OrbitishFO( "ExternalSubset",
     [ IsGroup, IsList, IsList,
       IsList,
       IsList,
-      IsFunction ], IsIdenticalObj, true, false );
+      IsFunction ], IsIdenticalObj, true, false,
+    Concatenation( "usage: ExternalSubset(<xset>,<start>)\n",
+      "or ExternalSubset(<G>,<Omega>,<start>[,<gens>,<acts>][,<act>])" ) );
 
 
 #############################################################################
@@ -1741,7 +1765,9 @@ OrbitishFO( "Blocks",
     [ IsGroup, IsList, IsList,
       IsList,
       IsList,
-      IsFunction ], IsIdenticalObj, BlocksAttr, true );
+      IsFunction ], IsIdenticalObj, BlocksAttr, true,
+    Concatenation( "usage: Blocks(<xset>[,<seed>])\n",
+      "or Blocks(<G>,<Omega>[,<seed>][,<gens>,<acts>][,<act>])" ) );
 
 
 #############################################################################
@@ -1790,7 +1816,9 @@ OrbitishFO( "MaximalBlocks",
     [ IsGroup, IsList, IsList,
       IsList,
       IsList,
-      IsFunction ], IsIdenticalObj, MaximalBlocksAttr,true );
+      IsFunction ], IsIdenticalObj, MaximalBlocksAttr, true,
+    Concatenation( "usage: MaximalBlocks(<xset>[,<seed>])\n",
+      "or MaximalBlocks(<G>,<Omega>[,<seed>][,<gens>,<acts>][,<act>])" ) );
 
 #T  the following syntax would be nice for consistency as well:
 ##  RepresentativesMinimalBlocks(<G>,<Omega>[,<seed>][,<gens>,<acts>][,<act>])
@@ -1833,7 +1861,9 @@ OrbitishFO( "RepresentativesMinimalBlocks",
     [ IsGroup, IsList, IsList,
       IsList,
       IsList,
-      IsFunction ], IsIdenticalObj, RepresentativesMinimalBlocksAttr,true );
+      IsFunction ], IsIdenticalObj, RepresentativesMinimalBlocksAttr, true,
+    Concatenation( "usage: RepresentativesMinimalBlocks(<xset>)\n",
+      "or RepresentativesMinimalBlocks(<G>,<Omega>[,<gens>,<acts>][,<act>])" ) );
 
 
 #############################################################################
