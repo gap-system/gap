@@ -2140,15 +2140,20 @@ DeclareOperation( "PermutationOp", [ IsObject, IsList, IsFunction ] );
 
 #############################################################################
 ##
-#O  PermutationCycle( <g>, <Omega>, <pnt>[, <act>] )
+#O  PermutationCycle( <g>, <Omega>, <pnt>[, <gens>, <acts>][, <act>] )
 ##
 ##  <#GAPDoc Label="PermutationCycle">
 ##  <ManSection>
-##  <Func Name="PermutationCycle" Arg='g, Omega, pnt[, act]'/>
+##  <Func Name="PermutationCycle" Arg='g, Omega, pnt[, gens, acts][, act]'/>
 ##
 ##  <Description>
 ##  computes the permutation that represents the cycle of <A>pnt</A> under
 ##  the action of the element <A>g</A>.
+##  <P/>
+##  Instead of the domain <A>Omega</A>, an external set <A>xset</A>
+##  may be given; then the action domain is the
+##  <Ref Attr="HomeEnumerator"/> value of <A>xset</A>
+##  (see Section&nbsp;<Ref Sect="External Sets"/>).
 ##  <Example><![CDATA[
 ##  gap> Permutation([[Z(3),-Z(3)],[Z(3),0*Z(3)]],AsList(GF(3)^2));
 ##  (2,7,6)(3,4,8)
@@ -2169,15 +2174,20 @@ DeclareOperation( "PermutationCycleOp",
 
 #############################################################################
 ##
-#O  Cycle( <g>, <Omega>, <pnt> [,<act>] )
+#O  Cycle( <g>, <Omega>, <pnt>[, <gens>, <acts>][, <act>] )
 ##
 ##  <#GAPDoc Label="Cycle">
 ##  <ManSection>
-##  <Func Name="Cycle" Arg='g, Omega, pnt[, act]'/>
+##  <Func Name="Cycle" Arg='g, Omega, pnt[, gens, acts][, act]'/>
 ##
 ##  <Description>
 ##  returns a list of the points in the cycle of <A>pnt</A> under the action
 ##  of the element <A>g</A>.
+##  <P/>
+##  Instead of the domain <A>Omega</A>, an external set <A>xset</A>
+##  may be given; then the action domain is the
+##  <Ref Attr="HomeEnumerator"/> value of <A>xset</A>
+##  (see Section&nbsp;<Ref Sect="External Sets"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2189,15 +2199,20 @@ DeclareOperation( "CycleOp", [ IsObject, IsList, IsObject, IsFunction ] );
 
 #############################################################################
 ##
-#O  Cycles( <g>, <Omega> [,<act>] )
+#O  Cycles( <g>, <Omega>[, <gens>, <acts>][, <act>] )
 ##
 ##  <#GAPDoc Label="Cycles">
 ##  <ManSection>
-##  <Func Name="Cycles" Arg='g, Omega[, act]'/>
+##  <Func Name="Cycles" Arg='g, Omega[, gens, acts][, act]'/>
 ##
 ##  <Description>
 ##  returns a list of the cycles (as lists of points) of the action of the
-##  element <A>g</A>.
+##  element <A>g</A> on <A>Omega</A>.
+##  <P/>
+##  Instead of the domain <A>Omega</A>, an external set <A>xset</A>
+##  may be given; then the action domain is the
+##  <Ref Attr="HomeEnumerator"/> value of <A>xset</A>
+##  (see Section&nbsp;<Ref Sect="External Sets"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2209,15 +2224,20 @@ DeclareOperation( "CyclesOp", [ IsObject, IsList, IsFunction ] );
 
 #############################################################################
 ##
-#O  CycleLength( <g>, <Omega>, <pnt> [,<act>] )
+#O  CycleLength( <g>, <Omega>, <pnt>[, <gens>, <acts>][, <act>] )
 ##
 ##  <#GAPDoc Label="CycleLength">
 ##  <ManSection>
-##  <Func Name="CycleLength" Arg='g, Omega, pnt[, act]'/>
+##  <Func Name="CycleLength" Arg='g, Omega, pnt[, gens, acts][, act]'/>
 ##
 ##  <Description>
-##  returns the length of the cycle of <A>pnt</A> under the action of the element
-##  <A>g</A>.
+##  returns the length of the cycle of <A>pnt</A> under the action of the
+##  element <A>g</A>.
+##  <P/>
+##  Instead of the domain <A>Omega</A>, an external set <A>xset</A>
+##  may be given; then the action domain is the
+##  <Ref Attr="HomeEnumerator"/> value of <A>xset</A>
+##  (see Section&nbsp;<Ref Sect="External Sets"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2230,15 +2250,20 @@ DeclareOperation( "CycleLengthOp",
 
 #############################################################################
 ##
-#O  CycleLengths( <g>, <Omega>[, <act>] )
+#O  CycleLengths( <g>, <Omega>[, <gens>, <acts>][, <act>] )
 ##
 ##  <#GAPDoc Label="CycleLengths">
 ##  <ManSection>
-##  <Oper Name="CycleLengths" Arg='g, Omega[, act]'/>
+##  <Func Name="CycleLengths" Arg='g, Omega[, gens, acts][, act]'/>
 ##
 ##  <Description>
 ##  returns the lengths of all the cycles under the action of the element
 ##  <A>g</A> on <A>Omega</A>.
+##  <P/>
+##  Instead of the domain <A>Omega</A>, an external set <A>xset</A>
+##  may be given; then the action domain is the
+##  <Ref Attr="HomeEnumerator"/> value of <A>xset</A>
+##  (see Section&nbsp;<Ref Sect="External Sets"/>).
 ##  <Example><![CDATA[
 ##  gap> Cycle((1,2,3)(4,5)(6,7),[4..7],4);
 ##  [ 4, 5 ]
@@ -2261,15 +2286,15 @@ DeclareOperation( "CycleLengthsOp",
 
 #############################################################################
 ##
-#F  CycleIndex( <g>, <Omega>[, <act>] )
-#F  CycleIndex( <G>, <Omega>[, <act>] )
+#F  CycleIndex( <g>[, <Omega>][, <act>] )
+#F  CycleIndex( <G>[, <Omega>][, <act>] )
 ##
 ##  <#GAPDoc Label="CycleIndex">
 ##  <ManSection>
 ##  <Heading>CycleIndex</Heading>
-##  <Func Name="CycleIndex" Arg='g, Omega[, act]'
+##  <Func Name="CycleIndex" Arg='g[, Omega][, act]'
 ##   Label="for a permutation and an action domain"/>
-##  <Func Name="CycleIndex" Arg='G, Omega[, act]'
+##  <Func Name="CycleIndex" Arg='G[, Omega][, act]'
 ##   Label="for a permutation group and an action domain"/>
 ##
 ##  <Description>
@@ -2290,6 +2315,10 @@ DeclareOperation( "CycleLengthsOp",
 ##  <Ref Func="CycleIndex" Label="for a permutation and an action domain"/>
 ##  are the indeterminates <M>1</M> to <M>n</M> over the rationals
 ##  (see&nbsp;<Ref Oper="Indeterminate" Label="for a ring (and a number)"/>).
+##  <P/>
+##  If <A>Omega</A> is omitted then <A>g</A> must be a permutation or a
+##  permutation group, and its <Ref Attr="MovedPoints"
+##  Label="for a permutation"/> value is used as action domain.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> g:=TransitiveGroup(6,8);
