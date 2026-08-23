@@ -692,6 +692,10 @@ gap> HexStringInt(last);
 <#Include Label="CrcString">
 <#Include Label="HexSHA256">
 <#Include Label="HexSHA256File">
+<#Include Label="IsSHA256State">
+<#Include Label="SHA256State">
+<#Include Label="UpdateSHA256">
+<#Include Label="UpdateSHA256File">
 <#Include Label="Pluralize">
 
 </Section>

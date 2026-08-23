@@ -240,12 +240,63 @@ static int sha256_final(sha256_state_t * state)
     return 0;
 }
 
+static sha256_state_t * SHA256_STATE(Obj state)
+{
+    return (sha256_state_t *)(&ADDR_OBJ(state)[1]);
+}
+
+#define RequireSHA256State(funcname, op)                                     \
+    RequireArgumentCondition(funcname, op,                                   \
+                             IS_DATOBJ(op) &&                                \
+                                 TYPE_OBJ(op) == GAP_SHA256_State_Type,      \
+                             "must be a SHA256 state")
+
+// Feed the contents of <filename> into <st>.  Mode "rb" rather than "r" so
+// that no line ending translation happens; the digest has to describe the
+// bytes on disk.  With <decompress> set, a file whose name ends in '.gz' is
+// read as its decompressed content instead, matching 'InputTextFile'.
+// Returns 0 on success, -1 if the file could not be read.
+static int sha256_update_file(sha256_state_t * st,
+                              Obj              filename,
+                              Obj              decompress)
+{
+    Int   fid, len;
+    UChar buf[16384];
+
+    fid = SyFopen(CONST_CSTR_STRING(filename), "rb", decompress == True);
+    if (fid == -1)
+        return -1;
+
+    while ((len = SyRead(fid, buf, sizeof(buf))) > 0) {
+        sha256_update(st, buf, len);
+    }
+    SyFclose(fid);
+    return len < 0 ? -1 : 0;
+}
+
+// The eight words of <st> as a plain list, most significant first.  <st> is
+// taken by value on purpose: NEW_PLIST below may trigger a garbage collection,
+// which can move bags, so this must not be handed a pointer into one.
+static Obj sha256_words(sha256_state_t st)
+{
+    Obj result;
+    int i;
+
+    result = NEW_PLIST(T_PLIST, 8);
+    SET_LEN_PLIST(result, 8);
+    for (i = 0; i < 8; i++) {
+        SET_ELM_PLIST(result, i + 1, ObjInt_UInt(st.r[i]));
+        CHANGED_BAG(result);
+    }
+    return result;
+}
+
 Obj FuncGAP_SHA256_INIT(Obj self)
 {
     Obj              result;
     sha256_state_t * sptr;
 
-    result = NewBag(T_DATOBJ, sizeof(UInt4) + sizeof(sha256_state_t));
+    result = NewBag(T_DATOBJ, sizeof(Obj) + sizeof(sha256_state_t));
     SET_TYPE_OBJ(result, GAP_SHA256_State_Type);
 
     sptr = (sha256_state_t *)(&ADDR_OBJ(result)[1]);
@@ -256,82 +307,50 @@ Obj FuncGAP_SHA256_INIT(Obj self)
 
 Obj FuncGAP_SHA256_UPDATE(Obj self, Obj state, Obj bytes)
 {
-    sha256_state_t * sptr;
-
-    RequireArgumentCondition(SELF_NAME, state,
-                             IS_DATOBJ(state) &&
-                                 TYPE_OBJ(state) == GAP_SHA256_State_Type,
-                             "must be a SHA256 state");
+    RequireSHA256State(SELF_NAME, state);
     RequireStringRep(SELF_NAME, bytes);
 
-    sptr = (sha256_state_t *)(&ADDR_OBJ(state)[1]);
-    sha256_update(sptr, CHARS_STRING(bytes), GET_LEN_STRING(bytes));
+    sha256_update(SHA256_STATE(state), CHARS_STRING(bytes),
+                  GET_LEN_STRING(bytes));
     CHANGED_BAG(state);
 
     return 0;
 }
 
-Obj FuncGAP_SHA256_FINAL(Obj self, Obj state)
+// Feed a whole file into <state>.  Returns 'true' on success, or 'fail' if
+// the file could not be read, in which case <state> is left as it was.
+Obj FuncGAP_SHA256_UPDATE_FILE(Obj self, Obj state, Obj filename,
+                               Obj decompress)
 {
-    Obj              result;
-    sha256_state_t * sptr;
-    int              i;
-
-    RequireArgumentCondition(SELF_NAME, state,
-                             IS_DATOBJ(state) &&
-                                 TYPE_OBJ(state) == GAP_SHA256_State_Type,
-                             "must be a SHA256 state");
-
-    result = NEW_PLIST(T_PLIST, 8);
-    SET_LEN_PLIST(result, 8);
-
-    sptr = (sha256_state_t *)(&ADDR_OBJ(state)[1]);
-    sha256_final(sptr);
-    CHANGED_BAG(state);
-
-    for (i = 0; i < 8; i++) {
-        SET_ELM_PLIST(result, i + 1, ObjInt_UInt(sptr->r[i]));
-        CHANGED_BAG(result);
-    }
-    return result;
-}
-
-Obj FuncGAP_SHA256_FILE(Obj self, Obj filename, Obj decompress)
-{
-    Obj            result;
     sha256_state_t st;
-    Int            fid, len;
-    int            i;
-    UChar          buf[16384];
 
+    RequireSHA256State(SELF_NAME, state);
     RequireStringRep(SELF_NAME, filename);
     RequireTrueOrFalse(SELF_NAME, decompress);
 
-    // Mode "rb" rather than "r" so that no line ending translation happens;
-    // the digest has to describe the bytes on disk.  With <decompress> set,
-    // a file whose name ends in '.gz' is hashed as its decompressed content
-    // instead, matching what 'InputTextFile' would read.
-    fid = SyFopen(CONST_CSTR_STRING(filename), "rb", decompress == True);
-    if (fid == -1)
+    // Work on a copy, so that a file which turns out to be unreadable part
+    // way through does not leave half of itself in the caller's state.
+    st = *SHA256_STATE(state);
+    if (sha256_update_file(&st, filename, decompress) < 0)
         return Fail;
 
-    sha256_init(&st);
-    while ((len = SyRead(fid, buf, sizeof(buf))) > 0) {
-        sha256_update(&st, buf, len);
-    }
-    SyFclose(fid);
-    if (len < 0)
-        return Fail;
+    *SHA256_STATE(state) = st;
+    CHANGED_BAG(state);
+    return True;
+}
 
+// The digest of <state> as it stands, leaving <state> usable.  Padding a
+// SHA256 state is destructive, so this finalizes a copy: reading the digest
+// must not be a one-shot operation the caller has to know about.
+Obj FuncGAP_SHA256_DIGEST(Obj self, Obj state)
+{
+    sha256_state_t st;
+
+    RequireSHA256State(SELF_NAME, state);
+
+    st = *SHA256_STATE(state);
     sha256_final(&st);
-
-    result = NEW_PLIST(T_PLIST, 8);
-    SET_LEN_PLIST(result, 8);
-    for (i = 0; i < 8; i++) {
-        SET_ELM_PLIST(result, i + 1, ObjInt_UInt(st.r[i]));
-        CHANGED_BAG(result);
-    }
-    return result;
+    return sha256_words(st);
 }
 
 Obj FuncGAP_SHA256_HMAC(Obj self, Obj key, Obj text)
@@ -393,8 +412,8 @@ Obj FuncGAP_SHA256_HMAC(Obj self, Obj key, Obj text)
 static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_0ARGS(GAP_SHA256_INIT),
     GVAR_FUNC_2ARGS(GAP_SHA256_UPDATE, state, bytes),
-    GVAR_FUNC_1ARGS(GAP_SHA256_FINAL, state),
-    GVAR_FUNC_2ARGS(GAP_SHA256_FILE, filename, decompress),
+    GVAR_FUNC_3ARGS(GAP_SHA256_UPDATE_FILE, state, filename, decompress),
+    GVAR_FUNC_1ARGS(GAP_SHA256_DIGEST, state),
     GVAR_FUNC_2ARGS(GAP_SHA256_HMAC, key, text),
 
     { 0 }    // Finish with an empty entry
