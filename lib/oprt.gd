@@ -906,9 +906,16 @@ end );
 ##  <Description>
 ##  computes a homomorphism from <A>G</A> into the symmetric group on
 ##  <M>|<A>Omega</A>|</M> points that gives the permutation action of
-##  <A>G</A> on <A>Omega</A>. (In particular, this homomorphism is a
-##  permutation equivalence, that is the permutation image of a group element
-##  is given by the positions of points in <A>Omega</A>.)
+##  <A>G</A> on <A>Omega</A>.
+##  The permutations in the image act on <M>[ 1 .. |<A>Omega</A>| ]</M>,
+##  where the number <M>i</M> stands for the <M>i</M>-th point of
+##  <A>Omega</A>; in other words, the images are taken with respect to the
+##  permutation equivalence between the action of <A>G</A> on <A>Omega</A>
+##  and its image, which is given by numbering the points of <A>Omega</A>
+##  (see the remark on <Ref Oper="PositionCanonical"/> below).
+##  Note that the homomorphism itself need not be injective,
+##  it is injective if and only if <A>G</A> acts faithfully on
+##  <A>Omega</A>.
 ##  <P/>
 ##  The result is undefined if <A>G</A> does not act on <A>Omega</A>.
 ##  <P/>
