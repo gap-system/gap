@@ -718,6 +718,37 @@ gap> HexStringInt(last);
 <#Include Label="SecondsDMYhms">
 <#Include Label="DMYhmsSeconds">
 
+<ManSection>
+<Func Name="CurrentSecondsSinceEpoch" Arg=''/>
+<Description>
+returns the number of seconds that have passed since
+1-Jan-1970, 00:00:00 UTC, ignoring leap seconds,
+or <K>fail</K> if the system clock cannot be read.
+<P/>
+That epoch is guaranteed, and does not depend on the epoch the underlying
+operating system happens to count from.  Note that the value says nothing
+about the local time zone; it is a point in time, not a local clock
+reading.
+<P/>
+This is the same time scale that the other functions in this section use,
+so the result can be passed to <Ref Func="DMYhmsSeconds"/> to obtain the
+current date and time.
+<P/>
+<Log><![CDATA[
+gap> secs:= CurrentSecondsSinceEpoch();;
+gap> DMYhmsSeconds( secs );
+[ 11, 8, 2026, 23, 14, 29 ]
+gap> StringDate( DMYDay( QuoInt( secs, 86400 ) ) );
+"11-Aug-2026"
+]]></Log>
+<P/>
+Note that <Ref Func="NanosecondsSinceEpoch"/> does <E>not</E> count from
+1-Jan-1970, despite its name: it counts from an unspecified point in the
+past, and is meant for measuring durations rather than for recording when
+something happened.
+</Description>
+</ManSection>
+
 </Section>
 
 
