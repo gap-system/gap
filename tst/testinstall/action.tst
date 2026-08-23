@@ -22,33 +22,33 @@ Error, RankAction: action must be transitive
 
 #
 gap> Blocks( G, [ 2 .. 5 ] ); # error, good
-Error, <G> must operate transitively on <D>
+Error, <G> must act transitively on <D>
 gap> Blocks( G, [ 1 .. 6 ] ); # error, good
-Error, <G> must operate transitively on <D>
-gap> Blocks( G, [ 1 .. 5 ] );; # works although not transitive
-gap> bl:= Blocks( G, [ 2 .. 6 ] );; # works although no action
-gap> Action( G, bl, OnSets ); # error, good (but late)
-Error, List Element: <list>[1] must have an assigned value
+Error, <G> must act transitively on <D>
+gap> Blocks( G, [ 1 .. 5 ] ); # error, good
+Error, <G> must act transitively on <D>
+gap> Blocks( G, [ 2 .. 6 ] ); # error, good
+Error, <G> must act transitively on <D>
 
 #
 gap> MaximalBlocks( G, [ 2 .. 5 ] ); # error, good
-Error, <G> must operate transitively on <D>
+Error, <G> must act transitively on <D>
 gap> MaximalBlocks( G, [ 1 .. 6 ] ); # error, good
-Error, <G> must operate transitively on <D>
-gap> MaximalBlocks( G, [ 1 .. 5 ] );; # works although not transitive
-gap> bl:= MaximalBlocks( G, [ 2 .. 6 ] );; # works although no action
-gap> Action( G, bl, OnSets ); # error, good (but late)
-Error, List Element: <list>[1] must have an assigned value
+Error, <G> must act transitively on <D>
+gap> MaximalBlocks( G, [ 1 .. 5 ] ); # error, good
+Error, <G> must act transitively on <D>
+gap> MaximalBlocks( G, [ 2 .. 6 ] ); # error, good
+Error, <G> must act transitively on <D>
 
 #
-gap> bl:= RepresentativesMinimalBlocks( G, [ 2 .. 5 ] ); # error, good
+gap> RepresentativesMinimalBlocks( G, [ 2 .. 5 ] ); # error, good
 Error, <G> must act transitively on <D>
-gap> bl:= RepresentativesMinimalBlocks( G, [ 1 .. 6 ] ); # error, good
+gap> RepresentativesMinimalBlocks( G, [ 1 .. 6 ] ); # error, good
 Error, <G> must act transitively on <D>
-gap> RepresentativesMinimalBlocks( G, [ 1 .. 5 ] );; # works although not transitive
-gap> bl:= RepresentativesMinimalBlocks( G, [ 2 .. 6 ] );; # works although no action
-gap> Action( G, bl, OnSets );
-Error, List Element: <list>[1] must have an assigned value
+gap> RepresentativesMinimalBlocks( G, [ 1 .. 5 ] ); # error, good
+Error, <G> must act transitively on <D>
+gap> RepresentativesMinimalBlocks( G, [ 2 .. 6 ] ); # error, good
+Error, <G> must act transitively on <D>
 
 #
 gap> xset:= ExternalSet( G, [ 2 .. 5 ] );; # works although no action

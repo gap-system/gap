@@ -1741,7 +1741,9 @@ OrbitsishOperation( "Transitivity", OrbitsishReq, false, NewAttribute );
 ##  If <A>seed</A> is given, a block system in which <A>seed</A>
 ##  is the subset of one block is computed.
 ##  <P/>
-##  The result is undefined if the action is not transitive.
+##  If the action is not transitive, an error is signalled for a
+##  permutation group acting on points, and the result is undefined
+##  otherwise.
 ##  <Example><![CDATA[
 ##  gap> g:=TransitiveGroup(8,3);
 ##  E(8)=2[x]2[x]2
@@ -1797,7 +1799,9 @@ OrbitishFO( "Blocks",
 ##  If <A>seed</A> is given, a block system is computed in which <A>seed</A>
 ##  is a subset of one block.
 ##  <P/>
-##  The result is undefined if the action is not transitive.
+##  If the action is not transitive, an error is signalled for a
+##  permutation group acting on points, and the result is undefined
+##  otherwise.
 ##  <Example><![CDATA[
 ##  gap> MaximalBlocks(g,[1..8]);
 ##  [ [ 1, 2, 3, 8 ], [ 4 .. 7 ] ]
@@ -1845,7 +1849,9 @@ OrbitishFO( "MaximalBlocks",
 ##  <Ref Oper="IsTransitive" Label="for a group, an action domain, etc."/>)
 ##  action of <A>G</A> on <A>Omega</A>.
 ##  <P/>
-##  The result is undefined if the action is not transitive.
+##  If the action is not transitive, an error is signalled for a
+##  permutation group acting on points, and the result is undefined
+##  otherwise.
 ##  <Example><![CDATA[
 ##  gap> RepresentativesMinimalBlocks(g,[1..8]);
 ##  [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 1, 5 ], [ 1, 6 ], [ 1, 7 ],
