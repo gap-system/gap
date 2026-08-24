@@ -647,8 +647,8 @@ Int SyFopen(const Char * name, const Char * mode, BOOL transparent_compress)
     Char                namegz [1024];
     int                 flags = 0;
 
-    Char * terminator = strrchr(name, '.');
-    BOOL   endsgz = terminator && (streq(terminator, ".gz"));
+    const Char * terminator = strrchr(name, '.');
+    BOOL         endsgz = terminator && (streq(terminator, ".gz"));
 
     // handle standard files
     if (streq(name, "*stdin*")) {
