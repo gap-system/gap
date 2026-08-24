@@ -1744,6 +1744,11 @@ OrbitsishOperation( "Transitivity", OrbitsishReq, false, NewAttribute );
 ##  If the action is not transitive, an error is signalled for a
 ##  permutation group acting on points, and the result is undefined
 ##  otherwise.
+##  For a permutation group and a given <A>seed</A>, verifying transitivity
+##  costs one extra orbit computation;
+##  call <Ref Oper="Blocks" Label="for a group, an action domain, etc."/>
+##  with the option <C>check := false</C> to suppress it if the action is
+##  known to be transitive.
 ##  <Example><![CDATA[
 ##  gap> g:=TransitiveGroup(8,3);
 ##  E(8)=2[x]2[x]2

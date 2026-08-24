@@ -91,5 +91,11 @@ gap> Blocks( V, [1..4] );
 gap> Blocks( V, [1..4], [1,2] );
 [ [ 1, 2 ], [ 3, 4 ] ]
 
+# the transitivity check for a seed can be switched off
+gap> Blocks( Group( (1,2), (3,4,5) ), [1..5], [1,2] );
+Error, <G> must act transitively on <D>
+gap> Blocks( Group( (1,2), (3,4,5) ), [1..5], [1,2] : check := false );
+[ [ 1, 2 ], [ 3 ], [ 4 ], [ 5 ] ]
+
 ##
 gap> STOP_TEST( "oprt.tst" );

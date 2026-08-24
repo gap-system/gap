@@ -440,9 +440,13 @@ InstallMethod( BlocksOp, "integers, with seed", true,
         TryNextMethod();
     fi;
 
-    # check that the group is transitive
-    if Length( D ) > 1
-       and Length( Orbit( G, D, D[1], gens, acts, act ) ) <> Length( D )  then
+    # Check that the group is transitive.  Unlike the method without seed,
+    # this method computes no orbit anyway, so the check is not for free;
+    # use the cheapest orbit algorithm available for permutations, and let
+    # `check := false' turn it off.
+    if ValueOption( "check" ) <> false and Length( D ) > 1
+       and ( Length( acts ) = 0
+             or Length( OrbitPerms( acts, D[1] ) ) <> Length( D ) )  then
         Error("<G> must act transitively on <D>");
     fi;
 
