@@ -140,7 +140,6 @@ AC_MSG_RESULT([$ABI])
 AC_SUBST([ABI])
 
 
-
 dnl
 dnl Miscellaneous tools
 dnl
@@ -194,6 +193,44 @@ AC_CHECK_SIZEOF([int])
 AC_CHECK_SIZEOF([long])
 AC_CHECK_SIZEOF([long long])
 
+
+dnl Despite being 64-bit, the RISC-V architecture supports hardware
+dnl MMUs and virtual memory layouts with fewer than the traditional
+dnl 48 addressable bits:
+dnl
+dnl   https://www.kernel.org/doc/html/next/riscv/vm-layout.html
+dnl
+dnl Here we detect only the most limited (SV39) of these, as GASMAN
+dnl must be made aware of the limitation.
+AS_CASE([$host], [riscv64*], [
+    AC_MSG_CHECKING([[for SV39 MMU (RISC-V)]])
+    AC_RUN_IFELSE(
+        [AC_LANG_SOURCE([[
+#define _BSD_SOURCE
+#include <asm/hwprobe.h>
+#include <sys/syscall.h>
+#include <unistd.h>
+
+int main(void) {
+  struct riscv_hwprobe p = {
+    .key = RISCV_HWPROBE_KEY_HIGHEST_VIRT_ADDRESS,
+  };
+  if ((syscall(__NR_riscv_hwprobe, &p, 1, 0, NULL, 0) == 0)
+      && (p.key != -1)
+      && ((void*)p.value == (void*)0x4000000000)) {
+    return 0;
+  }
+  return 1;
+}
+    ]])], [
+        AC_MSG_RESULT([yes])
+        GAP_DEFINE([HAVE_SV39_MMU=1])
+    ], [
+        AC_MSG_RESULT([no])
+    ], [
+        AC_MSG_RESULT([no (cross-compiling)])
+    ])
+])
 
 
 dnl
