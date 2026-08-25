@@ -151,13 +151,8 @@ InstallMethod( BlocksOp, "permgroup on integers",
         TryNextMethod();
     fi;
 
-    # handle trivial group
-    if Length( acts ) = 0 and Length(D)>1  then
-        Error("<G> must operate transitively on <D>");
-    fi;
-
     # handle trivial domain
-    if Length( D ) = 1  or IsPrimeInt( Length( D ) )  then
+    if Length( D ) <= 1  then
         return Immutable( [ D ] );
     fi;
 
@@ -175,11 +170,19 @@ InstallMethod( BlocksOp, "permgroup on integers",
         od;
     od;
 
-    # check that the group is transitive
+    # check that the group is transitive;
+    # this happens before the shortcut for prime degree below, so that the
+    # answer does not depend on the degree for an intransitive action
     if Length( orbit ) <> Length( D )  then
-        Error("<G> must operate transitively on <D>");
+        Error("<G> must act transitively on <D>");
     fi;
     Info( InfoAction, 4, "BlocksNoSeed transversal computed" );
+
+    # a transitive action of prime degree is primitive
+    if IsPrimeInt( Length( D ) )  then
+        return Immutable( [ D ] );
+    fi;
+
     nrorbs := Length( orbit );
 
     # since $i \in k^{G_1}$ implies $\beta(i)=\beta(k)$,  we initialize <eql>
@@ -437,6 +440,16 @@ InstallMethod( BlocksOp, "integers, with seed", true,
         TryNextMethod();
     fi;
 
+    # Check that the group is transitive.  Unlike the method without seed,
+    # this method computes no orbit anyway, so the check is not for free;
+    # use the cheapest orbit algorithm available for permutations, and let
+    # `check := false' turn it off.
+    if ValueOption( "check" ) <> false and Length( D ) > 1
+       and ( Length( acts ) = 0
+             or Length( OrbitPerms( acts, D[1] ) ) <> Length( D ) )  then
+        Error("<G> must act transitively on <D>");
+    fi;
+
     nrb := Length(D) - Length(seed) + 1;
 
     # in the beginning each point <d> is in a block by itself
@@ -573,7 +586,7 @@ local   blocks,   # block system of <G>, result
   fi;
 
   # handle trivial domain
-  if Length( D ) = 1  or IsPrime( Length( D ) )  then
+  if Length( D ) <= 1  then
     return Immutable([ D ]);
   fi;
 
@@ -595,11 +608,19 @@ local   blocks,   # block system of <G>, result
     od;
   od;
 
-  # check that the group is transitive
+  # check that the group is transitive;
+  # this happens before the shortcut for prime degree below, so that the
+  # answer does not depend on the degree for an intransitive action
   if Length( orbit ) <> Length( D )  then
     Error( "<G> must act transitively on <D>" );
   fi;
   Info(InfoAction,4,"RepresentativesMinimalBlocks transversal computed");
+
+  # a transitive action of prime degree is primitive
+  if IsPrime( Length( D ) )  then
+    return Immutable([ D ]);
+  fi;
+
   nrorbs := Length( orbit );
 
   # since $i \in k^{G_1}$ implies $\beta(i)=\beta(k)$,  we initialize <eql>

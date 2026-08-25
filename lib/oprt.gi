@@ -2069,6 +2069,11 @@ end );
 InstallGlobalFunction( Permutation, function( arg )
     local   g,  D,  gens,  acts,  act,  xset,  hom;
 
+    # test arguments
+    if Length( arg ) < 2 or Length( arg ) > 5 then
+      Error("usage: Permutation(<g>,<Omega>[,<gens>,<acts>][,<act>])");
+    fi;
+
     # Get the arguments.
     g := arg[ 1 ];
     if Length( arg ) = 2  and  IsExternalSet( arg[ 2 ] )  then
@@ -2165,6 +2170,11 @@ end );
 InstallGlobalFunction( PermutationCycle, function( arg )
     local   g,  D,  pnt,  gens,  acts,  act,  xset,  hom;
 
+    # test arguments
+    if Length( arg ) < 3 or Length( arg ) > 6 then
+      Error("usage: PermutationCycle(<g>,<Omega>,<pnt>[,<gens>,<acts>][,<act>])");
+    fi;
+
     # Get the arguments.
     g := arg[ 1 ];
     if Length( arg ) = 3  and  IsExternalSet( arg[ 2 ] )  then
@@ -2237,6 +2247,11 @@ end );
 InstallGlobalFunction( Cycle, function( arg )
     local   g,  D,  pnt,  gens,  acts,  act,  xset,  hom,  p;
 
+    # test arguments
+    if Length( arg ) < 2 or Length( arg ) > 6 then
+      Error("usage: Cycle(<g>,<Omega>,<pnt>[,<gens>,<acts>][,<act>])");
+    fi;
+
     # Get the arguments.
     g := arg[ 1 ];
     if Length( arg ) = 3  and  IsExternalSet( arg[ 2 ] )  then
@@ -2275,8 +2290,9 @@ InstallGlobalFunction( Cycle, function( arg )
     fi;
 
     if IsBound( gens )  and  not IsIdenticalObj( gens, acts )  then
-        hom := ActionHomomorphismAttr( ExternalOrbitOp
-               ( GroupByGenerators( gens ), D, pnt, gens, acts, act ) );
+        hom := ActionHomomorphismAttr( ExternalSetByFilterConstructor
+                       ( IsExternalSet,
+                         GroupByGenerators( gens ), D, gens, acts, act ) );
         return D{ CycleOp( ImagesRepresentative( hom, g ),
                        PositionCanonical( D, pnt ), OnPoints ) };
     elif IsBound( D )  then
@@ -2325,6 +2341,11 @@ end );
 ##
 InstallGlobalFunction( Cycles, function( arg )
     local   g,  D,  gens,  acts,  act,  xset,  hom;
+
+    # test arguments
+    if Length( arg ) < 2 or Length( arg ) > 5 then
+      Error("usage: Cycles(<g>,<Omega>[,<gens>,<acts>][,<act>])");
+    fi;
 
     # Get the arguments.
     g := arg[ 1 ];
@@ -2533,8 +2554,9 @@ InstallGlobalFunction( CycleLength, function( arg )
     local   g,  D,  pnt,  gens,  acts,  act,  xset,  hom,  p;
 
     # test arguments
-    if Length(arg)<2 or not IsMultiplicativeElementWithInverse(arg[1]) then
-      Error("usage: CycleLength(<g>,<D>,<pnt>[,<act>])");
+    if Length(arg)<2 or Length(arg)>6
+       or not IsMultiplicativeElementWithInverse(arg[1]) then
+      Error("usage: CycleLength(<g>,<Omega>,<pnt>[,<gens>,<acts>][,<act>])");
     fi;
 
     # Get the arguments.
@@ -2568,7 +2590,8 @@ InstallGlobalFunction( CycleLength, function( arg )
         gens := arg[ p + 1 ];
         acts := arg[ p + 2 ];
         if not IsIdenticalObj( gens, acts )  then
-          xset:=ExternalOrbitOp(GroupByGenerators(gens),D,pnt,gens,acts,act);
+          xset:= ExternalSetByFilterConstructor( IsExternalSet,
+                     GroupByGenerators( gens ), D, gens, acts, act );
         fi;
       fi;
     fi;
@@ -2605,8 +2628,9 @@ InstallGlobalFunction( CycleLengths, function( arg )
     local   g,  D,  gens,  acts,  act,  xset,  hom;
 
     # test arguments
-    if Length(arg)<2 or not IsMultiplicativeElementWithInverse(arg[1]) then
-      Error("usage: CycleLengths(<g>,<D>[,<act>])");
+    if Length(arg)<2 or Length(arg)>5
+       or not IsMultiplicativeElementWithInverse(arg[1]) then
+      Error("usage: CycleLengths(<g>,<Omega>[,<gens>,<acts>][,<act>])");
     fi;
 
     # Get the arguments.

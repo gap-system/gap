@@ -1485,15 +1485,23 @@ InstallMethod( ImagesRepresentative,"Constituent homomorphism",
   FamSourceEqFamElm,
         [ IsConstituentHomomorphism, IsMultiplicativeElementWithInverse ], 0,
     function( hom, elm )
-    local   D;
+    local   D,  img;
 
     D := Enumerator( UnderlyingExternalSet( hom ) );
     if Length( D ) = 0  then
         return ();
-    else
-        return PermList( OnTuples( [ 1 .. Length( D ) ],
-                       elm ^ hom!.conperm ) );
     fi;
+    img:= PermList( OnTuples( [ 1 .. Length( D ) ], elm ^ hom!.conperm ) );
+    if img = fail  then
+        # <elm> maps a point of the domain outside of it, so the underlying
+        # group does not act on the domain; report that instead of handing
+        # `fail' on to the caller
+        if ValueOption( "actioncanfail" ) = true  then
+            return fail;
+        fi;
+        Error( "<elm> does not induce a permutation of the action domain" );
+    fi;
+    return img;
 #T problem if the image consists of wrapped permutations!
 end );
 
