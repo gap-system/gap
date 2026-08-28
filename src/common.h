@@ -287,5 +287,7 @@ typedef ExecStatus (*ExecStatFunc)(Stat);
 typedef void (*PrintStatFunc)(Stat);
 typedef void (*PrintExprFunc)(Expr);
 
+//
+#include "precise_gc_julia.h"
 
 #endif // GAP_COMMON_H
