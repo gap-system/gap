@@ -579,7 +579,7 @@ static void GapRootScanner(int full)
     // towards the stack bottom, ensuring that we also scan any
     // references stored in registers.
     jmp_buf registers;
-    _setjmp(registers);
+    GAP_SETJMP(registers);
     TryMarkRange(ptls, registers, (char *)registers + sizeof(jmp_buf));
     TryMarkRange(ptls, (char *)registers + sizeof(jmp_buf), stackend);
 

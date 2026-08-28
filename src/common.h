@@ -47,6 +47,22 @@ GAP_STATIC_ASSERT(sizeof(void *) == SIZEOF_VOID_P, "sizeof(void *) is wrong");
 #endif
 
 
+// GAP_SETJMP and GAP_LONGJMP are used for error handling and for GASMAN's
+// register capture. On POSIX systems we use _setjmp/_longjmp, which do not
+// save and restore the signal mask and thus are much faster. On native
+// Windows those names do not exist (mingw's two-argument _setjmp intrinsic
+// is something else entirely), so use plain setjmp/longjmp there.
+// TODO(windows-port): Windows longjmp performs SEH stack unwinding; if that
+// misbehaves across GAP stack frames, switch to mingw's _setjmp(env, NULL).
+// Callers must include <setjmp.h> themselves.
+#ifdef SYS_IS_WINDOWS
+#define GAP_SETJMP(env) setjmp(env)
+#define GAP_LONGJMP(env, val) longjmp(env, val)
+#else
+#define GAP_SETJMP(env) _setjmp(env)
+#define GAP_LONGJMP(env, val) _longjmp(env, val)
+#endif
+
 #ifdef USE_GASMAN
 #define GAP_ENABLE_SAVELOAD
 #endif
