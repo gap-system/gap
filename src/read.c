@@ -127,6 +127,17 @@ struct ReaderState {
 
 typedef struct ReaderState ReaderState;
 
+// A ReaderState lives on the C stack but holds GAP objects, which a precise
+// collector cannot see there. List the slots next to the struct and root them
+// with GAP_GC_PUSH_ROOTS; see CODE_STATE_ROOTS in code.h for the convention.
+#define READER_STATE_ROOTS(p)                                                \
+    SCANNER_STATE_ROOTS(&(p)->s), INTR_STATE_ROOTS(&(p)->intr),              \
+        &(p)->StackNams
+
+GAP_STATIC_ASSERT(offsetof(ReaderState, LoopNesting) + sizeof(UInt) ==
+                      sizeof(ReaderState),
+                  "ReaderState grew; check READER_STATE_ROOTS");
+
 
 /****************************************************************************
 **
@@ -2566,11 +2577,15 @@ ExecStatus ReadEvalCommand(Obj            context,
 #endif
     Obj                 oldLVars = 0;
     Obj                 evalResultObj = 0;
-    Obj                 stackNams = 0;
 
     ReaderState reader;
     ReaderState * volatile rs = &reader;
     memset(rs, 0, sizeof(ReaderState));
+
+    // Root the reader state before anything can allocate: Match_ below stores
+    // string and number literals into rs->s.ValueObj. The memset above
+    // initialised every slot, which pushing them requires.
+    GAP_GC_PUSH_ROOTS(9, (&oldLVars, &evalResultObj, READER_STATE_ROOTS(rs)));
 
     GAP_ASSERT(input);
     rs->s.input = input;
@@ -2583,11 +2598,13 @@ ExecStatus ReadEvalCommand(Obj            context,
     // if scanning the first symbol produced a syntax error, abort
     if (rs->s.NrError) {
         FlushRestOfInputLine(input);
+        GAP_GC_POP();
         return STATUS_ERROR;
     }
 
     // if we have hit <end-of-file>, then give up
     if (rs->s.Symbol == S_EOF) {
+        GAP_GC_POP();
         return STATUS_EOF;
     }
 
@@ -2600,10 +2617,8 @@ ExecStatus ReadEvalCommand(Obj            context,
     memcpy( readJmpError, STATE(ReadJmpError), sizeof(jmp_buf) );
 
     // initialize everything and begin an interpreter
-    stackNams          = NEW_PLIST( T_PLIST, 16 );
-    rs->StackNams      = stackNams;
+    rs->StackNams      = NEW_PLIST( T_PLIST, 16 );
     STATE(Tilde)       = 0;
-    GAP_GC_PUSH3(&oldLVars, &evalResultObj, &stackNams);
 #ifdef HPCGAP
     lockSP = RegionLockSP();
 #endif
@@ -2688,6 +2703,27 @@ ExecStatus ReadEvalCommand(Obj            context,
     return status;
 }
 
+// Begin the implicit 'function() ... end' that a whole file is read inside,
+// declaring any local variables the file opens with.
+//
+// 'nams' needs no root of its own here: PushPlist stores it into
+// rs->StackNams, which is rooted for the duration, and PushPlist's parameter
+// is annotated GAP_GC_ROOTED_BY_ARG(0) so the analyzer knows it too.
+static void BeginImplicitFunction(ReaderState * rs, TypInputFile * input)
+    GAP_GC_CANSAFEPOINT
+{
+    Obj nams = NEW_PLIST(T_PLIST, 0);
+    PushPlist(rs->StackNams, nams);
+
+    UInt nloc = 0;
+    if (rs->s.Symbol == S_LOCAL) {
+        nloc = ReadLocals(rs, 0, nams);
+    }
+
+    IntrFuncExprBegin(&rs->intr, 0, nloc, nams, GetInputLineNumber(input));
+}
+
+
 /****************************************************************************
 **
 *F  ReadEvalFile()  . . . . . . . . . . . . . . . . . . . . . . . read a file
@@ -2704,11 +2740,8 @@ ExecStatus ReadEvalFile(TypInputFile * input, Obj * evalResult)
     volatile Obj        tilde;
     jmp_buf           readJmpError;
     volatile UInt       nr;
-    Obj                 stackNams = 0;
-    Obj                 nams = 0;
     Obj                 oldLVars = 0;
     Obj                 evalResultObj = 0;
-    volatile Int        nloc;
 #ifdef HPCGAP
     volatile int        lockSP;
 #endif
@@ -2716,6 +2749,11 @@ ExecStatus ReadEvalFile(TypInputFile * input, Obj * evalResult)
     ReaderState reader;
     ReaderState * volatile rs = &reader;
     memset(rs, 0, sizeof(ReaderState));
+
+    // Root the reader state before anything can allocate: Match_ below stores
+    // string and number literals into rs->s.ValueObj. The memset above
+    // initialised every slot, which pushing them requires.
+    GAP_GC_PUSH_ROOTS(9, (&oldLVars, &evalResultObj, READER_STATE_ROOTS(rs)));
 
     GAP_ASSERT(input);
     rs->s.input = input;
@@ -2736,10 +2774,8 @@ ExecStatus ReadEvalFile(TypInputFile * input, Obj * evalResult)
     memcpy( readJmpError, STATE(ReadJmpError), sizeof(jmp_buf) );
 
     // initialize everything and begin an interpreter
-    stackNams        = NEW_PLIST( T_PLIST, 16 );
-    rs->StackNams    = stackNams;
+    rs->StackNams    = NEW_PLIST( T_PLIST, 16 );
     STATE(Tilde)     = 0;
-    GAP_GC_PUSH4(&stackNams, &nams, &oldLVars, &evalResultObj);
 
     // remember the old execution state and start an execution environment
     oldLVars = SWITCH_TO_BOTTOM_LVARS();
@@ -2747,17 +2783,7 @@ ExecStatus ReadEvalFile(TypInputFile * input, Obj * evalResult)
     IntrBegin(&rs->intr);
     rs->intr.gapnameid = GetInputFilenameID(input);
 
-    // check for local variables
-    nams = NEW_PLIST(T_PLIST, 0);
-    PushPlist(stackNams, nams);
-    nloc = 0;
-    if (rs->s.Symbol == S_LOCAL) {
-        nloc = ReadLocals(rs, 0, nams);
-    }
-
-    // fake the 'function ()'
-    IntrFuncExprBegin(&rs->intr, 0, nloc, nams,
-                      GetInputLineNumber(input));
+    BeginImplicitFunction(rs, input);
 
     // read the statements
     GAP_ASSERT(rs->LoopNesting == 0);
