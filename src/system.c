@@ -51,6 +51,12 @@
 
 #include <sys/stat.h>
 
+#ifdef SYS_IS_WINDOWS
+#include <io.h>                         // for _setmode
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>                    // for GlobalMemoryStatusEx
+#endif
+
 #if defined(__APPLE__) && defined(__MACH__)
 // Workaround: TRUE / FALSE are also defined by the macOS Mach-O headers
 #define ENUM_DYLD_BOOL
@@ -570,6 +576,13 @@ static void InitSysOpts(void)
     Int SyStorMaxFromMem =
         (sysconf(_SC_PAGESIZE) * sysconf(_SC_PHYS_PAGES) * 3) / 4 / 1024;
     SyStorMax = SyStorMaxFromMem > SyStorMax ? SyStorMaxFromMem : SyStorMax;
+  #elif defined(SYS_IS_WINDOWS)
+    MEMORYSTATUSEX mem;
+    mem.dwLength = sizeof(mem);
+    if (GlobalMemoryStatusEx(&mem)) {
+        Int SyStorMaxFromMem = (Int)(mem.ullTotalPhys / 1024) * 3 / 4;
+        SyStorMax = SyStorMaxFromMem > SyStorMax ? SyStorMaxFromMem : SyStorMax;
+    }
   #endif
 #endif // defined(SYS_IS_64_BIT)
 
@@ -689,6 +702,16 @@ static void InitDotGapPath(void)
 
 void InitSystem(int argc, const char * argv[], BOOL handleSignals)
 {
+#ifdef SYS_IS_WINDOWS
+    // make binary mode the default for all file descriptors, so that the C
+    // runtime does not translate line endings behind GAP's back (matching
+    // the behavior of Cygwin's binmode mounts); GAP handles CRLF itself
+    _fmode = _O_BINARY;
+    _setmode(fileno(stdin), _O_BINARY);
+    _setmode(fileno(stdout), _O_BINARY);
+    _setmode(fileno(stderr), _O_BINARY);
+#endif
+
     InitSysOpts();
 
     if (handleSignals) {
