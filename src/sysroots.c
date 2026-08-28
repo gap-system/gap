@@ -165,7 +165,7 @@ void SySetGapRootPath(const Char * string)
         while (*p && *p != ';') {
             *q = *p++;
 
-#ifdef SYS_IS_CYGWIN32
+#if defined(SYS_IS_CYGWIN32) || defined(SYS_IS_WINDOWS)
             // change backslash to slash for Windows
             if (*q == '\\')
                 *q = '/';

@@ -992,7 +992,7 @@ static Obj FuncREAD_GAP_ROOT(Obj self, Obj filename)
 static Obj FuncTmpName(Obj self)
 {
     char name[100] = "/tmp/gaptempfile.XXXXXX";
-#ifdef SYS_IS_CYGWIN32
+#if defined(SYS_IS_CYGWIN32) || defined(SYS_IS_WINDOWS)
     // If /tmp is missing, write into Window's temp directory
     DIR* dir = opendir("/tmp");
     if(dir) {
@@ -1022,7 +1022,7 @@ static Obj FuncTmpDirectory(Obj self)
         name = MakeString(env_tmpdir);
     }
     else {
-#ifdef SYS_IS_CYGWIN32
+#if defined(SYS_IS_CYGWIN32) || defined(SYS_IS_WINDOWS)
         // If /tmp is missing, write into Window's temp directory
         DIR* dir = opendir("/tmp");
         if(dir) {
@@ -1496,7 +1496,7 @@ static Obj FuncREAD_ALL_FILE(Obj self, Obj fid, Obj limit)
     len = 0;
     lstr = 0;
 
-#ifdef SYS_IS_CYGWIN32
+#if defined(SYS_IS_CYGWIN32) || defined(SYS_IS_WINDOWS)
  getmore:
 #endif
     while (ilim == -1 || len < ilim ) {
@@ -1537,7 +1537,7 @@ static Obj FuncREAD_ALL_FILE(Obj self, Obj fid, Obj limit)
 
     // fix the length of <str>
     len = GET_LEN_STRING(str);
-#ifdef SYS_IS_CYGWIN32
+#if defined(SYS_IS_CYGWIN32) || defined(SYS_IS_WINDOWS)
     // line end hackery
     UInt i = 0, j = 0;
     while (i < len) {

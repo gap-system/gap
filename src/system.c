@@ -660,7 +660,7 @@ static void InitDotGapPath(void)
     if (home == 0)
         return;
 
-#if defined(__CYGWIN__)
+#if defined(__CYGWIN__) || defined(SYS_IS_WINDOWS)
     strxcpy(DotGapPath, home, sizeof(DotGapPath));
     strxcat(DotGapPath, "/_gap;", sizeof(DotGapPath));
 #else
