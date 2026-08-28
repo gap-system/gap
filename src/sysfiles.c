@@ -758,7 +758,7 @@ Int SyFopen(const Char * name, const Char * mode, BOOL transparent_compress)
         Panic("Unknown mode %s", mode);
     }
 
-#ifdef SYS_IS_CYGWIN32
+#ifdef SYS_IS_WINDOWS
     if (strlen(mode) >= 2 && mode[1] == 'b')
         flags |= O_BINARY;
 #endif
@@ -1419,7 +1419,7 @@ Int SyFseek (
  * a similar problem.
  */
 
-#ifdef SYS_IS_CYGWIN32
+#ifdef SYS_IS_WINDOWS
 #  define LINE_END_HACK 1
 #endif
 
