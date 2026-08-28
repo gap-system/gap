@@ -236,6 +236,9 @@ typedef struct {
 
 } ScannerState;
 
+// See CODE_STATE_ROOTS in code.h for why this list exists.
+#define SCANNER_STATE_ROOTS(p)    &(p)->ValueObj
+
 
 /****************************************************************************
 **
