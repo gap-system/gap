@@ -24,7 +24,7 @@
 **  The  list is  automatically extended to   make room for  the new element.
 **  'AddList' returns nothing, it is called only for its side effect.
 */
-void AddList(Obj list, Obj obj);
+void AddList(Obj list, Obj obj GAP_GC_ROOTED_BY_ARG(0) GAP_GC_MAYBE_UNROOTED);
 
 void AddPlist(Obj list, Obj obj);
 

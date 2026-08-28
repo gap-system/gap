@@ -106,7 +106,7 @@ typedef struct {
 */
 typedef void * Ptr;
 
-static inline int cmp_ptr(void * p, void * q)
+static inline int cmp_ptr(void * p, void * q) GAP_GC_NOTSAFEPOINT
 {
     // Comparing pointers in C without triggering undefined behavior
     // can be difficult. As the GC already assumes that the memory
@@ -151,7 +151,7 @@ static Bag *       GapStackBottom;
 static jl_task_t * RootTaskOfMainThread;
 #endif
 
-static TNumExtraMarkFuncBags ExtraMarkFuncBags;
+static TNumExtraMarkFuncBags ExtraMarkFuncBags GAP_GC_NOTSAFEPOINT;
 
 static TNumFreeFuncBags TabFreeFuncBags[NUM_TYPES];
 
@@ -232,7 +232,7 @@ static void * AllocateBagMemory(jl_ptls_t ptls, UInt type, UInt size)
 **  the second time raises a warning, because a non-default marking function
 **  is being replaced.
 */
-static void MarkAllSubBagsDefault(Bag bag, void * ref)
+static void MarkAllSubBagsDefault(Bag bag, void * ref) GAP_GC_NOTSAFEPOINT
 {
     MarkArrayOfBags(CONST_PTR_BAG(bag), SIZE_BAG(bag) / sizeof(Bag), ref);
 }
@@ -244,6 +244,7 @@ static void MarkAllSubBagsDefault(Bag bag, void * ref)
 // bit, which it does not if `obj` was marked before, be it by another GC
 // thread.
 static inline int MarkQueueObj(jl_ptls_t ptls, void * obj)
+    GAP_GC_NOTSAFEPOINT
 {
     // 2 is GC_OLD
     int young = !(jl_astaggedvalue(obj)->bits.gc & 2);
@@ -251,7 +252,7 @@ static inline int MarkQueueObj(jl_ptls_t ptls, void * obj)
     return young;
 }
 
-static inline int JMarkTyped(jl_ptls_t ptls, void * obj, jl_datatype_t * ty)
+static inline int JMarkTyped(jl_ptls_t ptls, void * obj, jl_datatype_t * ty) GAP_GC_NOTSAFEPOINT
 {
     // only traverse objects internally used by GAP
     if (!jl_typeis(obj, ty))
@@ -264,7 +265,7 @@ static inline int JMarkTyped(jl_ptls_t ptls, void * obj, jl_datatype_t * ty)
 // either a pool object, or lives in a system or package image (e.g. the
 // types of GAP.jl bags after loading it from a precompiled image), as
 // indicated by the `in_image` bit in its header.
-static inline int ValidTypeOfMarkedObj(void * obj)
+static inline int ValidTypeOfMarkedObj(void * obj) GAP_GC_NOTSAFEPOINT
 {
     jl_value_t * ty = jl_typeof(obj);
     // for a freed pool object, `ty` is the freelist link: NULL or a
@@ -277,7 +278,7 @@ static inline int ValidTypeOfMarkedObj(void * obj)
     return jl_typeis(ty, jl_datatype_type);
 }
 
-static inline void JMark(jl_ptls_t ptls, void * obj)
+static inline void JMark(jl_ptls_t ptls, void * obj) GAP_GC_NOTSAFEPOINT
 {
 #ifdef VALIDATE_MARKING
     if (!ValidTypeOfMarkedObj(obj))
@@ -287,7 +288,7 @@ static inline void JMark(jl_ptls_t ptls, void * obj)
 }
 
 // helper called directly by GAP.jl / JuliaInterface
-void MarkJuliaObjSafe(void * obj, void * ref)
+void MarkJuliaObjSafe(void * obj, void * ref) GAP_GC_NOTSAFEPOINT
 {
     if (!obj)
         return;
@@ -298,7 +299,7 @@ void MarkJuliaObjSafe(void * obj, void * ref)
 }
 
 // helper called directly by GAP.jl / JuliaInterface
-void MarkJuliaObj(void * obj, void * ref)
+void MarkJuliaObj(void * obj, void * ref) GAP_GC_NOTSAFEPOINT
 {
     if (!obj)
         return;
@@ -311,7 +312,7 @@ void MarkJuliaObj(void * obj, void * ref)
 }
 
 // helper called by MarkWeakPointerObj
-void MarkJuliaWeakRef(void * p, void * ref)
+void MarkJuliaWeakRef(void * p, void * ref) GAP_GC_NOTSAFEPOINT
 {
     // If `jl_nothing` gets passed in as an argument, it will not
     // be marked. This is harmless, because `jl_nothing` will always
@@ -377,7 +378,7 @@ void MarkJuliaWeakRef(void * p, void * ref)
 // the stack buffer or receive a segmentation fault due to hitting a guard
 // page.
 
-static void TryMark(jl_ptls_t ptls, void * p)
+static void TryMark(jl_ptls_t ptls, void * p) GAP_GC_NOTSAFEPOINT
 {
     jl_value_t * p2 = jl_gc_internal_obj_base_ptr(p);
     if (p2 && jl_typeis(p2, DatatypeGapObj)) {
@@ -390,13 +391,13 @@ static void TryMark(jl_ptls_t ptls, void * p)
     }
 }
 
-static inline int lt_ptr(void * a, void * b)
+static inline int lt_ptr(void * a, void * b) GAP_GC_NOTSAFEPOINT
 {
     return (uintptr_t)a < (uintptr_t)b;
 }
 
 // align pointer to full word if mis-aligned
-static inline void * align_ptr(void * p)
+static inline void * align_ptr(void * p) GAP_GC_NOTSAFEPOINT
 {
     uintptr_t u = (uintptr_t)p;
     u &= ~(sizeof(p) - 1);
@@ -404,6 +405,7 @@ static inline void * align_ptr(void * p)
 }
 
 static void FindLiveRangeReverse(PtrArray * arr, void * start, void * end)
+    GAP_GC_NOTSAFEPOINT
 {
     // HACK: the following deals with stacks of 'negative size' exposed by
     // Julia -- this was due to a bug on the Julia side. It was finally fixed
@@ -440,6 +442,7 @@ static void FindLiveRangeReverse(PtrArray * arr, void * start, void * end)
 }
 
 static void SafeScanTaskStack(PtrArray * stack, void * start, void * end)
+    GAP_GC_NOTSAFEPOINT
 {
     volatile jl_jmp_buf * old_safe_restore = jl_get_safe_restore();
     jl_jmp_buf            exc_buf;
@@ -460,7 +463,7 @@ static void SafeScanTaskStack(PtrArray * stack, void * start, void * end)
     jl_set_safe_restore((jl_jmp_buf *)old_safe_restore);
 }
 
-static void MarkFromList(jl_ptls_t ptls, PtrArray * arr)
+static void MarkFromList(jl_ptls_t ptls, PtrArray * arr) GAP_GC_NOTSAFEPOINT
 {
     for (Int i = 0; i < arr->len; i++) {
         JMark(ptls, arr->items[i]);
@@ -468,6 +471,7 @@ static void MarkFromList(jl_ptls_t ptls, PtrArray * arr)
 }
 
 static void ScanTaskStack(jl_task_t * task, void * start, void * end)
+    GAP_GC_NOTSAFEPOINT
 {
     PtrArray * stack = PtrArrayMake(1024);
     SafeScanTaskStack(stack, start, end);
@@ -488,6 +492,7 @@ static void ScanTaskStack(jl_task_t * task, void * start, void * end)
 }
 
 static NOINLINE void TryMarkRange(jl_ptls_t ptls, void * start, void * end)
+    GAP_GC_NOTSAFEPOINT
 {
     if (lt_ptr(end, start)) {
         SWAP(void *, start, end);
@@ -511,6 +516,7 @@ static NOINLINE void TryMarkRange(jl_ptls_t ptls, void * start, void * end)
 
 // Julia callback
 static void GapTaskScanner(jl_task_t * task, int root_task)
+    GAP_GC_NOTSAFEPOINT
 {
     // If this task has been scanned by GapRootScanner() already, skip it
     if (task == ScannedRootTask)
@@ -538,7 +544,7 @@ static void GapTaskScanner(jl_task_t * task, int root_task)
 #endif // DISABLE_STACK_SCAN
 
 // Julia callback
-static void GapRootScanner(int full)
+static void GapRootScanner(int full) GAP_GC_NOTSAFEPOINT
 {
     jl_ptls_t ptls = jl_get_ptls_states();
 
@@ -601,7 +607,7 @@ static void GapRootScanner(int full)
 // must not do: entering the error handler mid-collection runs GAP code. Read
 // the clock directly instead, and report 0 if it is unavailable. The Julia GC
 // is only supported on systems providing getrusage.
-static UInt GCTime(void)
+static UInt GCTime(void) GAP_GC_NOTSAFEPOINT
 {
     struct rusage buf;
     if (getrusage(RUSAGE_SELF, &buf))
@@ -610,7 +616,7 @@ static UInt GCTime(void)
 }
 
 // Julia callback
-static void PreGCHook(int full)
+static void PreGCHook(int full) GAP_GC_NOTSAFEPOINT
 {
     // This is the same code as in VarsBeforeCollectBags() for GASMAN.
     // It is necessary because ASS_LVAR() and related functionality
@@ -631,7 +637,7 @@ static void PreGCHook(int full)
 }
 
 // Julia callback
-static void PostGCHook(int full)
+static void PostGCHook(int full) GAP_GC_NOTSAFEPOINT
 {
 #ifndef DISABLE_STACK_SCAN
     ScannedRootTask = 0;
@@ -649,6 +655,7 @@ static void PostGCHook(int full)
 // the Julia marking function for master pointer objects (i.e., this function
 // is called by the Julia GC whenever it marks a GAP master pointer object)
 static uintptr_t MPtrMarkFunc(jl_ptls_t ptls, jl_value_t * obj)
+    GAP_GC_NOTSAFEPOINT
 {
     if (!*(void **)obj)
         return 0;
@@ -678,6 +685,7 @@ static uintptr_t MPtrMarkFunc(jl_ptls_t ptls, jl_value_t * obj)
 // the Julia marking function for bags (i.e., this function is called by the
 // Julia GC whenever it marks a GAP bag object)
 static uintptr_t BagMarkFunc(jl_ptls_t ptls, jl_value_t * obj)
+    GAP_GC_NOTSAFEPOINT
 {
     BagHeader * hdr = (BagHeader *)obj;
     Bag         contents = (Bag)(hdr + 1);
@@ -688,7 +696,7 @@ static uintptr_t BagMarkFunc(jl_ptls_t ptls, jl_value_t * obj)
 }
 
 // the Julia finalizer function for bags
-static void JFinalizer(jl_value_t * obj)
+static void JFinalizer(jl_value_t * obj) GAP_GC_NOTSAFEPOINT
 {
     BagHeader * hdr = (BagHeader *)obj;
     Bag         contents = (Bag)(hdr + 1);
@@ -976,7 +984,7 @@ Bag NewBag(UInt type, UInt size)
     return bag;
 }
 
-UInt ResizeBag(Bag bag, UInt new_size)
+UInt ResizeBag(Bag bag GAP_GC_MAYBE_UNROOTED, UInt new_size)
 {
     BagHeader * header = BAG_HEADER(bag);
     UInt        old_size = header->size;
@@ -997,7 +1005,9 @@ UInt ResizeBag(Bag bag, UInt new_size)
 
         // allocate new bag
         jl_ptls_t ptls = jl_get_ptls_states();
+        GAP_GC_PUSH1(&bag);
         header = AllocateBagMemory(ptls, header->type, alloc_size);
+        GAP_GC_POP();
 
         // copy bag header and data, and update size
         memcpy(header, BAG_HEADER(bag), sizeof(BagHeader) + old_size);
@@ -1013,7 +1023,7 @@ UInt ResizeBag(Bag bag, UInt new_size)
     return 1;
 }
 
-inline void MarkBag(Bag bag, void * ref)
+inline void MarkBag(Bag bag, void * ref) GAP_GC_NOTSAFEPOINT
 {
     if (!IS_BAG_REF(bag))
         return;
