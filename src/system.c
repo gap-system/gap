@@ -709,6 +709,14 @@ void InitSystem(int argc, const char * argv[], BOOL handleSignals)
     _setmode(fileno(stdin), _O_BINARY);
     _setmode(fileno(stdout), _O_BINARY);
     _setmode(fileno(stderr), _O_BINARY);
+
+    // have the console interpret ANSI escape sequences like other terminals
+    for (int fd = 1; fd <= 2; fd++) {
+        HANDLE h = (HANDLE)_get_osfhandle(fd);
+        DWORD  mode;
+        if (GetConsoleMode(h, &mode))
+            SetConsoleMode(h, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+    }
 #endif
 
     InitSysOpts();
