@@ -279,7 +279,7 @@ EXPORT_INLINE void SET_IS_FILTER(Obj oper) GAP_GC_NOTSAFEPOINT
 **
 *F  NEW_FLAGS( <flags>, <len> ) . . . . . . . . . . . . . . .  new flags list
 */
-EXPORT_INLINE Obj NEW_FLAGS(UInt len)
+EXPORT_INLINE Obj NEW_FLAGS(UInt len) GAP_GC_CANSAFEPOINT
 {
     UInt size = (3 + ((len+BIPEB-1) >> LBIPEB)) * sizeof(Obj);
     Obj flags = NewBag(T_FLAGS, size);
@@ -504,14 +504,14 @@ Obj DoFilter(Obj self, Obj obj);
 **
 *F  NewFilter( <name>, <nams>, <hdlr> ) . . . . . . . . . . make a new filter
 */
-Obj NewFilter(Obj name, Obj nams, ObjFunc_1ARGS hdlr);
+Obj NewFilter(Obj name, Obj nams, ObjFunc_1ARGS hdlr) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  NewAndFilter( <filt1>, <filt2> ) . . . . . make a new concatenated filter
 */
-Obj NewAndFilter(Obj oper1, Obj oper2);
+Obj NewAndFilter(Obj oper1, Obj oper2) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -531,60 +531,69 @@ extern Obj ReturnTrueFilter GAP_GC_GLOBALLY_ROOTED;
 **
 **  Default handlers for operations
 */
-Obj DoOperation0Args(Obj oper);
+Obj DoOperation0Args(Obj oper) GAP_GC_CANSAFEPOINT;
 
-Obj DoOperation1Args(Obj oper, Obj arg1);
+Obj DoOperation1Args(Obj oper, Obj arg1) GAP_GC_CANSAFEPOINT;
 
-Obj DoOperation2Args(Obj oper, Obj arg1, Obj arg2);
+Obj DoOperation2Args(Obj oper, Obj arg1, Obj arg2) GAP_GC_CANSAFEPOINT;
 
-Obj DoOperation3Args(Obj oper, Obj arg1, Obj arg2, Obj arg3);
+Obj DoOperation3Args(Obj oper, Obj arg1, Obj arg2, Obj arg3)
+    GAP_GC_CANSAFEPOINT;
 
-Obj DoOperation4Args(Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4);
+Obj DoOperation4Args(Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
+    GAP_GC_CANSAFEPOINT;
 
 Obj DoOperation5Args(
-    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5);
+    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
+    GAP_GC_CANSAFEPOINT;
 
 Obj DoOperation6Args(
-    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6);
+    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
+    GAP_GC_CANSAFEPOINT;
 
-Obj DoOperationXArgs(Obj self, Obj args);
+Obj DoOperationXArgs(Obj self, Obj args) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 **  Default handlers for verbose operations
 */
-Obj DoVerboseOperation0Args(Obj oper);
+Obj DoVerboseOperation0Args(Obj oper) GAP_GC_CANSAFEPOINT;
 
-Obj DoVerboseOperation1Args(Obj oper, Obj arg1);
+Obj DoVerboseOperation1Args(Obj oper, Obj arg1) GAP_GC_CANSAFEPOINT;
 
-Obj DoVerboseOperation2Args(Obj oper, Obj arg1, Obj arg2);
+Obj DoVerboseOperation2Args(Obj oper, Obj arg1, Obj arg2) GAP_GC_CANSAFEPOINT;
 
-Obj DoVerboseOperation3Args(Obj oper, Obj arg1, Obj arg2, Obj arg3);
+Obj DoVerboseOperation3Args(Obj oper, Obj arg1, Obj arg2, Obj arg3)
+    GAP_GC_CANSAFEPOINT;
 
-Obj DoVerboseOperation4Args(Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4);
+Obj DoVerboseOperation4Args(Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
+    GAP_GC_CANSAFEPOINT;
 
 Obj DoVerboseOperation5Args(
-    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5);
+    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
+    GAP_GC_CANSAFEPOINT;
 
 Obj DoVerboseOperation6Args(
-    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6);
+    Obj oper, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
+    GAP_GC_CANSAFEPOINT;
 
-Obj DoVerboseOperationXArgs(Obj self, Obj args);
+Obj DoVerboseOperationXArgs(Obj self, Obj args) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  NewOperation( <name> ) . . . . . . . . . . . . . . . make a new operation
 */
-Obj NewOperation(Obj name, Int narg, Obj nams, ObjFunc hdlr);
+Obj NewOperation(Obj name, Int narg, Obj nams, ObjFunc hdlr)
+    GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  DoAttribute( <self>, <obj> ) . . . . . . . default handler for attributes
 */
-Obj DoAttribute(Obj self, Obj obj);
+Obj DoAttribute(Obj self, Obj obj) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -598,28 +607,29 @@ Obj DoTestAttribute(Obj self, Obj obj);
 **
 *F  NewAttribute( <name> ) . . . . . . . . . . . . . . . make a new attribute
 */
-Obj NewAttribute(Obj name, Obj nams, ObjFunc_1ARGS hdlr);
+Obj NewAttribute(Obj name, Obj nams, ObjFunc_1ARGS hdlr) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 **  DoSetProperty( <prop>, <obj>, <val> )
 */
-Obj DoSetProperty(Obj self, Obj obj, Obj val);
+Obj DoSetProperty(Obj self, Obj obj, Obj val) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  DoProperty( <self>, <obj> ) . . . . . . .  default handler for properties
 */
-Obj DoProperty(Obj self, Obj obj);
+Obj DoProperty(Obj self, Obj obj) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  NewProperty( <name>, <nams>, <getHdlr>, <setHdlr> ) . make a new property
 */
-Obj NewProperty(Obj name, Obj nams, ObjFunc_1ARGS getHdlr, ObjFunc_2ARGS setHdlr);
+Obj NewProperty(Obj name, Obj nams, ObjFunc_1ARGS getHdlr, ObjFunc_2ARGS setHdlr)
+    GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

@@ -74,10 +74,11 @@ extern Obj ErrorMustHaveAssObjFunc GAP_GC_GLOBALLY_ROOTED;
 **  'AssGVarWithoutReadOnlyCheck' does the same thing, while not checking if the
 **                            variable is read only.
 */
-void AssGVar(UInt gvar, Obj val GAP_GC_MAYBE_UNROOTED);
+void AssGVar(UInt gvar, Obj val GAP_GC_MAYBE_UNROOTED) GAP_GC_CANSAFEPOINT;
 
 extern void AssGVarWithoutReadOnlyCheck(UInt gvar,
-                                        Obj  val GAP_GC_MAYBE_UNROOTED);
+                                        Obj  val GAP_GC_MAYBE_UNROOTED)
+    GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -88,7 +89,7 @@ extern void AssGVarWithoutReadOnlyCheck(UInt gvar,
 **  be 0 if  <gvar> has  no assigned value.    It will also cause a  function
 **  call, if <gvar> is automatic.
 */
-Obj ValAutoGVar(UInt gvar);
+Obj ValAutoGVar(UInt gvar) GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
@@ -129,7 +130,7 @@ Obj ExprGVar(UInt gvar) GAP_GC_GLOBALLY_ROOTED;
 **
 **  'GVarName' returns the global variable with the name <name>.
 */
-UInt GVarName(const Char * name);
+UInt GVarName(const Char * name) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -152,9 +153,9 @@ UInt completion_gvar(Char * name, UInt len);
 *F  MakeReadWriteGVar( <gvar> ) . . . . . . make a global variable read-write
 *F  MakeConstantGVar( <gvar> ) . . . . . . make a global variable constant
 */
-void MakeReadOnlyGVar(UInt gvar);
+void MakeReadOnlyGVar(UInt gvar) GAP_GC_CANSAFEPOINT;
 
-void MakeReadWriteGVar(UInt gvar);
+void MakeReadWriteGVar(UInt gvar) GAP_GC_CANSAFEPOINT;
 
 void MakeConstantGVar(UInt gvar);
 
@@ -179,6 +180,7 @@ BOOL IsDeclaredGVar(UInt gvar);
 */
 EXPORT_INLINE void AssReadOnlyGVar(UInt gvar,
                                    Obj  val GAP_GC_MAYBE_UNROOTED)
+    GAP_GC_CANSAFEPOINT
 {
     AssGVar(gvar, val);
     MakeReadOnlyGVar(gvar);
@@ -186,6 +188,7 @@ EXPORT_INLINE void AssReadOnlyGVar(UInt gvar,
 
 EXPORT_INLINE void AssConstantGVar(UInt gvar,
                                    Obj  val GAP_GC_MAYBE_UNROOTED)
+    GAP_GC_CANSAFEPOINT
 {
     AssGVar(gvar, val);
     MakeConstantGVar(gvar);
@@ -239,7 +242,7 @@ void InitFopyGVar(const Char * name, Obj * copy);
 **
 *F  UpdateCopyFopyInfo()  . . . . . . . . . .  convert kernel info into plist
 */
-void UpdateCopyFopyInfo(void);
+void UpdateCopyFopyInfo(void) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

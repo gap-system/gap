@@ -365,8 +365,8 @@ EXPORT_INLINE Obj NEW_FFE(FF fld, FFV val) GAP_GC_NOTSAFEPOINT
 **  'FiniteField' returns the small finite field with <p>^<d> elements.
 **  'FiniteFieldBySize' returns the small finite field with <q> elements.
 */
-FF FiniteField(UInt p, UInt d);
-FF FiniteFieldBySize(UInt q);
+FF FiniteField(UInt p, UInt d) GAP_GC_CANSAFEPOINT;
+FF FiniteFieldBySize(UInt q) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -379,7 +379,7 @@ FF FiniteFieldBySize(UInt q);
 **  the smallest such field.  If  <f1> and <f2> have different characteristic
 **  or the smallest common field, is too large, 'CommonFF' returns 0.
 */
-FF CommonFF(FF f1, UInt d1, FF f2, UInt d2);
+FF CommonFF(FF f1, UInt d1, FF f2, UInt d2) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

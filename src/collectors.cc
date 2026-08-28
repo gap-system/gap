@@ -158,7 +158,7 @@ typedef struct {
 *F  WordVectorAndClear( <type>, <vv>, <num> )
 */
 template <typename UIntN>
-static Obj WordVectorAndClear(Obj type, Obj vv, Int num)
+static Obj WordVectorAndClear(Obj type, Obj vv, Int num) GAP_GC_CANSAFEPOINT
 {
     Int         ebits;          // number of bits in the exponent
     UInt        expm;           // unsigned exponent mask
@@ -205,7 +205,7 @@ static Obj WordVectorAndClear(Obj type, Obj vv, Int num)
 **  WARNING: This function assumes that <vv> is cleared!
 */
 template <typename UIntN>
-static Int VectorWord(Obj vv, Obj v, Int num)
+static Int VectorWord(Obj vv, Obj v, Int num) GAP_GC_CANSAFEPOINT
 {
     Int         ebits;          // number of bits in the exponent
     UInt        expm;           // unsigned exponent mask
@@ -342,7 +342,7 @@ static Int SAddPartIntoExpVec(Int *         v,
 **  If a stack overflow occurs, we simply stop and return false.
 */
 template <typename UIntN>
-static Int SingleCollectWord(Obj sc, Obj vv, Obj w)
+static Int SingleCollectWord(Obj sc, Obj vv, Obj w) GAP_GC_CANSAFEPOINT
 {
     Int         ebits;      // number of bits in the exponent
     UInt        expm;       // unsigned exponent mask
@@ -620,7 +620,7 @@ static Int SingleCollectWord(Obj sc, Obj vv, Obj w)
 *F  Solution( <sc>, <ww>, <uu>, <func> )
 */
 template <typename UIntN>
-static Int Solution(Obj sc, Obj ww, Obj uu, FuncIOOO func)
+static Int Solution(Obj sc, Obj ww, Obj uu, FuncIOOO func) GAP_GC_CANSAFEPOINT
 {
     Int         ebits;          // number of bits in the exponent
     UInt        expm;           // unsigned exponent mask
@@ -854,7 +854,7 @@ static void AddPartIntoExpVec(Int *         v,
 **  If a stack overflow occurs, we simply stop and return false.
 */
 template <typename UIntN>
-static Int CombiCollectWord(Obj sc, Obj vv, Obj w)
+static Int CombiCollectWord(Obj sc, Obj vv, Obj w) GAP_GC_CANSAFEPOINT
 {
     Int         ebits;      // number of bits in the exponent
     UInt        expm;       // unsigned exponent mask
@@ -1450,6 +1450,7 @@ static Obj ReducedProduct(FinPowConjCol * fc, Obj sc, Obj w, Obj u)
 *F  ReducedPowerSmallInt( <fc>, <sc>, <w>, <pow> )
 */
 static Obj ReducedPowerSmallInt(FinPowConjCol * fc, Obj sc, Obj w, Obj vpow)
+    GAP_GC_CANSAFEPOINT
 {
     Obj                 type;       // type of the return objue
     Int                 num;        // number of gen/exp pairs in <data>
@@ -1661,6 +1662,7 @@ static Obj FuncFinPowConjCol_ReducedProduct ( Obj self, Obj sc, Obj w, Obj u )
 *F  FuncFinPowConjCol_ReducedPowerSmallInt( <self>, <sc>, <w>, <pow> )
 */
 static Obj FuncFinPowConjCol_ReducedPowerSmallInt (Obj self,Obj sc,Obj w,Obj vpow)
+    GAP_GC_CANSAFEPOINT
 {
     return ReducedPowerSmallInt( SC_COLLECTOR(sc), sc, w, vpow );
 }
@@ -1680,7 +1682,7 @@ static Obj FuncFinPowConjCol_ReducedQuotient ( Obj self, Obj sc, Obj w, Obj u )
 **
 *F  SET_SCOBJ_MAX_STACK_SIZE( <self>, <size> )
 */
-static Obj FuncSET_SCOBJ_MAX_STACK_SIZE(Obj self, Obj size)
+static Obj FuncSET_SCOBJ_MAX_STACK_SIZE(Obj self, Obj size) GAP_GC_CANSAFEPOINT
 {
     SC_MAX_STACK_SIZE = GetPositiveSmallInt(SELF_NAME, size);
     return 0;
@@ -1731,7 +1733,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // export position numbers 'SCP_SOMETHING'
     ExportAsConstantGVar(SCP_UNDERLYING_FAMILY);
@@ -1770,7 +1772,7 @@ static Int InitLibrary (
     return 0;
 }
 
-static Int InitModuleState(void)
+static Int InitModuleState(void) GAP_GC_CANSAFEPOINT
 {
     // register global bags with the garbage collector
     InitGlobalBag(&SC_NW_STACK, "SC_NW_STACK");

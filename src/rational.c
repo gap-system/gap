@@ -71,7 +71,7 @@
                              TNUM_OBJ(op) == T_RAT || IS_INT(op),            \
                              "must be a rational")
 
-static inline Obj MakeRat(Obj num, Obj den)
+static inline Obj MakeRat(Obj num, Obj den) GAP_GC_CANSAFEPOINT
 {
     Obj rat = NewBag(T_RAT, 2 * sizeof(Obj));
     SET_NUM_RAT(rat, num);
@@ -108,7 +108,7 @@ static Obj TypeRat(Obj rat)
 **
 **      <numerator> / <denominator>
 */
-static void PrintRat(Obj rat)
+static void PrintRat(Obj rat) GAP_GC_CANSAFEPOINT
 {
     Pr("%>", 0, 0);
     PrintObj( NUM_RAT(rat) );
@@ -161,7 +161,7 @@ static Int EqRat(Obj opL, Obj opR)
 **  'LtRat' returns 'true'  if  the  rational  <ratL>  is  smaller  than  the
 **  rational <ratR> and 'false' otherwise.  Either operand may be an integer.
 */
-static Int LtRat(Obj opL, Obj opR)
+static Int LtRat(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     Obj                 numL, denL;     // numerator and denominator left
     Obj                 numR, denR;     // numerator and denominator right
@@ -206,7 +206,7 @@ static Int LtRat(Obj opL, Obj opR)
 **  'SumRat'  returns the   sum of two  rationals  <opL>  and <opR>.   Either
 **  operand may also be an integer.  The sum is reduced.
 */
-static Obj SumRat(Obj opL, Obj opR)
+static Obj SumRat(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     Obj                 numL, denL;     // numerator and denominator left
     Obj                 numR, denR;     // numerator and denominator right
@@ -289,7 +289,7 @@ static Obj ZeroRat(Obj op)
 **
 *F  AInvRat(<op>) . . . . . . . . . . . . . .  additive inverse of a rational
 */
-static Obj AInvRat(Obj op)
+static Obj AInvRat(Obj op) GAP_GC_CANSAFEPOINT
 {
     Obj                 res = 0;
     Obj                 tmp = 0;
@@ -307,7 +307,7 @@ static Obj AInvRat(Obj op)
 **
 *F  AbsRat(<op>) . . . . . . . . . . . . . . . . absolute value of a rational
 */
-static Obj AbsRat(Obj op)
+static Obj AbsRat(Obj op) GAP_GC_CANSAFEPOINT
 {
     Obj res = 0;
     Obj tmp = 0;
@@ -326,7 +326,7 @@ static Obj AbsRat(Obj op)
 
 }
 
-static Obj FuncABS_RAT(Obj self, Obj op)
+static Obj FuncABS_RAT(Obj self, Obj op) GAP_GC_CANSAFEPOINT
 {
     RequireRational(SELF_NAME, op);
     return (TNUM_OBJ(op) == T_RAT) ? AbsRat(op) : AbsInt(op);
@@ -342,7 +342,7 @@ static Obj SignRat(Obj op)
     return SignInt( NUM_RAT(op) );
 }
 
-static Obj FuncSIGN_RAT(Obj self, Obj op)
+static Obj FuncSIGN_RAT(Obj self, Obj op) GAP_GC_CANSAFEPOINT
 {
     RequireRational(SELF_NAME, op);
     return (TNUM_OBJ(op) == T_RAT) ? SignRat(op) : SignInt(op);
@@ -356,7 +356,7 @@ static Obj FuncSIGN_RAT(Obj self, Obj op)
 **  'DiffRat' returns the  difference  of  two  rationals  <opL>  and  <opR>.
 **  Either operand may also be an integer.  The difference is reduced.
 */
-static Obj DiffRat(Obj opL, Obj opR)
+static Obj DiffRat(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     Obj                 numL, denL;     // numerator and denominator left
     Obj                 numR, denR;     // numerator and denominator right
@@ -432,7 +432,7 @@ static Obj DiffRat(Obj opL, Obj opR)
 **  'ProdRat' returns the  product of two rationals <opL> and  <opR>.  Either
 **  operand may also be an integer.  The product is reduced.
 */
-static Obj ProdRat(Obj opL, Obj opR)
+static Obj ProdRat(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     Obj                 numL, denL;     // numerator and denominator left
     Obj                 numR, denR;     // numerator and denominator right
@@ -510,9 +510,9 @@ static Obj OneRat(Obj op)
 **
 *F  InvRat(<op>)  . . . . . . . . . . . . . . . . . . . inverse of a rational
 */
-static Obj QuoRat(Obj opL, Obj opR);
+static Obj QuoRat(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT;
 
-static Obj InvRat(Obj op)
+static Obj InvRat(Obj op) GAP_GC_CANSAFEPOINT
 {
   Obj res;
     CHECK_RAT(op);
@@ -633,7 +633,7 @@ static Obj QuoRat(Obj opL, Obj opR)
 **  such that $0 \<= t/s \< n$ and $r/s - t/s$ is a multiple of $n$.  This is
 **  rarely needed while computing modular inverses is very useful.
 */
-static Obj ModRat(Obj opL, Obj n)
+static Obj ModRat(Obj opL, Obj n) GAP_GC_CANSAFEPOINT
 {
     // invert the denominator
     Obj d = InverseModInt( DEN_RAT(opL), n );
@@ -662,7 +662,7 @@ static Obj ModRat(Obj opL, Obj n)
 **  'PowRat' raises the rational <opL> to the  power  given  by  the  integer
 **  <opR>.  The power is reduced.
 */
-static Obj PowRat(Obj opL, Obj opR)
+static Obj PowRat(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     Obj                 numP = 0, denP = 0; // numerator and denominator power
     Obj                 pow = 0;        // power
@@ -758,7 +758,7 @@ static Obj FiltIS_RAT(Obj self, Obj val)
 **
 **  'NumeratorRat' returns the numerator of the rational <rat>.
 */
-static Obj FuncNUMERATOR_RAT(Obj self, Obj rat)
+static Obj FuncNUMERATOR_RAT(Obj self, Obj rat) GAP_GC_CANSAFEPOINT
 {
     RequireRational(SELF_NAME, rat);
 
@@ -781,7 +781,7 @@ static Obj FuncNUMERATOR_RAT(Obj self, Obj rat)
 **
 **  'DenominatorRat' returns the denominator of the rational <rat>.
 */
-static Obj FuncDENOMINATOR_RAT(Obj self, Obj rat)
+static Obj FuncDENOMINATOR_RAT(Obj self, Obj rat) GAP_GC_CANSAFEPOINT
 {
     RequireRational(SELF_NAME, rat);
 
@@ -990,7 +990,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFiltsFromTable( GVarFilts );

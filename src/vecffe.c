@@ -33,7 +33,7 @@
 **
 **  One may think of this as an optimized special case of 'KTNumPlist'.
 */
-static BOOL IsVecFFE(Obj obj)
+static BOOL IsVecFFE(Obj obj) GAP_GC_CANSAFEPOINT
 {
     UInt tnum = TNUM_OBJ(obj);
     if (tnum == T_PLIST_FFE || tnum == T_PLIST_FFE + IMMUTABLE)
@@ -70,7 +70,7 @@ static BOOL IsVecFFE(Obj obj)
 **  'SumFFEVecFFE' is an improved version  of  'SumSclList', which  does  not
 **  call 'SUM'.
 */
-static Obj SumFFEVecFFE(Obj elmL, Obj vecR)
+static Obj SumFFEVecFFE(Obj elmL, Obj vecR) GAP_GC_CANSAFEPOINT
 {
     Obj                 vecS;           // handle of the sum
     Obj *               ptrS;           // pointer into the sum
@@ -128,7 +128,7 @@ static Obj SumFFEVecFFE(Obj elmL, Obj vecR)
 **  'SumVecFFEFFE' is an improved version  of  'SumListScl', which  does  not
 **  call 'SUM'.
 */
-static Obj SumVecFFEFFE(Obj vecL, Obj elmR)
+static Obj SumVecFFEFFE(Obj vecL, Obj elmR) GAP_GC_CANSAFEPOINT
 {
     Obj                 vecS;           // handle of the sum
     Obj *               ptrS;           // pointer into the sum
@@ -185,7 +185,7 @@ static Obj SumVecFFEFFE(Obj vecL, Obj elmR)
 **  'SumVecFFEVecFFE' is an improved version of 'SumListList', which does not
 **  call 'SUM'.
 */
-static Obj SumVecFFEVecFFE(Obj vecL, Obj vecR)
+static Obj SumVecFFEVecFFE(Obj vecL, Obj vecR) GAP_GC_CANSAFEPOINT
 {
     Obj                 vecS;           // handle of the sum
     Obj *               ptrS;           // pointer into the sum
@@ -261,7 +261,7 @@ static Obj SumVecFFEVecFFE(Obj vecL, Obj vecR)
 **  'DiffFFEVecFFE'  is an improved  version of 'DiffSclList', which does not
 **  call 'DIFF'.
 */
-static Obj DiffFFEVecFFE(Obj elmL, Obj vecR)
+static Obj DiffFFEVecFFE(Obj elmL, Obj vecR) GAP_GC_CANSAFEPOINT
 {
     Obj                 vecD;           // handle of the difference
     Obj *               ptrD;           // pointer into the difference
@@ -320,7 +320,7 @@ static Obj DiffFFEVecFFE(Obj elmL, Obj vecR)
 **  'DiffVecFFEFFE' is an improved  version of 'DiffListScl', which  does not
 **  call 'DIFF'.
 */
-static Obj DiffVecFFEFFE(Obj vecL, Obj elmR)
+static Obj DiffVecFFEFFE(Obj vecL, Obj elmR) GAP_GC_CANSAFEPOINT
 {
     Obj                 vecD;           // handle of the difference
     Obj *               ptrD;           // pointer into the difference
@@ -379,7 +379,7 @@ static Obj DiffVecFFEFFE(Obj vecL, Obj elmR)
 **  'DiffVecFFEVecFFE' is an improved  version of  'DiffListList', which does
 **  not call 'DIFF'.
 */
-static Obj DiffVecFFEVecFFE(Obj vecL, Obj vecR)
+static Obj DiffVecFFEVecFFE(Obj vecL, Obj vecR) GAP_GC_CANSAFEPOINT
 {
     Obj                 vecD;           // handle of the difference
     Obj *               ptrD;           // pointer into the difference
@@ -460,7 +460,7 @@ static Obj DiffVecFFEVecFFE(Obj vecL, Obj vecR)
 **  'ProdFFEVecFFE'  is an  improved version of 'ProdSclList', which does not
 **  call 'PROD'.
 */
-static Obj ProdFFEVecFFE(Obj elmL, Obj vecR)
+static Obj ProdFFEVecFFE(Obj elmL, Obj vecR) GAP_GC_CANSAFEPOINT
 {
     Obj                 vecP;           // handle of the product
     Obj *               ptrP;           // pointer into the product
@@ -517,7 +517,7 @@ static Obj ProdFFEVecFFE(Obj elmL, Obj vecR)
 **  'ProdVecFFEFFE'  is an  improved version of 'ProdSclList', which does not
 **  call 'PROD'.
 */
-static Obj ProdVecFFEFFE(Obj vecL, Obj elmR)
+static Obj ProdVecFFEFFE(Obj vecL, Obj elmR) GAP_GC_CANSAFEPOINT
 {
     Obj                 vecP;           // handle of the product
     Obj *               ptrP;           // pointer into the product
@@ -575,7 +575,7 @@ static Obj ProdVecFFEFFE(Obj vecL, Obj elmR)
 **  'ProdVecFFEVecFFE' is an improved version  of 'ProdListList',  which does
 **  not call 'PROD'.
 */
-static Obj ProdVecFFEVecFFE(Obj vecL, Obj vecR)
+static Obj ProdVecFFEVecFFE(Obj vecL, Obj vecR) GAP_GC_CANSAFEPOINT
 {
     FFV                 valP;           // one product
     FFV                 valS;           // sum of the products
@@ -626,6 +626,7 @@ static Obj ProdVecFFEVecFFE(Obj vecL, Obj vecR)
 **
 */
 static Obj FuncADD_ROWVECTOR_VECFFES_3(Obj self, Obj vecL, Obj vecR, Obj mult)
+    GAP_GC_CANSAFEPOINT
 {
     Obj *ptrL;
     const Obj *ptrR;
@@ -712,6 +713,7 @@ static Obj FuncADD_ROWVECTOR_VECFFES_3(Obj self, Obj vecL, Obj vecR, Obj mult)
 */
 
 static Obj FuncMULT_VECTOR_VECFFES(Obj self, Obj vec, Obj mult)
+    GAP_GC_CANSAFEPOINT
 {
     Obj *ptr;
     FFV  valM;
@@ -779,6 +781,7 @@ static Obj FuncMULT_VECTOR_VECFFES(Obj self, Obj vec, Obj mult)
 **
 */
 static Obj FuncADD_ROWVECTOR_VECFFES_2(Obj self, Obj vecL, Obj vecR)
+    GAP_GC_CANSAFEPOINT
 {
     Obj *ptrL;
     const Obj *ptrR;
@@ -833,7 +836,7 @@ static Obj FuncADD_ROWVECTOR_VECFFES_2(Obj self, Obj vecL, Obj vecR)
 **  because it knows tha the zero is common and the result a vecffe
 */
 
-static Obj ZeroMutVecFFE(Obj vec)
+static Obj ZeroMutVecFFE(Obj vec) GAP_GC_CANSAFEPOINT
 {
     UInt i, len;
     Obj res;
@@ -852,7 +855,7 @@ static Obj ZeroMutVecFFE(Obj vec)
     return res;
 }
 
-static Obj ZeroVecFFE(Obj vec)
+static Obj ZeroVecFFE(Obj vec) GAP_GC_CANSAFEPOINT
 {
     UInt i, len;
     Obj res;
@@ -872,12 +875,12 @@ static Obj ZeroVecFFE(Obj vec)
 }
 
 
-static Obj FuncIS_VECFFE(Obj self, Obj vec)
+static Obj FuncIS_VECFFE(Obj self, Obj vec) GAP_GC_CANSAFEPOINT
 {
     return IsVecFFE(vec) ? True : False;
 }
 
-static Obj FuncCOMMON_FIELD_VECFFE(Obj self, Obj vec)
+static Obj FuncCOMMON_FIELD_VECFFE(Obj self, Obj vec) GAP_GC_CANSAFEPOINT
 {
     Obj elm;
     if (!IsVecFFE(vec))
@@ -886,7 +889,7 @@ static Obj FuncCOMMON_FIELD_VECFFE(Obj self, Obj vec)
     return INTOBJ_INT(SIZE_FF(FLD_FFE(elm)));
 }
 
-static Obj FuncSMALLEST_FIELD_VECFFE(Obj self, Obj vec)
+static Obj FuncSMALLEST_FIELD_VECFFE(Obj self, Obj vec) GAP_GC_CANSAFEPOINT
 {
     Obj elm;
     UInt deg, deg1, deg2, i, len, p, q;
@@ -980,7 +983,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable(GVarFuncs);

@@ -92,7 +92,7 @@ static void CleanOut( void )
 */
 static Obj FuncApplyRel(Obj self,
                         Obj app, // handle of the application list
-                        Obj rel)  // handle of the relator
+                        Obj rel) GAP_GC_CANSAFEPOINT  // handle of the relator
 {
 
     Int                 lp;             // left pointer into relator
@@ -162,7 +162,7 @@ static Obj FuncApplyRel(Obj self,
 **  'dedgen',  'dedcos',  'dedfst',  'dedlst',  'dedSize' and 'objTable'  are
 **  assumed to be known as static variables.
 */
-static void CompressDeductionList ( void )
+static void CompressDeductionList ( void ) GAP_GC_CANSAFEPOINT
 {
     Obj               * ptTable;          // pointer to the coset table
     Int                 i;
@@ -210,7 +210,7 @@ static void CompressDeductionList ( void )
 */
 static void HandleCoinc (
     Int                 cos1,
-    Int                 cos2 )
+    Int                 cos2 ) GAP_GC_CANSAFEPOINT
 {
     Obj *               ptTable;          // pointer to the coset table
     Obj *               ptNext;
@@ -366,7 +366,7 @@ static void HandleCoinc (
 **
 *F  FuncMakeConsequences( <self>, <list> )  find consqs of a coset definition
 */
-static Obj FuncMakeConsequences(Obj self, Obj list)
+static Obj FuncMakeConsequences(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     Obj                 hdSubs;
     Obj                 objRels;
@@ -545,7 +545,7 @@ static Obj FuncMakeConsequences(Obj self, Obj list)
 **  This  is a  special version  of  `FuncMakeConsequences'  for the subgroup
 **  presentation routines.
 */
-static Obj FuncMakeConsequencesPres(Obj self, Obj list)
+static Obj FuncMakeConsequencesPres(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     Obj                 objDefs1;       // handle of defs list part 1
     Obj                 objDefs2;       // handle of defs list part 2
@@ -654,6 +654,7 @@ static Obj FuncMakeConsequencesPres(Obj self, Obj list)
 **  standard (this is the default).
 */
 static Obj FuncStandardizeTableC(Obj self, Obj table, Obj stan)
+    GAP_GC_CANSAFEPOINT
 {
     Obj *               ptTable;        // pointer to table
     UInt                nrgen;          // number of rows of the table / 2
@@ -802,7 +803,7 @@ static void InitializeCosetFactorWord ( void )
 **  'wordList'  is assumed to be known as static variable.
 **
 */
-static Int TreeEntryC ( void )
+static Int TreeEntryC ( void ) GAP_GC_CANSAFEPOINT
 {
     Obj *               ptTree1;        // ptr to first tree component
     Obj *               ptTree2;        // ptr to second tree component
@@ -1008,7 +1009,7 @@ static Int TreeEntryC ( void )
 **  it returns 0 if everything worked, and 1 if a problem arose.
 */
 static Int AddCosetFactor2 (
-    Int                factor )
+    Int                factor ) GAP_GC_CANSAFEPOINT
 {
     Obj *               ptFac;          // pointer to the factor
     Obj *               ptWord;         // pointer to the word
@@ -1090,6 +1091,7 @@ static Int AddCosetFactor2 (
 **  problem (e.g. exponents).
 */
 static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
+    GAP_GC_CANSAFEPOINT
 {
     Obj *               ptApp;          // pointer to that list
     Obj                 word;           // handle of resulting word
@@ -1342,6 +1344,7 @@ static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
 **  of the copy does not exceed the minimal required size.
 */
 static Obj FuncCopyRel(Obj self, Obj rel) // the given relator
+    GAP_GC_CANSAFEPOINT
 {
     Obj *               ptRel;          // pointer to the given relator
     Obj                 copy;           // the copy
@@ -1377,6 +1380,7 @@ static Obj FuncCopyRel(Obj self, Obj rel) // the given relator
 **  It does not return anything.
 */
 static Obj FuncMakeCanonical(Obj self, Obj rel) // the given relator
+    GAP_GC_CANSAFEPOINT
 {
     Obj *               ptRel;          // pointer to the relator
     Obj                 obj1,  obj2;    // handles 0f relator entries
@@ -1528,7 +1532,7 @@ static Obj FuncMakeCanonical(Obj self, Obj rel) // the given relator
 **  in the  current generators, if  it finds any, or it  defines a new proper
 **  tree entry, and then returns it.
 */
-static Obj FuncTreeEntry(Obj self, Obj tree, Obj word)
+static Obj FuncTreeEntry(Obj self, Obj tree, Obj word) GAP_GC_CANSAFEPOINT
 {
     Obj *               ptTree1;        // pointer to that component
     Obj *               ptTree2;        // pointer to that component
@@ -1788,6 +1792,7 @@ static Obj FuncTreeEntry(Obj self, Obj tree, Obj word)
 **  standard (this is the default).
 */
 static Obj FuncStandardizeTable2C(Obj self, Obj table, Obj table2, Obj stan)
+    GAP_GC_CANSAFEPOINT
 {
     Obj *               ptTable;        // pointer to table
     Obj *               ptTabl2;        // pointer to coset factor table
@@ -1907,7 +1912,7 @@ static Obj FuncStandardizeTable2C(Obj self, Obj table, Obj table2, Obj stan)
 */
 static Obj FuncAddAbelianRelator(Obj self,
                                  Obj rels, // relators list
-                                 Obj number)
+                                 Obj number) GAP_GC_CANSAFEPOINT
 {
     Obj *               ptRels;         // pointer to relators list
     Obj *               pt1;            // pointer to a relator
@@ -2058,7 +2063,7 @@ static Obj FuncLOWINDEX_COSET_SCAN(Obj self,
                                    Obj t,  // table
                                    Obj r,  // relators
                                    Obj s1, // stack
-                                   Obj s2)  // stack
+                                   Obj s2) GAP_GC_CANSAFEPOINT  // stack
 {
   UInt ok,i,j,d,e,x,y,l,sd;
   Obj  rx;
@@ -2224,7 +2229,7 @@ static Obj FuncLOWINDEX_PREPARE_RELS(Obj self, Obj r) // rels
 *F  FuncNEW_LOWINDEX_DATA( <n> )
 **
 */
-static Obj FuncNEW_LOWINDEX_DATA(Obj self, Obj n)
+static Obj FuncNEW_LOWINDEX_DATA(Obj self, Obj n) GAP_GC_CANSAFEPOINT
 {
     Int len = GetSmallInt(SELF_NAME, n);
     Obj rel = NewBag(T_DATOBJ, (len + 1) * sizeof(Obj));
@@ -2360,7 +2365,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );

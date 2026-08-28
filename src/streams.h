@@ -29,7 +29,7 @@
 **  Read the current input as function. The caller is responsible for opening
 **  and closing the input.
 */
-Obj READ_AS_FUNC(TypInputFile * input);
+Obj READ_AS_FUNC(TypInputFile * input) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -40,7 +40,7 @@ Obj READ_AS_FUNC(TypInputFile * input);
 **  search all   directories given   in 'SyGapRootPaths',  check  dynamically
 **  loadable modules and statically linked modules.
 */
-Int READ_GAP_ROOT(const Char * filename);
+Int READ_GAP_ROOT(const Char * filename) GAP_GC_CANSAFEPOINT;
 
 // READ_ALL_COMMANDS reads a string of GAP statements and executes them
 // allowing to capture and process outputs

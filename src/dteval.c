@@ -53,9 +53,10 @@ static int             evlist, evlistvec;
 */
 
 // See below:
-static Obj Evaluation(Obj vec, Obj xk, Obj power);
+static Obj Evaluation(Obj vec, Obj xk, Obj power) GAP_GC_CANSAFEPOINT;
 
 static void MultGen(Obj xk, UInt gen, Obj power, Obj dtpols)
+    GAP_GC_CANSAFEPOINT
 {
     UInt  i, j, len, len2;
     Obj   copy = 0, sum = 0, sum1 = 0, sum2 = 0, prod = 0, ord = 0, help = 0;
@@ -158,6 +159,7 @@ static Obj Evaluation(Obj vec, Obj xk, Obj power)
 */
 
 static void Multbound(Obj xk, Obj y, Int anf, Int end, Obj dtpols)
+    GAP_GC_CANSAFEPOINT
 {
     int     i;
 
@@ -177,6 +179,7 @@ static void Multbound(Obj xk, Obj y, Int anf, Int end, Obj dtpols)
 */
 
 static Obj Multiplybound(Obj x, Obj y, Int anf, Int end, Obj dtpols)
+    GAP_GC_CANSAFEPOINT
 {
     UInt   i, j, k, len, help;
     Obj    xk = 0, res = 0, sum = 0;
@@ -291,9 +294,9 @@ static Obj Multiplybound(Obj x, Obj y, Int anf, Int end, Obj dtpols)
 */
 
 // See below:
-static Obj Solution(Obj x, Obj y, Obj dtpols);
+static Obj Solution(Obj x, Obj y, Obj dtpols) GAP_GC_CANSAFEPOINT;
 
-static Obj Power(Obj x, Obj n, Obj dtpols)
+static Obj Power(Obj x, Obj n, Obj dtpols) GAP_GC_CANSAFEPOINT
 {
     Obj     res = 0, m = 0, y = 0;
     UInt    i,len;
@@ -490,7 +493,7 @@ static Obj Solution(Obj x, Obj y, Obj dtpols)
 **  the deep thought polynomials <dtpols>.
 */
 
-static Obj Commutator(Obj x, Obj y, Obj dtpols)
+static Obj Commutator(Obj x, Obj y, Obj dtpols) GAP_GC_CANSAFEPOINT
 {
     Obj    res = 0, help = 0;
 
@@ -512,7 +515,7 @@ static Obj Commutator(Obj x, Obj y, Obj dtpols)
 **  deep thought polynomials <dtpols>. The result is an ordered word.
 */
 
-static Obj Conjugate(Obj x, Obj y, Obj dtpols)
+static Obj Conjugate(Obj x, Obj y, Obj dtpols) GAP_GC_CANSAFEPOINT
 {
     Obj    res = 0;
 
@@ -536,6 +539,7 @@ static Obj Conjugate(Obj x, Obj y, Obj dtpols)
 */
 
 static Obj Multiplyboundred(Obj x, Obj y, UInt anf, UInt end, Obj pcp)
+    GAP_GC_CANSAFEPOINT
 {
     Obj   orders = 0, res = 0, mod = 0, c = 0;
     UInt  i, len, len2, help;
@@ -569,7 +573,7 @@ static Obj Multiplyboundred(Obj x, Obj y, UInt anf, UInt end, Obj pcp)
 **  system <pcp>.
 */
 
-static Obj Powerred(Obj x, Obj n, Obj pcp)
+static Obj Powerred(Obj x, Obj n, Obj pcp) GAP_GC_CANSAFEPOINT
 {
     Obj   orders = 0, res = 0, mod = 0, c = 0;
     UInt  i, len, len2,help;
@@ -603,7 +607,7 @@ static Obj Powerred(Obj x, Obj n, Obj pcp)
 **  rewriting system <pcp>.
 */
 
-static Obj Solutionred(Obj x, Obj y, Obj pcp)
+static Obj Solutionred(Obj x, Obj y, Obj pcp) GAP_GC_CANSAFEPOINT
 {
     Obj   orders = 0, res = 0, mod = 0, c = 0;
     UInt  i, len, len2, help;
@@ -637,7 +641,7 @@ static Obj Solutionred(Obj x, Obj y, Obj pcp)
 **  thought rewriting system <pcp>.
 */
 
-static Obj Commutatorred(Obj x, Obj y, Obj pcp)
+static Obj Commutatorred(Obj x, Obj y, Obj pcp) GAP_GC_CANSAFEPOINT
 {
     Obj    orders = 0, mod = 0, c = 0, res = 0;
     UInt   i, len, len2, help;
@@ -671,7 +675,7 @@ static Obj Commutatorred(Obj x, Obj y, Obj pcp)
 **  thought rewriting system <pcp>.
 */
 
-static Obj Conjugatered(Obj x, Obj y, Obj pcp)
+static Obj Conjugatered(Obj x, Obj y, Obj pcp) GAP_GC_CANSAFEPOINT
 {
     Obj    orders = 0, mod = 0, c = 0, res = 0;
     UInt   i, len, len2, help;
@@ -702,7 +706,7 @@ static Obj Conjugatered(Obj x, Obj y, Obj pcp)
 **  compress removes pairs (n,0) from the list of GAP integers <list>.
 */
 
-static void compress(Obj list)
+static void compress(Obj list) GAP_GC_CANSAFEPOINT
 {
     UInt    i, skip, len;
 
@@ -737,7 +741,7 @@ static void compress(Obj list)
 **  FuncDTCompress implements the internal function DTCompress.
 */
 
-static Obj FuncDTCompress(Obj self, Obj list)
+static Obj FuncDTCompress(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     compress(list);
     return  (Obj)0;
@@ -755,7 +759,7 @@ static Obj FuncDTCompress(Obj self, Obj list)
 **  by <pcp>.
 */
 
-static void ReduceWord(Obj x, Obj pcp)
+static void ReduceWord(Obj x, Obj pcp) GAP_GC_CANSAFEPOINT
 {
     Obj       powers, exponent;
     Obj       deepthoughtpols = 0, help = 0, potenz = 0;
@@ -832,7 +836,7 @@ static void ReduceWord(Obj x, Obj pcp)
 **  with respect to the deep thought rewriting system <pcp>.
 */
 
-static Obj FuncDTMultiply(Obj self, Obj x, Obj y, Obj pcp)
+static Obj FuncDTMultiply(Obj self, Obj x, Obj y, Obj pcp) GAP_GC_CANSAFEPOINT
 {
     Obj res = 0;
 
@@ -861,7 +865,7 @@ static Obj FuncDTMultiply(Obj self, Obj x, Obj y, Obj pcp)
 **  with respect to the deep thought rewriting system <pcp>.
 */
 
-static Obj FuncDTPower(Obj self, Obj x, Obj n, Obj pcp)
+static Obj FuncDTPower(Obj self, Obj x, Obj n, Obj pcp) GAP_GC_CANSAFEPOINT
 {
     Obj    res = 0;
 
@@ -886,7 +890,7 @@ static Obj FuncDTPower(Obj self, Obj x, Obj n, Obj pcp)
 **  is reduced with respect to the deep thought rewriting system <pcp>.
 */
 
-static Obj FuncDTSolution(Obj self, Obj x, Obj y, Obj pcp)
+static Obj FuncDTSolution(Obj self, Obj x, Obj y, Obj pcp) GAP_GC_CANSAFEPOINT
 {
     Obj     res = 0;
 
@@ -914,6 +918,7 @@ static Obj FuncDTSolution(Obj self, Obj x, Obj y, Obj pcp)
 */
 
 static Obj FuncDTCommutator(Obj self, Obj x, Obj y, Obj pcp)
+    GAP_GC_CANSAFEPOINT
 {
     Obj   res = 0;
 
@@ -938,7 +943,7 @@ static Obj FuncDTCommutator(Obj self, Obj x, Obj y, Obj pcp)
 **  reduced with respect to the deep thought rewriting system <pcp>.
 */
 
-static Obj FuncDTConjugate(Obj self, Obj x, Obj y, Obj pcp)
+static Obj FuncDTConjugate(Obj self, Obj x, Obj y, Obj pcp) GAP_GC_CANSAFEPOINT
 {
     Obj   res = 0;
 
@@ -965,7 +970,7 @@ static Obj FuncDTConjugate(Obj self, Obj x, Obj y, Obj pcp)
 **  reduced with respect to the deep thought rewriting system <pcp>.
 */
 
-static Obj FuncDTQuotient(Obj self, Obj x, Obj y, Obj pcp)
+static Obj FuncDTQuotient(Obj self, Obj x, Obj y, Obj pcp) GAP_GC_CANSAFEPOINT
 {
     Obj     help = 0, res = 0;
 
@@ -1025,7 +1030,7 @@ static Int InitKernel (
 *F  PostRestore( <module> ) . . . . . . . . . . . . . after restore workspace
 */
 static Int PostRestore (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     evlist    = RNamName("evlist");
     evlistvec = RNamName("evlistvec");
@@ -1039,7 +1044,7 @@ static Int PostRestore (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );

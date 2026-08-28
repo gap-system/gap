@@ -32,7 +32,7 @@
 **
 *F  NEW_GF2VEC( <vec>, <type>, <len> )  . . . . . . . create a new GF2 vector
 */
-Obj NewGF2VecKernel(Obj type, UInt len);
+Obj NewGF2VecKernel(Obj type, UInt len) GAP_GC_CANSAFEPOINT;
 
 #define NEW_GF2VEC(vec, type, len) ((vec) = NewGF2VecKernel(type, len))
 
@@ -241,7 +241,7 @@ extern Obj TYPE_LIST_GF2MAT_IMM GAP_GC_GLOBALLY_ROOTED;
 extern Obj IsGF2VectorRep GAP_GC_GLOBALLY_ROOTED;
 extern Obj IsGF2MatrixRep GAP_GC_GLOBALLY_ROOTED;
 
-Obj ShallowCopyVecGF2(Obj vec);
+Obj ShallowCopyVecGF2(Obj vec) GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **

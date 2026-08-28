@@ -473,12 +473,12 @@ EXPORT_INLINE void CHANGED_BAG(Bag bag) GAP_GC_NOTSAFEPOINT
 **  areas of all bags may  change.  So you  must not keep any  pointers to or
 **  into the data areas of bags over calls to 'NewBag' (see "PTR_BAG").
 */
-Bag NewBag(UInt type, UInt size);
+Bag NewBag(UInt type, UInt size) GAP_GC_CANSAFEPOINT;
 
 
 // NewWordSizedBag is the same as NewBag, except it rounds 'size' up to
 // the next multiple of sizeof(UInt)
-EXPORT_INLINE Bag NewWordSizedBag(UInt type, UInt size)
+EXPORT_INLINE Bag NewWordSizedBag(UInt type, UInt size) GAP_GC_CANSAFEPOINT
 {
     UInt padding = 0;
     if(size % sizeof(UInt) != 0) {
@@ -567,7 +567,7 @@ EXPORT_INLINE void RetypeBag(Bag bag, UInt new_type) GAP_GC_NOTSAFEPOINT
 **  FIXME: for now, this checks the tnums; later, this will be turned
 **  into a check for an object flag
 */
-void RetypeBagSM(Bag bag, UInt new_type);
+void RetypeBagSM(Bag bag, UInt new_type) GAP_GC_CANSAFEPOINT;
 #ifdef HPCGAP
 void RetypeBagSMIfWritable(Bag bag, UInt new_type);
 #else
@@ -604,11 +604,13 @@ void RetypeBagSMIfWritable(Bag bag, UInt new_type);
 **  data areas of all bags may change.  So you must not keep  any pointers to
 **  or into the data areas of bags over calls to 'ResizeBag' (see "PTR_BAG").
 */
-UInt ResizeBag(Bag bag GAP_GC_MAYBE_UNROOTED, UInt new_size);
+UInt ResizeBag(Bag bag GAP_GC_MAYBE_UNROOTED, UInt new_size)
+    GAP_GC_CANSAFEPOINT;
 
 // ResizedWordSizedBag is the same as ResizeBag, except it round 'size'
 // up to the next multiple of sizeof(UInt)
 EXPORT_INLINE UInt ResizeWordSizedBag(Bag bag GAP_GC_MAYBE_UNROOTED, UInt size)
+    GAP_GC_CANSAFEPOINT
 {
     UInt padding = 0;
     if(size % sizeof(UInt) != 0) {
@@ -638,7 +640,7 @@ EXPORT_INLINE UInt ResizeWordSizedBag(Bag bag GAP_GC_MAYBE_UNROOTED, UInt size)
 **  of all bags may change.  So you must not keep any pointers to or into the
 **  data areas of bags over calls to 'CollectBags' (see "PTR_BAG").
 */
-UInt CollectBags(UInt size, UInt full);
+UInt CollectBags(UInt size, UInt full) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -920,7 +922,7 @@ void SetExtraMarkFuncBags(TNumExtraMarkFuncBags func);
 **  address of the argument 'argc' of the 'main' function of the application,
 **  i.e., '(Bag\*)\&argc'.
 */
-void InitBags(UInt initialSize, Bag * stackStart);
+void InitBags(UInt initialSize, Bag * stackStart) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

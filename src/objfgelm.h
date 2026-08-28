@@ -138,7 +138,7 @@ enum {
 **  'NewWord' returns a new object which has the given <type> and room for
 **  <npairs> pairs of generator number/exponent.
 */
-Obj NewWord(Obj type, UInt npairs);
+Obj NewWord(Obj type, UInt npairs) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

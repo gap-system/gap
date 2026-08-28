@@ -56,7 +56,7 @@ extern inline struct CFTLModuleState *CFTLState(void) GAP_GC_NOTSAFEPOINT
 #define EXPONENT_STACK  (CFTLState()->EXPONENT_STACK)
 #endif
 
-static inline Obj IncInt(Obj x)
+static inline Obj IncInt(Obj x) GAP_GC_CANSAFEPOINT
 {
     if (IS_INTOBJ(x) && x != INTOBJ_MAX) {
         return (Obj)((Int)x + (Int)4);
@@ -64,7 +64,7 @@ static inline Obj IncInt(Obj x)
     return SumInt(x, INTOBJ_INT(1));
 }
 
-static inline Obj DecInt(Obj x)
+static inline Obj DecInt(Obj x) GAP_GC_CANSAFEPOINT
 {
     if (IS_INTOBJ(x) && x != INTOBJ_MIN) {
         return (Obj)((Int)x - (Int)4);
@@ -72,7 +72,7 @@ static inline Obj DecInt(Obj x)
     return DiffInt(x, INTOBJ_INT(1));
 }
 
-static inline Obj FastAInvInt(Obj x)
+static inline Obj FastAInvInt(Obj x) GAP_GC_CANSAFEPOINT
 {
     if (IS_INTOBJ(x) && x != INTOBJ_MIN)
         return INTOBJ_INT(-INT_INTOBJ(x));
@@ -133,7 +133,7 @@ static void AddIn(Obj list, Obj w, Obj e)
   GAP_GC_POP();
 }
 
-static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
+static Obj CollectPolycyc(Obj pcp, Obj list, Obj word) GAP_GC_CANSAFEPOINT
 {
     Int    ngens   = INT_INTOBJ( CONST_ADDR_OBJ(pcp)[ PC_NUMBER_OF_GENERATORS ] );
     Obj    commute = CONST_ADDR_OBJ(pcp)[ PC_COMMUTE ];
@@ -359,6 +359,7 @@ static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
 }
 
 static Obj FuncCollectPolycyclic(Obj self, Obj pcp, Obj list, Obj word)
+    GAP_GC_CANSAFEPOINT
 {
   CollectPolycyc( pcp, list, word );
   return (Obj)0;
@@ -404,7 +405,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     ExportAsConstantGVar(PC_NUMBER_OF_GENERATORS);
     ExportAsConstantGVar(PC_GENERATORS);
@@ -428,7 +429,7 @@ static Int InitLibrary (
     return 0;
 }
 
-static Int InitModuleState(void)
+static Int InitModuleState(void) GAP_GC_CANSAFEPOINT
 {
     InitGlobalBag( &WORD_STACK, "WORD_STACK" );
     InitGlobalBag( &WORD_EXPONENT_STACK, "WORD_EXPONENT_STACK" );

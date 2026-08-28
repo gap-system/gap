@@ -278,7 +278,7 @@ BOOL IsDeclaredGVar(UInt gvar)
 */
 Obj             ErrorMustEvalToFuncFunc GAP_GC_GLOBALLY_ROOTED;
 
-static Obj ErrorMustEvalToFuncHandler(Obj self, Obj args)
+static Obj ErrorMustEvalToFuncHandler(Obj self, Obj args) GAP_GC_CANSAFEPOINT
 {
     ErrorQuit("Function Calls: <func> must be a function", 0, 0);
     return 0;
@@ -298,7 +298,7 @@ static Obj ErrorMustEvalToFuncHandler(Obj self, Obj args)
 */
 Obj             ErrorMustHaveAssObjFunc GAP_GC_GLOBALLY_ROOTED;
 
-static Obj ErrorMustHaveAssObjHandler(Obj self, Obj args)
+static Obj ErrorMustHaveAssObjHandler(Obj self, Obj args) GAP_GC_CANSAFEPOINT
 {
     ErrorQuit("Variable: <<unknown>> must have an assigned value", 0, 0);
     return 0;
@@ -315,7 +315,7 @@ static Obj ErrorMustHaveAssObjHandler(Obj self, Obj args)
 static Obj REREADING GAP_GC_GLOBALLY_ROOTED; // Copy of GAP global variable REREADING
 
 // We store pointers to C global variables as GAP immediate integers.
-static Obj * ELM_COPS_PLIST(Obj cops, UInt i)
+static Obj * ELM_COPS_PLIST(Obj cops, UInt i) GAP_GC_CANSAFEPOINT
 {
     UInt val = UInt_ObjInt(ELM_PLIST(cops, i));
     val <<= 2;
@@ -330,7 +330,7 @@ static Obj * ELM_COPS_PLIST(Obj cops, UInt i)
 static void AssGVarInternal(UInt gvar,
                             Obj  val GAP_GC_MAYBE_UNROOTED,
                             BOOL hasExprCopiesFopies,
-                            BOOL giveNameToFunc)
+                            BOOL giveNameToFunc) GAP_GC_CANSAFEPOINT
 {
     Obj                 cops;           // list of internal copies
     Obj *               copy;           // one copy
@@ -601,6 +601,7 @@ UInt GVarName(const Char * name)
 }
 
 void NewGVarCallback(SymbolTable * symtab, UInt numGVars, Obj string)
+    GAP_GC_CANSAFEPOINT
 {
 #ifdef USE_GVAR_BUCKETS
     UInt gvar_bucket = GVAR_BUCKET(numGVars);
@@ -687,7 +688,7 @@ void MakeThreadLocalVar (
 **
 *F  FuncDeclareGlobalName(<self>,<name>)
 */
-Obj FuncDeclareGlobalName(Obj self, Obj name)
+Obj FuncDeclareGlobalName(Obj self, Obj name) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep("DeclareGlobalName", name);
     SetIsDeclaredName(GVarName(CONST_CSTR_STRING(name)), TRUE);
@@ -706,7 +707,7 @@ Obj FuncDeclareGlobalName(Obj self, Obj name)
 **  'MakeReadOnlyGVar' make the global  variable with the name <name>  (which
 **  must be a GAP string) read only.
 */
-static Obj FuncMakeReadOnlyGVar(Obj self, Obj name)
+static Obj FuncMakeReadOnlyGVar(Obj self, Obj name) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, name);
     MakeReadOnlyGVar(GVarName(CONST_CSTR_STRING(name)));
@@ -724,7 +725,7 @@ static Obj FuncMakeReadOnlyGVar(Obj self, Obj name)
 **  'MakeConstantGVar' make the global  variable with the name <name>  (which
 **  must be a GAP string) constant.
 */
-static Obj FuncMakeConstantGVar(Obj self, Obj name)
+static Obj FuncMakeConstantGVar(Obj self, Obj name) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, name);
     MakeConstantGVar(GVarName(CONST_CSTR_STRING(name)));
@@ -756,7 +757,7 @@ void MakeReadWriteGVar (
 **  'MakeReadWriteGVar' make the global  variable with the name <name>  (which
 **  must be a GAP string) read and writable.
 */
-static Obj FuncMakeReadWriteGVar(Obj self, Obj name)
+static Obj FuncMakeReadWriteGVar(Obj self, Obj name) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, name);
     MakeReadWriteGVar(GVarName(CONST_CSTR_STRING(name)));
@@ -780,7 +781,7 @@ BOOL IsReadOnlyGVar(UInt gvar)
 
 static Obj FuncIsReadOnlyGVar (
     Obj                 self,
-    Obj                 name )
+    Obj                 name ) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, name);
     return IsReadOnlyGVar(GVarName(CONST_CSTR_STRING(name))) ? True : False;
@@ -801,7 +802,7 @@ BOOL IsConstantGVar(UInt gvar)
 **
 */
 
-static Obj FuncIsConstantGVar(Obj self, Obj name)
+static Obj FuncIsConstantGVar(Obj self, Obj name) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, name);
     return IsConstantGVar(GVarName(CONST_CSTR_STRING(name))) ? True : False;
@@ -823,7 +824,7 @@ static Obj FuncIsConstantGVar(Obj self, Obj name)
 **  cause the execution  of an assignment to  that global variable, otherwise
 **  an error is signalled.
 */
-static Obj FuncAUTO(Obj self, Obj args)
+static Obj FuncAUTO(Obj self, Obj args) GAP_GC_CANSAFEPOINT
 {
     Obj                 func;           // the function to call
     Obj                 arg;            // the argument to pass
@@ -927,7 +928,7 @@ UInt            completion_gvar (
 **
 *F  FuncIDENTS_GVAR( <self> ) . . . . . . . . . .  idents of global variables
 */
-static Obj FuncIDENTS_GVAR(Obj self)
+static Obj FuncIDENTS_GVAR(Obj self) GAP_GC_CANSAFEPOINT
 {
     Obj                 copy = 0;
     UInt                i;
@@ -951,7 +952,7 @@ static Obj FuncIDENTS_GVAR(Obj self)
     return copy;
 }
 
-static Obj FuncIDENTS_BOUND_GVARS(Obj self)
+static Obj FuncIDENTS_BOUND_GVARS(Obj self) GAP_GC_CANSAFEPOINT
 {
     Obj                 copy = 0;
     UInt                i, j;
@@ -983,7 +984,7 @@ static Obj FuncIDENTS_BOUND_GVARS(Obj self)
 **
 *F  FuncASS_GVAR( <self>, <gvar>, <val> ) . . . . assign to a global variable
 */
-static Obj FuncASS_GVAR(Obj self, Obj gvar, Obj val)
+static Obj FuncASS_GVAR(Obj self, Obj gvar, Obj val) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, gvar);
     AssGVar( GVarName( CONST_CSTR_STRING(gvar) ), val );
@@ -995,7 +996,7 @@ static Obj FuncASS_GVAR(Obj self, Obj gvar, Obj val)
 **
 *F  FuncISB_GVAR( <self>, <gvar> )  . . check assignment of a global variable
 */
-static Obj FuncISB_GVAR(Obj self, Obj gvar)
+static Obj FuncISB_GVAR(Obj self, Obj gvar) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, gvar);
 
@@ -1019,7 +1020,7 @@ static Obj FuncISB_GVAR(Obj self, Obj gvar)
 *F  FuncIS_AUTO_GVAR( <self>, <gvar> ) . . check if a global variable is auto
 */
 
-static Obj FuncIS_AUTO_GVAR(Obj self, Obj gvar)
+static Obj FuncIS_AUTO_GVAR(Obj self, Obj gvar) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, gvar);
     Obj expr = ExprGVar(GVarName( CONST_CSTR_STRING(gvar) ) );
@@ -1032,7 +1033,7 @@ static Obj FuncIS_AUTO_GVAR(Obj self, Obj gvar)
 *F  FuncVAL_GVAR( <self>, <gvar> )  . . contents of a global variable
 */
 
-static Obj FuncVAL_GVAR(Obj self, Obj gvar)
+static Obj FuncVAL_GVAR(Obj self, Obj gvar) GAP_GC_CANSAFEPOINT
 {
     Obj val;
 
@@ -1050,7 +1051,7 @@ static Obj FuncVAL_GVAR(Obj self, Obj gvar)
 *F  FuncUNB_GVAR( <self>, <gvar> )  . . unbind a global variable
 */
 
-static Obj FuncUNB_GVAR(Obj self, Obj gvar)
+static Obj FuncUNB_GVAR(Obj self, Obj gvar) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, gvar);
     AssGVar( GVarName( CONST_CSTR_STRING(gvar) ), (Obj)0 );
@@ -1526,7 +1527,7 @@ static Int InitKernel (
 */
 
 static Int PostRestore (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // restore PtrGVars
     GVarsAfterCollectBags();
@@ -1553,7 +1554,7 @@ static Int PreSave (
 *F  PostSave( <module> ) . . . . . . . . . . . . . after save workspace
 */
 static Int PostSave (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
   UpdateCopyFopyInfo();
   return 0;
@@ -1565,7 +1566,7 @@ static Int PostSave (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     InitSymbolTableLibrary(&GVarSymbolTable, 28069);
 
@@ -1614,7 +1615,7 @@ static Int CheckInit (
 }
 
 
-static Int InitModuleState(void)
+static Int InitModuleState(void) GAP_GC_CANSAFEPOINT
 {
     // Create the current namespace:
     STATE(CurrNamespace) = NEW_STRING(0);

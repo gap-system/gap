@@ -40,40 +40,44 @@ Int RegisterBreakloopObserver(intfunc func);
 **                                   ERROR_OUTPUT global variable defined in
 **                                   error.g, or "*errout*" otherwise
 */
-UInt OpenErrorOutput(TypOutputFile * output);
+UInt OpenErrorOutput(TypOutputFile * output) GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
 *F  ErrorQuit( <msg>, <arg1>, <arg2> )  . . . . . . . . . . .  print and quit
 */
-void ErrorQuit(const Char * msg, Int arg1, Int arg2) NORETURN;
+void ErrorQuit(const Char * msg, Int arg1, Int arg2) NORETURN
+    GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
 *F  ErrorMayQuit( <msg>, <arg1>, <arg2> )  . print, enter break loop and quit
 **                                           no option to return anything.
 */
-void ErrorMayQuit(const Char * msg, Int arg1, Int arg2) NORETURN;
+void ErrorMayQuit(const Char * msg, Int arg1, Int arg2) NORETURN
+    GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  ErrorMayQuitNrArgs( <narg>, <actual> ) . . . .  wrong number of arguments
 */
-void ErrorMayQuitNrArgs(Int narg, Int actual) NORETURN;
+void ErrorMayQuitNrArgs(Int narg, Int actual) NORETURN GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
 *F  ErrorMayQuitNrAtLeastArgs( <narg>, <actual> ) . . .  not enough arguments
 */
-void ErrorMayQuitNrAtLeastArgs(Int narg, Int actual) NORETURN;
+void ErrorMayQuitNrAtLeastArgs(Int narg, Int actual) NORETURN
+    GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  ErrorReturnVoid( <msg>, <arg1>, <arg2>, <msg2> )  . . .  print and return
 */
-void ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2);
+void ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2)
+    GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -94,7 +98,7 @@ void ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2);
 void RequireArgumentEx(const char * funcname,
                        Obj          op,
                        const char * argname,
-                       const char * msg) NORETURN;
+                       const char * msg) NORETURN GAP_GC_CANSAFEPOINT;
 
 #define NICE_ARGNAME(op) "<" #op ">"
 
@@ -183,10 +187,11 @@ void ErrorBoundedInt(const char * funcname,
                      Obj          op,
                      const char * argname,
                      int          min,
-                     int          max) NORETURN;
+                     int          max) NORETURN GAP_GC_CANSAFEPOINT;
 
 EXPORT_INLINE void RequireBoundedIntEx(
     const char * funcname, Obj op, const char * argname, int min, int max)
+    GAP_GC_CANSAFEPOINT
 {
     if (!(IS_INTOBJ(op) && min <= INT_INTOBJ(op) && INT_INTOBJ(op) <= max)) {
         ErrorBoundedInt(funcname, op, argname, min, max);
@@ -290,6 +295,7 @@ EXPORT_INLINE void RequireBoundedIntEx(
 */
 EXPORT_INLINE Int
 GetSmallIntEx(const char * funcname, Obj op, const char * argname)
+    GAP_GC_CANSAFEPOINT
 {
     RequireSmallIntEx(funcname, op, argname);
     return INT_INTOBJ(op);
@@ -305,6 +311,7 @@ GetSmallIntEx(const char * funcname, Obj op, const char * argname)
 */
 EXPORT_INLINE Int
 GetPositiveSmallIntEx(const char * funcname, Obj op, const char * argname)
+    GAP_GC_CANSAFEPOINT
 {
     RequirePositiveSmallIntEx(funcname, op, argname);
     return INT_INTOBJ(op);
@@ -321,6 +328,7 @@ GetPositiveSmallIntEx(const char * funcname, Obj op, const char * argname)
 */
 EXPORT_INLINE Int GetBoundedIntEx(
     const char * funcname, Obj op, const char * argname, int min, int max)
+    GAP_GC_CANSAFEPOINT
 {
     RequireBoundedIntEx(funcname, op, argname, min, max);
     return INT_INTOBJ(op);
@@ -334,14 +342,15 @@ EXPORT_INLINE Int GetBoundedIntEx(
 **
 *F  CheckIsPossList( <desc>, <poss> ) . . . . . . . . . . check for poss list
 */
-void CheckIsPossList(const Char * desc, Obj poss);
+void CheckIsPossList(const Char * desc, Obj poss) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  CheckIsDenseList( <desc>, <listName>, <list> ) . . . check for dense list
 */
-void CheckIsDenseList(const Char * desc, const Char * listName, Obj list);
+void CheckIsDenseList(const Char * desc, const Char * listName, Obj list)
+    GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -352,7 +361,7 @@ void CheckSameLength(const Char * desc,
                      const Char * name1,
                      const Char * name2,
                      Obj          op1,
-                     Obj          op2);
+                     Obj          op2) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -370,7 +379,7 @@ void CheckSameLength(const Char * desc,
 **
 *F  CALL_WITH_CATCH
 */
-Obj CALL_WITH_CATCH(Obj func, Obj args);
+Obj CALL_WITH_CATCH(Obj func, Obj args) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -380,8 +389,8 @@ Obj CALL_WITH_CATCH(Obj func, Obj args);
 **
 **  These helper functions are used by GAP's 'Assert' statement.
 */
-void AssertionFailure(void);
-void AssertionFailureWithMessage(Obj message);
+void AssertionFailure(void) GAP_GC_CANSAFEPOINT;
+void AssertionFailureWithMessage(Obj message) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

@@ -29,7 +29,7 @@
 **  Note that you still have to set the actual length once you have populated
 **  the record!
 */
-Obj NEW_PREC(UInt len);
+Obj NEW_PREC(UInt len) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -188,9 +188,10 @@ EXPORT_INLINE Obj GET_ELM_PREC(Obj rec GAP_GC_PROPAGATES_ROOT, UInt i)
 **  if the record contained rnam, and 0 otherwise.
 **/
 
-UInt PositionPRec(Obj rec, UInt rnam, int cleanup);
+UInt PositionPRec(Obj rec, UInt rnam, int cleanup) GAP_GC_CANSAFEPOINT;
 
 EXPORT_INLINE UInt FindPRec(Obj rec, UInt rnam, UInt * pos, int cleanup)
+    GAP_GC_CANSAFEPOINT
 {
     *pos = PositionPRec(rec, rnam, cleanup);
     return (*pos != 0);
@@ -206,7 +207,7 @@ EXPORT_INLINE UInt FindPRec(Obj rec, UInt rnam, UInt * pos, int cleanup)
 **  <rec> has no component with record name <rnam>.
 */
 Obj ElmPRec(Obj rec GAP_GC_PROPAGATES_ROOT, UInt rnam)
-    GAP_GC_PROPAGATES_ROOT_INDEXED(0, 1);
+    GAP_GC_PROPAGATES_ROOT_INDEXED(0, 1) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -216,7 +217,7 @@ Obj ElmPRec(Obj rec GAP_GC_PROPAGATES_ROOT, UInt rnam)
 **  'IsbPRec' returns 1 if the record <rec> has a component with  the  record
 **  name <rnam>, and 0 otherwise.
 */
-BOOL IsbPRec(Obj rec, UInt rnam);
+BOOL IsbPRec(Obj rec, UInt rnam) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -227,7 +228,8 @@ BOOL IsbPRec(Obj rec, UInt rnam);
 **  name <rnam> in the plain record <rec>.
 */
 void AssPRec(Obj rec, UInt rnam,
-             Obj val GAP_GC_ROOTED_BY_ARG_INDEXED(0, 1) GAP_GC_MAYBE_UNROOTED);
+             Obj val GAP_GC_ROOTED_BY_ARG_INDEXED(0, 1) GAP_GC_MAYBE_UNROOTED)
+    GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -237,7 +239,7 @@ void AssPRec(Obj rec, UInt rnam,
 **  'UnbPRec'  removes the record component  with the record name <rnam> from
 **  the record <rec>.
 */
-void UnbPRec(Obj rec, UInt rnam);
+void UnbPRec(Obj rec, UInt rnam) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -249,7 +251,7 @@ void UnbPRec(Obj rec, UInt rnam);
 **  called on the first read access if necessary. See the top of "precord.c"
 **  for a comment on lazy sorting.
 */
-void SortPRecRNam(Obj rec);
+void SortPRecRNam(Obj rec) GAP_GC_CANSAFEPOINT;
 
 
 #ifdef USE_THREADSAFE_COPYING

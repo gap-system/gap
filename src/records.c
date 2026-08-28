@@ -52,6 +52,7 @@ extern inline Obj NAME_RNAM(UInt rnam)
 }
 
 static void NewRNamCallback(SymbolTable * symtab, UInt id, Obj name)
+    GAP_GC_CANSAFEPOINT
 {
     AssPlist(NamesRNam, id, name);
 }
@@ -145,7 +146,7 @@ UInt            RNamObj (
 **  'RNamObj' returns the record name  corresponding  to  the  object  <obj>,
 **  which currently must be a string or an integer.
 */
-static Obj FuncRNamObj(Obj self, Obj obj)
+static Obj FuncRNamObj(Obj self, Obj obj) GAP_GC_CANSAFEPOINT
 {
     return INTOBJ_INT( RNamObj( obj ) );
 }
@@ -155,7 +156,7 @@ static Obj FuncRNamObj(Obj self, Obj obj)
 **
 *F  GetValidRNam( <funcname>, <rnam> ) . check if <rnam> is a valid prec rnam
 */
-UInt GetValidRNam(const char * funcname, Obj rnam)
+UInt GetValidRNam(const char * funcname, Obj rnam) GAP_GC_CANSAFEPOINT
 {
     UInt val = GetPositiveSmallInt(funcname, rnam);
     RequireArgumentCondition(funcname, rnam, IS_VALID_RNAM(val),
@@ -174,7 +175,7 @@ UInt GetValidRNam(const char * funcname, Obj rnam)
 **
 **  'NameRNam' returns the string corresponding to the record name <rnam>.
 */
-static Obj FuncNameRNam(Obj self, Obj rnam)
+static Obj FuncNameRNam(Obj self, Obj rnam) GAP_GC_CANSAFEPOINT
 {
     Int inam = GetValidRNam("NameRNam", rnam);
     Obj oname = NAME_RNAM(inam);
@@ -217,17 +218,17 @@ Obj             (*ElmRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
 
 static Obj ElmRecOper GAP_GC_GLOBALLY_ROOTED;
 
-static Obj ElmRecHandler(Obj self, Obj rec, Obj rnam)
+static Obj ElmRecHandler(Obj self, Obj rec, Obj rnam) GAP_GC_CANSAFEPOINT
 {
     return ELM_REC(rec, GetValidRNam("Record Element", rnam));
 }
 
-static Obj ElmRecError(Obj rec, UInt rnam)
+static Obj ElmRecError(Obj rec, UInt rnam) GAP_GC_CANSAFEPOINT
 {
     RequireArgument("Record Element", rec, "must be a record");
 }
 
-static Obj ElmRecObject(Obj obj, UInt rnam)
+static Obj ElmRecObject(Obj obj, UInt rnam) GAP_GC_CANSAFEPOINT
 {
   Obj elm;
   elm = DoOperation2Args( ElmRecOper, obj, INTOBJ_INT(rnam) );
@@ -250,18 +251,18 @@ BOOL (*IsbRecFuncs[LAST_REAL_TNUM + 1])(Obj rec, UInt rnam);
 
 static Obj IsbRecOper GAP_GC_GLOBALLY_ROOTED;
 
-static Obj IsbRecHandler(Obj self, Obj rec, Obj rnam)
+static Obj IsbRecHandler(Obj self, Obj rec, Obj rnam) GAP_GC_CANSAFEPOINT
 {
     return (ISB_REC(rec, GetValidRNam("Record IsBound", rnam)) ? True
                                                                : False);
 }
 
-static BOOL IsbRecError(Obj rec, UInt rnam)
+static BOOL IsbRecError(Obj rec, UInt rnam) GAP_GC_CANSAFEPOINT
 {
     RequireArgument("Record IsBound", rec, "must be a record");
 }
 
-static BOOL IsbRecObject(Obj obj, UInt rnam)
+static BOOL IsbRecObject(Obj obj, UInt rnam) GAP_GC_CANSAFEPOINT
 {
     return (DoOperation2Args( IsbRecOper, obj, INTOBJ_INT(rnam) ) == True);
 }
@@ -280,17 +281,18 @@ void            (*AssRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam, Obj obj )
 static Obj AssRecOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj AssRecHandler(Obj self, Obj rec, Obj rnam, Obj obj)
+    GAP_GC_CANSAFEPOINT
 {
     ASS_REC(rec, GetValidRNam("Record Assignment", rnam), obj);
     return 0;
 }
 
-static void AssRecError(Obj rec, UInt rnam, Obj obj)
+static void AssRecError(Obj rec, UInt rnam, Obj obj) GAP_GC_CANSAFEPOINT
 {
     RequireArgument("Record Assignment", rec, "must be a record");
 }
 
-static void AssRecObject(Obj obj, UInt rnam, Obj val)
+static void AssRecObject(Obj obj, UInt rnam, Obj val) GAP_GC_CANSAFEPOINT
 {
     DoOperation3Args( AssRecOper, obj, INTOBJ_INT(rnam), val );
 }
@@ -307,18 +309,18 @@ void            (*UnbRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
 
 static Obj UnbRecOper GAP_GC_GLOBALLY_ROOTED;
 
-static Obj UnbRecHandler(Obj self, Obj rec, Obj rnam)
+static Obj UnbRecHandler(Obj self, Obj rec, Obj rnam) GAP_GC_CANSAFEPOINT
 {
     UNB_REC(rec, GetValidRNam("Record Unbind", rnam));
     return 0;
 }
 
-static void UnbRecError(Obj rec, UInt rnam)
+static void UnbRecError(Obj rec, UInt rnam) GAP_GC_CANSAFEPOINT
 {
     RequireArgument("Record Unbind", rec, "must be a record");
 }
 
-static void UnbRecObject(Obj obj, UInt rnam)
+static void UnbRecObject(Obj obj, UInt rnam) GAP_GC_CANSAFEPOINT
 {
     DoOperation2Args( UnbRecOper, obj, INTOBJ_INT(rnam) );
 }
@@ -374,7 +376,7 @@ UInt            completion_rnam (
     return next != 0;
 }
 
-static Obj FuncALL_RNAMES(Obj self)
+static Obj FuncALL_RNAMES(Obj self) GAP_GC_CANSAFEPOINT
 {
     Obj                 copy, s = 0;
     UInt                i;
@@ -531,7 +533,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     InitSymbolTableLibrary(&RNamSymbolTable, 28069);
 
