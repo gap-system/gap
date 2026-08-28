@@ -255,9 +255,10 @@ UInt SyWindow;
 void SyExit(UInt ret)
 {
 #ifdef USE_JULIA_GC
-    jl_atexit_hook(ret);
-#endif
+    jl_exit((int)ret);
+#else
     exit((int)ret);
+#endif
 }
 
 
