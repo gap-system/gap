@@ -379,7 +379,7 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
               UserPreference( "PrescribedPackageVersions" ) );
     if exact <> fail then
       # Store the list of prescribed package version,
-      # including the informtion about ordering and 'OnlyNeeded' option.
+      # including the information about ordering and 'OnlyNeeded' option.
       GAPInfo.PrescribedPackageVersions:= exact;
       exact:= List( exact, x -> x{ [ 1, 2 ] } );
       GAPInfo.PackagesInfo:= Filtered( GAPInfo.PackagesInfo,

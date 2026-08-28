@@ -1390,7 +1390,7 @@ DeclareGlobalName( "PrescribedPackageVersions" );
 ##  and <C>version</C> is its version.
 ##  <P/>
 ##  One can print this string to a file and set the user preference
-##  <C>"PrescribedPackageVersions"</C> to the name of this file,
+##  <C>"PrescribedPackageVersions"</C> to the name of this file.
 ##  Then starting &GAP; anew will load exactly the same packages.
 ##  </Description>
 ##  </ManSection>
