@@ -32,7 +32,7 @@
 **  copy and finally removes duplicates, which must appear next to each other
 **  now that the copy is sorted.
 */
-Obj SetList(Obj list);
+Obj SetList(Obj list) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

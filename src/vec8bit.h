@@ -20,7 +20,7 @@
 **                convert a GF(2) vector into a GF(2^k) vector in place
 **
 */
-void RewriteGF2Vec(Obj vec, UInt q);
+void RewriteGF2Vec(Obj vec, UInt q) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -28,7 +28,7 @@ void RewriteGF2Vec(Obj vec, UInt q);
 *F  CopyVec8Bit( <list>, <mut> ) . . . . . . . . . . . . . . copying function
 **
 */
-Obj CopyVec8Bit(Obj list, UInt mut);
+Obj CopyVec8Bit(Obj list, UInt mut) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -49,7 +49,7 @@ EXPORT_INLINE BOOL IS_VEC8BIT_REP(Obj obj)
 **
 **  'PlainVec8Bit' converts the  vector <list> to a plain list.
 */
-void PlainVec8Bit(Obj list);
+void PlainVec8Bit(Obj list) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -57,7 +57,7 @@ void PlainVec8Bit(Obj list);
 *F  ASS_VEC8BIT( <list>, <pos>, <elm> ) . . . .  set an elm of an 8bit vector
 **
 */
-void ASS_VEC8BIT(Obj list, Obj pos, Obj elm);
+void ASS_VEC8BIT(Obj list, Obj pos, Obj elm) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -65,7 +65,7 @@ void ASS_VEC8BIT(Obj list, Obj pos, Obj elm);
 *F  ZeroVec8Bit( <list> ) . . . make a new 8 bit vector
 **
 */
-Obj ZeroVec8Bit(UInt q, UInt len, UInt mut);
+Obj ZeroVec8Bit(UInt q, UInt len, UInt mut) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -73,7 +73,7 @@ Obj ZeroVec8Bit(UInt q, UInt len, UInt mut);
 **  Low-level access, needed for meataxe64 package
 **
 */
-Obj GetFieldInfo8Bit(UInt q);
+Obj GetFieldInfo8Bit(UInt q) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

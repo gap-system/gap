@@ -167,7 +167,7 @@ static UInt RightMostOneGF2Vec(Obj vec)
 }
 
 
-static Obj AddCoeffsGF2VecGF2Vec(Obj sum, Obj vec)
+static Obj AddCoeffsGF2VecGF2Vec(Obj sum, Obj vec) GAP_GC_CANSAFEPOINT
 {
     UInt *       ptS;
     const UInt * ptV;
@@ -228,6 +228,7 @@ CopySection_GF2Vecs(Obj src, Obj dest, UInt smin, UInt dmin, UInt nelts)
 **  correct size.
 */
 static Obj AddPartialGF2VecGF2Vec(Obj sum, Obj vl, Obj vr, UInt n)
+    GAP_GC_CANSAFEPOINT
 {
     const UInt * ptL;       // bit field of <vl>
     const UInt * ptR;       // bit field of <vr>
@@ -324,7 +325,7 @@ static Obj AddPartialGF2VecGF2Vec(Obj sum, Obj vl, Obj vr, UInt n)
 
 #endif
 
-static Obj ProdGF2VecGF2Vec(Obj vl, Obj vr)
+static Obj ProdGF2VecGF2Vec(Obj vl, Obj vr) GAP_GC_CANSAFEPOINT
 {
     const UInt * ptL;     // bit field of <vl>
     const UInt * ptR;     // bit field of <vr>
@@ -378,7 +379,7 @@ static Obj ProdGF2VecGF2Vec(Obj vl, Obj vr)
 **  multiplied by the corresponding entry of <vl>.  Note that the  caller has
 **  to ensure, that <vl> is a gf2-vector and <vr> is a gf2-matrix.
 */
-static Obj ProdGF2VecGF2Mat(Obj vl, Obj vr)
+static Obj ProdGF2VecGF2Mat(Obj vl, Obj vr) GAP_GC_CANSAFEPOINT
 {
     UInt         len;    // length of the list
     UInt         stop;
@@ -448,7 +449,7 @@ static Obj ProdGF2VecGF2Mat(Obj vl, Obj vr)
 **  Note that the  caller has
 **  to ensure, that <ml> is a GF2 matrix and <vr> is a GF2 vector.
 */
-static Obj ProdGF2MatGF2Vec(Obj ml, Obj vr)
+static Obj ProdGF2MatGF2Vec(Obj ml, Obj vr) GAP_GC_CANSAFEPOINT
 {
     UInt         len;     // length of the vector
     UInt         ln1;     // length of the rows of the mx
@@ -522,7 +523,7 @@ static Obj ProdGF2MatGF2Vec(Obj ml, Obj vr)
 **  must be compatible.
 */
 
-static Obj ProdGF2MatGF2MatSimple(Obj ml, Obj mr)
+static Obj ProdGF2MatGF2MatSimple(Obj ml, Obj mr) GAP_GC_CANSAFEPOINT
 {
     Obj  prod = 0;
     UInt i;
@@ -651,6 +652,7 @@ static const UInt * getgreasedata(struct greaseinfo * g, UInt bits)
 
 static Obj
 ProdGF2MatGF2MatAdvanced(Obj ml, Obj mr, UInt greasesize, UInt blocksize)
+    GAP_GC_CANSAFEPOINT
 {
     Obj          prod = 0;      // Product Matrix
     UInt         i, j, k, b;    // Loop counters
@@ -866,6 +868,7 @@ ProdGF2MatGF2MatAdvanced(Obj ml, Obj mr, UInt greasesize, UInt blocksize)
 **  method to handle vector*plain list of GF2Vectors reasonably efficiently.
 */
 static Obj FuncPROD_GF2VEC_ANYMAT(Obj self, Obj vec, Obj mat)
+    GAP_GC_CANSAFEPOINT
 {
     Obj  res = 0;
     UInt len;
@@ -926,7 +929,7 @@ static Obj FuncPROD_GF2VEC_ANYMAT(Obj self, Obj vec, Obj mat)
 **  by this point it should be checked that list is a plain list of GF2
 **  vectors of equal lengths.
 */
-static Obj InversePlistGF2VecsDesstructive(Obj list)
+static Obj InversePlistGF2VecsDesstructive(Obj list) GAP_GC_CANSAFEPOINT
 {
     UInt         len;     // dimension
     Obj          inv = 0; // result
@@ -1018,7 +1021,7 @@ static Obj InversePlistGF2VecsDesstructive(Obj list)
 **
 */
 
-static Obj InverseGF2Mat(Obj mat, UInt mut)
+static Obj InverseGF2Mat(Obj mat, UInt mut) GAP_GC_CANSAFEPOINT
 {
     UInt         len;    // dimension
     Obj          inv = 0; // result
@@ -1128,6 +1131,7 @@ static UInt RNheads, RNvectors, RNcoeffs, RNrelns;
 
 
 static Obj SemiEchelonListGF2Vecs(Obj mat, UInt TransformationsNeeded)
+    GAP_GC_CANSAFEPOINT
 {
     UInt  nrows, ncols;
     UInt  i, j, h;
@@ -1234,7 +1238,7 @@ static Obj SemiEchelonListGF2Vecs(Obj mat, UInt TransformationsNeeded)
 **
 */
 
-static UInt TriangulizeListGF2Vecs(Obj mat, UInt clearup)
+static UInt TriangulizeListGF2Vecs(Obj mat, UInt clearup) GAP_GC_CANSAFEPOINT
 {
     UInt         nrows;
     UInt         ncols;
@@ -1303,7 +1307,7 @@ static UInt TriangulizeListGF2Vecs(Obj mat, UInt clearup)
 static Obj IsLockedRepresentationVector GAP_GC_GLOBALLY_ROOTED;
 
 
-static void PlainGF2Vec(Obj list)
+static void PlainGF2Vec(Obj list) GAP_GC_CANSAFEPOINT
 {
     Int  len;          // length of <list>
     UInt i;            // loop variable
@@ -1350,7 +1354,7 @@ static void PlainGF2Vec(Obj list)
 **
 **  'PlainGF2Mat' converts the GF2 matrix <list> to a plain list.
 */
-static void PlainGF2Mat(Obj list)
+static void PlainGF2Mat(Obj list) GAP_GC_CANSAFEPOINT
 {
     Int  len;    // length of <list>
     UInt i;      // loop variable
@@ -1373,7 +1377,7 @@ static void PlainGF2Mat(Obj list)
 **
 *F  ConvGF2Vec( <list> )  . . . . . . convert a list into a GF2 vector object
 */
-static void ConvGF2Vec(Obj list)
+static void ConvGF2Vec(Obj list) GAP_GC_CANSAFEPOINT
 {
     Int  len;      // logical length of the vector
     Int  i;        // loop variable
@@ -1443,7 +1447,7 @@ static void ConvGF2Vec(Obj list)
 **
 *F  FuncCONV_GF2VEC( <self>, <list> ) . . . . . convert into a GF2 vector rep
 */
-static Obj FuncCONV_GF2VEC(Obj self, Obj list)
+static Obj FuncCONV_GF2VEC(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     RequireSmallList(SELF_NAME, list);
     ConvGF2Vec(list);
@@ -1457,7 +1461,7 @@ static Obj FuncCONV_GF2VEC(Obj self, Obj list)
 **
 **  This is a non-destructive counterpart of ConvGF2Vec
 */
-static Obj NewGF2Vec(Obj list)
+static Obj NewGF2Vec(Obj list) GAP_GC_CANSAFEPOINT
 {
     Int  len;      // logical length of the vector
     Int  i;        // loop variable
@@ -1535,7 +1539,7 @@ static Obj NewGF2Vec(Obj list)
 **
 **  This is a non-destructive counterpart of FuncCONV_GF2VEC
 */
-static Obj FuncCOPY_GF2VEC(Obj self, Obj list)
+static Obj FuncCOPY_GF2VEC(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     list = NewGF2Vec(list);
     return list;
@@ -1548,7 +1552,7 @@ static Obj FuncCOPY_GF2VEC(Obj self, Obj list)
 ** <list> should be a list of compressed GF2 vectors
 **
 */
-static Obj FuncCONV_GF2MAT(Obj self, Obj list)
+static Obj FuncCONV_GF2MAT(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     UInt len, i;
     Obj  tmp;
@@ -1588,7 +1592,7 @@ static Obj FuncCONV_GF2MAT(Obj self, Obj list)
 **
 *F  FuncPLAIN_GF2VEC( <self>, <list> ) . . .  convert back into ordinary list
 */
-static Obj FuncPLAIN_GF2VEC(Obj self, Obj list)
+static Obj FuncPLAIN_GF2VEC(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     if (!IS_GF2VEC_REP(list)) {
         RequireArgument(SELF_NAME, list, "must be a GF2 vector");
@@ -1724,7 +1728,7 @@ static Int Cmp_GF2VEC_GF2VEC(Obj vl, Obj vr)
 **
 *F  FuncEQ_GF2VEC_GF2VEC( <self>, <vl>, <vr> )   test equality of GF2 vectors
 */
-static Obj FuncEQ_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
+static Obj FuncEQ_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr) GAP_GC_CANSAFEPOINT
 {
     RequireGF2VecRep(SELF_NAME, vl);
     RequireGF2VecRep(SELF_NAME, vr);
@@ -1740,7 +1744,7 @@ static Obj FuncEQ_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
 **
 *F  FuncLEN_GF2VEC( <self>, <list> )  . . . . . . . .  length of a GF2 vector
 */
-static Obj FuncLEN_GF2VEC(Obj self, Obj list)
+static Obj FuncLEN_GF2VEC(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     RequireGF2VecRep(SELF_NAME, list);
     return INTOBJ_INT(LEN_GF2VEC(list));
@@ -1756,7 +1760,7 @@ static Obj FuncLEN_GF2VEC(Obj self, Obj list)
 **  the  responsibility of  the caller to   ensure  that <pos> is  a positive
 **  integer.
 */
-static Obj FuncELM0_GF2VEC(Obj self, Obj list, Obj pos)
+static Obj FuncELM0_GF2VEC(Obj self, Obj list, Obj pos) GAP_GC_CANSAFEPOINT
 {
     RequireGF2VecRep(SELF_NAME, list);
     UInt p = GetSmallInt(SELF_NAME, pos);
@@ -1777,7 +1781,7 @@ static Obj FuncELM0_GF2VEC(Obj self, Obj list, Obj pos)
 **  <list>.   An  error  is signalled  if  <pos>  is  not bound.    It is the
 **  responsibility of the caller to ensure that <pos> is a positive integer.
 */
-static Obj FuncELM_GF2VEC(Obj self, Obj list, Obj pos)
+static Obj FuncELM_GF2VEC(Obj self, Obj list, Obj pos) GAP_GC_CANSAFEPOINT
 {
     RequireGF2VecRep(SELF_NAME, list);
     UInt p = GetSmallInt(SELF_NAME, pos);
@@ -1801,7 +1805,7 @@ static Obj FuncELM_GF2VEC(Obj self, Obj list, Obj pos)
 **  only positive integers.  An error is signalled if an element of <poss> is
 **  larger than the length of <list>.
 */
-static Obj FuncELMS_GF2VEC(Obj self, Obj list, Obj poss)
+static Obj FuncELMS_GF2VEC(Obj self, Obj list, Obj poss) GAP_GC_CANSAFEPOINT
 {
     Obj elms = 0;   // selected sublist, result
     Int lenList;    // length of <list>
@@ -1902,6 +1906,7 @@ static Obj FuncELMS_GF2VEC(Obj self, Obj list, Obj poss)
 */
 
 static Obj FuncASS_GF2VEC(Obj self, Obj list, Obj pos, Obj elm)
+    GAP_GC_CANSAFEPOINT
 {
     RequireGF2VecRep(SELF_NAME, list);
 
@@ -1948,7 +1953,7 @@ static Obj FuncASS_GF2VEC(Obj self, Obj list, Obj pos, Obj elm)
 **
 *F  FuncPLAIN_GF2MAT( <self>, <list> ) . . .  convert back into ordinary list
 */
-static Obj FuncPLAIN_GF2MAT(Obj self, Obj list)
+static Obj FuncPLAIN_GF2MAT(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     RequireGF2MatRep(SELF_NAME, list);
     PlainGF2Mat(list);
@@ -1967,6 +1972,7 @@ static Obj FuncPLAIN_GF2MAT(Obj self, Obj list)
 **  and that <elm> is not 0.
 */
 static Obj FuncASS_GF2MAT(Obj self, Obj list, Obj pos, Obj elm)
+    GAP_GC_CANSAFEPOINT
 {
     RequireGF2MatRep(SELF_NAME, list);
 
@@ -2015,7 +2021,7 @@ static Obj FuncASS_GF2MAT(Obj self, Obj list, Obj pos, Obj elm)
 *F  FuncELM_GF2MAT( <self>, <mat>, <row> ) . . . select a row of a GF2 matrix
 **
 */
-static Obj FuncELM_GF2MAT(Obj self, Obj mat, Obj row)
+static Obj FuncELM_GF2MAT(Obj self, Obj mat, Obj row) GAP_GC_CANSAFEPOINT
 {
     RequireGF2MatRep(SELF_NAME, mat);
     UInt r = GetSmallInt(SELF_NAME, row);
@@ -2033,6 +2039,7 @@ static Obj FuncELM_GF2MAT(Obj self, Obj mat, Obj row)
 **
 */
 static Obj FuncSWAP_ROWS_GF2MAT(Obj self, Obj mat, Obj row1, Obj row2)
+    GAP_GC_CANSAFEPOINT
 {
     RequireGF2MatRep(SELF_NAME, mat);
     RequireMutable(SELF_NAME, mat, "mat");
@@ -2063,6 +2070,7 @@ static Obj FuncSWAP_ROWS_GF2MAT(Obj self, Obj mat, Obj row1, Obj row2)
 **
 */
 static Obj FuncSWAP_COLS_GF2MAT(Obj self, Obj mat, Obj col1, Obj col2)
+    GAP_GC_CANSAFEPOINT
 {
     RequireGF2MatRep(SELF_NAME, mat);
     UInt c1 = GetSmallInt(SELF_NAME, col1);
@@ -2111,7 +2119,7 @@ static Obj FuncSWAP_COLS_GF2MAT(Obj self, Obj mat, Obj col1, Obj col2)
 **
 **  It is the responsibility of the caller  to ensure that <pos> is positive.
 */
-static Obj FuncUNB_GF2VEC(Obj self, Obj list, Obj pos)
+static Obj FuncUNB_GF2VEC(Obj self, Obj list, Obj pos) GAP_GC_CANSAFEPOINT
 {
     RequireGF2VecRep(SELF_NAME, list);
 
@@ -2150,7 +2158,7 @@ static Obj FuncUNB_GF2VEC(Obj self, Obj list, Obj pos)
 **
 **  It is the responsibility of the caller  to ensure that <pos> is positive.
 */
-static Obj FuncUNB_GF2MAT(Obj self, Obj list, Obj pos)
+static Obj FuncUNB_GF2MAT(Obj self, Obj list, Obj pos) GAP_GC_CANSAFEPOINT
 {
     RequireGF2MatRep(SELF_NAME, list);
 
@@ -2188,7 +2196,7 @@ static Obj FuncUNB_GF2MAT(Obj self, Obj list, Obj pos)
 **
 **  return the zero vector over GF2 of the same length as <mat>.
 */
-static Obj FuncZERO_GF2VEC(Obj self, Obj mat)
+static Obj FuncZERO_GF2VEC(Obj self, Obj mat) GAP_GC_CANSAFEPOINT
 {
     Obj  zero;
     UInt len;
@@ -2207,7 +2215,7 @@ static Obj FuncZERO_GF2VEC(Obj self, Obj mat)
 **
 **  return the zero vector over GF2 of length <len>
 */
-static Obj FuncZERO_GF2VEC_2(Obj self, Obj len)
+static Obj FuncZERO_GF2VEC_2(Obj self, Obj len) GAP_GC_CANSAFEPOINT
 {
     Obj zero;
     RequireNonnegativeSmallInt(SELF_NAME, len);
@@ -2224,7 +2232,7 @@ static Obj FuncZERO_GF2VEC_2(Obj self, Obj len)
 **  INVERSE_PLIST_GF2VECS_DESTRUCTIVE
 ** might do just as good a job
 */
-static Obj FuncINV_GF2MAT_MUTABLE(Obj self, Obj mat)
+static Obj FuncINV_GF2MAT_MUTABLE(Obj self, Obj mat) GAP_GC_CANSAFEPOINT
 {
     UInt len;
 
@@ -2248,6 +2256,7 @@ static Obj FuncINV_GF2MAT_MUTABLE(Obj self, Obj mat)
 ** might do just as good a job
 */
 static Obj FuncINV_GF2MAT_SAME_MUTABILITY(Obj self, Obj mat)
+    GAP_GC_CANSAFEPOINT
 {
     UInt len;
 
@@ -2270,7 +2279,7 @@ static Obj FuncINV_GF2MAT_SAME_MUTABILITY(Obj self, Obj mat)
 **  INVERSE_PLIST_GF2VECS_DESTRUCTIVE
 ** might do just as good a job
 */
-static Obj FuncINV_GF2MAT_IMMUTABLE(Obj self, Obj mat)
+static Obj FuncINV_GF2MAT_IMMUTABLE(Obj self, Obj mat) GAP_GC_CANSAFEPOINT
 {
     UInt len;
 
@@ -2293,6 +2302,7 @@ static Obj FuncINV_GF2MAT_IMMUTABLE(Obj self, Obj mat)
 **  invert possible GF2 matrix
 */
 static Obj FuncINV_PLIST_GF2VECS_DESTRUCTIVE(Obj self, Obj list)
+    GAP_GC_CANSAFEPOINT
 {
     UInt len, i;
     Obj  row;
@@ -2331,7 +2341,7 @@ static Obj FuncINV_PLIST_GF2VECS_DESTRUCTIVE(Obj self, Obj list)
 **  'FuncSUM_GF2VEC_GF2VEC'  is  an improved  version of 'SumListList', which
 **  does not call 'SUM' but uses bit operations instead.
 */
-static Obj FuncSUM_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
+static Obj FuncSUM_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr) GAP_GC_CANSAFEPOINT
 {
     Obj  sum = 0;    // sum, result
     UInt ll, lr;
@@ -2367,6 +2377,7 @@ static Obj FuncSUM_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
 **
 */
 static Obj FuncMULT_VECTOR_GF2VECS_2(Obj self, Obj vl, Obj mul)
+    GAP_GC_CANSAFEPOINT
 {
     RequireGF2VecRep(SELF_NAME, vl);
     RequireFFE(SELF_NAME, mul);
@@ -2389,7 +2400,7 @@ static Obj FuncMULT_VECTOR_GF2VECS_2(Obj self, Obj vl, Obj mul)
 **  'FuncPROD_GF2VEC_GF2VEC' returns the product of  the two GF2 vectors <vl>
 **  and <vr>.  The product is either `GF2One' or `GF2Zero'.
 */
-static Obj FuncPROD_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
+static Obj FuncPROD_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr) GAP_GC_CANSAFEPOINT
 {
     RequireGF2VecRep(SELF_NAME, vl);
     RequireGF2VecRep(SELF_NAME, vr);
@@ -2407,7 +2418,7 @@ static Obj FuncPROD_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
 **  The  product is  again a  GF2 vector.  It  is  the  responsibility of the
 **  caller to ensure that <vl> is a  GF2 vector, <vr>  a GF2 matrix.
 */
-static Obj FuncPROD_GF2VEC_GF2MAT(Obj self, Obj vl, Obj vr)
+static Obj FuncPROD_GF2VEC_GF2MAT(Obj self, Obj vl, Obj vr) GAP_GC_CANSAFEPOINT
 {
     RequireGF2VecRep(SELF_NAME, vl);
     RequireGF2MatRep(SELF_NAME, vr);
@@ -2424,7 +2435,7 @@ static Obj FuncPROD_GF2VEC_GF2MAT(Obj self, Obj vl, Obj vr)
 **  The  product is  again a  GF2 matrix.  It  is  the  responsibility of the
 **  caller to ensure that <ml> and <mr> are  GF2 matrices
 */
-static Obj FuncPROD_GF2MAT_GF2MAT(Obj self, Obj ml, Obj mr)
+static Obj FuncPROD_GF2MAT_GF2MAT(Obj self, Obj ml, Obj mr) GAP_GC_CANSAFEPOINT
 {
     RequireGF2MatRep(SELF_NAME, ml);
     RequireGF2MatRep(SELF_NAME, mr);
@@ -2451,6 +2462,7 @@ static Obj FuncPROD_GF2MAT_GF2MAT(Obj self, Obj ml, Obj mr)
 **  caller to ensure that <ml> and <mr> are  GF2 matrices
 */
 static Obj FuncPROD_GF2MAT_GF2MAT_SIMPLE(Obj self, Obj ml, Obj mr)
+    GAP_GC_CANSAFEPOINT
 {
     RequireGF2MatRep(SELF_NAME, ml);
     RequireGF2MatRep(SELF_NAME, mr);
@@ -2471,6 +2483,7 @@ static Obj FuncPROD_GF2MAT_GF2MAT_SIMPLE(Obj self, Obj ml, Obj mr)
 */
 static Obj FuncPROD_GF2MAT_GF2MAT_ADVANCED(
     Obj self, Obj ml, Obj mr, Obj greaselevel, Obj blocksize)
+    GAP_GC_CANSAFEPOINT
 {
     RequireGF2MatRep(SELF_NAME, ml);
     RequireGF2MatRep(SELF_NAME, mr);
@@ -2491,7 +2504,7 @@ static Obj FuncPROD_GF2MAT_GF2MAT_ADVANCED(
 **  The  product is  again a  GF2 vector.  It  is  the  responsibility of the
 **  caller to ensure that <vr> is a  GF2 vector, <vl>  a GF2 matrix.
 */
-static Obj FuncPROD_GF2MAT_GF2VEC(Obj self, Obj vl, Obj vr)
+static Obj FuncPROD_GF2MAT_GF2VEC(Obj self, Obj vl, Obj vr) GAP_GC_CANSAFEPOINT
 {
     RequireGF2MatRep(SELF_NAME, vl);
     RequireGF2VecRep(SELF_NAME, vr);
@@ -2504,6 +2517,7 @@ static Obj FuncPROD_GF2MAT_GF2VEC(Obj self, Obj vl, Obj vr)
 *F  FuncADDCOEFFS_GF2VEC_GF2VEC_MULT( <self>, <vl>, <vr>, <mul> ) GF2 vectors
 */
 static Obj FuncADDCOEFFS_GF2VEC_GF2VEC_MULT(Obj self, Obj vl, Obj vr, Obj mul)
+    GAP_GC_CANSAFEPOINT
 {
     RequireGF2VecRep(SELF_NAME, vl);
     RequireGF2VecRep(SELF_NAME, vr);
@@ -2528,6 +2542,7 @@ static Obj FuncADDCOEFFS_GF2VEC_GF2VEC_MULT(Obj self, Obj vl, Obj vr, Obj mul)
 *F  FuncADDCOEFFS_GF2VEC_GF2VEC( <self>, <vl>, <vr> ) . . . . . . GF2 vectors
 */
 static Obj FuncADDCOEFFS_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
+    GAP_GC_CANSAFEPOINT
 {
     RequireGF2VecRep(SELF_NAME, vl);
     RequireGF2VecRep(SELF_NAME, vr);
@@ -2539,7 +2554,7 @@ static Obj FuncADDCOEFFS_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
 **
 *F  FuncSHRINKCOEFFS_GF2VEC( <self>, <vec> )  . . . . . remove trailing zeros
 */
-static Obj FuncSHRINKCOEFFS_GF2VEC(Obj self, Obj vec)
+static Obj FuncSHRINKCOEFFS_GF2VEC(Obj self, Obj vec) GAP_GC_CANSAFEPOINT
 {
     UInt   len;
     UInt   nbb;
@@ -2645,12 +2660,14 @@ static UInt PositionNonZeroGF2Vec(Obj vec, UInt from)
 
 
 static Obj FuncPOSITION_NONZERO_GF2VEC(Obj self, Obj vec, Obj zero)
+    GAP_GC_CANSAFEPOINT
 {
     RequireGF2VecRep(SELF_NAME, vec);
     return INTOBJ_INT(PositionNonZeroGF2Vec(vec, 0));
 }
 
 static Obj FuncPOSITION_NONZERO_GF2VEC3(Obj self, Obj vec, Obj zero, Obj from)
+    GAP_GC_CANSAFEPOINT
 {
     RequireGF2VecRep(SELF_NAME, vec);
     RequireNonnegativeSmallInt(SELF_NAME, from);
@@ -2660,6 +2677,7 @@ static Obj FuncPOSITION_NONZERO_GF2VEC3(Obj self, Obj vec, Obj zero, Obj from)
 
 static Obj FuncCOPY_SECTION_GF2VECS(
     Obj self, Obj src, Obj dest, Obj from, Obj to, Obj howmany)
+    GAP_GC_CANSAFEPOINT
 {
     Int ifrom = GetPositiveSmallInt(SELF_NAME, from);
     Int ito = GetPositiveSmallInt(SELF_NAME, to);
@@ -2686,7 +2704,7 @@ static Obj FuncCOPY_SECTION_GF2VECS(
 **
 */
 
-static Obj FuncAPPEND_GF2VEC(Obj self, Obj vecl, Obj vecr)
+static Obj FuncAPPEND_GF2VEC(Obj self, Obj vecl, Obj vecr) GAP_GC_CANSAFEPOINT
 {
     UInt lenl, lenr;
     RequireGF2VecRep(SELF_NAME, vecl);
@@ -2710,7 +2728,7 @@ static Obj FuncAPPEND_GF2VEC(Obj self, Obj vecl, Obj vecr)
 **
 */
 
-static Obj FuncSHALLOWCOPY_GF2VEC(Obj self, Obj vec)
+static Obj FuncSHALLOWCOPY_GF2VEC(Obj self, Obj vec) GAP_GC_CANSAFEPOINT
 {
     RequireGF2VecRep(SELF_NAME, vec);
     return ShallowCopyVecGF2(vec);
@@ -2724,6 +2742,7 @@ static Obj FuncSHALLOWCOPY_GF2VEC(Obj self, Obj vec)
 
 
 static Obj FuncSUM_GF2MAT_GF2MAT(Obj self, Obj matl, Obj matr)
+    GAP_GC_CANSAFEPOINT
 {
     UInt ll, lr, ls, lm, wl, wr, ws, wm;
     Obj  sum = 0;
@@ -2817,7 +2836,7 @@ static Obj FuncSUM_GF2MAT_GF2MAT(Obj self, Obj matl, Obj matr)
 *F  FuncTRANSPOSED_GF2MAT( <self>, <mat>)
 **
 */
-static Obj FuncTRANSPOSED_GF2MAT(Obj self, Obj mat)
+static Obj FuncTRANSPOSED_GF2MAT(Obj self, Obj mat) GAP_GC_CANSAFEPOINT
 {
     UInt l, w;
     Obj  tra = 0, row = 0;
@@ -2908,7 +2927,7 @@ static Obj FuncTRANSPOSED_GF2MAT(Obj self, Obj mat)
 *F  FuncNUMBER_GF2VEC( <self>, <vect> )
 **
 */
-static Obj FuncNUMBER_GF2VEC(Obj self, Obj vec)
+static Obj FuncNUMBER_GF2VEC(Obj self, Obj vec) GAP_GC_CANSAFEPOINT
 {
     UInt        len, nd, i;
     UInt        head, a;
@@ -2979,7 +2998,7 @@ static Obj FuncNUMBER_GF2VEC(Obj self, Obj vec)
 **
 *F  FuncLT_GF2VEC_GF2VEC( <self>, <vl>, <vr> )   compare GF2 vectors
 */
-static Obj FuncLT_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
+static Obj FuncLT_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr) GAP_GC_CANSAFEPOINT
 {
     RequireGF2VecRep(SELF_NAME, vl);
     RequireGF2VecRep(SELF_NAME, vr);
@@ -3015,7 +3034,7 @@ static Int Cmp_GF2MAT_GF2MAT(Obj ml, Obj mr)
 *F  FuncEQ_GF2MAT_GF2MAT( <ml>, <mr> )   compare GF2 matrices
 */
 
-static Obj FuncEQ_GF2MAT_GF2MAT(Obj self, Obj ml, Obj mr)
+static Obj FuncEQ_GF2MAT_GF2MAT(Obj self, Obj ml, Obj mr) GAP_GC_CANSAFEPOINT
 {
     RequireGF2MatRep(SELF_NAME, ml);
     RequireGF2MatRep(SELF_NAME, mr);
@@ -3029,7 +3048,7 @@ static Obj FuncEQ_GF2MAT_GF2MAT(Obj self, Obj ml, Obj mr)
 *F  FuncLT_GF2MAT_GF2MAT( <ml>, <mr> )   compare GF2 matrices
 */
 
-static Obj FuncLT_GF2MAT_GF2MAT(Obj self, Obj ml, Obj mr)
+static Obj FuncLT_GF2MAT_GF2MAT(Obj self, Obj ml, Obj mr) GAP_GC_CANSAFEPOINT
 {
     RequireGF2MatRep(SELF_NAME, ml);
     RequireGF2MatRep(SELF_NAME, mr);
@@ -3069,7 +3088,7 @@ static UInt DistGF2Vecs(const UInt * ptL, const UInt * ptR, UInt len)
 **  'FuncDIST_GF2VEC_GF2VEC' returns the number of position in which two
 **  gf2-vectors <vl>  and  <vr> differ.
 */
-static Obj FuncDIST_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
+static Obj FuncDIST_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr) GAP_GC_CANSAFEPOINT
 {
     UInt   len;    // length of the list
     UInt   off;    // bit offset at the end to clean out
@@ -3111,7 +3130,7 @@ static void DistVecClosVec(
     Obj  osum,      // position of the sum vector
     UInt pos,       // recursion depth
     UInt l,         // length of basis
-    UInt len)  // length of the involved vectors
+    UInt len) GAP_GC_CANSAFEPOINT  // length of the involved vectors
 {
     UInt         i;
     UInt         di;
@@ -3152,7 +3171,7 @@ static Obj FuncDIST_VEC_CLOS_VEC(
     Obj self,
     Obj veclis,    // pointers to matrix vectors and their multiples
     Obj vec,       // vector we compute distance to
-    Obj d)  // distances list
+    Obj d) GAP_GC_CANSAFEPOINT  // distances list
 
 {
     Obj  sum = 0; // sum vector
@@ -3189,7 +3208,7 @@ AClosVec(Obj  veclis,    // pointers to matrix vectors and their multiples
          Obj  obv,       // best vector so far
          Obj  coords,    // coefficients to get current vector
          Obj  bcoords    // coefficients to get best vector
-)
+) GAP_GC_CANSAFEPOINT
 {
     UInt         di;
     Obj          vp;
@@ -3271,7 +3290,7 @@ static Obj FuncA_CLOS_VEC(
     Obj veclis,    // pointers to matrix vectors and their multiples
     Obj vec,       // vector we compute distance to
     Obj cnt,       // distances list
-    Obj stop)  // distances list
+    Obj stop) GAP_GC_CANSAFEPOINT  // distances list
 
 {
     Obj  sum = 0;  // sum vector
@@ -3306,7 +3325,7 @@ static Obj FuncA_CLOS_VEC_COORDS(
     Obj veclis,    // pointers to matrix vectors and their multiples
     Obj vec,       // vector we compute distance to
     Obj cnt,       // distances list
-    Obj stop)  // distances list
+    Obj stop) GAP_GC_CANSAFEPOINT  // distances list
 
 {
     Obj  sum = 0;     // sum vector
@@ -3364,6 +3383,7 @@ static Obj FuncA_CLOS_VEC_COORDS(
 
 static UInt CosetLeadersInnerGF2(
     Obj veclis, Obj v, Obj w, UInt weight, UInt pos, Obj leaders, UInt tofind)
+    GAP_GC_CANSAFEPOINT
 {
     UInt found = 0;
     UInt len = LEN_GF2VEC(v);
@@ -3423,6 +3443,7 @@ static UInt CosetLeadersInnerGF2(
 
 static Obj FuncCOSET_LEADERS_INNER_GF2(
     Obj self, Obj veclis, Obj weight, Obj tofind, Obj leaders)
+    GAP_GC_CANSAFEPOINT
 {
     Obj  v = 0, w = 0;
     UInt lenv, lenw;
@@ -3461,7 +3482,7 @@ static Obj FuncCOSET_LEADERS_INNER_GF2(
 **
 */
 
-static Obj FuncRIGHTMOST_NONZERO_GF2VEC(Obj self, Obj vec)
+static Obj FuncRIGHTMOST_NONZERO_GF2VEC(Obj self, Obj vec) GAP_GC_CANSAFEPOINT
 {
     RequireGF2VecRep(SELF_NAME, vec);
     return INTOBJ_INT(RightMostOneGF2Vec(vec));
@@ -3473,7 +3494,7 @@ static Obj FuncRIGHTMOST_NONZERO_GF2VEC(Obj self, Obj vec)
 **
 */
 
-static void ResizeGF2Vec(Obj vec, UInt newlen)
+static void ResizeGF2Vec(Obj vec, UInt newlen) GAP_GC_CANSAFEPOINT
 {
     UInt   len;
     UInt * ptr;
@@ -3531,7 +3552,7 @@ static void ResizeGF2Vec(Obj vec, UInt newlen)
 **
 */
 
-static Obj FuncRESIZE_GF2VEC(Obj self, Obj vec, Obj newlen)
+static Obj FuncRESIZE_GF2VEC(Obj self, Obj vec, Obj newlen) GAP_GC_CANSAFEPOINT
 {
     RequireGF2VecRep(SELF_NAME, vec);
     RequireMutable(SELF_NAME, vec, "vector");
@@ -3547,7 +3568,7 @@ static Obj FuncRESIZE_GF2VEC(Obj self, Obj vec, Obj newlen)
 **
 */
 
-static void ShiftLeftGF2Vec(Obj vec, UInt amount)
+static void ShiftLeftGF2Vec(Obj vec, UInt amount) GAP_GC_CANSAFEPOINT
 {
     UInt  len;
     UInt *ptr1, *ptr2;
@@ -3592,6 +3613,7 @@ static void ShiftLeftGF2Vec(Obj vec, UInt amount)
 */
 
 static Obj FuncSHIFT_LEFT_GF2VEC(Obj self, Obj vec, Obj amount)
+    GAP_GC_CANSAFEPOINT
 {
     RequireGF2VecRep(SELF_NAME, vec);
     RequireMutable(SELF_NAME, vec, "vector");
@@ -3606,7 +3628,7 @@ static Obj FuncSHIFT_LEFT_GF2VEC(Obj self, Obj vec, Obj amount)
 **
 */
 
-static void ShiftRightGF2Vec(Obj vec, UInt amount)
+static void ShiftRightGF2Vec(Obj vec, UInt amount) GAP_GC_CANSAFEPOINT
 {
     UInt  len;
     UInt *ptr1, *ptr2, *ptr0;
@@ -3656,6 +3678,7 @@ static void ShiftRightGF2Vec(Obj vec, UInt amount)
 */
 
 static Obj FuncSHIFT_RIGHT_GF2VEC(Obj self, Obj vec, Obj amount, Obj zero)
+    GAP_GC_CANSAFEPOINT
 {
     RequireGF2VecRep(SELF_NAME, vec);
     RequireMutable(SELF_NAME, vec, "vector");
@@ -3720,6 +3743,7 @@ static void AddShiftedVecGF2VecGF2(Obj vec1, Obj vec2, UInt len2, UInt off)
 
 static Obj
 FuncADD_GF2VEC_GF2VEC_SHIFTED(Obj self, Obj vec1, Obj vec2, Obj len2, Obj off)
+    GAP_GC_CANSAFEPOINT
 {
     RequireGF2VecRep(SELF_NAME, vec1);
     RequireGF2VecRep(SELF_NAME, vec2);
@@ -3747,6 +3771,7 @@ FuncADD_GF2VEC_GF2VEC_SHIFTED(Obj self, Obj vec1, Obj vec2, Obj len2, Obj off)
 */
 
 static Obj ProductCoeffsGF2Vec(Obj vec1, UInt len1, Obj vec2, UInt len2)
+    GAP_GC_CANSAFEPOINT
 {
     Obj          prod = 0;
     UInt         i, e;
@@ -3794,6 +3819,7 @@ static Obj ProductCoeffsGF2Vec(Obj vec1, UInt len1, Obj vec2, UInt len2)
 
 static Obj
 FuncPROD_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
+    GAP_GC_CANSAFEPOINT
 {
     UInt len1a, len2a;
     Obj  prod = 0;
@@ -3865,6 +3891,7 @@ static void ReduceCoeffsGF2Vec(Obj vec1, Obj vec2, UInt len2, Obj quotient)
 */
 static Obj
 FuncREDUCE_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
+    GAP_GC_CANSAFEPOINT
 {
     UInt last;
     Int  len2a;
@@ -3912,6 +3939,7 @@ FuncREDUCE_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
 */
 static Obj
 FuncQUOTREM_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
+    GAP_GC_CANSAFEPOINT
 {
     Int len2a;
     Int len1a;
@@ -3975,7 +4003,7 @@ FuncQUOTREM_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
 **  vectors
 */
 
-static Obj FuncSEMIECHELON_LIST_GF2VECS(Obj self, Obj mat)
+static Obj FuncSEMIECHELON_LIST_GF2VECS(Obj self, Obj mat) GAP_GC_CANSAFEPOINT
 {
     UInt i, len;
     UInt width;
@@ -4011,6 +4039,7 @@ static Obj FuncSEMIECHELON_LIST_GF2VECS(Obj self, Obj mat)
 */
 
 static Obj FuncSEMIECHELON_LIST_GF2VECS_TRANSFORMATIONS(Obj self, Obj mat)
+    GAP_GC_CANSAFEPOINT
 {
     UInt i, len;
     UInt width;
@@ -4041,7 +4070,7 @@ static Obj FuncSEMIECHELON_LIST_GF2VECS_TRANSFORMATIONS(Obj self, Obj mat)
 **
 */
 
-static Obj FuncTRIANGULIZE_LIST_GF2VECS(Obj self, Obj mat)
+static Obj FuncTRIANGULIZE_LIST_GF2VECS(Obj self, Obj mat) GAP_GC_CANSAFEPOINT
 {
     UInt i, len;
     UInt width;
@@ -4073,7 +4102,7 @@ static Obj FuncTRIANGULIZE_LIST_GF2VECS(Obj self, Obj mat)
 **
 */
 
-static Obj FuncRANK_LIST_GF2VECS(Obj self, Obj mat)
+static Obj FuncRANK_LIST_GF2VECS(Obj self, Obj mat) GAP_GC_CANSAFEPOINT
 {
     UInt i, len;
     UInt width;
@@ -4104,7 +4133,7 @@ static Obj FuncRANK_LIST_GF2VECS(Obj self, Obj mat)
 **
 */
 
-static Obj FuncDETERMINANT_LIST_GF2VECS(Obj self, Obj mat)
+static Obj FuncDETERMINANT_LIST_GF2VECS(Obj self, Obj mat) GAP_GC_CANSAFEPOINT
 {
     UInt i, len;
     UInt width;
@@ -4136,6 +4165,7 @@ static Obj FuncDETERMINANT_LIST_GF2VECS(Obj self, Obj mat)
 */
 
 static Obj FuncKRONECKERPRODUCT_GF2MAT_GF2MAT(Obj self, Obj matl, Obj matr)
+    GAP_GC_CANSAFEPOINT
 {
     UInt nrowl, nrowr, nrowp, ncoll, ncolr, ncolp, ncol, i, j, k, l, mutable;
     Obj  mat = 0, type, row = 0, shift[BIPEB] = { 0 };
@@ -4245,6 +4275,7 @@ static Obj FuncKRONECKERPRODUCT_GF2MAT_GF2MAT(Obj self, Obj matl, Obj matr)
 **
 */
 static Obj FuncMAT_ELM_GF2MAT(Obj self, Obj mat, Obj row, Obj col)
+    GAP_GC_CANSAFEPOINT
 {
     RequireGF2MatRep(SELF_NAME, mat);
     UInt r = GetPositiveSmallInt(SELF_NAME, row);
@@ -4273,6 +4304,7 @@ static Obj FuncMAT_ELM_GF2MAT(Obj self, Obj mat, Obj row, Obj col)
 */
 static Obj
 FuncSET_MAT_ELM_GF2MAT(Obj self, Obj mat, Obj row, Obj col, Obj elm)
+    GAP_GC_CANSAFEPOINT
 {
     RequireGF2MatRep(SELF_NAME, mat);
     UInt r = GetPositiveSmallInt(SELF_NAME, row);
@@ -4437,7 +4469,7 @@ static Int InitKernel(StructInitInfo * module)
 **
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-static Int InitLibrary(StructInitInfo * module)
+static Int InitLibrary(StructInitInfo * module) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable(GVarFuncs);

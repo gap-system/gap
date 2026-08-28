@@ -135,13 +135,17 @@ typedef struct ReaderState ReaderState;
 **  is <Statements>. The functions 'ReadExpr' and 'ReadStats' must therefore
 **  be declared forward.
 */
-static void ReadExpr(ReaderState * rs, TypSymbolSet follow, Char mode);
+static void ReadExpr(ReaderState * rs, TypSymbolSet follow, Char mode)
+    GAP_GC_CANSAFEPOINT;
 
-static UInt ReadStats(ReaderState * rs, TypSymbolSet follow);
+static UInt ReadStats(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT;
 
-static void ReadFuncExprAbbrevSingle(ReaderState * rs, TypSymbolSet follow);
+static void ReadFuncExprAbbrevSingle(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT;
 
-static void ReadAtom(ReaderState * rs, TypSymbolSet follow, Char mode);
+static void ReadAtom(ReaderState * rs, TypSymbolSet follow, Char mode)
+    GAP_GC_CANSAFEPOINT;
 
 static void PushGlobalForLoopVariable(ReaderState * rs, UInt var)
 {
@@ -174,7 +178,7 @@ static UInt GlobalComesFromEnclosingForLoop(ReaderState * rs, UInt var)
 static void Match_(ReaderState * rs,
            UInt           symbol,
            const Char *   msg,
-           TypSymbolSet   skipto)
+           TypSymbolSet   skipto) GAP_GC_CANSAFEPOINT
 {
     if (rs->intr.startLine == 0 && symbol != S_ILLEGAL) {
         rs->intr.startLine = rs->s.SymbolStartLine[0];
@@ -186,6 +190,7 @@ static void Match_(ReaderState * rs,
 
 // match either a semicolon or a dual semicolon
 static void MatchSemicolon(ReaderState * rs, TypSymbolSet skipto)
+    GAP_GC_CANSAFEPOINT
 {
     Match_(rs, rs->s.Symbol == S_DUALSEMICOLON ? S_DUALSEMICOLON : S_SEMICOLON,
           ";", skipto);
@@ -221,6 +226,7 @@ static UInt findValueInNams(Obj nams, const Char * val, UInt start, UInt end) GA
    empty options lists are handled further up
 */
 static void ReadFuncCallOption(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     volatile UInt rnam; // record component name
     if (rs->s.Symbol == S_IDENT) {
@@ -248,6 +254,7 @@ static void ReadFuncCallOption(ReaderState * rs, TypSymbolSet follow)
 }
 
 static void ReadFuncCallOptions(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
   volatile UInt nr;
   TRY_IF_NO_ERROR { IntrFuncCallOptionsBegin(&rs->intr); }
@@ -322,6 +329,7 @@ GAP_STATIC_ASSERT(sizeof(LHSRef) <= 8, "LHSRef is too big");
 **
 */
 static UInt EvalRef(ReaderState * rs, const LHSRef ref, BOOL needExpr)
+    GAP_GC_CANSAFEPOINT
 {
     TRY_IF_NO_ERROR
     {
@@ -380,7 +388,7 @@ static UInt EvalRef(ReaderState * rs, const LHSRef ref, BOOL needExpr)
     return 0;
 }
 
-static void AssignRef(ReaderState * rs, const LHSRef ref)
+static void AssignRef(ReaderState * rs, const LHSRef ref) GAP_GC_CANSAFEPOINT
 {
     TRY_IF_NO_ERROR
     {
@@ -434,7 +442,7 @@ static void AssignRef(ReaderState * rs, const LHSRef ref)
     }
 }
 
-static void UnbindRef(ReaderState * rs, const LHSRef ref)
+static void UnbindRef(ReaderState * rs, const LHSRef ref) GAP_GC_CANSAFEPOINT
 {
     TRY_IF_NO_ERROR
     {
@@ -479,7 +487,7 @@ static void UnbindRef(ReaderState * rs, const LHSRef ref)
     }
 }
 
-static void IsBoundRef(ReaderState * rs, const LHSRef ref)
+static void IsBoundRef(ReaderState * rs, const LHSRef ref) GAP_GC_CANSAFEPOINT
 {
     TRY_IF_NO_ERROR
     {
@@ -529,6 +537,7 @@ static void IsBoundRef(ReaderState * rs, const LHSRef ref)
 **
 */
 static LHSRef ReadSelector(ReaderState * rs, TypSymbolSet follow, UInt level)
+    GAP_GC_CANSAFEPOINT
 {
     volatile LHSRef ref;
 
@@ -639,6 +648,7 @@ static LHSRef ReadSelector(ReaderState * rs, TypSymbolSet follow, UInt level)
 }
 
 static void ReadReferenceModifiers(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     UInt level = 0;
 
@@ -659,6 +669,7 @@ static void ReadReferenceModifiers(ReaderState * rs, TypSymbolSet follow)
 **  <Ident> :=  a|b|..|z|A|B|..|Z { a|b|..|z|A|B|..|Z|0|..|9|_ }
 */
 static LHSRef ReadVar(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     LHSRef ref = { R_INVALID, 0, {0}, {0} };
 
@@ -747,6 +758,7 @@ static LHSRef ReadVar(ReaderState * rs, TypSymbolSet follow)
 // Helper function to be called after `ReadVar`, before any further tokens
 // have been consumed via calls to `Match`.
 static void CheckUnboundGlobal(ReaderState * rs, LHSRef ref)
+    GAP_GC_CANSAFEPOINT
 {
     // only warn if we are accessing a global variable
     if (ref.type != R_GVAR)
@@ -820,6 +832,7 @@ static void CheckUnboundGlobal(ReaderState * rs, LHSRef ref)
 **        |  <Var> '(' [ <Expr> { ',' <Expr> } ] [':' [ <options> ]] ')'
 */
 static void ReadCallVarAss(ReaderState * rs, TypSymbolSet follow, Char mode)
+    GAP_GC_CANSAFEPOINT
 {
     volatile LHSRef ref = ReadVar(rs, follow);
     if (ref.type == R_INVALID)
@@ -928,6 +941,7 @@ static void ReadCallVarAss(ReaderState * rs, TypSymbolSet follow, Char mode)
 **  <Atom> := 'IsBound' '(' <Var> ')'
 */
 static void ReadIsBound(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     Match_(rs, S_ISBOUND, "IsBound", follow);
     Match_(rs, S_LPAREN, "(", follow);
@@ -950,7 +964,7 @@ static void ReadIsBound(ReaderState * rs, TypSymbolSet follow)
 **  <Perm> :=  ( <Expr> {, <Expr>} ) { ( <Expr> {, <Expr>} ) }
 **
 */
-static void ReadPerm(ReaderState * rs, TypSymbolSet follow)
+static void ReadPerm(ReaderState * rs, TypSymbolSet follow) GAP_GC_CANSAFEPOINT
 {
     volatile UInt       nrc;            // number of cycles
     volatile UInt       nrx;            // number of expressions in cycle
@@ -996,6 +1010,7 @@ static void ReadPerm(ReaderState * rs, TypSymbolSet follow)
 **         |  '[' <Expr> [',' <Expr>] '..' <Expr> ']'
 */
 static void ReadListExpr(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     volatile UInt       pos;            // actual position of element
     volatile UInt       nr;             // number of elements
@@ -1081,6 +1096,7 @@ static void ReadListExpr(ReaderState * rs, TypSymbolSet follow)
 **  <Record> := 'rec( [ <Ident>:=<Expr> {, <Ident>:=<Expr> } ] )'
 */
 static void ReadRecExpr(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     volatile UInt       rnam;           // record component name
     volatile UInt       nr;             // number of components
@@ -1178,7 +1194,7 @@ static ArgList ReadFuncArgList(ReaderState * rs,
                                TypSymbolSet   follow,
                                BOOL           isAtomic,
                                UInt           symbol,
-                               const Char *   symbolstr)
+                               const Char *   symbolstr) GAP_GC_CANSAFEPOINT
 {
     Int        narg;           // number of arguments
     Obj        nams = 0;       // list of local variables names
@@ -1285,7 +1301,7 @@ static void ReadFuncExprBody(ReaderState * rs,
                              BOOL           isAbbrev,
                              Int            nloc,
                              ArgList        args,
-                             Int            startLine)
+                             Int            startLine) GAP_GC_CANSAFEPOINT
 {
     volatile UInt nr;           // number of statements
 
@@ -1333,6 +1349,7 @@ static void ReadFuncExprBody(ReaderState * rs,
 *F  ReadLocals( <follow> )
 */
 static UInt ReadLocals(ReaderState * rs, TypSymbolSet follow, Obj nams)
+    GAP_GC_CANSAFEPOINT
 {
     UInt narg = LEN_PLIST(nams);
     UInt nloc = 0;
@@ -1384,6 +1401,7 @@ static UInt ReadLocals(ReaderState * rs, TypSymbolSet follow, Obj nams)
 **                'end'
 */
 static void ReadFuncExpr(ReaderState * rs, TypSymbolSet follow, Char mode)
+    GAP_GC_CANSAFEPOINT
 {
     Int     startLine;        // line number of function keyword
     BOOL    isAtomic = FALSE; // is this an atomic function?
@@ -1429,6 +1447,7 @@ static void ReadFuncExpr(ReaderState * rs, TypSymbolSet follow, Char mode)
 **      <Function>      := '{' <ArgList> '}' '->' <Expr>
 */
 static void ReadFuncExprAbbrevMulti(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     Match_(rs, S_LBRACE, "{", follow);
 
@@ -1503,6 +1522,7 @@ static void ReadFuncExprAbbrevSingle(ReaderState * rs, TypSymbolSet follow)
 **  <String>  := " { <any character> } "
 */
 static void ReadLiteral(ReaderState * rs, TypSymbolSet follow, Char mode)
+    GAP_GC_CANSAFEPOINT
 {
     if (rs->s.Symbol == S_DOT) {
         // HACK: The only way a dot could turn up here is in a floating point
@@ -1649,7 +1669,7 @@ static void ReadAtom(ReaderState * rs, TypSymbolSet follow, Char mode)
 **
 *F  ReadSign( <follow> )  . . . . . . . . . . . . . . read a sign, or nothing
 */
-static Int ReadSign(ReaderState * rs, TypSymbolSet follow)
+static Int ReadSign(ReaderState * rs, TypSymbolSet follow) GAP_GC_CANSAFEPOINT
 {
     if (rs->s.Symbol == S_PLUS) {
         Match_(rs, S_PLUS, "unary +", follow);
@@ -1672,6 +1692,7 @@ static Int ReadSign(ReaderState * rs, TypSymbolSet follow)
 **  <Factor> := {'+'|'-'} <Atom> [ '^' {'+'|'-'} <Atom> ]
 */
 static void ReadFactor(ReaderState * rs, TypSymbolSet follow, Char mode)
+    GAP_GC_CANSAFEPOINT
 {
     volatile Int        sign1;
     volatile Int        sign2;
@@ -1725,6 +1746,7 @@ static void ReadFactor(ReaderState * rs, TypSymbolSet follow, Char mode)
 **  <Term> := <Factor> { '*'|'/'|'mod' <Factor> }
 */
 static void ReadTerm(ReaderState * rs, TypSymbolSet follow, Char mode)
+    GAP_GC_CANSAFEPOINT
 {
     volatile UInt       symbol;
 
@@ -1757,6 +1779,7 @@ static void ReadTerm(ReaderState * rs, TypSymbolSet follow, Char mode)
 **  <Arith> := <Term> { '+'|'-' <Term> }
 */
 static void ReadAri(ReaderState * rs, TypSymbolSet follow, Char mode)
+    GAP_GC_CANSAFEPOINT
 {
     UInt                symbol;
 
@@ -1786,6 +1809,7 @@ static void ReadAri(ReaderState * rs, TypSymbolSet follow, Char mode)
 **  <Rel> := { 'not' } <Arith> { '=|<>|<|>|<=|>=|in' <Arith> }
 */
 static void ReadRel(ReaderState * rs, TypSymbolSet follow, Char mode)
+    GAP_GC_CANSAFEPOINT
 {
     volatile UInt       symbol;
     volatile UInt       isNot;
@@ -1833,6 +1857,7 @@ static void ReadRel(ReaderState * rs, TypSymbolSet follow, Char mode)
 **  <And> := <Rel> { 'and' <Rel> }
 */
 static void ReadAnd(ReaderState * rs, TypSymbolSet follow, Char mode)
+    GAP_GC_CANSAFEPOINT
 {
     // <Rel>
     ReadRel(rs, follow, mode);
@@ -1862,6 +1887,7 @@ static void ReadAnd(ReaderState * rs, TypSymbolSet follow, Char mode)
 */
 static void
 ReadQualifiedExpr(ReaderState * rs, TypSymbolSet follow, Char mode)
+    GAP_GC_CANSAFEPOINT
 {
 #ifdef HPCGAP
     volatile LockQual qual = LOCK_QUAL_NONE;
@@ -1932,6 +1958,7 @@ static void ReadExpr(ReaderState * rs, TypSymbolSet follow, Char mode)
 **  <Statement> := 'Unbind' '(' <Var> ')' ';'
 */
 static void ReadUnbind(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     Match_(rs, S_UNBIND, "Unbind", follow);
     Match_(rs, S_LPAREN, "(", follow);
@@ -1949,6 +1976,7 @@ static void ReadUnbind(ReaderState * rs, TypSymbolSet follow)
 **  <Statement> :=  ';'
 */
 static void ReadEmpty(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
   IntrEmpty(&rs->intr);
 }
@@ -1962,7 +1990,7 @@ static void ReadEmpty(ReaderState * rs, TypSymbolSet follow)
 **
 **  <Statement> := 'Info' '(' <Expr> ',' <Expr> { ',' <Expr> } ')' ';'
 */
-static void ReadInfo(ReaderState * rs, TypSymbolSet follow)
+static void ReadInfo(ReaderState * rs, TypSymbolSet follow) GAP_GC_CANSAFEPOINT
 {
     volatile UInt narg;     // number of arguments to print (or not)
 
@@ -1994,6 +2022,7 @@ static void ReadInfo(ReaderState * rs, TypSymbolSet follow)
 **  <Statement> := 'Assert' '(' <Expr> ',' <Expr> [ ',' <Expr> ]  ')' ';'
 */
 static void ReadAssert(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     TRY_IF_NO_ERROR { IntrAssertBegin(&rs->intr); }
     Match_(rs, S_ASSERT, "Assert", follow);
@@ -2027,7 +2056,7 @@ static void ReadAssert(ReaderState * rs, TypSymbolSet follow)
 **                 [ 'else'               <Statements> ]
 **                 'fi' ';'
 */
-static void ReadIf(ReaderState * rs, TypSymbolSet follow)
+static void ReadIf(ReaderState * rs, TypSymbolSet follow) GAP_GC_CANSAFEPOINT
 {
     volatile UInt       nrb;            // number of branches
     volatile UInt       nrs;            // number of statements in a body
@@ -2079,7 +2108,7 @@ static void ReadIf(ReaderState * rs, TypSymbolSet follow)
 **                     <Statements>
 **                 'od' ';'
 */
-static void ReadFor(ReaderState * rs, TypSymbolSet follow)
+static void ReadFor(ReaderState * rs, TypSymbolSet follow) GAP_GC_CANSAFEPOINT
 {
     volatile UInt       nrs;            // number of statements in body
 
@@ -2130,6 +2159,7 @@ static void ReadFor(ReaderState * rs, TypSymbolSet follow)
 **                 'od' ';'
 */
 static void ReadWhile(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     volatile UInt       nrs;            // number of statements in body
 
@@ -2168,6 +2198,7 @@ static void ReadWhile(ReaderState * rs, TypSymbolSet follow)
 **  they are simply placeholders.
 */
 static void ReadAtomic(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     volatile UInt       nrs;            // number of statements in body
     volatile UInt       nexprs;         // number of statements in body
@@ -2233,6 +2264,7 @@ static void ReadAtomic(ReaderState * rs, TypSymbolSet follow)
 **                'until' <Expr> ';'
 */
 static void ReadRepeat(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     volatile UInt       nrs;            // number of statements in body
 
@@ -2266,6 +2298,7 @@ static void ReadRepeat(ReaderState * rs, TypSymbolSet follow)
 **  <Statement> := 'break' ';'
 */
 static void ReadBreak(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     if (!rs->LoopNesting)
         SyntaxError(&rs->s, "'break' statement not enclosed in a loop");
@@ -2287,6 +2320,7 @@ static void ReadBreak(ReaderState * rs, TypSymbolSet follow)
 **  <Statement> := 'continue' ';'
 */
 static void ReadContinue(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     if (!rs->LoopNesting)
         SyntaxError(&rs->s, "'continue' statement not enclosed in a loop");
@@ -2313,6 +2347,7 @@ static void ReadContinue(ReaderState * rs, TypSymbolSet follow)
 **  a return statement is not a function call and should not look  like  one.
 */
 static void ReadReturn(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     // skip the return symbol
     Match_(rs, S_RETURN, "return", follow);
@@ -2340,6 +2375,7 @@ static void ReadReturn(ReaderState * rs, TypSymbolSet follow)
 **  <Statement> := 'TryNextMethod' '(' ')' ';'
 */
 static void ReadTryNext(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     Match_(rs, S_TRYNEXT, "TryNextMethod", follow);
     Match_(rs, S_LPAREN, "(", follow);
@@ -2350,13 +2386,14 @@ static void ReadTryNext(ReaderState * rs, TypSymbolSet follow)
     }
 }
 
-static void ReadHelp(ReaderState * rs, TypSymbolSet follow)
+static void ReadHelp(ReaderState * rs, TypSymbolSet follow) GAP_GC_CANSAFEPOINT
 {
     TRY_IF_NO_ERROR { IntrHelp(&rs->intr, rs->s.ValueObj); }
     rs->s.ValueObj = 0;
 }
 
 static void ReadPragma(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     TRY_IF_NO_ERROR { IntrPragma(&rs->intr, rs->s.ValueObj); }
     rs->s.ValueObj = 0;
@@ -2371,7 +2408,7 @@ static void ReadPragma(ReaderState * rs, TypSymbolSet follow)
 **
 **  <Statement> := 'quit' ';'
 */
-static void ReadQuit(ReaderState * rs, TypSymbolSet follow)
+static void ReadQuit(ReaderState * rs, TypSymbolSet follow) GAP_GC_CANSAFEPOINT
 {
     // skip the quit symbol
     Match_(rs, S_QUIT, "quit", follow);
@@ -2389,7 +2426,7 @@ static void ReadQuit(ReaderState * rs, TypSymbolSet follow)
 **
 **  <Statement> := 'QUIT' ';'
 */
-static void ReadQUIT(ReaderState * rs, TypSymbolSet follow)
+static void ReadQUIT(ReaderState * rs, TypSymbolSet follow) GAP_GC_CANSAFEPOINT
 {
     // skip the quit symbol
     Match_(rs, S_QQUIT, "QUIT", follow);
@@ -2424,6 +2461,7 @@ static void ReadQUIT(ReaderState * rs, TypSymbolSet follow)
 **              |  ';'
 */
 static Int TryReadStatement(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     switch (rs->s.Symbol) {
     case S_IDENT:     ReadCallVarAss(rs, follow,'s'); break;
@@ -2477,6 +2515,7 @@ static UInt ReadStats(ReaderState * rs, TypSymbolSet follow)
 
 
 static void RecreateStackNams(ReaderState * rs, Obj context)
+    GAP_GC_CANSAFEPOINT
 {
     Obj stackNams = rs->StackNams;
     Obj lvars = context;

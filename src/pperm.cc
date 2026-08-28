@@ -151,7 +151,7 @@ typedef struct {
 #define TmpPPerm MODULE_STATE(PPerm, TmpPPerm)
 #endif
 
-static inline void ResizeTmpPPerm(UInt len)
+static inline void ResizeTmpPPerm(UInt len) GAP_GC_CANSAFEPOINT
 {
     if (TmpPPerm == (Obj)0) {
         TmpPPerm =
@@ -227,7 +227,7 @@ UInt CODEG_PPERM4(Obj f) GAP_GC_NOTSAFEPOINT
 }
 
 template <typename T>
-static inline Obj NEW_PPERM(UInt deg)
+static inline Obj NEW_PPERM(UInt deg) GAP_GC_CANSAFEPOINT
 {
     return NewBag(T_PPERM<T>::tnum, (deg + 1) * sizeof(T) + 2 * sizeof(Obj));
 
@@ -280,7 +280,7 @@ static inline void SET_DOM_PPERM(Obj f, Obj dom)
 // find domain and img set (unsorted) return the rank
 
 template <typename T>
-static UInt INIT_PPERM(Obj f)
+static UInt INIT_PPERM(Obj f) GAP_GC_CANSAFEPOINT
 {
     ASSERT_IS_PPERM<T>(f);
 
@@ -329,7 +329,7 @@ static UInt INIT_PPERM(Obj f)
     return rank;
 }
 
-static UInt INIT_PPERM(Obj f)
+static UInt INIT_PPERM(Obj f) GAP_GC_CANSAFEPOINT
 {
     if (TNUM_OBJ(f) == T_PPERM2) {
         return INIT_PPERM<UInt2>(f);
@@ -340,7 +340,7 @@ static UInt INIT_PPERM(Obj f)
 }
 
 template <typename T>
-static UInt RANK_PPERM(Obj f)
+static UInt RANK_PPERM(Obj f) GAP_GC_CANSAFEPOINT
 {
     ASSERT_IS_PPERM<T>(f);
     return (IMG_PPERM(f) == NULL ? INIT_PPERM<T>(f)
@@ -357,7 +357,7 @@ UInt RANK_PPERM4(Obj f)
     return RANK_PPERM<UInt4>(f);
 }
 
-static Obj SORT_PLIST_INTOBJ(Obj res)
+static Obj SORT_PLIST_INTOBJ(Obj res) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(IS_PLIST(res));
     if (LEN_PLIST(res) == 0)
@@ -401,7 +401,7 @@ static Obj FuncEmptyPartialPerm(Obj self)
 }
 
 // method for creating a partial perm
-static Obj FuncDensePartialPermNC(Obj self, Obj img)
+static Obj FuncDensePartialPermNC(Obj self, Obj img) GAP_GC_CANSAFEPOINT
 {
     RequireSmallList(SELF_NAME, img);
 
@@ -457,6 +457,7 @@ static Obj FuncDensePartialPermNC(Obj self, Obj img)
 
 // assumes that dom is a set and that img is duplicatefree
 static Obj FuncSparsePartialPermNC(Obj self, Obj dom, Obj img)
+    GAP_GC_CANSAFEPOINT
 {
     RequireSmallList(SELF_NAME, dom);
     RequireSmallList(SELF_NAME, img);
@@ -523,7 +524,7 @@ static Obj FuncSparsePartialPermNC(Obj self, Obj dom, Obj img)
 }
 
 // the degree of pperm is the maximum point where it is defined
-static Obj FuncDegreeOfPartialPerm(Obj self, Obj f)
+static Obj FuncDegreeOfPartialPerm(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
     return INTOBJ_INT(DEG_PPERM(f));
@@ -531,21 +532,21 @@ static Obj FuncDegreeOfPartialPerm(Obj self, Obj f)
 
 // the codegree of pperm is the maximum point in its image
 
-static Obj FuncCoDegreeOfPartialPerm(Obj self, Obj f)
+static Obj FuncCoDegreeOfPartialPerm(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
     return INTOBJ_INT(CODEG_PPERM(f));
 }
 
 // the rank is the number of points where it is defined
-static Obj FuncRankOfPartialPerm(Obj self, Obj f)
+static Obj FuncRankOfPartialPerm(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
     return INTOBJ_INT(RANK_PPERM(f));
 }
 
 // domain of a partial perm
-static Obj FuncDOMAIN_PPERM(Obj self, Obj f)
+static Obj FuncDOMAIN_PPERM(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
 
@@ -556,7 +557,7 @@ static Obj FuncDOMAIN_PPERM(Obj self, Obj f)
 }
 
 // image list of pperm
-static Obj FuncIMAGE_PPERM(Obj self, Obj f)
+static Obj FuncIMAGE_PPERM(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
 
@@ -595,7 +596,7 @@ static Obj FuncIMAGE_PPERM(Obj self, Obj f)
 }
 
 // image set of partial perm
-static Obj FuncIMAGE_SET_PPERM(Obj self, Obj f)
+static Obj FuncIMAGE_SET_PPERM(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
 
@@ -619,7 +620,7 @@ static Obj FuncIMAGE_SET_PPERM(Obj self, Obj f)
 }
 
 // preimage under a partial perm
-static Obj FuncPREIMAGE_PPERM_INT(Obj self, Obj f, Obj pt)
+static Obj FuncPREIMAGE_PPERM_INT(Obj self, Obj f, Obj pt) GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
     RequireSmallInt(SELF_NAME, pt);
@@ -630,7 +631,7 @@ static Obj FuncPREIMAGE_PPERM_INT(Obj self, Obj f, Obj pt)
 }
 
 // find img(f)
-static UInt4 * FindImg(UInt n, UInt rank, Obj img)
+static UInt4 * FindImg(UInt n, UInt rank, Obj img) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(IS_PLIST(img));
 
@@ -648,7 +649,7 @@ static UInt4 * FindImg(UInt n, UInt rank, Obj img)
 }
 
 // the least m, r such that f^m=f^m+r
-static Obj FuncINDEX_PERIOD_PPERM(Obj self, Obj f)
+static Obj FuncINDEX_PERIOD_PPERM(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
 
@@ -746,7 +747,7 @@ static Obj FuncINDEX_PERIOD_PPERM(Obj self, Obj f)
 }
 
 // the least power of <f> which is an idempotent
-static Obj FuncSMALLEST_IDEM_POW_PPERM(Obj self, Obj f)
+static Obj FuncSMALLEST_IDEM_POW_PPERM(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
 
@@ -765,7 +766,7 @@ static Obj FuncSMALLEST_IDEM_POW_PPERM(Obj self, Obj f)
 
 // returns the least list <out> such that for all <i> in [1..degree(f)]
 // there exists <j> in <out> and a pos int <k> such that <j^(f^k)=i>.
-static Obj FuncCOMPONENT_REPS_PPERM(Obj self, Obj f)
+static Obj FuncCOMPONENT_REPS_PPERM(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
 
@@ -850,7 +851,7 @@ static Obj FuncCOMPONENT_REPS_PPERM(Obj self, Obj f)
 }
 
 // the number of components of a partial perm (as a functional digraph)
-static Obj FuncNR_COMPONENTS_PPERM(Obj self, Obj f)
+static Obj FuncNR_COMPONENTS_PPERM(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
 
@@ -924,7 +925,7 @@ static Obj FuncNR_COMPONENTS_PPERM(Obj self, Obj f)
 }
 
 // the components of a partial perm (as a functional digraph)
-static Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
+static Obj FuncCOMPONENTS_PPERM(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
 
@@ -1038,7 +1039,7 @@ static Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
 }
 
 // the points that can be obtained from <pt> by successively applying <f>.
-static Obj FuncCOMPONENT_PPERM_INT(Obj self, Obj f, Obj pt)
+static Obj FuncCOMPONENT_PPERM_INT(Obj self, Obj f, Obj pt) GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
     RequireSmallInt(SELF_NAME, pt);
@@ -1093,7 +1094,7 @@ static Obj FuncCOMPONENT_PPERM_INT(Obj self, Obj f, Obj pt)
 }
 
 // the fixed points of a partial perm
-static Obj FuncFIXED_PTS_PPERM(Obj self, Obj f)
+static Obj FuncFIXED_PTS_PPERM(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
 
@@ -1162,7 +1163,7 @@ static Obj FuncFIXED_PTS_PPERM(Obj self, Obj f)
     return out;
 }
 
-static Obj FuncNR_FIXED_PTS_PPERM(Obj self, Obj f)
+static Obj FuncNR_FIXED_PTS_PPERM(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
 
@@ -1212,7 +1213,7 @@ static Obj FuncNR_FIXED_PTS_PPERM(Obj self, Obj f)
 }
 
 // the moved points of a partial perm
-static Obj FuncMOVED_PTS_PPERM(Obj self, Obj f)
+static Obj FuncMOVED_PTS_PPERM(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
 
@@ -1279,7 +1280,7 @@ static Obj FuncMOVED_PTS_PPERM(Obj self, Obj f)
     return out;
 }
 
-static Obj FuncNR_MOVED_PTS_PPERM(Obj self, Obj f)
+static Obj FuncNR_MOVED_PTS_PPERM(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
 
@@ -1328,7 +1329,7 @@ static Obj FuncNR_MOVED_PTS_PPERM(Obj self, Obj f)
     return INTOBJ_INT(nr);
 }
 
-static Obj FuncLARGEST_MOVED_PT_PPERM(Obj self, Obj f)
+static Obj FuncLARGEST_MOVED_PT_PPERM(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
 
@@ -1376,7 +1377,7 @@ static Obj FuncLARGEST_MOVED_PT_PPERM(Obj self, Obj f)
     return INTOBJ_INT(0);
 }
 
-static Obj FuncSMALLEST_MOVED_PT_PPERM(Obj self, Obj f)
+static Obj FuncSMALLEST_MOVED_PT_PPERM(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
 
@@ -1427,7 +1428,7 @@ static Obj FuncSMALLEST_MOVED_PT_PPERM(Obj self, Obj f)
 }
 
 // convert a T_PPERM4 with codeg<65536 to a T_PPERM2
-static Obj FuncTRIM_PPERM(Obj self, Obj f)
+static Obj FuncTRIM_PPERM(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
 
@@ -1469,12 +1470,13 @@ Int HashFuncForPPerm(Obj f)
 }
 
 static Obj FuncHASH_FUNC_FOR_PPERM(Obj self, Obj f, Obj data)
+    GAP_GC_CANSAFEPOINT
 {
     return INTOBJ_INT(HashFuncForPPerm(f) % INT_INTOBJ(data) + 1);
 }
 
 // test if a partial perm is an idempotent
-static Obj FuncIS_IDEM_PPERM(Obj self, Obj f)
+static Obj FuncIS_IDEM_PPERM(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
 
@@ -1525,7 +1527,7 @@ static Obj FuncIS_IDEM_PPERM(Obj self, Obj f)
 }
 
 // an idempotent partial perm <e> with ker(e)=ker(f)
-static Obj FuncLEFT_ONE_PPERM(Obj self, Obj f)
+static Obj FuncLEFT_ONE_PPERM(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
 
@@ -1575,7 +1577,7 @@ static Obj FuncLEFT_ONE_PPERM(Obj self, Obj f)
 }
 
 // an idempotent partial perm <e> with im(e)=im(f)
-static Obj FuncRIGHT_ONE_PPERM(Obj self, Obj f)
+static Obj FuncRIGHT_ONE_PPERM(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
 
@@ -1629,7 +1631,7 @@ static Obj FuncRIGHT_ONE_PPERM(Obj self, Obj f)
 
 // f<=g if and only if f is a restriction of g
 template <typename TF, typename TG>
-static Obj NaturalLeqPartialPerm(Obj f, Obj g)
+static Obj NaturalLeqPartialPerm(Obj f, Obj g) GAP_GC_CANSAFEPOINT
 {
     UInt   def, deg, i, j, rank;
     const TF * ptf;
@@ -1663,6 +1665,7 @@ static Obj NaturalLeqPartialPerm(Obj f, Obj g)
 }
 
 static Obj FuncNaturalLeqPartialPerm(Obj self, Obj f, Obj g)
+    GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
     RequirePartialPerm(SELF_NAME, g);
@@ -1682,7 +1685,7 @@ static Obj FuncNaturalLeqPartialPerm(Obj self, Obj f, Obj g)
 }
 
 template <typename TF, typename TG>
-static Obj JOIN_IDEM_PPERMS(Obj f, Obj g)
+static Obj JOIN_IDEM_PPERMS(Obj f, Obj g) GAP_GC_CANSAFEPOINT
 {
     typedef typename ResultType<TF, TG>::type Res;
 
@@ -1712,7 +1715,7 @@ static Obj JOIN_IDEM_PPERMS(Obj f, Obj g)
     return join;
 }
 
-static Obj FuncJOIN_IDEM_PPERMS(Obj self, Obj f, Obj g)
+static Obj FuncJOIN_IDEM_PPERMS(Obj self, Obj f, Obj g) GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
     RequirePartialPerm(SELF_NAME, g);
@@ -1745,7 +1748,7 @@ static Obj FuncJOIN_IDEM_PPERMS(Obj self, Obj f, Obj g)
 
 // the union of f and g where this defines an injective function
 template <typename TF, typename TG>
-static Obj JOIN_PPERMS(Obj f, Obj g)
+static Obj JOIN_PPERMS(Obj f, Obj g) GAP_GC_CANSAFEPOINT
 {
     typedef typename ResultType<TF, TG>::type Res;
 
@@ -1852,7 +1855,7 @@ static Obj JOIN_PPERMS(Obj f, Obj g)
     return join;
 }
 
-static Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g)
+static Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g) GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
     RequirePartialPerm(SELF_NAME, g);
@@ -1874,7 +1877,7 @@ static Obj FuncJOIN_PPERMS(Obj self, Obj f, Obj g)
     }
 }
 
-static Obj FuncMEET_PPERMS(Obj self, Obj f, Obj g)
+static Obj FuncMEET_PPERMS(Obj self, Obj f, Obj g) GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
     RequirePartialPerm(SELF_NAME, g);
@@ -2003,7 +2006,7 @@ static Obj FuncMEET_PPERMS(Obj self, Obj f, Obj g)
 }
 
 // restricted partial perm where set is assumed to be a set of positive ints
-static Obj FuncRESTRICTED_PPERM(Obj self, Obj f, Obj set)
+static Obj FuncRESTRICTED_PPERM(Obj self, Obj f, Obj set) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(IS_LIST(set));
 
@@ -2077,7 +2080,7 @@ static Obj FuncRESTRICTED_PPERM(Obj self, Obj f, Obj set)
 
 // convert a permutation <p> to a partial perm on <set>, which is assumed to
 // be a set of positive integers
-static Obj FuncAS_PPERM_PERM(Obj self, Obj p, Obj set)
+static Obj FuncAS_PPERM_PERM(Obj self, Obj p, Obj set) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(IS_PERM(p));
     GAP_ASSERT(IS_LIST(set));
@@ -2189,7 +2192,7 @@ static Obj FuncAS_PPERM_PERM(Obj self, Obj p, Obj set)
 }
 
 // for a partial perm with equal dom and img
-static Obj FuncAS_PERM_PPERM(Obj self, Obj f)
+static Obj FuncAS_PERM_PPERM(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
 
@@ -2238,6 +2241,7 @@ static Obj FuncAS_PERM_PPERM(Obj self, Obj f)
 // the permutation induced on im(f) by f^-1*g when im(g)=im(f)
 // and dom(f)=dom(g), no checking
 static Obj FuncPERM_LEFT_QUO_PPERM_NC(Obj self, Obj f, Obj g)
+    GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm(SELF_NAME, f);
     RequirePartialPerm(SELF_NAME, g);
@@ -2301,6 +2305,7 @@ static Obj FuncPERM_LEFT_QUO_PPERM_NC(Obj self, Obj f, Obj g)
 }
 
 static Obj FuncShortLexLeqPartialPerm(Obj self, Obj f, Obj g)
+    GAP_GC_CANSAFEPOINT
 {
     UInt   rankf, rankg, i, j, k;
     Obj    domf, domg;
@@ -2420,7 +2425,7 @@ static Obj FuncHAS_IMG_PPERM(Obj self, Obj f)
 // GAP kernel functions
 
 // an idempotent partial perm on the union of the domain and image
-static Obj OnePPerm(Obj f)
+static Obj OnePPerm(Obj f) GAP_GC_CANSAFEPOINT
 {
     RequirePartialPerm("OnePPerm", f);
 
@@ -2475,7 +2480,7 @@ static Obj OnePPerm(Obj f)
 
 // equality for partial perms
 template <typename TF, typename TG>
-static Int EqPPerm(Obj f, Obj g)
+static Int EqPPerm(Obj f, Obj g) GAP_GC_CANSAFEPOINT
 {
     ASSERT_IS_PPERM<TF>(f);
     ASSERT_IS_PPERM<TG>(g);
@@ -2543,7 +2548,7 @@ static Int LtPPerm(Obj f, Obj g)
 
 // product of partial perm and partial perm
 template <typename TF, typename TG>
-static Obj ProdPPerm(Obj f, Obj g)
+static Obj ProdPPerm(Obj f, Obj g) GAP_GC_CANSAFEPOINT
 {
     ASSERT_IS_PPERM<TF>(f);
     ASSERT_IS_PPERM<TG>(g);
@@ -2612,7 +2617,7 @@ static Obj ProdPPerm(Obj f, Obj g)
 
 
 // compose partial perms and perms
-static Obj ProdPPerm2Perm2(Obj f, Obj p)
+static Obj ProdPPerm2Perm2(Obj f, Obj p) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
     GAP_ASSERT(TNUM_OBJ(p) == T_PERM2);
@@ -2726,7 +2731,7 @@ static Obj ProdPPerm2Perm2(Obj f, Obj p)
     return fp;
 }
 
-static Obj ProdPPerm4Perm4(Obj f, Obj p)
+static Obj ProdPPerm4Perm4(Obj f, Obj p) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
     GAP_ASSERT(TNUM_OBJ(p) == T_PERM4);
@@ -2802,7 +2807,7 @@ static Obj ProdPPerm4Perm4(Obj f, Obj p)
     return fp;
 }
 
-static Obj ProdPPerm2Perm4(Obj f, Obj p)
+static Obj ProdPPerm2Perm4(Obj f, Obj p) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
     GAP_ASSERT(TNUM_OBJ(p) == T_PERM4);
@@ -2850,7 +2855,7 @@ static Obj ProdPPerm2Perm4(Obj f, Obj p)
     return fp;
 }
 
-static Obj ProdPPerm4Perm2(Obj f, Obj p)
+static Obj ProdPPerm4Perm2(Obj f, Obj p) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
     GAP_ASSERT(TNUM_OBJ(p) == T_PERM2);
@@ -2899,7 +2904,7 @@ static Obj ProdPPerm4Perm2(Obj f, Obj p)
 
 // product of a perm and a partial perm
 template <typename TP, typename TF>
-static Obj ProdPermPPerm(Obj p, Obj f)
+static Obj ProdPermPPerm(Obj p, Obj f) GAP_GC_CANSAFEPOINT
 {
     ASSERT_IS_PERM<TP>(p);
     ASSERT_IS_PPERM<TF>(f);
@@ -2946,7 +2951,7 @@ static Obj ProdPermPPerm(Obj p, Obj f)
 
 // the inverse of a partial perm
 template <typename Res, typename T>
-static Obj InvPPerm(Obj f)
+static Obj InvPPerm(Obj f) GAP_GC_CANSAFEPOINT
 {
     ASSERT_IS_PPERM<T>(f);
 
@@ -2987,7 +2992,7 @@ static Obj InvPPerm(Obj f)
     return inv;
 }
 
-static Obj InvPPerm2(Obj f)
+static Obj InvPPerm2(Obj f) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
     if (DEG_PPERM2(f) < 65536) {
@@ -2998,7 +3003,7 @@ static Obj InvPPerm2(Obj f)
     }
 }
 
-static Obj InvPPerm4(Obj f)
+static Obj InvPPerm4(Obj f) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
     if (DEG_PPERM4(f) < 65536) {
@@ -3011,7 +3016,7 @@ static Obj InvPPerm4(Obj f)
 
 // Conjugation: p ^ -1 * f * p
 template <typename Res, typename TF, typename TP>
-static Obj PowPPermPerm(Obj f, Obj p)
+static Obj PowPPermPerm(Obj f, Obj p) GAP_GC_CANSAFEPOINT
 {
     ASSERT_IS_PPERM<TF>(f);
     ASSERT_IS_PERM<TP>(p);
@@ -3072,7 +3077,7 @@ static Obj PowPPermPerm(Obj f, Obj p)
 }
 
 // special case for permutations of degree 65536
-static Obj PowPPerm2Perm2(Obj f, Obj p)
+static Obj PowPPerm2Perm2(Obj f, Obj p) GAP_GC_CANSAFEPOINT
 {
     if (DEG_PERM2(p) == 65536)
         return PowPPermPerm<UInt4, UInt2, UInt2>(f, p);
@@ -3082,7 +3087,7 @@ static Obj PowPPerm2Perm2(Obj f, Obj p)
 
 // g ^ -1 * f * g
 template <typename TF, typename TG>
-static Obj PowPPerm(Obj f, Obj g)
+static Obj PowPPerm(Obj f, Obj g) GAP_GC_CANSAFEPOINT
 {
     typedef typename ResultType<TF, TG>::type Res;
 
@@ -3310,7 +3315,7 @@ static Obj PowPPerm(Obj f, Obj g)
 
 // f*g^-1 for partial perms
 template <typename TF, typename TG>
-static Obj QuoPPerm(Obj f, Obj g)
+static Obj QuoPPerm(Obj f, Obj g) GAP_GC_CANSAFEPOINT
 {
     ASSERT_IS_PPERM<TF>(f);
     ASSERT_IS_PPERM<TG>(g);
@@ -3407,7 +3412,7 @@ static Obj QuoPPerm(Obj f, Obj g)
 
 
 // i^f
-static Obj PowIntPPerm2(Obj i, Obj f)
+static Obj PowIntPPerm2(Obj i, Obj f) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM2);
 
@@ -3419,7 +3424,7 @@ static Obj PowIntPPerm2(Obj i, Obj f)
         IMAGEPP((UInt)INT_INTOBJ(i), ADDR_PPERM2(f), DEG_PPERM2(f)));
 }
 
-static Obj PowIntPPerm4(Obj i, Obj f)
+static Obj PowIntPPerm4(Obj i, Obj f) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(TNUM_OBJ(f) == T_PPERM4);
 
@@ -3433,7 +3438,7 @@ static Obj PowIntPPerm4(Obj i, Obj f)
 
 // p^-1*f
 template <typename TP, typename TF>
-static Obj LQuoPermPPerm(Obj p, Obj f)
+static Obj LQuoPermPPerm(Obj p, Obj f) GAP_GC_CANSAFEPOINT
 {
     ASSERT_IS_PERM<TP>(p);
     ASSERT_IS_PPERM<TF>(f);
@@ -3522,7 +3527,7 @@ static Obj LQuoPermPPerm(Obj p, Obj f)
 
 // f^-1*g
 template <typename TF, typename TG>
-static Obj LQuoPPerm(Obj f, Obj g)
+static Obj LQuoPPerm(Obj f, Obj g) GAP_GC_CANSAFEPOINT
 {
     ASSERT_IS_PPERM<TF>(f);
     ASSERT_IS_PPERM<TG>(g);
@@ -3822,6 +3827,7 @@ Obj OnTuplesPPerm(Obj tup, Obj f)
 }
 
 static Obj FuncOnPosIntSetsPartialPerm(Obj self, Obj set, Obj f)
+    GAP_GC_CANSAFEPOINT
 {
     RequireSmallList(SELF_NAME, set);
     RequirePartialPerm(SELF_NAME, f);
@@ -4114,7 +4120,7 @@ static Int InitKernel(StructInitInfo * module)
 /****************************************************************************
  *F InitLibrary( <module> ) . . . . . . .  initialise library data structures
  */
-static Int InitLibrary(StructInitInfo * module)
+static Int InitLibrary(StructInitInfo * module) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable(GVarFuncs);

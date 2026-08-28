@@ -280,18 +280,20 @@ typedef struct {
 */
 void SyntaxErrorWithOffset(ScannerState * s,
                            const Char *   msg,
-                           Int            tokenoffset);
+                           Int            tokenoffset) GAP_GC_CANSAFEPOINT;
 
 void SyntaxWarningWithOffset(ScannerState * s,
                              const Char *   msg,
-                             Int            tokenoffset);
+                             Int            tokenoffset) GAP_GC_CANSAFEPOINT;
 
 EXPORT_INLINE void SyntaxError(ScannerState * s, const Char * msg)
+    GAP_GC_CANSAFEPOINT
 {
     SyntaxErrorWithOffset(s, msg, 0);
 }
 
 EXPORT_INLINE void SyntaxWarning(ScannerState * s, const Char * msg)
+    GAP_GC_CANSAFEPOINT
 {
     SyntaxWarningWithOffset(s, msg, 0);
 }
@@ -343,7 +345,7 @@ EXPORT_INLINE void SyntaxWarning(ScannerState * s, const Char * msg)
 void Match(ScannerState * s,
            UInt           symbol,
            const Char *   msg,
-           TypSymbolSet   skipto);
+           TypSymbolSet   skipto) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -356,7 +358,7 @@ void Match(ScannerState * s,
 **  cannot detect this without being context aware, we must provide this
 **  function to allow the reader to signal to the scanner about this.
 */
-void ScanForFloatAfterDotHACK(ScannerState * s);
+void ScanForFloatAfterDotHACK(ScannerState * s) GAP_GC_CANSAFEPOINT;
 
 
 #endif // GAP_SCANNER_H
