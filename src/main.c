@@ -30,6 +30,12 @@
 #include <mach-o/dyld.h>
 #endif
 
+#ifdef SYS_IS_MINGW
+// omit rarely used parts of windows.h, whose names clash with GAP's
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>    // for GetModuleFileNameA
+#endif
+
 extern int realmain(int argc, const char * argv[]);
 
 /****************************************************************************
@@ -42,6 +48,33 @@ extern int realmain(int argc, const char * argv[]);
 static void SetupInitialGapRoot(const char * argv0)
 {
     gap_strlcpy(SyDefaultRootPath, SYS_DEFAULT_PATHS, sizeof(SyDefaultRootPath));
+}
+
+#else
+
+#ifdef SYS_IS_MINGW
+
+static void SetupGAPLocation(const char * argv0, char * GAPExecLocation)
+{
+    char locBuf[GAP_PATH_MAX] = "";
+
+    DWORD len = GetModuleFileNameA(NULL, locBuf, sizeof(locBuf));
+    if (len == 0 || len >= sizeof(locBuf))
+        *locBuf = 0;    // reset buffer after error
+
+    // GAP uses '/' as its directory separator throughout
+    for (char * p = locBuf; *p; p++)
+        if (*p == '\\')
+            *p = '/';
+
+    gap_strlcpy(GAPExecLocation, locBuf, GAP_PATH_MAX);
+
+    // now strip the executable name off
+    size_t length = strlen(GAPExecLocation);
+    while (length > 0 && GAPExecLocation[length] != '/') {
+        GAPExecLocation[length] = 0;
+        length--;
+    }
 }
 
 #else
@@ -142,6 +175,8 @@ static void SetupGAPLocation(const char * argv0, char * GAPExecLocation)
         length--;
     }
 }
+
+#endif
 
 /****************************************************************************
 **

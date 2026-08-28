@@ -35,6 +35,30 @@
 #include <sys/resource.h>
 #endif
 
+#ifdef SYS_IS_MINGW
+// omit rarely used parts of windows.h, whose names clash with GAP's
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>    // for Sleep, GetProcessTimes
+#endif
+
+#ifdef SYS_IS_MINGW
+// user and kernel CPU time of this process in milliseconds
+static void SyWinProcessTimes(UInt * user, UInt * kernel)
+{
+    const UInt     FILETIME_PER_MS = 10000;    // FILETIME counts 100 ns
+    FILETIME       creation, exit, kern, usr;
+    ULARGE_INTEGER t;
+
+    GetProcessTimes(GetCurrentProcess(), &creation, &exit, &kern, &usr);
+    t.LowPart = usr.dwLowDateTime;
+    t.HighPart = usr.dwHighDateTime;
+    *user = t.QuadPart / FILETIME_PER_MS;
+    t.LowPart = kern.dwLowDateTime;
+    t.HighPart = kern.dwHighDateTime;
+    *kernel = t.QuadPart / FILETIME_PER_MS;
+}
+#endif
+
 #if defined(__APPLE__) && defined(__MACH__) // macOS
 #include <mach/mach_time.h>
 #elif defined(HAVE_CLOCK_GETTIME) && defined(CLOCK_MONOTONIC)
@@ -80,6 +104,10 @@ UInt SyTime(void)
     // a substitute (it is not perfect, as NanosecondsSinceEpoch()
     // is walltime, while RUSAGE_SELF is CPU time).
     return SyNanosecondsSinceEpoch() / 1000000;
+#elif defined(SYS_IS_MINGW)
+    UInt user, kernel;
+    SyWinProcessTimes(&user, &kernel);
+    return user;
 #else
     struct rusage buf;
 
@@ -227,6 +255,17 @@ static Obj FuncRuntime(Obj self)
 
 static Obj FuncRUNTIMES(Obj self)
 {
+#ifdef SYS_IS_MINGW
+    // Windows keeps no times of terminated children
+    UInt user, kernel;
+    SyWinProcessTimes(&user, &kernel);
+    Obj res = NEW_PLIST(T_PLIST, 4);
+    ASS_LIST(res, 1, ObjInt_UInt(user));
+    ASS_LIST(res, 2, ObjInt_UInt(kernel));
+    ASS_LIST(res, 3, ObjInt_UInt(0));
+    ASS_LIST(res, 4, ObjInt_UInt(0));
+    return res;
+#else
     UInt          tmp;
     struct rusage buf;
     Obj           res = NEW_PLIST(T_PLIST, 4);
@@ -254,6 +293,7 @@ static Obj FuncRUNTIMES(Obj self)
     ASS_LIST(res, 4, ObjInt_UInt(tmp));
 
     return res;
+#endif
 }
 
 
@@ -414,7 +454,11 @@ static Obj FuncSleep(Obj self, Obj secs)
     Int s = GetSmallInt(SELF_NAME, secs);
 
     if (s > 0)
+#ifdef SYS_IS_MINGW
+        Sleep((DWORD)s * 1000);
+#else
         sleep((UInt)s);
+#endif
 
     // either we used up the time, or we were interrupted.
     if (HaveInterrupt()) {
@@ -437,7 +481,11 @@ static Obj FuncMicroSleep(Obj self, Obj msecs)
     Int s = GetSmallInt(SELF_NAME, msecs);
 
     if (s > 0)
+#ifdef SYS_IS_MINGW
+        Sleep((DWORD)(s / 1000));
+#else
         usleep((UInt)s);
+#endif
 
     // either we used up the time, or we were interrupted.
     if (HaveInterrupt()) {
