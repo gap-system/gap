@@ -704,12 +704,18 @@ static Expr SyntaxTreeCodeFunc(CodeState * cs, Obj node) GAP_GC_CANSAFEPOINT
 static Obj FuncSYNTAX_TREE_CODE(Obj self, Obj tree) GAP_GC_CANSAFEPOINT
 {
     RequirePlainRec(SELF_NAME, tree);
-    CodeState cs;
-    CodeBegin(&cs);
-    SyntaxTreeCodeFunc(&cs, tree);
     Obj func = 0;
     Obj name = 0;
-    GAP_GC_PUSH2(&func, &name);
+
+    // The coder state lives on the C stack but holds GAP objects, so root it
+    // before CodeBegin, which allocates. CodeBegin zeroes it again itself.
+    CodeState cs;
+    memset(&cs, 0, sizeof(cs));
+    // 4 slots from CODE_STATE_ROOTS, plus func and name
+    GAP_GC_PUSH_ROOTS(6, (&func, &name, CODE_STATE_ROOTS(&cs)));
+
+    CodeBegin(&cs);
+    SyntaxTreeCodeFunc(&cs, tree);
     func = CodeEnd(&cs, 0);
     if (IsbPRec(tree, RNamName("name"))) {
         name = ELM_REC(tree, RNamName("name"));

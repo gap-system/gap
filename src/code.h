@@ -18,6 +18,7 @@
 
 #include "gapstate.h"
 #include "objects.h"
+#include <stddef.h>    // for offsetof
 
 /****************************************************************************
 **
@@ -74,6 +75,20 @@ struct CodeState {
 };
 
 typedef struct CodeState CodeState;
+
+// A CodeState is allocated on the C stack, so a precise collector cannot see
+// the GAP objects inside it. List their slots here, next to the fields, and
+// root them with GAP_GC_PUSH_ROOTS wherever such a struct is created.
+#define CODE_STATE_ROOTS(p)                                                  \
+    &(p)->OffsBodyStack, &(p)->CodeResult, &(p)->CodeLVars, &(p)->currBody
+
+// Adding a field to CODE_STATE_ROOTS makes every user a compile error, since
+// the slot count no longer matches. This catches the other direction: a new
+// field appended to the struct without being added above. It cannot see a
+// field inserted in the middle.
+GAP_STATIC_ASSERT(offsetof(CodeState, currBody) + sizeof(Obj) ==
+                      sizeof(CodeState),
+                  "CodeState grew; check CODE_STATE_ROOTS");
 
 
 /****************************************************************************
