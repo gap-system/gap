@@ -40,10 +40,27 @@
 
 #include "config.h"
 
+#include <errno.h>
+
+#ifdef SYS_IS_MINGW
+#include <io.h>                         // for _get_osfhandle
+#include <stdlib.h>                     // for malloc, free
+#include <string.h>                     // for strlen, strpbrk
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
+
+// How a child process ended. At most one of <termSignal> and <execError> is
+// nonzero, and <exitCode> is meaningful only if both are zero.
+typedef struct {
+    int exitCode;
+    int termSignal;    // signal that killed the child
+    int execError;     // errno if the child could not be started
+} SyProcessResult;
+
 // the POSIX implementation, on top of fork and pseudo terminals
 #if !defined(GAP_DISABLE_SUBPROCESS_CODE) && !defined(SYS_IS_MINGW)
 
-#include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <termios.h>
@@ -587,14 +604,6 @@ cleanup:
 
 #ifndef GAP_DISABLE_SUBPROCESS_CODE
 
-// How a child process ended. At most one of <termSignal> and <execError> is
-// nonzero, and <exitCode> is meaningful only if both are zero.
-typedef struct {
-    int exitCode;
-    int termSignal;    // signal that killed the child
-    int execError;     // errno if the child could not be started
-} SyProcessResult;
-
 /****************************************************************************
 **
 *F  SyExecuteProcess( <dir>, <prg>, <in>, <out>, <args> ) . . . . new process
@@ -906,6 +915,16 @@ SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[])
 }
 #endif
 
+#else
+
+// no way to start a subprocess: signal failure
+static SyProcessResult
+SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[])
+{
+    SyProcessResult result = { 0, 0, ENOSYS };
+    return result;
+}
+
 #endif
 
 #endif    // !GAP_DISABLE_SUBPROCESS_CODE
@@ -1170,56 +1189,6 @@ static Obj FuncFD_OF_IOSTREAM(Obj self, Obj stream)
     return result;
 }
 
-static Obj
-FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
-{
-    Obj    ExecArgs[1024];
-    Char * ExecCArgs[1024];
-
-    Obj tmp;
-    Int i;
-
-    RequireStringRep(SELF_NAME, dir);
-    RequireStringRep(SELF_NAME, prg);
-    Int iin = GetSmallInt(SELF_NAME, in);
-    Int iout = GetSmallInt(SELF_NAME, out);
-    RequirePlainList(SELF_NAME, args);
-
-    // create an argument array
-    for (i = 1; i <= LEN_PLIST(args); i++) {
-        if (i == 1023)
-            break;
-        tmp = ELM_PLIST(args, i);
-        RequireStringRep(SELF_NAME, tmp);
-        ExecArgs[i] = tmp;
-    }
-    ExecCArgs[0] = CSTR_STRING(prg);
-    ExecCArgs[i] = 0;
-    for (i--; 0 < i; i--) {
-        ExecCArgs[i] = CSTR_STRING(ExecArgs[i]);
-    }
-    if (SyWindow && out == INTOBJ_INT(1))    // standard output
-        syWinPut(INT_INTOBJ(out), "@z", "");
-
-    // execute the process
-    SyProcessResult res = SyExecuteProcess(CSTR_STRING(dir), CSTR_STRING(prg),
-                                           iin, iout, ExecCArgs);
-
-    if (SyWindow && out == INTOBJ_INT(1))    // standard output
-        syWinPut(INT_INTOBJ(out), "@mAgIc", "");
-
-    // the program never ran
-    if (res.execError != 0)
-        return Fail;
-
-    // killed by a signal: report it as a negative value, so that it cannot be
-    // mistaken for an exit code
-    if (res.termSignal != 0)
-        return INTOBJ_INT(-res.termSignal);
-
-    return INTOBJ_INT(res.exitCode);
-}
-
 #else // !defined(GAP_DISABLE_SUBPROCESS_CODE) && !defined(SYS_IS_MINGW)
 
 int CheckChildStatusChanged(int childPID, int status)
@@ -1272,23 +1241,257 @@ static Obj FuncFD_OF_IOSTREAM(Obj self, Obj stream)
     return Fail;
 }
 
-static Obj
-FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
+#if defined(SYS_IS_MINGW) && !defined(GAP_DISABLE_SUBPROCESS_CODE)
+
+// append <arg> to the command line <dst> at position <pos>, quoted
+// following the MSVCRT command line parsing rules; returns the new position
+static UInt syWinQuoteArg(char * dst, UInt pos, const char * arg)
 {
-    // validate the arguments exactly as the real implementation does
-    RequireStringRep(SELF_NAME, dir);
-    RequireStringRep(SELF_NAME, prg);
-    GetSmallInt(SELF_NAME, in);
-    GetSmallInt(SELF_NAME, out);
-    RequirePlainList(SELF_NAME, args);
-    for (Int i = 1; i <= LEN_PLIST(args); i++) {
-        Obj tmp = ELM_PLIST(args, i);
-        RequireStringRep(SELF_NAME, tmp);
+    UInt nbs;    // number of pending backslashes
+
+    // MSYS2 programs also take ' as a quote, and expand ~ and globs in
+    // unquoted arguments
+    if (*arg != '\0' && *arg != '~' &&
+        strpbrk(arg, " \t\"'*?[{}()") == NULL) {
+        // no quoting needed
+        while (*arg)
+            dst[pos++] = *arg++;
+        return pos;
     }
-    return Fail;
+
+    dst[pos++] = '"';
+    while (*arg) {
+        nbs = 0;
+        while (*arg == '\\') {
+            nbs++;
+            arg++;
+        }
+        if (*arg == '\0') {
+            // backslashes before the closing quote must be doubled
+            for (nbs *= 2; nbs > 0; nbs--)
+                dst[pos++] = '\\';
+        }
+        else if (*arg == '"') {
+            // backslashes before a quote must be doubled, the quote escaped
+            for (nbs = 2 * nbs + 1; nbs > 0; nbs--)
+                dst[pos++] = '\\';
+            dst[pos++] = '"';
+            arg++;
+        }
+        else {
+            for (; nbs > 0; nbs--)
+                dst[pos++] = '\\';
+            dst[pos++] = *arg++;
+        }
+    }
+    dst[pos++] = '"';
+    return pos;
+}
+
+// append <arg> for cmd.exe, which has no escapes: `/C "cp "a b" c"` runs
+// `cp "a b" c`
+static UInt syWinQuoteCmdArg(char * dst, UInt pos, const char * arg)
+{
+    BOOL quote = *arg == '\0' || strpbrk(arg, " \t") != NULL;
+
+    if (quote)
+        dst[pos++] = '"';
+    while (*arg)
+        dst[pos++] = *arg++;
+    if (quote)
+        dst[pos++] = '"';
+    return pos;
+}
+
+static BOOL syWinIsCmd(const char * prg)
+{
+    const char * base = prg;
+
+    for (const char * p = prg; *p; p++) {
+        if (*p == '/' || *p == '\\')
+            base = p + 1;
+    }
+    return _stricmp(base, "cmd.exe") == 0;
+}
+
+// Windows exit codes are 32 bits wide; larger ones than this do not fit a
+// small integer on 32 bit systems
+enum { SY_WIN_MAX_EXIT_CODE = (1 << 28) - 1 };
+
+static SyProcessResult
+SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[])
+{
+    UInt   i, pos, len;
+    char * cmdline;
+    HANDLE hin, hout, herr;
+    BOOL   closein = FALSE, closeout = FALSE;
+
+    SyProcessResult result = { 0, 0, EBADF };
+
+    // inheritable handles for the null device
+    SECURITY_ATTRIBUTES sa = { sizeof(sa), NULL, TRUE };
+
+    // build the command line; worst case doubles every character
+    len = 1;
+    for (i = 0; args[i] != NULL; i++)
+        len += 2 * strlen(args[i]) + 4;
+    cmdline = malloc(len);
+    if (cmdline == NULL) {
+        result.execError = ENOMEM;
+        return result;
+    }
+    // program name quoted, with backslashes: cmd.exe parses its own command
+    // line and takes a forward slash path for switches
+    pos = 0;
+    cmdline[pos++] = '"';
+    for (const char * p = args[0]; *p; p++)
+        cmdline[pos++] = *p == '/' ? '\\' : *p;
+    cmdline[pos++] = '"';
+
+    BOOL iscmd = syWinIsCmd(prg);
+    for (i = 1; args[i] != NULL; i++) {
+        cmdline[pos++] = ' ';
+        pos = iscmd ? syWinQuoteCmdArg(cmdline, pos, args[i])
+                    : syWinQuoteArg(cmdline, pos, args[i]);
+    }
+    cmdline[pos] = '\0';
+
+    // standard input and output for the child; -1 means the null device
+    if (in == -1) {
+        hin = CreateFileA("NUL", GENERIC_READ,
+                          FILE_SHARE_READ | FILE_SHARE_WRITE, &sa,
+                          OPEN_EXISTING, 0, NULL);
+        closein = TRUE;
+    }
+    else {
+        hin = (HANDLE)_get_osfhandle(SyBufFileno(in));
+        SetHandleInformation(hin, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT);
+    }
+    if (out == -1) {
+        hout = CreateFileA("NUL", GENERIC_WRITE,
+                           FILE_SHARE_READ | FILE_SHARE_WRITE, &sa,
+                           OPEN_EXISTING, 0, NULL);
+        closeout = TRUE;
+    }
+    else {
+        hout = (HANDLE)_get_osfhandle(SyBufFileno(out));
+        SetHandleInformation(hout, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT);
+    }
+    herr = GetStdHandle(STD_ERROR_HANDLE);
+    SetHandleInformation(herr, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT);
+
+    if (hin != INVALID_HANDLE_VALUE && hout != INVALID_HANDLE_VALUE) {
+        STARTUPINFOA si;
+        PROCESS_INFORMATION pi;
+
+        memset(&si, 0, sizeof(si));
+        si.cb = sizeof(si);
+        si.dwFlags = STARTF_USESTDHANDLES;
+        si.hStdInput = hin;
+        si.hStdOutput = hout;
+        si.hStdError = herr;
+
+        if (CreateProcessA(prg, cmdline, NULL, NULL, TRUE, 0, NULL, dir,
+                           &si, &pi)) {
+            DWORD code;
+
+            // stop reading our own standard input while the child runs
+            FreezeStdin = 1;
+            WaitForSingleObject(pi.hProcess, INFINITE);
+            FreezeStdin = 0;
+
+            // there are no signals; a crashed program exits with an NTSTATUS
+            // value such as 0xC0000005, reported as -1
+            result.execError = 0;
+            if (GetExitCodeProcess(pi.hProcess, &code) &&
+                code <= SY_WIN_MAX_EXIT_CODE)
+                result.exitCode = code;
+            else
+                result.exitCode = -1;
+            CloseHandle(pi.hProcess);
+            CloseHandle(pi.hThread);
+        }
+        else {
+            DWORD err = GetLastError();
+            result.execError =
+                (err == ERROR_FILE_NOT_FOUND || err == ERROR_PATH_NOT_FOUND)
+                    ? ENOENT
+                    : EIO;
+        }
+    }
+
+    free(cmdline);
+    if (closein && hin != INVALID_HANDLE_VALUE)
+        CloseHandle(hin);
+    if (closeout && hout != INVALID_HANDLE_VALUE)
+        CloseHandle(hout);
+    return result;
+}
+
+#else
+
+// no way to start a subprocess: signal failure
+static SyProcessResult
+SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[])
+{
+    SyProcessResult result = { 0, 0, ENOSYS };
+    return result;
 }
 
 #endif
+
+#endif
+
+
+static Obj
+FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
+{
+    Obj    ExecArgs[1024];
+    Char * ExecCArgs[1024];
+
+    Obj tmp;
+    Int i;
+
+    RequireStringRep(SELF_NAME, dir);
+    RequireStringRep(SELF_NAME, prg);
+    Int iin = GetSmallInt(SELF_NAME, in);
+    Int iout = GetSmallInt(SELF_NAME, out);
+    RequirePlainList(SELF_NAME, args);
+
+    // create an argument array
+    for (i = 1; i <= LEN_PLIST(args); i++) {
+        if (i == 1023)
+            break;
+        tmp = ELM_PLIST(args, i);
+        RequireStringRep(SELF_NAME, tmp);
+        ExecArgs[i] = tmp;
+    }
+    ExecCArgs[0] = CSTR_STRING(prg);
+    ExecCArgs[i] = 0;
+    for (i--; 0 < i; i--) {
+        ExecCArgs[i] = CSTR_STRING(ExecArgs[i]);
+    }
+    if (SyWindow && out == INTOBJ_INT(1))    // standard output
+        syWinPut(INT_INTOBJ(out), "@z", "");
+
+    // execute the process
+    SyProcessResult res = SyExecuteProcess(CSTR_STRING(dir), CSTR_STRING(prg),
+                                           iin, iout, ExecCArgs);
+
+    if (SyWindow && out == INTOBJ_INT(1))    // standard output
+        syWinPut(INT_INTOBJ(out), "@mAgIc", "");
+
+    // the program never ran
+    if (res.execError != 0)
+        return Fail;
+
+    // killed by a signal: report it as a negative value, so that it cannot be
+    // mistaken for an exit code
+    if (res.termSignal != 0)
+        return INTOBJ_INT(-res.termSignal);
+
+    return INTOBJ_INT(res.exitCode);
+}
 
 
 /****************************************************************************
