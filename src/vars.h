@@ -29,7 +29,7 @@
 **
 *F  IsBottomLVars(<lvars>) . . test whether lvars is at the call stack bottom
 */
-BOOL IsBottomLVars(Obj lvars);
+BOOL IsBottomLVars(Obj lvars) GAP_GC_NOTSAFEPOINT;
 
 
 /****************************************************************************
@@ -37,7 +37,7 @@ BOOL IsBottomLVars(Obj lvars);
 *F  IS_LVARS_OR_HVARS()
 **
 */
-EXPORT_INLINE BOOL IS_LVARS_OR_HVARS(Obj obj)
+EXPORT_INLINE BOOL IS_LVARS_OR_HVARS(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     UInt tnum = TNUM_OBJ(obj);
     return tnum == T_LVARS || tnum == T_HVARS;
@@ -55,12 +55,13 @@ typedef struct {
 *F  FUNC_LVARS . . . . . . . . . . . function to which the given lvars belong
 **
 */
-EXPORT_INLINE Obj FUNC_LVARS_PTR(const void * lvars_ptr)
+EXPORT_INLINE Obj FUNC_LVARS_PTR(const void * lvars_ptr) GAP_GC_NOTSAFEPOINT
 {
     return ((const LVarsHeader *)lvars_ptr)->func;
 }
 
-EXPORT_INLINE Obj FUNC_LVARS(Obj lvars_obj)
+EXPORT_INLINE Obj FUNC_LVARS(Obj lvars_obj GAP_GC_PROPAGATES_ROOT)
+    GAP_GC_NOTSAFEPOINT
 {
     return FUNC_LVARS_PTR(CONST_ADDR_OBJ(lvars_obj));
 }
@@ -71,12 +72,12 @@ EXPORT_INLINE Obj FUNC_LVARS(Obj lvars_obj)
 *F  STAT_LVARS . . . . . . . current statement in function of the given lvars
 **
 */
-EXPORT_INLINE Expr STAT_LVARS_PTR(const void * lvars_ptr)
+EXPORT_INLINE Expr STAT_LVARS_PTR(const void * lvars_ptr) GAP_GC_NOTSAFEPOINT
 {
     return ((const LVarsHeader *)lvars_ptr)->stat;
 }
 
-EXPORT_INLINE Expr STAT_LVARS(Obj lvars_obj)
+EXPORT_INLINE Expr STAT_LVARS(Obj lvars_obj) GAP_GC_NOTSAFEPOINT
 {
     return STAT_LVARS_PTR(CONST_ADDR_OBJ(lvars_obj));
 }
@@ -87,12 +88,13 @@ EXPORT_INLINE Expr STAT_LVARS(Obj lvars_obj)
 *F  PARENT_LVARS . . . . . . . . . . . . . .  parent lvars of the given lvars
 **
 */
-EXPORT_INLINE Obj PARENT_LVARS_PTR(const void * lvars_ptr)
+EXPORT_INLINE Obj PARENT_LVARS_PTR(const void * lvars_ptr) GAP_GC_NOTSAFEPOINT
 {
     return ((const LVarsHeader *)lvars_ptr)->parent;
 }
 
-EXPORT_INLINE Obj PARENT_LVARS(Obj lvars_obj)
+EXPORT_INLINE Obj PARENT_LVARS(Obj lvars_obj GAP_GC_PROPAGATES_ROOT)
+    GAP_GC_NOTSAFEPOINT
 {
     return PARENT_LVARS_PTR(CONST_ADDR_OBJ(lvars_obj));
 }
@@ -107,7 +109,7 @@ EXPORT_INLINE Obj PARENT_LVARS(Obj lvars_obj)
 **  This  is  in this package,  because  it is stored   along  with the local
 **  variables in the local variables bag.
 */
-EXPORT_INLINE Obj CURR_FUNC(void)
+EXPORT_INLINE Obj CURR_FUNC(void) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_LVARS_OR_HVARS(STATE(CurrLVars)));
     GAP_ASSERT(STATE(PtrLVars) == PTR_BAG(STATE(CurrLVars)));
@@ -119,7 +121,7 @@ EXPORT_INLINE Obj CURR_FUNC(void)
 **
 *F  SET_BRK_CALL_TO(expr) . . . set expr. which was called from current frame
 */
-EXPORT_INLINE void SET_BRK_CALL_TO(Expr expr)
+EXPORT_INLINE void SET_BRK_CALL_TO(Expr expr) GAP_GC_NOTSAFEPOINT
 {
     ((LVarsHeader *)STATE(PtrLVars))->stat = expr;
 }
@@ -139,7 +141,8 @@ void FreeLVarsBag(Bag bag);
 *F  MakeHighVars( <bag> ) . . turn all frames on the stack into high vars
 */
 
-EXPORT_INLINE void MakeHighVars( Bag bag ) {
+EXPORT_INLINE void MakeHighVars(Bag bag) GAP_GC_NOTSAFEPOINT
+{
   while (bag && TNUM_OBJ(bag) == T_LVARS) {
     RetypeBag(bag, T_HVARS);
     bag = PARENT_LVARS(bag);
@@ -153,7 +156,7 @@ EXPORT_INLINE void MakeHighVars( Bag bag ) {
 **
 **  'SWITCH_TO_OLD_LVARS' switches back to the old local variables bag <old>.
 */
-EXPORT_INLINE Obj SWITCH_TO_OLD_LVARS(Obj old)
+EXPORT_INLINE Obj SWITCH_TO_OLD_LVARS(Obj old) GAP_GC_NOTSAFEPOINT
 {
     // As an optimization, we never call CHANGED_BAG on CurrLVars directly,
     // instead a callback that is run just before any GC takes care of that.
@@ -218,12 +221,14 @@ Obj SWITCH_TO_BOTTOM_LVARS(void);
 **
 **  'ASS_LVAR' assigns the value <val> to the local variable <lvar>.
 */
-EXPORT_INLINE void ASS_LVAR(UInt lvar, Obj val)
+EXPORT_INLINE void ASS_LVAR(UInt lvar, Obj val) GAP_GC_NOTSAFEPOINT
 {
     STATE(PtrLVars)[lvar + 2] = val;
 }
 
-EXPORT_INLINE void ASS_LVAR_WITH_CONTEXT(Obj context, UInt lvar, Obj val)
+EXPORT_INLINE void ASS_LVAR_WITH_CONTEXT(
+    Obj context, UInt lvar, Obj val GAP_GC_ROOTED_BY_ARG_INDEXED(0, 1))
+    GAP_GC_NOTSAFEPOINT
 {
     ADDR_OBJ(context)[lvar + 2] = val;
 }
@@ -235,12 +240,14 @@ EXPORT_INLINE void ASS_LVAR_WITH_CONTEXT(Obj context, UInt lvar, Obj val)
 **
 **  'OBJ_LVAR' returns the value of the local variable <lvar>.
 */
-EXPORT_INLINE Obj OBJ_LVAR(UInt lvar)
+EXPORT_INLINE Obj OBJ_LVAR(UInt lvar) GAP_GC_NOTSAFEPOINT
 {
     return STATE(PtrLVars)[lvar + 2];
 }
 
-EXPORT_INLINE Obj OBJ_LVAR_WITH_CONTEXT(Obj context, UInt lvar)
+EXPORT_INLINE Obj OBJ_LVAR_WITH_CONTEXT(Obj context GAP_GC_PROPAGATES_ROOT,
+                                        UInt lvar)
+    GAP_GC_PROPAGATES_ROOT_INDEXED(0, 1) GAP_GC_NOTSAFEPOINT
 {
     return CONST_ADDR_OBJ(context)[lvar + 2];
 }
@@ -252,14 +259,25 @@ EXPORT_INLINE Obj OBJ_LVAR_WITH_CONTEXT(Obj context, UInt lvar)
 **
 **  'NAME_LVAR' returns the name of the local variable <lvar>.
 */
-EXPORT_INLINE Obj NAME_LVAR(UInt lvar)
+EXPORT_INLINE Obj NAME_LVAR(UInt lvar) GAP_GC_GLOBALLY_ROOTED
 {
-    return NAMI_FUNC(CURR_FUNC(), lvar);
+    Obj func = CURR_FUNC();
+    Obj name = 0;
+    GAP_GC_PUSH2(&func, &name);
+    name = NAMI_FUNC(func, lvar);
+    GAP_GC_POP();
+    return name;
 }
 
-EXPORT_INLINE Obj NAME_LVAR_WITH_CONTEXT(Obj context, UInt lvar)
+EXPORT_INLINE Obj NAME_LVAR_WITH_CONTEXT(Obj context GAP_GC_PROPAGATES_ROOT,
+                                         UInt lvar)
 {
-    return NAMI_FUNC(FUNC_LVARS(context), lvar);
+    Obj func = FUNC_LVARS(context);
+    Obj name = 0;
+    GAP_GC_PUSH2(&func, &name);
+    name = NAMI_FUNC(func, lvar);
+    GAP_GC_POP();
+    return name;
 }
 
 
@@ -284,13 +302,15 @@ Obj ObjLVar(UInt lvar);
 **
 **  'NAME_HVAR' returns the name of the higher variable <hvar>.
 */
-void ASS_HVAR(UInt hvar, Obj val);
-Obj  OBJ_HVAR(UInt hvar);
+void ASS_HVAR(UInt hvar, Obj val) GAP_GC_NOTSAFEPOINT;
+Obj  OBJ_HVAR(UInt hvar) GAP_GC_NOTSAFEPOINT;
 Obj  NAME_HVAR(UInt hvar);
 
-void ASS_HVAR_WITH_CONTEXT(Obj context, UInt hvar, Obj val);
-Obj  OBJ_HVAR_WITH_CONTEXT(Obj context, UInt hvar);
-Obj  NAME_HVAR_WITH_CONTEXT(Obj context, UInt hvar);
+void ASS_HVAR_WITH_CONTEXT(Obj context, UInt hvar, Obj val)
+    GAP_GC_NOTSAFEPOINT;
+Obj  OBJ_HVAR_WITH_CONTEXT(Obj context GAP_GC_PROPAGATES_ROOT, UInt hvar)
+    GAP_GC_NOTSAFEPOINT;
+Obj  NAME_HVAR_WITH_CONTEXT(Obj context GAP_GC_PROPAGATES_ROOT, UInt hvar);
 
 
 /****************************************************************************

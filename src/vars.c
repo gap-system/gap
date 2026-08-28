@@ -55,7 +55,7 @@
 **  have to check for the bottom, slowing it down.
 **
 */
-static Bag BottomLVars;
+static Bag BottomLVars GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
@@ -70,8 +70,9 @@ Obj             ObjLVar (
     Obj                 val;            // value result
     val = OBJ_LVAR(lvar);
     if (val == 0) {
+        Obj name = NAME_LVAR(lvar);
         ErrorMayQuit("Variable: '%g' must have an assigned value",
-                     (Int)NAME_LVAR(lvar), 0);
+                     (Int)name, 0);
     }
     return val;
 }
@@ -173,16 +174,22 @@ static Obj EvalIsbLVar(Expr expr)
 */
 static void PrintAssLVar(Stat stat)
 {
+    Obj name = NAME_LVAR(READ_STAT(stat, 0));
+    GAP_GC_PUSH1(&name);
     Pr("%2>", 0, 0);
-    Pr("%I", (Int)NAME_LVAR(READ_STAT(stat, 0)), 0);
+    Pr("%I", (Int)name, 0);
     Pr("%< %>:= ", 0, 0);
     PrintExpr(READ_EXPR(stat, 1));
     Pr("%2<;", 0, 0);
+    GAP_GC_POP();
 }
 
 static void PrintUnbLVar(Stat stat)
 {
-    Pr("Unbind( %I );", (Int)NAME_LVAR(READ_STAT(stat, 0)), 0);
+    Obj name = NAME_LVAR(READ_STAT(stat, 0));
+    GAP_GC_PUSH1(&name);
+    Pr("Unbind( %I );", (Int)name, 0);
+    GAP_GC_POP();
 }
 
 
@@ -194,12 +201,18 @@ static void PrintUnbLVar(Stat stat)
 */
 static void PrintRefLVar(Expr expr)
 {
-    Pr("%I", (Int)NAME_LVAR(LVAR_REF_LVAR(expr)), 0);
+    Obj name = NAME_LVAR(LVAR_REF_LVAR(expr));
+    GAP_GC_PUSH1(&name);
+    Pr("%I", (Int)name, 0);
+    GAP_GC_POP();
 }
 
 static void PrintIsbLVar(Expr expr)
 {
-    Pr("IsBound( %I )", (Int)NAME_LVAR(READ_EXPR(expr, 0)), 0);
+    Obj name = NAME_LVAR(READ_EXPR(expr, 0));
+    GAP_GC_PUSH1(&name);
+    Pr("IsBound( %I )", (Int)name, 0);
+    GAP_GC_POP();
 }
 
 
@@ -215,12 +228,12 @@ static void PrintIsbLVar(Expr expr)
 **
 **  'NAME_HVAR' returns the name of the higher variable <hvar>.
 */
-void ASS_HVAR(UInt hvar, Obj val)
+void ASS_HVAR(UInt hvar, Obj val) GAP_GC_NOTSAFEPOINT
 {
     ASS_HVAR_WITH_CONTEXT(STATE(CurrLVars), hvar, val);
 }
 
-Obj OBJ_HVAR(UInt hvar)
+Obj OBJ_HVAR(UInt hvar) GAP_GC_NOTSAFEPOINT
 {
     return OBJ_HVAR_WITH_CONTEXT(STATE(CurrLVars), hvar);
 }
@@ -231,6 +244,7 @@ Obj NAME_HVAR(UInt hvar)
 }
 
 void ASS_HVAR_WITH_CONTEXT(Obj context, UInt hvar, Obj val)
+    GAP_GC_NOTSAFEPOINT
 {
     // walk up the environment chain to the correct values bag
     for (UInt i = 1; i <= (hvar >> MAX_FUNC_LVARS_BITS); i++) {
@@ -242,7 +256,8 @@ void ASS_HVAR_WITH_CONTEXT(Obj context, UInt hvar, Obj val)
     CHANGED_BAG(context);
 }
 
-Obj OBJ_HVAR_WITH_CONTEXT(Obj context, UInt hvar)
+Obj OBJ_HVAR_WITH_CONTEXT(Obj context GAP_GC_PROPAGATES_ROOT, UInt hvar)
+    GAP_GC_NOTSAFEPOINT
 {
     // walk up the environment chain to the correct values bag
     for (UInt i = 1; i <= (hvar >> MAX_FUNC_LVARS_BITS); i++) {
@@ -256,7 +271,7 @@ Obj OBJ_HVAR_WITH_CONTEXT(Obj context, UInt hvar)
     return val;
 }
 
-Obj NAME_HVAR_WITH_CONTEXT(Obj context, UInt hvar)
+Obj NAME_HVAR_WITH_CONTEXT(Obj context GAP_GC_PROPAGATES_ROOT, UInt hvar)
 {
     // walk up the environment chain to the correct values bag
     for (UInt i = 1; i <= (hvar >> MAX_FUNC_LVARS_BITS); i++) {
@@ -476,10 +491,12 @@ static void PrintIsbGVar(Expr expr)
 */
 static ExecStatus ExecAssList(Expr stat)
 {
-    Obj                 list;           // list, left operand
-    Obj                 pos;            // position, left operand
+    Obj                 list = 0;       // list, left operand
+    Obj                 pos = 0;        // position, left operand
     Int                 p;              // position, as C integer
-    Obj                 rhs;            // right hand side, right operand
+    Obj                 rhs = 0;        // right hand side, right operand
+
+    GAP_GC_PUSH3(&list, &pos, &rhs);
 
     // evaluate the list (checking is done by 'ASS_LIST')
     list = EVAL_EXPR(READ_STAT(stat, 0));
@@ -510,6 +527,7 @@ static ExecStatus ExecAssList(Expr stat)
         ASSB_LIST(list, pos, rhs);
     }
 
+    GAP_GC_POP();
     return STATUS_END;
 }
 /****************************************************************************
@@ -521,18 +539,26 @@ static ExecStatus ExecAssList(Expr stat)
 */
 static ExecStatus ExecAssMat(Expr stat)
 {
+    Obj mat = 0;
+    Obj row = 0;
+    Obj col = 0;
+    Obj rhs = 0;
+
+    GAP_GC_PUSH4(&mat, &row, &col, &rhs);
+
     // evaluate the matrix (checking is done by 'ASS_MAT')
-    Obj mat = EVAL_EXPR(READ_STAT(stat, 0));
+    mat = EVAL_EXPR(READ_STAT(stat, 0));
 
     // evaluate and check the row and column
-    Obj row = EVAL_EXPR(READ_STAT(stat, 1));
-    Obj col = EVAL_EXPR(READ_STAT(stat, 2));
+    row = EVAL_EXPR(READ_STAT(stat, 1));
+    col = EVAL_EXPR(READ_STAT(stat, 2));
 
     // evaluate the right hand side
-    Obj rhs = EVAL_EXPR(READ_STAT(stat, 3));
+    rhs = EVAL_EXPR(READ_STAT(stat, 3));
 
     ASS_MAT(mat, row, col, rhs);
 
+    GAP_GC_POP();
     return STATUS_END;
 }
 
@@ -546,9 +572,11 @@ static ExecStatus ExecAssMat(Expr stat)
 */
 static ExecStatus ExecAsssList(Expr stat)
 {
-    Obj                 list;           // list, left operand
-    Obj                 poss;           // positions, left operand
-    Obj                 rhss;           // right hand sides, right operand
+    Obj                 list = 0;       // list, left operand
+    Obj                 poss = 0;       // positions, left operand
+    Obj                 rhss = 0;       // right hand sides, right operand
+
+    GAP_GC_PUSH3(&list, &poss, &rhss);
 
     // evaluate the list (checking is done by 'ASSS_LIST')
     list = EVAL_EXPR(READ_STAT(stat, 0));
@@ -565,6 +593,7 @@ static ExecStatus ExecAsssList(Expr stat)
     // assign the right hand sides to several elements of the list
     ASSS_LIST( list, poss, rhss );
 
+    GAP_GC_POP();
     return STATUS_END;
 }
 
@@ -585,12 +614,14 @@ static ExecStatus ExecAsssList(Expr stat)
 */
 static ExecStatus ExecAssListLevel(Expr stat)
 {
-    Obj                 lists;          // lists, left operand
-    Obj                 pos;            // position, left operand
-    Obj                 rhss;           // right hand sides, right operand
+    Obj                 lists = 0;      // lists, left operand
+    Obj                 pos = 0;        // position, left operand
+    Obj                 rhss = 0;       // right hand sides, right operand
     UInt                level;          // level
     Int narg,i;
-    Obj ixs;
+    Obj ixs = 0;
+
+    GAP_GC_PUSH4(&lists, &pos, &rhss, &ixs);
 
     // evaluate lists (if this works, then <lists> is nested <level> deep,
     // checking it is nested <level>+1 deep is done by 'AssListLevel')
@@ -612,6 +643,7 @@ static ExecStatus ExecAssListLevel(Expr stat)
     // assign the right hand sides to the elements of several lists
     AssListLevel( lists, ixs, rhss, level );
 
+    GAP_GC_POP();
     return STATUS_END;
 }
 
@@ -632,10 +664,12 @@ static ExecStatus ExecAssListLevel(Expr stat)
 */
 static ExecStatus ExecAsssListLevel(Expr stat)
 {
-    Obj                 lists;          // lists, left operand
-    Obj                 poss;           // position, left operand
-    Obj                 rhss;           // right hand sides, right operand
+    Obj                 lists = 0;      // lists, left operand
+    Obj                 poss = 0;       // position, left operand
+    Obj                 rhss = 0;       // right hand sides, right operand
     UInt                level;          // level
+
+    GAP_GC_PUSH3(&lists, &poss, &rhss);
 
     // evaluate lists (if this works, then <lists> is nested <level> deep,
     // checking it is nested <level>+1 deep is done by 'AsssListLevel')
@@ -654,6 +688,7 @@ static ExecStatus ExecAsssListLevel(Expr stat)
     // assign the right hand sides to several elements of several lists
     AsssListLevel( lists, poss, rhss, level );
 
+    GAP_GC_POP();
     return STATUS_END;
 }
 
@@ -667,11 +702,13 @@ static ExecStatus ExecAsssListLevel(Expr stat)
 */
 static ExecStatus ExecUnbList(Expr stat)
 {
-    Obj                 list;           // list, left operand
-    Obj                 pos;            // position, left operand
-    Obj ixs;
+    Obj                 list = 0;       // list, left operand
+    Obj                 pos = 0;        // position, left operand
+    Obj ixs = 0;
     Int narg;
     Int i;
+
+    GAP_GC_PUSH3(&list, &pos, &ixs);
 
     // evaluate the list (checking is done by 'UNB_LIST')
     list = EVAL_EXPR(READ_STAT(stat, 0));
@@ -695,6 +732,7 @@ static ExecStatus ExecUnbList(Expr stat)
       UNBB_LIST(list, ixs);
     }
 
+    GAP_GC_POP();
     return STATUS_END;
 }
 
@@ -708,10 +746,12 @@ static ExecStatus ExecUnbList(Expr stat)
 */
 static Obj EvalElmList(Expr expr)
 {
-    Obj                 elm;            // element, result
-    Obj                 list;           // list, left operand
-    Obj                 pos;            // position, right operand
+    Obj                 elm = 0;        // element, result
+    Obj                 list = 0;       // list, left operand
+    Obj                 pos = 0;        // position, right operand
     Int                 p;              // position, as C integer
+
+    GAP_GC_PUSH3(&elm, &list, &pos);
 
     // evaluate the list (checking is done by 'ELM_LIST')
     list = EVAL_EXPR(READ_EXPR(expr, 0));
@@ -725,11 +765,13 @@ static Obj EvalElmList(Expr expr)
         // special case for plain lists (use generic code to signal errors)
         if ( IS_PLIST( list ) ) {
             if ( LEN_PLIST(list) < p ) {
-                return ELM_LIST( list, p );
+                elm = ELM_LIST( list, p );
             }
-            elm = ELM_PLIST( list, p );
-            if ( elm == 0 ) {
-                return ELM_LIST( list, p );
+            else {
+                elm = ELM_PLIST( list, p );
+                if ( elm == 0 ) {
+                    elm = ELM_LIST( list, p );
+                }
             }
         }
         // generic case
@@ -741,6 +783,7 @@ static Obj EvalElmList(Expr expr)
     }
 
     // return the element
+    GAP_GC_POP();
     return elm;
 }
 
@@ -753,15 +796,24 @@ static Obj EvalElmList(Expr expr)
 */
 static Obj EvalElmMat(Expr expr)
 {
+    Obj mat = 0;
+    Obj row = 0;
+    Obj col = 0;
+    Obj elm = 0;
+
+    GAP_GC_PUSH4(&mat, &row, &col, &elm);
+
     // evaluate the matrix (checking is done by 'ELM_MAT')
-    Obj mat = EVAL_EXPR(READ_EXPR(expr, 0));
+    mat = EVAL_EXPR(READ_EXPR(expr, 0));
 
     // evaluate and check the row and column
-    Obj row = EVAL_EXPR(READ_EXPR(expr, 1));
-    Obj col = EVAL_EXPR(READ_EXPR(expr, 2));
+    row = EVAL_EXPR(READ_EXPR(expr, 1));
+    col = EVAL_EXPR(READ_EXPR(expr, 2));
 
     // return the element
-    return ELM_MAT(mat, row, col);
+    elm = ELM_MAT(mat, row, col);
+    GAP_GC_POP();
+    return elm;
 }
 
 
@@ -774,9 +826,11 @@ static Obj EvalElmMat(Expr expr)
 */
 static Obj EvalElmsList(Expr expr)
 {
-    Obj                 elms;           // elements, result
-    Obj                 list;           // list, left operand
-    Obj                 poss;           // positions, right operand
+    Obj                 elms = 0;       // elements, result
+    Obj                 list = 0;       // list, left operand
+    Obj                 poss = 0;       // positions, right operand
+
+    GAP_GC_PUSH3(&elms, &list, &poss);
 
     // evaluate the list (checking is done by 'ELMS_LIST')
     list = EVAL_EXPR(READ_EXPR(expr, 0));
@@ -789,6 +843,7 @@ static Obj EvalElmsList(Expr expr)
     elms = ELMS_LIST( list, poss );
 
     // return the elements
+    GAP_GC_POP();
     return elms;
 }
 
@@ -808,12 +863,14 @@ static Obj EvalElmsList(Expr expr)
 */
 static Obj EvalElmListLevel(Expr expr)
 {
-    Obj                 lists;          // lists, left operand
-    Obj                 pos;            // position, right operand
-    Obj                 ixs;
+    Obj                 lists = 0;      // lists, left operand
+    Obj                 pos = 0;        // position, right operand
+    Obj                 ixs = 0;
     UInt                level;          // level
     Int narg;
     Int i;
+
+    GAP_GC_PUSH3(&lists, &pos, &ixs);
 
     // evaluate lists (if this works, then <lists> is nested <level> deep,
     // checking it is nested <level>+1 deep is done by 'ElmListLevel')
@@ -832,6 +889,7 @@ static Obj EvalElmListLevel(Expr expr)
     ElmListLevel( lists, ixs, level );
 
     // return the elements
+    GAP_GC_POP();
     return lists;
 }
 
@@ -852,9 +910,11 @@ static Obj EvalElmListLevel(Expr expr)
 */
 static Obj EvalElmsListLevel(Expr expr)
 {
-    Obj                 lists;          // lists, left operand
-    Obj                 poss;           // positions, right operand
+    Obj                 lists = 0;      // lists, left operand
+    Obj                 poss = 0;       // positions, right operand
     UInt                level;          // level
+
+    GAP_GC_PUSH2(&lists, &poss);
 
     // evaluate lists (if this works, then <lists> is nested <level> deep,
     // checking it is nested <level>+1 deep is done by 'ElmsListLevel')
@@ -871,6 +931,7 @@ static Obj EvalElmsListLevel(Expr expr)
     ElmsListLevel( lists, poss, level );
 
     // return the elements
+    GAP_GC_POP();
     return lists;
 }
 
@@ -884,10 +945,13 @@ static Obj EvalElmsListLevel(Expr expr)
 */
 static Obj EvalIsbList(Expr expr)
 {
-    Obj                 list;           // list, left operand
-    Obj                 pos;            // position, right operand
-    Obj ixs;
+    Obj                 list = 0;       // list, left operand
+    Obj                 pos = 0;        // position, right operand
+    Obj ixs = 0;
     Int narg, i;
+    BOOL isb;
+
+    GAP_GC_PUSH3(&list, &pos, &ixs);
 
     // evaluate the list (checking is done by 'ISB_LIST')
     list = EVAL_EXPR(READ_EXPR(expr, 0));
@@ -897,9 +961,11 @@ static Obj EvalIsbList(Expr expr)
       pos = EVAL_EXPR(READ_EXPR(expr, 1));
 
       if (IS_POS_INTOBJ(pos))
-        return ISB_LIST( list, INT_INTOBJ(pos) ) ? True : False;
+        isb = ISB_LIST( list, INT_INTOBJ(pos) );
       else
-        return ISBB_LIST(list, pos) ? True : False;
+        isb = ISBB_LIST(list, pos);
+      GAP_GC_POP();
+      return isb ? True : False;
     } else {
       ixs = NEW_PLIST(T_PLIST, narg);
       for (i = 1; i <= narg; i++) {
@@ -907,7 +973,9 @@ static Obj EvalIsbList(Expr expr)
         SET_ELM_PLIST(ixs,i,pos);
       }
       SET_LEN_PLIST(ixs, narg);
-      return ISBB_LIST(list, ixs) ? True : False;
+      isb = ISBB_LIST(list, ixs);
+      GAP_GC_POP();
+      return isb ? True : False;
     }
 
 }
@@ -1139,9 +1207,11 @@ static void PrintElmsListLevel(Expr expr)
 */
 static ExecStatus ExecAssRecName(Stat stat)
 {
-    Obj                 record;         // record, left operand
+    Obj                 record = 0;     // record, left operand
     UInt                rnam;           // name, left operand
-    Obj                 rhs;            // rhs, right operand
+    Obj                 rhs = 0;        // rhs, right operand
+
+    GAP_GC_PUSH2(&record, &rhs);
 
     // evaluate the record (checking is done by 'ASS_REC')
     record = EVAL_EXPR(READ_STAT(stat, 0));
@@ -1155,6 +1225,7 @@ static ExecStatus ExecAssRecName(Stat stat)
     // assign the right hand side to the element of the record
     ASS_REC( record, rnam, rhs );
 
+    GAP_GC_POP();
     return STATUS_END;
 }
 
@@ -1168,15 +1239,19 @@ static ExecStatus ExecAssRecName(Stat stat)
 */
 static ExecStatus ExecAssRecExpr(Stat stat)
 {
-    Obj                 record;         // record, left operand
+    Obj                 record = 0;     // record, left operand
     UInt                rnam;           // name, left operand
-    Obj                 rhs;            // rhs, right operand
+    Obj                 rhs = 0;        // rhs, right operand
+    Obj                 name = 0;       // evaluated record name
+
+    GAP_GC_PUSH3(&record, &rhs, &name);
 
     // evaluate the record (checking is done by 'ASS_REC')
     record = EVAL_EXPR(READ_STAT(stat, 0));
 
     // evaluate the name and convert it to a record name
-    rnam = RNamObj(EVAL_EXPR(READ_STAT(stat, 1)));
+    name = EVAL_EXPR(READ_STAT(stat, 1));
+    rnam = RNamObj(name);
 
     // evaluate the right hand side
     rhs = EVAL_EXPR(READ_STAT(stat, 2));
@@ -1184,6 +1259,7 @@ static ExecStatus ExecAssRecExpr(Stat stat)
     // assign the right hand side to the element of the record
     ASS_REC( record, rnam, rhs );
 
+    GAP_GC_POP();
     return STATUS_END;
 }
 
@@ -1197,8 +1273,10 @@ static ExecStatus ExecAssRecExpr(Stat stat)
 */
 static ExecStatus ExecUnbRecName(Stat stat)
 {
-    Obj                 record;         // record, left operand
+    Obj                 record = 0;     // record, left operand
     UInt                rnam;           // name, left operand
+
+    GAP_GC_PUSH1(&record);
 
     // evaluate the record (checking is done by 'UNB_REC')
     record = EVAL_EXPR(READ_STAT(stat, 0));
@@ -1209,6 +1287,7 @@ static ExecStatus ExecUnbRecName(Stat stat)
     // unbind the element of the record
     UNB_REC( record, rnam );
 
+    GAP_GC_POP();
     return STATUS_END;
 }
 
@@ -1222,18 +1301,23 @@ static ExecStatus ExecUnbRecName(Stat stat)
 */
 static ExecStatus ExecUnbRecExpr(Stat stat)
 {
-    Obj                 record;         // record, left operand
+    Obj                 record = 0;     // record, left operand
     UInt                rnam;           // name, left operand
+    Obj                 name = 0;       // evaluated record name
+
+    GAP_GC_PUSH2(&record, &name);
 
     // evaluate the record (checking is done by 'UNB_REC')
     record = EVAL_EXPR(READ_STAT(stat, 0));
 
     // evaluate the name and convert it to a record name
-    rnam = RNamObj(EVAL_EXPR(READ_STAT(stat, 1)));
+    name = EVAL_EXPR(READ_STAT(stat, 1));
+    rnam = RNamObj(name);
 
     // unbind the element of the record
     UNB_REC( record, rnam );
 
+    GAP_GC_POP();
     return STATUS_END;
 }
 
@@ -1247,9 +1331,11 @@ static ExecStatus ExecUnbRecExpr(Stat stat)
 */
 static Obj EvalElmRecName(Expr expr)
 {
-    Obj                 elm;            // element, result
-    Obj                 record;         // the record, left operand
+    Obj                 elm = 0;        // element, result
+    Obj                 record = 0;     // the record, left operand
     UInt                rnam;           // the name, right operand
+
+    GAP_GC_PUSH2(&elm, &record);
 
     // evaluate the record (checking is done by 'ELM_REC')
     record = EVAL_EXPR(READ_EXPR(expr, 0));
@@ -1261,6 +1347,7 @@ static Obj EvalElmRecName(Expr expr)
     elm = ELM_REC( record, rnam );
 
     // return the element
+    GAP_GC_POP();
     return elm;
 }
 
@@ -1274,20 +1361,25 @@ static Obj EvalElmRecName(Expr expr)
 */
 static Obj EvalElmRecExpr(Expr expr)
 {
-    Obj                 elm;            // element, result
-    Obj                 record;         // the record, left operand
+    Obj                 elm = 0;        // element, result
+    Obj                 record = 0;     // the record, left operand
     UInt                rnam;           // the name, right operand
+    Obj                 name = 0;       // evaluated record name
+
+    GAP_GC_PUSH3(&elm, &record, &name);
 
     // evaluate the record (checking is done by 'ELM_REC')
     record = EVAL_EXPR(READ_EXPR(expr, 0));
 
     // evaluate the name and convert it to a record name
-    rnam = RNamObj(EVAL_EXPR(READ_EXPR(expr, 1)));
+    name = EVAL_EXPR(READ_EXPR(expr, 1));
+    rnam = RNamObj(name);
 
     // select the element of the record
     elm = ELM_REC( record, rnam );
 
     // return the element
+    GAP_GC_POP();
     return elm;
 }
 
@@ -1301,8 +1393,11 @@ static Obj EvalElmRecExpr(Expr expr)
 */
 static Obj EvalIsbRecName(Expr expr)
 {
-    Obj                 record;         // the record, left operand
+    Obj                 record = 0;     // the record, left operand
     UInt                rnam;           // the name, right operand
+    BOOL                isb;
+
+    GAP_GC_PUSH1(&record);
 
     // evaluate the record (checking is done by 'ISB_REC')
     record = EVAL_EXPR(READ_EXPR(expr, 0));
@@ -1310,7 +1405,9 @@ static Obj EvalIsbRecName(Expr expr)
     // get the name (stored immediately in the expression)
     rnam = READ_EXPR(expr, 1);
 
-    return (ISB_REC( record, rnam ) ? True : False);
+    isb = ISB_REC( record, rnam );
+    GAP_GC_POP();
+    return isb ? True : False;
 }
 
 
@@ -1323,16 +1420,23 @@ static Obj EvalIsbRecName(Expr expr)
 */
 static Obj EvalIsbRecExpr(Expr expr)
 {
-    Obj                 record;         // the record, left operand
+    Obj                 record = 0;     // the record, left operand
     UInt                rnam;           // the name, right operand
+    Obj                 name = 0;       // evaluated record name
+    BOOL                isb;
+
+    GAP_GC_PUSH2(&record, &name);
 
     // evaluate the record (checking is done by 'ISB_REC')
     record = EVAL_EXPR(READ_EXPR(expr, 0));
 
     // evaluate the name and convert it to a record name
-    rnam = RNamObj(EVAL_EXPR(READ_EXPR(expr, 1)));
+    name = EVAL_EXPR(READ_EXPR(expr, 1));
+    rnam = RNamObj(name);
 
-    return (ISB_REC( record, rnam ) ? True : False);
+    isb = ISB_REC( record, rnam );
+    GAP_GC_POP();
+    return isb ? True : False;
 }
 
 
@@ -1463,10 +1567,12 @@ static void PrintIsbRecExpr(Expr expr)
 */
 static ExecStatus ExecAssPosObj(Expr stat)
 {
-    Obj                 posobj;         // posobj, left operand
-    Obj                 pos;            // position, left operand
+    Obj                 posobj = 0;     // posobj, left operand
+    Obj                 pos = 0;        // position, left operand
     Int                 p;              // position, as a C integer
-    Obj                 rhs;            // right hand side, right operand
+    Obj                 rhs = 0;        // right hand side, right operand
+
+    GAP_GC_PUSH3(&posobj, &pos, &rhs);
 
     // evaluate the posobj (checking is done by 'AssPosObj')
     posobj = EVAL_EXPR(READ_STAT(stat, 0));
@@ -1481,6 +1587,7 @@ static ExecStatus ExecAssPosObj(Expr stat)
     // special case for plain posobj
     AssPosObj(posobj, p, rhs);
 
+    GAP_GC_POP();
     return STATUS_END;
 }
 
@@ -1494,9 +1601,11 @@ static ExecStatus ExecAssPosObj(Expr stat)
 */
 static ExecStatus ExecUnbPosObj(Expr stat)
 {
-    Obj                 posobj;         // posobj, left operand
-    Obj                 pos;            // position, left operand
+    Obj                 posobj = 0;     // posobj, left operand
+    Obj                 pos = 0;        // position, left operand
     Int                 p;              // position, as a C integer
+
+    GAP_GC_PUSH2(&posobj, &pos);
 
     // evaluate the posobj (checking is done by 'UnbPosObj')
     posobj = EVAL_EXPR(READ_STAT(stat, 0));
@@ -1508,6 +1617,7 @@ static ExecStatus ExecUnbPosObj(Expr stat)
     // unbind the element
     UnbPosObj(posobj, p);
 
+    GAP_GC_POP();
     return STATUS_END;
 }
 
@@ -1521,10 +1631,12 @@ static ExecStatus ExecUnbPosObj(Expr stat)
 */
 static Obj EvalElmPosObj(Expr expr)
 {
-    Obj                 elm;            // element, result
-    Obj                 posobj;         // posobj, left operand
-    Obj                 pos;            // position, right operand
+    Obj                 elm = 0;        // element, result
+    Obj                 posobj = 0;     // posobj, left operand
+    Obj                 pos = 0;        // position, right operand
     Int                 p;              // position, as C integer
+
+    GAP_GC_PUSH3(&elm, &posobj, &pos);
 
     // evaluate the posobj (checking is done by 'ElmPosObj')
     posobj = EVAL_EXPR(READ_EXPR(expr, 0));
@@ -1537,6 +1649,7 @@ static Obj EvalElmPosObj(Expr expr)
     elm = ElmPosObj(posobj, p);
 
     // return the element
+    GAP_GC_POP();
     return elm;
 }
 
@@ -1551,9 +1664,11 @@ static Obj EvalElmPosObj(Expr expr)
 static Obj EvalIsbPosObj(Expr expr)
 {
     Obj                 isb;            // isbound, result
-    Obj                 posobj;         // posobj, left operand
-    Obj                 pos;            // position, right operand
+    Obj                 posobj = 0;     // posobj, left operand
+    Obj                 pos = 0;        // position, right operand
     Int                 p;              // position, as C integer
+
+    GAP_GC_PUSH2(&posobj, &pos);
 
     // evaluate the posobj (checking is done by 'IsbPosObj')
     posobj = EVAL_EXPR(READ_EXPR(expr, 0));
@@ -1565,6 +1680,7 @@ static Obj EvalIsbPosObj(Expr expr)
     // get the result
     isb = IsbPosObj(posobj, p) ? True : False;
 
+    GAP_GC_POP();
     return isb;
 }
 
@@ -1641,9 +1757,11 @@ static void PrintIsbPosObj(Expr expr)
 */
 static ExecStatus ExecAssComObjName(Stat stat)
 {
-    Obj                 comobj;         // comobj, left operand
+    Obj                 comobj = 0;     // comobj, left operand
     UInt                rnam;           // name, left operand
-    Obj                 rhs;            // rhs, right operand
+    Obj                 rhs = 0;        // rhs, right operand
+
+    GAP_GC_PUSH2(&comobj, &rhs);
 
     // evaluate the comobj (checking is done by 'AssComObj')
     comobj = EVAL_EXPR(READ_STAT(stat, 0));
@@ -1657,6 +1775,7 @@ static ExecStatus ExecAssComObjName(Stat stat)
     // assign the right hand side to the element of the comobj
     AssComObj(comobj, rnam, rhs);
 
+    GAP_GC_POP();
     return STATUS_END;
 }
 
@@ -1670,15 +1789,19 @@ static ExecStatus ExecAssComObjName(Stat stat)
 */
 static ExecStatus ExecAssComObjExpr(Stat stat)
 {
-    Obj                 comobj;         // comobj, left operand
+    Obj                 comobj = 0;     // comobj, left operand
     UInt                rnam;           // name, left operand
-    Obj                 rhs;            // rhs, right operand
+    Obj                 rhs = 0;        // rhs, right operand
+    Obj                 name = 0;       // evaluated component name
+
+    GAP_GC_PUSH3(&comobj, &rhs, &name);
 
     // evaluate the comobj (checking is done by 'AssComObj')
     comobj = EVAL_EXPR(READ_STAT(stat, 0));
 
     // evaluate the name and convert it to a comobj name
-    rnam = RNamObj(EVAL_EXPR(READ_STAT(stat, 1)));
+    name = EVAL_EXPR(READ_STAT(stat, 1));
+    rnam = RNamObj(name);
 
     // evaluate the right hand side
     rhs = EVAL_EXPR(READ_STAT(stat, 2));
@@ -1686,6 +1809,7 @@ static ExecStatus ExecAssComObjExpr(Stat stat)
     // assign the right hand side to the element of the comobj
     AssComObj(comobj, rnam, rhs);
 
+    GAP_GC_POP();
     return STATUS_END;
 }
 
@@ -1699,8 +1823,10 @@ static ExecStatus ExecAssComObjExpr(Stat stat)
 */
 static ExecStatus ExecUnbComObjName(Stat stat)
 {
-    Obj                 comobj;         // comobj, left operand
+    Obj                 comobj = 0;     // comobj, left operand
     UInt                rnam;           // name, left operand
+
+    GAP_GC_PUSH1(&comobj);
 
     // evaluate the comobj (checking is done by 'UnbComObj')
     comobj = EVAL_EXPR(READ_STAT(stat, 0));
@@ -1711,6 +1837,7 @@ static ExecStatus ExecUnbComObjName(Stat stat)
     // unbind the element of the comobj
     UnbComObj(comobj, rnam);
 
+    GAP_GC_POP();
     return STATUS_END;
 }
 
@@ -1724,18 +1851,23 @@ static ExecStatus ExecUnbComObjName(Stat stat)
 */
 static ExecStatus ExecUnbComObjExpr(Stat stat)
 {
-    Obj                 comobj;         // comobj, left operand
+    Obj                 comobj = 0;     // comobj, left operand
     UInt                rnam;           // name, left operand
+    Obj                 name = 0;       // evaluated component name
+
+    GAP_GC_PUSH2(&comobj, &name);
 
     // evaluate the comobj (checking is done by 'UnbComObj')
     comobj = EVAL_EXPR(READ_STAT(stat, 0));
 
     // evaluate the name and convert it to a comobj name
-    rnam = RNamObj(EVAL_EXPR(READ_STAT(stat, 1)));
+    name = EVAL_EXPR(READ_STAT(stat, 1));
+    rnam = RNamObj(name);
 
     // unbind the element of the comobj
     UnbComObj(comobj, rnam);
 
+    GAP_GC_POP();
     return STATUS_END;
 }
 
@@ -1749,9 +1881,11 @@ static ExecStatus ExecUnbComObjExpr(Stat stat)
 */
 static Obj EvalElmComObjName(Expr expr)
 {
-    Obj                 elm;            // element, result
-    Obj                 comobj;         // the comobj, left operand
+    Obj                 elm = 0;        // element, result
+    Obj                 comobj = 0;     // the comobj, left operand
     UInt                rnam;           // the name, right operand
+
+    GAP_GC_PUSH2(&elm, &comobj);
 
     // evaluate the comobj (checking is done by 'ElmComObj')
     comobj = EVAL_EXPR(READ_EXPR(expr, 0));
@@ -1763,6 +1897,7 @@ static Obj EvalElmComObjName(Expr expr)
     elm = ElmComObj(comobj, rnam);
 
     // return the element
+    GAP_GC_POP();
     return elm;
 }
 
@@ -1776,20 +1911,25 @@ static Obj EvalElmComObjName(Expr expr)
 */
 static Obj EvalElmComObjExpr(Expr expr)
 {
-    Obj                 elm;            // element, result
-    Obj                 comobj;         // the comobj, left operand
+    Obj                 elm = 0;        // element, result
+    Obj                 comobj = 0;     // the comobj, left operand
     UInt                rnam;           // the name, right operand
+    Obj                 name = 0;       // evaluated component name
+
+    GAP_GC_PUSH3(&elm, &comobj, &name);
 
     // evaluate the comobj (checking is done by 'ElmComObj')
     comobj = EVAL_EXPR(READ_EXPR(expr, 0));
 
     // evaluate the name and convert it to a comobj name
-    rnam = RNamObj(EVAL_EXPR(READ_EXPR(expr, 1)));
+    name = EVAL_EXPR(READ_EXPR(expr, 1));
+    rnam = RNamObj(name);
 
     // select the element of the comobj
     elm = ElmComObj(comobj, rnam);
 
     // return the element
+    GAP_GC_POP();
     return elm;
 }
 
@@ -1804,8 +1944,10 @@ static Obj EvalElmComObjExpr(Expr expr)
 static Obj EvalIsbComObjName(Expr expr)
 {
     Obj                 isb;            // element, result
-    Obj                 comobj;         // the comobj, left operand
+    Obj                 comobj = 0;     // the comobj, left operand
     UInt                rnam;           // the name, right operand
+
+    GAP_GC_PUSH1(&comobj);
 
     // evaluate the comobj (checking is done by 'IsbComObj')
     comobj = EVAL_EXPR(READ_EXPR(expr, 0));
@@ -1816,6 +1958,7 @@ static Obj EvalIsbComObjName(Expr expr)
     // select the element of the comobj
     isb = IsbComObj(comobj, rnam) ? True : False;
 
+    GAP_GC_POP();
     return isb;
 }
 
@@ -1830,18 +1973,23 @@ static Obj EvalIsbComObjName(Expr expr)
 static Obj EvalIsbComObjExpr(Expr expr)
 {
     Obj                 isb;            // element, result
-    Obj                 comobj;         // the comobj, left operand
+    Obj                 comobj = 0;     // the comobj, left operand
     UInt                rnam;           // the name, right operand
+    Obj                 name = 0;       // evaluated component name
+
+    GAP_GC_PUSH2(&comobj, &name);
 
     // evaluate the comobj (checking is done by 'IsbComObj')
     comobj = EVAL_EXPR(READ_EXPR(expr, 0));
 
     // evaluate the name and convert it to a comobj name
-    rnam = RNamObj(EVAL_EXPR(READ_EXPR(expr, 1)));
+    name = EVAL_EXPR(READ_EXPR(expr, 1));
+    rnam = RNamObj(name);
 
     // select the element of the comobj
     isb = IsbComObj(comobj, rnam) ? True : False;
 
+    GAP_GC_POP();
     return isb;
 }
 
@@ -2003,13 +2151,18 @@ static Obj FuncContentsLVars(Obj self, Obj lvars)
   if (!IS_LVARS_OR_HVARS(lvars)) {
       RequireArgument(SELF_NAME, lvars, "must be an lvars");
   }
-  Obj contents = NEW_PREC(0);
-  Obj func = FUNC_LVARS(lvars);
-  Obj nams = NAMS_FUNC(func);
-  UInt len = (SIZE_BAG(lvars) - 2*sizeof(Obj) - sizeof(UInt))/sizeof(Obj);
-  Obj values = NEW_PLIST_IMM(T_PLIST, len);
   if (IsBottomLVars(lvars))
     return Fail;
+  Obj contents = 0;
+  Obj func = 0;
+  Obj nams = 0;
+  Obj values = 0;
+  GAP_GC_PUSH4(&contents, &func, &nams, &values);
+  contents = NEW_PREC(0);
+  func = FUNC_LVARS(lvars);
+  nams = NAMS_FUNC(func);
+  UInt len = (SIZE_BAG(lvars) - 2*sizeof(Obj) - sizeof(UInt))/sizeof(Obj);
+  values = NEW_PLIST_IMM(T_PLIST, len);
   AssPRec(contents, RNamName("func"), func);
   AssPRec(contents, RNamName("names"), nams);
   memcpy(1+ADDR_OBJ(values), 3+CONST_ADDR_OBJ(lvars), len*sizeof(Obj));
@@ -2019,6 +2172,7 @@ static Obj FuncContentsLVars(Obj self, Obj lvars)
   AssPRec(contents, RNamName("values"), values);
   if (!IsBottomLVars(ENVI_FUNC(func)))
     AssPRec(contents, RNamName("higher"), ENVI_FUNC(func));
+  GAP_GC_POP();
   return contents;
 }
 
@@ -2035,7 +2189,7 @@ static Obj FuncENVI_FUNC(Obj self, Obj func)
 *F  IsBottomLVars(<lvars>) . .  check whether some lvars are the bottom lvars
 **
 */
-BOOL IsBottomLVars(Obj lvars)
+BOOL IsBottomLVars(Obj lvars) GAP_GC_NOTSAFEPOINT
 {
     return lvars == BottomLVars;
 }

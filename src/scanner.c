@@ -533,7 +533,10 @@ finish:
     i = AddCharToValue(s, i, '\0');
     if (s->ValueObj) {
         // flush buffer
-        AppendBufToString(s->ValueObj, s->Value, i - 1);
+        Obj value_obj = s->ValueObj;
+        GAP_GC_PUSH1(&value_obj);
+        s->ValueObj = AppendBufToString(value_obj, s->Value, i - 1);
+        GAP_GC_POP();
     }
     return symbol;
 }
