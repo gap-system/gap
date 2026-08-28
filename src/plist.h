@@ -64,7 +64,7 @@ EXPORT_INLINE Obj NEW_PLIST_WITH_MUTABILITY(Int mut, UInt type, Int plen)
 **
 *F  IS_PLIST( <list> )  . . . . . . . . . . . check if <list> is a plain list
 */
-EXPORT_INLINE BOOL IS_PLIST(Obj list)
+EXPORT_INLINE BOOL IS_PLIST(Obj list) GAP_GC_NOTSAFEPOINT
 {
     return FIRST_PLIST_TNUM <= TNUM_OBJ(list) &&
            TNUM_OBJ(list) <= LAST_PLIST_TNUM;
@@ -82,7 +82,7 @@ EXPORT_INLINE BOOL IS_PLIST(Obj list)
 **  (which have the same memory layout as plists), as the plist APIs using it
 **  for assertion checks are in practice invoked on such objects, too.
 */
-EXPORT_INLINE BOOL IS_PLIST_OR_POSOBJ(Obj list)
+EXPORT_INLINE BOOL IS_PLIST_OR_POSOBJ(Obj list) GAP_GC_NOTSAFEPOINT
 {
     UInt tnum = TNUM_OBJ(list);
     return (FIRST_PLIST_TNUM <= tnum && tnum <= LAST_PLIST_TNUM) ||
@@ -97,7 +97,7 @@ EXPORT_INLINE BOOL IS_PLIST_OR_POSOBJ(Obj list)
 **  'CAPACITY_PLIST' returns the maximum capacity of a PLIST.
 **
 */
-EXPORT_INLINE Int CAPACITY_PLIST(Obj list)
+EXPORT_INLINE Int CAPACITY_PLIST(Obj list) GAP_GC_NOTSAFEPOINT
 {
     return SIZE_OBJ(list) / sizeof(Obj) - 1;
 }
@@ -146,7 +146,7 @@ EXPORT_INLINE void SHRINK_PLIST(Obj list, Int plen)
 **  'SET_LEN_PLIST' sets the length of  the plain list  <list> to <len>.
 **
 */
-EXPORT_INLINE void SET_LEN_PLIST(Obj list, Int len)
+EXPORT_INLINE void SET_LEN_PLIST(Obj list, Int len) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_PLIST_OR_POSOBJ(list));
     GAP_ASSERT(len >= 0);
@@ -162,7 +162,7 @@ EXPORT_INLINE void SET_LEN_PLIST(Obj list, Int len)
 **  'LEN_PLIST' returns the logical length of the list <list> as a C integer.
 **
 */
-EXPORT_INLINE Int LEN_PLIST(Obj list)
+EXPORT_INLINE Int LEN_PLIST(Obj list) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_PLIST_OR_POSOBJ(list));
     return INT_INTOBJ(CONST_ADDR_OBJ(list)[0]);
@@ -178,7 +178,9 @@ EXPORT_INLINE Int LEN_PLIST(Obj list)
 **  the length of <list>.
 **
 */
-EXPORT_INLINE void SET_ELM_PLIST(Obj list, Int pos, Obj val)
+EXPORT_INLINE void SET_ELM_PLIST(Obj list, Int pos,
+                                 Obj val GAP_GC_ROOTED_BY_ARG_INDEXED(0, 1))
+    GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_PLIST_OR_POSOBJ(list));
     GAP_ASSERT(pos >= 1);
@@ -195,7 +197,8 @@ EXPORT_INLINE void SET_ELM_PLIST(Obj list, Int pos, Obj val)
 **  <list>.  If <list> has no assigned element at position <pos>, 'ELM_PLIST'
 **  returns 0.
 */
-EXPORT_INLINE Obj ELM_PLIST(Obj list, Int pos)
+EXPORT_INLINE Obj ELM_PLIST(Obj list GAP_GC_PROPAGATES_ROOT, Int pos)
+    GAP_GC_PROPAGATES_ROOT_INDEXED(0, 1) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_PLIST_OR_POSOBJ(list));
     GAP_ASSERT(pos >= 1);
@@ -211,7 +214,7 @@ EXPORT_INLINE Obj ELM_PLIST(Obj list, Int pos)
 **
 **  This point will be invalidated whenever a garbage collection occurs.
 */
-EXPORT_INLINE Obj * BASE_PTR_PLIST(Obj list)
+EXPORT_INLINE Obj * BASE_PTR_PLIST(Obj list) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_PLIST_OR_POSOBJ(list));
     return ADDR_OBJ(list) + 1;
@@ -226,7 +229,7 @@ EXPORT_INLINE Obj * BASE_PTR_PLIST(Obj list)
 **  whether they are dense or not (i.e. of type 'T_PLIST'),
 **  use 'IS_DENSE_LIST' instead.
 */
-EXPORT_INLINE BOOL IS_DENSE_PLIST(Obj list)
+EXPORT_INLINE BOOL IS_DENSE_PLIST(Obj list) GAP_GC_NOTSAFEPOINT
 {
     return T_PLIST_DENSE <= TNUM_OBJ(list) &&
            TNUM_OBJ(list) <= LAST_PLIST_TNUM;
@@ -236,7 +239,7 @@ EXPORT_INLINE BOOL IS_DENSE_PLIST(Obj list)
 **
 *F  IS_PLIST_MUTABLE( <list> )  . . . . . . . . . . . is a plain list mutable
 */
-EXPORT_INLINE BOOL IS_PLIST_MUTABLE(Obj list)
+EXPORT_INLINE BOOL IS_PLIST_MUTABLE(Obj list) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_PLIST(list));
     return !((TNUM_OBJ(list) - T_PLIST) % 2);
@@ -246,7 +249,8 @@ EXPORT_INLINE BOOL IS_PLIST_MUTABLE(Obj list)
 **
 *F  AssPlist( <list>, <pos>, <val>) . . . . . . . . .  assign to a plain list
 */
-void AssPlist(Obj list, Int pos, Obj val);
+void AssPlist(Obj list, Int pos,
+              Obj val GAP_GC_ROOTED_BY_ARG_INDEXED(0, 1) GAP_GC_MAYBE_UNROOTED);
 
 /****************************************************************************
 **
@@ -258,10 +262,14 @@ void AssPlist(Obj list, Int pos, Obj val);
 **  instead.
 **
 */
-EXPORT_INLINE UInt PushPlist(Obj list, Obj val)
+EXPORT_INLINE UInt PushPlist(Obj list,
+                             Obj val GAP_GC_ROOTED_BY_ARG(0)
+                                 GAP_GC_MAYBE_UNROOTED)
 {
     const UInt pos = LEN_PLIST(list) + 1;
+    GAP_GC_PUSH1(&val);
     GROW_PLIST(list, pos);
+    GAP_GC_POP();
     SET_LEN_PLIST(list, pos);
     SET_ELM_PLIST(list, pos, val);
     if (IS_BAG_REF(val))
@@ -281,7 +289,7 @@ EXPORT_INLINE UInt PushPlist(Obj list, Obj val)
 **  preventing the garbage collector from collecting the pop'ed object.
 **
 */
-EXPORT_INLINE Obj PopPlist(Obj list)
+EXPORT_INLINE Obj PopPlist(Obj list) GAP_GC_NOTSAFEPOINT
 {
     const UInt pos = LEN_PLIST(list);
     Obj val = ELM_PLIST(list, pos);
@@ -369,9 +377,11 @@ Obj ShallowCopyPlist(Obj list);
 **
 *F  AssPlistEmpty( <list>, <pos>, <val> ) . . . . .  assignment to empty list
 */
-void AssPlistEmpty(Obj list, Int pos, Obj val);
+void AssPlistEmpty(Obj list, Int pos,
+                   Obj val GAP_GC_ROOTED_BY_ARG_INDEXED(0, 1));
 
-void AssPlistFfe(Obj list, Int pos, Obj val);
+void AssPlistFfe(Obj list, Int pos,
+                 Obj val GAP_GC_ROOTED_BY_ARG_INDEXED(0, 1));
 
 /****************************************************************************
 **

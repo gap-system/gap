@@ -16,42 +16,43 @@
 #include "gasman.h"
 
 void MarkArrayOfBags(const Bag array[], UInt count, void * ref)
+    GAP_GC_NOTSAFEPOINT
 {
     for (UInt i = 0; i < count; i++) {
         MarkBag(array[i], ref);
     }
 }
 
-void MarkNoSubBags(Bag bag, void * ref)
+void MarkNoSubBags(Bag bag, void * ref) GAP_GC_NOTSAFEPOINT
 {
 }
 
-void MarkOneSubBags(Bag bag, void * ref)
+void MarkOneSubBags(Bag bag, void * ref) GAP_GC_NOTSAFEPOINT
 {
     MarkArrayOfBags(CONST_PTR_BAG(bag), 1, ref);
 }
 
-void MarkTwoSubBags(Bag bag, void * ref)
+void MarkTwoSubBags(Bag bag, void * ref) GAP_GC_NOTSAFEPOINT
 {
     MarkArrayOfBags(CONST_PTR_BAG(bag), 2, ref);
 }
 
-void MarkThreeSubBags(Bag bag, void * ref)
+void MarkThreeSubBags(Bag bag, void * ref) GAP_GC_NOTSAFEPOINT
 {
     MarkArrayOfBags(CONST_PTR_BAG(bag), 3, ref);
 }
 
-void MarkFourSubBags(Bag bag, void * ref)
+void MarkFourSubBags(Bag bag, void * ref) GAP_GC_NOTSAFEPOINT
 {
     MarkArrayOfBags(CONST_PTR_BAG(bag), 4, ref);
 }
 
-void MarkAllSubBags(Bag bag, void * ref)
+void MarkAllSubBags(Bag bag, void * ref) GAP_GC_NOTSAFEPOINT
 {
     MarkArrayOfBags(CONST_PTR_BAG(bag), SIZE_BAG(bag) / sizeof(Bag), ref);
 }
 
-void MarkAllButFirstSubBags(Bag bag, void * ref)
+void MarkAllButFirstSubBags(Bag bag, void * ref) GAP_GC_NOTSAFEPOINT
 {
     MarkArrayOfBags(CONST_PTR_BAG(bag) + 1, SIZE_BAG(bag) / sizeof(Bag) - 1, ref);
 }

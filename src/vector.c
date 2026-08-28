@@ -37,7 +37,7 @@
 */
 static Obj SumIntVector(Obj elmL, Obj vecR)
 {
-    Obj                 vecS;           // handle of the sum
+    Obj                 vecS = 0;       // handle of the sum
     Obj *               ptrS;           // pointer into the sum
     Obj                 elmS;           // one element of sum list
     const Obj *         ptrR;           // pointer into the right operand
@@ -47,6 +47,7 @@ static Obj SumIntVector(Obj elmL, Obj vecR)
 
     // make the result list
     len = LEN_PLIST(vecR);
+    GAP_GC_PUSH1(&vecS);
     vecS = NEW_PLIST(TNUM_OBJ(vecR), len);
     SET_LEN_PLIST(vecS, len);
 
@@ -66,6 +67,7 @@ static Obj SumIntVector(Obj elmL, Obj vecR)
             ptrS[i] = elmS;
     }
 
+    GAP_GC_POP();
     return vecS;
 }
 
@@ -83,7 +85,7 @@ static Obj SumIntVector(Obj elmL, Obj vecR)
 */
 static Obj SumVectorInt(Obj vecL, Obj elmR)
 {
-    Obj                 vecS;           // handle of the sum
+    Obj                 vecS = 0;       // handle of the sum
     Obj *               ptrS;           // pointer into the sum
     Obj                 elmS;           // one element of sum list
     const Obj *         ptrL;           // pointer into the left operand
@@ -93,6 +95,7 @@ static Obj SumVectorInt(Obj vecL, Obj elmR)
 
     // make the result list
     len = LEN_PLIST(vecL);
+    GAP_GC_PUSH1(&vecS);
     vecS = NEW_PLIST(TNUM_OBJ(vecL), len);
     SET_LEN_PLIST(vecS, len);
 
@@ -112,6 +115,7 @@ static Obj SumVectorInt(Obj vecL, Obj elmR)
             ptrS[i] = elmS;
     }
 
+    GAP_GC_POP();
     return vecS;
 }
 
@@ -129,7 +133,7 @@ static Obj SumVectorInt(Obj vecL, Obj elmR)
 */
 static Obj SumVectorVector(Obj vecL, Obj vecR)
 {
-    Obj                 vecS;           // handle of the sum
+    Obj                 vecS = 0;       // handle of the sum
     Obj *               ptrS;           // pointer into the sum
     Obj                 elmS;           // one element of sum list
     const Obj *         ptrL;           // pointer into the left operand
@@ -149,6 +153,7 @@ static Obj SumVectorVector(Obj vecL, Obj vecR)
         lenmin = lenR;
         len = lenL;
     }
+    GAP_GC_PUSH1(&vecS);
     vecS = NEW_PLIST_WITH_MUTABILITY(
         IS_MUTABLE_OBJ(vecL) || IS_MUTABLE_OBJ(vecR), T_PLIST_CYC, len);
     SET_LEN_PLIST(vecS, len);
@@ -180,6 +185,7 @@ static Obj SumVectorVector(Obj vecL, Obj vecR)
             ptrS[i] = ptrL[i];
         }
 
+    GAP_GC_POP();
     return vecS;
 }
 
@@ -197,7 +203,7 @@ static Obj SumVectorVector(Obj vecL, Obj vecR)
 */
 static Obj DiffIntVector(Obj elmL, Obj vecR)
 {
-    Obj                 vecD;           // handle of the difference
+    Obj                 vecD = 0;       // handle of the difference
     Obj *               ptrD;           // pointer into the difference
     Obj                 elmD;           // one element of difference list
     const Obj *         ptrR;           // pointer into the right operand
@@ -207,6 +213,7 @@ static Obj DiffIntVector(Obj elmL, Obj vecR)
 
     // make the result list
     len = LEN_PLIST(vecR);
+    GAP_GC_PUSH1(&vecD);
     vecD = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecR), T_PLIST_CYC, len);
     SET_LEN_PLIST(vecD, len);
 
@@ -226,6 +233,7 @@ static Obj DiffIntVector(Obj elmL, Obj vecR)
             ptrD[i] = elmD;
     }
 
+    GAP_GC_POP();
     return vecD;
 }
 
@@ -243,7 +251,7 @@ static Obj DiffIntVector(Obj elmL, Obj vecR)
 */
 static Obj DiffVectorInt(Obj vecL, Obj elmR)
 {
-    Obj                 vecD;           // handle of the difference
+    Obj                 vecD = 0;       // handle of the difference
     Obj *               ptrD;           // pointer into the difference
     Obj                 elmD;           // one element of difference list
     const Obj *         ptrL;           // pointer into the left operand
@@ -253,6 +261,7 @@ static Obj DiffVectorInt(Obj vecL, Obj elmR)
 
     // make the result list
     len = LEN_PLIST(vecL);
+    GAP_GC_PUSH1(&vecD);
     vecD = NEW_PLIST(TNUM_OBJ(vecL), len);
     SET_LEN_PLIST(vecD, len);
 
@@ -272,6 +281,7 @@ static Obj DiffVectorInt(Obj vecL, Obj elmR)
             ptrD[i] = elmD;
     }
 
+    GAP_GC_POP();
     return vecD;
 }
 
@@ -289,7 +299,7 @@ static Obj DiffVectorInt(Obj vecL, Obj elmR)
 */
 static Obj DiffVectorVector(Obj vecL, Obj vecR)
 {
-    Obj                 vecD;           // handle of the sum
+    Obj                 vecD = 0;       // handle of the sum
     Obj *               ptrD;           // pointer into the sum
     Obj                 elmD;           // one element of sum list
     const Obj *         ptrL;           // pointer into the left operand
@@ -309,6 +319,7 @@ static Obj DiffVectorVector(Obj vecL, Obj vecR)
         lenmin = lenR;
         len = lenL;
     }
+    GAP_GC_PUSH1(&vecD);
     vecD = NEW_PLIST_WITH_MUTABILITY(
         IS_MUTABLE_OBJ(vecL) || IS_MUTABLE_OBJ(vecR), T_PLIST_CYC, len);
     SET_LEN_PLIST(vecD, len);
@@ -349,6 +360,7 @@ static Obj DiffVectorVector(Obj vecL, Obj vecR)
             ptrD[i] = ptrL[i];
         }
 
+    GAP_GC_POP();
     return vecD;
 }
 
@@ -366,7 +378,7 @@ static Obj DiffVectorVector(Obj vecL, Obj vecR)
 */
 static Obj ProdIntVector(Obj elmL, Obj vecR)
 {
-    Obj                 vecP;           // handle of the product
+    Obj                 vecP = 0;       // handle of the product
     Obj *               ptrP;           // pointer into the product
     Obj                 elmP;           // one element of product list
     const Obj *         ptrR;           // pointer into the right operand
@@ -376,6 +388,7 @@ static Obj ProdIntVector(Obj elmL, Obj vecR)
 
     // make the result list
     len = LEN_PLIST(vecR);
+    GAP_GC_PUSH1(&vecP);
     vecP = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecR), T_PLIST_CYC, len);
     SET_LEN_PLIST(vecP, len);
 
@@ -395,6 +408,7 @@ static Obj ProdIntVector(Obj elmL, Obj vecR)
             ptrP[i] = elmP;
     }
 
+    GAP_GC_POP();
     return vecP;
 }
 
@@ -412,7 +426,7 @@ static Obj ProdIntVector(Obj elmL, Obj vecR)
 */
 static Obj ProdVectorInt(Obj vecL, Obj elmR)
 {
-    Obj                 vecP;           // handle of the product
+    Obj                 vecP = 0;       // handle of the product
     Obj *               ptrP;           // pointer into the product
     Obj                 elmP;           // one element of product list
     const Obj *         ptrL;           // pointer into the left operand
@@ -422,6 +436,7 @@ static Obj ProdVectorInt(Obj vecL, Obj elmR)
 
     // make the result list
     len = LEN_PLIST(vecL);
+    GAP_GC_PUSH1(&vecP);
     vecP = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecL), T_PLIST_CYC, len);
     SET_LEN_PLIST(vecP, len);
 
@@ -441,6 +456,7 @@ static Obj ProdVectorInt(Obj vecL, Obj elmR)
             ptrP[i] = elmP;
     }
 
+    GAP_GC_POP();
     return vecP;
 }
 
@@ -458,9 +474,9 @@ static Obj ProdVectorInt(Obj vecL, Obj elmR)
 */
 static Obj ProdVectorVector(Obj vecL, Obj vecR)
 {
-    Obj                 elmP;           // product, result
-    Obj                 elmS;           // partial sum of result
-    Obj                 elmT;           // one summand of result
+    Obj                 elmP = 0;       // product, result
+    Obj                 elmS = 0;       // partial sum of result
+    Obj                 elmT = 0;       // one summand of result
     const Obj *         ptrL;           // pointer into the left operand
     Obj                 elmL;           // one element of left operand
     const Obj *         ptrR;           // pointer into the right operand
@@ -474,6 +490,7 @@ static Obj ProdVectorVector(Obj vecL, Obj vecR)
     len = (lenL < lenR) ? lenL : lenR;
 
     // loop over the entries and multiply
+    GAP_GC_PUSH3(&elmP, &elmS, &elmT);
     ptrL = CONST_ADDR_OBJ(vecL);
     ptrR = CONST_ADDR_OBJ(vecR);
     elmL = ptrL[1];
@@ -500,6 +517,7 @@ static Obj ProdVectorVector(Obj vecL, Obj vecR)
         elmP = elmS;
     }
 
+    GAP_GC_POP();
     return elmP;
 }
 
@@ -521,11 +539,11 @@ static Obj ProdVectorVector(Obj vecL, Obj vecR)
 */
 static Obj ProdVectorMatrix(Obj vecL, Obj matR)
 {
-    Obj                 vecP;           // handle of the product
+    Obj                 vecP = 0;       // handle of the product
     Obj *               ptrP;           // pointer into the product
     Obj                 elmP;           // one summand of product
     Obj                 elmS;           // temporary for sum
-    Obj                 elmT;           // another temporary
+    Obj                 elmT = 0;       // another temporary
     Obj                 elmL;           // one element of left operand
     Obj                 vecR;           // one vector of right operand
     const Obj *         ptrR;           // pointer into the right vector
@@ -542,6 +560,7 @@ static Obj ProdVectorMatrix(Obj vecL, Obj matR)
 
     // make the result list
 
+    GAP_GC_PUSH2(&vecP, &elmT);
     vecP = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecL) || IS_MUTABLE_OBJ(ELM_PLIST(matR, 1)),
                          T_PLIST_CYC, col);
     SET_LEN_PLIST(vecP, col);
@@ -617,6 +636,7 @@ static Obj ProdVectorMatrix(Obj vecL, Obj matR)
         }
     }
 
+    GAP_GC_POP();
     return vecP;
 }
 

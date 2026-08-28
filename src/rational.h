@@ -28,25 +28,25 @@
 *F  NUM_RAT(<rat>)  . . . . . . . . . . . . . . . . . numerator of a rational
 *F  DEN_RAT(<rat>)  . . . . . . . . . . . . . . . . denominator of a rational
 */
-EXPORT_INLINE Obj NUM_RAT(Obj rat)
+EXPORT_INLINE Obj NUM_RAT(Obj rat) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(TNUM_OBJ(rat) == T_RAT);
     return CONST_ADDR_OBJ(rat)[0];
 }
 
-EXPORT_INLINE Obj DEN_RAT(Obj rat)
+EXPORT_INLINE Obj DEN_RAT(Obj rat) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(TNUM_OBJ(rat) == T_RAT);
     return CONST_ADDR_OBJ(rat)[1];
 }
 
-EXPORT_INLINE void SET_NUM_RAT(Obj rat, Obj val)
+EXPORT_INLINE void SET_NUM_RAT(Obj rat, Obj val) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(TNUM_OBJ(rat) == T_RAT);
     ADDR_OBJ(rat)[0] = val;
 }
 
-EXPORT_INLINE void SET_DEN_RAT(Obj rat, Obj val)
+EXPORT_INLINE void SET_DEN_RAT(Obj rat, Obj val) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(TNUM_OBJ(rat) == T_RAT);
     ADDR_OBJ(rat)[1] = val;

@@ -13,6 +13,8 @@
 #ifndef GAP_JULIA_GC_H
 #define GAP_JULIA_GC_H
 
+#include "precise_gc.h"
+
 /****************************************************************************
 **
 *F  MarkJuliaObj(<obj>) . . . . . . . . . . . . . . . . . . mark Julia object
@@ -22,7 +24,7 @@
 **  may result.
 */
 
-void MarkJuliaObj(void * obj, void * ref);
+void MarkJuliaObj(void * obj, void * ref) GAP_GC_NOTSAFEPOINT;
 
 /****************************************************************************
 **
@@ -33,7 +35,7 @@ void MarkJuliaObj(void * obj, void * ref);
 **  a valid Julia object. If not, it is silently ignored.
 */
 
-void MarkJuliaObjSafe(void * obj, void * ref);
+void MarkJuliaObjSafe(void * obj, void * ref) GAP_GC_NOTSAFEPOINT;
 
 /****************************************************************************
 **
@@ -43,6 +45,6 @@ void MarkJuliaObjSafe(void * obj, void * ref);
 **  reference and cannot be NULL.
 */
 
-void MarkJuliaWeakRef(void * obj, void * ref);
+void MarkJuliaWeakRef(void * obj, void * ref) GAP_GC_NOTSAFEPOINT;
 
 #endif

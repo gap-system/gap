@@ -73,7 +73,7 @@ typedef struct {
 static Int lastFreePackageTNUM = FIRST_PACKAGE_TNUM;
 
 
-static Obj TYPE_KERNEL_OBJECT;
+static Obj TYPE_KERNEL_OBJECT GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
@@ -280,7 +280,7 @@ static Obj FuncSET_TYPE_OBJ(Obj self, Obj obj, Obj type)
 */
 BOOL (*IsMutableObjFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
-static Obj IsMutableObjFilt;
+static Obj IsMutableObjFilt GAP_GC_GLOBALLY_ROOTED;
 
 static BOOL IsMutableObjError(Obj obj)
 {
@@ -315,7 +315,7 @@ static Obj FiltIS_MUTABLE_OBJ(Obj self, Obj obj)
 
 #ifdef HPCGAP
 
-static Obj IsInternallyMutableObjFilt;
+static Obj IsInternallyMutableObjFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_INTERNALLY_MUTABLE_OBJ(Obj self, Obj obj)
 {
@@ -345,7 +345,7 @@ BOOL IsInternallyMutableObj(Obj obj)
 */
 BOOL (*IsCopyableObjFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
-static Obj IsCopyableObjFilt;
+static Obj IsCopyableObjFilt GAP_GC_GLOBALLY_ROOTED;
 
 static BOOL IsCopyableObjError(Obj obj)
 {
@@ -376,7 +376,7 @@ static Obj FiltIS_COPYABLE_OBJ(Obj self, Obj obj)
 */
 Obj (*ShallowCopyObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
-static Obj ShallowCopyObjOper;
+static Obj ShallowCopyObjOper GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
@@ -455,7 +455,9 @@ Obj CopyObj (
 #ifdef USE_THREADSAFE_COPYING
     return CopyReachableObjectsFrom(obj, 0, 0, !mut);
 #else
-    Obj                 new;            // copy of <obj>
+    Obj                 new = 0;        // copy of <obj>
+
+    GAP_GC_PUSH1(&new);
 
     // make a copy
     new = COPY_OBJ( obj, mut );
@@ -464,6 +466,7 @@ Obj CopyObj (
     CLEAN_OBJ( obj );
 
     // return the copy
+    GAP_GC_POP();
     return new;
 #endif
 }
@@ -578,7 +581,7 @@ void CLEAN_OBJ(Obj obj)
 
 #if !defined(USE_THREADSAFE_COPYING) && !defined(USE_BOEHM_GC)
 
-static void MarkCopyingSubBags(Obj obj, void * ref)
+static void MarkCopyingSubBags(Obj obj, void * ref) GAP_GC_NOTSAFEPOINT
 {
     Obj fpl = CONST_ADDR_OBJ(obj)[0];
 
@@ -632,8 +635,8 @@ static Obj CopyObjConstant(Obj obj, Int mut)
 */
 static Obj CopyObjPosObj(Obj obj, Int mut)
 {
-    Obj                 copy;           // copy, result
-    Obj                 tmp;            // temporary variable
+    Obj                 copy = 0;       // copy, result
+    Obj                 tmp = 0;        // temporary variable
     UInt                i;              // loop variable
 
     // immutable input is handled by COPY_OBJ
@@ -643,6 +646,8 @@ static Obj CopyObjPosObj(Obj obj, Int mut)
     if ( ! IS_COPYABLE_OBJ(obj) ) {
         ErrorQuit("Panic: encountered mutable, non-copyable object", 0, 0);
     }
+
+    GAP_GC_PUSH2(&copy, &tmp);
 
     // make a copy
     copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
@@ -664,6 +669,7 @@ static Obj CopyObjPosObj(Obj obj, Int mut)
     }
 
     // return the copy
+    GAP_GC_POP();
     return copy;
 }
 
@@ -691,8 +697,8 @@ static void CleanObjPosObj(Obj obj)
 */
 static Obj CopyObjComObj(Obj obj, Int mut)
 {
-    Obj                 copy;           // copy, result
-    Obj                 tmp;            // temporary variable
+    Obj                 copy = 0;       // copy, result
+    Obj                 tmp = 0;        // temporary variable
 
     // immutable input is handled by COPY_OBJ
     GAP_ASSERT(IS_MUTABLE_OBJ(obj));
@@ -701,6 +707,8 @@ static Obj CopyObjComObj(Obj obj, Int mut)
     if ( ! IS_COPYABLE_OBJ(obj) ) {
         ErrorQuit("Panic: encountered mutable, non-copyable object", 0, 0);
     }
+
+    GAP_GC_PUSH2(&copy, &tmp);
 
     // make a copy
     copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
@@ -724,6 +732,7 @@ static Obj CopyObjComObj(Obj obj, Int mut)
     }
 
     // return the copy
+    GAP_GC_POP();
     return copy;
 }
 
@@ -750,7 +759,7 @@ static void CleanObjComObj(Obj obj)
 */
 static Obj CopyObjDatObj(Obj obj, Int mut)
 {
-    Obj                 copy;           // copy, result
+    Obj                 copy = 0;       // copy, result
 
     // immutable input is handled by COPY_OBJ
     GAP_ASSERT(IS_MUTABLE_OBJ(obj));
@@ -759,6 +768,8 @@ static Obj CopyObjDatObj(Obj obj, Int mut)
     if ( ! IS_COPYABLE_OBJ(obj) ) {
         ErrorQuit("Panic: encountered mutable, non-copyable object", 0, 0);
     }
+
+    GAP_GC_PUSH1(&copy);
 
     // make a copy
     copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
@@ -771,6 +782,7 @@ static Obj CopyObjDatObj(Obj obj, Int mut)
     PrepareCopy(obj, copy);
 
     // return the copy
+    GAP_GC_POP();
     return copy;
 }
 
@@ -813,7 +825,7 @@ static Obj FuncDEEP_COPY_OBJ(Obj self, Obj obj)
 **
 */
 
-static Obj PostMakeImmutableOp = 0;
+static Obj PostMakeImmutableOp GAP_GC_GLOBALLY_ROOTED = 0;
 
 void (*MakeImmutableObjFuncs[LAST_REAL_TNUM+1])( Obj );
 
@@ -903,7 +915,7 @@ static Obj FuncGET_TNAM_FROM_TNUM(Obj self, Obj obj)
 
 // This function is used to keep track of which objects are already
 // being printed or viewed to trigger the use of ~ when needed.
-static inline BOOL IS_ON_PRINT_STACK(Obj obj)
+static inline BOOL IS_ON_PRINT_STACK(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     if (!(FIRST_RECORD_TNUM <= TNUM_OBJ(obj) &&
           TNUM_OBJ(obj) <= LAST_LIST_TNUM))
@@ -1030,7 +1042,7 @@ void (* PrintObjFuncs [ LAST_REAL_TNUM  +1 ])( Obj obj );
 **
 *F  PrintObjObject( <obj> ) . . . . . . . . . . . . . . . . . print an object
 */
-Obj PrintObjOper;
+Obj PrintObjOper GAP_GC_GLOBALLY_ROOTED;
 
 static void PrintObjObject(Obj obj)
 {
@@ -1082,7 +1094,7 @@ static Obj FuncSET_PRINT_OBJ_INDEX(Obj self, Obj index)
 **  recursion works nicely.
 */
 
-static Obj ViewObjOper;
+static Obj ViewObjOper GAP_GC_GLOBALLY_ROOTED;
 
 void ViewObj(Obj obj)
 {
@@ -1743,9 +1755,9 @@ static void LoadDatObj(Obj datobj)
 **  WARNING: at the moment the functions breaks on cloning `[1,~]'.  This can
 **  be fixed if necessary.
 */
-static Obj IsToBeDefinedObj;
+static Obj IsToBeDefinedObj GAP_GC_GLOBALLY_ROOTED;
 
-static Obj REREADING;
+static Obj REREADING GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncCLONE_OBJ(Obj self, Obj dst, Obj src)
 {
@@ -1780,6 +1792,8 @@ static Obj FuncCLONE_OBJ(Obj self, Obj dst, Obj src)
     }
 #endif
 
+    GAP_GC_PUSH1(&src);
+
     // if object is mutable, produce a structural copy
     if ( IS_MUTABLE_OBJ(src) ) {
         src = CopyObj( src, 1 );
@@ -1804,6 +1818,7 @@ static Obj FuncCLONE_OBJ(Obj self, Obj dst, Obj src)
     SET_PTR_BAG(dst, PTR_BAG(tmp));
 #endif
 
+    GAP_GC_POP();
     return 0;
 }
 

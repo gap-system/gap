@@ -248,7 +248,7 @@ static Obj  Part(Obj list, Int pos1, Int pos2);
 **  Dt_add is used to store the library function dt_add.
 */
 
-static Obj Dt_add;
+static Obj Dt_add GAP_GC_GLOBALLY_ROOTED;
 
 /****************************************************************************
 **
@@ -445,9 +445,11 @@ static Obj Mark2(Obj tree, Int index1, Obj reftree, Int index2)
 {
     UInt    i, // loop variable
             len;
-    Obj     new,
-            list, // list to return
-            refgen;
+    Obj     new = 0,
+            list = 0, // list to return
+            refgen = 0;
+
+    GAP_GC_PUSH3(&new, &list, &refgen);
 
     // initialize <list>
     list = NEW_PLIST(T_PLIST, 0);
@@ -502,6 +504,7 @@ static Obj Mark2(Obj tree, Int index1, Obj reftree, Int index2)
             // skip tree(<tree>, i-1)
             i = i - 1 + DT_LENGTH(tree, i-1);
     }
+    GAP_GC_POP();
     return  list;
 }
 
@@ -581,10 +584,13 @@ static Obj MakeFormulaVector(Obj tree, Obj pr)
     UInt  i, // denominator of a binomial coefficient
           j, // loop variable
           u; // node index
-    Obj   rel, // stores relations of <pr>
-          vec, // stores formula vector to return
-          prod,// stores the product of two integers
-          gen;
+    Obj   rel = 0, // stores relations of <pr>
+          vec = 0, // stores formula vector to return
+          prod = 0,// stores the product of two integers
+          gen = 0,
+          binom = 0;
+
+    GAP_GC_PUSH5(&rel, &vec, &prod, &gen, &binom);
 
     // initialize <vec> and set the first four elements
     vec = NewPlistFromArgs(INTOBJ_INT(0), INTOBJ_INT(1),
@@ -630,9 +636,8 @@ static Obj MakeFormulaVector(Obj tree, Obj pr)
             {
                 if ( ELM_PLIST(rel, j) == gen  )
                 {
-                    prod = ProdInt(ELM_PLIST(vec, 2),
-                                   BinomialInt(ELM_PLIST(rel, j+1),
-                                            INTOBJ_INT(i)        )        );
+                    binom = BinomialInt(ELM_PLIST(rel, j+1), INTOBJ_INT(i));
+                    prod = ProdInt(ELM_PLIST(vec, 2), binom);
                     SET_ELM_PLIST(vec,  2, prod);
                     // tell gasman that vec has changed
                     CHANGED_BAG(vec);
@@ -643,6 +648,7 @@ static Obj MakeFormulaVector(Obj tree, Obj pr)
         }
         u = FindTree(tree, 1);
     }
+    GAP_GC_POP();
     return vec;
 }
 
@@ -784,11 +790,13 @@ static void FindNewReps2(Obj tree, Obj reps, Obj pr);
 
 static void GetPols(Obj list, Obj pr, Obj pols)
 {
-    Obj    lreps,
-           rreps,
-           tree,
-           tree1;
+    Obj    lreps = 0,
+           rreps = 0,
+           tree = 0,
+           tree1 = 0;
     UInt   i,j,k,l, lenr, lenl, len;
+
+    GAP_GC_PUSH7(&list, &pr, &pols, &lreps, &rreps, &tree, &tree1);
 
     lreps = NEW_PLIST(T_PLIST, 2);
     rreps = NEW_PLIST(T_PLIST, 2);
@@ -825,6 +833,7 @@ static void GetPols(Obj list, Obj pr, Obj pols)
                 UnmarkTree(tree);
                 FindNewReps2(tree, pols, pr);
             }
+    GAP_GC_POP();
 }
 
 
@@ -860,16 +869,19 @@ static void FindNewReps1(Obj tree, Obj reps);
 
 static void GetReps(Obj list, Obj reps)
 {
-    Obj    lreps,
-           rreps,
-           tree,
-           tree1;
+    Obj    lreps = 0,
+           rreps = 0,
+           tree = 0,
+           tree1 = 0;
     UInt   i,j,k,l, lenr, lenl, len;;
+
+    GAP_GC_PUSH6(&list, &reps, &lreps, &rreps, &tree, &tree1);
 
     if  ( LEN_PLIST(list) != 4 )
     {
         SET_ELM_PLIST(reps, 1, list);
         SET_LEN_PLIST(reps, 1);
+        GAP_GC_POP();
         return;
     }
     lreps = NEW_PLIST(T_PLIST, 2);
@@ -910,6 +922,7 @@ static void GetReps(Obj list, Obj reps)
             UnmarkTree(tree);
             FindNewReps1(tree, reps);
         }
+    GAP_GC_POP();
 }
 
 
@@ -953,22 +966,24 @@ static void FindSubs1(Obj tree,
 
 static void FindNewReps1(Obj tree, Obj reps)
 {
-    Obj   y,           // stores a copy of <tree>
-          lsubs,       /*  stores pos(<subtree>) for all subtrees of
+    Obj   y = 0,       // stores a copy of <tree>
+          lsubs = 0,   /*  stores pos(<subtree>) for all subtrees of
                        **  left(<tree>) in a given almost equal class    */
 
-          rsubs,       /*  stores pos(<subtree>) for all subtrees of
+          rsubs = 0,   /*  stores pos(<subtree>) for all subtrees of
                        **  right(<tree>) in the same almost equal class  */
 
-          llist,       /*  stores all elements of an almost equal class
+          llist = 0,   /*  stores all elements of an almost equal class
                        **  of subtrees of left(<tree>)                   */
 
-          rlist;       /*  stores all elements of the same almost equal
+          rlist = 0;   /*  stores all elements of the same almost equal
                        **  class of subtrees of right(<tree>)            */
     Int   a,           // stores a subtree of right((<tree>)
           n,           // Length of lsubs
           m,           // Length of rsubs
           i;           // loop variable
+
+    GAP_GC_PUSH6(&tree, &y, &lsubs, &rsubs, &llist, &rlist);
 
     /*  get a subtree of right(<tree>) which is unmarked but whose
     **  subtrees are all marked                                          */
@@ -983,6 +998,7 @@ static void FindNewReps1(Obj tree, Obj reps)
             y = ShallowCopyPlist(tree);
             AssPlist(reps, LEN_PLIST(reps) + 1, y);
         }
+        GAP_GC_POP();
         return;
     }
     /*  get all subtrees of left(<tree>) which are almost equal to
@@ -1003,6 +1019,7 @@ static void FindNewReps1(Obj tree, Obj reps)
         FindNewReps1(tree, reps);
         // unmark all top nodes of the trees stored in rlist
         UnmarkAEClass(tree, rlist);
+        GAP_GC_POP();
         return;
     }
     /*  store all pos-arguments that occur in the trees of llist.
@@ -1032,6 +1049,7 @@ static void FindNewReps1(Obj tree, Obj reps)
     **  pos-arguments to the original state.                            */
     UnmarkAEClass(tree, rlist);
     UnmarkAEClass(tree, llist);
+    GAP_GC_POP();
 }
 
 // See below:
@@ -1053,21 +1071,24 @@ FindNewReps2(Obj tree, Obj reps, Obj pr /*  pc-presentation for a
                                          **  nilpotent group <G> */
 )
 {
-    Obj   lsubs,       /*  stores pos(<subtree>) for all subtrees of
+    Obj   lsubs = 0,   /*  stores pos(<subtree>) for all subtrees of
                        **  left(<tree>) in a given almost equal class    */
 
-          rsubs,       /*  stores pos(<subtree>) for all subtrees of
+          rsubs = 0,   /*  stores pos(<subtree>) for all subtrees of
                        **  right(<tree>) in the same almost equal class  */
 
-          llist,       /*  stores all elements of an almost equal class
+          llist = 0,   /*  stores all elements of an almost equal class
                        **  of subtrees of left(<tree>)                   */
 
-          rlist;       /*  stores all elements of the same almost equal
+          rlist = 0;   /*  stores all elements of the same almost equal
                        **  class of subtrees of right(<tree>)            */
+    Obj   formula = 0;
     Int   a,           // stores a subtree of right((<tree>)
           n,           // Length of lsubs
           m,           // Length of rsubs
           i;           // loop variable
+
+    GAP_GC_PUSH8(&tree, &reps, &pr, &lsubs, &rsubs, &llist, &rlist, &formula);
 
     /*  get a subtree of right(<tree>) which is unmarked but whose
     **  subtrees are all marked                                          */
@@ -1083,9 +1104,10 @@ FindNewReps2(Obj tree, Obj reps, Obj pr /*  pc-presentation for a
                 /*  get the formula vector of tree and add it to
                 **  reps[ rel[1] ].                                */
             UnmarkTree(tree);
-            tree = MakeFormulaVector( tree, pr);
-            CALL_3ARGS(Dt_add, tree, reps, pr);
+            formula = MakeFormulaVector( tree, pr);
+            CALL_3ARGS(Dt_add, formula, reps, pr);
         }
+        GAP_GC_POP();
         return;
     }
     /*  get all subtrees of left(<tree>) which are almost equal to
@@ -1106,6 +1128,7 @@ FindNewReps2(Obj tree, Obj reps, Obj pr /*  pc-presentation for a
         FindNewReps2(tree, reps, pr);
         // unmark all top nodes of the trees stored in rlist
         UnmarkAEClass(tree, rlist);
+        GAP_GC_POP();
         return;
     }
     /*  store all pos-arguments that occur in the trees of llist.
@@ -1135,6 +1158,7 @@ FindNewReps2(Obj tree, Obj reps, Obj pr /*  pc-presentation for a
     **  pos-arguments to the original state.                            */
     UnmarkAEClass(tree, rlist);
     UnmarkAEClass(tree, llist);
+    GAP_GC_POP();
 }
 
 
@@ -1147,24 +1171,26 @@ static void FindNewReps(Obj tree,
                                 **  i > max lies in the center of <G>   */
 )
 {
-    Obj   y,           // stores a copy of <tree>
-          lsubs,       /*  stores pos(<subtree>) for all subtrees of
+    Obj   y = 0,       // stores a copy of <tree>
+          lsubs = 0,   /*  stores pos(<subtree>) for all subtrees of
                        **  left(<tree>) in a given almost equal class    */
 
-          rsubs,       /*  stores pos(<subtree>) for all subtrees of
+          rsubs = 0,   /*  stores pos(<subtree>) for all subtrees of
                        **  right(<tree>) in the same almost equal class  */
 
-          llist,       /*  stores all elements of an almost equal class
+          llist = 0,   /*  stores all elements of an almost equal class
                        **  of subtrees of left(<tree>)                   */
 
-          rlist,       /*  stores all elements of the same almost equal
+          rlist = 0,   /*  stores all elements of the same almost equal
                        **  class of subtrees of right(<tree>)            */
-          list1,       // stores a sublist of <reps>
-          rel;         // stores a commutator relation from <pr>
+          list1 = 0,   // stores a sublist of <reps>
+          rel = 0;     // stores a commutator relation from <pr>
     Int   a;           // stores a subtree of right((<tree>)
     UInt  n,           // Length of lsubs
           m,           // Length of rsubs
           i, lenrel;   // loop variable
+
+    GAP_GC_PUSH8(&tree, &y, &lsubs, &rsubs, &llist, &rlist, &list1, &rel);
 
     /*  get a subtree of right(<tree>) which is unmarked but whose
     **  subtrees are all marked                                          */
@@ -1208,6 +1234,7 @@ static void FindNewReps(Obj tree,
                 }
             }
         }
+        GAP_GC_POP();
         return;
     }
     /*  get all subtrees of left(<tree>) which are almost equal to
@@ -1228,6 +1255,7 @@ static void FindNewReps(Obj tree,
         FindNewReps(tree, reps, pr, max);
         // unmark all top nodes of the trees stored in rlist
         UnmarkAEClass(tree, rlist);
+        GAP_GC_POP();
         return;
     }
     /*  store all pos-arguments that occur in the trees of llist.
@@ -1257,6 +1285,7 @@ static void FindNewReps(Obj tree,
     **  pos-arguments to the original state.                            */
     UnmarkAEClass(tree, rlist);
     UnmarkAEClass(tree, llist);
+    GAP_GC_POP();
 }
 
 

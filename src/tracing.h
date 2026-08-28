@@ -52,7 +52,7 @@ void InstallOpWrapper(void (*activate)(void), void (*deactivate)(void));
 
 #define DEFINE_OP_WRAPPER1(Array)                                            \
     static ObjFunc_0ARGS Wrap##Array[LAST_REAL_TNUM + 1];                    \
-    Obj                  Wrap##Array##Func(Obj op)                           \
+    Obj Wrap##Array##Func(Obj op)                        \
     {                                                                        \
         ReportWrappedOperation1(#Array, op);                                 \
         return Wrap##Array[TNUM_OBJ(op)](op);                                \
@@ -75,7 +75,7 @@ void InstallOpWrapper(void (*activate)(void), void (*deactivate)(void));
 #define DEFINE_OP_WRAPPER2(Array)                                            \
     static ObjFunc_1ARGS Wrap##Array[LAST_REAL_TNUM + 1]                     \
                                     [LAST_REAL_TNUM + 1];                    \
-    Obj Wrap##Array##Func(Obj op1, Obj op2)                                  \
+    Obj Wrap##Array##Func(Obj op1, Obj op2)              \
     {                                                                        \
         ReportWrappedOperation2(#Array, op1, op2);                           \
         return Wrap##Array[TNUM_OBJ(op1)][TNUM_OBJ(op2)](op1, op2);          \

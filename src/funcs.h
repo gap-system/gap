@@ -35,10 +35,10 @@ Obj MakeFunction(Obj fexp);
 **  to protect against stack overflows and the resulting crashes.
 */
 
-Int IncRecursionDepth(void);
-void DecRecursionDepth(void);
-Int  GetRecursionDepth(void);
-void SetRecursionDepth(Int depth);
+Int  IncRecursionDepth(void) GAP_GC_NOTSAFEPOINT;
+void DecRecursionDepth(void) GAP_GC_NOTSAFEPOINT;
+Int  GetRecursionDepth(void) GAP_GC_NOTSAFEPOINT;
+void SetRecursionDepth(Int depth) GAP_GC_NOTSAFEPOINT;
 
 extern UInt RecursionTrapInterval;
 void        RecursionDepthTrap(void);

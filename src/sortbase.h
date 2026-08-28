@@ -117,7 +117,7 @@ static void PREFIXNAME(Shell)(SORT_FUNC_ARGS, Int start, Int end)
 
 // Swap values at indices a and b
 #define SWAP_INDICES PREFIXNAME(Swap)
-static inline void PREFIXNAME(Swap)(SORT_FUNC_ARGS, Int a, Int b) {
+static inline void PREFIXNAME(Swap)(SORT_FUNC_ARGS, Int a, Int b){
   SORT_CREATE_LOCAL(t);
   SORT_CREATE_LOCAL(u);
   SORT_ASS_LIST_TO_LOCAL(t, a);
@@ -137,7 +137,7 @@ static inline int COMP_INDICES(SORT_FUNC_ARGS, Int a, Int b) {
 }
 
 // Sort 3 indices
-static inline void PREFIXNAME(Sort3)(SORT_FUNC_ARGS, Int a, Int b, Int c) {
+static inline void PREFIXNAME(Sort3)(SORT_FUNC_ARGS, Int a, Int b, Int c){
   if (!(COMP_INDICES(SORT_ARGS, b, a))) {
     if (!(COMP_INDICES(SORT_ARGS, c, b)))
       return;
@@ -165,7 +165,7 @@ static inline void PREFIXNAME(Sort3)(SORT_FUNC_ARGS, Int a, Int b, Int c) {
  * partition_point
  */
 static inline BOOL PREFIXNAME(Partition)(SORT_FUNC_ARGS, Int start, Int end,
-                                        Int *partition_point) {
+                                        Int *partition_point){
   Int left = start;
   Int right = end;
   BOOL first_pass = TRUE;
@@ -359,8 +359,9 @@ static void PREFIXNAME(MergeRanges)(SORT_FUNC_ARGS, Int b1, Int e1, Int e2,
 
 void PREFIXNAME(Merge)(SORT_FUNC_ARGS) {
   Int len = SORT_LEN_LIST();
-  Obj buf = SORT_CREATE_TEMP_BUFFER(len);
   SORT_FILTER_CHECKS();
+  Obj buf = SORT_CREATE_TEMP_BUFFER(len);
+  GAP_GC_PUSH1(&buf);
   Int stepsize = 24;
   Int i;
   // begin with splitting into small steps we insertion sort
@@ -380,6 +381,7 @@ void PREFIXNAME(Merge)(SORT_FUNC_ARGS) {
     }
     stepsize *= 2;
   }
+  GAP_GC_POP();
 }
 
 #undef PREFIXNAME

@@ -42,7 +42,7 @@ ArithMethod1 ZeroSameMutFuncs[LAST_REAL_TNUM + 1];
 **
 *F  ZeroSameMutObject( <obj> ) . . . . . . . . . . . . . . . . . call methsel
 */
-static Obj ZeroSameMutabilityOp;
+static Obj ZeroSameMutabilityOp GAP_GC_GLOBALLY_ROOTED;
 
 static Obj ZeroSameMutObject(Obj obj)
 {
@@ -102,7 +102,7 @@ ArithMethod1 ZeroMutFuncs [LAST_REAL_TNUM+1];
 **
 *F  ZeroMutObject( <obj> ) . . . . . . . . . . . . . . . . . . . call methsel
 */
-static Obj ZeroOp;
+static Obj ZeroOp GAP_GC_GLOBALLY_ROOTED;
 
 static Obj ZeroMutObject(Obj obj)
 
@@ -169,7 +169,7 @@ ArithMethod1 AInvMutFuncs[ LAST_REAL_TNUM + 1];
 **
 *F  AInvObj( <obj> )  . . . . . . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj AdditiveInverseSameMutabilityOp;
+static Obj AdditiveInverseSameMutabilityOp GAP_GC_GLOBALLY_ROOTED;
 
 static Obj AInvSameMutObject(Obj obj)
 {
@@ -222,7 +222,7 @@ static Obj FuncAINV_SAMEMUT(Obj self, Obj obj)
 **
 *F  AInvMutObject( <obj> ) . . . . . . . . . . . . . . . . . . . call methsel
 */
-static Obj AdditiveInverseOp;
+static Obj AdditiveInverseOp GAP_GC_GLOBALLY_ROOTED;
 
 static Obj AInvMutObject(Obj obj)
 {
@@ -283,7 +283,7 @@ ArithMethod1 OneFuncs [LAST_REAL_TNUM+1];
 **
 *F  OneObject( <obj> )  . . . . . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj OneOp;
+static Obj OneOp GAP_GC_GLOBALLY_ROOTED;
 
 static Obj OneObject(Obj obj)
 {
@@ -343,7 +343,7 @@ ArithMethod1 OneSameMut[LAST_REAL_TNUM + 1];
 **
 *F  OneSameMutObject( <obj> ) . . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj OneSameMutabilityOp;
+static Obj OneSameMutabilityOp GAP_GC_GLOBALLY_ROOTED;
 
 static Obj OneSameMutObject(Obj obj)
 {
@@ -404,7 +404,7 @@ ArithMethod1 InvFuncs [LAST_REAL_TNUM+1];
 **
 *F  InvObject( <obj> )  . . . . . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj InvOp;
+static Obj InvOp GAP_GC_GLOBALLY_ROOTED;
 
 static Obj InvObject(Obj obj)
 {
@@ -465,7 +465,7 @@ ArithMethod1 InvSameMutFuncs[LAST_REAL_TNUM + 1];
 **
 *F  InvSameMutObject( <obj> ) . . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj InverseSameMutabilityOp;
+static Obj InverseSameMutabilityOp GAP_GC_GLOBALLY_ROOTED;
 
 static Obj InvSameMutObject(Obj obj)
 {
@@ -541,7 +541,7 @@ static Int EqNot(Obj opL, Obj opR)
 **
 *F  EqObject( <opL>, <opR> )  . . . . . . . . . . . . . . . . .  call methsel
 */
-Obj EqOper;
+Obj EqOper GAP_GC_GLOBALLY_ROOTED;
 
 Int EqObject (
     Obj                 opL,
@@ -602,7 +602,7 @@ CompaMethod LtFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 **
 *F  LtObject( <opL>, <opR> )  . . . . . . . . . . . . . . . . .  call methsel
 */
-Obj LtOper;
+Obj LtOper GAP_GC_GLOBALLY_ROOTED;
 
 static Int LtObject(Obj opL, Obj opR)
 {
@@ -672,7 +672,7 @@ static Int InUndefined(Obj opL, Obj opR)
 **
 *F  InObject( <opL>, <opR> )  . . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj InOper;
+static Obj InOper GAP_GC_GLOBALLY_ROOTED;
 
 static Int InObject(Obj opL, Obj opR)
 {
@@ -736,7 +736,7 @@ ArithMethod2    SumFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 **
 *F  SumObject( <opL>, <opR> ) . . . . . . . . . . . . . . . . .  call methsel
 */
-Obj SumOper;
+Obj SumOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj SumObject(Obj opL, Obj opR)
 {
@@ -803,10 +803,13 @@ ArithMethod2 DiffFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 */
 static Obj DiffDefault(Obj opL, Obj opR)
 {
-    Obj                 tmp;
+    Obj                 tmp = 0;
 
+    GAP_GC_PUSH1(&tmp);
     tmp = AINV_SAMEMUT(opR);
-    return SUM( opL, tmp );
+    tmp = SUM( opL, tmp );
+    GAP_GC_POP();
+    return tmp;
 }
 
 
@@ -814,7 +817,7 @@ static Obj DiffDefault(Obj opL, Obj opR)
 **
 *F  DiffObject( <opL>, <opR> )  . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj DiffOper;
+static Obj DiffOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj DiffObject(Obj opL, Obj opR)
 {
@@ -889,7 +892,7 @@ ArithMethod2    ProdFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 **
 *F  ProdObject( <opL>, <opR> )  . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj ProdOper;
+static Obj ProdOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj ProdObject(Obj opL, Obj opR)
 {
@@ -956,9 +959,12 @@ ArithMethod2 QuoFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 */
 static Obj QuoDefault(Obj opL, Obj opR)
 {
-    Obj                 tmp;
+    Obj                 tmp = 0;
+    GAP_GC_PUSH1(&tmp);
     tmp = INV_SAMEMUT(opR);
-    return PROD( opL, tmp );
+    tmp = PROD( opL, tmp );
+    GAP_GC_POP();
+    return tmp;
 }
 
 
@@ -966,7 +972,7 @@ static Obj QuoDefault(Obj opL, Obj opR)
 **
 *F  QuoObject( <opL>, <opR> ) . . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj QuoOper;
+static Obj QuoOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj QuoObject(Obj opL, Obj opR)
 {
@@ -1043,9 +1049,12 @@ ArithMethod2 LQuoFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 */
 static Obj LQuoDefault(Obj opL, Obj opR)
 {
-    Obj                 tmp;
+    Obj                 tmp = 0;
+    GAP_GC_PUSH1(&tmp);
     tmp = INV_SAMEMUT(opL);
-    return PROD( tmp, opR );
+    tmp = PROD( tmp, opR );
+    GAP_GC_POP();
+    return tmp;
 }
 
 
@@ -1053,7 +1062,7 @@ static Obj LQuoDefault(Obj opL, Obj opR)
 **
 *F  LQuoObject( <opL>, <opR> )  . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj LQuoOper;
+static Obj LQuoOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj LQuoObject(Obj opL, Obj opR)
 {
@@ -1130,9 +1139,12 @@ ArithMethod2 PowFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 */
 static Obj PowDefault(Obj opL, Obj opR)
 {
-    Obj                 tmp;
+    Obj                 tmp = 0;
+    GAP_GC_PUSH1(&tmp);
     tmp = LQUO( opR, opL );
-    return PROD( tmp, opR );
+    tmp = PROD( tmp, opR );
+    GAP_GC_POP();
+    return tmp;
 }
 
 
@@ -1140,7 +1152,7 @@ static Obj PowDefault(Obj opL, Obj opR)
 **
 *F  PowObject( <opL>, <opR> ) . . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj PowOper;
+static Obj PowOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj PowObject(Obj opL, Obj opR)
 {
@@ -1218,11 +1230,14 @@ ArithMethod2 CommFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 */
 static Obj CommDefault(Obj opL, Obj opR)
 {
-    Obj                 tmp1;
-    Obj                 tmp2;
+    Obj                 tmp1 = 0;
+    Obj                 tmp2 = 0;
+    GAP_GC_PUSH2(&tmp1, &tmp2);
     tmp1 = PROD( opR, opL );
     tmp2 = PROD( opL, opR );
-    return LQUO( tmp1, tmp2 );
+    tmp1 = LQUO( tmp1, tmp2 );
+    GAP_GC_POP();
+    return tmp1;
 }
 
 
@@ -1230,7 +1245,7 @@ static Obj CommDefault(Obj opL, Obj opR)
 **
 *F  CommObject( <opL>, <opR> )  . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj CommOper;
+static Obj CommOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj CommObject(Obj opL, Obj opR)
 {
@@ -1306,7 +1321,7 @@ ArithMethod2 ModFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 **
 *F  ModObject( <opL>, <opR> ) . . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj ModOper;
+static Obj ModOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj ModObject(Obj opL, Obj opR)
 {

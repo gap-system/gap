@@ -273,7 +273,7 @@ EXPORT_INLINE Int EQ(Obj opL, Obj opR)
     return (*EqFuncs[tnumL][tnumR])(opL, opR);
 }
 
-extern Obj EqOper;
+extern Obj EqOper GAP_GC_GLOBALLY_ROOTED;
 
 Int EqObject(Obj opL, Obj opR);
 
@@ -303,7 +303,7 @@ EXPORT_INLINE Int LT(Obj opL, Obj opR)
     return (*LtFuncs[tnumL][tnumR])(opL, opR);
 }
 
-extern Obj LtOper;
+extern Obj LtOper GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
@@ -360,7 +360,7 @@ EXPORT_INLINE Obj SUM(Obj opL, Obj opR)
 }
 
 
-extern Obj SumOper;
+extern Obj SumOper GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
