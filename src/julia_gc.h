@@ -47,4 +47,5 @@ void MarkJuliaObjSafe(void * obj, void * ref) GAP_GC_NOTSAFEPOINT;
 
 void MarkJuliaWeakRef(void * obj, void * ref) GAP_GC_NOTSAFEPOINT;
 
+
 #endif
