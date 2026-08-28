@@ -22,6 +22,7 @@
 #include "code.h"
 #include "common.h"
 #include "gap.h"
+#include <stddef.h>    // for offsetof
 
 
 struct IntrState {
@@ -59,6 +60,14 @@ struct IntrState {
     // 'StackObj' is the stack of values.
     Obj StackObj;
 };
+
+// See CODE_STATE_ROOTS in code.h. Note 'cs' is declared as CodeState[1], so
+// it is already a pointer here.
+#define INTR_STATE_ROOTS(p)    CODE_STATE_ROOTS((p)->cs), &(p)->StackObj
+
+GAP_STATIC_ASSERT(offsetof(struct IntrState, StackObj) + sizeof(Obj) ==
+                      sizeof(struct IntrState),
+                  "IntrState grew; check INTR_STATE_ROOTS");
 
 typedef struct IntrState IntrState;
 
