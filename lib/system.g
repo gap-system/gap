@@ -561,6 +561,10 @@ end );
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL("ARCH_IS_WINDOWS",function()
+  # native Windows (mingw) has no POSIX tools
+  if POSITION_SUBSTRING (GAPInfo.Architecture, "mingw", 0) <> fail then
+    return true;
+  fi;
   # Exit early if we are not in Cygwin
   if POSITION_SUBSTRING (GAPInfo.Architecture, "cygwin", 0) = fail then
     return false;
