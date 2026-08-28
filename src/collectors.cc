@@ -50,13 +50,13 @@ extern "C" {
 struct CollectorsState_ {
 #endif
 
-DECL_MODULE_STATE Obj  SC_NW_STACK;
-DECL_MODULE_STATE Obj  SC_LW_STACK;
-DECL_MODULE_STATE Obj  SC_PW_STACK;
-DECL_MODULE_STATE Obj  SC_EW_STACK;
-DECL_MODULE_STATE Obj  SC_GE_STACK;
-DECL_MODULE_STATE Obj  SC_CW_VECTOR;
-DECL_MODULE_STATE Obj  SC_CW2_VECTOR;
+DECL_MODULE_STATE Obj  SC_NW_STACK GAP_GC_GLOBALLY_ROOTED;
+DECL_MODULE_STATE Obj  SC_LW_STACK GAP_GC_GLOBALLY_ROOTED;
+DECL_MODULE_STATE Obj  SC_PW_STACK GAP_GC_GLOBALLY_ROOTED;
+DECL_MODULE_STATE Obj  SC_EW_STACK GAP_GC_GLOBALLY_ROOTED;
+DECL_MODULE_STATE Obj  SC_GE_STACK GAP_GC_GLOBALLY_ROOTED;
+DECL_MODULE_STATE Obj  SC_CW_VECTOR GAP_GC_GLOBALLY_ROOTED;
+DECL_MODULE_STATE Obj  SC_CW2_VECTOR GAP_GC_GLOBALLY_ROOTED;
 DECL_MODULE_STATE UInt SC_MAX_STACK_SIZE;
 #ifdef HPCGAP
 };
@@ -64,7 +64,7 @@ DECL_MODULE_STATE UInt SC_MAX_STACK_SIZE;
 static ModuleStateOffset CollectorsStateOffset = -1;
 
 // for debugging from GDB / lldb, we mark this as extern inline
-extern inline struct CollectorsState_ * CollectorsState(void)
+extern inline struct CollectorsState_ * CollectorsState(void) GAP_GC_NOTSAFEPOINT
 {
     return (struct CollectorsState_ *)StateSlotsAtOffset(CollectorsStateOffset);
 }
@@ -176,6 +176,7 @@ static Obj WordVectorAndClear(Obj type, Obj vv, Int num)
 
     // construct a new object
     obj = NewWord(type, num);
+    GAP_GC_PUSH1(&obj);
 
     // clear <vv>
     ptr = DATA_WORD(obj);
@@ -192,6 +193,7 @@ static Obj WordVectorAndClear(Obj type, Obj vv, Int num)
     ResizeBag( obj, 2*sizeof(Obj) + j * BITS_WORD(obj)/8 );
     ADDR_OBJ(obj)[1] = INTOBJ_INT(j);
 
+    GAP_GC_POP();
     return obj;
 }
 
@@ -626,7 +628,7 @@ static Int Solution(Obj sc, Obj ww, Obj uu, FuncIOOO func)
     Int         i;              // loop variable for gen/exp pairs
     Int         ro;             // relative order
     Obj         rod;            // relative orders
-    Obj         g;              // one generator word
+    Obj         g = 0;          // one generator word
     UIntN *     gtr;            // pointer into the data area of <g>
     Int *       ptr;            // pointer into the collect vector
     Int *       qtr;            // pointer into the collect vector
@@ -668,6 +670,7 @@ static Int Solution(Obj sc, Obj ww, Obj uu, FuncIOOO func)
     expm = ((UInt)1 << ebits) - 1;
 
     // use <g> as right argument for the collector
+    GAP_GC_PUSH1(&g);
     g = NewWord(SC_DEFAULT_TYPE(sc), 1);
 
     // start clearing <ww>, storing the result in <uu>
@@ -680,11 +683,14 @@ static Int Solution(Obj sc, Obj ww, Obj uu, FuncIOOO func)
         if ( *qtr < 0 )  *qtr += ro;
         if ( *qtr != 0 ) {
             *gtr = ( i << ebits ) | ( *qtr & expm );
-            if ( func(sc,ww,g) == -1 )
+            if ( func(sc,ww,g) == -1 ) {
+                GAP_GC_POP();
                 return -1;
+            }
         }
         *ptr = 0;
     }
+    GAP_GC_POP();
     return 0;
 }
 
@@ -1519,15 +1525,21 @@ static Obj ReducedPowerSmallInt(FinPowConjCol * fc, Obj sc, Obj w, Obj vpow)
     }
 
     // use "divide et impera" instead of repeated squaring r2l
+    Obj square = 0;
+    Obj result = 0;
+    res = 0;
+    GAP_GC_PUSH3(&res, &square, &result);
     if ( pow % 2 ) {
         res = ReducedPowerSmallInt( fc, sc, w, INTOBJ_INT((pow-1)/2) );
-        return ReducedProduct( fc, sc, w,
-            ReducedProduct( fc, sc, res, res ) );
+        square = ReducedProduct(fc, sc, res, res);
+        result = ReducedProduct(fc, sc, w, square);
     }
     else {
         res = ReducedPowerSmallInt( fc, sc, w, INTOBJ_INT(pow/2) );
-        return ReducedProduct( fc, sc, res, res );
+        result = ReducedProduct(fc, sc, res, res);
     }
+    GAP_GC_POP();
+    return result;
 
 }
 
@@ -1564,21 +1576,28 @@ static Obj ReducedQuotient(FinPowConjCol * fc, Obj sc, Obj w, Obj u)
 
     // and replace <u> by its inverse
     u = fc->wordVectorAndClear( type, vc2, num );
+    Obj result = 0;
+    GAP_GC_PUSH2(&u, &result);
 
     // check that it has the correct length, unpack <w> into it
     if ( fc->vectorWord( vcw, w, num ) == -1 )  {
         memset(ADDR_OBJ(vcw) + 1, 0, sizeof(Int) * num);
+        GAP_GC_POP();
         return Fail;
     }
 
     // collect <w> into it
     if ( fc->collectWord( sc, vcw, u ) == -1 ) {
         memset(ADDR_OBJ(vcw) + 1, 0, sizeof(Int) * num);
-        return ReducedQuotient( fc, sc, w, u );
+        result = ReducedQuotient(fc, sc, w, u);
+        GAP_GC_POP();
+        return result;
     }
 
     // convert the vector <vcw> into a word and clear <vcw>
-    return fc->wordVectorAndClear( type, vcw, num );
+    result = fc->wordVectorAndClear(type, vcw, num);
+    GAP_GC_POP();
+    return result;
 }
 
 

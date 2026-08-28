@@ -45,7 +45,10 @@
 **  The  list is  automatically extended to   make room for  the new element.
 **  'AddList' returns nothing, it is called only for its side effect.
 */
-static void AddList3(Obj list, Obj obj, Int pos)
+static void AddList3(Obj list,
+                     Obj obj GAP_GC_ROOTED_BY_ARG_INDEXED(0, 2)
+                         GAP_GC_MAYBE_UNROOTED,
+                     Int pos)
 {
     Int len;
     Int i;
@@ -57,7 +60,7 @@ static void AddList3(Obj list, Obj obj, Int pos)
     ASS_LIST(list, pos, obj);
 }
 
-void AddList(Obj list, Obj obj)
+void AddList(Obj list, Obj obj GAP_GC_ROOTED_BY_ARG(0) GAP_GC_MAYBE_UNROOTED)
 {
     AddList3(list, obj, -1);
 }
@@ -185,7 +188,7 @@ static Obj RemPlist(Obj list)
     return removed;
 }
 
-static Obj RemListOper;
+static Obj RemListOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncREM_LIST(Obj self, Obj list)
 {
@@ -219,7 +222,7 @@ static Obj FuncAPPEND_LIST_INTR(Obj self, Obj list1, Obj list2)
 {
     UInt                len1;           // length of the first list
     UInt                len2;           // length of the second list
-    Obj                 elm;            // one element of the second list
+    Obj                 elm = 0;        // one element of the second list
     Int                 i;              // loop variable
 
     RequireMutable(SELF_NAME, list1, "list");
@@ -228,10 +231,12 @@ static Obj FuncAPPEND_LIST_INTR(Obj self, Obj list1, Obj list2)
 
     // handle the case of strings now
     if (IS_STRING_REP(list1) && IS_STRING(list2)) {
+        GAP_GC_PUSH1(&list2);
         if (!IS_STRING_REP(list2)) {
             list2 = ImmutableString(list2);
         }
         AppendString(list1, list2);
+        GAP_GC_POP();
         return 0;
     }
 
@@ -276,7 +281,7 @@ static Obj FuncAPPEND_LIST_INTR(Obj self, Obj list1, Obj list2)
     return 0;
 }
 
-static Obj AppendListOper;
+static Obj AppendListOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncAPPEND_LIST(Obj self, Obj list, Obj obj)
 {
@@ -451,9 +456,11 @@ static Obj FuncPOSITION_SORTED_BY(Obj self, Obj list, Obj val, Obj func)
     // perform the binary search to find the position
     UInt l = 0;
     UInt h = LEN_PLIST(list) + 1;
+    Obj v = 0;
+    GAP_GC_PUSH1(&v);
     while (l + 1 < h) {       // list[l] < val && val <= list[h]
         UInt m = (l + h) / 2; // l < m < h
-        Obj  v = CALL_1ARGS(func, ELM_PLIST(list, m));
+        v = CALL_1ARGS(func, ELM_PLIST(list, m));
         if (LT(v, val)) {
             l = m;
         }
@@ -462,6 +469,7 @@ static Obj FuncPOSITION_SORTED_BY(Obj self, Obj list, Obj val, Obj func)
         }
     }
 
+    GAP_GC_POP();
     return INTOBJ_INT(h);
 }
 
@@ -943,8 +951,8 @@ static Obj FuncOnPoints(Obj self, Obj point, Obj elm)
 */
 static Obj FuncOnPairs(Obj self, Obj pair, Obj elm)
 {
-    Obj                 img;            // image, result
-    Obj                 tmp;            // temporary
+    Obj                 img = 0;        // image, result
+    Obj                 tmp = 0;        // temporary
 
     RequireSmallList(SELF_NAME, pair);
     if (LEN_LIST(pair) != 2) {
@@ -953,6 +961,7 @@ static Obj FuncOnPairs(Obj self, Obj pair, Obj elm)
     }
 
     // create a new bag for the result
+    GAP_GC_PUSH2(&img, &tmp);
     img = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(pair), T_PLIST, 2 );
     SET_LEN_PLIST( img, 2 );
 
@@ -962,6 +971,7 @@ static Obj FuncOnPairs(Obj self, Obj pair, Obj elm)
     tmp = POW( ELMV_LIST( pair, 2 ), elm );
     SET_ELM_PLIST( img, 2, tmp );
 
+    GAP_GC_POP();
     return img;
 }
 
@@ -980,8 +990,8 @@ static Obj FuncOnPairs(Obj self, Obj pair, Obj elm)
 */
 static Obj FuncOnTuples(Obj self, Obj tuple, Obj elm)
 {
-    Obj                 img;            // image, result
-    Obj                 tmp;            // temporary
+    Obj                 img = 0;        // image, result
+    Obj                 tmp = 0;        // temporary
     UInt                i;              // loop variable
 
     RequireSmallList(SELF_NAME, tuple);
@@ -1011,6 +1021,7 @@ static Obj FuncOnTuples(Obj self, Obj tuple, Obj elm)
     }
 
     // create a new bag for the result
+    GAP_GC_PUSH2(&img, &tmp);
     img = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(tuple), T_PLIST, LEN_LIST(tuple) );
     SET_LEN_PLIST( img, LEN_LIST(tuple) );
 
@@ -1020,6 +1031,7 @@ static Obj FuncOnTuples(Obj self, Obj tuple, Obj elm)
         SET_ELM_PLIST( img, i, tmp );
     }
 
+    GAP_GC_POP();
     return img;
 }
 
@@ -1038,7 +1050,7 @@ static Obj FuncOnTuples(Obj self, Obj tuple, Obj elm)
 
 static Obj FuncOnSets(Obj self, Obj set, Obj elm)
 {
-    Obj                 img;            // handle of the image, result
+    Obj                 img = 0;        // handle of the image, result
     UInt                status;        // the elements are mutable
 
     if (!HAS_FILT_LIST(set, FN_IS_SSORT) && !IS_SSORT_LIST(set)) {
@@ -1071,6 +1083,7 @@ static Obj FuncOnSets(Obj self, Obj set, Obj elm)
     }
 
     // compute the list of images
+    GAP_GC_PUSH1(&img);
     img = FuncOnTuples( self, set, elm );
 
     // sort the images list (which is a dense plain list)
@@ -1095,6 +1108,7 @@ static Obj FuncOnSets(Obj self, Obj set, Obj elm)
 
 
     // return set
+    GAP_GC_POP();
     return img;
 }
 
@@ -1158,8 +1172,8 @@ static Obj FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH(Obj self, Obj digraph)
 {
   UInt i,level,k,l,x,t,m;
   UInt now = 0,n;
-  Obj val, stack, comps,comp;
-  Obj frames, adj;
+  Obj val = 0, stack = 0, comps = 0, comp = 0;
+  Obj frames = 0, adj = 0;
   UInt *fptr;
 
   n = LEN_LIST(digraph);
@@ -1167,6 +1181,7 @@ static Obj FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH(Obj self, Obj digraph)
     {
       return NewEmptyPlist();
     }
+  GAP_GC_PUSH6(&val, &stack, &comps, &comp, &frames, &adj);
   val = NewBag(T_DATOBJ, (n+1)*sizeof(UInt));
   stack = NEW_PLIST(T_PLIST_CYC, n);
   comps = NEW_PLIST(T_PLIST_TAB, n);
@@ -1248,6 +1263,7 @@ static Obj FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH(Obj self, Obj digraph)
 
     }
   SHRINK_PLIST(comps, LEN_PLIST(comps));
+  GAP_GC_POP();
   return comps;
 }
 
@@ -1480,7 +1496,7 @@ static Obj FastCallFuncList(Obj func, Obj list)
     }
 }
 
-static Obj IsListOrCollection;
+static Obj IsListOrCollection GAP_GC_GLOBALLY_ROOTED;
 
 // Recursively walk the generator/filter description in `gens`, updating
 // `args` with the currently selected loop variables and folding each produced
@@ -1494,33 +1510,45 @@ static int FoldLeftXHelp(Obj   gens,
                          int   genIndex,
                          int   valIndex)
 {
+    Obj gen = 0;
+    Obj iter = 0;
+    Obj nfun = 0;
+    Obj dfun = 0;
+    Obj elm = 0;
+    GAP_GC_PUSH5(&gen, &iter, &nfun, &dfun, &elm);
     while (genIndex <= LEN_PLIST(gens)) {
-        Obj gen = ELM_PLIST(gens, genIndex);
+        gen = ELM_PLIST(gens, genIndex);
         if (IS_FUNC(gen))
             gen = FastCallFuncList(gen, args);
         if (gen == True)
             genIndex++;
         else if (gen == False)
+        {
+            GAP_GC_POP();
             return 0;
+        }
         else if (IS_LIST(gen)) {
             const int len = LEN_LIST(gen);
             for (int i = 1; i <= len; i++) {
-                Obj elm = ELM0_LIST(gen, i);
+                elm = ELM0_LIST(gen, i);
                 if (!elm)
                     continue; // skip holes
                 AssPlist(args, valIndex, elm);
                 if (FoldLeftXHelp(gens, foldFunc, acc, abortValue, args,
                                   genIndex + 1, valIndex + 1))
+                {
+                    GAP_GC_POP();
                     return 1;
+                }
             }
             UNB_LIST(args, valIndex);
+            GAP_GC_POP();
             return 0;
         }
         else if (CALL_1ARGS(IsListOrCollection, gen) == True) {
             // get the iterator
-            Obj iter = CALL_1ARGS(ITERATOR, gen);
+            iter = CALL_1ARGS(ITERATOR, gen);
 
-            Obj nfun, dfun;
             if (IS_PREC_OR_COMOBJ(iter) &&
                 CALL_1ARGS(STD_ITER, iter) == True) {
                 // this can avoid method selection overhead on iterator
@@ -1536,14 +1564,18 @@ static int FoldLeftXHelp(Obj   gens,
             while (CALL_1ARGS(dfun, iter) == False) {
 
                 // get the element and assign it to the variable
-                Obj elm = CALL_1ARGS(nfun, iter);
+                elm = CALL_1ARGS(nfun, iter);
 
                 AssPlist(args, valIndex, elm);
                 if (FoldLeftXHelp(gens, foldFunc, acc, abortValue, args,
                                   genIndex + 1, valIndex + 1))
+                {
+                    GAP_GC_POP();
                     return 1;
+                }
             }
             UNB_LIST(args, valIndex);
+            GAP_GC_POP();
             return 0;
         }
         else {
@@ -1553,7 +1585,9 @@ static int FoldLeftXHelp(Obj   gens,
         }
     }
     *acc = CALL_2ARGS(foldFunc, *acc, args);
-    return abortValue == *acc;
+    int res = abortValue == *acc;
+    GAP_GC_POP();
+    return res;
 }
 
 // Kernel entry point for FoldLeftX after GAP-level argument validation.
@@ -1567,8 +1601,11 @@ Obj FuncFOLD_LEFT_X(
     if (!IS_FUNC(foldFunc))
         return Fail;
 
-    Obj args = NEW_PLIST(T_PLIST, LEN_PLIST(gens));
+    Obj args = 0;
+    GAP_GC_PUSH2(&args, &init);
+    args = NEW_PLIST(T_PLIST, LEN_PLIST(gens));
     FoldLeftXHelp(gens, foldFunc, &init, abortValue, args, 1, 1);
+    GAP_GC_POP();
     return init;
 }
 

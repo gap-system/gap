@@ -88,8 +88,8 @@ static inline Obj MakeRat(Obj num, Obj den)
 **
 **  'TypeRat' is the function in 'TypeObjFuncs' for rationals.
 */
-static Obj TYPE_RAT_POS;
-static Obj TYPE_RAT_NEG;
+static Obj TYPE_RAT_POS GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_RAT_NEG GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeRat(Obj rat)
 {
@@ -165,6 +165,9 @@ static Int LtRat(Obj opL, Obj opR)
 {
     Obj                 numL, denL;     // numerator and denominator left
     Obj                 numR, denR;     // numerator and denominator right
+    Obj                 prodL = 0;
+    Obj                 prodR = 0;
+    Int                 lt;
 
     CHECK_RAT(opL);
     CHECK_RAT(opR);
@@ -187,7 +190,12 @@ static Int LtRat(Obj opL, Obj opR)
     }
 
     // a / b < c / d <=> a d < c b
-    return LtInt( ProdInt( numL, denR ), ProdInt( numR, denL ) );
+    GAP_GC_PUSH2(&prodL, &prodR);
+    prodL = ProdInt(numL, denR);
+    prodR = ProdInt(numR, denL);
+    lt = LtInt(prodL, prodR);
+    GAP_GC_POP();
+    return lt;
 }
 
 
@@ -202,9 +210,10 @@ static Obj SumRat(Obj opL, Obj opR)
 {
     Obj                 numL, denL;     // numerator and denominator left
     Obj                 numR, denR;     // numerator and denominator right
-    Obj                 gcd1, gcd2;     // gcd of denominators
-    Obj                 numS, denS;     // numerator and denominator sum
-    Obj                 sum;            // sum
+    Obj                 gcd1 = 0, gcd2 = 0; // gcd of denominators
+    Obj                 numS = 0, denS = 0; // numerator and denominator sum
+    Obj                 sum = 0;        // sum
+    Obj                 tmp1 = 0, tmp2 = 0;
 
     CHECK_RAT(opL);
     CHECK_RAT(opR);
@@ -227,21 +236,29 @@ static Obj SumRat(Obj opL, Obj opR)
     }
 
     // find the gcd of the denominators
+    GAP_GC_PUSH7(&gcd1, &gcd2, &numS, &denS, &sum, &tmp1, &tmp2);
     gcd1 = GcdInt( denL, denR );
 
     // nothing can cancel if the gcd is 1
     if (gcd1 == INTOBJ_INT(1)) {
-        numS = SumInt( ProdInt( numL, denR ), ProdInt( numR, denL ) );
+        tmp1 = ProdInt(numL, denR);
+        tmp2 = ProdInt(numR, denL);
+        numS = SumInt(tmp1, tmp2);
         denS = ProdInt( denL, denR );
     }
 
     // a little bit more difficult otherwise
     else {
-        numS = SumInt( ProdInt( numL, QuoInt( denR, gcd1 ) ),
-                       ProdInt( numR, QuoInt( denL, gcd1 ) ) );
+        tmp1 = QuoInt(denR, gcd1);
+        tmp1 = ProdInt(numL, tmp1);
+        tmp2 = QuoInt(denL, gcd1);
+        tmp2 = ProdInt(numR, tmp2);
+        numS = SumInt(tmp1, tmp2);
         gcd2 = GcdInt( numS, gcd1 );
         numS = QuoInt( numS, gcd2 );
-        denS = ProdInt( QuoInt( denL, gcd1 ), QuoInt( denR, gcd2 ) );
+        tmp1 = QuoInt(denL, gcd1);
+        tmp2 = QuoInt(denR, gcd2);
+        denS = ProdInt(tmp1, tmp2);
     }
 
     // make the fraction or, if possible, the integer
@@ -253,6 +270,7 @@ static Obj SumRat(Obj opL, Obj opR)
     }
 
     CHECK_RAT(sum);
+    GAP_GC_POP();
     return sum;
 }
 
@@ -273,12 +291,14 @@ static Obj ZeroRat(Obj op)
 */
 static Obj AInvRat(Obj op)
 {
-    Obj                 res;
-    Obj                 tmp;
+    Obj                 res = 0;
+    Obj                 tmp = 0;
     CHECK_RAT(op);
+    GAP_GC_PUSH2(&res, &tmp);
     tmp = AInvInt( NUM_RAT(op) );
     res = MakeRat(tmp, DEN_RAT(op));
     CHECK_RAT(res);
+    GAP_GC_POP();
     return res;
 }
 
@@ -289,15 +309,19 @@ static Obj AInvRat(Obj op)
 */
 static Obj AbsRat(Obj op)
 {
-    Obj res;
-    Obj tmp;
+    Obj res = 0;
+    Obj tmp = 0;
     CHECK_RAT(op);
+    GAP_GC_PUSH2(&res, &tmp);
     tmp = AbsInt( NUM_RAT(op) );
-    if ( tmp == NUM_RAT(op))
+    if ( tmp == NUM_RAT(op)) {
+        GAP_GC_POP();
         return op;
+    }
 
     res = MakeRat(tmp, DEN_RAT(op));
     CHECK_RAT(res);
+    GAP_GC_POP();
     return res;
 
 }
@@ -336,9 +360,10 @@ static Obj DiffRat(Obj opL, Obj opR)
 {
     Obj                 numL, denL;     // numerator and denominator left
     Obj                 numR, denR;     // numerator and denominator right
-    Obj                 gcd1, gcd2;     // gcd of denominators
-    Obj                 numD, denD;     // numerator and denominator diff
-    Obj                 dif;            // diff
+    Obj                 gcd1 = 0, gcd2 = 0; // gcd of denominators
+    Obj                 numD = 0, denD = 0; // numerator and denominator diff
+    Obj                 dif = 0;        // diff
+    Obj                 tmp1 = 0, tmp2 = 0;
 
     CHECK_RAT(opL);
     CHECK_RAT(opR);
@@ -361,21 +386,29 @@ static Obj DiffRat(Obj opL, Obj opR)
     }
 
     // find the gcd of the denominators
+    GAP_GC_PUSH7(&gcd1, &gcd2, &numD, &denD, &dif, &tmp1, &tmp2);
     gcd1 = GcdInt( denL, denR );
 
     // nothing can cancel if the gcd is 1
     if (gcd1 == INTOBJ_INT(1)) {
-        numD = DiffInt( ProdInt( numL, denR ), ProdInt( numR, denL ) );
+        tmp1 = ProdInt(numL, denR);
+        tmp2 = ProdInt(numR, denL);
+        numD = DiffInt(tmp1, tmp2);
         denD = ProdInt( denL, denR );
     }
 
     // a little bit more difficult otherwise
     else {
-        numD = DiffInt( ProdInt( numL, QuoInt( denR, gcd1 ) ),
-                        ProdInt( numR, QuoInt( denL, gcd1 ) ) );
+        tmp1 = QuoInt(denR, gcd1);
+        tmp1 = ProdInt(numL, tmp1);
+        tmp2 = QuoInt(denL, gcd1);
+        tmp2 = ProdInt(numR, tmp2);
+        numD = DiffInt(tmp1, tmp2);
         gcd2 = GcdInt( numD, gcd1 );
         numD = QuoInt( numD, gcd2 );
-        denD = ProdInt( QuoInt( denL, gcd1 ), QuoInt( denR, gcd2 ) );
+        tmp1 = QuoInt(denL, gcd1);
+        tmp2 = QuoInt(denR, gcd2);
+        denD = ProdInt(tmp1, tmp2);
     }
 
     // make the fraction or, if possible, the integer
@@ -387,6 +420,7 @@ static Obj DiffRat(Obj opL, Obj opR)
     }
 
     CHECK_RAT(dif);
+    GAP_GC_POP();
     return dif;
 }
 
@@ -402,9 +436,10 @@ static Obj ProdRat(Obj opL, Obj opR)
 {
     Obj                 numL, denL;     // numerator and denominator left
     Obj                 numR, denR;     // numerator and denominator right
-    Obj                 gcd1, gcd2;     // gcd of denominators
-    Obj                 numP, denP;     // numerator and denominator prod
-    Obj                 prd;            // prod
+    Obj                 gcd1 = 0, gcd2 = 0; // gcd of denominators
+    Obj                 numP = 0, denP = 0; // numerator and denominator prod
+    Obj                 prd = 0;        // prod
+    Obj                 tmp1 = 0, tmp2 = 0;
 
     CHECK_RAT(opL);
     CHECK_RAT(opR);
@@ -427,6 +462,7 @@ static Obj ProdRat(Obj opL, Obj opR)
     }
 
     // find the gcds
+    GAP_GC_PUSH7(&gcd1, &gcd2, &numP, &denP, &prd, &tmp1, &tmp2);
     gcd1 = GcdInt( numL, denR );
     gcd2 = GcdInt( numR, denL );
 
@@ -438,8 +474,12 @@ static Obj ProdRat(Obj opL, Obj opR)
 
     // a little bit more difficult otherwise
     else {
-        numP = ProdInt( QuoInt( numL, gcd1 ), QuoInt( numR, gcd2 ) );
-        denP = ProdInt( QuoInt( denL, gcd2 ), QuoInt( denR, gcd1 ) );
+        tmp1 = QuoInt(numL, gcd1);
+        tmp2 = QuoInt(numR, gcd2);
+        numP = ProdInt(tmp1, tmp2);
+        tmp1 = QuoInt(denL, gcd2);
+        tmp2 = QuoInt(denR, gcd1);
+        denP = ProdInt(tmp1, tmp2);
     }
 
     // make the fraction or, if possible, the integer
@@ -451,6 +491,7 @@ static Obj ProdRat(Obj opL, Obj opR)
     }
 
     CHECK_RAT(prd);
+    GAP_GC_POP();
     return prd;
 }
 
@@ -493,10 +534,11 @@ static Obj InvRat(Obj op)
 static Obj QuoRat(Obj opL, Obj opR)
 {
     Obj                 numL, denL;     // numerator and denominator left
-    Obj                 numR, denR;     // numerator and denominator right
-    Obj                 gcd1, gcd2;     // gcd of denominators
-    Obj                 numQ, denQ;     // numerator and denominator Qrod
-    Obj                 quo;            // Qrod
+    Obj                 numR = 0, denR = 0; // numerator and denominator right
+    Obj                 gcd1 = 0, gcd2 = 0; // gcd of denominators
+    Obj                 numQ = 0, denQ = 0; // numerator and denominator Qrod
+    Obj                 quo = 0;        // Qrod
+    Obj                 tmp1 = 0, tmp2 = 0;
 
     CHECK_RAT(opL);
     CHECK_RAT(opR);
@@ -525,6 +567,8 @@ static Obj QuoRat(Obj opL, Obj opR)
 
     // we multiply the left numerator with the right denominator
     // so the right denominator should carry the sign of the right operand
+    GAP_GC_PUSH9(&numR, &denR, &gcd1, &gcd2, &numQ, &denQ, &quo, &tmp1,
+                 &tmp2);
     if ( IS_NEG_INT(numR) ) {
         numR = AInvInt( numR );
         denR = AInvInt( denR );
@@ -542,8 +586,12 @@ static Obj QuoRat(Obj opL, Obj opR)
 
     // a little bit more difficult otherwise
     else {
-        numQ = ProdInt( QuoInt( numL, gcd1 ), QuoInt( denR, gcd2 ) );
-        denQ = ProdInt( QuoInt( denL, gcd2 ), QuoInt( numR, gcd1 ) );
+        tmp1 = QuoInt(numL, gcd1);
+        tmp2 = QuoInt(denR, gcd2);
+        numQ = ProdInt(tmp1, tmp2);
+        tmp1 = QuoInt(denL, gcd2);
+        tmp2 = QuoInt(numR, gcd1);
+        denQ = ProdInt(tmp1, tmp2);
     }
 
     // make the fraction or, if possible, the integer
@@ -555,6 +603,7 @@ static Obj QuoRat(Obj opL, Obj opR)
     }
 
     CHECK_RAT(quo);
+    GAP_GC_POP();
     return quo;
 }
 
@@ -588,6 +637,7 @@ static Obj ModRat(Obj opL, Obj n)
 {
     // invert the denominator
     Obj d = InverseModInt( DEN_RAT(opL), n );
+    Obj prod = 0;
 
     // check whether the denominator of <opL> really was invertible mod <n> */
     if ( d == Fail ) {
@@ -597,7 +647,11 @@ static Obj ModRat(Obj opL, Obj n)
     }
 
     // return the remainder
-    return ModInt( ProdInt( NUM_RAT(opL), d ), n );
+    GAP_GC_PUSH2(&d, &prod);
+    prod = ProdInt(NUM_RAT(opL), d);
+    d = ModInt(prod, n);
+    GAP_GC_POP();
+    return d;
 }
 
 
@@ -610,10 +664,12 @@ static Obj ModRat(Obj opL, Obj n)
 */
 static Obj PowRat(Obj opL, Obj opR)
 {
-    Obj                 numP, denP;     // numerator and denominator power
-    Obj                 pow;            // power
+    Obj                 numP = 0, denP = 0; // numerator and denominator power
+    Obj                 pow = 0;        // power
+    Obj                 exp = 0;
 
     CHECK_RAT(opL);
+    GAP_GC_PUSH4(&numP, &denP, &pow, &exp);
 
     // if <opR> == 0 return 1
     if (opR == INTOBJ_INT(0)) {
@@ -634,20 +690,23 @@ static Obj PowRat(Obj opL, Obj opR)
 
     // if <opR> is negative and numerator is 1 just power the denominator
     else if (NUM_RAT(opL) == INTOBJ_INT(1)) {
-        pow = PowInt( DEN_RAT(opL), AInvInt( opR ) );
+        exp = AInvInt(opR);
+        pow = PowInt(DEN_RAT(opL), exp);
     }
 
     // if <opR> is negative and numerator is -1 return (-1)^r * num(l)
     else if (NUM_RAT(opL) == INTOBJ_INT(-1)) {
-        numP = PowInt( NUM_RAT(opL), AInvInt( opR ) );
-        denP = PowInt( DEN_RAT(opL), AInvInt( opR ) );
+        exp = AInvInt(opR);
+        numP = PowInt(NUM_RAT(opL), exp);
+        denP = PowInt(DEN_RAT(opL), exp);
         pow = ProdInt(numP, denP);
     }
 
     // if <opR> is negative do both powers, take care of the sign
     else {
-        numP = PowInt( DEN_RAT(opL), AInvInt( opR ) );
-        denP = PowInt( NUM_RAT(opL), AInvInt( opR ) );
+        exp = AInvInt(opR);
+        numP = PowInt(DEN_RAT(opL), exp);
+        denP = PowInt(NUM_RAT(opL), exp);
         if (IS_NEG_INT(denP)) {
             numP = AInvInt(numP);
             denP = AInvInt(denP);
@@ -656,6 +715,7 @@ static Obj PowRat(Obj opL, Obj opR)
     }
 
     CHECK_RAT(pow);
+    GAP_GC_POP();
     return pow;
 }
 
@@ -671,7 +731,7 @@ static Obj PowRat(Obj opL, Obj opR)
 **  'IsRat' returns  'true' if  the  value <val> is  a  rational and  'false'
 **  otherwise.
 */
-static Obj IsRatFilt;
+static Obj IsRatFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_RAT(Obj self, Obj val)
 {

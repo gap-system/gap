@@ -122,10 +122,10 @@ void ClearError(void);
 /****************************************************************************
 **
 */
-extern Obj ITERATOR;
-extern Obj IS_DONE_ITER;
-extern Obj NEXT_ITER;
-extern Obj STD_ITER;
+extern Obj ITERATOR GAP_GC_GLOBALLY_ROOTED;
+extern Obj IS_DONE_ITER GAP_GC_GLOBALLY_ROOTED;
+extern Obj NEXT_ITER GAP_GC_GLOBALLY_ROOTED;
+extern Obj STD_ITER GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************

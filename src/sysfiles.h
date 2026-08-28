@@ -237,7 +237,7 @@ Char * SyFgets(Char * line, UInt length, Int fid);
 void SyFputs(const Char * line, Int fid);
 
 
-Int SyRead(Int fid, void * ptr, size_t len);
+Int SyRead(Int fid, void * ptr, size_t len) GAP_GC_NOTSAFEPOINT;
 Int SyWrite(Int fid, const void * ptr, size_t len);
 
 Int SyReadWithBuffer(Int fid, void * ptr, size_t len);
