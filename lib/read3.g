@@ -210,7 +210,6 @@ ReadLib( "grpramat.gd" );
 ReadGrp( "basic.gd"    );
 ReadGrp( "classic.gd"  );
 ReadGrp( "conformal.gd" );
-ReadGrp( "perf.gd"     );
 ReadGrp( "suzuki.gd"   );
 ReadGrp( "ree.gd"   );
 ReadGrp( "simple.gd"   );

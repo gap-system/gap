@@ -72,12 +72,14 @@ gap> StructureDescription(SL(2,3):recompute);
 "SL(2,3)"
 gap> StructureDescription(SL(3,3));
 "PSL(3,3)"
+#@if IsPackageMarkedForLoading( "perfgrp", "" )
 gap> StructureDescription(PerfectGroup(IsPermGroup, 960, 1));
 "(C2 x C2 x C2 x C2) : A5"
 gap> G := PerfectGroup(IsPermGroup,1344,1);; StructureDescription(G);
 "(C2 x C2 x C2) : PSL(3,2)"
 gap> G := PerfectGroup(IsPermGroup,1344,2);; StructureDescription(G);
 "(C2 x C2 x C2) . PSL(3,2)"
+#@fi
 #@if IsPackageMarkedForLoading( "smallgrp", "" )
 gap> StructureDescription(SmallGroup(32,15):recompute);
 "C4 . D8 = C4 . (C4 x C2)"
