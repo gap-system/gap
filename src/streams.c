@@ -48,6 +48,10 @@
 #include <time.h>
 #include <unistd.h>
 
+#ifdef SYS_IS_WINDOWS
+#include <io.h>                         // for _mktemp
+#endif
+
 #ifdef HAVE_SELECT
 // For FuncUNIXSelect
 #include <sys/time.h>
@@ -1035,8 +1039,18 @@ static Obj FuncTmpDirectory(Obj self)
     const char * extra = "/gaptempdirXXXXXX";
     AppendCStr(name, extra, strlen(extra));
 
+#ifdef HAVE_MKDTEMP
     if (mkdtemp(CSTR_STRING(name)) == 0)
         return Fail;
+#else
+    // without mkdtemp, pick a name first and create the directory
+    // afterwards; unlike mkdtemp this is racy
+    // TODO(windows-port): use a native atomic replacement
+    if (_mktemp(CSTR_STRING(name)) == 0)
+        return Fail;
+    if (SyMkdir(CSTR_STRING(name)) == -1)
+        return Fail;
+#endif
     return name;
 }
 
@@ -1131,7 +1145,11 @@ static Obj FuncGAP_realpath(Obj self, Obj path)
     RequireStringRep(SELF_NAME, path);
     char resolved_path[GAP_PATH_MAX];
 
+#ifdef SYS_IS_WINDOWS
+    if (NULL == _fullpath(resolved_path, CONST_CSTR_STRING(path), sizeof(resolved_path))) {
+#else
     if (NULL == realpath(CONST_CSTR_STRING(path), resolved_path)) {
+#endif
         SySetErrorNo();
         return Fail;
     }

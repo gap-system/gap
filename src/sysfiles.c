@@ -44,9 +44,12 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <termios.h>
 #include <time.h>
 #include <unistd.h>
+
+#ifdef HAVE_TERMIOS_H
+#include <termios.h>
+#endif
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -80,7 +83,13 @@
 
 #include <zlib.h>
 
+#ifdef HAVE_SYS_UTSNAME_H
 #include <sys/utsname.h>
+#endif
+
+#ifdef SYS_IS_WINDOWS
+#include <direct.h>                     // for _mkdir
+#endif
 
 
 // 'EndLineHook' is a GAP-level variable which can be set to a function to be
@@ -364,6 +373,7 @@ static Obj FuncCrcString(Obj self, Obj str)
 Obj SyGetOsRelease(void)
 {
     Obj            r = NEW_PREC(0);
+#ifdef HAVE_SYS_UTSNAME_H
     struct utsname buf;
     if (!uname(&buf)) {
         AssPRec(r, RNamName("sysname"), MakeImmString(buf.sysname));
@@ -372,6 +382,8 @@ Obj SyGetOsRelease(void)
         AssPRec(r, RNamName("version"), MakeImmString(buf.version));
         AssPRec(r, RNamName("machine"), MakeImmString(buf.machine));
     }
+#endif
+    // TODO(windows-port): fill in via GetVersionEx or the registry
 
     return r;
 }
@@ -875,6 +887,8 @@ Int SyIsEndOfFile (
 **  continue signals if this particular version  of UNIX supports them, so we
 **  can turn the terminal line back to cooked mode before stopping GAP.
 */
+#ifdef HAVE_TERMIOS_H
+
 static struct termios   syOld, syNew;           // old and new terminal state
 
 #ifdef SIGTSTP
@@ -963,6 +977,22 @@ void syStopraw (
         fputs("gap: 'tcsetattr' could not turn off raw mode!\n",stderr);
 }
 
+#else
+
+// without termios raw mode is not available; the line editor then falls
+// back to plain line-buffered input (syFgetsNoEdit)
+// TODO(windows-port): implement raw mode via the Windows console API
+UInt syStartraw(Int fid)
+{
+    return 0;
+}
+
+void syStopraw(Int fid)
+{
+}
+
+#endif
+
 
 /****************************************************************************
 **
@@ -1022,12 +1052,16 @@ static void syAnswerIntr(int signr)
 
 void SyInstallAnswerIntr ( void )
 {
+#ifdef HAVE_SIGACTION
     struct sigaction sa;
 
     sa.sa_handler = syAnswerIntr;
     sigemptyset(&(sa.sa_mask));
     sa.sa_flags = SA_RESTART;
     sigaction( SIGINT, &sa, NULL );
+#else
+    signal( SIGINT, syAnswerIntr );
+#endif
 }
 
 
@@ -2045,14 +2079,14 @@ static Obj FuncREADLINEINITLINE(Obj self, Obj line)
 static Int ISINITREADLINE = 0;
 // a hook function called regularly while waiting on input
 static Int current_rl_fid;
+#ifdef HAVE_SELECT
 static int charreadhook_rl(void)
 {
-#ifdef HAVE_SELECT
     if (OnCharReadHookActiveCheck())
         HandleCharReadHook(syBuf[current_rl_fid].fp);
-#endif
-  return 0;
+    return 0;
 }
+#endif
 
 static int preInputHook_rl(void)
 {
@@ -2945,7 +2979,11 @@ Int SyMkdir ( const Char * name )
 {
     Int res;
     SyClearErrorNo();
+#ifdef SYS_IS_WINDOWS
+    res = _mkdir(name);
+#else
     res = mkdir(name, 0777);
+#endif
     if (res == -1)
        SySetErrorNo();
     return res;
@@ -2984,7 +3022,11 @@ char SyFileType(const Char * path)
     int         res;
     struct stat ourlstatbuf;
 
+#ifdef HAVE_LSTAT
     res = lstat(path, &ourlstatbuf);
+#else
+    res = stat(path, &ourlstatbuf);
+#endif
     if (res < 0) {
         SySetErrorNo();
         return 0;
@@ -2993,8 +3035,10 @@ char SyFileType(const Char * path)
         return 'F';
     if (S_ISDIR(ourlstatbuf.st_mode))
         return 'D';
+#ifdef S_ISLNK
     if (S_ISLNK(ourlstatbuf.st_mode))
         return 'L';
+#endif
 #ifdef S_ISCHR
     if (S_ISCHR(ourlstatbuf.st_mode))
         return 'C';
@@ -3217,12 +3261,14 @@ void InitSysFiles(void)
     syBuf[0].echo = fileno(stdout);
     syBuf[0].bufno = -1;
     syBuf[0].isTTY = isatty(fileno(stdin));
+#ifdef HAVE_TTYNAME
     if (syBuf[0].isTTY) {
         // if stdin is on a terminal, make sure stdout in on the same terminal
         if (stat_in.st_dev != stat_out.st_dev ||
             stat_in.st_ino != stat_out.st_ino)
             syBuf[0].echo = open(ttyname(fileno(stdin)), O_WRONLY);
     }
+#endif
 
     // set up stdout
     syBuf[1].type = raw_socket;
@@ -3236,12 +3282,14 @@ void InitSysFiles(void)
     syBuf[2].echo = fileno(stderr);
     syBuf[2].bufno = -1;
     syBuf[2].isTTY = isatty(fileno(stderr));
+#ifdef HAVE_TTYNAME
     if (syBuf[2].isTTY) {
         // if stderr is on a terminal, make sure errin in on the same terminal
         if (stat_in.st_dev != stat_err.st_dev ||
             stat_in.st_ino != stat_err.st_ino)
             syBuf[2].fp = open(ttyname(fileno(stderr)), O_RDONLY);
     }
+#endif
 
     // set up errout
     syBuf[3].type = raw_socket;

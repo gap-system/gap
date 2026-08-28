@@ -35,6 +35,11 @@
 #include <sys/resource.h>
 #endif
 
+#ifdef SYS_IS_WINDOWS
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>    // for Sleep
+#endif
+
 #if defined(__APPLE__) && defined(__MACH__) // macOS
 #include <mach/mach_time.h>
 #elif defined(HAVE_CLOCK_GETTIME) && defined(CLOCK_MONOTONIC)
@@ -80,6 +85,10 @@ UInt SyTime(void)
     // a substitute (it is not perfect, as NanosecondsSinceEpoch()
     // is walltime, while RUSAGE_SELF is CPU time).
     return SyNanosecondsSinceEpoch()/1000000000;
+#elif !defined(HAVE_GETRUSAGE)
+    // no getrusage: substitute wallclock milliseconds for CPU time
+    // TODO(windows-port): use GetProcessTimes
+    return SyNanosecondsSinceEpoch()/1000000;
 #else
     struct rusage buf;
 
@@ -227,6 +236,10 @@ static Obj FuncRuntime(Obj self)
 
 static Obj FuncRUNTIMES(Obj self)
 {
+#ifndef HAVE_GETRUSAGE
+    // TODO(windows-port): use GetProcessTimes
+    return Fail;
+#else
     UInt          tmp;
     struct rusage buf;
     Obj           res = NEW_PLIST(T_PLIST, 4);
@@ -254,6 +267,7 @@ static Obj FuncRUNTIMES(Obj self)
     ASS_LIST(res, 4, ObjInt_UInt(tmp));
 
     return res;
+#endif
 }
 
 
@@ -414,7 +428,11 @@ static Obj FuncSleep(Obj self, Obj secs)
     Int s = GetSmallInt(SELF_NAME, secs);
 
     if (s > 0)
+#ifdef SYS_IS_WINDOWS
+        Sleep((DWORD)s * 1000);
+#else
         sleep((UInt)s);
+#endif
 
     // either we used up the time, or we were interrupted.
     if (HaveInterrupt()) {
@@ -437,7 +455,11 @@ static Obj FuncMicroSleep(Obj self, Obj msecs)
     Int s = GetSmallInt(SELF_NAME, msecs);
 
     if (s > 0)
+#ifdef SYS_IS_WINDOWS
+        Sleep((DWORD)(s / 1000));
+#else
         usleep((UInt)s);
+#endif
 
     // either we used up the time, or we were interrupted.
     if (HaveInterrupt()) {

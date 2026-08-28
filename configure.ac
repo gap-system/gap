@@ -969,7 +969,7 @@ dnl
 dnl check for functionality related to child process handling,
 dnl including pseudo TTY support, signals, etc.
 AC_CHECK_HEADERS([termios.h])
-AC_CHECK_HEADERS([sys/ioctl.h sys/resource.h])
+AC_CHECK_HEADERS([sys/ioctl.h sys/resource.h sys/utsname.h])
 
 
 # openpty() is available on various BSD variants, but also in glibc.
@@ -1004,6 +1004,9 @@ AC_CHECK_TYPE([sig_atomic_t], [],
     [#include <signal.h>]
 )
 AC_CHECK_FUNCS([signal sigaction setpgid])
+
+dnl POSIX functions absent on native Windows (mingw)
+AC_CHECK_FUNCS([realpath readlink mkdtemp lstat ttyname])
 
 
 dnl
