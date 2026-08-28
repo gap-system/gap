@@ -1463,6 +1463,9 @@ end);
 ##
 #M  ReadAllLine( <iostream>[, <nofail>][, <IsAllLine>] ) . .  read whole line
 ##
+# this method serves pty based iostreams, which only exist on systems that
+# also have UNIXSelect
+if IsBound( UNIXSelect ) then
 InstallMethod( ReadAllLine, "iostream,boolean,function",
         [ IsInputOutputStreamByPtyRep and IsInputOutputStream, IsBool, IsFunction ],
     function(iostream, nofail, IsAllLine)
@@ -1484,6 +1487,7 @@ InstallMethod( ReadAllLine, "iostream,boolean,function",
     fi;
     return line;
 end);
+fi;
 
 InstallMethod( ReadAllLine, "iostream,boolean,function",
         [ IsInputOutputStream, IsBool, IsFunction ],
