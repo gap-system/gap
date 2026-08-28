@@ -1182,6 +1182,16 @@ static Obj FuncFD_OF_IOSTREAM(Obj self, Obj stream)
 static Obj
 FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
 {
+    // validate the arguments exactly as the real implementation does
+    RequireStringRep(SELF_NAME, dir);
+    RequireStringRep(SELF_NAME, prg);
+    GetSmallInt(SELF_NAME, in);
+    GetSmallInt(SELF_NAME, out);
+    RequirePlainList(SELF_NAME, args);
+    for (Int i = 1; i <= LEN_PLIST(args); i++) {
+        Obj tmp = ELM_PLIST(args, i);
+        RequireStringRep(SELF_NAME, tmp);
+    }
     return Fail;
 }
 

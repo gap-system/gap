@@ -237,8 +237,15 @@ static Obj FuncRuntime(Obj self)
 static Obj FuncRUNTIMES(Obj self)
 {
 #ifndef HAVE_GETRUSAGE
+    // report the wallclock based SyTime approximation as user time and
+    // zero for the other three components
     // TODO(windows-port): use GetProcessTimes
-    return Fail;
+    Obj res = NEW_PLIST(T_PLIST, 4);
+    ASS_LIST(res, 1, ObjInt_UInt(SyTime()));
+    ASS_LIST(res, 2, ObjInt_UInt(0));
+    ASS_LIST(res, 3, ObjInt_UInt(0));
+    ASS_LIST(res, 4, ObjInt_UInt(0));
+    return res;
 #else
     UInt          tmp;
     struct rusage buf;

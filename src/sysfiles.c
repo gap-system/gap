@@ -1330,6 +1330,11 @@ Int SyFseek (
         return -1;
     }
 
+    // reject negative positions uniformly; Windows' lseek does not
+    if ( pos < 0 ) {
+        return -1;
+    }
+
     if (syBuf[fid].bufno >= 0) {
         UInt bufno = syBuf[fid].bufno;
         syBuffers[bufno].buflen = 0;
