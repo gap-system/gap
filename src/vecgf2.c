@@ -41,7 +41,7 @@
 **
 *V  TYPE_LIST_GF2VEC  . . . . . . . . . . . . . . type of a GF2 vector object
 */
-Obj TYPE_LIST_GF2VEC;
+Obj TYPE_LIST_GF2VEC GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
@@ -49,58 +49,70 @@ Obj TYPE_LIST_GF2VEC;
 *V  TYPE_LIST_GF2VEC_LOCKED. . . .  type of a mutable GF2 vector object
 **                                          with locked representation
 */
-Obj TYPE_LIST_GF2VEC_LOCKED;
+Obj TYPE_LIST_GF2VEC_LOCKED GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
 **
 *V  TYPE_LIST_GF2VEC_IMM  . . . . . .  type of an immutable GF2 vector object
 */
-Obj TYPE_LIST_GF2VEC_IMM;
+Obj TYPE_LIST_GF2VEC_IMM GAP_GC_GLOBALLY_ROOTED;
 
 /****************************************************************************
 **
 *V  TYPE_LIST_GF2VEC_IMM_LOCKED . . .  type of an immutable GF2 vector object
 **                                          with locked representation
 */
-Obj TYPE_LIST_GF2VEC_IMM_LOCKED;
+Obj TYPE_LIST_GF2VEC_IMM_LOCKED GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
 **
 *V  TYPE_LIST_GF2MAT  . . . . . . . . . . . . . . type of a GF2 matrix object
 */
-Obj TYPE_LIST_GF2MAT;
+Obj TYPE_LIST_GF2MAT GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
 **
 *V  TYPE_LIST_GF2MAT_IMM  . . . . . .  type of an immutable GF2 matrix object
 */
-Obj TYPE_LIST_GF2MAT_IMM;
+Obj TYPE_LIST_GF2MAT_IMM GAP_GC_GLOBALLY_ROOTED;
+
+
+Obj NewGF2VecKernel(Obj type, UInt len)
+{
+    Obj vec = 0;
+    GAP_GC_PUSH1(&vec);
+    vec = NewBag(T_DATOBJ, SIZE_PLEN_GF2VEC(len));
+    SetTypeDatObj(vec, type);
+    SET_LEN_GF2VEC(vec, len);
+    GAP_GC_POP();
+    return vec;
+}
 
 
 /****************************************************************************
 **
 *V  IsGF2VectorRep  . . . . . . . . . . . . . . . . . . . . . . . . .  filter
 */
-Obj IsGF2VectorRep;
+Obj IsGF2VectorRep GAP_GC_GLOBALLY_ROOTED;
 
-Obj IsGF2MatrixRep;
+Obj IsGF2MatrixRep GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
 **
 *V  GF2One  . . . . . . . . . . . . . . . . . . . . . . . . . . .  one of GF2
 */
-static Obj GF2One;
+static Obj GF2One GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
 **
 *V  GF2Zero . . . . . . . . . . . . . . . . . . . . . . . . . . . zero of GF2
 */
-static Obj GF2Zero;
+static Obj GF2Zero GAP_GC_GLOBALLY_ROOTED;
 
 #define RequireGF2VecRep(funcname, op)                                       \
     RequireArgumentCondition(funcname, op, IS_GF2VEC_REP(op),               \
@@ -372,11 +384,13 @@ static Obj ProdGF2VecGF2Mat(Obj vl, Obj vr)
     UInt         stop;
     UInt         col;     // length of the rows
     UInt         i;       // loop variables
-    Obj          prod;    // product, result
-    Obj          row1;    // top row of matrix
+    Obj          prod = 0;    // product, result
+    Obj          row1 = 0;    // top row of matrix
     UInt *       start;
     const UInt * ptL;
     UInt         mask;
+
+    GAP_GC_PUSH2(&prod, &row1);
 
     // both operands lie in the same field
     len = LEN_GF2VEC(vl);
@@ -419,6 +433,7 @@ static Obj ProdGF2VecGF2Mat(Obj vl, Obj vr)
         }
     }
 
+    GAP_GC_POP();
     return prod;
 }
 
@@ -509,11 +524,14 @@ static Obj ProdGF2MatGF2Vec(Obj ml, Obj vr)
 
 static Obj ProdGF2MatGF2MatSimple(Obj ml, Obj mr)
 {
-    Obj  prod;
+    Obj  prod = 0;
     UInt i;
     UInt len;
-    Obj  row;
-    Obj  rtype;
+    Obj  row = 0;
+    Obj  rtype = 0;
+
+    GAP_GC_PUSH3(&prod, &row, &rtype);
+
     len = LEN_GF2MAT(ml);
     prod = NewBag(T_POSOBJ, SIZE_PLEN_GF2MAT(len));
     SET_LEN_GF2MAT(prod, len);
@@ -539,6 +557,7 @@ static Obj ProdGF2MatGF2MatSimple(Obj ml, Obj mr)
         CHANGED_BAG(prod);
         TakeInterrupt();
     }
+    GAP_GC_POP();
     return prod;
 }
 
@@ -605,6 +624,8 @@ static const UInt * getgreasedata(struct greaseinfo * g, UInt bits)
         // make it by adding row x to grease vector indexed y
         ps = g->prrows[x];
         ps2 = getgreasedata(g, y);
+        if (ps2 == 0)
+            return 0;
         pd1 = g->pgbuf + (bits - 3) * g->nblocks;
         pd = pd1;
         // time critical inner loop
@@ -631,7 +652,7 @@ static const UInt * getgreasedata(struct greaseinfo * g, UInt bits)
 static Obj
 ProdGF2MatGF2MatAdvanced(Obj ml, Obj mr, UInt greasesize, UInt blocksize)
 {
-    Obj          prod;          // Product Matrix
+    Obj          prod = 0;      // Product Matrix
     UInt         i, j, k, b;    // Loop counters
     UInt         gs;            // Actual level of grease for current block
     const UInt * rptr;          // Pointer to current row of ml
@@ -639,8 +660,8 @@ ProdGF2MatGF2MatAdvanced(Obj ml, Obj mr, UInt greasesize, UInt blocksize)
     const UInt * v;          // pointer to computed grease vector
     UInt len, rlen, ilen;    // len = length of ml, ilen = row length of ml =
                              // length of mr, rlen = row length of mr
-    Obj    row;    // current row of ml, or row of prod when it is being built
-    Obj    rtype;              // type of rows of prod
+    Obj    row = 0;    // current row of ml, or row of prod when it is being built
+    Obj    rtype = 0;          // type of rows of prod
     Obj    gbuf = (Obj)0;      // grease buffer
     Obj    gtags = (Obj)0;     // grease tags (whether that row is known yet
     Obj    grules = (Obj)0;    // rules for making new grease vectors
@@ -651,13 +672,16 @@ ProdGF2MatGF2MatAdvanced(Obj ml, Obj mr, UInt greasesize, UInt blocksize)
     UInt   glen;                   // 1 << greasesize
     UInt   bs;                     // actual size of current block
     UInt * pprow;                  // pointer into current row of prod
-    Obj    lrowptrs;               // cache of direct pointers to rows of ml
+    Obj    lrowptrs = 0;           // cache of direct pointers to rows of ml
     const UInt **     plrows;      // and a direct pointer to that cache
-    Obj               rrowptrs;    // and for mr
+    Obj               rrowptrs = 0;    // and for mr
     const UInt **     prrows;
-    Obj               prowptrs;    // and for prod
+    Obj               prowptrs = 0;    // and for prod
     UInt **           pprows;
     struct greaseinfo g;
+
+    GAP_GC_PUSH9(&prod, &row, &rtype, &gbuf, &gtags, &grules,
+                 &lrowptrs, &rrowptrs, &prowptrs);
 
     len = LEN_GF2MAT(ml);
     row = ELM_GF2MAT(mr, 1);
@@ -831,6 +855,7 @@ ProdGF2MatGF2MatAdvanced(Obj ml, Obj mr, UInt greasesize, UInt blocksize)
                 prrows[i] = CONST_BLOCKS_GF2VEC(ELM_GF2MAT(mr, i + 1));
         }
     }
+    GAP_GC_POP();
     return prod;
 }
 
@@ -842,10 +867,10 @@ ProdGF2MatGF2MatAdvanced(Obj ml, Obj mr, UInt greasesize, UInt blocksize)
 */
 static Obj FuncPROD_GF2VEC_ANYMAT(Obj self, Obj vec, Obj mat)
 {
-    Obj  res;
+    Obj  res = 0;
     UInt len;
     UInt len1;
-    Obj  row1;
+    Obj  row1 = 0;
     UInt i;
     UInt block = 0;
 
@@ -859,10 +884,14 @@ static Obj FuncPROD_GF2VEC_ANYMAT(Obj self, Obj vec, Obj mat)
     if (len > LEN_PLIST(mat))
         len = LEN_PLIST(mat);
 
+    GAP_GC_PUSH2(&res, &row1);
+
     // Get the first row, to establish the size of the result
     row1 = ELM_PLIST(mat, 1);
-    if (!IS_GF2VEC_REP(row1))
+    if (!IS_GF2VEC_REP(row1)) {
+        GAP_GC_POP();
         return TRY_NEXT_METHOD;
+    }
     len1 = LEN_GF2VEC(row1);
 
     // create the result space
@@ -878,11 +907,14 @@ static Obj FuncPROD_GF2VEC_ANYMAT(Obj self, Obj vec, Obj mat)
             block = CONST_BLOCK_ELM_GF2VEC(vec, i);
         if (block & MASK_POS_GF2VEC(i)) {
             row1 = ELM_PLIST(mat, i);
-            if (!IS_GF2VEC_REP(row1))
+            if (!IS_GF2VEC_REP(row1)) {
+                GAP_GC_POP();
                 return TRY_NEXT_METHOD;
+            }
             AddPartialGF2VecGF2Vec(res, res, row1, 1);
         }
     }
+    GAP_GC_POP();
     return res;
 }
 
@@ -897,10 +929,10 @@ static Obj FuncPROD_GF2VEC_ANYMAT(Obj self, Obj vec, Obj mat)
 static Obj InversePlistGF2VecsDesstructive(Obj list)
 {
     UInt         len;     // dimension
-    Obj          inv;     // result
-    Obj          row;     // row vector
-    Obj          old;     // row from <mat>
-    Obj          tmp;     // temporary
+    Obj          inv = 0; // result
+    Obj          row = 0; // row vector
+    Obj          old = 0; // row from <mat>
+    Obj          tmp = 0; // temporary
     UInt *       ptQ;     // data block of <row>
     const UInt * ptP;     // data block of source row
     const UInt * end;     // end marker
@@ -909,6 +941,8 @@ static Obj InversePlistGF2VecsDesstructive(Obj list)
     UInt         k;       // loop variable
 
     len = LEN_PLIST(list);
+
+    GAP_GC_PUSH4(&inv, &row, &old, &tmp);
 
     // create the identity matrix
     tmp = NEW_PLIST(T_PLIST, len);
@@ -931,6 +965,7 @@ static Obj InversePlistGF2VecsDesstructive(Obj list)
                 break;
         }
         if (i > len) {
+            GAP_GC_POP();
             return Fail;
         }
         if (i != k) {
@@ -971,6 +1006,7 @@ static Obj InversePlistGF2VecsDesstructive(Obj list)
         }
         TakeInterrupt();
     }
+    GAP_GC_POP();
     return inv;
 }
 
@@ -986,15 +1022,15 @@ static Obj InversePlistGF2VecsDesstructive(Obj list)
 static Obj InverseGF2Mat(Obj mat, UInt mut)
 {
     UInt         len;    // dimension
-    Obj          inv;    // result
-    Obj          row;    // row vector
-    Obj          tmp;    // temporary
+    Obj          inv = 0; // result
+    Obj          row = 0; // row vector
+    Obj          tmp = 0; // temporary
     UInt         i;      // loop variable
-    Obj          old;    // row from <mat>
+    Obj          old = 0; // row from <mat>
     const UInt * ptQ;    // data block of <row>
     UInt *       ptP;    // data block of source row
     UInt *       end;    // end marker
-    Obj          rtype;
+    Obj          rtype = 0;
 
     // make a structural copy of <mat> as list of GF2 vectors
     len = LEN_GF2MAT(mat);
@@ -1012,6 +1048,8 @@ static Obj InverseGF2Mat(Obj mat, UInt mut)
             return Fail;
     }
 
+    GAP_GC_PUSH5(&inv, &row, &tmp, &old, &rtype);
+
     tmp = NEW_PLIST(T_PLIST, len);
     for (i = len; 0 < i; i--) {
         old = ELM_GF2MAT(mat, i);
@@ -1026,8 +1064,10 @@ static Obj InverseGF2Mat(Obj mat, UInt mut)
     }
     SET_LEN_PLIST(tmp, len);
     inv = InversePlistGF2VecsDesstructive(tmp);
-    if (inv == Fail)
+    if (inv == Fail) {
+        GAP_GC_POP();
         return inv;
+    }
 
     // convert list <inv> into a matrix
     ResizeBag(inv, SIZE_PLEN_GF2MAT(len));
@@ -1046,6 +1086,7 @@ static Obj InverseGF2Mat(Obj mat, UInt mut)
     SET_TYPE_POSOBJ(inv, (mut == 2 || (mut == 1 && IS_MUTABLE_OBJ(mat)))
                              ? TYPE_LIST_GF2MAT
                              : TYPE_LIST_GF2MAT_IMM);
+    GAP_GC_POP();
     return inv;
 }
 
@@ -1092,14 +1133,15 @@ static Obj SemiEchelonListGF2Vecs(Obj mat, UInt TransformationsNeeded)
 {
     UInt  nrows, ncols;
     UInt  i, j, h;
-    Obj   heads, vectors, coeffs = 0, relns = 0;
+    Obj   heads = 0, vectors = 0, coeffs = 0, relns = 0;
     UInt  nvecs, nrels = 0;
     Obj   coeffrow = 0;
-    Obj   row;
+    Obj   row = 0;
     UInt *rowp, *coeffrowp = 0;
-    Obj   res;
+    Obj   res = 0;
     nrows = LEN_PLIST(mat);
     ncols = LEN_GF2VEC(ELM_PLIST(mat, 1));
+    GAP_GC_PUSH7(&heads, &vectors, &coeffs, &relns, &coeffrow, &row, &res);
     heads = NEW_PLIST(T_PLIST_CYC, ncols);
     SET_LEN_PLIST(heads, ncols);
     vectors = NEW_PLIST(T_PLIST_TAB_RECT, nrows);
@@ -1185,6 +1227,7 @@ static Obj SemiEchelonListGF2Vecs(Obj mat, UInt TransformationsNeeded)
             RetypeBag(relns, T_PLIST_EMPTY);
     }
     SortPRecRNam(res);
+    GAP_GC_POP();
     return res;
 }
 
@@ -1262,7 +1305,7 @@ static UInt TriangulizeListGF2Vecs(Obj mat, UInt clearup)
 **
 **  'PlainGF2Vec' converts the GF2 vector <list> to a plain list.
 */
-static Obj IsLockedRepresentationVector;
+static Obj IsLockedRepresentationVector GAP_GC_GLOBALLY_ROOTED;
 
 
 static void PlainGF2Vec(Obj list)
@@ -1425,14 +1468,17 @@ static Obj NewGF2Vec(Obj list)
     Int  i;        // loop variable
     UInt block;    // one block of the boolean list
     UInt bit;      // one bit of a block
-    Obj  x;
-    Obj  res;    // resulting GF2 vector object
+    Obj  x = 0;
+    Obj  res = 0;    // resulting GF2 vector object
+
+    GAP_GC_PUSH3(&list, &x, &res);
 
     // already in the correct representation
     if (IS_GF2VEC_REP(list)) {
         res = ShallowCopyVecGF2(list);
         if (!IS_MUTABLE_OBJ(list))
             SetTypeDatObj(res, TYPE_LIST_GF2VEC_IMM);
+        GAP_GC_POP();
         return res;
     }
 
@@ -1463,10 +1509,11 @@ static Obj NewGF2Vec(Obj list)
             // might be GF(2) elt written over bigger field
             if (EQ(x, GF2One))
                 block |= bit;
-            else if (!EQ(x, GF2Zero))
+            else if (!EQ(x, GF2Zero)) {
                 ErrorMayQuit(
                     "COPY_GF2VEC: argument must be a list of GF2 elements",
                     0, 0);
+            }
         }
 
         bit = bit << 1;
@@ -1483,6 +1530,7 @@ static Obj NewGF2Vec(Obj list)
     else
         SetTypeDatObj(res, TYPE_LIST_GF2VEC_IMM);
 
+    GAP_GC_POP();
     return res;
 }
 
@@ -1760,7 +1808,7 @@ static Obj FuncELM_GF2VEC(Obj self, Obj list, Obj pos)
 */
 static Obj FuncELMS_GF2VEC(Obj self, Obj list, Obj poss)
 {
-    Obj elms;       // selected sublist, result
+    Obj elms = 0;   // selected sublist, result
     Int lenList;    // length of <list>
     Int lenPoss;    // length of positions
     Int pos;        // position as integer
@@ -1772,6 +1820,8 @@ static Obj FuncELMS_GF2VEC(Obj self, Obj list, Obj poss)
 
     // get the length of <list>
     lenList = LEN_GF2VEC(list);
+
+    GAP_GC_PUSH1(&elms);
 
     // general code for arbitrary lists, which are ranges
     if (!IS_RANGE(poss)) {
@@ -1840,6 +1890,7 @@ static Obj FuncELMS_GF2VEC(Obj self, Obj list, Obj poss)
         }
     }
 
+    GAP_GC_POP();
     return elms;
 }
 
@@ -2287,7 +2338,7 @@ static Obj FuncINV_PLIST_GF2VECS_DESTRUCTIVE(Obj self, Obj list)
 */
 static Obj FuncSUM_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
 {
-    Obj  sum;    // sum, result
+    Obj  sum = 0;    // sum, result
     UInt ll, lr;
 
     RequireGF2VecRep(SELF_NAME, vl);
@@ -2296,6 +2347,7 @@ static Obj FuncSUM_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
     ll = LEN_GF2VEC(vl);
     lr = LEN_GF2VEC(vr);
 
+    GAP_GC_PUSH1(&sum);
 
     if (ll < lr) {
         sum = ShallowCopyVecGF2(vr);
@@ -2309,6 +2361,7 @@ static Obj FuncSUM_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
     if (!IS_MUTABLE_OBJ(vl) && !IS_MUTABLE_OBJ(vr))
         SET_TYPE_POSOBJ(sum, TYPE_LIST_GF2VEC_IMM);
 
+    GAP_GC_POP();
     return sum;
 }
 
@@ -2678,10 +2731,10 @@ static Obj FuncSHALLOWCOPY_GF2VEC(Obj self, Obj vec)
 static Obj FuncSUM_GF2MAT_GF2MAT(Obj self, Obj matl, Obj matr)
 {
     UInt ll, lr, ls, lm, wl, wr, ws, wm;
-    Obj  sum;
-    Obj  vl, vr, sv;
+    Obj  sum = 0;
+    Obj  vl = 0, vr = 0, sv = 0;
     UInt i;
-    Obj  rtype;
+    Obj  rtype = 0;
     RequireGF2MatRep(SELF_NAME, matl);
     RequireGF2MatRep(SELF_NAME, matr);
     ll = LEN_GF2MAT(matl);
@@ -2710,6 +2763,8 @@ static Obj FuncSUM_GF2MAT_GF2MAT(Obj self, Obj matl, Obj matr)
     if ((ll > lr && wr > wl) || (ll < lr && wr < wl))
         return TRY_NEXT_METHOD;
 
+
+    GAP_GC_PUSH5(&sum, &vl, &vr, &sv, &rtype);
 
     sum = NewBag(T_POSOBJ, SIZE_PLEN_GF2MAT(ls));
     if (IS_MUTABLE_OBJ(matl) || IS_MUTABLE_OBJ(matr)) {
@@ -2757,6 +2812,7 @@ static Obj FuncSUM_GF2MAT_GF2MAT(Obj self, Obj matl, Obj matr)
         SET_ELM_GF2MAT(sum, i, sv);
         CHANGED_BAG(sum);
     }
+    GAP_GC_POP();
     return sum;
 }
 
@@ -2769,7 +2825,7 @@ static Obj FuncSUM_GF2MAT_GF2MAT(Obj self, Obj matl, Obj matr)
 static Obj FuncTRANSPOSED_GF2MAT(Obj self, Obj mat)
 {
     UInt l, w;
-    Obj  tra, row;
+    Obj  tra = 0, row = 0;
     Obj  typ, r1;
     UInt vals[BIPEB];
     UInt mask, val, bit;
@@ -2780,6 +2836,8 @@ static Obj FuncTRANSPOSED_GF2MAT(Obj self, Obj mat)
 
     if (LEN_GF2MAT(mat) == 0)
         return TRY_NEXT_METHOD;
+
+    GAP_GC_PUSH2(&tra, &row);
 
     // type for mat
     typ = TYPE_LIST_GF2MAT;
@@ -2845,6 +2903,7 @@ static Obj FuncTRANSPOSED_GF2MAT(Obj self, Obj mat)
             }
         }
     }
+    GAP_GC_POP();
     return tra;
 }
 
@@ -2859,7 +2918,7 @@ static Obj FuncNUMBER_GF2VEC(Obj self, Obj vec)
     UInt        len, nd, i;
     UInt        head, a;
     UInt        off, off2;    // 0 based
-    Obj         zahl;         // the long number
+    Obj         zahl = 0;     // the long number
     UInt *      num2;
     mp_limb_t * vp;
     RequireGF2VecRep(SELF_NAME, vec);
@@ -2882,6 +2941,7 @@ static Obj FuncNUMBER_GF2VEC(Obj self, Obj vec)
         // the number of words (limbs) we need.
         nd = ((len - 1) / GMP_LIMB_BITS) + 1;
 
+        GAP_GC_PUSH1(&zahl);
         zahl = NewBag(T_INTPOS, nd * sizeof(UInt));
 
         // garbage collection might lose pointer
@@ -2915,6 +2975,7 @@ static Obj FuncNUMBER_GF2VEC(Obj self, Obj vec)
         }
 
         zahl = GMP_NORMALIZE(zahl);
+        GAP_GC_POP();
         return zahl;
     }
 }
@@ -3055,7 +3116,7 @@ static void DistVecClosVec(
     Obj  osum,      // position of the sum vector
     UInt pos,       // recursion depth
     UInt l,         // length of basis
-    UInt len)       // length of the involved vectors
+    UInt len)  // length of the involved vectors
 {
     UInt         i;
     UInt         di;
@@ -3097,10 +3158,10 @@ static Obj FuncDIST_VEC_CLOS_VEC(
     Obj self,
     Obj veclis,    // pointers to matrix vectors and their multiples
     Obj vec,       // vector we compute distance to
-    Obj d)         // distances list
+    Obj d)  // distances list
 
 {
-    Obj  sum;    // sum vector
+    Obj  sum = 0; // sum vector
     UInt len;
 
     RequirePlainList(SELF_NAME, veclis);
@@ -3109,12 +3170,15 @@ static Obj FuncDIST_VEC_CLOS_VEC(
 
     len = LEN_GF2VEC(vec);
 
+    GAP_GC_PUSH1(&sum);
+
     // get space for sum vector
     NEW_GF2VEC(sum, TYPE_LIST_GF2VEC, len);
 
     // do the recursive work
     DistVecClosVec(veclis, vec, d, sum, 1, LEN_PLIST(veclis), len);
 
+    GAP_GC_POP();
     return (Obj)0;
 }
 
@@ -3213,11 +3277,11 @@ static Obj FuncA_CLOS_VEC(
     Obj veclis,    // pointers to matrix vectors and their multiples
     Obj vec,       // vector we compute distance to
     Obj cnt,       // distances list
-    Obj stop)      // distances list
+    Obj stop)  // distances list
 
 {
-    Obj  sum;     // sum vector
-    Obj  best;    // best vector
+    Obj  sum = 0;  // sum vector
+    Obj  best = 0; // best vector
     UInt len;
 
     RequirePlainList(SELF_NAME, veclis);
@@ -3228,6 +3292,8 @@ static Obj FuncA_CLOS_VEC(
     RequireNonnegativeSmallInt(SELF_NAME, cnt);
     RequireNonnegativeSmallInt(SELF_NAME, stop);
 
+    GAP_GC_PUSH2(&sum, &best);
+
     // get space for sum vector and zero out
     NEW_GF2VEC(sum, TYPE_LIST_GF2VEC, len);
     NEW_GF2VEC(best, TYPE_LIST_GF2VEC, len);
@@ -3237,6 +3303,7 @@ static Obj FuncA_CLOS_VEC(
              INT_INTOBJ(stop), len + 1,    // maximal value +1
              best, (Obj)0, (Obj)0);
 
+    GAP_GC_POP();
     return best;
 }
 
@@ -3245,14 +3312,14 @@ static Obj FuncA_CLOS_VEC_COORDS(
     Obj veclis,    // pointers to matrix vectors and their multiples
     Obj vec,       // vector we compute distance to
     Obj cnt,       // distances list
-    Obj stop)      // distances list
+    Obj stop)  // distances list
 
 {
-    Obj  sum;        // sum vector
-    Obj  best;       // best vector
-    Obj  coords;     // coefficients of mat to get current
-    Obj  bcoords;    // coefficients of mat to get best
-    Obj  res;        // length 2 plist for results
+    Obj  sum = 0;     // sum vector
+    Obj  best = 0;    // best vector
+    Obj  coords = 0;  // coefficients of mat to get current
+    Obj  bcoords = 0; // coefficients of mat to get best
+    Obj  res = 0;     // length 2 plist for results
     UInt len, len2, i;
 
     RequirePlainList(SELF_NAME, veclis);
@@ -3263,6 +3330,8 @@ static Obj FuncA_CLOS_VEC_COORDS(
 
     RequireNonnegativeSmallInt(SELF_NAME, cnt);
     RequireNonnegativeSmallInt(SELF_NAME, stop);
+
+    GAP_GC_PUSH5(&sum, &best, &coords, &bcoords, &res);
 
     // get space for sum vector and zero out
     NEW_GF2VEC(sum, TYPE_LIST_GF2VEC, len);
@@ -3289,6 +3358,7 @@ static Obj FuncA_CLOS_VEC_COORDS(
     SET_ELM_PLIST(res, 1, best);
     SET_ELM_PLIST(res, 2, bcoords);
     CHANGED_BAG(res);
+    GAP_GC_POP();
     return res;
 }
 
@@ -3362,13 +3432,16 @@ static UInt CosetLeadersInnerGF2(
 static Obj FuncCOSET_LEADERS_INNER_GF2(
     Obj self, Obj veclis, Obj weight, Obj tofind, Obj leaders)
 {
-    Obj  v, w;
+    Obj  v = 0, w = 0;
     UInt lenv, lenw;
+    UInt found;
 
     RequirePlainList(SELF_NAME, veclis);
     RequireSmallInt(SELF_NAME, weight);
     RequireSmallInt(SELF_NAME, tofind);
     RequirePlainList(SELF_NAME, leaders);
+
+    GAP_GC_PUSH2(&v, &w);
 
     lenv = LEN_PLIST(veclis);
     NEW_GF2VEC(v, TYPE_LIST_GF2VEC, lenv);
@@ -3378,8 +3451,10 @@ static Obj FuncCOSET_LEADERS_INNER_GF2(
         ErrorMayQuit("COSET_LEADERS_INNER_GF2: too many cosets to return the "
                      "leaders in a plain list",
                      0, 0);
-    return INTOBJ_INT(CosetLeadersInnerGF2(veclis, v, w, INT_INTOBJ(weight),
-                                           1, leaders, INT_INTOBJ(tofind)));
+    found = CosetLeadersInnerGF2(veclis, v, w, INT_INTOBJ(weight), 1, leaders,
+                                 INT_INTOBJ(tofind));
+    GAP_GC_POP();
+    return INTOBJ_INT(found);
 }
 
 /****************************************************************************
@@ -3681,7 +3756,7 @@ FuncADD_GF2VEC_GF2VEC_SHIFTED(Obj self, Obj vec1, Obj vec2, Obj len2, Obj off)
 
 static Obj ProductCoeffsGF2Vec(Obj vec1, UInt len1, Obj vec2, UInt len2)
 {
-    Obj          prod;
+    Obj          prod = 0;
     UInt         i, e;
     const UInt * ptr;
     UInt         block = 0;
@@ -3690,6 +3765,7 @@ static Obj ProductCoeffsGF2Vec(Obj vec1, UInt len1, Obj vec2, UInt len2)
         len = 0;
     else
         len = len1 + len2 - 1;
+    GAP_GC_PUSH1(&prod);
     NEW_GF2VEC(prod, TYPE_LIST_GF2VEC, len);
 
     // better to do the longer loop on the inside
@@ -3714,6 +3790,7 @@ static Obj ProductCoeffsGF2Vec(Obj vec1, UInt len1, Obj vec2, UInt len2)
         if (block & ((UInt)1 << e++))
             AddShiftedVecGF2VecGF2(prod, vec2, len2, i);
     }
+    GAP_GC_POP();
     return prod;
 }
 
@@ -3727,7 +3804,7 @@ static Obj
 FuncPROD_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
 {
     UInt len1a, len2a;
-    Obj  prod;
+    Obj  prod = 0;
     UInt last;
 
     RequireNonnegativeSmallInt(SELF_NAME, len1);
@@ -3742,10 +3819,12 @@ FuncPROD_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
         ErrorMayQuit("PROD_COEFFS_GF2VEC: <len1> must be not more than the "
                      "actual\nlength of the vector",
                      0, 0);
+    GAP_GC_PUSH1(&prod);
     prod = ProductCoeffsGF2Vec(vec1, len1a, vec2, len2a);
     last = RightMostOneGF2Vec(prod);
     if (last < LEN_GF2VEC(prod))
         ResizeGF2Vec(prod, last);
+    GAP_GC_POP();
     return prod;
 }
 
@@ -3844,7 +3923,7 @@ FuncQUOTREM_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
 {
     Int len2a;
     Int len1a;
-    Obj quotv, remv, ret;
+    Obj quotv = 0, remv = 0, ret = 0;
     RequireGF2VecRep(SELF_NAME, vec1);
     RequireGF2VecRep(SELF_NAME, vec2);
     RequireNonnegativeSmallInt(SELF_NAME, len1);
@@ -3874,6 +3953,8 @@ FuncQUOTREM_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
         return 0;
     }
 
+    GAP_GC_PUSH3(&quotv, &remv, &ret);
+
     NEW_GF2VEC(remv, TYPE_LIST_GF2VEC, len1a);
     memcpy(BLOCKS_GF2VEC(remv), CONST_BLOCKS_GF2VEC(vec1),
            ((len1a + BIPEB - 1) / BIPEB) * sizeof(UInt));
@@ -3889,6 +3970,7 @@ FuncQUOTREM_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
 
     CHANGED_BAG(ret);
 
+    GAP_GC_POP();
     return ret;
 }
 
@@ -4066,9 +4148,15 @@ static Obj FuncDETERMINANT_LIST_GF2VECS(Obj self, Obj mat)
 static Obj FuncKRONECKERPRODUCT_GF2MAT_GF2MAT(Obj self, Obj matl, Obj matr)
 {
     UInt nrowl, nrowr, nrowp, ncoll, ncolr, ncolp, ncol, i, j, k, l, mutable;
-    Obj  mat, type, row, shift[BIPEB];
+    Obj  mat = 0, type, row = 0, shift[BIPEB] = { 0 };
     UInt *       data;
     const UInt * datar;
+#ifdef USE_JULIA_GC
+    jl_value_t ** roots = 0;
+#define SET_KRON_ROOT(i, v) (roots[i] = (jl_value_t *)(v))
+#else
+#define SET_KRON_ROOT(i, v) ((void)0)
+#endif
 
     RequireGF2MatRep(SELF_NAME, matl);
     RequireGF2MatRep(SELF_NAME, matr);
@@ -4082,8 +4170,11 @@ static Obj FuncKRONECKERPRODUCT_GF2MAT_GF2MAT(Obj self, Obj matl, Obj matr)
 
     mutable = IS_MUTABLE_OBJ(matl) || IS_MUTABLE_OBJ(matr);
 
+    GAP_GC_PUSHARGS(roots, BIPEB + 2);
+
     // create a matrix
     mat = NewBag(T_POSOBJ, SIZE_PLEN_GF2MAT(nrowp));
+    SET_KRON_ROOT(0, mat);
     SET_LEN_GF2MAT(mat, nrowp);
     if (mutable) {
         SET_TYPE_POSOBJ(mat, TYPE_LIST_GF2MAT);
@@ -4098,6 +4189,7 @@ static Obj FuncKRONECKERPRODUCT_GF2MAT_GF2MAT(Obj self, Obj matl, Obj matr)
 
     for (i = 1; i <= nrowp; i++) {
         NEW_GF2VEC(row, type, ncolp);
+        SET_KRON_ROOT(1, row);
         SET_ELM_GF2MAT(mat, i, row);
         CHANGED_BAG(mat);
     }
@@ -4105,6 +4197,7 @@ static Obj FuncKRONECKERPRODUCT_GF2MAT_GF2MAT(Obj self, Obj matl, Obj matr)
     // allocate data for shifts of rows of matr
     for (i = 0; i < BIPEB; i++) {
         shift[i] = NewBag(T_DATOBJ, SIZE_PLEN_GF2VEC(ncolr + 2 * BIPEB));
+        SET_KRON_ROOT(i + 2, shift[i]);
     }
 
     // fill in matrix
@@ -4150,6 +4243,8 @@ static Obj FuncKRONECKERPRODUCT_GF2MAT_GF2MAT(Obj self, Obj matl, Obj matr)
         }
     }
 
+    GAP_GC_POP();
+#undef SET_KRON_ROOT
     return mat;
 }
 

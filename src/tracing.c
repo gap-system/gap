@@ -25,20 +25,24 @@
 
 #include <setjmp.h>
 
-static Obj RecordedStats;
+static Obj RecordedStats GAP_GC_GLOBALLY_ROOTED;
 
 // Report the 1 argument operation 'name' was applied to 'op'
 void ReportWrappedOperation1(const char * cname, Obj op)
 {
+    Obj list = 0;
+    Obj val = 0;
+    GAP_GC_PUSH2(&list, &val);
+
     UInt name = RNamName(cname);
     if (!ISB_REC(RecordedStats, name)) {
-        Obj list = NEW_PLIST(T_PLIST, 0);
+        list = NEW_PLIST(T_PLIST, 0);
         ASS_REC(RecordedStats, name, list);
     }
-    Obj list = ELM_REC(RecordedStats, name);
+    list = ELM_REC(RecordedStats, name);
 
     UInt tnam = TNUM_OBJ(op) + 1;
-    Obj  val = ELM0_LIST(list, tnam);
+    val = ELM0_LIST(list, tnam);
     if (!val) {
         val = INTOBJ_INT(0);
     }
@@ -49,27 +53,34 @@ void ReportWrappedOperation1(const char * cname, Obj op)
     val = ObjInt_Int8(intval);
 
     ASS_LIST(list, tnam, val);
+
+    GAP_GC_POP();
 }
 
 // Report the 2 argument operation 'name' was applied to 'op1' and 'op2'
 void ReportWrappedOperation2(const char * cname, Obj op1, Obj op2)
 {
+    Obj list = 0;
+    Obj pos = 0;
+    Obj val = 0;
+    GAP_GC_PUSH3(&list, &pos, &val);
+
     UInt name = RNamName(cname);
     if (!ISB_REC(RecordedStats, name)) {
-        Obj list = NEW_PLIST(T_PLIST, 0);
+        list = NEW_PLIST(T_PLIST, 0);
         ASS_REC(RecordedStats, name, list);
     }
-    Obj list = ELM_REC(RecordedStats, name);
+    list = ELM_REC(RecordedStats, name);
 
     UInt tnam1 = TNUM_OBJ(op1) + 1;
-    Obj  pos = ELM0_LIST(list, tnam1);
+    pos = ELM0_LIST(list, tnam1);
     if (!pos) {
         pos = NEW_PLIST(T_PLIST, 0);
         ASS_LIST(list, tnam1, pos);
     }
 
     UInt tnam2 = TNUM_OBJ(op2) + 1;
-    Obj  val = ELM0_LIST(pos, tnam2);
+    val = ELM0_LIST(pos, tnam2);
     if (!val) {
         val = INTOBJ_INT(0);
     }
@@ -80,6 +91,8 @@ void ReportWrappedOperation2(const char * cname, Obj op1, Obj op2)
     val = ObjInt_Int8(intval);
 
     ASS_LIST(pos, tnam2, val);
+
+    GAP_GC_POP();
 }
 
 typedef void (*voidfunc)(void);

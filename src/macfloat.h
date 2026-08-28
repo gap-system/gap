@@ -21,9 +21,9 @@ typedef double Double;
 #define STRTOD strtod
 #define MATH(name) name
 
-Double VAL_MACFLOAT(Obj obj);
-void SET_VAL_MACFLOAT(Obj obj, Double val);
-BOOL IS_MACFLOAT(Obj obj);
+Double VAL_MACFLOAT(Obj obj) GAP_GC_NOTSAFEPOINT;
+void SET_VAL_MACFLOAT(Obj obj, Double val) GAP_GC_NOTSAFEPOINT;
+BOOL IS_MACFLOAT(Obj obj) GAP_GC_NOTSAFEPOINT;
 Obj NEW_MACFLOAT(Double val);
 
 

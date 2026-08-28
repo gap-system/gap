@@ -31,9 +31,19 @@ struct T_PERM<UInt4> {
 
 template <typename T>
 static void ASSERT_IS_PERM(Obj perm)
+    GAP_GC_NOTSAFEPOINT
+;
+
+template <typename T>
+static void ASSERT_IS_PERM(Obj perm)
 {
     GAP_ASSERT(TNUM_OBJ(perm) == T_PERM<T>::tnum);
 }
+
+template <typename T>
+static inline UInt SIZEBAG_PERM(UInt deg)
+    GAP_GC_NOTSAFEPOINT
+;
 
 template <typename T>
 static inline UInt SIZEBAG_PERM(UInt deg)
@@ -49,6 +59,11 @@ static inline Obj NEW_PERM(UInt deg)
 
 template <typename T>
 static inline UInt DEG_PERM(Obj perm)
+    GAP_GC_NOTSAFEPOINT
+;
+
+template <typename T>
+static inline UInt DEG_PERM(Obj perm)
 {
     ASSERT_IS_PERM<T>(perm);
     return (SIZE_OBJ(perm) - sizeof(Obj)) / sizeof(T);
@@ -56,10 +71,20 @@ static inline UInt DEG_PERM(Obj perm)
 
 template <typename T>
 static inline T * ADDR_PERM(Obj perm)
+    GAP_GC_NOTSAFEPOINT
+;
+
+template <typename T>
+static inline T * ADDR_PERM(Obj perm)
 {
     ASSERT_IS_PERM<T>(perm);
     return (T *)(ADDR_OBJ(perm) + 1);
 }
+
+template <typename T>
+static inline const T * CONST_ADDR_PERM(Obj perm)
+    GAP_GC_NOTSAFEPOINT
+;
 
 template <typename T>
 static inline const T * CONST_ADDR_PERM(Obj perm)

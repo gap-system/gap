@@ -72,8 +72,8 @@
 **  'TypeRangeNSort' is the  function in 'TypeObjFuncs' for ranges which are
 **  not strictly sorted.
 */
-static Obj TYPE_RANGE_NSORT_IMMUTABLE;
-static Obj TYPE_RANGE_NSORT_MUTABLE;
+static Obj TYPE_RANGE_NSORT_IMMUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_RANGE_NSORT_MUTABLE GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeRangeNSort(Obj list)
 {
@@ -89,8 +89,8 @@ static Obj TypeRangeNSort(Obj list)
 **  'TypeRangeSSort' is the function in 'TypeObjFuncs' for ranges which are
 **  strictly sorted.
 */
-static Obj TYPE_RANGE_SSORT_IMMUTABLE;
-static Obj TYPE_RANGE_SSORT_MUTABLE;
+static Obj TYPE_RANGE_SSORT_IMMUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_RANGE_SSORT_MUTABLE GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeRangeSSort(Obj list)
 {
@@ -140,6 +140,7 @@ static Obj CopyRange(Obj list, Int mut)
 
     // make a copy
     copy = NewBag(TNUM_OBJ(list), SIZE_OBJ(list));
+    GAP_GC_PUSH1(&copy);
     if (!mut)
         MakeImmutableNoRecurse(copy);
     ADDR_OBJ(copy)[0] = CONST_ADDR_OBJ(list)[0];
@@ -152,6 +153,7 @@ static Obj CopyRange(Obj list, Int mut)
     ADDR_OBJ(copy)[2] = CONST_ADDR_OBJ(list)[2];
 
     // return the copy
+    GAP_GC_POP();
     return copy;
 }
 
@@ -357,6 +359,7 @@ static Obj ElmsRange(Obj list, Obj poss)
 
         // make the result list
         elms = NEW_PLIST( T_PLIST, lenPoss );
+        GAP_GC_PUSH1(&elms);
         SET_LEN_PLIST( elms, lenPoss );
 
         // loop over the entries of <positions> and select
@@ -385,6 +388,8 @@ static Obj ElmsRange(Obj list, Obj poss)
             SET_ELM_PLIST( elms, i, elm );
 
         }
+
+        GAP_GC_POP();
 
     }
 
@@ -632,7 +637,7 @@ static void PlainRange(Obj list)
 **  otherwise.  As a  side effect 'IsRange' converts proper ranges represented
 **  the ordinary way to the compact representation.
 */
-static Obj IsRangeFilt;
+static Obj IsRangeFilt GAP_GC_GLOBALLY_ROOTED;
 
 static BOOL IsRange(Obj list)
 {
@@ -832,21 +837,24 @@ Obj Range3Check (
 */
 static Obj ShiftRange(Obj offset, Obj range)
 {
-    Obj low;
-    Obj high;
-    Obj shifted;
+    Obj low = 0;
+    Obj high = 0;
+    Obj shifted = 0;
 
+    GAP_GC_PUSH3(&low, &high, &shifted);
     low = SUM(offset, INTOBJ_INT(GET_LOW_RANGE(range)));
     high = SUM(offset, GET_ELM_RANGE(range, GET_LEN_RANGE(range)));
     if (!IS_INTOBJ(low) || !IS_INTOBJ(high)) {
-        return SumSclList(offset, range);
+        shifted = SumSclList(offset, range);
     }
-
-    shifted = NEW_RANGE(GET_LEN_RANGE(range), INT_INTOBJ(low),
-                        GET_INC_RANGE(range));
-    if (!IS_MUTABLE_OBJ(range)) {
-        MakeImmutableNoRecurse(shifted);
+    else {
+        shifted = NEW_RANGE(GET_LEN_RANGE(range), INT_INTOBJ(low),
+                            GET_INC_RANGE(range));
+        if (!IS_MUTABLE_OBJ(range)) {
+            MakeImmutableNoRecurse(shifted);
+        }
     }
+    GAP_GC_POP();
     return shifted;
 }
 
@@ -870,7 +878,7 @@ static Obj SumRangeInt(Obj opL, Obj opR)
 **
 *F  FiltIS_RANGE_REP( <self>, <obj> ) . . . . . test if value is in range rep
 */
-static Obj IsRangeRepFilt;
+static Obj IsRangeRepFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_RANGE_REP(Obj self, Obj obj)
 {

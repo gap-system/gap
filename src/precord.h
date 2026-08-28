@@ -36,7 +36,7 @@ Obj NEW_PREC(UInt len);
 **
 *F  IS_PREC( <rec> ) . . . . . . . . .  check if <rec> is in plain record rep
 */
-EXPORT_INLINE BOOL IS_PREC(Obj rec)
+EXPORT_INLINE BOOL IS_PREC(Obj rec) GAP_GC_NOTSAFEPOINT
 {
     UInt tnum = TNUM_OBJ(rec);
     return tnum == T_PREC || tnum == T_PREC+IMMUTABLE;
@@ -55,7 +55,7 @@ EXPORT_INLINE BOOL IS_PREC(Obj rec)
 **  the same memory layout as precs), as the precs APIs using it for
 **  assertion checks are in practice invoked on such objects, too.
 */
-EXPORT_INLINE BOOL IS_PREC_OR_COMOBJ(Obj rec)
+EXPORT_INLINE BOOL IS_PREC_OR_COMOBJ(Obj rec) GAP_GC_NOTSAFEPOINT
 {
     UInt tnum = TNUM_OBJ(rec);
     return tnum == T_PREC || tnum == T_PREC+IMMUTABLE || tnum == T_COMOBJ;
@@ -69,7 +69,7 @@ EXPORT_INLINE BOOL IS_PREC_OR_COMOBJ(Obj rec)
 **  'CAPACITY_PREC' returns the maximum capacity of a PREC.
 **
 */
-EXPORT_INLINE UInt CAPACITY_PREC(Obj rec)
+EXPORT_INLINE UInt CAPACITY_PREC(Obj rec) GAP_GC_NOTSAFEPOINT
 {
     return SIZE_OBJ(rec) / (2 * sizeof(Obj)) - 1;
 }
@@ -81,7 +81,7 @@ EXPORT_INLINE UInt CAPACITY_PREC(Obj rec)
 **
 **  'LEN_PREC' returns the number of components of the plain record <rec>.
 */
-EXPORT_INLINE UInt LEN_PREC(Obj rec)
+EXPORT_INLINE UInt LEN_PREC(Obj rec) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_PREC_OR_COMOBJ(rec));
     return ((const UInt *)(CONST_ADDR_OBJ(rec)))[1];
@@ -94,7 +94,7 @@ EXPORT_INLINE UInt LEN_PREC(Obj rec)
 **
 **  'SET_LEN_PREC' sets the number of components of the plain record <rec>.
 */
-EXPORT_INLINE void SET_LEN_PREC(Obj rec, UInt nr)
+EXPORT_INLINE void SET_LEN_PREC(Obj rec, UInt nr) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_PREC_OR_COMOBJ(rec));
     GAP_ASSERT(nr <= CAPACITY_PREC(rec));
@@ -109,7 +109,7 @@ EXPORT_INLINE void SET_LEN_PREC(Obj rec, UInt nr)
 **  'SET_RNAM_PREC' sets   the name of  the  <i>-th  record component  of the
 **  record <rec> to the record name <rnam>.
 */
-EXPORT_INLINE void SET_RNAM_PREC(Obj rec, UInt i, Int rnam)
+EXPORT_INLINE void SET_RNAM_PREC(Obj rec, UInt i, Int rnam) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_PREC_OR_COMOBJ(rec));
     GAP_ASSERT(i <= CAPACITY_PREC(rec));
@@ -124,7 +124,7 @@ EXPORT_INLINE void SET_RNAM_PREC(Obj rec, UInt i, Int rnam)
 **  'GET_RNAM_PREC' returns the record name of the <i>-th record component of
 **  the record <rec>.
 */
-EXPORT_INLINE Int GET_RNAM_PREC(Obj rec, UInt i)
+EXPORT_INLINE Int GET_RNAM_PREC(Obj rec, UInt i) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_PREC_OR_COMOBJ(rec));
     GAP_ASSERT(i <= LEN_PREC(rec));
@@ -139,7 +139,9 @@ EXPORT_INLINE Int GET_RNAM_PREC(Obj rec, UInt i)
 **  'SET_ELM_PREC' sets  the value  of  the  <i>-th  record component of  the
 **  record <rec> to the value <val>.
 */
-EXPORT_INLINE void SET_ELM_PREC(Obj rec, UInt i, Obj val)
+EXPORT_INLINE void SET_ELM_PREC(Obj rec, UInt i,
+                                Obj val GAP_GC_ROOTED_BY_ARG_INDEXED(0, 1))
+    GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_PREC_OR_COMOBJ(rec));
     GAP_ASSERT(i <= CAPACITY_PREC(rec));
@@ -154,7 +156,8 @@ EXPORT_INLINE void SET_ELM_PREC(Obj rec, UInt i, Obj val)
 **  'GET_ELM_PREC' returns the value  of the <i>-th  record component of  the
 **  record <rec>.
 */
-EXPORT_INLINE Obj GET_ELM_PREC(Obj rec, UInt i)
+EXPORT_INLINE Obj GET_ELM_PREC(Obj rec GAP_GC_PROPAGATES_ROOT, UInt i)
+    GAP_GC_PROPAGATES_ROOT_INDEXED(0, 1) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_PREC_OR_COMOBJ(rec));
     GAP_ASSERT(i <= LEN_PREC(rec));
@@ -202,7 +205,8 @@ EXPORT_INLINE UInt FindPRec(Obj rec, UInt rnam, UInt * pos, int cleanup)
 **  record name <rnam> in  the plain record <rec>.   An error is signalled if
 **  <rec> has no component with record name <rnam>.
 */
-Obj ElmPRec(Obj rec, UInt rnam);
+Obj ElmPRec(Obj rec GAP_GC_PROPAGATES_ROOT, UInt rnam)
+    GAP_GC_PROPAGATES_ROOT_INDEXED(0, 1);
 
 
 /****************************************************************************
@@ -222,7 +226,8 @@ BOOL IsbPRec(Obj rec, UInt rnam);
 **  'AssPRec' assigns the value <val> to the record component with the record
 **  name <rnam> in the plain record <rec>.
 */
-void AssPRec(Obj rec, UInt rnam, Obj val);
+void AssPRec(Obj rec, UInt rnam,
+             Obj val GAP_GC_ROOTED_BY_ARG_INDEXED(0, 1) GAP_GC_MAYBE_UNROOTED);
 
 
 /****************************************************************************
@@ -254,7 +259,7 @@ void CopyPRecord(TraversalState * traversal, Obj copy, Obj original);
 #endif
 
 
-void MarkPRecSubBags(Obj bag, void * ref);
+void MarkPRecSubBags(Obj bag, void * ref) GAP_GC_NOTSAFEPOINT;
 
 
 /****************************************************************************

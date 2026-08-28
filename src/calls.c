@@ -60,7 +60,7 @@
 #include "hpc/thread.h"
 #endif
 
-void SET_NAME_FUNC(Obj func, Obj name)
+void SET_NAME_FUNC(Obj func, Obj name) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(name == 0 || IS_STRING_REP(name));
     FUNC(func)->name = name;
@@ -146,14 +146,17 @@ static inline void SET_STOR_WOUT_PROF(Obj prof, UInt8 n)
 */
 static Obj DoWrap0args(Obj self)
 {
-    Obj                 result;         // value of function call, result
-    Obj                 args;           // arguments list
+    Obj                 result = 0;     // value of function call, result
+    Obj                 args = 0;       // arguments list
+
+    GAP_GC_PUSH2(&result, &args);
 
     // make the arguments list
     args = NEW_PLIST( T_PLIST, 0 );
 
     // call the variable number of arguments function
     result = CALL_XARGS( self, args );
+    GAP_GC_POP();
     return result;
 }
 
@@ -164,8 +167,10 @@ static Obj DoWrap0args(Obj self)
 */
 static Obj DoWrap1args(Obj self, Obj arg1)
 {
-    Obj                 result;         // value of function call, result
-    Obj                 args;           // arguments list
+    Obj                 result = 0;     // value of function call, result
+    Obj                 args = 0;       // arguments list
+
+    GAP_GC_PUSH2(&result, &args);
 
     // make the arguments list
     args = NEW_PLIST( T_PLIST, 1 );
@@ -174,6 +179,7 @@ static Obj DoWrap1args(Obj self, Obj arg1)
 
     // call the variable number of arguments function
     result = CALL_XARGS( self, args );
+    GAP_GC_POP();
     return result;
 }
 
@@ -184,8 +190,10 @@ static Obj DoWrap1args(Obj self, Obj arg1)
 */
 static Obj DoWrap2args(Obj self, Obj arg1, Obj arg2)
 {
-    Obj                 result;         // value of function call, result
-    Obj                 args;           // arguments list
+    Obj                 result = 0;     // value of function call, result
+    Obj                 args = 0;       // arguments list
+
+    GAP_GC_PUSH2(&result, &args);
 
     // make the arguments list
     args = NEW_PLIST( T_PLIST, 2 );
@@ -195,6 +203,7 @@ static Obj DoWrap2args(Obj self, Obj arg1, Obj arg2)
 
     // call the variable number of arguments function
     result = CALL_XARGS( self, args );
+    GAP_GC_POP();
     return result;
 }
 
@@ -205,8 +214,10 @@ static Obj DoWrap2args(Obj self, Obj arg1, Obj arg2)
 */
 static Obj DoWrap3args(Obj self, Obj arg1, Obj arg2, Obj arg3)
 {
-    Obj                 result;         // value of function call, result
-    Obj                 args;           // arguments list
+    Obj                 result = 0;     // value of function call, result
+    Obj                 args = 0;       // arguments list
+
+    GAP_GC_PUSH2(&result, &args);
 
     // make the arguments list
     args = NEW_PLIST( T_PLIST, 3 );
@@ -217,6 +228,7 @@ static Obj DoWrap3args(Obj self, Obj arg1, Obj arg2, Obj arg3)
 
     // call the variable number of arguments function
     result = CALL_XARGS( self, args );
+    GAP_GC_POP();
     return result;
 }
 
@@ -227,8 +239,10 @@ static Obj DoWrap3args(Obj self, Obj arg1, Obj arg2, Obj arg3)
 */
 static Obj DoWrap4args(Obj self, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
 {
-    Obj                 result;         // value of function call, result
-    Obj                 args;           // arguments list
+    Obj                 result = 0;     // value of function call, result
+    Obj                 args = 0;       // arguments list
+
+    GAP_GC_PUSH2(&result, &args);
 
     // make the arguments list
     args = NEW_PLIST( T_PLIST, 4 );
@@ -240,6 +254,7 @@ static Obj DoWrap4args(Obj self, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
 
     // call the variable number of arguments function
     result = CALL_XARGS( self, args );
+    GAP_GC_POP();
     return result;
 }
 
@@ -251,8 +266,10 @@ static Obj DoWrap4args(Obj self, Obj arg1, Obj arg2, Obj arg3, Obj arg4)
 static Obj
 DoWrap5args(Obj self, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
 {
-    Obj                 result;         // value of function call, result
-    Obj                 args;           // arguments list
+    Obj                 result = 0;     // value of function call, result
+    Obj                 args = 0;       // arguments list
+
+    GAP_GC_PUSH2(&result, &args);
 
     // make the arguments list
     args = NEW_PLIST( T_PLIST, 5 );
@@ -265,6 +282,7 @@ DoWrap5args(Obj self, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
 
     // call the variable number of arguments function
     result = CALL_XARGS( self, args );
+    GAP_GC_POP();
     return result;
 }
 
@@ -276,8 +294,10 @@ DoWrap5args(Obj self, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5)
 static Obj DoWrap6args(
     Obj self, Obj arg1, Obj arg2, Obj arg3, Obj arg4, Obj arg5, Obj arg6)
 {
-    Obj                 result;         // value of function call, result
-    Obj                 args;           // arguments list
+    Obj                 result = 0;     // value of function call, result
+    Obj                 args = 0;       // arguments list
+
+    GAP_GC_PUSH2(&result, &args);
 
     // make the arguments list
     args = NEW_PLIST( T_PLIST, 6 );
@@ -291,6 +311,7 @@ static Obj DoWrap6args(
 
     // call the variable number of arguments function
     result = CALL_XARGS( self, args );
+    GAP_GC_POP();
     return result;
 }
 
@@ -449,12 +470,14 @@ static ALWAYS_INLINE Obj DoProfNNNargs (
     Obj                 arg6 )
 
 {
-    Obj                 result;         // value of function call, result
-    Obj                 prof;           // profiling bag
+    Obj                 result = 0;     // value of function call, result
+    Obj                 prof = 0;       // profiling bag
     UInt                timeElse;       // time    spent elsewhere
     UInt                timeCurr;       // time    spent in current funcs.
     UInt8               storElse;       // storage spent elsewhere
     UInt8               storCurr;       // storage spent in current funcs.
+
+    GAP_GC_PUSH2(&result, &prof);
 
     // get the profiling bag
     prof = PROF_FUNC( PROF_FUNC( self ) );
@@ -495,6 +518,7 @@ static ALWAYS_INLINE Obj DoProfNNNargs (
     SET_STOR_WOUT_PROF( prof, STOR_WOUT_PROF(prof) + storCurr );
     StorDone += storCurr;
 
+    GAP_GC_POP();
     return result;
 }
 
@@ -830,7 +854,16 @@ Obj NewFunctionC (
     const Char *        nams,
     ObjFunc             hdlr )
 {
-    return NewFunction(MakeImmString(name), narg, ArgStringToList(nams), hdlr);
+    Obj nameObj = 0;
+    Obj namsObj = 0;
+    Obj func = 0;
+
+    GAP_GC_PUSH3(&nameObj, &namsObj, &func);
+    nameObj = MakeImmString(name);
+    namsObj = ArgStringToList(nams);
+    func = NewFunction(nameObj, narg, namsObj, hdlr);
+    GAP_GC_POP();
+    return func;
 }
 
 
@@ -849,9 +882,11 @@ Obj NewFunctionT (
     Obj                 nams,
     ObjFunc             hdlr )
 {
-    Obj                 func;           // function, result
-    Obj                 prof;           // profiling bag
+    Obj                 func = 0;       // function, result
+    Obj                 prof = 0;       // profiling bag
+    Obj                 immName = 0;    // immutable function name
 
+    GAP_GC_PUSH5(&name, &nams, &func, &prof, &immName);
 
     // make the function object
     func = NewBag( type, size );
@@ -882,7 +917,9 @@ Obj NewFunctionT (
     }
 
     // enter the arguments and the names
-    SET_NAME_FUNC(func, name ? ImmutableString(name) : 0);
+    if (name)
+        immName = ImmutableString(name);
+    SET_NAME_FUNC(func, immName);
     SET_NARG_FUNC(func, narg);
     SET_NAMS_FUNC(func, nams);
     SET_NLOC_FUNC(func, 0);
@@ -903,6 +940,7 @@ Obj NewFunctionT (
     CHANGED_BAG(func);
 
     // return the function bag
+    GAP_GC_POP();
     return func;
 }
 
@@ -916,10 +954,12 @@ Obj NewFunctionT (
 ** to be passed to 'NewFunction' as <nams>.
 */
 Obj ArgStringToList(const Char *nams_c) {
-    Obj                 tmp;            // argument name as an object
-    Obj                 nams_o;         // nams as an object
+    Obj                 tmp = 0;        // argument name as an object
+    Obj                 nams_o = 0;     // nams as an object
     UInt                len;            // length
     UInt                i, k, l;        // loop variables
+
+    GAP_GC_PUSH2(&tmp, &nams_o);
 
     // convert the arguments list to an object
     len = 0;
@@ -946,6 +986,7 @@ Obj ArgStringToList(const Char *nams_c) {
         k = l;
     }
 
+    GAP_GC_POP();
     return nams_o;
 }
 
@@ -963,10 +1004,10 @@ Obj ArgStringToList(const Char *nams_c) {
 **
 **  'TypeFunction' is the function in 'TypeObjFuncs' for functions.
 */
-static Obj TYPE_FUNCTION;
-static Obj TYPE_OPERATION;
-static Obj TYPE_FUNCTION_WITH_NAME;
-static Obj TYPE_OPERATION_WITH_NAME;
+static Obj TYPE_FUNCTION GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_OPERATION GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_FUNCTION_WITH_NAME GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_OPERATION_WITH_NAME GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeFunction(Obj func)
 {
@@ -983,7 +1024,7 @@ static Obj TypeFunction(Obj func)
 **
 */
 
-static Obj PrintOperation;
+static Obj PrintOperation GAP_GC_GLOBALLY_ROOTED;
 
 static void PrintFunction(Obj func)
 {
@@ -1080,6 +1121,7 @@ void PrintKernelFunction(Obj func)
     GAP_ASSERT(IsKernelFunction(func));
     Obj body = BODY_FUNC(func);
     Obj filename = body ? GET_FILENAME_BODY(body) : 0;
+    GAP_GC_PUSH2(&body, &filename);
     if (filename) {
         // A "location" is a string attached exclusively to GAP kernel
         // functions; it is derived from the function's "cookie" which has the
@@ -1116,6 +1158,7 @@ void PrintKernelFunction(Obj func)
         // of NewFunction* for this problem
         Pr("<<kernel or compiled code>>", 0, 0);
     }
+    GAP_GC_POP();
 }
 
 
@@ -1130,7 +1173,7 @@ void PrintKernelFunction(Obj func)
 **  'IsFunction' returns   'true'  if  <func>   is a function    and  'false'
 **  otherwise.
 */
-static Obj IsFunctionFilt;
+static Obj IsFunctionFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_FUNCTION(Obj self, Obj obj)
 {
@@ -1157,16 +1200,16 @@ static Obj FiltIS_FUNCTION(Obj self, Obj obj)
 **  'CallFuncList' calls the  function <func> with the arguments list <list>,
 **  i.e., it is equivalent to '<func>( <list>[1], <list>[2]... )'.
 */
-Obj CallFuncListOper;
-static Obj CallFuncListWrapOper;
+Obj CallFuncListOper GAP_GC_GLOBALLY_ROOTED;
+static Obj CallFuncListWrapOper GAP_GC_GLOBALLY_ROOTED;
 
 Obj CallFuncList ( Obj func, Obj list )
 {
-    Obj                 result;         // result
-    Obj                 list2;          // list of arguments
+    Obj                 result = 0;     // result
+    Obj                 list2 = 0;      // list of arguments
     Obj                 arg;            // one argument
     UInt                i;              // loop variable
-
+    GAP_GC_PUSH2(&result, &list2);
 
     if (TNUM_OBJ(func) == T_FUNCTION) {
 
@@ -1210,6 +1253,7 @@ Obj CallFuncList ( Obj func, Obj list )
     } else {
       result = DoOperation2Args(CallFuncListOper, func, list);
     }
+    GAP_GC_POP();
     return result;
 
 }
@@ -1237,12 +1281,14 @@ static Obj FuncCALL_FUNC_LIST_WRAP(Obj self, Obj func, Obj list)
 **
 *F  AttrNAME_FUNC( <self>, <func> ) . . . . . . . . . . .  name of a function
 */
-static Obj NameFuncAttr;
-static Obj SET_NAME_FUNC_Oper;
+static Obj NameFuncAttr GAP_GC_GLOBALLY_ROOTED;
+static Obj SET_NAME_FUNC_Oper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj AttrNAME_FUNC(Obj self, Obj func)
 {
-    Obj                 name;
+    Obj                 name = 0;
+
+    GAP_GC_PUSH1(&name);
 
     if ( TNUM_OBJ(func) == T_FUNCTION ) {
         name = NAME_FUNC(func);
@@ -1251,19 +1297,26 @@ static Obj AttrNAME_FUNC(Obj self, Obj func)
             SET_NAME_FUNC(func, name);
             CHANGED_BAG(func);
         }
+        GAP_GC_POP();
         return name;
     }
     else {
+        GAP_GC_POP();
         return DoAttribute( self, func );
     }
 }
 
 static Obj FuncSET_NAME_FUNC(Obj self, Obj func, Obj name)
 {
+    Obj immName = 0;
+
     RequireStringRep(SELF_NAME, name);
 
   if (TNUM_OBJ(func) == T_FUNCTION ) {
-    SET_NAME_FUNC(func, ImmutableString(name));
+    GAP_GC_PUSH1(&immName);
+    immName = ImmutableString(name);
+    SET_NAME_FUNC(func, immName);
+    GAP_GC_POP();
     CHANGED_BAG(func);
   } else
     DoOperation2Args(SET_NAME_FUNC_Oper, func, name);
@@ -1275,7 +1328,7 @@ static Obj FuncSET_NAME_FUNC(Obj self, Obj func, Obj name)
 **
 *F  FuncNARG_FUNC( <self>, <func> ) . . . . number of arguments of a function
 */
-static Obj NARG_FUNC_Oper;
+static Obj NARG_FUNC_Oper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncNARG_FUNC(Obj self, Obj func)
 {
@@ -1292,7 +1345,7 @@ static Obj FuncNARG_FUNC(Obj self, Obj func)
 **
 *F  FuncNAMS_FUNC( <self>, <func> ) . . . . names of local vars of a function
 */
-static Obj NAMS_FUNC_Oper;
+static Obj NAMS_FUNC_Oper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncNAMS_FUNC(Obj self, Obj func)
 {
@@ -1311,7 +1364,7 @@ static Obj FuncNAMS_FUNC(Obj self, Obj func)
 *F  FuncLOCKS_FUNC( <self>, <func> ) . . . . locking status of a possibly
 **                                           atomic function
 */
-static Obj LOCKS_FUNC_Oper;
+static Obj LOCKS_FUNC_Oper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncLOCKS_FUNC(Obj self, Obj func)
 {
@@ -1337,7 +1390,7 @@ static Obj FuncLOCKS_FUNC(Obj self, Obj func)
 **
 *F  FuncPROF_FUNC( <self>, <func> ) . . . . . .  profiling info of a function
 */
-static Obj PROF_FUNC_Oper;
+static Obj PROF_FUNC_Oper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncPROF_FUNC(Obj self, Obj func)
 {
@@ -1395,9 +1448,12 @@ static Obj FuncCLEAR_PROFILE_FUNC(Obj self, Obj func)
 static Obj FuncPROFILE_FUNC(Obj self, Obj func)
 {
     Obj                 prof;
-    Obj                 copy;
+    Obj                 copy = 0;
+    Obj                 name = 0;
 
     RequireFunction(SELF_NAME, func);
+
+    GAP_GC_PUSH2(&copy, &name);
 
     // uninstall trace handler
     ChangeDoOperations( func, 0 );
@@ -1416,7 +1472,8 @@ static Obj FuncPROFILE_FUNC(Obj self, Obj func)
         SET_HDLR_FUNC(copy,5, HDLR_FUNC(func,5));
         SET_HDLR_FUNC(copy,6, HDLR_FUNC(func,6));
         SET_HDLR_FUNC(copy,7, HDLR_FUNC(func,7));
-        SET_NAME_FUNC(copy,   NAME_FUNC(func));
+        name = NAME_FUNC(func);
+        SET_NAME_FUNC(copy,   name);
         SET_NARG_FUNC(copy,   NARG_FUNC(func));
         SET_NAMS_FUNC(copy,   NAMS_FUNC(func));
         SET_PROF_FUNC(copy,   PROF_FUNC(func));
@@ -1433,6 +1490,7 @@ static Obj FuncPROFILE_FUNC(Obj self, Obj func)
         CHANGED_BAG(func);
     }
 
+    GAP_GC_POP();
     return (Obj)0;
 }
 
@@ -1632,7 +1690,7 @@ static void LoadFunction(Obj func)
 **
 **  'MarkFunctionSubBags' is the marking function for bags of type 'T_FUNCTION'.
 */
-static void MarkFunctionSubBags(Obj func, void * ref)
+static void MarkFunctionSubBags(Obj func, void * ref) GAP_GC_NOTSAFEPOINT
 {
     // the first eight slots are pointers to C functions, so we need
     // to skip those for marking

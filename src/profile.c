@@ -106,7 +106,7 @@
 ** Store the current state of the profiler
 */
 
-static Obj OutputtedFilenameList;
+static Obj OutputtedFilenameList GAP_GC_GLOBALLY_ROOTED;
 
 struct StatementLocation
 {
@@ -162,7 +162,7 @@ static struct ProfileState
   // a longjmp.
   // We need to store the actual values, as RecursionDepth can increase
   // by more than one when a GAP function is called
-  Obj visitedDepths;
+  Obj visitedDepths GAP_GC_GLOBALLY_ROOTED;
 } profileState;
 
 // Some GAP functionality (such as syntaxtree) evaluates expressions, which makes
@@ -241,6 +241,7 @@ static Obj JsonEscapeString(Obj param)
     // Allocate an output string with twice the size of the input
     // string, as in the worst case every single has to be escaped.
     Obj     copy = NEW_STRING(lenString * 2);
+    GAP_GC_PUSH1(&copy);
     UChar * in = CHARS_STRING(param);
     UChar * base = CHARS_STRING(copy);
     UChar * out = base;
@@ -274,6 +275,7 @@ static Obj JsonEscapeString(Obj param)
 
     SET_LEN_STRING(copy, out - base);
     ResizeBag(copy, SIZEBAG_STRINGLEN(out - base));
+    GAP_GC_POP();
     return copy;
 }
 
@@ -308,20 +310,26 @@ static void HookedLineOutput(Obj func, char type)
   if (profileState.status == Profile_Active && profileState.OutputRepeats)
   {
     Obj body = BODY_FUNC(func);
+    Obj name = 0;
+    Obj filename = 0;
+    GAP_GC_PUSH2(&name, &filename);
+
     UInt startline = GET_STARTLINE_BODY(body);
     UInt endline = GET_ENDLINE_BODY(body);
 
-    Obj name = NAME_FUNC(func);
+    name = NAME_FUNC(func);
     if (name) {
         name = JsonEscapeString(name);
     }
 
-    Obj         filename = GET_FILENAME_BODY(body);
+    filename = GET_FILENAME_BODY(body);
     UInt        fileid = GET_GAPNAMEID_BODY(body);
     outputFilenameIdIfRequired(fileid);
     const Char *filename_c = "<missing filename>";
-    if(filename != Fail && filename != NULL)
-        filename_c = CONST_CSTR_STRING(JsonEscapeString(filename));
+    if(filename != Fail && filename != NULL) {
+        filename = JsonEscapeString(filename);
+        filename_c = CONST_CSTR_STRING(filename);
+    }
 
     // Do this here to avoid GCs before string is used
     const Char * name_c = name ? CONST_CSTR_STRING(name) : "nameless";
@@ -341,6 +349,8 @@ static void HookedLineOutput(Obj func, char type)
                                  "\"FileId\":%d}\n",
             type, name_c, (int)startline, (int)endline, filename_c,
             (int)fileid);
+
+    GAP_GC_POP();
   }
   HashUnlock(&profileState);
 }

@@ -32,7 +32,7 @@
 
 static SymbolTable RNamSymbolTable;
 
-static Obj NamesRNam;
+static Obj NamesRNam GAP_GC_GLOBALLY_ROOTED;
 
 /****************************************************************************
 **
@@ -40,12 +40,13 @@ static Obj NamesRNam;
 **
 **  'IS_VALID_RNAM' returns if <rnam> is a valid record name.
 */
-static BOOL IS_VALID_RNAM(UInt rnam)
+static BOOL IS_VALID_RNAM(UInt rnam) GAP_GC_NOTSAFEPOINT
 {
     return rnam != 0 && rnam <= LEN_PLIST(NamesRNam);
 }
 
 extern inline Obj NAME_RNAM(UInt rnam)
+    GAP_GC_NOTSAFEPOINT GAP_GC_GLOBALLY_ROOTED
 {
     return ELM_PLIST(NamesRNam, rnam);
 }
@@ -191,7 +192,7 @@ static Obj FuncNameRNam(Obj self, Obj rnam)
 */
 BOOL (*IsRecFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
-static Obj IsRecFilt;
+static Obj IsRecFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_REC(Obj self, Obj obj)
 {
@@ -214,7 +215,7 @@ static BOOL IsRecObject(Obj obj)
 */
 Obj             (*ElmRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
 
-static Obj ElmRecOper;
+static Obj ElmRecOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj ElmRecHandler(Obj self, Obj rec, Obj rnam)
 {
@@ -247,7 +248,7 @@ static Obj ElmRecObject(Obj obj, UInt rnam)
 */
 BOOL (*IsbRecFuncs[LAST_REAL_TNUM + 1])(Obj rec, UInt rnam);
 
-static Obj IsbRecOper;
+static Obj IsbRecOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj IsbRecHandler(Obj self, Obj rec, Obj rnam)
 {
@@ -276,7 +277,7 @@ static BOOL IsbRecObject(Obj obj, UInt rnam)
 */
 void            (*AssRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam, Obj obj );
 
-static Obj AssRecOper;
+static Obj AssRecOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj AssRecHandler(Obj self, Obj rec, Obj rnam, Obj obj)
 {
@@ -304,7 +305,7 @@ static void AssRecObject(Obj obj, UInt rnam, Obj val)
 */
 void            (*UnbRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
 
-static Obj UnbRecOper;
+static Obj UnbRecOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj UnbRecHandler(Obj self, Obj rec, Obj rnam)
 {
@@ -375,18 +376,20 @@ UInt            completion_rnam (
 
 static Obj FuncALL_RNAMES(Obj self)
 {
-    Obj                 copy, s;
+    Obj                 copy, s = 0;
     UInt                i;
     Obj                 name;
     const UInt          countRNam = LEN_PLIST(NamesRNam);
 
     copy = NEW_PLIST_IMM( T_PLIST, countRNam );
+    GAP_GC_PUSH2(&copy, &s);
     for ( i = 1;  i <= countRNam;  i++ ) {
         name = NAME_RNAM( i );
         s = CopyToStringRep(name);
         SET_ELM_PLIST( copy, i, s );
         CHANGED_BAG( copy );
     }
+    GAP_GC_POP();
     SET_LEN_PLIST( copy, countRNam );
     return copy;
 }

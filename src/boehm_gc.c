@@ -55,7 +55,7 @@ struct OpaqueBag {
 
 #ifndef WARD_ENABLED
 
-static inline Bag * DATA(BagHeader * bag)
+static inline Bag * DATA(BagHeader * bag) GAP_GC_NOTSAFEPOINT
 {
     return (Bag *)(((char *)bag) + sizeof(BagHeader));
 }

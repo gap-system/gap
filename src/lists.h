@@ -219,7 +219,8 @@ extern Obj (*Elm0ListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **  signalled if <list>  is  not a list.  It   is the responsibility   of the
 **  caller to ensure that <pos> is a positive integer.
 */
-EXPORT_INLINE Obj ELM0_LIST(Obj list, Int pos)
+EXPORT_INLINE Obj ELM0_LIST(Obj list GAP_GC_PROPAGATES_ROOT, Int pos)
+    GAP_GC_PROPAGATES_ROOT_INDEXED(0, 1)
 {
     return (*Elm0ListFuncs[TNUM_OBJ(list)])(list, pos);
 }
@@ -270,7 +271,8 @@ extern  Obj (*Elm0vListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **  that <list> is a list and that <pos> is less than  or equal to the length
 **  of <list>.
 */
-EXPORT_INLINE Obj ELMV0_LIST(Obj list, Int pos)
+EXPORT_INLINE Obj ELMV0_LIST(Obj list GAP_GC_PROPAGATES_ROOT, Int pos)
+    GAP_GC_PROPAGATES_ROOT_INDEXED(0, 1)
 {
     GAP_ASSERT(pos > 0);
     GAP_ASSERT(pos <= LEN_LIST(list));
@@ -308,7 +310,8 @@ extern Obj (*ElmListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 */
 Obj ELMB_LIST(Obj list, Obj pos);
 
-EXPORT_INLINE Obj ELM_LIST(Obj list, Int pos)
+EXPORT_INLINE Obj ELM_LIST(Obj list GAP_GC_PROPAGATES_ROOT, Int pos)
+    GAP_GC_PROPAGATES_ROOT_INDEXED(0, 1)
 {
     Obj ret = (*ElmListFuncs[TNUM_OBJ(list)])(list, pos);
     GAP_ASSERT(ret != 0);
@@ -349,7 +352,8 @@ extern Obj (*ElmvListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **  that <list> is a list and that <pos> is less  than or equal to the length
 **  of <list>.
 */
-EXPORT_INLINE Obj ELMV_LIST(Obj list, Int pos)
+EXPORT_INLINE Obj ELMV_LIST(Obj list GAP_GC_PROPAGATES_ROOT, Int pos)
+    GAP_GC_PROPAGATES_ROOT_INDEXED(0, 1)
 {
     GAP_ASSERT(pos > 0);
     GAP_ASSERT(pos <= LEN_LIST(list));
@@ -376,7 +380,8 @@ extern Obj (*ElmwListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **  'ELMW_LIST' does the same as 'ELMV_LIST', but  the caller also guarantees
 **  that <list> has an assigned object at the position <pos>.
 */
-EXPORT_INLINE Obj ELMW_LIST(Obj list, Int pos)
+EXPORT_INLINE Obj ELMW_LIST(Obj list GAP_GC_PROPAGATES_ROOT, Int pos)
+    GAP_GC_PROPAGATES_ROOT_INDEXED(0, 1)
 {
     GAP_ASSERT(pos > 0);
     GAP_ASSERT(pos <= LEN_LIST(list));
@@ -498,7 +503,8 @@ extern  void            (*AssListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos, O
 
 void ASSB_LIST(Obj list, Obj pos, Obj obj);
 
-EXPORT_INLINE void ASS_LIST(Obj list, Int pos, Obj obj)
+EXPORT_INLINE void ASS_LIST(Obj list, Int pos,
+                            Obj obj GAP_GC_ROOTED_BY_ARG_INDEXED(0, 1))
 {
     GAP_ASSERT(pos > 0);
     GAP_ASSERT(obj != 0);

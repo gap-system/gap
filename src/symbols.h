@@ -27,10 +27,10 @@ typedef void (*NewSymbolFunc)(SymbolTable * symtab, UInt id, Obj name);
 struct SymbolTable {
     // number of symbols, stored as an object so it can be saved
     // in workspaces
-    Obj count;
+    Obj count GAP_GC_GLOBALLY_ROOTED;
 
     // hashtable: a plist containing integers
-    Obj table;
+    Obj table GAP_GC_GLOBALLY_ROOTED;
 
     // a function which maps symbol ids back to names
     SymbolIdToNameFunc nameFunc;
