@@ -401,6 +401,48 @@ jobs:
             make citests
 
 
+  mingw64:
+    # Native Windows build with mingw-w64 via MSYS2 (issue #4157)
+    runs-on: windows-2022
+    timeout-minutes: 60
+    name: "Native Windows (MINGW64)"
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          install: >-
+            autoconf
+            automake
+            libtool
+            make
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-gmp
+            mingw-w64-x86_64-readline
+            mingw-w64-x86_64-zlib
+
+      - name: Configure
+        run: ./autogen.sh && ./configure
+
+      - name: Build GAP
+        run: make -j4 V=1
+
+      - name: Download required GAP packages
+        run: make bootstrap-pkg-minimal
+
+      # StringFile("/") expects POSIX semantics: a directory can be
+      # opened but not read there, while on Windows the open fails
+      - name: Remove tests which do not work on native Windows
+        run: rm tst/testinstall/read.tst
+
+      - name: Run tests
+        run: NO_COVERAGE=1 dev/ci.sh testinstall testmockpkg
+
   openbsd:
     runs-on: ubuntu-latest
     timeout-minutes: 60

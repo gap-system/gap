@@ -1,8 +1,9 @@
 # Cross-compiling GAP for native Windows (mingw-w64)
 
-Status: the kernel compiles and links (see issue #4157); the resulting
-`gap.exe` does not run yet. The canonical target is x86_64-w64-mingw32,
-matching the MSYS2 MINGW64 environment used by the CI job `mingw64`.
+Status (issue #4157): `gap.exe` passes testinstall, with line editing,
+readline, subprocesses (pipes instead of ptys) and kernel extensions;
+packages needing POSIX, foremost IO, are unavailable. The target is
+x86_64-w64-mingw32, as in the MSYS2 MINGW64 environment of the CI job.
 
 The instructions below are for macOS; on Linux, install `gcc-mingw-w64`
 instead of the brew package and adjust paths.
@@ -62,6 +63,12 @@ mkdir -p build-mingw64 && cd build-mingw64
 make -j8
 ```
 
+For readline, copy MSYS2's `mingw-w64-x86_64-readline` artifacts into the
+prefix (`include/readline/`, `lib/libreadline.dll.a`,
+`lib/libhistory.dll.a`; plain readline does not build for mingw) and
+configure with `--with-readline=$MPREFIX`. At runtime `libreadline8.dll`
+and `libtermcap-0.dll` must sit next to gap.exe.
+
 Verify:
 
 ```sh
@@ -70,6 +77,9 @@ x86_64-w64-mingw32-objdump -p gap.exe | grep 'DLL Name'
                             # only system DLLs + libwinpthread-1.dll
 ```
 
-`wine gap.exe --version` works as a smoke test (copy
-`libwinpthread-1.dll` from the toolchain next to gap.exe first);
-anything beyond `--version` needs the runtime port.
+Wine (`brew install --cask wine-stable`) runs the result: copy
+`libwinpthread-1.dll` from the toolchain next to gap.exe, then e.g.
+
+```sh
+wine gap.exe -A -q -c 'Read("../tst/testinstall.g");' < /dev/null
+```
