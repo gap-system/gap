@@ -331,6 +331,13 @@ ifneq (,$(findstring cygwin,$(host_os)))
   # sure we care about "make install" on Cygwin, so I am not going to work on
   # this until someone specifically asks for it (and even then I'll require
   # that person to help test it)
+else ifneq (,$(findstring mingw,$(host_os)))
+  GAC_CFLAGS =
+  # Link kernel extensions against the import library of libgap.dll; the
+  # loader then resolves their dependency against the libgap.dll that is
+  # already loaded into the gap process, by module name, without searching
+  # the filesystem. (Same "make install" caveat as for Cygwin above.)
+  GAC_LDFLAGS = -shared -static-libgcc $(abs_builddir)/libgap.dll.a
 else
   ifneq (,$(findstring darwin,$(host_os)))
     GAC_CFLAGS = -fno-common
@@ -541,12 +548,15 @@ GAP_LDFLAGS += -Wl,--stack,16777216
 # Allow multiple definitions so we can declare a function multiple times with 'extern inline'
 GAP_LDFLAGS += -Wl,--allow-multiple-definition
 
-# For now gap.exe is a plain statically linked executable, and kernel
-# extensions are not supported.
-# TODO(windows-port): build gap.exe against libgap.dll as on Cygwin, so
-# that kernel extensions can resolve GAP symbols at load time.
-gap$(EXEEXT): build/obj/src/main.c.o $(OBJS) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
-	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $< $(OBJS) $(GAP_LIBS) -o $@
+# link the GCC runtime statically, so that gap.exe and libgap.dll do not
+# depend on libgcc_s_seh-1.dll
+GAP_LDFLAGS += -static-libgcc
+
+# GAP proper lives in libgap.dll, which is built next to gap.exe, where the
+# loader finds it; gap.exe is a small stub, and kernel extensions link
+# against the import library libgap.dll.a
+gap$(EXEEXT): build/obj/src/main.c.o libgap$(SHLIB_EXT) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $< $(GAP_LIBS) -L${abs_builddir} -lgap -o $@
 
 else
 
