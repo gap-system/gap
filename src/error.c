@@ -39,9 +39,9 @@
 #include <stdio.h>  // for fprintf
 
 
-static Obj ErrorInner;
-static Obj ERROR_OUTPUT = NULL;
-static Obj IsOutputStream;
+static Obj ErrorInner GAP_GC_GLOBALLY_ROOTED;
+static Obj ERROR_OUTPUT GAP_GC_GLOBALLY_ROOTED = NULL;
+static Obj IsOutputStream GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
@@ -191,7 +191,7 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self,
                                        Obj level,
                                        Obj prefixWidth)
 {
-    volatile Obj location = Fail;
+    Obj location = Fail;
 
     if (IsBottomLVars(context))
         return Fail;
@@ -211,6 +211,7 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self,
     }
 
     BOOL rethrow = FALSE;
+    GAP_GC_PUSH1(&location);
     GAP_TRY
     {
         Obj func = FUNC_LVARS(context);
@@ -281,9 +282,12 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self,
     // HACK: close the output again
     CloseOutput(&output);
 
-    if (rethrow)
+    if (rethrow) {
+        GAP_GC_POP();
         GAP_THROW();
+    }
 
+    GAP_GC_POP();
     return location;
 }
 
@@ -299,9 +303,10 @@ static Obj FuncCALL_WITH_CATCH(Obj self, Obj func, Obj args)
 
 Obj CALL_WITH_CATCH(Obj func, volatile Obj args)
 {
-    volatile Obj       res;
-    volatile Obj       currLVars;
-    volatile Obj       tilde;
+    Obj       res;
+    Obj       currLVars;
+    Obj       tilde;
+    Obj       result = 0;
 
     RequireFunction("CALL_WITH_CATCH", func);
     if (!IS_LIST(args))
@@ -315,13 +320,14 @@ Obj CALL_WITH_CATCH(Obj func, volatile Obj args)
     currLVars = STATE(CurrLVars);
     tilde = STATE(Tilde);
     res = NEW_PLIST_IMM(T_PLIST_DENSE, 2);
+    GAP_GC_PUSH4(&res, &currLVars, &tilde, &result);
 #ifdef HPCGAP
     int      lockSP = RegionLockSP();
     Region * savedRegion = TLS(currentRegion);
 #endif
     GAP_TRY
     {
-        Obj result = CallFuncList(func, args);
+        result = CallFuncList(func, args);
         // Make an explicit check if an interrupt occurred
         // in case func was a kernel function.
         TakeInterrupt();
@@ -356,6 +362,7 @@ Obj CALL_WITH_CATCH(Obj func, volatile Obj args)
             HashUnlock(TLS(CurrentHashLock));
 #endif
     }
+    GAP_GC_POP();
     return res;
 }
 
@@ -418,18 +425,24 @@ static Obj CallErrorInner(const Char * msg,
 {
     // Must do this before creating any other GAP objects,
     // as one of the args could be a pointer into a Bag.
-    Obj EarlyMsg = ErrorMessageToGAPString(msg, arg1, arg2);
+    Obj EarlyMsg = 0;
+    Obj r = 0;
+    Obj l = 0;
+    Obj res = 0;
+    GAP_GC_PUSH4(&EarlyMsg, &r, &l, &res);
+
+    EarlyMsg = ErrorMessageToGAPString(msg, arg1, arg2);
 
     if (!ErrorInner || !IS_FUNC(ErrorInner)) {
         fprintf(stderr, "%s\n", CONST_CSTR_STRING(EarlyMsg));
+        GAP_GC_POP();
         if (!ErrorInner)
             Panic("error handler not yet initialized");
         else
             Panic("error handler must be a function");
     }
 
-    Obj r = NEW_PREC(0);
-    Obj l;
+    r = NEW_PREC(0);
     Int i;
 
 #ifdef HPCGAP
@@ -447,13 +460,14 @@ static Obj CallErrorInner(const Char * msg,
     for (i = 0; i < ARRAY_SIZE(signalBreakFuncList) && signalBreakFuncList[i];
          ++i)
         (signalBreakFuncList[i])(1);
-    Obj res = CALL_2ARGS(ErrorInner, r, l);
+    res = CALL_2ARGS(ErrorInner, r, l);
     for (i = 0; i < ARRAY_SIZE(signalBreakFuncList) && signalBreakFuncList[i];
          ++i)
         (signalBreakFuncList[i])(0);
 #ifdef HPCGAP
     TLS(currentRegion) = savedRegion;
 #endif
+    GAP_GC_POP();
     return res;
 }
 
@@ -497,8 +511,12 @@ void ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2)
     }
 
     Obj lateMsg = MakeString("you can enter 'quit;' to quit to outer loop, or\n");
-    AppendString(lateMsg, MakeString(msg2));
+    Obj msg2String = 0;
+    GAP_GC_PUSH2(&lateMsg, &msg2String);
+    msg2String = MakeString(msg2);
+    AppendString(lateMsg, msg2String);
     CallErrorInner(msg, arg1, arg2, 0, 1, lateMsg);
+    GAP_GC_POP();
 }
 
 /****************************************************************************
@@ -508,7 +526,9 @@ void ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2)
 void ErrorMayQuit(const Char * msg, Int arg1, Int arg2)
 {
     Obj LateMsg = MakeString("you can enter 'quit;' to quit to outer loop");
+    GAP_GC_PUSH1(&LateMsg);
     CallErrorInner(msg, arg1, arg2, 0, 0, LateMsg);
+    GAP_GC_POP();
     Panic("ErrorMayQuit must not return");
 }
 

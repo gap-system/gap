@@ -194,7 +194,7 @@ static void MatchSemicolon(ReaderState * rs, TypSymbolSet skipto)
 // Search the plist 'nams' for a string equal to 'value' between and
 // including index 'start' and 'end' and return its index; return 0 if not
 // found.
-static UInt findValueInNams(Obj nams, const Char * val, UInt start, UInt end)
+static UInt findValueInNams(Obj nams, const Char * val, UInt start, UInt end) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(LEN_PLIST(nams) < MAX_FUNC_LVARS);
     for (UInt i = start; i <= end; i++) {
@@ -263,7 +263,7 @@ static void ReadFuncCallOptions(ReaderState * rs, TypSymbolSet follow)
   }
 }
 
-static Obj GAPInfo;
+static Obj GAPInfo GAP_GC_GLOBALLY_ROOTED;
 
 static UInt WarnOnUnboundGlobalsRNam;
 
@@ -839,21 +839,27 @@ static void ReadCallVarAss(ReaderState * rs, TypSymbolSet follow, Char mode)
     if (ref.type == R_GVAR && IsConstantGVar(ref.var) && ValGVar(ref.var)) {
         // deal with references
         if (mode == 'r' || (mode == 'x' && rs->s.Symbol != S_ASSIGN)) {
-            Obj val = ValAutoGVar(ref.var);
+            Obj val = 0;
+            GAP_GC_PUSH1(&val);
+            val = ValAutoGVar(ref.var);
             TRY_IF_NO_ERROR {
                 if (val == True) {
                     IntrTrueExpr(&rs->intr);
+                    GAP_GC_POP();
                     return;
                 }
                 else if (val == False) {
                     IntrFalseExpr(&rs->intr);
+                    GAP_GC_POP();
                     return;
                 }
                 else if (IS_INTOBJ(val)) {
                     IntrIntObjExpr(&rs->intr, val);
+                    GAP_GC_POP();
                     return;
                 }
             }
+            GAP_GC_POP();
         }
     }
 
@@ -1175,7 +1181,8 @@ static ArgList ReadFuncArgList(ReaderState * rs,
                                const Char *   symbolstr)
 {
     Int        narg;           // number of arguments
-    Obj        nams;           // list of local variables names
+    Obj        nams = 0;       // list of local variables names
+    Obj        name = 0;       // current argument name
 #ifdef HPCGAP
     LockQual   lockqual;
     Bag        locks = 0;      // locks of the function
@@ -1189,6 +1196,7 @@ static ArgList ReadFuncArgList(ReaderState * rs,
 
     // make and push the new local variables list (args and locals)
     narg = 0;
+    GAP_GC_PUSH2(&nams, &name);
     nams = NEW_PLIST(T_PLIST, 0);
     if (rs->s.Symbol != symbol) {
         goto start;
@@ -1230,7 +1238,8 @@ static ArgList ReadFuncArgList(ReaderState * rs,
             SyntaxError(&rs->s, "Name used for two arguments");
         }
         narg += 1;
-        PushPlist(nams, MakeImmString(rs->s.Value));
+        name = MakeImmString(rs->s.Value);
+        PushPlist(nams, name);
 #ifdef HPCGAP
         if (isAtomic) {
             GrowString(locks, narg);
@@ -1266,6 +1275,7 @@ static ArgList ReadFuncArgList(ReaderState * rs,
     if (locks)
         MakeImmutable(args.locks);
 #endif
+    GAP_GC_POP();
     return args;
 }
 
@@ -1326,9 +1336,11 @@ static UInt ReadLocals(ReaderState * rs, TypSymbolSet follow, Obj nams)
 {
     UInt narg = LEN_PLIST(nams);
     UInt nloc = 0;
+    Obj  name = 0;
 
     Match_(rs, S_LOCAL, "local", follow);
 
+    GAP_GC_PUSH2(&nams, &name);
     while (1) {
         if (rs->s.Symbol == S_IDENT) {
             if (findValueInNams(nams, rs->s.Value, narg + 1, narg + nloc)) {
@@ -1338,7 +1350,8 @@ static UInt ReadLocals(ReaderState * rs, TypSymbolSet follow, Obj nams)
                 SyntaxError(&rs->s, "Name used for argument and local");
             }
             nloc += 1;
-            PushPlist(nams, MakeImmString(rs->s.Value));
+            name = MakeImmString(rs->s.Value);
+            PushPlist(nams, name);
             if (LEN_PLIST(nams) >= MAX_FUNC_LVARS) {
                 SyntaxError(&rs->s, "Too many function arguments and locals");
             }
@@ -1354,6 +1367,7 @@ static UInt ReadLocals(ReaderState * rs, TypSymbolSet follow, Obj nams)
     }
     MatchSemicolon(rs, STATBEGIN | S_END | follow);
 
+    GAP_GC_POP();
     return nloc;
 }
 
@@ -1390,12 +1404,14 @@ static void ReadFuncExpr(ReaderState * rs, TypSymbolSet follow, Char mode)
     Match_(rs, S_LPAREN, "(", S_IDENT|S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
 
     args = ReadFuncArgList(rs, follow, isAtomic, S_RPAREN, ")");
+    GAP_GC_PUSH1(&args.nams);
 
     if (rs->s.Symbol == S_LOCAL) {
         nloc = ReadLocals(rs, follow, args.nams);
     }
 
     ReadFuncExprBody(rs, follow, FALSE, nloc, args, startLine);
+    GAP_GC_POP();
 
     // 'end'
     Match_(rs, S_END, "while parsing a function: statement or 'end'", follow);
@@ -1417,11 +1433,13 @@ static void ReadFuncExprAbbrevMulti(ReaderState * rs, TypSymbolSet follow)
     Match_(rs, S_LBRACE, "{", follow);
 
     ArgList args = ReadFuncArgList(rs, follow, FALSE, S_RBRACE, "}");
+    GAP_GC_PUSH1(&args.nams);
 
     // match away the '->'
     Match_(rs, S_MAPTO, "->", follow);
 
     ReadFuncExprBody(rs, follow, TRUE, 0, args, GetInputLineNumber(rs->s.input));
+    GAP_GC_POP();
 }
 
 /****************************************************************************
@@ -1437,8 +1455,12 @@ static void ReadFuncExprAbbrevMulti(ReaderState * rs, TypSymbolSet follow)
 static void ReadFuncExprAbbrevSingle(ReaderState * rs, TypSymbolSet follow)
 {
     // make and push the new local variables list
-    Obj nams = NEW_PLIST(T_PLIST, 1);
-    PushPlist(nams, MakeImmString(rs->s.Value));
+    Obj nams = 0;
+    Obj name = 0;
+    GAP_GC_PUSH2(&nams, &name);
+    nams = NEW_PLIST(T_PLIST, 1);
+    name = MakeImmString(rs->s.Value);
+    PushPlist(nams, name);
 
     ArgList args;
     args.narg = 1;
@@ -1452,6 +1474,7 @@ static void ReadFuncExprAbbrevSingle(ReaderState * rs, TypSymbolSet follow)
     Match_(rs, S_MAPTO, "->", follow);
 
     ReadFuncExprBody(rs, follow, TRUE, 0, args, GetInputLineNumber(rs->s.input));
+    GAP_GC_POP();
 }
 
 /****************************************************************************
@@ -2502,6 +2525,9 @@ ExecStatus ReadEvalCommand(Obj            context,
 #ifdef HPCGAP
     int                 lockSP;
 #endif
+    Obj                 oldLVars = 0;
+    Obj                 evalResultObj = 0;
+    Obj                 stackNams = 0;
 
     ReaderState reader;
     ReaderState * volatile rs = &reader;
@@ -2535,8 +2561,10 @@ ExecStatus ReadEvalCommand(Obj            context,
     memcpy( readJmpError, STATE(ReadJmpError), sizeof(jmp_buf) );
 
     // initialize everything and begin an interpreter
-    rs->StackNams      = NEW_PLIST( T_PLIST, 16 );
+    stackNams          = NEW_PLIST( T_PLIST, 16 );
+    rs->StackNams      = stackNams;
     STATE(Tilde)       = 0;
+    GAP_GC_PUSH3(&oldLVars, &evalResultObj, &stackNams);
 #ifdef HPCGAP
     lockSP = RegionLockSP();
 #endif
@@ -2545,7 +2573,7 @@ ExecStatus ReadEvalCommand(Obj            context,
             INTOBJ_INT(GetInputLineNumber(input)));
 
     // remember the old execution state and start an execution environment
-    Bag oldLVars =
+    oldLVars =
         context ? SWITCH_TO_OLD_LVARS(context) : SWITCH_TO_BOTTOM_LVARS();
 
     if (context)
@@ -2591,10 +2619,13 @@ ExecStatus ReadEvalCommand(Obj            context,
         *dualSemicolon = (rs->s.Symbol == S_DUALSEMICOLON);
 
     // end the interpreter
-    status = IntrEnd(&rs->intr, rs->s.NrError > 0, evalResult);
+    status = IntrEnd(&rs->intr, rs->s.NrError > 0,
+                     evalResult ? &evalResultObj : 0);
 
     // restore the execution environment
     SWITCH_TO_OLD_LVARS(oldLVars);
+    if (evalResult)
+        *evalResult = evalResultObj;
 
 #ifdef HPCGAP
     if (rs->s.NrError > 0) {
@@ -2614,6 +2645,7 @@ ExecStatus ReadEvalCommand(Obj            context,
     ClearError();
 
     // return whether a return-statement or a quit-statement were executed
+    GAP_GC_POP();
     return status;
 }
 
@@ -2633,7 +2665,10 @@ ExecStatus ReadEvalFile(TypInputFile * input, Obj * evalResult)
     volatile Obj        tilde;
     jmp_buf           readJmpError;
     volatile UInt       nr;
-    volatile Obj        nams;
+    Obj                 stackNams = 0;
+    Obj                 nams = 0;
+    Obj                 oldLVars = 0;
+    Obj                 evalResultObj = 0;
     volatile Int        nloc;
 #ifdef HPCGAP
     volatile int        lockSP;
@@ -2662,18 +2697,20 @@ ExecStatus ReadEvalFile(TypInputFile * input, Obj * evalResult)
     memcpy( readJmpError, STATE(ReadJmpError), sizeof(jmp_buf) );
 
     // initialize everything and begin an interpreter
-    rs->StackNams    = NEW_PLIST( T_PLIST, 16 );
+    stackNams        = NEW_PLIST( T_PLIST, 16 );
+    rs->StackNams    = stackNams;
     STATE(Tilde)     = 0;
+    GAP_GC_PUSH4(&stackNams, &nams, &oldLVars, &evalResultObj);
 
     // remember the old execution state and start an execution environment
-    Bag oldLVars = SWITCH_TO_BOTTOM_LVARS();
+    oldLVars = SWITCH_TO_BOTTOM_LVARS();
 
     IntrBegin(&rs->intr);
     rs->intr.gapnameid = GetInputFilenameID(input);
 
     // check for local variables
     nams = NEW_PLIST(T_PLIST, 0);
-    PushPlist(rs->StackNams, nams);
+    PushPlist(stackNams, nams);
     nloc = 0;
     if (rs->s.Symbol == S_LOCAL) {
         nloc = ReadLocals(rs, 0, nams);
@@ -2700,10 +2737,13 @@ ExecStatus ReadEvalFile(TypInputFile * input, Obj * evalResult)
     }
 
     // end the interpreter
-    status = IntrEnd(&rs->intr, rs->s.NrError > 0, evalResult);
+    status = IntrEnd(&rs->intr, rs->s.NrError > 0,
+                     evalResult ? &evalResultObj : 0);
 
     // restore the execution environment
     SWITCH_TO_OLD_LVARS(oldLVars);
+    if (evalResult)
+        *evalResult = evalResultObj;
 
     // switch back to the old reader context
     memcpy( STATE(ReadJmpError), readJmpError, sizeof(jmp_buf) );
@@ -2717,6 +2757,7 @@ ExecStatus ReadEvalFile(TypInputFile * input, Obj * evalResult)
     ClearError();
 
     // return whether a return-statement or a quit-statement were executed
+    GAP_GC_POP();
     return status;
 }
 
@@ -2731,13 +2772,14 @@ Obj Call0ArgsInNewReader(Obj f)
 {
     // remember the old state
     volatile UInt userHasQuit = STATE(UserHasQuit);
-    volatile Obj  oldLvars;
-    volatile Obj  result = 0;
+    Obj           oldLvars = 0;
+    Obj           result = 0;
 
     // initialize everything
     STATE(UserHasQuit) = FALSE;
     oldLvars = SWITCH_TO_BOTTOM_LVARS();
 
+    GAP_GC_PUSH2(&oldLvars, &result);
     GAP_TRY
     {
         result = CALL_0ARGS(f);
@@ -2750,6 +2792,7 @@ Obj Call0ArgsInNewReader(Obj f)
     // switch back to the old state
     SWITCH_TO_OLD_LVARS(oldLvars);
     STATE(UserHasQuit) = userHasQuit;
+    GAP_GC_POP();
     return result;
 }
 
@@ -2764,13 +2807,14 @@ Obj Call1ArgsInNewReader(Obj f, Obj a)
 {
     // remember the old state
     volatile UInt userHasQuit = STATE(UserHasQuit);
-    volatile Obj  oldLvars;
-    volatile Obj  result = 0;
+    Obj           oldLvars = 0;
+    Obj           result = 0;
 
     // initialize everything
     STATE(UserHasQuit) = FALSE;
     oldLvars = SWITCH_TO_BOTTOM_LVARS();
 
+    GAP_GC_PUSH2(&oldLvars, &result);
     GAP_TRY
     {
         result = CALL_1ARGS(f, a);
@@ -2783,6 +2827,7 @@ Obj Call1ArgsInNewReader(Obj f, Obj a)
     // switch back to the old state
     SWITCH_TO_OLD_LVARS(oldLvars);
     STATE(UserHasQuit) = userHasQuit;
+    GAP_GC_POP();
     return result;
 }
 

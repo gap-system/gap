@@ -24,7 +24,7 @@
 extern "C" {
 #endif
 
-extern Obj InfoDecision;
+extern Obj InfoDecision GAP_GC_GLOBALLY_ROOTED;
 
 
 // types, should go into 'gvars.c' and 'records.c'

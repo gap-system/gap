@@ -843,10 +843,12 @@ static Obj ZeroMutVecFFE(Obj vec)
     len = LEN_PLIST(vec);
     assert(len);
     res  = NEW_PLIST(T_PLIST_FFE, len);
+    GAP_GC_PUSH1(&res);
     SET_LEN_PLIST(res, len);
     z = ZERO_SAMEMUT(ELM_PLIST(vec, 1));
     for (i = 1; i <= len; i++)
         SET_ELM_PLIST(res, i, z);
+    GAP_GC_POP();
     return res;
 }
 
@@ -860,10 +862,12 @@ static Obj ZeroVecFFE(Obj vec)
     len = LEN_PLIST(vec);
     assert(len);
     res  = NEW_PLIST(TNUM_OBJ(vec), len);
+    GAP_GC_PUSH1(&res);
     SET_LEN_PLIST(res, len);
     z = ZERO_SAMEMUT(ELM_PLIST(vec, 1));
     for (i = 1; i <= len; i++)
         SET_ELM_PLIST(res, i, z);
+    GAP_GC_POP();
     return res;
 }
 

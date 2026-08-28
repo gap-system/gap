@@ -546,8 +546,8 @@ static Obj NBits_Less(Obj l, Obj r)
     const UIntN * pl;           // data area in <l>
     const UIntN * pr;           // data area in <r>
     Obj         lexico;         // lexicographic order of <l> and <r>
-    Obj         ll;             // length of <l>
-    Obj         lr;             // length of <r>
+    Obj         ll = 0;         // length of <l>
+    Obj         lr = 0;         // length of <r>
 
     // if <l> or <r> is the identity it is easy
     nl = NPAIRS_WORD(l);
@@ -555,6 +555,7 @@ static Obj NBits_Less(Obj l, Obj r)
     if ( nl == 0 || nr == 0 ) {
         return ( nr != 0 ) ? True : False;
     }
+    GAP_GC_PUSH2(&ll, &lr);
 
     // get the number of bits for exponents
     ebits = EBITS_WORD(l);
@@ -597,15 +598,18 @@ static Obj NBits_Less(Obj l, Obj r)
                   lexico = (*pl & genm) < (*(pr+1) & genm) ? True : False;
                   break;
                 }
-                else
+                else {
                     // <r> is now essentially the empty word.
+                    GAP_GC_POP();
                     return False;
+                }
             }
             if( nl > 1 ) {  // exl < exr
                 lexico = (*(pl+1) & genm) < (*pr & genm) ? True : False;
                 break;
             }
             // <l> is now essentially the empty word.
+            GAP_GC_POP();
             return True;
         }
 
@@ -619,9 +623,14 @@ static Obj NBits_Less(Obj l, Obj r)
         C_SUM_FIA(lr,lr,INTOBJ_INT(exr));
     }
 
-    if( EQ( ll, lr ) ) return lexico;
+    if( EQ( ll, lr ) ) {
+        GAP_GC_POP();
+        return lexico;
+    }
 
-    return LT( ll, lr ) ? True : False;
+    lexico = LT( ll, lr ) ? True : False;
+    GAP_GC_POP();
+    return lexico;
 }
 
 static Obj Func8Bits_Less(Obj self, Obj l, Obj r)
@@ -655,7 +664,7 @@ static Obj NBits_AssocWord(Obj type, Obj data)
     Int         nexp;           // current exponent
     Obj         vgen;           // value of current generator
     Int         ngen;           // current generator
-    Obj         obj;            // result
+    Obj         obj = 0;        // result
     UIntN *     ptr;            // pointer into the data area of <obj>
 
     // get the number of bits for exponents
@@ -666,6 +675,7 @@ static Obj NBits_AssocWord(Obj type, Obj data)
 
     // construct a new object
     num = LEN_LIST(data)/2;
+    GAP_GC_PUSH1(&obj);
     obj = NewWord(type, num);
 
     ptr = DATA_WORD(obj);
@@ -675,15 +685,18 @@ static Obj NBits_AssocWord(Obj type, Obj data)
         vgen = ELMW_LIST( data, 2*i-1 );
         ngen = INT_INTOBJ(vgen);
         vexp = ELMW_LIST( data, 2*i );
-        if (!IS_INTOBJ(vexp) || vexp == INTOBJ_INT(0))
+        if (!IS_INTOBJ(vexp) || vexp == INTOBJ_INT(0)) {
+            GAP_GC_POP();
             RequireArgument("NBits_AssocWord", vexp,
                             "must be a non-zero small integer");
+        }
         nexp = INT_INTOBJ(vexp) & expm;
         *ptr = ((ngen-1) << ebits) | nexp;
-        assert( ptr == DATA_WORD(obj) + (i-1) );
+        GAP_ASSERT(ptr == DATA_WORD(obj) + (i - 1));
     }
     CHANGED_BAG(obj);
 
+    GAP_GC_POP();
     return obj;
 }
 
@@ -717,7 +730,7 @@ static Obj NBits_ObjByVector(Obj type, Obj data)
     Int         j;              // loop variable for exponent vector
     Int         nexp;           // current exponent
     Obj         vexp;           // value of current exponent
-    Obj         obj;            // result
+    Obj         obj = 0;        // result
     UIntN *     ptr;            // pointer into the data area of <obj>
 
     // get the number of bits for exponents
@@ -737,6 +750,7 @@ static Obj NBits_ObjByVector(Obj type, Obj data)
     }
 
     // construct a new object
+    GAP_GC_PUSH1(&obj);
     obj = NewWord(type, num);
 
     ptr = DATA_WORD(obj);
@@ -748,10 +762,11 @@ static Obj NBits_ObjByVector(Obj type, Obj data)
         vexp = ELMW_LIST( data, j );
         nexp = INT_INTOBJ(vexp) & expm;
         *ptr = ((j-1) << ebits) | nexp;
-        assert( ptr == DATA_WORD(obj) + (i-1) );
+        GAP_ASSERT(ptr == DATA_WORD(obj) + (i - 1));
     }
     CHANGED_BAG(obj);
 
+    GAP_GC_POP();
     return obj;
 }
 
@@ -1219,10 +1234,11 @@ template <typename UIntN>
 static Obj NBits_LengthWord(Obj w)
 {
   UInt npairs,i,ebits,exps,expm;
-  Obj len, uexp;
+  Obj len = 0, uexp = 0;
   const UIntN *data;
   UIntN pair;
 
+  GAP_GC_PUSH2(&len, &uexp);
   npairs = NPAIRS_WORD(w);
   ebits = EBITS_WORD(w);
   data = CONST_DATA_WORD(w);
@@ -1241,6 +1257,7 @@ static Obj NBits_LengthWord(Obj w)
         uexp = INTOBJ_INT(pair & expm);
       C_SUM_FIA(len,len,uexp);
     }
+  GAP_GC_POP();
   return len;
 }
 

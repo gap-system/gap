@@ -86,14 +86,14 @@
 // 'EndLineHook' is a GAP-level variable which can be set to a function to be
 // called at end of each command line (i.e. after the user presses enter).
 // If not bound, nothing is done.
-static Obj EndLineHook = 0;
+static Obj EndLineHook GAP_GC_GLOBALLY_ROOTED = 0;
 
 // 'PreInputHook' is a GAP-level variable which can be set to a function to be
 // called once the line editor is ready to accept input. If not bound, nothing
 // is done. 'ColorPrompt' uses it to switch to the color for user input, which
 // must not happen earlier: readline may redraw parts of the prompt when it
 // starts up, and those redraws have to use the prompt color.
-static Obj PreInputHook = 0;
+static Obj PreInputHook GAP_GC_GLOBALLY_ROOTED = 0;
 
 static void CallPreInputHook(void)
 {
@@ -365,6 +365,8 @@ Obj SyGetOsRelease(void)
 {
     Obj            r = NEW_PREC(0);
     struct utsname buf;
+
+    GAP_GC_PUSH1(&r);
     if (!uname(&buf)) {
         AssPRec(r, RNamName("sysname"), MakeImmString(buf.sysname));
         AssPRec(r, RNamName("nodename"), MakeImmString(buf.nodename));
@@ -372,7 +374,7 @@ Obj SyGetOsRelease(void)
         AssPRec(r, RNamName("version"), MakeImmString(buf.version));
         AssPRec(r, RNamName("machine"), MakeImmString(buf.machine));
     }
-
+    GAP_GC_POP();
     return r;
 }
 
@@ -1876,15 +1878,15 @@ static Char * syFgetsNoEdit(Char * line, UInt length, Int fid, UInt block)
 /* will be imported from library, first is generic function which does some
    checks before returning result to kernel, the second is the list of handler
    functions which do the actual work. */
-static Obj LineEditKeyHandler;
-static Obj LineEditKeyHandlers;
-static Obj GAPInfo;
+static Obj LineEditKeyHandler GAP_GC_GLOBALLY_ROOTED;
+static Obj LineEditKeyHandlers GAP_GC_GLOBALLY_ROOTED;
+static Obj GAPInfo GAP_GC_GLOBALLY_ROOTED;
 
 #ifdef HAVE_LIBREADLINE
 
 // we import GAP level functions from GAPInfo components
-static Obj CLEFuncs;
-static Obj KeyHandler;
+static Obj CLEFuncs GAP_GC_GLOBALLY_ROOTED;
+static Obj KeyHandler GAP_GC_GLOBALLY_ROOTED;
 
 static int GAPMacroNumber = 0;
 
@@ -1893,11 +1895,26 @@ static int GAP_set_macro(int count, int key)
  GAPMacroNumber = count;
  return 0;
 }
+
 // a generic rl_command_func_t that delegates to GAP level
 static int GAP_rl_func(int count, int key)
 {
-   Obj   rldata, linestr, okey, res, obj, data, beginchange, endchange, m;
+   Obj   rldata, linestr, okey, res, obj, data, beginchange, endchange, m, item;
    Int   len, n, hook, dlen, max, i;
+
+   rldata = 0;
+   linestr = 0;
+   res = 0;
+   obj = 0;
+   data = 0;
+   beginchange = 0;
+   endchange = 0;
+   m = 0;
+   item = 0;
+   // These locals can hold immediate values as well as bags, so they must be
+   // rooted through a fixed-arity frame, which stores their addresses.
+   GAP_GC_PUSH9(&rldata, &linestr, &res, &obj, &data, &beginchange, &endchange,
+                &m, &item);
 
    // we shift indices 0-based on C-level and 1-based on GAP level
    linestr = MakeString(rl_line_buffer);
@@ -1916,10 +1933,13 @@ static int GAP_rl_func(int count, int key)
    SET_ELM_PLIST(rldata, 4, INTOBJ_INT(rl_point+1));
    SET_ELM_PLIST(rldata, 5, INTOBJ_INT(rl_mark+1));
    res = Call1ArgsInNewReader(KeyHandler, rldata);
-   if (!res) return 0;
-   if (!IS_LIST(res)) return 0;
+   if (!res)
+     goto done;
+   if (!IS_LIST(res))
+     goto done;
    len = LEN_LIST(res);
-   if (len == 0) return 0;
+   if (len == 0)
+     goto done;
    obj = ELM_LIST(res, 1);
    if (IsStringConv(obj)) {
       // insert txt
@@ -1928,9 +1948,11 @@ static int GAP_rl_func(int count, int key)
    } else if ((obj == True || obj == False) && len > 2) {
       // kill or delete text
       beginchange = ELM_LIST(res, 2);
-      if (!IS_INTOBJ(beginchange)) return 0;
+      if (!IS_INTOBJ(beginchange))
+         goto done;
       endchange = ELM_LIST(res, 3);
-      if (!IS_INTOBJ(endchange)) return 0;
+      if (!IS_INTOBJ(endchange))
+         goto done;
       if (obj == True)
          rl_kill_text(INT_INTOBJ(beginchange)-1, INT_INTOBJ(endchange)-1);
       else
@@ -1940,9 +1962,11 @@ static int GAP_rl_func(int count, int key)
       // delete some text and insert
       beginchange = obj;
       endchange = ELM_LIST(res, 2);
-      if (!IS_INTOBJ(endchange)) return 0;
+      if (!IS_INTOBJ(endchange))
+         goto done;
       obj = ELM_LIST(res, 3);
-      if (!IsStringConv(obj)) return 0;
+      if (!IsStringConv(obj))
+         goto done;
       rl_begin_undo_group();
       rl_delete_text(INT_INTOBJ(beginchange)-1, INT_INTOBJ(endchange)-1);
       rl_point = INT_INTOBJ(beginchange)-1;
@@ -1955,18 +1979,20 @@ static int GAP_rl_func(int count, int key)
       data = ELM_LIST(res, 2);
       if (hook == 1) {
          // display matches
-         if (!IS_LIST(data)) return 0;
+         if (!IS_LIST(data))
+            goto done;
          // -1, because first is word to be completed
          dlen = LEN_LIST(data)-1;
          // +2, must be in 'argv' format, terminated by 0
          char **strs = (char**)calloc(dlen+2, sizeof(char*));
          max = 0;
          for (i=0; i <= dlen; i++) {
-            if (!IsStringConv(ELM_LIST(data, i+1))) {
+            item = ELM_LIST(data, i+1);
+            if (!IsStringConv(item)) {
                free(strs);
-               return 0;
+               goto done;
             }
-            strs[i] = CSTR_STRING(ELM_LIST(data, i+1));
+            strs[i] = CSTR_STRING(item);
             if (max < strlen(strs[i])) max = strlen(strs[i]);
          }
          rl_display_match_list(strs, dlen, max);
@@ -1975,7 +2001,8 @@ static int GAP_rl_func(int count, int key)
       }
       else if (hook == 2) {
          // put these characters into sequence of input keys
-         if (!IsStringConv(data)) return 0;
+         if (!IsStringConv(data))
+            goto done;
          dlen = strlen(CSTR_STRING(data));
          for (i=0; i < dlen; i++)
              rl_stuff_char(CSTR_STRING(data)[i]);
@@ -2005,6 +2032,8 @@ static int GAP_rl_func(int count, int key)
       if (IS_INTOBJ(m))
           rl_mark = INT_INTOBJ(m) - 1;
    }
+done:
+   GAP_GC_POP();
    return 0;
 }
 
@@ -3034,10 +3063,12 @@ static Obj SyReadStringFile(Int fid)
 
     // read <fid> until we see  eof   (in 32kB pieces)
     str = NEW_STRING(0);
+    GAP_GC_PUSH1(&str);
     len = 0;
     do {
         ret = SyRead(fid, buf, 32768);
         if (ret < 0) {
+            GAP_GC_POP();
             SySetErrorNo();
             return Fail;
         }
@@ -3054,6 +3085,7 @@ static Obj SyReadStringFile(Int fid)
     ResizeBag( str, SIZEBAG_STRINGLEN(len) );
 
     syBuf[fid].ateof = TRUE;
+    GAP_GC_POP();
     return str;
 }
 
@@ -3079,6 +3111,7 @@ static Obj SyReadStringFileStat(Int fid)
         }
         len = (Int) fstatbuf.st_size;
         str = NEW_STRING( len );
+        GAP_GC_PUSH1(&str);
         CHARS_STRING(str)[len] = '\0';
         SET_LEN_STRING(str, len);
         ptr = CSTR_STRING(str);
@@ -3086,6 +3119,7 @@ static Obj SyReadStringFileStat(Int fid)
             l = (len > 1048576) ? 1048576 : len;
             ret = SyRead(fid, ptr, l);
             if (ret == -1) {
+                GAP_GC_POP();
                 SySetErrorNo();
                 return Fail;
             }
@@ -3093,6 +3127,7 @@ static Obj SyReadStringFileStat(Int fid)
             ptr += ret;
         }
         syBuf[fid].ateof = TRUE;
+        GAP_GC_POP();
         return str;
     } else {
         SySetErrorNo();

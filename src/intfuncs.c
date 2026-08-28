@@ -48,7 +48,7 @@
 #define UPPER_MASK 0x80000000UL // most significant w-r bits
 #define LOWER_MASK 0x7fffffffUL // least significant r bits
 
-static void initGRMT(UInt4 * mt, UInt4 s)
+static void initGRMT(UInt4 * mt, UInt4 s) GAP_GC_NOTSAFEPOINT
 {
     UInt4 mti;
     mt[0]= s & 0xffffffffUL;
@@ -132,7 +132,7 @@ static Obj FuncInitRandomMT(Obj self, Obj initstr)
 **  (the first 4*624 bytes are the random numbers, the last 4 bytes contain
 **  a counter)
 */
-UInt4 nextrandMT_int32(UInt4* mt)
+UInt4 nextrandMT_int32(UInt4* mt) GAP_GC_NOTSAFEPOINT
 {
     UInt4 mti, y, N=624, M=397;
     static UInt4 mag01[2]={0x0UL, MATRIX_A};
@@ -516,12 +516,12 @@ typedef struct {
     Obj offset;
 } BitfieldFuncBag;
 
-static inline const BitfieldFuncBag * CBFB(Obj func)
+static inline const BitfieldFuncBag * CBFB(Obj func) GAP_GC_NOTSAFEPOINT
 {
     return (const BitfieldFuncBag *)CONST_ADDR_OBJ(func);
 }
 
-static inline BitfieldFuncBag * BFB(Obj func)
+static inline BitfieldFuncBag * BFB(Obj func) GAP_GC_NOTSAFEPOINT
 {
     return (BitfieldFuncBag *)ADDR_OBJ(func);
 }
@@ -637,49 +637,62 @@ static Obj FuncMAKE_BITFIELDS(Obj self, Obj widths)
     if (starts[nfields] > 8 * sizeof(UInt))
         ErrorMayQuit("MAKE_BITFIELDS: total widths too large", 0, 0);
 
-    Obj nameSetter = MakeImmString("<field setter>");
-    Obj nameGetter = MakeImmString("<field getter>");
-    Obj nameBSetter = MakeImmString("<boolean field setter>");
-    Obj nameBGetter = MakeImmString("<boolean field getter>");
-    Obj dataArgs = NewPlistFromArgs(MakeImmString("data"));
-    // build the two-name list one name at a time: the second MakeImmString
-    // allocates while the first result would only be held in a C temporary
-    Obj dataValArgs = NEW_PLIST(T_PLIST, 2);
-    PushPlist(dataValArgs, MakeImmString("data"));
-    PushPlist(dataValArgs, MakeImmString("val"));
+    Obj names = 0;
+    Obj dataArgs = 0;
+    Obj dataValArgs = 0;
+    Obj setters = 0;
+    Obj getters = 0;
+    Obj bsetters = 0;
+    Obj bgetters = 0;
+    Obj func = 0;
+    Obj ms = 0;
+    GAP_GC_PUSH9(&names, &dataArgs, &dataValArgs, &setters, &getters,
+                 &bsetters, &bgetters, &func, &ms);
 
-    Obj  setters = NEW_PLIST_IMM(T_PLIST_DENSE, nfields);
-    Obj  getters = NEW_PLIST_IMM(T_PLIST_DENSE, nfields);
-    Obj  bsetters = NEW_PLIST_IMM(T_PLIST, nfields);
+    names = NEW_PLIST(T_PLIST, 4);
+    PushPlist(names, MakeImmString("<field setter>"));
+    PushPlist(names, MakeImmString("<field getter>"));
+    PushPlist(names, MakeImmString("<boolean field setter>"));
+    PushPlist(names, MakeImmString("<boolean field getter>"));
+    dataArgs = NewPlistFromArgs(MakeImmString("data"));
+    dataValArgs =
+        NewPlistFromArgs(MakeImmString("data"), MakeImmString("val"));
+
+    setters = NEW_PLIST_IMM(T_PLIST_DENSE, nfields);
+    getters = NEW_PLIST_IMM(T_PLIST_DENSE, nfields);
+    bsetters = NEW_PLIST_IMM(T_PLIST, nfields);
     UInt bslen = 0;
-    Obj  bgetters = NEW_PLIST_IMM(T_PLIST, nfields);
+    bgetters = NEW_PLIST_IMM(T_PLIST, nfields);
     for (UInt i = 1; i <= nfields; i++) {
         UInt mask = ((UInt)1 << starts[i]) - ((UInt)1 << starts[i - 1]);
-        Obj  s = NewFunctionT(T_FUNCTION, sizeof(BitfieldFuncBag), nameSetter,
-                             2, dataValArgs, DoFieldSetter);
-        SET_MASK_BITFIELD_FUNC(s, mask);
-        SET_OFFFSET_BITFIELD_FUNC(s, starts[i - 1]);
-        SET_ELM_PLIST(setters, i, s);
+        func = NewFunctionT(T_FUNCTION, sizeof(BitfieldFuncBag),
+                            ELM_PLIST(names, 1), 2, dataValArgs,
+                            DoFieldSetter);
+        SET_MASK_BITFIELD_FUNC(func, mask);
+        SET_OFFFSET_BITFIELD_FUNC(func, starts[i - 1]);
+        SET_ELM_PLIST(setters, i, func);
         CHANGED_BAG(setters);
-        Obj g = NewFunctionT(T_FUNCTION, sizeof(BitfieldFuncBag), nameGetter,
-                             1, dataArgs, DoFieldGetter);
-        SET_MASK_BITFIELD_FUNC(g, mask);
-        SET_OFFFSET_BITFIELD_FUNC(g, starts[i - 1]);
-        SET_ELM_PLIST(getters, i, g);
+        func = NewFunctionT(T_FUNCTION, sizeof(BitfieldFuncBag),
+                            ELM_PLIST(names, 2), 1, dataArgs, DoFieldGetter);
+        SET_MASK_BITFIELD_FUNC(func, mask);
+        SET_OFFFSET_BITFIELD_FUNC(func, starts[i - 1]);
+        SET_ELM_PLIST(getters, i, func);
         CHANGED_BAG(getters);
         if (starts[i] - starts[i - 1] == 1) {
-            s = NewFunctionT(T_FUNCTION, sizeof(BitfieldFuncBag), nameBSetter,
-                             2, dataValArgs, DoBooleanFieldSetter);
-            SET_MASK_BITFIELD_FUNC(s, mask);
-            SET_OFFFSET_BITFIELD_FUNC(s, starts[i - 1]);
-            SET_ELM_PLIST(bsetters, i, s);
+            func = NewFunctionT(T_FUNCTION, sizeof(BitfieldFuncBag),
+                                ELM_PLIST(names, 3), 2, dataValArgs,
+                                DoBooleanFieldSetter);
+            SET_MASK_BITFIELD_FUNC(func, mask);
+            SET_OFFFSET_BITFIELD_FUNC(func, starts[i - 1]);
+            SET_ELM_PLIST(bsetters, i, func);
             CHANGED_BAG(bsetters);
             bslen = i;
-            g = NewFunctionT(T_FUNCTION, sizeof(BitfieldFuncBag), nameBGetter,
-                             1, dataArgs, DoBooleanFieldGetter);
-            SET_MASK_BITFIELD_FUNC(g, mask);
-            SET_OFFFSET_BITFIELD_FUNC(g, starts[i - 1]);
-            SET_ELM_PLIST(bgetters, i, g);
+            func = NewFunctionT(T_FUNCTION, sizeof(BitfieldFuncBag),
+                                ELM_PLIST(names, 4), 1, dataArgs,
+                                DoBooleanFieldGetter);
+            SET_MASK_BITFIELD_FUNC(func, mask);
+            SET_OFFFSET_BITFIELD_FUNC(func, starts[i - 1]);
+            SET_ELM_PLIST(bgetters, i, func);
             CHANGED_BAG(bgetters);
         }
     }
@@ -689,7 +702,7 @@ static Obj FuncMAKE_BITFIELDS(Obj self, Obj widths)
     SET_LEN_PLIST(bsetters, bslen);
     SET_LEN_PLIST(bgetters, bslen);
 
-    Obj ms = NEW_PREC(5);
+    ms = NEW_PREC(5);
     AssPRec(ms, RNamName("widths"), CopyObj(widths, 0));
     AssPRec(ms, RNamName("getters"), getters);
     AssPRec(ms, RNamName("setters"), setters);
@@ -699,6 +712,7 @@ static Obj FuncMAKE_BITFIELDS(Obj self, Obj widths)
     }
     SortPRecRNam(ms);
     MakeImmutableNoRecurse(ms);
+    GAP_GC_POP();
     return ms;
 }
 

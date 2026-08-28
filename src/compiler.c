@@ -274,9 +274,11 @@ static Bag NewInfoCVars(void)
     return new;
 }
 
-static void CopyInfoCVars(Bag dst, Bag src)
+static void CopyInfoCVars(Obj dst GAP_GC_MAYBE_UNROOTED,
+                          Obj src GAP_GC_MAYBE_UNROOTED)
 {
     Int                 i;
+    GAP_GC_PUSH2(&dst, &src);
     if ( SIZE_BAG(dst) < SIZE_BAG(src) )  ResizeBag( dst, SIZE_BAG(src) );
     if ( SIZE_BAG(src) < SIZE_BAG(dst) )  ResizeBag( src, SIZE_BAG(dst) );
     NR_INFO(dst)    = NR_INFO(src);
@@ -290,11 +292,14 @@ static void CopyInfoCVars(Bag dst, Bag src)
     for ( i = 1; i <= NTEMP_INFO(dst) && i <= NTEMP_INFO(src); i++ ) {
         TNUM_TEMP_INFO(dst,i) = TNUM_TEMP_INFO(src,i);
     }
+    GAP_GC_POP();
 }
 
-static void MergeInfoCVars(Bag dst, Bag src)
+static void MergeInfoCVars(Obj dst GAP_GC_MAYBE_UNROOTED,
+                           Obj src GAP_GC_MAYBE_UNROOTED)
 {
     Int                 i;
+    GAP_GC_PUSH2(&dst, &src);
     if ( SIZE_BAG(dst) < SIZE_BAG(src) )  ResizeBag( dst, SIZE_BAG(src) );
     if ( SIZE_BAG(src) < SIZE_BAG(dst) )  ResizeBag( src, SIZE_BAG(dst) );
     if ( NTEMP_INFO(dst)<NTEMP_INFO(src) )  NTEMP_INFO(dst)=NTEMP_INFO(src);
@@ -304,23 +309,29 @@ static void MergeInfoCVars(Bag dst, Bag src)
     for ( i = 1; i <= NTEMP_INFO(dst) && i <= NTEMP_INFO(src); i++ ) {
         TNUM_TEMP_INFO(dst,i) &= TNUM_TEMP_INFO(src,i);
     }
+    GAP_GC_POP();
 }
 
-static BOOL IsEqInfoCVars(Bag dst, Bag src)
+static BOOL IsEqInfoCVars(Obj dst GAP_GC_MAYBE_UNROOTED,
+                          Obj src GAP_GC_MAYBE_UNROOTED)
 {
     Int                 i;
+    GAP_GC_PUSH2(&dst, &src);
     if ( SIZE_BAG(dst) < SIZE_BAG(src) )  ResizeBag( dst, SIZE_BAG(src) );
     if ( SIZE_BAG(src) < SIZE_BAG(dst) )  ResizeBag( src, SIZE_BAG(dst) );
     for ( i = 1; i <= NLVAR_INFO(src); i++ ) {
         if ( TNUM_LVAR_INFO(dst,i) != TNUM_LVAR_INFO(src,i) ) {
+            GAP_GC_POP();
             return FALSE;
         }
     }
     for ( i = 1; i <= NTEMP_INFO(dst) && i <= NTEMP_INFO(src); i++ ) {
         if ( TNUM_TEMP_INFO(dst,i) != TNUM_TEMP_INFO(src,i) ) {
+            GAP_GC_POP();
             return FALSE;
         }
     }
+    GAP_GC_POP();
     return TRUE;
 }
 
@@ -356,7 +367,9 @@ static Temp NewTemp(const Char * name)
     // maybe make room for more temporaries
     if ( NTEMP_INFO( info ) < temp ) {
         if ( SIZE_BAG(info) < SIZE_INFO( NLVAR_INFO(info), temp ) ) {
+            GAP_GC_PUSH1(&info);
             ResizeBag( info, SIZE_INFO( NLVAR_INFO(info), temp+7 ) );
+            GAP_GC_POP();
         }
         NTEMP_INFO( info ) = temp;
     }
@@ -523,7 +536,7 @@ typedef UInt    GVar;
 #define COMP_USE_GVAR_COPY      (1 << 1)
 #define COMP_USE_GVAR_FOPY      (1 << 2)
 
-static Bag CompInfoGVar;
+static Bag CompInfoGVar GAP_GC_GLOBALLY_ROOTED;
 
 static void CompSetUseGVar(GVar gvar, UInt mode)
 {
@@ -565,7 +578,7 @@ typedef UInt    RNam;
 
 #define COMP_USE_RNAM_ID        (1 << 0)
 
-static Bag CompInfoRNam;
+static Bag CompInfoRNam GAP_GC_GLOBALLY_ROOTED;
 
 static void CompSetUseRNam(RNam rnam, UInt mode)
 {
@@ -652,15 +665,20 @@ static void Emit(const char * fmt, ...)
             // emit a GAP string
             else if ( *p == 'g' || *p == 'C' ) {
                 const Char f[] = { '%', *p, 0 };
-                Obj str = va_arg( ap, Obj );
+                Obj str = 0;
+                GAP_GC_PUSH1(&str);
+                str = va_arg( ap, Obj );
                 Pr(f, (Int)str, 0);
+                GAP_GC_POP();
             }
 
             // emit a name
             else if ( *p == 'n' ) {
-                Obj str = va_arg( ap, Obj );
+                Obj str = 0;
                 UInt i = 0;
                 Char c;
+                GAP_GC_PUSH1(&str);
+                str = va_arg( ap, Obj );
                 while ((c = CONST_CSTR_STRING(str)[i++])) {
                     if ( IsAlpha(c) || IsDigit(c) ) {
                         Pr("%c", (Int)c, 0);
@@ -672,6 +690,7 @@ static void Emit(const char * fmt, ...)
                         Pr("_%c%c",hex[((UInt)c)/16],hex[((UInt)c)%16]);
                     }
                 }
+                GAP_GC_POP();
             }
 
             // emit a C variable
@@ -688,10 +707,18 @@ static void Emit(const char * fmt, ...)
                     Pr("t_%d", TEMP_CVAR(cvar), 0);
                 }
                 else if ( LVAR_CVAR(cvar) <= narg ) {
-                    Emit( "a_%n", NAME_LVAR( LVAR_CVAR(cvar) ) );
+                    Obj name = 0;
+                    GAP_GC_PUSH1(&name);
+                    name = NAME_LVAR(LVAR_CVAR(cvar));
+                    Emit( "a_%n", name );
+                    GAP_GC_POP();
                 }
                 else {
-                    Emit( "l_%n", NAME_LVAR( LVAR_CVAR(cvar) ) );
+                    Obj name = 0;
+                    GAP_GC_PUSH1(&name);
+                    name = NAME_LVAR(LVAR_CVAR(cvar));
+                    Emit( "l_%n", name );
+                    GAP_GC_POP();
                 }
             }
 
@@ -705,10 +732,18 @@ static void Emit(const char * fmt, ...)
                     Pr("Int_ObjInt(t_%d)", TEMP_CVAR(cvar), 0);
                 }
                 else if ( LVAR_CVAR(cvar) <= narg ) {
-                    Emit( "Int_ObjInt(a_%n)", NAME_LVAR( LVAR_CVAR(cvar) ) );
+                    Obj name = 0;
+                    GAP_GC_PUSH1(&name);
+                    name = NAME_LVAR(LVAR_CVAR(cvar));
+                    Emit( "Int_ObjInt(a_%n)", name );
+                    GAP_GC_POP();
                 }
                 else {
-                    Emit( "Int_ObjInt(l_%n)", NAME_LVAR( LVAR_CVAR(cvar) ) );
+                    Obj name = 0;
+                    GAP_GC_PUSH1(&name);
+                    name = NAME_LVAR(LVAR_CVAR(cvar));
+                    Emit( "Int_ObjInt(l_%n)", name );
+                    GAP_GC_POP();
                 }
             }
 
@@ -757,14 +792,16 @@ static void Emit(const char * fmt, ...)
 **
 *F  CompCheckBound( <obj>, <name> ) emit code to check that <obj> has a value
 */
-static void CompCheckBound(CVar obj, Obj name)
+static void CompCheckBound(CVar obj, Obj name GAP_GC_MAYBE_UNROOTED)
 {
+    GAP_GC_PUSH1(&name);
     if ( ! HasInfoCVar( obj, W_BOUND ) ) {
         if ( CompCheckTypes ) {
             Emit( "CHECK_BOUND( %c, \"%g\" );\n", obj, name );
         }
         SetInfoCVar( obj, W_BOUND );
     }
+    GAP_GC_POP();
 }
 
 
@@ -1159,7 +1196,9 @@ static CVar CompOr(Expr expr)
     CVar                val;            // or, result
     CVar                left;           // left operand
     CVar                right;          // right operand
-    Bag                 only_left;      // info after evaluating only left
+    Bag                 only_left = 0;  // info after evaluating only left
+
+    GAP_GC_PUSH1(&only_left);
 
     // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
@@ -1184,6 +1223,7 @@ static CVar CompOr(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
+    GAP_GC_POP();
     return val;
 }
 
@@ -1197,7 +1237,9 @@ static CVar CompOrBool(Expr expr)
     CVar                val;            // or, result
     CVar                left;           // left operand
     CVar                right;          // right operand
-    Bag                 only_left;      // info after evaluating only left
+    Bag                 only_left = 0;  // info after evaluating only left
+
+    GAP_GC_PUSH1(&only_left);
 
     // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
@@ -1222,6 +1264,7 @@ static CVar CompOrBool(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
+    GAP_GC_POP();
     return val;
 }
 
@@ -1236,7 +1279,9 @@ static CVar CompAnd(Expr expr)
     CVar                left;           // left operand
     CVar                right1;         // right operand 1
     CVar                right2;         // right operand 2
-    Bag                 only_left;      // info after evaluating only left
+    Bag                 only_left = 0;  // info after evaluating only left
+
+    GAP_GC_PUSH1(&only_left);
 
     // allocate a temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
@@ -1279,6 +1324,7 @@ static CVar CompAnd(Expr expr)
     if ( IS_TEMP_CVAR( right1 ) )  FreeTemp( TEMP_CVAR( right1 ) );
     if ( IS_TEMP_CVAR( left   ) )  FreeTemp( TEMP_CVAR( left   ) );
 
+    GAP_GC_POP();
     return val;
 }
 
@@ -1292,7 +1338,9 @@ static CVar CompAndBool(Expr expr)
     CVar                val;            // or, result
     CVar                left;           // left operand
     CVar                right;          // right operand
-    Bag                 only_left;      // info after evaluating only left
+    Bag                 only_left = 0;  // info after evaluating only left
+
+    GAP_GC_PUSH1(&only_left);
 
     // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
@@ -1317,6 +1365,7 @@ static CVar CompAndBool(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
+    GAP_GC_POP();
     return val;
 }
 
@@ -2206,7 +2255,9 @@ static CVar CompIntExpr(Expr expr)
     }
     else {
         // get the actual integer
-        Obj obj = EVAL_EXPR(expr);
+        Obj obj = 0;
+        GAP_GC_PUSH1(&obj);
+        obj = EVAL_EXPR(expr);
 
         val = CVAR_TEMP( NewTemp( "val" ) );
         siz = SIZE_OBJ(obj);
@@ -2234,6 +2285,7 @@ static CVar CompIntExpr(Expr expr)
             Emit("%c = C_NORMALIZE_64BIT(%c);\n", val,val);
             Emit("#endif");
         }
+        GAP_GC_POP();
         return val;
     }
 }
@@ -2583,10 +2635,12 @@ static CVar CompRangeExpr(Expr expr)
 static CVar CompStringExpr(Expr expr)
 {
     CVar                string;         // string value, result
-    Obj                 str;            // the actual string object
+    Obj                 str = 0;        // the actual string object
 
     // allocate a new temporary for the string
     string = CVAR_TEMP( NewTemp( "string" ) );
+
+    GAP_GC_PUSH1(&str);
 
     // get the string of this expression
     str = EVAL_EXPR(expr);
@@ -2598,6 +2652,7 @@ static CVar CompStringExpr(Expr expr)
     SetInfoCVar( string, W_LIST );
 
     // return the string
+    GAP_GC_POP();
     return string;
 }
 
@@ -3690,9 +3745,11 @@ static void CompIf(Stat stat)
 {
     CVar                cond;           // condition
     UInt                nr;             // number of branches
-    Bag                 info_in;        // information at branch begin
-    Bag                 info_out;       // information at branch end
+    Bag                 info_in = 0;    // information at branch begin
+    Bag                 info_out = 0;   // information at branch end
     UInt                i;              // loop variable
+
+    GAP_GC_PUSH2(&info_in, &info_out);
 
     // get the number of branches
     nr = SIZE_STAT( stat ) / (2*sizeof(Stat));
@@ -3813,6 +3870,7 @@ static void CompIf(Stat stat)
     // put what we know into the current info
     CopyInfoCVars( INFO_FEXP(CURR_FUNC()), info_out );
 
+    GAP_GC_POP();
 }
 
 
@@ -3831,8 +3889,10 @@ static void CompFor(Stat stat)
     CVar                lidx;           // loop index variable
     CVar                elm;            // element of list
     Int                 pass;           // current pass
-    Bag                 prev;           // previous temp-info
+    Bag                 prev = 0;       // previous temp-info
     Int                 i;              // loop variable
+
+    GAP_GC_PUSH1(&prev);
 
     // handle 'for <lvar> in [<first>..<last>] do'
     if ( IS_REF_LVAR( READ_STAT(stat, 0) )
@@ -4052,6 +4112,7 @@ static void CompFor(Stat stat)
 
     }
 
+    GAP_GC_POP();
 }
 
 
@@ -4063,8 +4124,10 @@ static void CompWhile(Stat stat)
 {
     CVar                cond;           // condition
     Int                 pass;           // current pass
-    Bag                 prev;           // previous temp-info
+    Bag                 prev = 0;       // previous temp-info
     UInt                i;              // loop variable
+
+    GAP_GC_PUSH1(&prev);
 
     // find an invariant temp-info
     // the emits are probably not needed
@@ -4109,6 +4172,7 @@ static void CompWhile(Stat stat)
     Emit( "\n}\n" );
     Emit( "/* od */\n" );
 
+    GAP_GC_POP();
 }
 
 
@@ -4120,8 +4184,10 @@ static void CompRepeat(Stat stat)
 {
     CVar                cond;           // condition
     Int                 pass;           // current pass
-    Bag                 prev;           // previous temp-info
+    Bag                 prev = 0;       // previous temp-info
     UInt                i;              // loop variable
+
+    GAP_GC_PUSH1(&prev);
 
     // find an invariant temp-info
     // the emits are probably not needed
@@ -4169,6 +4235,7 @@ static void CompRepeat(Stat stat)
 
     // that's it
     Emit( "} while ( 1 );\n" );
+    GAP_GC_POP();
 }
 
 
@@ -5029,7 +5096,7 @@ static void CompAssert3(Stat stat)
 **  'CompFunc' compiles the function <func>, i.e., it emits  the code for the
 **  handler of the function <func> and the handlers of all its subfunctions.
 */
-static Obj CompFunctions;
+static Obj CompFunctions GAP_GC_GLOBALLY_ROOTED;
 
 static void CompFunc(Obj func)
 {
@@ -5077,11 +5144,14 @@ static void CompFunc(Obj func)
     Obj values = VALUES_BODY(BODY_FUNC(func));
     if (values) {
         UInt len = LEN_PLIST(values);
+        Obj  val = 0;
+        GAP_GC_PUSH2(&values, &val);
         for (i = 1; i <= len; i++) {
-            Obj val = ELM_PLIST(values, i);
+            val = ELM_PLIST(values, i);
             if (IS_FUNC(val))
                 CompFunc(val);
         }
+        GAP_GC_POP();
     }
 
     // emit the code for the function header and the arguments
@@ -5252,8 +5322,8 @@ Int CompileFunc(Obj filename, Obj func, Obj name, Int crc, Obj magic2)
 
     // emit code for the functions
     Emit( "\n/* information for the functions */\n" );
-    Emit( "static Obj  NameFunc[%d];\n", compFunctionsNr+1 );
-    Emit( "static Obj FileName;\n" );
+    Emit( "static Obj NameFunc[%d] GAP_GC_GLOBALLY_ROOTED;\n", compFunctionsNr+1 );
+    Emit( "static Obj FileName GAP_GC_GLOBALLY_ROOTED;\n" );
 
 
     // now compile the handlers

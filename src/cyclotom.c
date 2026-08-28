@@ -105,37 +105,38 @@
 /****************************************************************************
 **
 */
-static inline UInt SIZE_CYC(Obj cyc)
+static inline UInt SIZE_CYC(Obj cyc) GAP_GC_NOTSAFEPOINT
 {
     return SIZE_OBJ(cyc) / (sizeof(Obj)+sizeof(UInt4));
 }
 
-static inline Obj * COEFS_CYC(Obj cyc)
+static inline Obj * COEFS_CYC(Obj cyc) GAP_GC_NOTSAFEPOINT
 {
     return ADDR_OBJ(cyc);
 }
 
-static inline const Obj * CONST_COEFS_CYC(Obj cyc)
+static inline const Obj * CONST_COEFS_CYC(Obj cyc) GAP_GC_NOTSAFEPOINT
 {
     return CONST_ADDR_OBJ(cyc);
 }
 
-static inline UInt4 * EXPOS_CYC(Obj cyc, UInt len)
+static inline UInt4 * EXPOS_CYC(Obj cyc, UInt len) GAP_GC_NOTSAFEPOINT
 {
     return (UInt4 *)(ADDR_OBJ(cyc)+(len));
 }
 
 static inline const UInt4 * CONST_EXPOS_CYC(Obj cyc, UInt len)
+    GAP_GC_NOTSAFEPOINT
 {
     return (const UInt4 *)(CONST_ADDR_OBJ(cyc)+(len));
 }
 
-static inline Obj NOF_CYC(Obj cyc)
+static inline Obj NOF_CYC(Obj cyc) GAP_GC_NOTSAFEPOINT
 {
     return CONST_COEFS_CYC(cyc)[0];
 }
 
-static inline void SET_NOF_CYC(Obj cyc, Obj val)
+static inline void SET_NOF_CYC(Obj cyc, Obj val) GAP_GC_NOTSAFEPOINT
 {
     COEFS_CYC(cyc)[0] = val;
 }
@@ -159,7 +160,7 @@ struct CycModuleState {
 **  It is created in 'InitCyc' with room for up to 1000 coefficients  and  is
 **  resized when need arises.
 */
-DECL_MODULE_STATE Obj ResultCyc;
+DECL_MODULE_STATE Obj ResultCyc GAP_GC_GLOBALLY_ROOTED;
 
 /****************************************************************************
 **
@@ -179,7 +180,7 @@ DECL_MODULE_STATE Obj ResultCyc;
 **  is called to compute $e_n^i$ and can then do this easier by just  putting
 **  1 at the <i>th place in 'ResultCyc' and then calling 'Cyclotomic'.
 */
-DECL_MODULE_STATE Obj  LastECyc;
+DECL_MODULE_STATE Obj  LastECyc GAP_GC_GLOBALLY_ROOTED;
 DECL_MODULE_STATE UInt LastNCyc;
 
 #ifdef HPCGAP
@@ -221,7 +222,7 @@ static void GrowResultCyc(UInt size)
 **
 **  'TypeCyc' is the function in 'TypeObjFuncs' for cyclotomics.
 */
-static Obj TYPE_CYC;
+static Obj TYPE_CYC GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeCyc(Obj cyc)
 {
@@ -806,6 +807,10 @@ static UInt FindCommonField(UInt nl, UInt nr, UInt *ml, UInt *mr)
   UInt n,a,b,c;
   UInt8 n8;
 
+  if (nl == 0 || nr == 0) {
+    ErrorQuit("invalid cyclotomic field order", 0, 0);
+  }
+
   // get the smallest field that contains both cyclotomics
   // First Euclid's Algorithm for gcd
   if (nl > nr) {
@@ -819,6 +824,9 @@ static UInt FindCommonField(UInt nl, UInt nr, UInt *ml, UInt *mr)
     c = a % b;
     a = b;
     b = c;
+  }
+  if (a == 0) {
+    ErrorQuit("invalid cyclotomic field order", 0, 0);
   }
   *ml = nr/a;
   // Compute the result (lcm) in 64 bit
@@ -891,7 +899,7 @@ static Obj SumCyc(Obj opL, Obj opR)
     const Obj *         cfs;            // pointer to the coefficients
     const UInt4 *       exs;            // pointer to the exponents
     Obj *               res;            // pointer to the result
-    Obj                 sum;            // sum of two coefficients
+    Obj                 sum = 0;        // sum of two coefficients
     UInt                i;              // loop variable
 
     // take the cyclotomic with less terms as the right operand
@@ -899,11 +907,15 @@ static Obj SumCyc(Obj opL, Obj opR)
       || (TNUM_OBJ(opR) == T_CYC && SIZE_CYC(opL) < SIZE_CYC(opR)) ) {
         sum = opL;  opL = opR;  opR = sum;
     }
+    GAP_GC_PUSH3(&opL, &opR, &sum);
 
     nl = (TNUM_OBJ(opL) != T_CYC ? 1 : INT_INTOBJ( NOF_CYC(opL) ));
     nr = (TNUM_OBJ(opR) != T_CYC ? 1 : INT_INTOBJ( NOF_CYC(opR) ));
 
     n = FindCommonField(nl, nr, &ml, &mr);
+    if (n == 0) {
+        ErrorQuit("invalid cyclotomic field order", 0, 0);
+    }
 
     // Copy the left operand into the result
     if ( TNUM_OBJ(opL) != T_CYC ) {
@@ -956,7 +968,9 @@ static Obj SumCyc(Obj opL, Obj opR)
 
     // return the base reduced packed cyclotomic
     if ( nl % ml != 0 || nr % mr != 0 )  ConvertToBase( n );
-    return Cyclotomic( n, ml * mr );
+    sum = Cyclotomic( n, ml * mr );
+    GAP_GC_POP();
+    return sum;
 }
 
 
@@ -980,16 +994,17 @@ static Obj ZeroCyc(Obj op)
 */
 static Obj AInvCyc(Obj op)
 {
-    Obj                 res;            // inverse, result
+    Obj                 res = 0;        // inverse, result
     UInt                len;            // number of terms
     const Obj *         cfs;            // ptr to coeffs of left operand
     const UInt4 *       exs;            // ptr to expnts of left operand
     Obj *               cfp;            // ptr to coeffs of product
     UInt4 *             exp;            // ptr to expnts of product
     UInt                i;              // loop variable
-    Obj                 prd;            // product of two coefficients
+    Obj                 prd = 0;        // product of two coefficients
 
     // simply invert the coefficients
+    GAP_GC_PUSH2(&res, &prd);
     res = NewBag( T_CYC, SIZE_CYC(op) * (sizeof(Obj)+sizeof(UInt4)) );
     SET_NOF_CYC(res, NOF_CYC(op));
     len = SIZE_CYC(op);
@@ -1014,6 +1029,7 @@ static Obj AInvCyc(Obj op)
     }
     CHANGED_BAG( res );
 
+    GAP_GC_POP();
     return res;
 }
 
@@ -1037,13 +1053,17 @@ static Obj DiffCyc(Obj opL, Obj opR)
     const Obj *         cfs;            // pointer to the coefficients
     const UInt4 *       exs;            // pointer to the exponents
     Obj *               res;            // pointer to the result
-    Obj                 sum;            // difference of two coefficients
+    Obj                 sum = 0;        // difference of two coefficients
     UInt                i;              // loop variable
 
+    GAP_GC_PUSH3(&opL, &opR, &sum);
     // get the smallest field that contains both cyclotomics
     nl = (TNUM_OBJ(opL) != T_CYC ? 1 : INT_INTOBJ( NOF_CYC(opL) ));
     nr = (TNUM_OBJ(opR) != T_CYC ? 1 : INT_INTOBJ( NOF_CYC(opR) ));
     n = FindCommonField(nl, nr, &ml, &mr);
+    if (n == 0) {
+        ErrorQuit("invalid cyclotomic field order", 0, 0);
+    }
 
     // copy the left operand into the result
     if ( TNUM_OBJ(opL) != T_CYC ) {
@@ -1096,7 +1116,9 @@ static Obj DiffCyc(Obj opL, Obj opR)
 
     // return the base reduced packed cyclotomic
     if ( nl % ml != 0 || nr % mr != 0 )  ConvertToBase( n );
-    return Cyclotomic( n, ml * mr );
+    sum = Cyclotomic( n, ml * mr );
+    GAP_GC_POP();
+    return sum;
 }
 
 
@@ -1117,14 +1139,14 @@ static Obj DiffCyc(Obj opL, Obj opR)
 */
 static Obj ProdCycInt(Obj opL, Obj opR)
 {
-    Obj                 hdP;            // product, result
+    Obj                 hdP = 0;        // product, result
     UInt                len;            // number of terms
     const Obj *         cfs;            // ptr to coeffs of left operand
     const UInt4 *       exs;            // ptr to expnts of left operand
     Obj *               cfp;            // ptr to coeffs of product
     UInt4 *             exp;            // ptr to expnts of product
     UInt                i;              // loop variable
-    Obj                 prd;            // product of two coefficients
+    Obj                 prd = 0;        // product of two coefficients
 
     // for $rat * rat$ delegate
     if ( TNUM_OBJ(opL) != T_CYC && TNUM_OBJ(opR) != T_CYC ) {
@@ -1133,6 +1155,8 @@ static Obj ProdCycInt(Obj opL, Obj opR)
 
     // make the right operand the non cyclotomic
     if ( TNUM_OBJ(opL) != T_CYC ) { hdP = opL;  opL = opR;  opR = hdP; }
+
+    GAP_GC_PUSH2(&hdP, &prd);
 
     // for $cyc * 0$ return 0 and for $cyc * 1$ return $cyc$
     if ( opR == INTOBJ_INT(0) ) {
@@ -1144,7 +1168,7 @@ static Obj ProdCycInt(Obj opL, Obj opR)
 
     // for $cyc * -1$ need no multiplication or division
     else if ( opR == INTOBJ_INT(-1) ) {
-        return AInvCyc( opL );
+        hdP = AInvCyc( opL );
     }
 
     // for $cyc * small$ use immediate multiplication if possible
@@ -1187,6 +1211,7 @@ static Obj ProdCycInt(Obj opL, Obj opR)
         }
     }
 
+    GAP_GC_POP();
     return hdP;
 }
 
@@ -1206,14 +1231,14 @@ static Obj ProdCyc(Obj opL, Obj opR)
     UInt                nl, nr;         // order of left and right field
     UInt                n;              // order of smallest superfield
     UInt                ml, mr;         // cofactors into the superfield
-    Obj                 c;              // one coefficient of the left op
+    Obj                 c = 0;          // one coefficient of the left op
     UInt                e;              // one exponent of the left op
     UInt                len;            // number of terms
     const Obj *         cfs;            // pointer to the coefficients
     const UInt4 *       exs;            // pointer to the exponents
     Obj *               res;            // pointer to the result
-    Obj                 sum;            // sum of two coefficients
-    Obj                 prd;            // product of two coefficients
+    Obj                 sum = 0;        // sum of two coefficients
+    Obj                 prd = 0;        // product of two coefficients
     UInt                i, k;           // loop variable
 
     // for $rat * cyc$ and $cyc * rat$ delegate
@@ -1225,11 +1250,15 @@ static Obj ProdCyc(Obj opL, Obj opR)
     if ( SIZE_CYC(opL) < SIZE_CYC(opR) ) {
         prd = opL;  opL = opR;  opR = prd;
     }
+    GAP_GC_PUSH5(&opL, &opR, &c, &sum, &prd);
 
     // get the smallest field that contains both cyclotomics
     nl = (TNUM_OBJ(opL) != T_CYC ? 1 : INT_INTOBJ( NOF_CYC(opL) ));
     nr = (TNUM_OBJ(opR) != T_CYC ? 1 : INT_INTOBJ( NOF_CYC(opR) ));
     n = FindCommonField(nl, nr, &ml, &mr);
+    if (n == 0) {
+        ErrorQuit("invalid cyclotomic field order", 0, 0);
+    }
 
     // loop over the terms of the right operand
     for ( k = 1; k < SIZE_CYC(opR); k++ ) {
@@ -1321,7 +1350,9 @@ static Obj ProdCyc(Obj opL, Obj opR)
 
     // return the base reduced packed cyclotomic
     ConvertToBase( n );
-    return Cyclotomic( n, ml * mr );
+    prd = Cyclotomic( n, ml * mr );
+    GAP_GC_POP();
+    return prd;
 }
 
 
@@ -1354,7 +1385,9 @@ static Obj OneCyc(Obj op)
 */
 static Obj InvCyc(Obj op)
 {
-    Obj                 prd;            // product of conjugates
+    Obj                 prd = 0;        // product of conjugates
+    Obj                 cycgen = 0;     // one conjugate as a cyclotomic
+    Obj                 norm = 0;       // norm of the cyclotomic
     UInt                n;              // order of the field
     UInt                sqr;            // if n < sqr*sqr n is squarefree
     UInt                len;            // number of terms
@@ -1365,6 +1398,7 @@ static Obj InvCyc(Obj op)
     UInt                gcd, s, t;      // gcd of i and n, temporaries
 
     // get the order of the field, test if it is squarefree
+    GAP_GC_PUSH4(&op, &prd, &cycgen, &norm);
     n = INT_INTOBJ( NOF_CYC(op) );
     for ( sqr = 2; sqr*sqr <= n && n % (sqr*sqr) != 0; sqr++ )
         ;
@@ -1388,11 +1422,13 @@ static Obj InvCyc(Obj op)
 
             // if n is squarefree conversion and reduction are unnecessary
             if ( n < sqr*sqr ) {
-                prd = ProdCyc( prd, Cyclotomic( n, n ) );
+                cycgen = Cyclotomic( n, n );
+                prd = ProdCyc( prd, cycgen );
             }
             else {
                 ConvertToBase( n );
-                prd = ProdCyc( prd, Cyclotomic( n, 1 ) );
+                cycgen = Cyclotomic( n, 1 );
+                prd = ProdCyc( prd, cycgen );
             }
 
         }
@@ -1400,7 +1436,11 @@ static Obj InvCyc(Obj op)
     }
 
     // the inverse is the product divided by the norm
-    return ProdCycInt( prd, INV( ProdCyc( op, prd ) ) );
+    norm = ProdCyc( op, prd );
+    norm = INV( norm );
+    prd = ProdCycInt( prd, norm );
+    GAP_GC_POP();
+    return prd;
 }
 
 
@@ -1413,12 +1453,13 @@ static Obj InvCyc(Obj op)
 */
 static Obj PowCyc(Obj opL, Obj opR)
 {
-    Obj                 pow;            // power (result)
+    Obj                 pow = 0;        // power (result)
     Int                 exp;            // exponent (right operand)
     Int                 n;              // order of the field
     UInt                i;              // exponent of left operand
 
     // get the exponent
+    GAP_GC_PUSH2(&opL, &pow);
     exp = INT_INTOBJ(opR);
 
     // for $cyc^0$ return 1, for $cyc^1$ return cyc, for $rat^exp$ delegate
@@ -1473,6 +1514,7 @@ static Obj PowCyc(Obj opL, Obj opR)
 
     }
 
+    GAP_GC_POP();
     return pow;
 }
 
@@ -1488,7 +1530,7 @@ static Obj PowCyc(Obj opL, Obj opR)
 **  'E'  returns a  primitive  root of order <n>, which must  be  a  positive
 **  integer, represented as cyclotomic.
 */
-static Obj EOper;
+static Obj EOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncE(Obj self, Obj n)
 {
@@ -1534,7 +1576,7 @@ static Obj FuncE(Obj self, Obj n)
 **  'IsCyc' returns 'true'  if the value <val> is   a cyclotomic and  'false'
 **  otherwise.
 */
-static Obj IsCycFilt;
+static Obj IsCycFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_CYC(Obj self, Obj val)
 {
@@ -1563,7 +1605,7 @@ static Obj FiltIS_CYC(Obj self, Obj val)
 **
 **  'IsCycInt' relies on the fact that the base is an integral base.
 */
-static Obj IsCycIntOper;
+static Obj IsCycIntOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncIS_CYC_INT(Obj self, Obj val)
 {
@@ -1607,7 +1649,7 @@ static Obj FuncIS_CYC_INT(Obj self, Obj val)
 **  'Conductor' returns the N of the cyclotomic <cyc>, i.e., the order of the
 **  roots of which <cyc> is written as a linear combination.
 */
-static Obj ConductorAttr;
+static Obj ConductorAttr GAP_GC_GLOBALLY_ROOTED;
 
 static Obj AttrCONDUCTOR(Obj self, Obj cyc)
 {
@@ -1676,7 +1718,7 @@ static Obj AttrCONDUCTOR(Obj self, Obj cyc)
 **  of which <cyc> is written as a linear combination.  The <i>th element  of
 **  the list is the coefficient of $e_l^{i-1}$.
 */
-static Obj CoeffsCycOper;
+static Obj CoeffsCycOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncCOEFFS_CYC(Obj self, Obj cyc)
 {
@@ -1736,12 +1778,13 @@ static Obj FuncCOEFFS_CYC(Obj self, Obj cyc)
 **  <ord> may be any integer, of course if it is not relative prime to  $ord$
 **  the mapping will not be an automorphism, though still an endomorphism.
 */
-static Obj GaloisCycOper;
+static Obj GaloisCycOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncGALOIS_CYC(Obj self, Obj cyc, Obj ord)
 {
-    Obj                 gal;            // galois conjugate, result
-    Obj                 sum;            // sum of two coefficients
+    Obj                 gal = 0;        // galois conjugate, result
+    Obj                 sum = 0;        // sum of two coefficients
+    Obj                 conductor = 0;  // conductor for reducing <ord>
     Int                 n;              // order of the field
     UInt                sqr;            // if n < sqr*sqr n is squarefree
     Int                 o;              // galois automorphism
@@ -1756,20 +1799,26 @@ static Obj FuncGALOIS_CYC(Obj self, Obj cyc, Obj ord)
     if (!IS_INT(ord) || !IS_CYC(cyc)) {
         return DoOperation2Args( self, cyc, ord );
     }
+    GAP_GC_PUSH5(&cyc, &ord, &gal, &sum, &conductor);
 
     // get and check <ord>
     if ( ! IS_INTOBJ(ord) ) {
-        ord = MOD( ord, AttrCONDUCTOR( 0, cyc ) );
+        conductor = AttrCONDUCTOR( 0, cyc );
+        ord = MOD( ord, conductor );
     }
     o = INT_INTOBJ(ord);
 
     // every galois automorphism fixes the rationals
     if (TNUM_OBJ(cyc) != T_CYC) {
+        GAP_GC_POP();
         return cyc;
     }
 
     // get the order of the field, test if it squarefree
     n = INT_INTOBJ( NOF_CYC(cyc) );
+    if (n == 0) {
+        ErrorQuit("invalid cyclotomic field order", 0, 0);
+    }
     for ( sqr = 2; sqr*sqr <= n && n % (sqr*sqr) != 0; sqr++ )
         ;
 
@@ -1881,6 +1930,7 @@ static Obj FuncGALOIS_CYC(Obj self, Obj cyc, Obj ord)
 
     }
 
+    GAP_GC_POP();
     return gal;
 }
 
@@ -1896,7 +1946,7 @@ static Obj FuncGALOIS_CYC(Obj self, Obj cyc, Obj ord)
 **  'CycList' returns the cyclotomic described by the list <list>
 **  of rationals.
 */
-static Obj CycListOper;
+static Obj CycListOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncCycList(Obj self, Obj list)
 {
@@ -1945,7 +1995,7 @@ static Obj FuncCycList(Obj self, Obj list)
 **
 **  'MarkCycSubBags' is the marking function for bags of type 'T_CYC'.
 */
-static void MarkCycSubBags(Obj cyc, void * ref)
+static void MarkCycSubBags(Obj cyc, void * ref) GAP_GC_NOTSAFEPOINT
 {
     MarkArrayOfBags( COEFS_CYC( cyc ), SIZE_CYC(cyc), ref );
 }

@@ -47,10 +47,10 @@ GAP_STATIC_ASSERT(sizeof(StatHeader) == 8, "StatHeader has wrong size");
 #ifdef HPCGAP
 struct CodeModuleState {
 #endif
-DECL_MODULE_STATE Bag StackStat;
+DECL_MODULE_STATE Bag StackStat GAP_GC_GLOBALLY_ROOTED;
 DECL_MODULE_STATE Int CountStat;
 
-DECL_MODULE_STATE Bag StackExpr;
+DECL_MODULE_STATE Bag StackExpr GAP_GC_GLOBALLY_ROOTED;
 DECL_MODULE_STATE Int CountExpr;
 #ifdef HPCGAP
 };
@@ -58,7 +58,7 @@ DECL_MODULE_STATE Int CountExpr;
 static ModuleStateOffset CodeStateOffset = -1;
 
 // for debugging from GDB / lldb, we mark this as extern inline
-extern inline struct CodeModuleState * CShelper(void)
+extern inline struct CodeModuleState * CShelper(void) GAP_GC_NOTSAFEPOINT
 {
     return (struct CodeModuleState *)StateSlotsAtOffset(CodeStateOffset);
 }
@@ -166,7 +166,7 @@ static inline void PopOffsBody(CodeState * cs)
 
 // filename
 
-Obj GET_FILENAME_BODY(Obj body)
+Obj GET_FILENAME_BODY(Obj body GAP_GC_PROPAGATES_ROOT) GAP_GC_NOTSAFEPOINT
 {
     Obj val = BODY_HEADER(body)->filename_or_id;
     if (IS_INTOBJ(val)) {
@@ -177,7 +177,7 @@ Obj GET_FILENAME_BODY(Obj body)
     return val;
 }
 
-void SET_FILENAME_BODY(Obj body, Obj val)
+void SET_FILENAME_BODY(Obj body, Obj val GAP_GC_ROOTED_BY_ARG(0))
 {
     GAP_ASSERT(IS_STRING_REP(val));
     MakeImmutable(val);
@@ -186,7 +186,7 @@ void SET_FILENAME_BODY(Obj body, Obj val)
 
 // gapnameid
 
-UInt GET_GAPNAMEID_BODY(Obj body)
+UInt GET_GAPNAMEID_BODY(Obj body) GAP_GC_NOTSAFEPOINT
 {
     Obj gapnameid = BODY_HEADER(body)->filename_or_id;
     return IS_POS_INTOBJ(gapnameid) ? INT_INTOBJ(gapnameid) : 0;
@@ -199,13 +199,13 @@ void SET_GAPNAMEID_BODY(Obj body, UInt val)
 
 // location
 
-Obj GET_LOCATION_BODY(Obj body)
+Obj GET_LOCATION_BODY(Obj body GAP_GC_PROPAGATES_ROOT) GAP_GC_NOTSAFEPOINT
 {
     Obj location = BODY_HEADER(body)->startline_or_location;
     return (location && IS_STRING_REP(location)) ? location : 0;
 }
 
-void SET_LOCATION_BODY(Obj body, Obj val)
+void SET_LOCATION_BODY(Obj body, Obj val GAP_GC_ROOTED_BY_ARG(0))
 {
     GAP_ASSERT(IS_STRING_REP(val));
     MakeImmutable(val);
@@ -214,7 +214,7 @@ void SET_LOCATION_BODY(Obj body, Obj val)
 
 // startline
 
-UInt GET_STARTLINE_BODY(Obj body)
+UInt GET_STARTLINE_BODY(Obj body) GAP_GC_NOTSAFEPOINT
 {
     Obj line = BODY_HEADER(body)->startline_or_location;
     return IS_POS_INTOBJ(line) ? INT_INTOBJ(line) : 0;
@@ -227,7 +227,7 @@ void SET_STARTLINE_BODY(Obj body, UInt val)
 
 // endline
 
-UInt GET_ENDLINE_BODY(Obj body)
+UInt GET_ENDLINE_BODY(Obj body) GAP_GC_NOTSAFEPOINT
 {
     Obj line = BODY_HEADER(body)->endline;
     return IS_POS_INTOBJ(line) ? INT_INTOBJ(line) : 0;
@@ -777,10 +777,12 @@ void CodeFuncExprBegin(CodeState * cs,
                        UInt        gapnameid,
                        Int         startLine)
 {
-    Obj                 fexp;           // function expression bag
-    Bag                 body;           // function body
+    Obj                 fexp = 0;       // function expression bag
+    Bag                 body = 0;       // function body
     Obj                 lvars;
     LVarsHeader         * hdr;
+
+    GAP_GC_PUSH2(&fexp, &body);
 
     // remember the current offset
     PushOffsBody(cs);
@@ -828,6 +830,8 @@ void CodeFuncExprBegin(CodeState * cs,
 
     // allocate the top level statement sequence
     NewStat(cs, STAT_SEQ_STAT, 8 * sizeof(Stat));
+
+    GAP_GC_POP();
 }
 
 #ifdef HPCGAP
@@ -1828,7 +1832,7 @@ enum {
 };
 static UInt NextFloatExprNumber = 3;
 
-static Obj CONVERT_FLOAT_LITERAL_EAGER;
+static Obj CONVERT_FLOAT_LITERAL_EAGER GAP_GC_GLOBALLY_ROOTED;
 
 
 static UInt getNextFloatExprNumber(void)
@@ -1910,11 +1914,14 @@ static void CodeEagerFloatExpr(CodeState * cs, Obj str, Char mark)
 {
     // Eager case, do the conversion now
     Expr fl = NewExpr(cs, EXPR_FLOAT_EAGER, sizeof(UInt) * 3);
-    Obj v = CALL_2ARGS(CONVERT_FLOAT_LITERAL_EAGER, str, ObjsChar[(Int)mark]);
+    Obj v = 0;
+    GAP_GC_PUSH1(&v);
+    v = CALL_2ARGS(CONVERT_FLOAT_LITERAL_EAGER, str, ObjsChar[(Int)mark]);
     WRITE_EXPR(cs, fl, 0, AddValueToBody(cs, v));
     WRITE_EXPR(cs, fl, 1, AddValueToBody(cs, str));    // store for printing
     WRITE_EXPR(cs, fl, 2, (UInt)mark);
     PushExpr(fl);
+    GAP_GC_POP();
 }
 
 void CodeFloatExpr(CodeState * cs, Obj s)

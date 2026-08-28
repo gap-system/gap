@@ -884,7 +884,7 @@ static Obj FuncCREATE_PTY_IOSTREAM(Obj self, Obj dir, Obj prog, Obj args)
 }
 
 
-static Int ReadFromPty2(UInt stream, Char * buf, Int maxlen, UInt block)
+static Int ReadFromPty2(UInt stream, Char * buf, Int maxlen, UInt block) GAP_GC_NOTSAFEPOINT
 {
     // read at most maxlen bytes from stream, into buf. If block is non-zero
     // then wait for at least one byte to be available. Otherwise don't.
@@ -987,12 +987,16 @@ static Obj FuncREAD_IOSTREAM(Obj self, Obj stream, Obj len)
     /* HandleChildStatusChanges(pty);   Omit this to allow picking up
      * "trailing" bytes*/
     Obj string = NEW_STRING(INT_INTOBJ(len));
+    GAP_GC_PUSH1(&string);
     Int ret = ReadFromPty2(pty, CSTR_STRING(string), INT_INTOBJ(len), 1);
     HashUnlock(PtyIOStreams);
-    if (ret == -1)
+    if (ret == -1) {
+        GAP_GC_POP();
         return Fail;
+    }
     SET_LEN_STRING(string, ret);
     ResizeBag(string, SIZEBAG_STRINGLEN(ret));
+    GAP_GC_POP();
     return string;
 }
 
@@ -1003,12 +1007,16 @@ static Obj FuncREAD_IOSTREAM_NOWAIT(Obj self, Obj stream, Obj len)
     /* HandleChildStatusChanges(pty);   Omit this to allow picking up
      * "trailing" bytes*/
     Obj string = NEW_STRING(INT_INTOBJ(len));
+    GAP_GC_PUSH1(&string);
     Int ret = ReadFromPty2(pty, CSTR_STRING(string), INT_INTOBJ(len), 0);
     HashUnlock(PtyIOStreams);
-    if (ret == -1)
+    if (ret == -1) {
+        GAP_GC_POP();
         return Fail;
+    }
     SET_LEN_STRING(string, ret);
     ResizeBag(string, SIZEBAG_STRINGLEN(ret));
+    GAP_GC_POP();
     return string;
 }
 

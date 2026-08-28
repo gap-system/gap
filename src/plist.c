@@ -193,17 +193,17 @@ void             GrowPlist (
 **
 */
 
-static Obj TYPE_LIST_NDENSE_MUTABLE;
-static Obj TYPE_LIST_NDENSE_IMMUTABLE;
-static Obj TYPE_LIST_DENSE_NHOM_MUTABLE;
-static Obj TYPE_LIST_DENSE_NHOM_IMMUTABLE;
-static Obj TYPE_LIST_DENSE_NHOM_SSORT_MUTABLE;
-static Obj TYPE_LIST_DENSE_NHOM_SSORT_IMMUTABLE;
-static Obj TYPE_LIST_DENSE_NHOM_NSORT_MUTABLE;
-static Obj TYPE_LIST_DENSE_NHOM_NSORT_IMMUTABLE;
-static Obj TYPE_LIST_EMPTY_MUTABLE;
-static Obj TYPE_LIST_EMPTY_IMMUTABLE;
-static Obj TYPE_LIST_HOM;
+static Obj TYPE_LIST_NDENSE_MUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_LIST_NDENSE_IMMUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_LIST_DENSE_NHOM_MUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_LIST_DENSE_NHOM_IMMUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_LIST_DENSE_NHOM_SSORT_MUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_LIST_DENSE_NHOM_SSORT_IMMUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_LIST_DENSE_NHOM_NSORT_MUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_LIST_DENSE_NHOM_NSORT_IMMUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_LIST_EMPTY_MUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_LIST_EMPTY_IMMUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_LIST_HOM GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypePlistWithKTNum( Obj list, UInt *ktnum );
 
@@ -617,10 +617,13 @@ static Obj TypePlistHomHelper(Obj family, UInt tnum, UInt knr, Obj list)
     knr = tnum - knr + 1;
 
     // get the list types of that family
-    Obj types = TYPES_LIST_FAM(family);
+    Obj types = 0;
+    Obj type = 0;
+    GAP_GC_PUSH2(&types, &type);
+    types = TYPES_LIST_FAM(family);
 
     // if the type is not yet known, compute it
-    Obj type = ELM0_LIST(types, knr);
+    type = ELM0_LIST(types, knr);
     if (type == 0) {
         Obj isMutable = IS_MUTABLE_OBJ(list) ? True : False;
         Obj sort = HasFiltListTNums[tnum][FN_IS_SSORT]
@@ -639,6 +642,7 @@ static Obj TypePlistHomHelper(Obj family, UInt tnum, UInt knr, Obj list)
         type = ELM0_LIST(types, knr);
 #endif
     }
+    GAP_GC_POP();
     return type;
 }
 
@@ -715,39 +719,48 @@ static Obj TypePlistWithKTNum (
 static Obj TypePlistHom(Obj list)
 {
     Int                 tnum;           // TNUM of <list>
-    Obj                 family;         // family of elements
+    Obj                 family = 0;     // family of elements
 
     // get the tnum and the family of the elements
+    GAP_GC_PUSH1(&family);
     tnum   = KTNumHomPlist( list );
     family = FAMILY_OBJ( ELM_PLIST( list, 1 ) );
 
-    return TypePlistHomHelper(family, tnum, T_PLIST_HOM, list);
+    Obj type = TypePlistHomHelper(family, tnum, T_PLIST_HOM, list);
+    GAP_GC_POP();
+    return type;
 }
 
 static Obj TypePlistCyc(Obj list)
 {
     Int                 tnum;           // TNUM of <list>
-    Obj                 family;         // family of elements
+    Obj                 family = 0;     // family of elements
 
     // get the tnum and the family of the elements
+    GAP_GC_PUSH1(&family);
     tnum   = TNUM_OBJ( list );
 
     // This had better return the cyclotomics family, could be speeded up
     family = FAMILY_OBJ( ELM_PLIST( list, 1 ) );
 
-    return TypePlistHomHelper(family, tnum, T_PLIST_CYC, list);
+    Obj type = TypePlistHomHelper(family, tnum, T_PLIST_CYC, list);
+    GAP_GC_POP();
+    return type;
 }
 
 static Obj TypePlistFfe(Obj list)
 {
     Int                 tnum;           // TNUM of <list>
-    Obj                 family;         // family of elements
+    Obj                 family = 0;     // family of elements
 
     // get the tnum and the family of the elements
+    GAP_GC_PUSH1(&family);
     tnum   = TNUM_OBJ( list );
     family = FAMILY_OBJ( ELM_PLIST( list, 1 ) );
 
-    return TypePlistHomHelper(family, tnum, T_PLIST_FFE, list);
+    Obj type = TypePlistHomHelper(family, tnum, T_PLIST_FFE, list);
+    GAP_GC_POP();
+    return type;
 }
 
 /****************************************************************************
@@ -809,7 +822,7 @@ static Obj FuncShrinkAllocationPlist(Obj self, Obj plist)
 **
 *F  FiltIS_PLIST_REP( <self>, <obj> ) . . . . . . . .  handler for `IS_PLIST'
 */
-static Obj IsPlistFilt;
+static Obj IsPlistFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_PLIST_REP(Obj self, Obj obj)
 {
@@ -866,7 +879,7 @@ static void CopyPlist(TraversalState * traversal, Obj copy, Obj original)
 */
 static Obj CopyPlist(Obj list, Int mut)
 {
-    Obj                 copy;           // copy, result
+    Obj                 copy = 0;       // copy, result
     Obj                 tmp;            // temporary variable
     UInt                i;              // loop variable
 
@@ -874,6 +887,7 @@ static Obj CopyPlist(Obj list, Int mut)
     GAP_ASSERT(IS_MUTABLE_OBJ(list));
 
     // make a copy
+    GAP_GC_PUSH1(&copy);
     copy = NewBag(TNUM_OBJ(list), SIZE_OBJ(list));
     if (!mut)
         MakeImmutableNoRecurse(copy);
@@ -893,6 +907,7 @@ static Obj CopyPlist(Obj list, Int mut)
     }
 
     // return the copy
+    GAP_GC_POP();
     return copy;
 }
 
@@ -1180,13 +1195,15 @@ static Obj ElmvPlistDense(Obj list, Int pos)
 */
 static Obj ElmsPlist(Obj list, Obj poss)
 {
-    Obj                 elms;           // selected sublist, result
+    Obj                 elms = 0;       // selected sublist, result
     Int                 lenList;        // length of <list>
     Obj                 elm;            // one element from <list>
     Int                 lenPoss;        // length of <positions>
     Int                 pos;            // <position> as integer
     Int                 inc;            // increment in a range
     Int                 i;              // loop variable
+
+    GAP_GC_PUSH1(&elms);
 
     // select no element
     if ( LEN_LIST(poss) == 0 ) {
@@ -1283,6 +1300,7 @@ static Obj ElmsPlist(Obj list, Obj poss)
 
     }
 
+    GAP_GC_POP();
     return elms;
 }
 
@@ -1290,13 +1308,15 @@ static Obj ElmsPlist(Obj list, Obj poss)
 // and might be better
 static Obj ElmsPlistDense(Obj list, Obj poss)
 {
-    Obj                 elms;           // selected sublist, result
+    Obj                 elms = 0;       // selected sublist, result
     Int                 lenList;        // length of <list>
     Obj                 elm;            // one element from <list>
     Int                 lenPoss;        // length of <positions>
     Int                 pos;            // <position> as integer
     Int                 inc;            // increment in a range
     Int                 i;              // loop variable
+
+    GAP_GC_PUSH1(&elms);
 
     // select no element
     if ( LEN_LIST(poss) == 0 ) {
@@ -1428,6 +1448,7 @@ static Obj ElmsPlistDense(Obj list, Obj poss)
 
     }
 
+    GAP_GC_POP();
     return elms;
 }
 
@@ -1480,14 +1501,14 @@ static void UnbPlist(Obj list, Int pos)
 **
 **  'AssPlist' is the function in 'AssListFuncs' for plain lists.
 */
-void            AssPlist (
-    Obj                 list,
-    Int                 pos,
-    Obj                 val )
+void AssPlist(Obj list, Int pos,
+              Obj val GAP_GC_ROOTED_BY_ARG_INDEXED(0, 1) GAP_GC_MAYBE_UNROOTED)
 {
     // resize the list if necessary
     if ( LEN_PLIST( list ) < pos ) {
+        GAP_GC_PUSH1(&val);
         GROW_PLIST( list, pos );
+        GAP_GC_POP();
         SET_LEN_PLIST( list, pos );
     }
 
@@ -1497,7 +1518,8 @@ void            AssPlist (
         CHANGED_BAG( list );
 }
 
-static void AssPlistXXX(Obj list, Int pos, Obj val)
+static void AssPlistXXX(Obj list, Int pos,
+                        Obj val GAP_GC_ROOTED_BY_ARG_INDEXED(0, 1))
 {
     Int len = LEN_PLIST(list);
 
@@ -1513,7 +1535,8 @@ static void AssPlistXXX(Obj list, Int pos, Obj val)
     }
 }
 
-static void AssPlistCyc(Obj list, Int pos, Obj val)
+static void AssPlistCyc(Obj list, Int pos,
+                        Obj val GAP_GC_ROOTED_BY_ARG_INDEXED(0, 1))
 {
     Int len = LEN_PLIST(list);
 
@@ -1544,7 +1567,7 @@ static void AssPlistCyc(Obj list, Int pos, Obj val)
 void AssPlistFfe   (
     Obj                 list,
     Int                 pos,
-    Obj                 val )
+    Obj                 val GAP_GC_ROOTED_BY_ARG_INDEXED(0, 1) )
 {
     Int len = LEN_PLIST(list);
 
@@ -1595,7 +1618,8 @@ void AssPlistFfe   (
       }
 }
 
-static void AssPlistDense(Obj list, Int pos, Obj val)
+static void AssPlistDense(Obj list, Int pos,
+                          Obj val GAP_GC_ROOTED_BY_ARG_INDEXED(0, 1))
 {
     Int len = LEN_PLIST(list);
 
@@ -1612,7 +1636,8 @@ static void AssPlistDense(Obj list, Int pos, Obj val)
         SET_FILT_LIST( list, FN_IS_NDENSE );
 }
 
-static void AssPlistHomog(Obj list, Int pos, Obj val)
+static void AssPlistHomog(Obj list, Int pos,
+                          Obj val GAP_GC_ROOTED_BY_ARG_INDEXED(0, 1))
 {
     Int len = LEN_PLIST(list);
 
@@ -1672,7 +1697,7 @@ static void AssPlistHomog(Obj list, Int pos, Obj val)
 void AssPlistEmpty (
     Obj                 list,
     Int                 pos,
-    Obj                 val )
+    Obj                 val GAP_GC_ROOTED_BY_ARG_INDEXED(0, 1) )
 {
     // if <pos> is large than one use `AssPlistDense'
     if ( 1 != pos ) {
@@ -2404,7 +2429,8 @@ static void MakeImmutablePlistNoMutElms(Obj list)
 
 static Obj FuncIsRectangularTablePlist(Obj self, Obj plist)
 {
-  Obj len;
+  Obj len = 0;
+  Obj len2 = 0;
   UInt lenlist;
   UInt i;
   BOOL hasMut = FALSE;
@@ -2419,18 +2445,24 @@ static Obj FuncIsRectangularTablePlist(Obj self, Obj plist)
         SET_FILT_LIST(plist, FN_IS_RECT);
       return True;
     }
+  GAP_GC_PUSH2(&len, &len2);
   elm = ELM_PLIST(plist,1);
   len = LENGTH(elm);
   hasMut = IS_MUTABLE_OBJ(elm);
   for (i = 2; i <= lenlist; i++)
     {
       elm = ELM_PLIST(plist,i);
-      if (!EQ(len, LENGTH(elm)))
+      len2 = LENGTH(elm);
+      if (!EQ(len, len2))
+        {
+        GAP_GC_POP();
         return False;
+        }
       hasMut = hasMut || IS_MUTABLE_OBJ(elm);
     }
   if (!hasMut)
     SET_FILT_LIST(plist, FN_IS_RECT);
+  GAP_GC_POP();
   return True;
 
 }

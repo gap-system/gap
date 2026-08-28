@@ -78,7 +78,7 @@ static inline void FORGET_WP(Obj wp, UInt pos)
 **  Objects at the end of <wp> may evaporate, so the stored length can only
 **  be regarded as an upper bound.
 */
-static inline void STORE_LEN_WPOBJ(Obj wp, Int len)
+static inline void STORE_LEN_WPOBJ(Obj wp, Int len) GAP_GC_NOTSAFEPOINT
 {
     ADDR_OBJ(wp)[0] = INTOBJ_INT(len);
 }
@@ -94,7 +94,7 @@ static inline void STORE_LEN_WPOBJ(Obj wp, Int len)
 **  Note that as the list can mutate under your feet, the length may be
 **  an overestimate.
 */
-static inline Int STORED_LEN_WPOBJ(Obj wp)
+static inline Int STORED_LEN_WPOBJ(Obj wp) GAP_GC_NOTSAFEPOINT
 {
     return INT_INTOBJ(CONST_ADDR_OBJ(wp)[0]);
 }
@@ -230,6 +230,7 @@ static Obj FuncWeakPointerObj(Obj self, Obj list)
   Obj wp;
   Int i;
   Int len;
+  Obj elm = 0;
 #ifdef USE_BOEHM_GC
   // We need to make sure that the list stays live until
   // after REGISTER_WP(); on architectures that pass
@@ -244,6 +245,7 @@ static Obj FuncWeakPointerObj(Obj self, Obj list)
       ErrorMayQuit("WeakPointerObj: List size too large", 0, 0);
 
   wp = (Obj) NewBag(T_WPOBJ, (len+1)*sizeof(Obj));
+  GAP_GC_PUSH2(&wp, &elm);
   STORE_LEN_WPOBJ(wp,len);
   for (i = 1; i <= len ; i++)
     {
@@ -253,13 +255,15 @@ static Obj FuncWeakPointerObj(Obj self, Obj list)
       if (IS_BAG_REF(tmp))
         REGISTER_WP(wp, i, tmp);
 #else
-      SET_ELM_WPOBJ(wp, i, ELM0_LIST(list, i));
+      elm = ELM0_LIST(list, i);
+      SET_ELM_WPOBJ(wp, i, elm);
 #endif
       // this must be here in case list is in fact an object and causes a GC
       // in the element access method
       CHANGED_BAG(wp);
     }
 
+  GAP_GC_POP();
   return wp;
 }
 
@@ -502,7 +506,7 @@ static Obj FuncElmWPObj(Obj self, Obj wp, Obj pos)
 **  same type.
 */
 
-static Obj TYPE_WPOBJ;
+static Obj TYPE_WPOBJ GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeWPObj(Obj wp)
 {
@@ -514,7 +518,7 @@ static Obj TypeWPObj(Obj wp)
 **
 *F  FuncIsWPObj(<self>,<wp>) . . . . . . . . handler for GAP function IsWPObj
 */
-static Obj IsWPObjFilt;
+static Obj IsWPObjFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIsWPObj(Obj self, Obj wp)
 {
@@ -534,7 +538,7 @@ static Obj FiltIsWPObj(Obj self, Obj wp)
 
 #if defined(USE_GASMAN)
 
-static void MarkWeakPointerObj(Obj wp, void * ref)
+static void MarkWeakPointerObj(Obj wp, void * ref) GAP_GC_NOTSAFEPOINT
 {
     // can't use the stored length here, in case we are in the middle of
     // copying
@@ -558,7 +562,7 @@ static void SweepWeakPointerObj( Bag *src, Bag *dst, UInt len)
 
 #ifdef USE_JULIA_GC
 
-static void MarkWeakPointerObj(Obj wp, void * ref)
+static void MarkWeakPointerObj(Obj wp, void * ref) GAP_GC_NOTSAFEPOINT
 {
     // can't use the stored length here, in case we are in the middle of
     // copying
@@ -626,8 +630,8 @@ static void CopyWPObj(TraversalState * traversal, Obj copy, Obj original)
 static Obj CopyObjWPObj(Obj obj, Int mut)
 {
     Obj                 copy;           // copy, result
-    Obj                 tmp;            // temporary variable
-    Obj                 elm;
+    Obj                 tmp = 0;        // temporary variable
+    Obj                 elm = 0;
     UInt                i;              // loop variable
 
     // immutable input is handled by COPY_OBJ
@@ -645,6 +649,7 @@ static Obj CopyObjWPObj(Obj obj, Int mut)
         copy = NEW_PLIST_IMM(T_PLIST, len);
         // Set length as plist is constructed
     }
+    GAP_GC_PUSH3(&copy, &elm, &tmp);
 
     // leave a forwarding pointer
     PrepareCopy(obj, copy);
@@ -665,6 +670,7 @@ static Obj CopyObjWPObj(Obj obj, Int mut)
     }
 
     // return the copy
+    GAP_GC_POP();
     return copy;
 }
 
@@ -756,8 +762,11 @@ static void CleanObjWPObj(Obj obj)
     // clean the subvalues
     for ( i = 1; i < SIZE_OBJ(obj)/sizeof(Obj); i++ ) {
         elm = ELM_WPOBJ(obj, i);
-        if (elm)
+        if (elm) {
+            GAP_GC_PUSH1(&elm);
             CLEAN_OBJ(elm);
+            GAP_GC_POP();
+        }
     }
 
 }

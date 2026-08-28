@@ -63,8 +63,8 @@
 **
 **  'TypePRec' is the function in 'TypeObjFuncs' for plain records.
 */
-static Obj TYPE_PREC_MUTABLE;
-static Obj TYPE_PREC_IMMUTABLE;
+static Obj TYPE_PREC_MUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_PREC_IMMUTABLE GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypePRec(Obj prec)
 {
@@ -165,6 +165,7 @@ static Obj CopyPRec(Obj rec, Int mut)
 
     // make a copy
     copy = NewBag(T_PREC, SIZE_OBJ(rec));
+    GAP_GC_PUSH1(&copy);
     if (!mut)
         MakeImmutableNoRecurse(copy);
     memcpy(ADDR_OBJ(copy), CONST_ADDR_OBJ(rec), SIZE_OBJ(rec));
@@ -182,6 +183,7 @@ static Obj CopyPRec(Obj rec, Int mut)
         SET_ELM_PREC(copy, i, tmp);
         CHANGED_BAG(copy);
     }
+    GAP_GC_POP();
 
     // return the copy
     return copy;
@@ -374,10 +376,8 @@ void UnbPRec (
 **  'AssPRec' assigns the value <val> to the record component with the record
 **  name <rnam> in the plain record <rec>.
 */
-void AssPRec (
-    Obj                 rec,
-    UInt                rnam,
-    Obj                 val )
+void AssPRec(Obj rec, UInt rnam,
+             Obj val GAP_GC_ROOTED_BY_ARG_INDEXED(0, 1) GAP_GC_MAYBE_UNROOTED)
 {
     UInt                len;            // length of <rec>
 
@@ -386,6 +386,8 @@ void AssPRec (
         ErrorMayQuit("Record Assignment: <rec> must be a mutable record", 0,
                      0);
     }
+
+    GAP_GC_PUSH1(&val);
 
     // get the length of the record
     len = LEN_PREC( rec );
@@ -408,6 +410,8 @@ void AssPRec (
     // assign the value to the component
     SET_ELM_PREC( rec, i, val );
     CHANGED_BAG( rec );
+
+    GAP_GC_POP();
 }
 
 /****************************************************************************
@@ -537,6 +541,7 @@ static Obj InnerRecNames(Obj rec)
 
     // allocate the list
     list = NEW_PLIST( T_PLIST, LEN_PREC(rec) );
+    GAP_GC_PUSH1(&list);
     SET_LEN_PLIST( list, LEN_PREC(rec) );
 
     // loop over the components
@@ -548,6 +553,7 @@ static Obj InnerRecNames(Obj rec)
         SET_ELM_PLIST( list, i, string );
         CHANGED_BAG( list );
     }
+    GAP_GC_POP();
 
     // return the list
     return list;
@@ -737,7 +743,7 @@ static void LoadPRec(Obj prec)
 **  'MarkPRecSubBags' is the marking function for bags of type 'T_PREC' or
 **  'T_COMOBJ'.
 */
-void MarkPRecSubBags(Obj bag, void * ref)
+void MarkPRecSubBags(Obj bag, void * ref) GAP_GC_NOTSAFEPOINT
 {
     const Bag * data = CONST_PTR_BAG(bag);
     const UInt count = SIZE_BAG(bag) / sizeof(Bag);

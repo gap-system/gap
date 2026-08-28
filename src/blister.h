@@ -27,7 +27,7 @@
 **
 *F  IS_BLIST_REP( <list> )  . . . . .  check if <list> is in boolean list rep
 */
-EXPORT_INLINE BOOL IS_BLIST_REP(Obj list)
+EXPORT_INLINE BOOL IS_BLIST_REP(Obj list) GAP_GC_NOTSAFEPOINT
 {
     return T_BLIST <= TNUM_OBJ(list) &&
            TNUM_OBJ(list) <= T_BLIST_SSORT + IMMUTABLE;
@@ -42,7 +42,7 @@ EXPORT_INLINE BOOL IS_BLIST_REP(Obj list)
 **  <plen> elements must at least have.
 **
 */
-EXPORT_INLINE Int SIZE_PLEN_BLIST(Int plen)
+EXPORT_INLINE Int SIZE_PLEN_BLIST(Int plen) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(plen >= 0);
     return sizeof(Obj) + (plen + BIPEB - 1) / BIPEB * sizeof(UInt);
@@ -57,7 +57,7 @@ EXPORT_INLINE Int SIZE_PLEN_BLIST(Int plen)
 **  integer.
 **
 */
-EXPORT_INLINE Int LEN_BLIST(Obj list)
+EXPORT_INLINE Int LEN_BLIST(Obj list) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_BLIST_REP(list));
     return INT_INTOBJ(CONST_ADDR_OBJ(list)[0]);
@@ -69,7 +69,7 @@ EXPORT_INLINE Int LEN_BLIST(Obj list)
 *F  NUMBER_BLOCKS_BLIST(<list>) . . . . . . . . number of UInt blocks in list
 **
 */
-EXPORT_INLINE Int NUMBER_BLOCKS_BLIST(Obj blist)
+EXPORT_INLINE Int NUMBER_BLOCKS_BLIST(Obj blist) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_BLIST_REP(blist));
     return (LEN_BLIST(blist) + BIPEB - 1) / BIPEB;
@@ -84,7 +84,7 @@ EXPORT_INLINE Int NUMBER_BLOCKS_BLIST(Obj blist)
 **  <len>, which must be a positive C integer.
 **
 */
-EXPORT_INLINE void SET_LEN_BLIST(Obj list, Int len)
+EXPORT_INLINE void SET_LEN_BLIST(Obj list, Int len) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_BLIST_REP(list));
     GAP_ASSERT(len >= 0);
@@ -114,12 +114,12 @@ EXPORT_INLINE Obj NEW_BLIST(Int len)
 **  returns a pointer to the start of the data of the Boolean list
 **
 */
-EXPORT_INLINE UInt * BLOCKS_BLIST(Obj list)
+EXPORT_INLINE UInt * BLOCKS_BLIST(Obj list) GAP_GC_NOTSAFEPOINT
 {
     return ((UInt *)(ADDR_OBJ(list) + 1));
 }
 
-EXPORT_INLINE const UInt * CONST_BLOCKS_BLIST(Obj list)
+EXPORT_INLINE const UInt * CONST_BLOCKS_BLIST(Obj list) GAP_GC_NOTSAFEPOINT
 {
     return ((const UInt *)(CONST_ADDR_OBJ(list) + 1));
 }
@@ -132,12 +132,12 @@ EXPORT_INLINE const UInt * CONST_BLOCKS_BLIST(Obj list)
 **  <pos>-th element of the boolean list <list>. <pos> must be a positive
 **  integer less than or equal to the length of <list>.
 */
-EXPORT_INLINE UInt * BLOCK_ELM_BLIST_PTR(Obj list, UInt pos)
+EXPORT_INLINE UInt * BLOCK_ELM_BLIST_PTR(Obj list, UInt pos) GAP_GC_NOTSAFEPOINT
 {
     return BLOCKS_BLIST(list) + ((pos)-1) / BIPEB;
 }
 
-EXPORT_INLINE const UInt * CONST_BLOCK_ELM_BLIST_PTR(Obj list, UInt pos)
+EXPORT_INLINE const UInt * CONST_BLOCK_ELM_BLIST_PTR(Obj list, UInt pos) GAP_GC_NOTSAFEPOINT
 {
     return CONST_BLOCKS_BLIST(list) + ((pos)-1) / BIPEB;
 }
@@ -150,7 +150,7 @@ EXPORT_INLINE const UInt * CONST_BLOCK_ELM_BLIST_PTR(Obj list, UInt pos)
 **  '(<pos>-1) % BIPEB',
 **  useful for accessing the <pos>-th element of a blist.
 */
-EXPORT_INLINE UInt MASK_POS_BLIST(UInt pos)
+EXPORT_INLINE UInt MASK_POS_BLIST(UInt pos) GAP_GC_NOTSAFEPOINT
 {
     return ((UInt)1) << (pos - 1) % BIPEB;
 }
@@ -166,12 +166,12 @@ EXPORT_INLINE UInt MASK_POS_BLIST(UInt pos)
 **  'TEST_BIT_BLIST_NO_ASSERTS' behaves the same but does not perform
 **  any debugging checks.
 */
-EXPORT_INLINE Int TEST_BIT_BLIST_NO_ASSERTS(Obj list, UInt pos)
+EXPORT_INLINE Int TEST_BIT_BLIST_NO_ASSERTS(Obj list, UInt pos) GAP_GC_NOTSAFEPOINT
 {
     return *CONST_BLOCK_ELM_BLIST_PTR(list, pos) & MASK_POS_BLIST(pos);
 }
 
-EXPORT_INLINE Int TEST_BIT_BLIST(Obj list, UInt pos)
+EXPORT_INLINE Int TEST_BIT_BLIST(Obj list, UInt pos) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_BLIST_REP(list));
     GAP_ASSERT(pos <= LEN_BLIST(list));
@@ -189,12 +189,12 @@ EXPORT_INLINE Int TEST_BIT_BLIST(Obj list, UInt pos)
 **  'ELM_BLIST_NO_ASSERTS' behaves the same but does not perform any debugging
 **  checks.
 */
-EXPORT_INLINE Obj ELM_BLIST_NO_ASSERTS(Obj list, UInt pos)
+EXPORT_INLINE Obj ELM_BLIST_NO_ASSERTS(Obj list, UInt pos) GAP_GC_NOTSAFEPOINT
 {
     return TEST_BIT_BLIST_NO_ASSERTS(list, pos) ? True : False;
 }
 
-EXPORT_INLINE Obj ELM_BLIST(Obj list, UInt pos)
+EXPORT_INLINE Obj ELM_BLIST(Obj list, UInt pos) GAP_GC_NOTSAFEPOINT
 {
     return TEST_BIT_BLIST(list, pos) ? True : False;
 }
@@ -208,14 +208,14 @@ EXPORT_INLINE Obj ELM_BLIST(Obj list, UInt pos)
 **  to 1 resp. 0.  <pos> must be a positive integer less than or equal to
 **  the length of <list>.
 */
-EXPORT_INLINE void SET_BIT_BLIST(Obj list, UInt pos)
+EXPORT_INLINE void SET_BIT_BLIST(Obj list, UInt pos) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_BLIST_REP(list));
     GAP_ASSERT(pos <= LEN_BLIST(list));
     *BLOCK_ELM_BLIST_PTR(list, pos) |= MASK_POS_BLIST(pos);
 }
 
-EXPORT_INLINE void CLEAR_BIT_BLIST(Obj list, UInt pos)
+EXPORT_INLINE void CLEAR_BIT_BLIST(Obj list, UInt pos) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_BLIST_REP(list));
     GAP_ASSERT(pos <= LEN_BLIST(list));
