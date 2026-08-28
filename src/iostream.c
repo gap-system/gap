@@ -828,7 +828,7 @@ SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[])
 
 // This function assumes that the caller invoked HashLock(PtyIOStreams).
 // It unlocks just before throwing any error.
-static void HandleChildStatusChanges(UInt pty)
+static void HandleChildStatusChanges(UInt pty) GAP_GC_CANSAFEPOINT
 {
     // common error handling, when we are asked to read or write to a stopped
     // or dead child
@@ -854,6 +854,7 @@ static void HandleChildStatusChanges(UInt pty)
 }
 
 static Obj FuncCREATE_PTY_IOSTREAM(Obj self, Obj dir, Obj prog, Obj args)
+    GAP_GC_CANSAFEPOINT
 {
     Obj    allargs[MAX_ARGS + 1];
     Char * argv[MAX_ARGS + 2];
@@ -928,7 +929,7 @@ static Int ReadFromPty2(UInt stream, Char * buf, Int maxlen, UInt block) GAP_GC_
 }
 
 
-static UInt WriteToPty(UInt stream, Char * buf, Int len)
+static UInt WriteToPty(UInt stream, Char * buf, Int len) GAP_GC_CANSAFEPOINT
 {
     Int res;
     Int old;
@@ -958,7 +959,7 @@ static UInt WriteToPty(UInt stream, Char * buf, Int len)
     return old;
 }
 
-static UInt HashLockStreamIfAvailable(Obj stream)
+static UInt HashLockStreamIfAvailable(Obj stream) GAP_GC_CANSAFEPOINT
 {
     UInt pty = INT_INTOBJ(stream);
     HashLock(PtyIOStreams);
@@ -970,6 +971,7 @@ static UInt HashLockStreamIfAvailable(Obj stream)
 }
 
 static Obj FuncWRITE_IOSTREAM(Obj self, Obj stream, Obj string, Obj len)
+    GAP_GC_CANSAFEPOINT
 {
     UInt pty = HashLockStreamIfAvailable(stream);
 
@@ -980,7 +982,7 @@ static Obj FuncWRITE_IOSTREAM(Obj self, Obj stream, Obj string, Obj len)
     return ObjInt_Int(result);
 }
 
-static Obj FuncREAD_IOSTREAM(Obj self, Obj stream, Obj len)
+static Obj FuncREAD_IOSTREAM(Obj self, Obj stream, Obj len) GAP_GC_CANSAFEPOINT
 {
     UInt pty = HashLockStreamIfAvailable(stream);
 
@@ -1001,6 +1003,7 @@ static Obj FuncREAD_IOSTREAM(Obj self, Obj stream, Obj len)
 }
 
 static Obj FuncREAD_IOSTREAM_NOWAIT(Obj self, Obj stream, Obj len)
+    GAP_GC_CANSAFEPOINT
 {
     UInt pty = HashLockStreamIfAvailable(stream);
 
@@ -1020,7 +1023,7 @@ static Obj FuncREAD_IOSTREAM_NOWAIT(Obj self, Obj stream, Obj len)
     return string;
 }
 
-static Obj FuncKILL_CHILD_IOSTREAM(Obj self, Obj stream)
+static Obj FuncKILL_CHILD_IOSTREAM(Obj self, Obj stream) GAP_GC_CANSAFEPOINT
 {
     UInt pty = HashLockStreamIfAvailable(stream);
 
@@ -1032,6 +1035,7 @@ static Obj FuncKILL_CHILD_IOSTREAM(Obj self, Obj stream)
 }
 
 static Obj FuncSIGNAL_CHILD_IOSTREAM(Obj self, Obj stream, Obj sig)
+    GAP_GC_CANSAFEPOINT
 {
     UInt pty = HashLockStreamIfAvailable(stream);
 
@@ -1042,7 +1046,7 @@ static Obj FuncSIGNAL_CHILD_IOSTREAM(Obj self, Obj stream, Obj sig)
     return 0;
 }
 
-static Obj FuncCLOSE_PTY_IOSTREAM(Obj self, Obj stream)
+static Obj FuncCLOSE_PTY_IOSTREAM(Obj self, Obj stream) GAP_GC_CANSAFEPOINT
 {
     UInt pty = HashLockStreamIfAvailable(stream);
     int status, retcode;
@@ -1075,7 +1079,7 @@ static Obj FuncCLOSE_PTY_IOSTREAM(Obj self, Obj stream)
     return 0;
 }
 
-static Obj FuncIS_BLOCKED_IOSTREAM(Obj self, Obj stream)
+static Obj FuncIS_BLOCKED_IOSTREAM(Obj self, Obj stream) GAP_GC_CANSAFEPOINT
 {
     UInt pty = HashLockStreamIfAvailable(stream);
 
@@ -1085,7 +1089,7 @@ static Obj FuncIS_BLOCKED_IOSTREAM(Obj self, Obj stream)
     return isBlocked ? True : False;
 }
 
-static Obj FuncFD_OF_IOSTREAM(Obj self, Obj stream)
+static Obj FuncFD_OF_IOSTREAM(Obj self, Obj stream) GAP_GC_CANSAFEPOINT
 {
     UInt pty = HashLockStreamIfAvailable(stream);
 
@@ -1096,6 +1100,7 @@ static Obj FuncFD_OF_IOSTREAM(Obj self, Obj stream)
 
 static Obj
 FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
+    GAP_GC_CANSAFEPOINT
 {
     Obj    ExecArgs[1024];
     Char * ExecCArgs[1024];
@@ -1259,7 +1264,7 @@ static Int InitKernel(StructInitInfo * module)
 **
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-static Int InitLibrary(StructInitInfo * module)
+static Int InitLibrary(StructInitInfo * module) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable(GVarFuncs);

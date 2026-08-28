@@ -267,6 +267,7 @@ void SyExit(UInt ret)
 *F  Panic( <msg> )
 */
 void Panic_(const char * file, int line, const char * fmt, ...)
+    GAP_GC_NO_SAFEPOINT_ANALYSIS
 {
     fprintf(stderr, "Panic in %s:%d: ", file, line);
     va_list args;
@@ -352,7 +353,7 @@ err:
 
 #endif
 
-static void usage(void)
+static void usage(void) GAP_GC_CANSAFEPOINT
 {
     fputs("usage: gap [OPTIONS] [FILES]\n", stderr);
     fputs("       use '-h' option to get help.\n", stderr);
@@ -463,6 +464,7 @@ static int setGapRootPath(const char * argv[], void * Dummy)
 // Provide stub with helpful error message
 
 static int enableMemCheck(const char * argv[], void * dummy)
+    GAP_GC_CANSAFEPOINT
 {
     fputs("# Error: --enableMemCheck not supported by this copy of GAP\n", stderr);
     fputs("  pass --enable-memory-checking to ./configure\n", stderr);
@@ -471,7 +473,7 @@ static int enableMemCheck(const char * argv[], void * dummy)
 #endif
 
 
-static int printVersion(const char * argv[], void * dummy)
+static int printVersion(const char * argv[], void * dummy) GAP_GC_CANSAFEPOINT
 {
     fputs("GAP ", stdout);
     fputs(SyBuildVersion, stdout);
@@ -586,6 +588,7 @@ static void InitSysOpts(void)
 }
 
 static void ParseCommandLineOptions(int argc, const char * argv[], int phase)
+    GAP_GC_CANSAFEPOINT
 {
     // scan the command line for options that we have to process in the kernel
     // we just scan the whole command line looking for the keys for the

@@ -24,11 +24,12 @@
 **  The  list is  automatically extended to   make room for  the new element.
 **  'AddList' returns nothing, it is called only for its side effect.
 */
-void AddList(Obj list, Obj obj GAP_GC_ROOTED_BY_ARG(0) GAP_GC_MAYBE_UNROOTED);
+void AddList(Obj list, Obj obj GAP_GC_ROOTED_BY_ARG(0) GAP_GC_MAYBE_UNROOTED)
+    GAP_GC_CANSAFEPOINT;
 
-void AddPlist(Obj list, Obj obj);
+void AddPlist(Obj list, Obj obj) GAP_GC_CANSAFEPOINT;
 
-void AddPlist3(Obj list, Obj obj, Int pos);
+void AddPlist3(Obj list, Obj obj, Int pos) GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
@@ -92,7 +93,7 @@ void SortPlistByRawObj(Obj list);
 **  returns 0 if <list> contains mutable elements, 1 if immutable but
 **  not homogeneous, 2 otherwise
 */
-UInt RemoveDupsDensePlist(Obj list);
+UInt RemoveDupsDensePlist(Obj list) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

@@ -41,9 +41,9 @@ Int LtListList(Obj listL, Obj listR);
 **  'SumListList' is a generic  function for the third kind  of sum,  that of
 **  two lists.
 */
-Obj SumSclList(Obj listL, Obj listR);
-Obj SumListScl(Obj listL, Obj listR);
-Obj SumListList(Obj listL, Obj listR);
+Obj SumSclList(Obj listL, Obj listR) GAP_GC_CANSAFEPOINT;
+Obj SumListScl(Obj listL, Obj listR) GAP_GC_CANSAFEPOINT;
+Obj SumListList(Obj listL, Obj listR) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -61,9 +61,9 @@ Obj SumListList(Obj listL, Obj listR);
 **  'DiffListList' is  a generic function for the  third  kind of difference,
 **  that of two lists.
 */
-Obj DiffSclList(Obj listL, Obj listR);
-Obj DiffListScl(Obj listL, Obj listR);
-Obj DiffListList(Obj listL, Obj listR);
+Obj DiffSclList(Obj listL, Obj listR) GAP_GC_CANSAFEPOINT;
+Obj DiffListScl(Obj listL, Obj listR) GAP_GC_CANSAFEPOINT;
+Obj DiffListList(Obj listL, Obj listR) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -86,9 +86,9 @@ Obj DiffListList(Obj listL, Obj listR);
 **  vectors, a vector and a matrix, and the product of a vector and a list of
 **  matrices.
 */
-Obj ProdSclList(Obj listL, Obj listR);
-Obj ProdListScl(Obj listL, Obj listR);
-Obj ProdListList(Obj listL, Obj listR);
+Obj ProdSclList(Obj listL, Obj listR) GAP_GC_CANSAFEPOINT;
+Obj ProdListScl(Obj listL, Obj listR) GAP_GC_CANSAFEPOINT;
+Obj ProdListList(Obj listL, Obj listR) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

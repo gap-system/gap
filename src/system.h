@@ -106,7 +106,7 @@ enum {
 **  If ret is 0 'SyExit' should signal to a calling process that all is  ok.
 **  If ret is 1 'SyExit' should signal a  failure  to  the  calling process.
 */
-void SyExit(UInt ret) NORETURN;
+void SyExit(UInt ret) NORETURN GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -114,6 +114,7 @@ void SyExit(UInt ret) NORETURN;
 *F  Panic( <msg> )
 */
 void Panic_(const char * file, int line, const char * fmt, ...) NORETURN
+    GAP_GC_NOTSAFEPOINT
 #ifdef HAVE_FUNC_ATTRIBUTE_FORMAT
     __attribute__((format(printf, 3, 4)))
 #endif
@@ -134,10 +135,11 @@ void Panic_(const char * file, int line, const char * fmt, ...) NORETURN
 **  answer the user interrupts '<ctr>-C', scans the command line for options,
 **  sets up the GAP root paths, locates the '.gaprc' file (if any), and more.
 */
-void InitSystem(int argc, const char * argv[], BOOL handleSignals);
+void InitSystem(int argc, const char * argv[], BOOL handleSignals)
+    GAP_GC_CANSAFEPOINT;
 
 
-void InitRootPaths(int argc, const char * argv[]);
+void InitRootPaths(int argc, const char * argv[]) GAP_GC_CANSAFEPOINT;
 
 
 #endif // GAP_SYSTEM_H

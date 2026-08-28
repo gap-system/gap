@@ -26,7 +26,7 @@
 #include "sysstr.h"
 
 
-static UInt NextSymbol(ScannerState * s);
+static UInt NextSymbol(ScannerState * s) GAP_GC_CANSAFEPOINT;
 
 #define GET_NEXT_CHAR() GetNextChar(s->input)
 
@@ -41,6 +41,7 @@ static void SyntaxErrorOrWarning(ScannerState * s,
                                  const Char *   msg,
                                  UInt           error,
                                  Int            tokenoffset)
+    GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(tokenoffset >= 0 && tokenoffset <= 2);
     // do not print a message if we found one already on the current line
@@ -156,6 +157,7 @@ void SyntaxWarningWithOffset(ScannerState * s,
 **
 */
 static Obj AppendBufToString(Obj string, const char * buf, UInt bufsize)
+    GAP_GC_CANSAFEPOINT
 {
     char *s;
     if (string == 0) {
@@ -271,7 +273,7 @@ void Match(ScannerState * s,
 **  'GetIdent' can decide with one string comparison if 's->Value' holds
 **  a keyword or not.
 */
-static UInt GetIdent(ScannerState * s, Int i, Char c)
+static UInt GetIdent(ScannerState * s, Int i, Char c) GAP_GC_CANSAFEPOINT
 {
     // initially it could be a keyword
     Int isQuoted = 0;
@@ -382,6 +384,7 @@ static UInt GetIdent(ScannerState * s, Int i, Char c)
 **
 */
 static UInt AddCharToBuf(Obj * string, Char * buf, UInt bufsize, UInt pos, Char c)
+    GAP_GC_CANSAFEPOINT
 {
     if (pos >= bufsize) {
         *string = AppendBufToString(*string, buf, pos);
@@ -392,11 +395,13 @@ static UInt AddCharToBuf(Obj * string, Char * buf, UInt bufsize, UInt pos, Char 
 }
 
 static UInt AddCharToValue(ScannerState * s, UInt pos, Char c)
+    GAP_GC_CANSAFEPOINT
 {
     return AddCharToBuf(&s->ValueObj, s->Value, MAX_VALUE_LEN - 1, pos, c);
 }
 
 static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
+    GAP_GC_CANSAFEPOINT
 {
     UInt symbol = S_ILLEGAL;
     UInt i = 0;
@@ -558,7 +563,7 @@ void ScanForFloatAfterDotHACK(ScannerState * s)
 *F  GetOctalDigits()
 **
 */
-static inline Char GetOctalDigits(ScannerState * s, Char c)
+static inline Char GetOctalDigits(ScannerState * s, Char c) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT('0' <= c && c <= '7');
     Char result;
@@ -577,7 +582,7 @@ static inline Char GetOctalDigits(ScannerState * s, Char c)
 *F  CharHexDigit( <ch> ) . . . . . . . . .  turn a single hex digit into Char
 **
 */
-static inline Char CharHexDigit(ScannerState * s)
+static inline Char CharHexDigit(ScannerState * s) GAP_GC_CANSAFEPOINT
 {
     Char c = GET_NEXT_CHAR();
     if (!isxdigit((unsigned int)c)) {
@@ -601,7 +606,7 @@ static inline Char CharHexDigit(ScannerState * s)
 **  into the variable *dst.
 **
 */
-static Char GetEscapedChar(ScannerState * s)
+static Char GetEscapedChar(ScannerState * s) GAP_GC_CANSAFEPOINT
 {
   Char result = 0;
   Char c = GET_NEXT_CHAR();
@@ -662,7 +667,7 @@ static Char GetEscapedChar(ScannerState * s)
 **  An error is raised if the string includes a <newline> character or if the
 **  file ends before the closing '"'.
 */
-static Char GetStr(ScannerState * s, Char c)
+static Char GetStr(ScannerState * s, Char c) GAP_GC_CANSAFEPOINT
 {
     Obj  string = 0;
     Char buf[1024] = "";
@@ -693,7 +698,7 @@ static Char GetStr(ScannerState * s, Char c)
 }
 
 
-static void GetPragma(ScannerState * s, Char c)
+static void GetPragma(ScannerState * s, Char c) GAP_GC_CANSAFEPOINT
 {
     Obj  string = 0;
     Char buf[1024];
@@ -729,7 +734,7 @@ static void GetPragma(ScannerState * s, Char c)
 **
 **  An error is raised if the file ends before the closing """.
 */
-static Char GetTripStr(ScannerState * s, Char c)
+static Char GetTripStr(ScannerState * s, Char c) GAP_GC_CANSAFEPOINT
 {
     Obj  string = 0;
     Char buf[1024];
@@ -776,7 +781,7 @@ static Char GetTripStr(ScannerState * s, Char c)
 **  quoted string, and then reads it. The opening quote '"' of the string is
 **  the current character pointed to by 'In'.
 */
-static void GetString(ScannerState * s)
+static void GetString(ScannerState * s) GAP_GC_CANSAFEPOINT
 {
     Int  isTripleQuoted = 0;
     Char c = GET_NEXT_CHAR();
@@ -815,7 +820,7 @@ static void GetString(ScannerState * s)
 **  must not  be '\'' or <newline>, but  the escape  sequences '\\\'' or '\n'
 **  can be used instead.
 */
-static void GetChar(ScannerState * s)
+static void GetChar(ScannerState * s) GAP_GC_CANSAFEPOINT
 {
   // skip '\''
   Char c = GET_NEXT_CHAR();
@@ -843,7 +848,7 @@ static void GetChar(ScannerState * s)
   }
 }
 
-static void GetHelp(ScannerState * s)
+static void GetHelp(ScannerState * s) GAP_GC_CANSAFEPOINT
 {
     Obj  string = 0;
     Char buf[1024];

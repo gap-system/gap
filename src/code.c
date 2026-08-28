@@ -151,14 +151,14 @@ static Int TNUM_STAT_OR_EXPR(CodeState * cs, Expr expr)
 #define SET_ARGI_INFO(info, i, x) WRITE_STAT(cs, info, (i)-1, x)
 
 
-static inline void PushOffsBody(CodeState * cs)
+static inline void PushOffsBody(CodeState * cs) GAP_GC_CANSAFEPOINT
 {
     if (!cs->OffsBodyStack)
         cs->OffsBodyStack = NEW_PLIST(T_PLIST, 4);
     PushPlist(cs->OffsBodyStack, ObjInt_UInt(cs->OffsBody));
 }
 
-static inline void PopOffsBody(CodeState * cs)
+static inline void PopOffsBody(CodeState * cs) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(cs->OffsBodyStack != 0);
     cs->OffsBody = UInt_ObjInt(PopPlist(cs->OffsBodyStack));
@@ -278,7 +278,7 @@ Stat NewStatOrExpr(CodeState * cs, UInt type, UInt size, UInt line)
     return stat;
 }
 
-static Stat NewStat(CodeState * cs, UInt type, UInt size)
+static Stat NewStat(CodeState * cs, UInt type, UInt size) GAP_GC_CANSAFEPOINT
 {
     return NewStatOrExpr(cs, type, size,
                          GetInputLineNumber(GetCurrentInput()));
@@ -293,7 +293,7 @@ static Stat NewStat(CodeState * cs, UInt type, UInt size)
 **  'NewExpr' allocates a new expression memory block of  the type <type> and
 **  <size> bytes.  'NewExpr' returns the identifier of the new expression.
 */
-static Expr NewExpr(CodeState * cs, UInt type, UInt size)
+static Expr NewExpr(CodeState * cs, UInt type, UInt size) GAP_GC_CANSAFEPOINT
 {
     return NewStat(cs, type, size);
 }
@@ -360,7 +360,7 @@ static Stat PopStat ( void )
     return stat;
 }
 
-static Stat PopSeqStat(CodeState * cs, UInt nr)
+static Stat PopSeqStat(CodeState * cs, UInt nr) GAP_GC_CANSAFEPOINT
 {
     Stat                body;           // sequence, result
     Stat                stat;           // single statement
@@ -398,6 +398,7 @@ static Stat PopSeqStat(CodeState * cs, UInt nr)
 
 static inline Stat
 PopLoopStat(CodeState * cs, UInt baseType, UInt extra, UInt nr)
+    GAP_GC_CANSAFEPOINT
 {
     // fix up the case of no statements
     if (0 == nr) {
@@ -448,7 +449,7 @@ static inline UInt CapacityStackExpr(void)
     return SIZE_BAG(CS(StackExpr)) / sizeof(Expr) - 1;
 }
 
-static void PushExpr(Expr expr)
+static void PushExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     // there must be a stack, it must not be underfull or overfull
     GAP_ASSERT(CS(StackExpr) != 0);
@@ -492,7 +493,7 @@ static Expr PopExpr(void)
 **  'PushUnaryOp' pushes a   unary  operator expression onto the   expression
 **  stack.  <type> is the type of the operator (currently only 'EXPR_NOT').
 */
-static void PushUnaryOp(CodeState * cs, UInt type)
+static void PushUnaryOp(CodeState * cs, UInt type) GAP_GC_CANSAFEPOINT
 {
     Expr                unop;           // unary operator, result
     Expr                op;             // operand
@@ -516,7 +517,7 @@ static void PushUnaryOp(CodeState * cs, UInt type)
 **  'PushBinaryOp' pushes a binary   operator expression onto  the expression
 **  stack.  <type> is the type of the operator.
 */
-static void PushBinaryOp(CodeState * cs, UInt type)
+static void PushBinaryOp(CodeState * cs, UInt type) GAP_GC_CANSAFEPOINT
 {
     Expr                binop;          // binary operator, result
     Expr                opL;            // left operand
@@ -1911,6 +1912,7 @@ Expr CodeLazyFloatExpr(CodeState * cs, Obj str, UInt pushExpr)
 }
 
 static void CodeEagerFloatExpr(CodeState * cs, Obj str, Char mark)
+    GAP_GC_CANSAFEPOINT
 {
     // Eager case, do the conversion now
     Expr fl = NewExpr(cs, EXPR_FLOAT_EAGER, sizeof(UInt) * 3);
@@ -2306,6 +2308,7 @@ void CodeIsbGVar(CodeState * cs, UInt gvar)
 *F  CodeAsssListLevel( <level> )  . code multiple assignment to several lists
 */
 static void CodeAssListUniv(CodeState * cs, Stat ass, Int narg)
+    GAP_GC_CANSAFEPOINT
 {
     Expr                list;           // list expression
     Expr                pos;            // position expression
@@ -2419,6 +2422,7 @@ void CodeUnbList(CodeState * cs, Int narg)
 *F  CodeElmsListLevel( <level> )  .  code multiple selection of several lists
 */
 static void CodeElmListUniv(CodeState * cs, Expr ref, Int narg)
+    GAP_GC_CANSAFEPOINT
 {
     Expr                list;           // list expression
     Expr                pos;            // position expression
@@ -3214,7 +3218,7 @@ static Int InitKernel (
 *F  PostRestore( <module> ) . . . . . . .  recover
 */
 static Int PostRestore (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
   NextFloatExprNumber = INT_INTOBJ(ValGVar(GVarName("SavedFloatIndex")));
   return 0;
@@ -3226,7 +3230,7 @@ static Int PostRestore (
 *F  PreSave( <module> ) . . . . . . .  clean up before saving
 */
 static Int PreSave (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
   // Can't save in mid-parsing
   if (CS(CountExpr) || CS(CountStat))
@@ -3243,7 +3247,7 @@ static Int PreSave (
   return 0;
 }
 
-static Int InitModuleState(void)
+static Int InitModuleState(void) GAP_GC_CANSAFEPOINT
 {
     // allocate the statements and expressions stacks
     CS(StackStat) = NewKernelBuffer(sizeof(Obj) + 64 * sizeof(Stat));

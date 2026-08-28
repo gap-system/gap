@@ -162,7 +162,7 @@ void GAP_Initialize(int              argc,
                     char **          argv,
                     GAP_CallbackFunc markBagsCallback,
                     GAP_CallbackFunc errorCallback,
-                    int              handleSignals);
+                    int              handleSignals) GAP_GC_CANSAFEPOINT;
 
 
 ////
@@ -182,7 +182,7 @@ void GAP_MarkBag(Obj obj);
 // A partial collection will attempt to clean up only recently allocated
 // objects which have not been garbage-collected yet, and is hence normally
 // a faster operation.
-void GAP_CollectBags(BOOL full);
+void GAP_CollectBags(BOOL full) GAP_GC_CANSAFEPOINT;
 
 
 ////
@@ -219,7 +219,7 @@ void GAP_CollectBags(BOOL full);
 // its content.
 //
 // To see an example of how to use this function see tst/testlibgap/basic.c
-Obj GAP_EvalString(const char * cmd);
+Obj GAP_EvalString(const char * cmd) GAP_GC_CANSAFEPOINT;
 
 
 ////
@@ -228,15 +228,16 @@ Obj GAP_EvalString(const char * cmd);
 
 // Returns the value of the global GAP variable with name <name>, or NULL if
 // no global variable with this name is defined.
-Obj GAP_ValueGlobalVariable(const char * name);
+Obj GAP_ValueGlobalVariable(const char * name) GAP_GC_CANSAFEPOINT;
 
 // Checks if assigning to the global GAP variable <name> is possible, by
 // verifying that <name> is not the name of a read-only or constant variable.
-int GAP_CanAssignGlobalVariable(const char * name);
+int GAP_CanAssignGlobalVariable(const char * name) GAP_GC_CANSAFEPOINT;
 
 // Assign <value> to the global GAP variable <name>. If <name> is the name of
 // a readonly or constant variable, an error is raised.
-void GAP_AssignGlobalVariable(const char * name, Obj value);
+void GAP_AssignGlobalVariable(const char * name, Obj value)
+    GAP_GC_CANSAFEPOINT;
 
 
 ////
@@ -305,23 +306,23 @@ int GAP_IsFunction(Obj obj);
 
 // Call the GAP object <func> as a function with arguments given
 // as a GAP list <args>.
-Obj GAP_CallFuncList(Obj func, Obj args);
+Obj GAP_CallFuncList(Obj func, Obj args) GAP_GC_CANSAFEPOINT;
 
 // Call the GAP object <func> as a function with arguments given
 // as an array <args> with <narg> entries.
-Obj GAP_CallFuncArray(Obj func, UInt narg, Obj args[]);
+Obj GAP_CallFuncArray(Obj func, UInt narg, Obj args[]) GAP_GC_CANSAFEPOINT;
 
 // Call the GAP object <func> as a function with 0 arguments.
-Obj GAP_CallFunc0Args(Obj func);
+Obj GAP_CallFunc0Args(Obj func) GAP_GC_CANSAFEPOINT;
 
 // Call the GAP object <func> as a function with 1 argument.
-Obj GAP_CallFunc1Args(Obj func, Obj a1);
+Obj GAP_CallFunc1Args(Obj func, Obj a1) GAP_GC_CANSAFEPOINT;
 
 // Call the GAP object <func> as a function with 2 arguments.
-Obj GAP_CallFunc2Args(Obj func, Obj a1, Obj a2);
+Obj GAP_CallFunc2Args(Obj func, Obj a1, Obj a2) GAP_GC_CANSAFEPOINT;
 
 // Call the GAP object <func> as a function with 3 arguments.
-Obj GAP_CallFunc3Args(Obj func, Obj a1, Obj a2, Obj a3);
+Obj GAP_CallFunc3Args(Obj func, Obj a1, Obj a2, Obj a3) GAP_GC_CANSAFEPOINT;
 
 
 ////
@@ -335,10 +336,10 @@ int GAP_IsMacFloat(Obj obj);
 
 // Returns the value of the GAP machine float object <obj>.
 // If <obj> is not a machine float object, an error is raised.
-double GAP_ValueMacFloat(Obj obj);
+double GAP_ValueMacFloat(Obj obj) GAP_GC_CANSAFEPOINT;
 
 // Returns a new GAP machine float with value <x>.
-Obj GAP_NewMacFloat(double x);
+Obj GAP_NewMacFloat(double x) GAP_GC_CANSAFEPOINT;
 
 
 ////
@@ -370,19 +371,19 @@ int GAP_IsLargeInt(Obj obj);
 // Note that GAP automatically reduces and normalized the integer object,
 // i.e., it will discard any leading zeros; and if the integer fits into a
 // small integer, it will be returned as such.
-Obj GAP_MakeObjInt(const UInt * limbs, Int size);
+Obj GAP_MakeObjInt(const UInt * limbs, Int size) GAP_GC_CANSAFEPOINT;
 
 // Return a GAP integer object with value equal to <val>.
 //
 // Never raises an error.
-Obj GAP_NewObjIntFromInt(Int val);
+Obj GAP_NewObjIntFromInt(Int val) GAP_GC_CANSAFEPOINT;
 
 // Return an integer equal to the given GAP integer object. If <obj> is not
 // a GAP integer, or does not fit into an Int, an error is raised.
 //
 // If `GAP_IsSmallInt(obj)` return 1, then it is guaranteed that this will
 // succeed and no error is raised.
-Int GAP_ValueInt(Obj);
+Int GAP_ValueInt(Obj) GAP_GC_CANSAFEPOINT;
 
 // If <obj> is a GAP integer, returns the number of limbs needed to store the
 // integer, times the sign. If <obj> is the integer 0, then 0 is returned. If
@@ -390,7 +391,7 @@ Int GAP_ValueInt(Obj);
 // its sign.
 //
 // If <obj> is not a GAP integer, an error is raised.
-Int GAP_SizeInt(Obj obj);
+Int GAP_SizeInt(Obj obj) GAP_GC_CANSAFEPOINT;
 
 // Returns a pointer to the limbs of a the GAP large integer <obj>.
 // If <obj> is not a GAP large integer, then NULL is returned.
@@ -418,7 +419,7 @@ UInt GAP_LenList(Obj list);
 // Assign <val> at position <pos> into the GAP list <list>.
 // If <val> is zero, then this unbinds the list entry.
 // If <list> is not a GAP list, an error may be raised.
-void GAP_AssList(Obj list, UInt pos, Obj val);
+void GAP_AssList(Obj list, UInt pos, Obj val) GAP_GC_CANSAFEPOINT;
 
 // Returns the element at the position <pos> in the GAP list <list>.
 // Returns 0 if there is no entry at the given position.
@@ -428,7 +429,7 @@ void GAP_AssList(Obj list, UInt pos, Obj val);
 Obj GAP_ElmList(Obj list, UInt pos);
 
 // Returns a new empty plain list with capacity <capacity>
-Obj GAP_NewPlist(Int capacity);
+Obj GAP_NewPlist(Int capacity) GAP_GC_CANSAFEPOINT;
 
 // Returns a new range with <len> elements, starting at <low>, and proceeding
 // in increments of <inc>. So the final element in the range will be equal to
@@ -437,7 +438,7 @@ Obj GAP_NewPlist(Int capacity);
 // Note that <inc> must be non-zero, and all three arguments as
 // well as the value <high> must fit into a GAP small integer.
 // If any of these conditions is violated, then GAP_Fail is returned.
-Obj GAP_NewRange(Int len, Int low, Int inc);
+Obj GAP_NewRange(Int len, Int low, Int inc) GAP_GC_CANSAFEPOINT;
 
 
 ////
@@ -471,22 +472,22 @@ int GAP_IsMatrixObj(Obj obj);
 
 // Returns the number of rows of the given GAP matrix or matrix obj.
 // If <mat> is not a GAP matrix or matrix obj, an error may be raised.
-UInt GAP_NrRows(Obj mat);
+UInt GAP_NrRows(Obj mat) GAP_GC_CANSAFEPOINT;
 
 // Returns the number of columns of the given GAP matrix or matrix obj.
 // If <mat> is not a GAP matrix or matrix obj, an error may be raised.
-UInt GAP_NrCols(Obj mat);
+UInt GAP_NrCols(Obj mat) GAP_GC_CANSAFEPOINT;
 
 // Assign <val> at position <pos> into the GAP matrix obj <mat>.
 // If <val> is zero, then this unbinds the list entry.
 // If <mat> is not a GAP matrix obj, an error may be raised.
-void GAP_AssMat(Obj mat, UInt row, UInt col, Obj val);
+void GAP_AssMat(Obj mat, UInt row, UInt col, Obj val) GAP_GC_CANSAFEPOINT;
 
 // Returns the element at the <row>, <col> in the GAP matrix obj <mat>.
 // Returns 0 if <row> or <col> are out of bounds, i.e., if either
 // is zero, or larger than the number of rows respectively columns of the list.
 // If <mat> is not a GAP matrix obj, an error may be raised.
-Obj GAP_ElmMat(Obj mat, UInt row, UInt col);
+Obj GAP_ElmMat(Obj mat, UInt row, UInt col) GAP_GC_CANSAFEPOINT;
 
 
 ////
@@ -501,15 +502,15 @@ int GAP_IsRecord(Obj obj);
 // Assign <val> to component given by <name> in the GAP record <rec>.
 // If <val> is zero, then this unbinds the record entry.
 // If <record> is not a GAP record, an error may be raised.
-void GAP_AssRecord(Obj rec, Obj name, Obj val);
+void GAP_AssRecord(Obj rec, Obj name, Obj val) GAP_GC_CANSAFEPOINT;
 
 // Returns the component given by <name> in the GAP record <rec>.
 // Returns 0 if there is no entry of the given name.
 // If <rec> is not a GAP record, an error may be raised.
-Obj GAP_ElmRecord(Obj rec, Obj name);
+Obj GAP_ElmRecord(Obj rec, Obj name) GAP_GC_CANSAFEPOINT;
 
 // Returns a new empty plain record with capacity <capacity>.
-Obj GAP_NewPrecord(Int capacity);
+Obj GAP_NewPrecord(Int capacity) GAP_GC_CANSAFEPOINT;
 
 
 ////
@@ -546,15 +547,15 @@ char * GAP_CSTR_STRING(Obj obj);
 
 // Returns a new mutable GAP string containing a copy of the given NULL
 // terminated C string.
-Obj GAP_MakeString(const char * string);
+Obj GAP_MakeString(const char * string) GAP_GC_CANSAFEPOINT;
 
 // Returns a new mutable GAP string containing a copy of the given
 // C string of given length (in bytes).
-Obj GAP_MakeStringWithLen(const char * string, UInt len);
+Obj GAP_MakeStringWithLen(const char * string, UInt len) GAP_GC_CANSAFEPOINT;
 
 // Returns a immutable GAP string containing a copy of the given NULL
 // terminated C string.
-Obj GAP_MakeImmString(const char * string);
+Obj GAP_MakeImmString(const char * string) GAP_GC_CANSAFEPOINT;
 
 
 ////

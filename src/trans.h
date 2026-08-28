@@ -18,7 +18,7 @@ EXPORT_INLINE BOOL IS_TRANS(Obj f) GAP_GC_NOTSAFEPOINT
     return (TNUM_OBJ(f) == T_TRANS2 || TNUM_OBJ(f) == T_TRANS4);
 }
 
-EXPORT_INLINE Obj NEW_TRANS2(UInt deg)
+EXPORT_INLINE Obj NEW_TRANS2(UInt deg) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(deg <= 65536);
     return NewBag(T_TRANS2, deg * sizeof(UInt2) + 3 * sizeof(Obj));
@@ -42,9 +42,9 @@ EXPORT_INLINE UInt DEG_TRANS2(Obj f) GAP_GC_NOTSAFEPOINT
     return ((UInt)(SIZE_OBJ(f) - 3 * sizeof(Obj)) / sizeof(UInt2));
 }
 
-UInt RANK_TRANS2(Obj f);
+UInt RANK_TRANS2(Obj f) GAP_GC_CANSAFEPOINT;
 
-EXPORT_INLINE Obj NEW_TRANS4(UInt deg)
+EXPORT_INLINE Obj NEW_TRANS4(UInt deg) GAP_GC_CANSAFEPOINT
 {
     // No assert here since we allow creating new T_TRANS4's when the degree
     // is low enough to fit in a T_TRANS2.
@@ -69,9 +69,9 @@ EXPORT_INLINE UInt DEG_TRANS4(Obj f) GAP_GC_NOTSAFEPOINT
     return ((UInt)(SIZE_OBJ(f) - 3 * sizeof(Obj)) / sizeof(UInt4));
 }
 
-UInt RANK_TRANS4(Obj f);
+UInt RANK_TRANS4(Obj f) GAP_GC_CANSAFEPOINT;
 
-EXPORT_INLINE Obj NEW_TRANS(UInt deg)
+EXPORT_INLINE Obj NEW_TRANS(UInt deg) GAP_GC_CANSAFEPOINT
 {
     if (deg < 65536) {
         return NEW_TRANS2(deg);
@@ -87,7 +87,7 @@ EXPORT_INLINE UInt DEG_TRANS(Obj f) GAP_GC_NOTSAFEPOINT
     return (TNUM_OBJ(f) == T_TRANS2 ? DEG_TRANS2(f) : DEG_TRANS4(f));
 }
 
-EXPORT_INLINE UInt RANK_TRANS(Obj f)
+EXPORT_INLINE UInt RANK_TRANS(Obj f) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(IS_TRANS(f));
     return (TNUM_OBJ(f) == T_TRANS2 ? RANK_TRANS2(f) : RANK_TRANS4(f));
@@ -100,7 +100,7 @@ EXPORT_INLINE UInt RANK_TRANS(Obj f)
 **  'OnTuplesTrans'  returns  the  image  of  the  tuple  <tup>   under  the
 **  transformation <f>.
 */
-Obj OnTuplesTrans(Obj tup, Obj f);
+Obj OnTuplesTrans(Obj tup, Obj f) GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
@@ -109,7 +109,7 @@ Obj OnTuplesTrans(Obj tup, Obj f);
 **  'OnSetsTrans' returns the  image of the  tuple <set> under the
 **  transformation <f>.
 */
-Obj OnSetsTrans(Obj set, Obj f);
+Obj OnSetsTrans(Obj set, Obj f) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -118,7 +118,7 @@ Obj OnSetsTrans(Obj set, Obj f);
 **
 **  Returns a hash value for a transformation
 */
-Int HashFuncForTrans(Obj f);
+Int HashFuncForTrans(Obj f) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

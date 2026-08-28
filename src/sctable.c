@@ -54,6 +54,7 @@
 **  constants table <table>.
 */
 static Obj FuncSC_TABLE_ENTRY(Obj self, Obj table, Obj i, Obj j, Obj k)
+    GAP_GC_CANSAFEPOINT
 {
     Obj                 tmp;            // temporary
     Obj                 basis;          // basis  list
@@ -142,6 +143,7 @@ static Obj FuncSC_TABLE_ENTRY(Obj self, Obj table, Obj i, Obj j, Obj k)
 **  <list2> with respect to the structure constants table <table>.
 */
 static void SCTableProdAdd(Obj res, Obj coeff, Obj basis_coeffs, Int dim)
+    GAP_GC_CANSAFEPOINT
 {
     Obj                 basis;
     Obj                 coeffs;
@@ -173,6 +175,7 @@ static void SCTableProdAdd(Obj res, Obj coeff, Obj basis_coeffs, Int dim)
 }
 
 static Obj FuncSC_TABLE_PRODUCT(Obj self, Obj table, Obj list1, Obj list2)
+    GAP_GC_CANSAFEPOINT
 {
     Obj                 res = 0;        // result list
     Obj                 row = 0;        // one row of sc table
@@ -317,7 +320,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );

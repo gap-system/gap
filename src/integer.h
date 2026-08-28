@@ -122,10 +122,10 @@ EXPORT_INLINE BOOL IS_EVEN_INT(Obj obj) GAP_GC_NOTSAFEPOINT
 **  a GAP integer, either an immediate, small integer if possible or
 **  otherwise a new GAP bag with TNUM T_INTPOS or T_INTNEG.
 */
-Obj ObjInt_Int(Int i);
-Obj ObjInt_UInt(UInt i);
-Obj ObjInt_Int8(Int8 i);
-Obj ObjInt_UInt8(UInt8 i);
+Obj ObjInt_Int(Int i) GAP_GC_CANSAFEPOINT;
+Obj ObjInt_UInt(UInt i) GAP_GC_CANSAFEPOINT;
+Obj ObjInt_Int8(Int8 i) GAP_GC_CANSAFEPOINT;
+Obj ObjInt_UInt8(UInt8 i) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -133,10 +133,10 @@ Obj ObjInt_UInt8(UInt8 i);
 **  The following functions convert a GAP integer into an Int, UInt,
 **  Int8 or UInt8 if it is in range. Otherwise it gives an error.
 */
-Int   Int_ObjInt(Obj i);
-UInt  UInt_ObjInt(Obj i);
-Int8  Int8_ObjInt(Obj i);
-UInt8 UInt8_ObjInt(Obj i);
+Int   Int_ObjInt(Obj i) GAP_GC_CANSAFEPOINT;
+UInt  UInt_ObjInt(Obj i) GAP_GC_CANSAFEPOINT;
+Int8  Int8_ObjInt(Obj i) GAP_GC_CANSAFEPOINT;
+UInt8 UInt8_ObjInt(Obj i) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -152,7 +152,7 @@ UInt8 UInt8_ObjInt(Obj i);
 **  i.e., it will discard any leading zeros; and if the integer fits into a
 **  small integer, it will be returned as such.
 */
-Obj MakeObjInt(const UInt * limbs, int size);
+Obj MakeObjInt(const UInt * limbs, int size) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -162,7 +162,7 @@ Obj MakeObjInt(const UInt * limbs, int size);
 **  TODO: This is an internal implementation detail and ideally should not
 **  be exported; unfortunately, FuncNUMBER_GF2VEC currently needs this.
 */
-Obj GMP_NORMALIZE(Obj gmp GAP_GC_PROPAGATES_ROOT);
+Obj GMP_NORMALIZE(Obj gmp GAP_GC_PROPAGATES_ROOT) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -175,7 +175,7 @@ void PrintInt(Obj op);
 
 
 //
-Obj IntHexString(Obj str);
+Obj IntHexString(Obj str) GAP_GC_CANSAFEPOINT;
 
 
 // Parse a string containing a decimal integer into a GAP integer
@@ -185,7 +185,7 @@ Obj IntHexString(Obj str);
 // If <string> is non-NULL, then <str> is ignored, and <string>
 // must reference a GAP string object. If <string> is NULL, then
 // <str> must point to a C string.
-Obj IntStringInternal(Obj string, const Char * str);
+Obj IntStringInternal(Obj string, const Char * str) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -214,7 +214,7 @@ Int LtInt(Obj opL, Obj opR);
 **
 **  'SumInt' returns the sum of the two integer arguments <opL> and <opR>.
 */
-Obj SumInt(Obj opL, Obj opR);
+Obj SumInt(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -224,21 +224,21 @@ Obj SumInt(Obj opL, Obj opR);
 **  'DiffInt' returns the difference of the two integer arguments <opL>
 **  and <opR>.
 */
-Obj DiffInt(Obj opL, Obj opR);
+Obj DiffInt(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  AInvInt( <op> ) . . . . . . . . . . . . .  additive inverse of an integer
 */
-Obj AInvInt(Obj op);
+Obj AInvInt(Obj op) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  AbsInt( <op> ) . . . . . . . . . . . . . . . absolute value of an integer
 */
-Obj AbsInt(Obj op);
+Obj AbsInt(Obj op) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -255,7 +255,7 @@ Obj SignInt(Obj op);
 **  'ProdInt' returns the product of the two  integer  arguments  <opL>  and
 **  <opR>.
 */
-Obj ProdInt(Obj opL, Obj opR);
+Obj ProdInt(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -265,7 +265,7 @@ Obj ProdInt(Obj opL, Obj opR);
 **  'ModInt' returns the smallest positive representative of the residue
 **  class of the integer <opL> modulo the integer <opR>.
 */
-Obj ModInt(Obj opL, Obj opR);
+Obj ModInt(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -274,7 +274,7 @@ Obj ModInt(Obj opL, Obj opR);
 **
 **  'PowInt' returns the <opR>-th (an integer) power of the integer <opL>.
 */
-Obj PowInt(Obj opL, Obj opR);
+Obj PowInt(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -283,7 +283,7 @@ Obj PowInt(Obj opL, Obj opR);
 **
 **  'QuoInt' returns the integer part of the two integers <opL> and <opR>.
 */
-Obj QuoInt(Obj opL, Obj opR);
+Obj QuoInt(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -293,7 +293,7 @@ Obj QuoInt(Obj opL, Obj opR);
 **  'RemInt' returns the remainder of the quotient of the integers <opL> and
 **  <opR>.
 */
-Obj RemInt(Obj opL, Obj opR);
+Obj RemInt(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -302,7 +302,7 @@ Obj RemInt(Obj opL, Obj opR);
 **
 **  'GcdInt' returns the gcd of the two integers <opL> and <opR>.
 */
-Obj GcdInt(Obj opL, Obj opR);
+Obj GcdInt(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -311,14 +311,14 @@ Obj GcdInt(Obj opL, Obj opR);
 **
 **  'LcmInt' returns the lcm of the two integers <opL> and <opR>.
 */
-Obj LcmInt(Obj opL, Obj opR);
+Obj LcmInt(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  InverseModInt( <op> ) . . . .  mult. inverse of an integer modulo another
 */
-Obj InverseModInt(Obj base, Obj mod);
+Obj InverseModInt(Obj base, Obj mod) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -333,7 +333,7 @@ Int CLog2Int(Int intnum);
 **
 *F  BinomialInt(<n>, <k>) . . . .  return the binomial coefficient of n and k
 */
-Obj BinomialInt(Obj n, Obj k);
+Obj BinomialInt(Obj n, Obj k) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

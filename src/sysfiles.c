@@ -168,6 +168,7 @@ static SYS_SY_BUFFER syBuffers[32];
 
 // utility to check return value of 'write'
 static ssize_t echoandcheck(int fid, const char *buf, size_t count)
+    GAP_GC_CANSAFEPOINT
 {
   int ret;
   if (syBuf[fid].type == gzip_socket) {
@@ -320,7 +321,7 @@ gap> CrcString("GAP example string");
 */
 
 // And here we include a variant working on a GAP string
-static Obj FuncCrcString(Obj self, Obj str)
+static Obj FuncCrcString(Obj self, Obj str) GAP_GC_CANSAFEPOINT
 {
     UInt4       crc;
     UInt4       old;
@@ -883,7 +884,7 @@ static struct termios   syOld, syNew;           // old and new terminal state
 
 static Int syFid;
 
-static void syAnswerCont(int signr)
+static void syAnswerCont(int signr) GAP_GC_CANSAFEPOINT
 {
     syStartraw( syFid );
     signal( SIGCONT, SIG_DFL );
@@ -994,7 +995,7 @@ static UInt syLastIntr; // time of the last interrupt
 static BOOL doingReadline;
 #endif
 
-static void syAnswerIntr(int signr)
+static void syAnswerIntr(int signr) GAP_GC_CANSAFEPOINT
 {
     UInt                nowIntr;
 
@@ -1144,7 +1145,7 @@ void InitWindowSize(void)
 **
 *f  syEchoch( <ch>, <fid> )
 */
-static void syEchoch(Int ch, Int fid)
+static void syEchoch(Int ch, Int fid) GAP_GC_CANSAFEPOINT
 {
     Char                ch2;
 
@@ -1187,7 +1188,7 @@ Int SyEchoch (
 **
 *f  syEchos( <ch>, <fid> )
 */
-static void syEchos(const Char * str, Int fid)
+static void syEchos(const Char * str, Int fid) GAP_GC_CANSAFEPOINT
 {
     // if running under a window handler, send the line to it
     if ( SyWindow && fid < 4 )
@@ -1405,7 +1406,7 @@ Int SyWrite(Int fid, const void * ptr, size_t len)
     }
 }
 
-static Int syGetchTerm(Int fid)
+static Int syGetchTerm(Int fid) GAP_GC_CANSAFEPOINT
 {
     UChar                ch;
     Char                str[2];
@@ -1534,7 +1535,7 @@ static Int syGetchNonTerm(Int fid)
 *f  syGetch( <fid> )
 */
 
-static Int syGetch(Int fid)
+static Int syGetch(Int fid) GAP_GC_CANSAFEPOINT
 {
     if (syBuf[fid].isTTY)
       return syGetchTerm(fid);
@@ -1827,6 +1828,7 @@ Int HasAvailableBytes( UInt fid )
 
 
 static Char * syFgetsNoEdit(Char * line, UInt length, Int fid, UInt block)
+    GAP_GC_CANSAFEPOINT
 {
   UInt x = 0;
   int ret = 0;
@@ -1897,7 +1899,7 @@ static int GAP_set_macro(int count, int key)
 }
 
 // a generic rl_command_func_t that delegates to GAP level
-static int GAP_rl_func(int count, int key)
+static int GAP_rl_func(int count, int key) GAP_GC_CANSAFEPOINT
 {
    Obj   rldata, linestr, okey, res, obj, data, beginchange, endchange, m, item;
    Int   len, n, hook, dlen, max, i;
@@ -2037,7 +2039,7 @@ done:
    return 0;
 }
 
-static Obj FuncBINDKEYSTOGAPHANDLER(Obj self, Obj keys)
+static Obj FuncBINDKEYSTOGAPHANDLER(Obj self, Obj keys) GAP_GC_CANSAFEPOINT
 {
   Char*  seq;
 
@@ -2049,6 +2051,7 @@ static Obj FuncBINDKEYSTOGAPHANDLER(Obj self, Obj keys)
 }
 
 static Obj FuncBINDKEYSTOMACRO(Obj self, Obj keys, Obj macro)
+    GAP_GC_CANSAFEPOINT
 {
   Char   *seq, *macr;
 
@@ -2060,7 +2063,7 @@ static Obj FuncBINDKEYSTOMACRO(Obj self, Obj keys, Obj macro)
   return True;
 }
 
-static Obj FuncREADLINEINITLINE(Obj self, Obj line)
+static Obj FuncREADLINEINITLINE(Obj self, Obj line) GAP_GC_CANSAFEPOINT
 {
   Char   *cline;
 
@@ -2089,7 +2092,7 @@ static int preInputHook_rl(void)
   return 0;
 }
 
-static void initreadline(void)
+static void initreadline(void) GAP_GC_CANSAFEPOINT
 {
 
   /* allows users to configure GAP specific settings in their ~/.inputrc like:
@@ -2121,6 +2124,7 @@ static void initreadline(void)
 }
 
 static Char * readlineFgets(Char * line, UInt length, Int fid, UInt block)
+    GAP_GC_CANSAFEPOINT
 {
   char *                 rlres = (char*)NULL;
 
@@ -2199,6 +2203,7 @@ static Int syEndEdit(Int fid)
 #endif
 
 static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
+    GAP_GC_CANSAFEPOINT
 {
     Int                 ch,  ch2,  ch3, last;
     Char                * p,  * q,  * r,  * s,  * t;
@@ -3054,7 +3059,7 @@ char SyFileType(const Char * path)
 *F  SyReadStringFile( <fid> ) . . . . . . . . read file content into a string
 **
 */
-static Obj SyReadStringFile(Int fid)
+static Obj SyReadStringFile(Int fid) GAP_GC_CANSAFEPOINT
 {
     Char            buf[32769];
     Int             ret, len;
@@ -3093,7 +3098,7 @@ static Obj SyReadStringFile(Int fid)
 // fstat seems completely broken under CYGWIN
 /* first try to get the whole file as one chunk, this avoids garbage
    collections because of the GROW_STRING calls below    */
-static Obj SyReadStringFileStat(Int fid)
+static Obj SyReadStringFileStat(Int fid) GAP_GC_CANSAFEPOINT
 {
     Int             ret, len;
     Obj             str;
@@ -3356,7 +3361,7 @@ static Int InitKernel(
 */
 
 static Int InitLibrary(
-      StructInitInfo * module )
+      StructInitInfo * module ) GAP_GC_CANSAFEPOINT
 {
   // init filters and functions
   InitGVarFuncsFromTable( GVarFuncs );

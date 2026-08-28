@@ -92,7 +92,7 @@ UInt OpenErrorOutput(TypOutputFile * output)
 **
 *F  FuncDownEnv( <self>, <level> )  . . . . . . . . .  change the environment
 */
-static Obj FuncDownEnv(Obj self, Obj args)
+static Obj FuncDownEnv(Obj self, Obj args) GAP_GC_CANSAFEPOINT
 {
     Int depth;
 
@@ -114,7 +114,7 @@ static Obj FuncDownEnv(Obj self, Obj args)
     return (Obj)0;
 }
 
-static Obj FuncUpEnv(Obj self, Obj args)
+static Obj FuncUpEnv(Obj self, Obj args) GAP_GC_CANSAFEPOINT
 {
     Int depth;
     if (LEN_PLIST(args) == 0) {
@@ -150,6 +150,7 @@ static Obj FuncSET_ERROR_LVARS(Obj self, Obj lvars)
 }
 
 static Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
+    GAP_GC_CANSAFEPOINT
 {
     if (IsBottomLVars(context))
         return Fail;
@@ -189,7 +190,7 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self,
                                        Obj context,
                                        Obj activeContext,
                                        Obj level,
-                                       Obj prefixWidth)
+                                       Obj prefixWidth) GAP_GC_CANSAFEPOINT
 {
     Obj location = Fail;
 
@@ -297,6 +298,7 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self,
 **
 */
 static Obj FuncCALL_WITH_CATCH(Obj self, Obj func, Obj args)
+    GAP_GC_CANSAFEPOINT
 {
     return CALL_WITH_CATCH(func, args);
 }
@@ -408,6 +410,7 @@ Int RegisterBreakloopObserver(intfunc func)
 */
 
 static Obj ErrorMessageToGAPString(const Char * msg, Int arg1, Int arg2)
+    GAP_GC_CANSAFEPOINT
 {
     Char message[1024];
     SPrTo(message, sizeof(message), msg, arg1, arg2);
@@ -421,7 +424,7 @@ static Obj CallErrorInner(const Char * msg,
                           Int          arg2,
                           UInt         justQuit,
                           UInt         mayReturnVoid,
-                          Obj          lateMessage)
+                          Obj          lateMessage) GAP_GC_CANSAFEPOINT
 {
     // Must do this before creating any other GAP objects,
     // as one of the args could be a pointer into a Bag.
@@ -719,7 +722,7 @@ static Int InitKernel(StructInitInfo * module)
 **
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-static Int InitLibrary(StructInitInfo * module)
+static Int InitLibrary(StructInitInfo * module) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable(GVarFuncs);

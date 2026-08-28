@@ -448,15 +448,17 @@ void CheckAllHandlers(void);
 **  'NewFunctionT' does the same as 'NewFunction', but allows to specify  the
 **  <type> and <size> of the newly created bag.
 */
-Obj NewFunction(Obj name, Int narg, Obj nams, ObjFunc hdlr);
+Obj NewFunction(Obj name, Int narg, Obj nams, ObjFunc hdlr)
+    GAP_GC_CANSAFEPOINT;
 
 Obj NewFunctionC(const Char * name,
                  Int          narg,
                  const Char * nams,
-                 ObjFunc      hdlr);
+                 ObjFunc      hdlr) GAP_GC_CANSAFEPOINT;
 
 Obj NewFunctionT(
-    UInt type, UInt size, Obj name, Int narg, Obj nams, ObjFunc hdlr);
+    UInt type, UInt size, Obj name, Int narg, Obj nams, ObjFunc hdlr)
+    GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -467,7 +469,7 @@ Obj NewFunctionT(
 **  separated argument names, and turns it into a plist of strings, ready
 **  to be passed to 'NewFunction' as <nams>.
 */
-Obj ArgStringToList(const Char * nams_c);
+Obj ArgStringToList(const Char * nams_c) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -486,7 +488,7 @@ void PrintKernelFunction(Obj func);
 **  i.e., it is equivalent to '<func>( <list>[1], <list>[2]... )'.
 */
 
-Obj CallFuncList(Obj func, Obj list);
+Obj CallFuncList(Obj func, Obj list) GAP_GC_CANSAFEPOINT;
 
 extern Obj CallFuncListOper GAP_GC_GLOBALLY_ROOTED;
 
