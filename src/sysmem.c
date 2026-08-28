@@ -39,6 +39,11 @@
 #include <string.h>     // for memset
 #endif
 
+#ifdef SYS_IS_WINDOWS
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>    // for VirtualAlloc
+#endif
+
 
 Int SyStorMax;
 SyStorEnum SyStorOverrun;
@@ -401,6 +406,134 @@ static int SyTryToIncreasePool(void)
     return 0;
 }
 
+#elif defined(SYS_IS_WINDOWS)
+
+/****************************************************************************
+**  Pool via VirtualAlloc, mirroring the mmap based pool above. Note that
+**  reservations have a 64 kB granularity, so all sizes are rounded up to
+**  that, keeping the region end fit for contiguous extension.
+*/
+
+enum { SY_WIN_ALLOC_GRANULARITY = 64 * 1024 };
+
+static size_t SyRoundUpToGranularity(size_t size)
+{
+    return (size + SY_WIN_ALLOC_GRANULARITY - 1) &
+           ~(size_t)(SY_WIN_ALLOC_GRANULARITY - 1);
+}
+
+static void *SyMMapStart = NULL;   // start of the reserved region for POOL
+static void *SyMMapEnd;            // end of the reserved region for POOL
+static void *SyMMapAdvised;        // we have already advised about non-usage
+                                   // up to here
+static char *SyWinCommitted;       // the pool is committed up to here
+
+// apply MEM_COMMIT or MEM_DECOMMIT to the range [<from>, <to>), splitting
+// it at region boundaries: a single call may not span separate
+// reservations, and the pool consists of one reservation per extension
+static BOOL SyWinChangeRange(char * from, char * to, BOOL commit)
+{
+    MEMORY_BASIC_INFORMATION info;
+    char *                   end;
+
+    while (from < to) {
+        if (VirtualQuery(from, &info, sizeof(info)) == 0)
+            return FALSE;
+        end = (char *)info.BaseAddress + info.RegionSize;
+        if (end > to)
+            end = to;
+        if (commit) {
+            if (!VirtualAlloc(from, end - from, MEM_COMMIT, PAGE_READWRITE))
+                return FALSE;
+        }
+        else {
+            VirtualFree(from, end - from, MEM_DECOMMIT);
+        }
+        from = end;
+    }
+    return TRUE;
+}
+
+// Unlike mmap'ed memory, reserved address space must be committed before
+// use, and committed pages count against the system commit limit whether
+// they are touched or not. So the pool is committed on demand as the
+// workspace grows into it, and decommitted again by SyMAdviseFree.
+static BOOL SyWinCommitPool(void * upto)
+{
+    char * newend;
+
+    if ((char *)upto <= SyWinCommitted)
+        return TRUE;
+    newend = (char *)SyRoundUpToGranularity((UInt)upto);
+    if (newend > (char *)SyMMapEnd)
+        newend = SyMMapEnd;
+    if (!SyWinChangeRange(SyWinCommitted, newend, TRUE))
+        return FALSE;
+    SyWinCommitted = newend;
+    return TRUE;
+}
+
+void SyMAdviseFree(void)
+{
+    size_t size;
+    void * from;
+    if (!SyMMapStart)
+        return;
+    from = EndOfWorkspace();
+    from = (void *)SyRoundUpToPagesize((UInt)from);
+    if (from > SyMMapAdvised) {
+        SyMMapAdvised = from;
+        return;
+    }
+    if (from < SyMMapStart || from >= SyMMapEnd || from >= SyMMapAdvised)
+        return;
+    size = (char *)SyMMapAdvised - (char *)from;
+    // decommitting releases the commit charge; the pages are recommitted
+    // and zero filled when the workspace grows into them again, matching
+    // the semantics of MADV_DONTNEED
+    SyWinChangeRange(from, (char *)from + size, FALSE);
+    if ((char *)from < SyWinCommitted)
+        SyWinCommitted = from;
+    SyMMapAdvised = from;
+}
+
+static void * SyAnonMMap(size_t size)
+{
+    void * result;
+    size = SyRoundUpToGranularity(size);
+    // try the same fixed address as the mmap based pool, at 16 terabyte
+    result = VirtualAlloc((void *)((UInt)16 * 1024 * 1024 * 1024 * 1024),
+                          size, MEM_RESERVE, PAGE_NOACCESS);
+    if (result == NULL) {
+        result = VirtualAlloc(NULL, size, MEM_RESERVE, PAGE_NOACCESS);
+    }
+    SyMMapStart = result;
+    if (result != NULL) {
+        SyMMapEnd = (char *)result + size;
+        SyMMapAdvised = (char *)result + size;
+        SyWinCommitted = result;
+    }
+    return result;
+}
+
+// This tries to increase the pool size by a factor of 3/2, if this
+// worked, then 0 is returned, otherwise -1.
+static int SyTryToIncreasePool(void)
+{
+    void * result;
+    size_t size, newchunk;
+
+    size = (char *)SyMMapEnd - (char *)SyMMapStart;
+    newchunk = SyRoundUpToGranularity(size / 2);
+    // the extension only helps if it is contiguous with the current pool
+    result = VirtualAlloc(SyMMapEnd, newchunk, MEM_RESERVE, PAGE_NOACCESS);
+    if (result == NULL)
+        return -1;
+    SyMMapEnd = (char *)SyMMapEnd + newchunk;
+    SyAllocPool += newchunk;
+    return 0;
+}
+
 #else
 
 void SyMAdviseFree(void)
@@ -426,7 +559,7 @@ static void SyInitialAllocPool(void)
    do {
        // Always round up to pagesize:
        SyAllocPool = SyRoundUpToPagesize(SyAllocPool);
-#ifdef HAVE_MADVISE
+#if defined(HAVE_MADVISE) || defined(SYS_IS_WINDOWS)
        POOL = SyAnonMMap(SyAllocPool+pagesize);   // For alignment
 #else
        POOL = calloc(SyAllocPool+pagesize,1);   // For alignment
@@ -459,6 +592,11 @@ static UInt *** SyAllocBagsFromPool(Int size)
             return INVALID_PTR;
     }
     UInt *** ret = EndOfWorkspace();
+#ifdef SYS_IS_WINDOWS
+    // reserved address space must be committed before it can be used
+    if (!SyWinCommitPool((char *)ret + size * 1024))
+        return INVALID_PTR;
+#endif
     syWorksize += size;
     return ret;
 }
