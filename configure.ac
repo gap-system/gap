@@ -186,7 +186,9 @@ CHECK_COMPILER_BUILTIN([__builtin_mul_overflow],[0,0,&x]);
 CHECK_COMPILER_BUILTIN([__builtin_clz],[0]);
 CHECK_COMPILER_BUILTIN([__builtin_clzl],[0]);
 CHECK_COMPILER_BUILTIN([__builtin_clzll],[0]);
+CHECK_COMPILER_BUILTIN([__builtin_popcount],[0]);
 CHECK_COMPILER_BUILTIN([__builtin_popcountl],[0]);
+CHECK_COMPILER_BUILTIN([__builtin_popcountll],[0]);
 
 dnl determine sizeof of some standard types, so that the GAP headers
 dnl can pick the correct builtins among those we just tested
