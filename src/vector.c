@@ -35,7 +35,7 @@
 **  'SumIntVector' is an improved version  of  'SumSclList', which  does  not
 **  call 'SUM' if the operands are immediate integers.
 */
-static Obj SumIntVector(Obj elmL, Obj vecR)
+static Obj SumIntVector(Obj elmL, Obj vecR) GAP_GC_CANSAFEPOINT
 {
     Obj                 vecS = 0;       // handle of the sum
     Obj *               ptrS;           // pointer into the sum
@@ -83,7 +83,7 @@ static Obj SumIntVector(Obj elmL, Obj vecR)
 **  'SumVectorInt' is an improved version  of  'SumListScl', which  does  not
 **  call 'SUM' if the operands are immediate integers.
 */
-static Obj SumVectorInt(Obj vecL, Obj elmR)
+static Obj SumVectorInt(Obj vecL, Obj elmR) GAP_GC_CANSAFEPOINT
 {
     Obj                 vecS = 0;       // handle of the sum
     Obj *               ptrS;           // pointer into the sum
@@ -131,7 +131,7 @@ static Obj SumVectorInt(Obj vecL, Obj elmR)
 **  'SumVectorVector' is an improved version of 'SumListList', which does not
 **  call 'SUM' if the operands are immediate integers.
 */
-static Obj SumVectorVector(Obj vecL, Obj vecR)
+static Obj SumVectorVector(Obj vecL, Obj vecR) GAP_GC_CANSAFEPOINT
 {
     Obj                 vecS = 0;       // handle of the sum
     Obj *               ptrS;           // pointer into the sum
@@ -201,7 +201,7 @@ static Obj SumVectorVector(Obj vecL, Obj vecR)
 **  'DiffIntVector'  is an improved  version of 'DiffSclList', which does not
 **  call 'DIFF' if the operands are immediate integers.
 */
-static Obj DiffIntVector(Obj elmL, Obj vecR)
+static Obj DiffIntVector(Obj elmL, Obj vecR) GAP_GC_CANSAFEPOINT
 {
     Obj                 vecD = 0;       // handle of the difference
     Obj *               ptrD;           // pointer into the difference
@@ -249,7 +249,7 @@ static Obj DiffIntVector(Obj elmL, Obj vecR)
 **  'DiffVectorInt' is an improved  version of 'DiffListScl', which  does not
 **  call 'DIFF' if the operands are immediate integers.
 */
-static Obj DiffVectorInt(Obj vecL, Obj elmR)
+static Obj DiffVectorInt(Obj vecL, Obj elmR) GAP_GC_CANSAFEPOINT
 {
     Obj                 vecD = 0;       // handle of the difference
     Obj *               ptrD;           // pointer into the difference
@@ -297,7 +297,7 @@ static Obj DiffVectorInt(Obj vecL, Obj elmR)
 **  'DiffVectorVector' is an improved  version of  'DiffListList', which does
 **  not call 'DIFF' if the operands are immediate integers.
 */
-static Obj DiffVectorVector(Obj vecL, Obj vecR)
+static Obj DiffVectorVector(Obj vecL, Obj vecR) GAP_GC_CANSAFEPOINT
 {
     Obj                 vecD = 0;       // handle of the sum
     Obj *               ptrD;           // pointer into the sum
@@ -376,7 +376,7 @@ static Obj DiffVectorVector(Obj vecL, Obj vecR)
 **  'ProdIntVector'  is an  improved version of 'ProdSclList', which does not
 **  call 'PROD' if the operands are immediate integers.
 */
-static Obj ProdIntVector(Obj elmL, Obj vecR)
+static Obj ProdIntVector(Obj elmL, Obj vecR) GAP_GC_CANSAFEPOINT
 {
     Obj                 vecP = 0;       // handle of the product
     Obj *               ptrP;           // pointer into the product
@@ -424,7 +424,7 @@ static Obj ProdIntVector(Obj elmL, Obj vecR)
 **  'ProdVectorInt'  is an  improved version of 'ProdSclList', which does not
 **  call 'PROD' if the operands are immediate integers.
 */
-static Obj ProdVectorInt(Obj vecL, Obj elmR)
+static Obj ProdVectorInt(Obj vecL, Obj elmR) GAP_GC_CANSAFEPOINT
 {
     Obj                 vecP = 0;       // handle of the product
     Obj *               ptrP;           // pointer into the product
@@ -537,7 +537,7 @@ static Obj ProdVectorVector(Obj vecL, Obj vecR)
 **  We now need to supply a handler for this and install it as a library method,
 **
 */
-static Obj ProdVectorMatrix(Obj vecL, Obj matR)
+static Obj ProdVectorMatrix(Obj vecL, Obj matR) GAP_GC_CANSAFEPOINT
 {
     Obj                 vecP = 0;       // handle of the product
     Obj *               ptrP;           // pointer into the product
@@ -641,6 +641,7 @@ static Obj ProdVectorMatrix(Obj vecL, Obj matR)
 }
 
 static Obj FuncPROD_VECTOR_MATRIX(Obj self, Obj vec, Obj mat)
+    GAP_GC_CANSAFEPOINT
 {
     return ProdVectorMatrix(vec, mat);
 }
@@ -655,7 +656,7 @@ static Obj FuncPROD_VECTOR_MATRIX(Obj self, Obj vec, Obj mat)
 **  vectors, because it knows what the cyclotomic zero is.
 */
 
-static Obj ZeroVector(Obj vec)
+static Obj ZeroVector(Obj vec) GAP_GC_CANSAFEPOINT
 {
     UInt i, len;
     Obj res;
@@ -669,7 +670,7 @@ static Obj ZeroVector(Obj vec)
     return res;
 }
 
-static Obj ZeroMutVector(Obj vec)
+static Obj ZeroMutVector(Obj vec) GAP_GC_CANSAFEPOINT
 {
     UInt i, len;
     Obj res;
@@ -741,7 +742,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable(GVarFuncs);

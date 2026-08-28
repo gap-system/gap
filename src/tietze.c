@@ -42,7 +42,7 @@
 **
 *F  CheckTietzeStack( <tietze> )
 */
-static void CheckTietzeStack(Obj tietze)
+static void CheckTietzeStack(Obj tietze) GAP_GC_CANSAFEPOINT
 {
     // check the Tietze stack
     RequirePlainList(0, tietze);
@@ -57,7 +57,7 @@ static void CheckTietzeStack(Obj tietze)
 **
 *F  CheckTietzeRelators( <tietze> )
 */
-static Obj CheckTietzeRelators(Obj tietze)
+static Obj CheckTietzeRelators(Obj tietze) GAP_GC_CANSAFEPOINT
 {
     Obj rels = ELM_PLIST(tietze, TZ_RELATORS);
     Int numrels = INT_INTOBJ(ELM_PLIST(tietze, TZ_NUMRELS));
@@ -74,6 +74,7 @@ static Obj CheckTietzeRelators(Obj tietze)
 */
 static void
 CheckTietzeInverses(Obj tietze, Obj * invs, Obj ** ptInvs, Int * numgens)
+    GAP_GC_CANSAFEPOINT
 {
     // get and check the Tietze inverses list
     *invs    = ELM_PLIST(tietze, TZ_INVERSES);
@@ -91,6 +92,7 @@ CheckTietzeInverses(Obj tietze, Obj * invs, Obj ** ptInvs, Int * numgens)
 */
 static void
 CheckTietzeLengths(Obj tietze, Int numrels, Obj * lens, Obj ** ptLens)
+    GAP_GC_CANSAFEPOINT
 {
     // Get and check the Tietze lengths list
     *lens = ELM_PLIST(tietze, TZ_LENGTHS);
@@ -105,7 +107,7 @@ CheckTietzeLengths(Obj tietze, Int numrels, Obj * lens, Obj ** ptLens)
 **
 *F  CheckTietzeFlags( <tietze>, <numrels> )
 */
-static Obj CheckTietzeFlags(Obj tietze, Int numrels)
+static Obj CheckTietzeFlags(Obj tietze, Int numrels) GAP_GC_CANSAFEPOINT
 {
     // get and check the Tietze flags list
     Obj flags = ELM_PLIST(tietze, TZ_FLAGS);
@@ -120,7 +122,7 @@ static Obj CheckTietzeFlags(Obj tietze, Int numrels)
 **
 *F  CheckTietzeRelLengths( <tietze> )
 */
-static Int CheckTietzeRelLengths(Obj tietze)
+static Int CheckTietzeRelLengths(Obj tietze) GAP_GC_CANSAFEPOINT
 {
     Int         numrels = INT_INTOBJ(ELM_PLIST(tietze, TZ_NUMRELS));
     Obj         rels = ELM_PLIST(tietze, TZ_RELATORS);
@@ -150,7 +152,7 @@ static Int CheckTietzeRelLengths(Obj tietze)
 **
 *F  FuncTzSortC( <self>, <stack> )  . . . . . . . sort the relators by length
 */
-static Obj FuncTzSortC(Obj self, Obj tietze)
+static Obj FuncTzSortC(Obj self, Obj tietze) GAP_GC_CANSAFEPOINT
 {
     Obj                 rels = 0;       // relators list
     Obj *               ptRels;         // pointer to this list
@@ -228,7 +230,7 @@ static Obj FuncTzSortC(Obj self, Obj tietze)
 **
 *F  FuncTzRenumberGens( <self>, <stack> ) . .  renumber the Tietze generators
 */
-static Obj FuncTzRenumberGens(Obj self, Obj tietze)
+static Obj FuncTzRenumberGens(Obj self, Obj tietze) GAP_GC_CANSAFEPOINT
 {
     Obj                 rels = 0;       // handle of the relators list
     const Obj *         ptRels;         // pointer to this list
@@ -278,7 +280,7 @@ static Obj FuncTzRenumberGens(Obj self, Obj tietze)
 **
 *F  FuncTzReplaceGens( <self>, <stack> )  replace Tietze generators by others
 */
-static Obj FuncTzReplaceGens(Obj self, Obj tietze)
+static Obj FuncTzReplaceGens(Obj self, Obj tietze) GAP_GC_CANSAFEPOINT
 {
     Obj                 rels = 0;       // handle of the relators list
     const Obj *         ptRels;         // pointer to this list
@@ -405,6 +407,7 @@ static Obj FuncTzReplaceGens(Obj self, Obj tietze)
 *F  FuncTzSubstituteGen( <self>, <stack>, <gennum>, <word> )
 */
 static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
+    GAP_GC_CANSAFEPOINT
 {
     Obj                 rels = 0;       // handle of the relators list
     Obj *               ptRels;         // pointer to this list
@@ -600,7 +603,7 @@ static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
 **
 *F  FuncTzOccurrences( <self>, <args> ) . .  occurrences of Tietze generators
 */
-static Obj FuncTzOccurrences(Obj self, Obj args)
+static Obj FuncTzOccurrences(Obj self, Obj args) GAP_GC_CANSAFEPOINT
 {
     Obj                 tietze;         // handle of the Tietze stack
     Obj                 rels = 0;       // handle of the relators list
@@ -786,7 +789,7 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
 **
 *F  FuncTzOccurrencesPairs( <self>, <args> )  . . . . .  occurrences of pairs
 */
-static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
+static Obj FuncTzOccurrencesPairs(Obj self, Obj args) GAP_GC_CANSAFEPOINT
 {
     Obj                 tietze;         // handle of the Tietze stack
     Obj                 rels = 0;       // handle of the relators list
@@ -951,7 +954,7 @@ static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
 **
 *F  FuncTzSearchC( <self>, <args> ) . find subword matches in Tietze relators
 */
-static Obj FuncTzSearchC(Obj self, Obj args)
+static Obj FuncTzSearchC(Obj self, Obj args) GAP_GC_CANSAFEPOINT
 {
     Obj                 tietze;         // handle of the Tietze stack
     Obj                 rels = 0;       // handle of the relators list
@@ -1437,6 +1440,7 @@ static Obj FuncTzSearchC(Obj self, Obj args)
 // rewriting using tz form relators
 
 static Obj FuncREDUCE_LETREP_WORDS_REW_SYS(Obj self, Obj tzrules, Obj a_w)
+    GAP_GC_CANSAFEPOINT
 {
  UInt n,lt,i,k,p,j,lrul,eq,rlen,newlen,a;
  Obj w = 0, nw = 0, rul = 0, wp = 0, rj = 0;
@@ -1633,7 +1637,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );

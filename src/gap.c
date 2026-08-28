@@ -185,7 +185,7 @@ static Obj FuncSHELL(Obj self,
                      Obj canReturnObj,
                      Obj breakLoop,
                      Obj prompt,
-                     Obj preCommandHook)
+                     Obj preCommandHook) GAP_GC_CANSAFEPOINT
 {
     //
     // validate all arguments
@@ -405,7 +405,7 @@ static Obj FuncSHELL(Obj self,
     return (Obj)0;
 }
 
-int realmain(int argc, const char * argv[])
+int realmain(int argc, const char * argv[]) GAP_GC_CANSAFEPOINT
 {
   UInt                type;                   // result of compile
   Obj                 func = 0;               // function (compiler)
@@ -454,7 +454,7 @@ static Obj FuncID_FUNC(Obj self, Obj val1)
 **
 *F  FuncRETURN_FIRST( <self>, <args> ) . . . . . . . . Return first argument
 */
-static Obj FuncRETURN_FIRST(Obj self, Obj args)
+static Obj FuncRETURN_FIRST(Obj self, Obj args) GAP_GC_CANSAFEPOINT
 {
     if (!IS_PLIST(args) || LEN_PLIST(args) < 1)
         ErrorMayQuit("RETURN_FIRST requires at least one argument",0,0);
@@ -492,7 +492,7 @@ static Obj FuncRETURN_NOTHING(Obj self, Obj arg)
 **  to leave this value unaffected.  Note that those parameters can  also  be
 **  set with the command line options '-x <x>' and '-y <y>'.
 */
-static Obj FuncSizeScreen(Obj self, Obj args)
+static Obj FuncSizeScreen(Obj self, Obj args) GAP_GC_CANSAFEPOINT
 {
   Obj                 size = 0;       // argument and result list
   Obj                 elm = 0;        // one entry from size
@@ -570,7 +570,7 @@ static Obj FuncSizeScreen(Obj self, Obj args)
 */
 static Obj WindowCmdString GAP_GC_GLOBALLY_ROOTED;
 
-static Obj FuncWindowCmd(Obj self, Obj args)
+static Obj FuncWindowCmd(Obj self, Obj args) GAP_GC_CANSAFEPOINT
 {
   Obj             tmp = 0;
   Obj             list = 0;
@@ -712,7 +712,7 @@ static Obj FuncWindowCmd(Obj self, Obj args)
 **
 **  'GASMAN( "display" | "clear" | "collect" | "message" | "partial" )'
 */
-static Obj FuncGASMAN(Obj self, Obj args)
+static Obj FuncGASMAN(Obj self, Obj args) GAP_GC_CANSAFEPOINT
 {
     if ( ! IS_SMALL_LIST(args) || LEN_LIST(args) == 0 ) {
         ErrorMayQuit(
@@ -868,7 +868,7 @@ static Obj FuncGASMAN_MESSAGE_STATUS(Obj self)
 }
 #endif
 
-static Obj FuncGASMAN_LIMITS(Obj self)
+static Obj FuncGASMAN_LIMITS(Obj self) GAP_GC_CANSAFEPOINT
 {
   Obj list;
   list = NEW_PLIST_IMM(T_PLIST_CYC, 3);
@@ -893,7 +893,7 @@ static Obj FuncGASMAN_MEM_CHECK(Obj self, Obj newval)
 #endif
 
 
-static Obj FuncTOTAL_GC_TIME(Obj self)
+static Obj FuncTOTAL_GC_TIME(Obj self) GAP_GC_CANSAFEPOINT
 {
     return ObjInt_UInt8(TotalGCTime());
 }
@@ -902,7 +902,7 @@ static Obj FuncTOTAL_GC_TIME(Obj self)
 **
 *F  FuncTotalMemoryAllocated( <self> ) .expert function 'TotalMemoryAllocated'
 */
-static Obj FuncTotalMemoryAllocated(Obj self)
+static Obj FuncTotalMemoryAllocated(Obj self) GAP_GC_CANSAFEPOINT
 {
     return ObjInt_UInt8(SizeAllBags);
 }
@@ -915,7 +915,7 @@ static Obj FuncTotalMemoryAllocated(Obj self)
 **  returns the bag size of the object. This does not include the size of
 **  sub-objects.
 */
-static Obj FuncSIZE_OBJ(Obj self, Obj obj)
+static Obj FuncSIZE_OBJ(Obj self, Obj obj) GAP_GC_CANSAFEPOINT
 {
     if (IS_INTOBJ(obj) || IS_FFE(obj))
         return INTOBJ_INT(0);
@@ -935,7 +935,7 @@ static Obj FuncTNUM_OBJ(Obj self, Obj obj)
 **
 *F  FuncTNAM_OBJ( <self>, <obj> ) . . . . . . . .  expert function 'TNAM_OBJ'
 */
-static Obj FuncTNAM_OBJ(Obj self, Obj obj)
+static Obj FuncTNAM_OBJ(Obj self, Obj obj) GAP_GC_CANSAFEPOINT
 {
     return MakeImmString(TNAM_OBJ(obj));
 }
@@ -944,7 +944,7 @@ static Obj FuncTNAM_OBJ(Obj self, Obj obj)
 **
 *F  FuncOBJ_HANDLE( <self>, <handle> ) . . . . . expert function 'OBJ_HANDLE'
 */
-static Obj FuncOBJ_HANDLE(Obj self, Obj handle)
+static Obj FuncOBJ_HANDLE(Obj self, Obj handle) GAP_GC_CANSAFEPOINT
 {
     if (handle != INTOBJ_INT(0) && !IS_POS_INT(handle))
         RequireArgument(SELF_NAME, handle, "must be a non-negative integer");
@@ -959,7 +959,7 @@ static Obj FuncOBJ_HANDLE(Obj self, Obj handle)
 **  object non-identical objects will have different handles. The integers
 **  may be large.
 */
-static Obj FuncHANDLE_OBJ(Obj self, Obj obj)
+static Obj FuncHANDLE_OBJ(Obj self, Obj obj) GAP_GC_CANSAFEPOINT
 {
     return ObjInt_UInt((UInt) obj);
 }
@@ -972,7 +972,7 @@ HANDLE_OBJ for non-immediate objects, but divided by sizeof(Obj), which gets
 rid of a few zero bits and thus increases the chance of the result value
 fitting into an immediate integer. */
 
-static Obj FuncMASTER_POINTER_NUMBER(Obj self, Obj o)
+static Obj FuncMASTER_POINTER_NUMBER(Obj self, Obj o) GAP_GC_CANSAFEPOINT
 {
     if (IS_INTOBJ(o) || IS_FFE(o)) {
         return INTOBJ_INT(0);
@@ -1005,7 +1005,7 @@ static int SetExitValue(Obj code)
 **
 */
 
-static Obj FuncGapExitCode(Obj self, Obj args)
+static Obj FuncGapExitCode(Obj self, Obj args) GAP_GC_CANSAFEPOINT
 {
     if (LEN_LIST(args) > 1) {
         ErrorQuit("usage: GapExitCode( [ <return value> ] )", 0, 0);
@@ -1030,7 +1030,7 @@ static Obj FuncGapExitCode(Obj self, Obj args)
 **
 */
 
-static Obj FuncQuitGap(Obj self, Obj args)
+static Obj FuncQuitGap(Obj self, Obj args) GAP_GC_CANSAFEPOINT
 {
   if ( LEN_LIST(args) == 0 ) {
     SystemErrorCode = 0;
@@ -1050,7 +1050,7 @@ static Obj FuncQuitGap(Obj self, Obj args)
 **
 */
 
-static Obj FuncForceQuitGap(Obj self, Obj args)
+static Obj FuncForceQuitGap(Obj self, Obj args) GAP_GC_CANSAFEPOINT
 {
   if ( LEN_LIST(args) == 0 )
   {
@@ -1083,7 +1083,7 @@ static Obj FuncSHOULD_QUIT_ON_BREAK(Obj self)
 */
 static Obj KernelArgs GAP_GC_GLOBALLY_ROOTED;
 
-static void InitKernelArgs(int argc, const char * argv[])
+static void InitKernelArgs(int argc, const char * argv[]) GAP_GC_CANSAFEPOINT
 {
     // make command line available to GAP level
     KernelArgs = NEW_PLIST_IMM(T_PLIST, argc);
@@ -1092,7 +1092,7 @@ static void InitKernelArgs(int argc, const char * argv[])
     }
 }
 
-static Obj FuncKERNEL_INFO(Obj self)
+static Obj FuncKERNEL_INFO(Obj self) GAP_GC_CANSAFEPOINT
 {
     Obj  res = 0;
     UInt r;
@@ -1250,7 +1250,7 @@ void UpdateTime(UInt startTime)
 // code which wants to look like interactive usage of GAP. Using this
 // function will not stop GAP automatically changing these variables as
 // usual.
-static Obj FuncUPDATE_STAT(Obj self, Obj name, Obj newStat)
+static Obj FuncUPDATE_STAT(Obj self, Obj name, Obj newStat) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, name);
 
@@ -1277,7 +1277,7 @@ static Obj FuncUPDATE_STAT(Obj self, Obj name, Obj newStat)
 }
 
 
-static Obj FuncSetAssertionLevel(Obj self, Obj level)
+static Obj FuncSetAssertionLevel(Obj self, Obj level) GAP_GC_CANSAFEPOINT
 {
     RequireNonnegativeSmallInt(SELF_NAME, level);
     STATE(CurrentAssertionLevel) = INT_INTOBJ(level);
@@ -1372,7 +1372,7 @@ static Int InitKernel (
 *F  PostRestore( <module> ) . . . . . . . . . . . . . after restore workspace
 */
 static Int PostRestore (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // construct the `ViewObj' variable
     ViewObjGVar = GVarName( "ViewObj" );
@@ -1395,7 +1395,7 @@ static Int PostRestore (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );

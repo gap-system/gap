@@ -108,6 +108,7 @@ static void INTERPRETER_PROFILE_HOOK(IntrState * intr, int ignoreLevel)
 */
 
 static void PushObj(IntrState * intr, Obj val GAP_GC_MAYBE_UNROOTED)
+    GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(val != 0);
     PushPlist(intr->StackObj, val);
@@ -122,17 +123,17 @@ static void PushObj(IntrState * intr, Obj val GAP_GC_MAYBE_UNROOTED)
  * so it will not see this magic value. */
 static Obj VoidReturnMarker GAP_GC_GLOBALLY_ROOTED;
 
-static void PushFunctionVoidReturn(IntrState * intr)
+static void PushFunctionVoidReturn(IntrState * intr) GAP_GC_CANSAFEPOINT
 {
     PushPlist(intr->StackObj, VoidReturnMarker);
 }
 
-static void PushVoidObj(IntrState * intr)
+static void PushVoidObj(IntrState * intr) GAP_GC_CANSAFEPOINT
 {
     PushPlist(intr->StackObj, 0);
 }
 
-static Obj PopObj(IntrState * intr)
+static Obj PopObj(IntrState * intr) GAP_GC_CANSAFEPOINT
 {
     Obj val = PopPlist(intr->StackObj);
 
@@ -160,6 +161,7 @@ static Obj PopVoidObj(IntrState * intr)
 
 
 static void StartFakeFuncExpr(IntrState * intr, Obj stackNams)
+    GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(intr->coding == 0);
 
@@ -193,6 +195,7 @@ static void StartFakeFuncExpr(IntrState * intr, Obj stackNams)
 
 
 static void FinishAndCallFakeFuncExpr(IntrState * intr, Obj stackNams)
+    GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(intr->coding == 0);
 
@@ -1450,7 +1453,7 @@ void IntrNot(IntrState * intr)
 **  actions to interpret the respective operator expression.  They are called
 **  by the reader *after* *both* operands are read.
 */
-static void StackSwap(IntrState * intr)
+static void StackSwap(IntrState * intr) GAP_GC_CANSAFEPOINT
 {
     Obj                 opL = 0;        // left operand
     Obj                 opR = 0;        // right operand
@@ -1907,7 +1910,7 @@ void IntrIntExpr(IntrState * intr, Obj string, Char * str)
 
 static Obj CONVERT_FLOAT_LITERAL_EAGER GAP_GC_GLOBALLY_ROOTED;
 
-static Obj ConvertFloatLiteralEager(Obj str)
+static Obj ConvertFloatLiteralEager(Obj str) GAP_GC_CANSAFEPOINT
 {
     Obj res = 0;
     GAP_GC_PUSH2(&str, &res);
@@ -2075,7 +2078,7 @@ void IntrCharExpr(IntrState * intr, Char chr)
 *F  IntrPermCycle(<nr>) . . . . . .  interpret literal permutation expression
 *F  IntrPerm(<nr>)  . . . . . . . .  interpret literal permutation expression
 */
-static Obj GetFromStack(Obj cycle, Int j)
+static Obj GetFromStack(Obj cycle, Int j) GAP_GC_CANSAFEPOINT
 {
     IntrState * intr = (IntrState *)cycle;
     return PopObj(intr);
@@ -4417,7 +4420,7 @@ void IntrAssertEnd3Args(IntrState * intr)
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // register global bags with the garbage collector
     InitGlobalBag( &STATE(ErrorLVars), "STATE(ErrorLVars)"         );

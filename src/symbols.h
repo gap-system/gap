@@ -54,7 +54,8 @@ void InitSymbolTableKernel(SymbolTable *      symtab,
                            NewSymbolFunc      newSymbolFunc);
 
 // Initialize library part of a SymbolTable (to be called from InitLibrary)
-void InitSymbolTableLibrary(SymbolTable * symtab, UInt initialSize);
+void InitSymbolTableLibrary(SymbolTable * symtab, UInt initialSize)
+    GAP_GC_CANSAFEPOINT;
 
 // Return the number of symbols contained in a SymbolTable (thread safe)
 int LengthSymbolTable(SymbolTable * symtab);
@@ -62,7 +63,7 @@ int LengthSymbolTable(SymbolTable * symtab);
 // Return a unique id for the symbol <name> in <symtab>. If the entry
 // is not yet in the table, it is added, and <symtab->newSymbolFunc> is
 // invoked.
-UInt LookupSymbol(SymbolTable * symtab, const char * name);
+UInt LookupSymbol(SymbolTable * symtab, const char * name) GAP_GC_CANSAFEPOINT;
 
 
 #ifdef HPCGAP

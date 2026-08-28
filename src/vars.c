@@ -134,7 +134,7 @@ void FreeLVarsBag(Bag bag)
 **  'ExecAssLVar' executes the local  variable assignment statement <stat> to
 **  the local variable that is referenced in <stat>.
 */
-static ExecStatus ExecAssLVar(Stat stat)
+static ExecStatus ExecAssLVar(Stat stat) GAP_GC_CANSAFEPOINT
 {
     Obj                 rhs;            // value of right hand side
 
@@ -290,7 +290,7 @@ Obj NAME_HVAR_WITH_CONTEXT(Obj context GAP_GC_PROPAGATES_ROOT, UInt hvar)
 **  'ExecAssHVar' executes the higher variable assignment statement <stat> to
 **  the higher variable that is referenced in <stat>.
 */
-static ExecStatus ExecAssHVar(Stat stat)
+static ExecStatus ExecAssHVar(Stat stat) GAP_GC_CANSAFEPOINT
 {
     Obj                 rhs;            // value of right hand side
 
@@ -317,7 +317,7 @@ static ExecStatus ExecUnbHVar(Stat stat)
 **  'EvalRefLVarXX' evaluates the higher variable reference expression <expr>
 **  to the higher variable that is referenced in <expr>.
 */
-static Obj EvalRefHVar(Expr expr)
+static Obj EvalRefHVar(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 val;            // value, result
     UInt                hvar = READ_EXPR(expr, 0);
@@ -390,7 +390,7 @@ static void PrintIsbHVar(Expr expr)
 **  'ExecAssGVar' executes the global variable assignment statement <stat> to
 **  the global variable that is referenced in <stat>.
 */
-static ExecStatus ExecAssGVar(Stat stat)
+static ExecStatus ExecAssGVar(Stat stat) GAP_GC_CANSAFEPOINT
 {
     Obj                 rhs;            // value of right hand side
 
@@ -401,7 +401,7 @@ static ExecStatus ExecAssGVar(Stat stat)
     return STATUS_END;
 }
 
-static ExecStatus ExecUnbGVar(Stat stat)
+static ExecStatus ExecUnbGVar(Stat stat) GAP_GC_CANSAFEPOINT
 {
     // unbind the global variable
     AssGVar(READ_STAT(stat, 0), (Obj)0);
@@ -417,7 +417,7 @@ static ExecStatus ExecUnbGVar(Stat stat)
 **  'EvalRefGVar' evaluates the  global variable reference expression  <expr>
 **  to the global variable that is referenced in <expr>.
 */
-static Obj EvalRefGVar(Expr expr)
+static Obj EvalRefGVar(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 val;            // value, result
 
@@ -432,7 +432,7 @@ static Obj EvalRefGVar(Expr expr)
     return val;
 }
 
-static Obj EvalIsbGVar(Expr expr)
+static Obj EvalIsbGVar(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 val;            // value, result
 
@@ -489,7 +489,7 @@ static void PrintIsbGVar(Expr expr)
 **  'ExecAssList'  executes the list  assignment statement <stat> of the form
 **  '<list>[<position>] := <rhs>;'.
 */
-static ExecStatus ExecAssList(Expr stat)
+static ExecStatus ExecAssList(Expr stat) GAP_GC_CANSAFEPOINT
 {
     Obj                 list = 0;       // list, left operand
     Obj                 pos = 0;        // position, left operand
@@ -538,7 +538,7 @@ static ExecStatus ExecAssList(Expr stat)
 **  'ExecAssMat' executes the matrix assignment statement <stat> of the form
 **  '<mat>[<row>,<col>] := <rhs>;'.
 */
-static ExecStatus ExecAssMat(Expr stat)
+static ExecStatus ExecAssMat(Expr stat) GAP_GC_CANSAFEPOINT
 {
     Obj mat = 0;
     Obj row = 0;
@@ -571,7 +571,7 @@ static ExecStatus ExecAssMat(Expr stat)
 **  'ExecAsssList' executes the list assignment statement  <stat> of the form
 **  '<list>{<positions>} := <rhss>;'.
 */
-static ExecStatus ExecAsssList(Expr stat)
+static ExecStatus ExecAsssList(Expr stat) GAP_GC_CANSAFEPOINT
 {
     Obj                 list = 0;       // list, left operand
     Obj                 poss = 0;       // positions, left operand
@@ -613,7 +613,7 @@ static ExecStatus ExecAsssList(Expr stat)
 **  a  list, and 'ExecAssListLevel' assigns the  element '<rhss>[<i>]' to the
 **  list '<list>[<i>]' at <position>.
 */
-static ExecStatus ExecAssListLevel(Expr stat)
+static ExecStatus ExecAssListLevel(Expr stat) GAP_GC_CANSAFEPOINT
 {
     Obj                 lists = 0;      // lists, left operand
     Obj                 pos = 0;        // position, left operand
@@ -664,7 +664,7 @@ static ExecStatus ExecAssListLevel(Expr stat)
 **  a list, and 'ExecAsssListLevel' assigns the elements '<rhss>[<i>]' to the
 **  list '<list>[<i>]' at the positions <positions>.
 */
-static ExecStatus ExecAsssListLevel(Expr stat)
+static ExecStatus ExecAsssListLevel(Expr stat) GAP_GC_CANSAFEPOINT
 {
     Obj                 lists = 0;      // lists, left operand
     Obj                 poss = 0;       // position, left operand
@@ -702,7 +702,7 @@ static ExecStatus ExecAsssListLevel(Expr stat)
 **  'ExecUnbList'  executes the list   unbind  statement <stat> of the   form
 **  'Unbind( <list>[<position>] );'.
 */
-static ExecStatus ExecUnbList(Expr stat)
+static ExecStatus ExecUnbList(Expr stat) GAP_GC_CANSAFEPOINT
 {
     Obj                 list = 0;       // list, left operand
     Obj                 pos = 0;        // position, left operand
@@ -747,7 +747,7 @@ static ExecStatus ExecUnbList(Expr stat)
 **  'EvalElmList' evaluates the list  element expression  <expr> of the  form
 **  '<list>[<position>]'.
 */
-static Obj EvalElmList(Expr expr)
+static Obj EvalElmList(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 elm = 0;        // element, result
     Obj                 list = 0;       // list, left operand
@@ -797,7 +797,7 @@ static Obj EvalElmList(Expr expr)
 **  'EvalElmMat' evaluates the matrix element expression <expr> of the form
 **  '<mat>[<row>,<col>]'.
 */
-static Obj EvalElmMat(Expr expr)
+static Obj EvalElmMat(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj mat = 0;
     Obj row = 0;
@@ -827,7 +827,7 @@ static Obj EvalElmMat(Expr expr)
 **  'EvalElmsList' evaluates the  list element expression  <expr> of the form
 **  '<list>{<positions>}'.
 */
-static Obj EvalElmsList(Expr expr)
+static Obj EvalElmsList(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 elms = 0;       // elements, result
     Obj                 list = 0;       // list, left operand
@@ -864,7 +864,7 @@ static Obj EvalElmsList(Expr expr)
 **  must be a  list of lists  and 'EvalElmListLevel'  selects the element  at
 **  <position> from each of the lists and returns the list of those values.
 */
-static Obj EvalElmListLevel(Expr expr)
+static Obj EvalElmListLevel(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 lists = 0;      // lists, left operand
     Obj                 pos = 0;        // position, right operand
@@ -912,7 +912,7 @@ static Obj EvalElmListLevel(Expr expr)
 **  <positions>  from each   of the lists  and  returns   the  list  of those
 **  sublists.
 */
-static Obj EvalElmsListLevel(Expr expr)
+static Obj EvalElmsListLevel(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 lists = 0;      // lists, left operand
     Obj                 poss = 0;       // positions, right operand
@@ -947,7 +947,7 @@ static Obj EvalElmsListLevel(Expr expr)
 **  'EvalIsbList'  evaluates the list  isbound expression  <expr> of the form
 **  'IsBound( <list>[<position>] )'.
 */
-static Obj EvalIsbList(Expr expr)
+static Obj EvalIsbList(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 list = 0;       // list, left operand
     Obj                 pos = 0;        // position, right operand
@@ -1210,7 +1210,7 @@ static void PrintElmsListLevel(Expr expr)
 **  'ExecAssRecName' executes the record  assignment statement <stat>  of the
 **  form '<record>.<name> := <rhs>;'.
 */
-static ExecStatus ExecAssRecName(Stat stat)
+static ExecStatus ExecAssRecName(Stat stat) GAP_GC_CANSAFEPOINT
 {
     Obj                 record = 0;     // record, left operand
     UInt                rnam;           // name, left operand
@@ -1242,7 +1242,7 @@ static ExecStatus ExecAssRecName(Stat stat)
 **  'ExecAssRecExpr'  executes the record assignment  statement <stat> of the
 **  form '<record>.(<name>) := <rhs>;'.
 */
-static ExecStatus ExecAssRecExpr(Stat stat)
+static ExecStatus ExecAssRecExpr(Stat stat) GAP_GC_CANSAFEPOINT
 {
     Obj                 record = 0;     // record, left operand
     UInt                rnam;           // name, left operand
@@ -1276,7 +1276,7 @@ static ExecStatus ExecAssRecExpr(Stat stat)
 **  'ExecUnbRecName' executes the record  unbind statement <stat> of the form
 **  'Unbind( <record>.<name> );'.
 */
-static ExecStatus ExecUnbRecName(Stat stat)
+static ExecStatus ExecUnbRecName(Stat stat) GAP_GC_CANSAFEPOINT
 {
     Obj                 record = 0;     // record, left operand
     UInt                rnam;           // name, left operand
@@ -1304,7 +1304,7 @@ static ExecStatus ExecUnbRecName(Stat stat)
 **  'ExecUnbRecExpr' executes the record  unbind statement <stat> of the form
 **  'Unbind( <record>.(<name>) );'.
 */
-static ExecStatus ExecUnbRecExpr(Stat stat)
+static ExecStatus ExecUnbRecExpr(Stat stat) GAP_GC_CANSAFEPOINT
 {
     Obj                 record = 0;     // record, left operand
     UInt                rnam;           // name, left operand
@@ -1334,7 +1334,7 @@ static ExecStatus ExecUnbRecExpr(Stat stat)
 **  'EvalElmRecName' evaluates the   record element expression  <expr> of the
 **  form '<record>.<name>'.
 */
-static Obj EvalElmRecName(Expr expr)
+static Obj EvalElmRecName(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 elm = 0;        // element, result
     Obj                 record = 0;     // the record, left operand
@@ -1364,7 +1364,7 @@ static Obj EvalElmRecName(Expr expr)
 **  'EvalElmRecExpr'  evaluates the record   element expression <expr> of the
 **  form '<record>.(<name>)'.
 */
-static Obj EvalElmRecExpr(Expr expr)
+static Obj EvalElmRecExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 elm = 0;        // element, result
     Obj                 record = 0;     // the record, left operand
@@ -1396,7 +1396,7 @@ static Obj EvalElmRecExpr(Expr expr)
 **  'EvalElmRecName' evaluates the   record isbound expression  <expr> of the
 **  form 'IsBound( <record>.<name> )'.
 */
-static Obj EvalIsbRecName(Expr expr)
+static Obj EvalIsbRecName(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 record = 0;     // the record, left operand
     UInt                rnam;           // the name, right operand
@@ -1423,7 +1423,7 @@ static Obj EvalIsbRecName(Expr expr)
 **  'EvalIsbRecExpr' evaluates  the record isbound  expression  <expr> of the
 **  form 'IsBound( <record>.(<name>) )'.
 */
-static Obj EvalIsbRecExpr(Expr expr)
+static Obj EvalIsbRecExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 record = 0;     // the record, left operand
     UInt                rnam;           // the name, right operand
@@ -1570,7 +1570,7 @@ static void PrintIsbRecExpr(Expr expr)
 **  'ExecAssPosObj' executes the posobj assignment statement <stat> of the
 **  form '<posobj>[<position>] := <rhs>;'.
 */
-static ExecStatus ExecAssPosObj(Expr stat)
+static ExecStatus ExecAssPosObj(Expr stat) GAP_GC_CANSAFEPOINT
 {
     Obj                 posobj = 0;     // posobj, left operand
     Obj                 pos = 0;        // position, left operand
@@ -1604,7 +1604,7 @@ static ExecStatus ExecAssPosObj(Expr stat)
 **  'ExecUnbPosObj' executes the posobj unbind statement <stat> of the form
 **  'Unbind( <posobj>[<position>] );'.
 */
-static ExecStatus ExecUnbPosObj(Expr stat)
+static ExecStatus ExecUnbPosObj(Expr stat) GAP_GC_CANSAFEPOINT
 {
     Obj                 posobj = 0;     // posobj, left operand
     Obj                 pos = 0;        // position, left operand
@@ -1634,7 +1634,7 @@ static ExecStatus ExecUnbPosObj(Expr stat)
 **  'EvalElmPosObj' evaluates the posobj element expression <expr> of the
 **  form '<posobj>[<position>]'.
 */
-static Obj EvalElmPosObj(Expr expr)
+static Obj EvalElmPosObj(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 elm = 0;        // element, result
     Obj                 posobj = 0;     // posobj, left operand
@@ -1666,7 +1666,7 @@ static Obj EvalElmPosObj(Expr expr)
 **  'EvalElmPosObj' evaluates the posobj isbound expression <expr> of the
 **  form 'IsBound( <posobj>[<position>] )'.
 */
-static Obj EvalIsbPosObj(Expr expr)
+static Obj EvalIsbPosObj(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 isb;            // isbound, result
     Obj                 posobj = 0;     // posobj, left operand
@@ -1760,7 +1760,7 @@ static void PrintIsbPosObj(Expr expr)
 **  'ExecAssComObjName' executes the comobj assignment statement <stat> of
 **  the form '<comobj>!.<name> := <rhs>;'.
 */
-static ExecStatus ExecAssComObjName(Stat stat)
+static ExecStatus ExecAssComObjName(Stat stat) GAP_GC_CANSAFEPOINT
 {
     Obj                 comobj = 0;     // comobj, left operand
     UInt                rnam;           // name, left operand
@@ -1792,7 +1792,7 @@ static ExecStatus ExecAssComObjName(Stat stat)
 **  'ExecAssComObjExpr' executes the comobj assignment statement <stat> of
 **  the form '<comobj>.(<name>) := <rhs>;'.
 */
-static ExecStatus ExecAssComObjExpr(Stat stat)
+static ExecStatus ExecAssComObjExpr(Stat stat) GAP_GC_CANSAFEPOINT
 {
     Obj                 comobj = 0;     // comobj, left operand
     UInt                rnam;           // name, left operand
@@ -1826,7 +1826,7 @@ static ExecStatus ExecAssComObjExpr(Stat stat)
 **  'ExecUnbComObjName' executes the comobj unbind statement <stat> of the
 **  form 'Unbind( <comobj>.<name> );'.
 */
-static ExecStatus ExecUnbComObjName(Stat stat)
+static ExecStatus ExecUnbComObjName(Stat stat) GAP_GC_CANSAFEPOINT
 {
     Obj                 comobj = 0;     // comobj, left operand
     UInt                rnam;           // name, left operand
@@ -1854,7 +1854,7 @@ static ExecStatus ExecUnbComObjName(Stat stat)
 **  'ExecUnbComObjExpr' executes the comobj unbind statement <stat> of the
 **  form 'Unbind( <comobj>.(<name>) );'.
 */
-static ExecStatus ExecUnbComObjExpr(Stat stat)
+static ExecStatus ExecUnbComObjExpr(Stat stat) GAP_GC_CANSAFEPOINT
 {
     Obj                 comobj = 0;     // comobj, left operand
     UInt                rnam;           // name, left operand
@@ -1884,7 +1884,7 @@ static ExecStatus ExecUnbComObjExpr(Stat stat)
 **  'EvalElmComObjName' evaluates the comobj element expression <expr> of the
 **  form '<comobj>.<name>'.
 */
-static Obj EvalElmComObjName(Expr expr)
+static Obj EvalElmComObjName(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 elm = 0;        // element, result
     Obj                 comobj = 0;     // the comobj, left operand
@@ -1914,7 +1914,7 @@ static Obj EvalElmComObjName(Expr expr)
 **  'EvalElmComObjExpr' evaluates the comobj element expression <expr> of the
 **  form '<comobj>.(<name>)'.
 */
-static Obj EvalElmComObjExpr(Expr expr)
+static Obj EvalElmComObjExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 elm = 0;        // element, result
     Obj                 comobj = 0;     // the comobj, left operand
@@ -1946,7 +1946,7 @@ static Obj EvalElmComObjExpr(Expr expr)
 **  'EvalIsbComObjName' evaluates the comobj isbound expression <expr> of the
 **  form 'IsBound( <comobj>.<name> )'.
 */
-static Obj EvalIsbComObjName(Expr expr)
+static Obj EvalIsbComObjName(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 isb;            // element, result
     Obj                 comobj = 0;     // the comobj, left operand
@@ -1975,7 +1975,7 @@ static Obj EvalIsbComObjName(Expr expr)
 **  'EvalIsbComObjExpr' evaluates the comobj isbound expression <expr> of the
 **  form 'IsBound( <comobj>.(<name>) )'.
 */
-static Obj EvalIsbComObjExpr(Expr expr)
+static Obj EvalIsbComObjExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 isb;            // element, result
     Obj                 comobj = 0;     // the comobj, left operand
@@ -2142,7 +2142,7 @@ static Obj FuncGetBottomLVars(Obj self)
   return BottomLVars;
 }
 
-static Obj FuncParentLVars(Obj self, Obj lvars)
+static Obj FuncParentLVars(Obj self, Obj lvars) GAP_GC_CANSAFEPOINT
 {
   if (!IS_LVARS_OR_HVARS(lvars)) {
       RequireArgument(SELF_NAME, lvars, "must be an lvars");
@@ -2151,7 +2151,7 @@ static Obj FuncParentLVars(Obj self, Obj lvars)
   return parent ? parent : Fail;
 }
 
-static Obj FuncContentsLVars(Obj self, Obj lvars)
+static Obj FuncContentsLVars(Obj self, Obj lvars) GAP_GC_CANSAFEPOINT
 {
   if (!IS_LVARS_OR_HVARS(lvars)) {
       RequireArgument(SELF_NAME, lvars, "must be an lvars");
@@ -2181,7 +2181,7 @@ static Obj FuncContentsLVars(Obj self, Obj lvars)
   return contents;
 }
 
-static Obj FuncENVI_FUNC(Obj self, Obj func)
+static Obj FuncENVI_FUNC(Obj self, Obj func) GAP_GC_CANSAFEPOINT
 {
     RequireFunction(SELF_NAME, func);
     Obj envi = ENVI_FUNC(func);
@@ -2507,7 +2507,7 @@ static Int PostRestore (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     Obj tmpFunc, tmpBody;
 

@@ -85,7 +85,7 @@ static Obj NumberRowsAttr GAP_GC_GLOBALLY_ROOTED;
 static Obj NumberColumnsAttr GAP_GC_GLOBALLY_ROOTED;
 static Obj SetIsSmallList GAP_GC_GLOBALLY_ROOTED;
 
-static BOOL IsSmallListObject(Obj obj)
+static BOOL IsSmallListObject(Obj obj) GAP_GC_CANSAFEPOINT
 {
   Obj len;
   if (DoFilter(IsListFilt, obj) != True)
@@ -142,7 +142,7 @@ static BOOL IsSmallListObject(Obj obj)
 **    internal types (NOT YET IMPLEMENTED)
 */
 
-static Obj AttrLENGTH(Obj self, Obj list)
+static Obj AttrLENGTH(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     // internal list types
 #ifdef HPCGAP
@@ -169,7 +169,7 @@ static Obj AttrLENGTH(Obj self, Obj list)
 **
 *F  AttrNUMBER_ROWS( <self>, <mat> )  . . . . . .  'NumberRows' interface
 */
-static Obj AttrNUMBER_ROWS(Obj self, Obj mat)
+static Obj AttrNUMBER_ROWS(Obj self, Obj mat) GAP_GC_CANSAFEPOINT
 {
     if (IS_PLIST(mat)) {
         return ObjInt_Int(LEN_PLIST(mat));
@@ -183,7 +183,7 @@ static Obj AttrNUMBER_ROWS(Obj self, Obj mat)
 **
 *F  AttrNUMBER_COLUMNS( <self>, <mat> ) . . . .  'NumberColumns' interface
 */
-static Obj AttrNUMBER_COLUMNS(Obj self, Obj mat)
+static Obj AttrNUMBER_COLUMNS(Obj self, Obj mat) GAP_GC_CANSAFEPOINT
 {
     if (IS_PLIST(mat)) {
         if (LEN_PLIST(mat) == 0) {
@@ -217,7 +217,7 @@ static Obj AttrNUMBER_COLUMNS(Obj self, Obj mat)
 */
 Int (*LenListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
-static Obj FuncLEN_LIST(Obj self, Obj list)
+static Obj FuncLEN_LIST(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     // special case for plain lists (avoid conversion back and forth)
     if ( IS_PLIST(list) ) {
@@ -231,13 +231,13 @@ static Obj FuncLEN_LIST(Obj self, Obj list)
 }
 
 
-static Int LenListError(Obj list)
+static Int LenListError(Obj list) GAP_GC_CANSAFEPOINT
 {
     RequireArgument("Length", list, "must be a list");
 }
 
 
-static Int LenListObject(Obj obj)
+static Int LenListObject(Obj obj) GAP_GC_CANSAFEPOINT
 {
     Obj                 len = 0;
 
@@ -265,13 +265,13 @@ static Int LenListObject(Obj obj)
 
 Obj             (*LengthFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
-static Obj LengthError(Obj list)
+static Obj LengthError(Obj list) GAP_GC_CANSAFEPOINT
 {
     RequireArgument("Length", list, "must be a list");
 }
 
 
-static Obj LengthObject(Obj obj)
+static Obj LengthObject(Obj obj) GAP_GC_CANSAFEPOINT
 {
     return AttrLENGTH( LengthAttr, obj );
 }
@@ -298,7 +298,7 @@ BOOL (*IsbListFuncs[LAST_REAL_TNUM + 1])(Obj list, Int pos);
 
 static Obj             IsbListOper GAP_GC_GLOBALLY_ROOTED;
 
-static Obj FuncISB_LIST(Obj self, Obj list, Obj pos)
+static Obj FuncISB_LIST(Obj self, Obj list, Obj pos) GAP_GC_CANSAFEPOINT
 {
     if (IS_POS_INTOBJ(pos))
         return ISB_LIST( list, INT_INTOBJ(pos) ) ? True : False;
@@ -306,12 +306,12 @@ static Obj FuncISB_LIST(Obj self, Obj list, Obj pos)
         return ISBB_LIST( list, pos ) ? True : False;
 }
 
-static BOOL IsbListError(Obj list, Int pos)
+static BOOL IsbListError(Obj list, Int pos) GAP_GC_CANSAFEPOINT
 {
     RequireArgument("IsBound", list, "must be a list");
 }
 
-static BOOL IsbListObject(Obj list, Int pos)
+static BOOL IsbListObject(Obj list, Int pos) GAP_GC_CANSAFEPOINT
 {
     return DoOperation2Args( IsbListOper, list, INTOBJ_INT(pos) ) == True;
 }
@@ -376,12 +376,13 @@ static Obj ElmDefListDefault(Obj list, Int pos, Obj def)
 */
 static Obj ElmDefListOper GAP_GC_GLOBALLY_ROOTED;
 
-static Obj ElmDefListObject(Obj list, Int pos, Obj def)
+static Obj ElmDefListObject(Obj list, Int pos, Obj def) GAP_GC_CANSAFEPOINT
 {
     return DoOperation3Args(ElmDefListOper, list, INTOBJ_INT(pos), def);
 }
 
 static Obj FuncELM_DEFAULT_LIST(Obj self, Obj list, Obj pos, Obj def)
+    GAP_GC_CANSAFEPOINT
 {
     Int ipos = GetPositiveSmallInt("GetWithDefault", pos);
     return ELM_DEFAULT_LIST(list, ipos, def);
@@ -402,7 +403,7 @@ Obj (*Elm0vListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **
 *F  Elm0ListError( <list>, <pos> )  . . . . . . . . . . . . . . error message
 */
-static Obj Elm0ListError(Obj list, Int pos)
+static Obj Elm0ListError(Obj list, Int pos) GAP_GC_CANSAFEPOINT
 {
     RequireArgument("List Element", list, "must be a list");
 }
@@ -470,7 +471,7 @@ Obj (*ElmwListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **
 *F  ElmListError( <list>, <pos> ) . . . . . . . . . . . . . . . error message
 */
-static Obj ElmListError(Obj list, Int pos)
+static Obj ElmListError(Obj list, Int pos) GAP_GC_CANSAFEPOINT
 {
     RequireArgument("List Element", list, "must be a list");
 }
@@ -488,7 +489,7 @@ static Obj ElmListError(Obj list, Int pos)
 */
 static Obj ElmListOper GAP_GC_GLOBALLY_ROOTED;
 
-static Obj ElmListObject(Obj list, Int pos)
+static Obj ElmListObject(Obj list, Int pos) GAP_GC_CANSAFEPOINT
 {
     return ELMB_LIST( list, INTOBJ_INT(pos) );
 }
@@ -510,7 +511,7 @@ Obj ELMB_LIST(Obj list, Obj pos)
 **
 *F  FuncELM_MAT( <self>, <mat>, <row>, <col> ) . . . . .  operation `ELM_MAT'
 */
-static Obj FuncELM_MAT(Obj self, Obj mat, Obj row, Obj col)
+static Obj FuncELM_MAT(Obj self, Obj mat, Obj row, Obj col) GAP_GC_CANSAFEPOINT
 {
     return ELM_MAT(mat, row, col);
 }
@@ -555,7 +556,7 @@ Obj ELM_MAT(Obj mat, Obj row, Obj col)
 **
 *F  FuncELM_LIST( <self>, <list>, <pos> ) . . . . . . .  operation `ELM_LIST'
 */
-static Obj FuncELM_LIST(Obj self, Obj list, Obj pos)
+static Obj FuncELM_LIST(Obj self, Obj list, Obj pos) GAP_GC_CANSAFEPOINT
 {
     if (IS_POS_INTOBJ(pos))
         return ELM_LIST(list, INT_INTOBJ(pos));
@@ -586,7 +587,7 @@ Obj (*ElmsListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj poss );
 **
 *F  ElmsListError(<list>,<poss>)  . . . . . . . . .  error selection function
 */
-static Obj ElmsListError(Obj list, Obj poss)
+static Obj ElmsListError(Obj list, Obj poss) GAP_GC_CANSAFEPOINT
 {
     RequireArgument("List Elements", list, "must be a list");
 }
@@ -600,7 +601,7 @@ static Obj ElmsListError(Obj list, Obj poss)
 */
 static Obj ElmsListOper GAP_GC_GLOBALLY_ROOTED;
 
-static Obj ElmsListObject(Obj list, Obj poss)
+static Obj ElmsListObject(Obj list, Obj poss) GAP_GC_CANSAFEPOINT
 {
     Obj                 elm;
 
@@ -616,7 +617,7 @@ static Obj ElmsListObject(Obj list, Obj poss)
 **
 *F  FuncELMS_LIST( <self>, <list>, <poss> ) . . . . . . `ELMS_LIST' operation
 */
-static Obj FuncELMS_LIST(Obj self, Obj list, Obj poss)
+static Obj FuncELMS_LIST(Obj self, Obj list, Obj poss) GAP_GC_CANSAFEPOINT
 {
     return ElmsListCheck( list, poss );
 }
@@ -745,6 +746,7 @@ Obj ElmsListDefault (
 *F  FuncELMS_LIST_DEFAULT( <self>, <list>, <poss> ) . . . . `ElmsListDefault'
 */
 static Obj FuncELMS_LIST_DEFAULT(Obj self, Obj list, Obj poss)
+    GAP_GC_CANSAFEPOINT
 {
     return ElmsListDefault( list, poss );
 }
@@ -794,7 +796,7 @@ void             (*UnbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
 static Obj             UnbListOper GAP_GC_GLOBALLY_ROOTED;
 
-static Obj FuncUNB_LIST(Obj self, Obj list, Obj pos)
+static Obj FuncUNB_LIST(Obj self, Obj list, Obj pos) GAP_GC_CANSAFEPOINT
 {
     if (IS_POS_INTOBJ(pos))
         UNB_LIST( list, INT_INTOBJ(pos) );
@@ -803,12 +805,12 @@ static Obj FuncUNB_LIST(Obj self, Obj list, Obj pos)
     return 0;
 }
 
-static void UnbListError(Obj list, Int pos)
+static void UnbListError(Obj list, Int pos) GAP_GC_CANSAFEPOINT
 {
     RequireArgument("Unbind", list, "must be a list");
 }
 
-static void UnbListObject(Obj list, Int pos)
+static void UnbListObject(Obj list, Int pos) GAP_GC_CANSAFEPOINT
 {
     DoOperation2Args( UnbListOper, list, INTOBJ_INT(pos) );
 }
@@ -843,6 +845,7 @@ void            (*AssListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos, Obj obj )
 static Obj AssListOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncASS_LIST(Obj self, Obj list, Obj pos, Obj obj)
+    GAP_GC_CANSAFEPOINT
 {
     if (IS_POS_INTOBJ(pos))
         ASS_LIST(list, INT_INTOBJ(pos), obj);
@@ -851,7 +854,7 @@ static Obj FuncASS_LIST(Obj self, Obj list, Obj pos, Obj obj)
     return 0;
 }
 
-static void AssListError(Obj list, Int pos, Obj obj)
+static void AssListError(Obj list, Int pos, Obj obj) GAP_GC_CANSAFEPOINT
 {
     RequireArgument("List Assignments", list, "must be a list");
 }
@@ -881,6 +884,7 @@ void ASSB_LIST (
 static Obj AssMatOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncASS_MAT(Obj self, Obj mat, Obj row, Obj col, Obj obj)
+    GAP_GC_CANSAFEPOINT
 {
     ASS_MAT(mat, row, col, obj);
     return 0;
@@ -923,12 +927,13 @@ void            (*AsssListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj poss, Obj obj
 static Obj             AsssListOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncASSS_LIST(Obj self, Obj list, Obj poss, Obj objs)
+    GAP_GC_CANSAFEPOINT
 {
     AsssListCheck( list, poss, objs );
     return 0;
 }
 
-static void AsssListError(Obj list, Obj poss, Obj objs)
+static void AsssListError(Obj list, Obj poss, Obj objs) GAP_GC_CANSAFEPOINT
 {
     RequireArgument("List Assignments", list, "must be a list");
 }
@@ -998,12 +1003,13 @@ void            AsssListDefault (
 
 }
 
-static void AsssListObject(Obj list, Obj poss, Obj objs)
+static void AsssListObject(Obj list, Obj poss, Obj objs) GAP_GC_CANSAFEPOINT
 {
     DoOperation3Args( AsssListOper, list, poss, objs );
 }
 
 static Obj FuncASSS_LIST_DEFAULT(Obj self, Obj list, Obj poss, Obj objs)
+    GAP_GC_CANSAFEPOINT
 {
     AsssListDefault( list, poss, objs );
     return 0;
@@ -1106,7 +1112,7 @@ static Obj PropIS_SSORT_LIST(Obj self, Obj obj)
     return (IS_SSORT_LIST( obj ) ? True : False);
 }
 
-static Obj PropSetIS_SSORT_LIST(Obj self, Obj obj, Obj val)
+static Obj PropSetIS_SSORT_LIST(Obj self, Obj obj, Obj val) GAP_GC_CANSAFEPOINT
 {
     UInt tnum = TNUM_OBJ(obj);
     if (FIRST_LIST_TNUM <= tnum && tnum <= LAST_LIST_TNUM)
@@ -1154,7 +1160,7 @@ static BOOL IsSSortListDefault(Obj list)
     return TRUE;
 }
 
-static BOOL IsSSortListObject(Obj obj)
+static BOOL IsSSortListObject(Obj obj) GAP_GC_CANSAFEPOINT
 {
     return (DoProperty( IsSSortListProp, obj ) == True);
 }
@@ -1219,7 +1225,7 @@ static BOOL IsPossListDefault(Obj list)
     return TRUE;
 }
 
-static BOOL IsPossListObject(Obj obj)
+static BOOL IsPossListObject(Obj obj) GAP_GC_CANSAFEPOINT
 {
     return (DoProperty( IsPossListProp, obj ) == True);
 }
@@ -1251,6 +1257,7 @@ static Obj PosListHandler2(Obj self, Obj list, Obj obj)
 }
 
 static Obj PosListHandler3(Obj self, Obj list, Obj obj, Obj start)
+    GAP_GC_CANSAFEPOINT
 {
     if (TNUM_OBJ(start) != T_INTPOS && !IS_NONNEG_INTOBJ(start)) {
         RequireArgument(SELF_NAME, start, "must be a non-negative integer");
@@ -1258,7 +1265,7 @@ static Obj PosListHandler3(Obj self, Obj list, Obj obj, Obj start)
     return POS_LIST( list, obj, start );
 }
 
-static Obj PosListError(Obj list, Obj obj, Obj start)
+static Obj PosListError(Obj list, Obj obj, Obj start) GAP_GC_CANSAFEPOINT
 {
     RequireArgument("Position", list, "must be a list");
 }
@@ -1297,7 +1304,7 @@ static Obj PosListDefault (
     }
 }
 
-static Obj PosListObject(Obj list, Obj obj, Obj start)
+static Obj PosListObject(Obj list, Obj obj, Obj start) GAP_GC_CANSAFEPOINT
 {
     return DoOperation3Args( PosListOper, list, obj, start );
 }
@@ -1623,6 +1630,7 @@ void            AsssListLevel (
 static Obj ExtractSubVectorOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncEXTRACT_SUB_VECTOR(Obj self, Obj vec, Obj poss)
+    GAP_GC_CANSAFEPOINT
 {
     if (IS_PLIST(vec)) {
         CheckIsPossList("List Elements", poss);
@@ -1640,7 +1648,7 @@ static Obj FuncEXTRACT_SUB_VECTOR(Obj self, Obj vec, Obj poss)
 static Obj CopySubVectorOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncCOPY_SUB_VECTOR(
-    Obj self, Obj src, Obj dst, Obj scols, Obj dcols)
+    Obj self, Obj src, Obj dst, Obj scols, Obj dcols) GAP_GC_CANSAFEPOINT
 {
     if (IS_PLIST(src) && IS_PLIST(dst)) {
         Obj rhss = 0;
@@ -1665,6 +1673,7 @@ static Obj FuncCOPY_SUB_VECTOR(
 static Obj ExtractSubMatrixOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncEXTRACT_SUB_MATRIX(Obj self, Obj mat, Obj rows, Obj cols)
+    GAP_GC_CANSAFEPOINT
 {
     if (IS_PLIST(mat)) {
         Obj submat = 0;
@@ -1691,6 +1700,7 @@ static Obj CopySubMatrixOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncCOPY_SUB_MATRIX(
     Obj self, Obj src, Obj dst, Obj srows, Obj drows, Obj scols, Obj dcols)
+    GAP_GC_CANSAFEPOINT
 {
     if (IS_PLIST(src) && IS_PLIST(dst)) {
         Obj srcsub = 0;
@@ -1728,7 +1738,7 @@ static Obj FuncCOPY_SUB_MATRIX(
 */
 void            (*PlainListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
-static void PlainListError(Obj list)
+static void PlainListError(Obj list) GAP_GC_CANSAFEPOINT
 {
     ErrorQuit("Panic: cannot convert <list> (is a %s) to a plain list",
               (Int)TNAM_OBJ(list), 0);
@@ -1755,7 +1765,7 @@ Obj PLAIN_LIST_COPY(Obj list)
     return res;
 }
 
-Obj FuncPlainListCopy(Obj self, Obj list)
+Obj FuncPlainListCopy(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     if (!IS_LIST(list))
         RequireArgument(SELF_NAME, list, "must be a list");
@@ -1797,7 +1807,7 @@ Obj             TYPES_LIST_FAM (
 **  The line break hints are consistent with those
 **  that appear in the 'ViewObj' and 'ViewString' methods for finite lists.
 */
-static void PrintListDefault(Obj list)
+static void PrintListDefault(Obj list) GAP_GC_CANSAFEPOINT
 {
     Obj                 elm;
 
@@ -1944,6 +1954,7 @@ void AsssListLevelCheck (
 static Obj SwapMatRows GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncSWAP_MAT_ROWS(Obj self, Obj mat, Obj row1, Obj row2)
+    GAP_GC_CANSAFEPOINT
 {
     if (IS_POS_INTOBJ(row1) && IS_POS_INTOBJ(row2) && IS_PLIST(mat)) {
         Int r1 = INT_INTOBJ(row1);
@@ -1973,6 +1984,7 @@ static Obj FuncSWAP_MAT_ROWS(Obj self, Obj mat, Obj row1, Obj row2)
 static Obj SwapMatCols GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncSWAP_MAT_COLS(Obj self, Obj mat, Obj col1, Obj col2)
+    GAP_GC_CANSAFEPOINT
 {
     if (IS_POS_INTOBJ(col1) && IS_POS_INTOBJ(col2) && IS_PLIST(mat)) {
         Int c1 = INT_INTOBJ(col1);
@@ -2390,7 +2402,7 @@ static Int InitKernel (
 *F  PostRestore( <module> ) . . . . . . . . . . . . . after restore workspace
 */
 static Int PostRestore (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // what's that?
     TYPES_LIST_FAM_RNam = RNamName( "TYPES_LIST_FAM" );
@@ -2404,7 +2416,7 @@ static Int PostRestore (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFiltsFromTable( GVarFilts );

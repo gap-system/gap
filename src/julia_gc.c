@@ -205,6 +205,7 @@ static UInt MarkCacheHits, MarkCacheAttempts, MarkCacheCollisions;
 **  Allocate memory for a new bag.
 **/
 static void * AllocateBagMemory(jl_ptls_t ptls, UInt type, UInt size)
+    GAP_GC_CANSAFEPOINT
 {
     // HOOK: return `size` bytes memory of TNUM `type`.
     void * result;
@@ -680,7 +681,7 @@ static void JFinalizer(jl_value_t * obj) GAP_GC_NOTSAFEPOINT
 // helper called directly by GAP.jl
 jl_datatype_t * GAP_DeclareGapObj(jl_sym_t *      name,
                                   jl_module_t *   module,
-                                  jl_datatype_t * parent)
+                                  jl_datatype_t * parent) GAP_GC_CANSAFEPOINT
 {
     return jl_new_foreign_type(name, module, parent, MPtrMarkFunc, NULL, 1,
                                0);
@@ -690,7 +691,7 @@ jl_datatype_t * GAP_DeclareGapObj(jl_sym_t *      name,
 jl_datatype_t * GAP_DeclareBag(jl_sym_t *      name,
                                jl_module_t *   module,
                                jl_datatype_t * parent,
-                               int             large)
+                               int             large) GAP_GC_CANSAFEPOINT
 {
     return jl_new_foreign_type(name, module, parent, BagMarkFunc, JFinalizer,
                                1, large > 0);
@@ -707,6 +708,7 @@ jl_datatype_t * GAP_DeclareBag(jl_sym_t *      name,
 // 'module' is NULL.
 void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
                                   jl_datatype_t * parent /* unused */)
+    GAP_GC_CANSAFEPOINT
 {
 #if defined(USE_GAP_INSIDE_JULIA)
     GAP_ASSERT(module != 0);

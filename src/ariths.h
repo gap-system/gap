@@ -275,7 +275,7 @@ EXPORT_INLINE Int EQ(Obj opL, Obj opR)
 
 extern Obj EqOper GAP_GC_GLOBALLY_ROOTED;
 
-Int EqObject(Obj opL, Obj opR);
+Int EqObject(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

@@ -265,7 +265,7 @@ static Int HasInfoCVar(CVar cvar, Int type)
 }
 
 
-static Bag NewInfoCVars(void)
+static Bag NewInfoCVars(void) GAP_GC_CANSAFEPOINT
 {
     Bag                 old;
     Bag                 new;
@@ -275,7 +275,7 @@ static Bag NewInfoCVars(void)
 }
 
 static void CopyInfoCVars(Obj dst GAP_GC_MAYBE_UNROOTED,
-                          Obj src GAP_GC_MAYBE_UNROOTED)
+                          Obj src GAP_GC_MAYBE_UNROOTED) GAP_GC_CANSAFEPOINT
 {
     Int                 i;
     GAP_GC_PUSH2(&dst, &src);
@@ -296,7 +296,7 @@ static void CopyInfoCVars(Obj dst GAP_GC_MAYBE_UNROOTED,
 }
 
 static void MergeInfoCVars(Obj dst GAP_GC_MAYBE_UNROOTED,
-                           Obj src GAP_GC_MAYBE_UNROOTED)
+                           Obj src GAP_GC_MAYBE_UNROOTED) GAP_GC_CANSAFEPOINT
 {
     Int                 i;
     GAP_GC_PUSH2(&dst, &src);
@@ -313,7 +313,7 @@ static void MergeInfoCVars(Obj dst GAP_GC_MAYBE_UNROOTED,
 }
 
 static BOOL IsEqInfoCVars(Obj dst GAP_GC_MAYBE_UNROOTED,
-                          Obj src GAP_GC_MAYBE_UNROOTED)
+                          Obj src GAP_GC_MAYBE_UNROOTED) GAP_GC_CANSAFEPOINT
 {
     Int                 i;
     GAP_GC_PUSH2(&dst, &src);
@@ -352,7 +352,7 @@ static BOOL IsEqInfoCVars(Obj dst GAP_GC_MAYBE_UNROOTED,
 */
 typedef UInt4           Temp;
 
-static Temp NewTemp(const Char * name)
+static Temp NewTemp(const Char * name) GAP_GC_CANSAFEPOINT
 {
     Temp                temp;           // new temporary, result
     Bag                 info;           // information bag
@@ -538,7 +538,7 @@ typedef UInt    GVar;
 
 static Bag CompInfoGVar GAP_GC_GLOBALLY_ROOTED;
 
-static void CompSetUseGVar(GVar gvar, UInt mode)
+static void CompSetUseGVar(GVar gvar, UInt mode) GAP_GC_CANSAFEPOINT
 {
     // only mark in pass 1
     if ( CompPass != 1 )  return;
@@ -580,7 +580,7 @@ typedef UInt    RNam;
 
 static Bag CompInfoRNam GAP_GC_GLOBALLY_ROOTED;
 
-static void CompSetUseRNam(RNam rnam, UInt mode)
+static void CompSetUseRNam(RNam rnam, UInt mode) GAP_GC_CANSAFEPOINT
 {
     // only mark in pass 1
     if ( CompPass != 1 )  return;
@@ -930,7 +930,7 @@ static CVar CompBoolExpr(Expr expr)
 **
 *F  CompUnknownBool( <expr> ) . . . . . . . . . .  use 'CompExpr' and convert
 */
-static CVar CompUnknownBool(Expr expr)
+static CVar CompUnknownBool(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                res;            // result
     CVar                val;            // value of expression
@@ -965,10 +965,10 @@ static GVar G_Length;
 **
 *F  CompFunccall0to6Args( <expr> )  . . . EXPR_FUNCCALL_0ARGS...EXPR_FUNCCALL_6ARGS
 */
-static CVar CompRefGVarFopy(Expr expr);
+static CVar CompRefGVarFopy(Expr expr) GAP_GC_CANSAFEPOINT;
 
 
-static CVar CompFunccall0to6Args(Expr expr)
+static CVar CompFunccall0to6Args(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                result;         // result, result
     CVar                func;           // function
@@ -1047,7 +1047,7 @@ static CVar CompFunccall0to6Args(Expr expr)
 **
 *F  CompFunccallXArgs( <expr> ) . . . . . . . . . . . . . EXPR_FUNCCALL_XARGS
 */
-static CVar CompFunccallXArgs(Expr expr)
+static CVar CompFunccallXArgs(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                result;         // result, result
     CVar                func;           // function
@@ -1103,7 +1103,7 @@ static CVar CompFunccallXArgs(Expr expr)
 **
 *F  CompFunccallXArgs( <expr> ) . . . . . . . . . . . . .  EXPR_FUNCCALL_OPTS
 */
-static CVar CompFunccallOpts(Expr expr)
+static CVar CompFunccallOpts(Expr expr) GAP_GC_CANSAFEPOINT
 {
   CVar opts = CompExpr(READ_STAT(expr, 0));
   GVar pushOptions;
@@ -1125,7 +1125,7 @@ static CVar CompFunccallOpts(Expr expr)
 **
 *F  CompFuncExpr( <expr> ) . . . . . . . . . . . . . . . . . . . .  EXPR_FUNC
 */
-static CVar CompFuncExpr(Expr expr)
+static CVar CompFuncExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                func;           // function, result
     CVar                tmp;            // dummy body
@@ -1183,7 +1183,7 @@ static CVar CompFuncExpr(Expr expr)
 **
 *F  CompOr( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . .  EXPR_OR
 */
-static CVar CompOr(Expr expr)
+static CVar CompOr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // or, result
     CVar                left;           // left operand
@@ -1224,7 +1224,7 @@ static CVar CompOr(Expr expr)
 **
 *F  CompOrBool( <expr> ) . . . . . . . . . . . . . . . . . . . . . .  EXPR_OR
 */
-static CVar CompOrBool(Expr expr)
+static CVar CompOrBool(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // or, result
     CVar                left;           // left operand
@@ -1265,7 +1265,7 @@ static CVar CompOrBool(Expr expr)
 **
 *F  CompAnd( <expr> ) . . . . . . . . . . . . . . . . . . . . . . .  EXPR_AND
 */
-static CVar CompAnd(Expr expr)
+static CVar CompAnd(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1325,7 +1325,7 @@ static CVar CompAnd(Expr expr)
 **
 *F  CompAndBool( <expr> ) . . . . . . . . . . . . . . . . . . . . .  EXPR_AND
 */
-static CVar CompAndBool(Expr expr)
+static CVar CompAndBool(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // or, result
     CVar                left;           // left operand
@@ -1366,7 +1366,7 @@ static CVar CompAndBool(Expr expr)
 **
 *F  CompNot( <expr> ) . . . . . . . . . . . . . . . . . . . . . . .  EXPR_NOT
 */
-static CVar CompNot(Expr expr)
+static CVar CompNot(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // operand
@@ -1394,7 +1394,7 @@ static CVar CompNot(Expr expr)
 **
 *F  CompNotBoot( <expr> ) . . . . . . . . . . . . . . . . . . . . .  EXPR_NOT
 */
-static CVar CompNotBool(Expr expr)
+static CVar CompNotBool(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // operand
@@ -1422,7 +1422,7 @@ static CVar CompNotBool(Expr expr)
 **
 *F  CompEq( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . .  EXPR_EQ
 */
-static CVar CompEq(Expr expr)
+static CVar CompEq(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1458,7 +1458,7 @@ static CVar CompEq(Expr expr)
 **
 *F  CompEqBool( <expr> ) . . . . . . . . . . . . . . . . . . . . . .  EXPR_EQ
 */
-static CVar CompEqBool(Expr expr)
+static CVar CompEqBool(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1494,7 +1494,7 @@ static CVar CompEqBool(Expr expr)
 **
 *F  CompNe( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . . .  EXPR_NE
 */
-static CVar CompNe(Expr expr)
+static CVar CompNe(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1530,7 +1530,7 @@ static CVar CompNe(Expr expr)
 **
 *F  CompNeBool( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  EXPR_NE
 */
-static CVar CompNeBool(Expr expr)
+static CVar CompNeBool(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1566,7 +1566,7 @@ static CVar CompNeBool(Expr expr)
 **
 *F  CompLt( <expr> )  . . . . . . . . . . . . . . . . . . . . . . . . .  EXPR_LT
 */
-static CVar CompLt(Expr expr)
+static CVar CompLt(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1602,7 +1602,7 @@ static CVar CompLt(Expr expr)
 **
 *F  CompLtBool( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  EXPR_LT
 */
-static CVar CompLtBool(Expr expr)
+static CVar CompLtBool(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1638,7 +1638,7 @@ static CVar CompLtBool(Expr expr)
 **
 *F  CompGe( <expr> )  . . . . . . . . . . . . . . . . . . . . . . . . .  EXPR_GE
 */
-static CVar CompGe(Expr expr)
+static CVar CompGe(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1674,7 +1674,7 @@ static CVar CompGe(Expr expr)
 **
 *F  CompGeBool( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  EXPR_GE
 */
-static CVar CompGeBool(Expr expr)
+static CVar CompGeBool(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1710,7 +1710,7 @@ static CVar CompGeBool(Expr expr)
 **
 *F  CompGt( <expr> )  . . . . . . . . . . . . . . . . . . . . . . . . .  EXPR_GT
 */
-static CVar CompGt(Expr expr)
+static CVar CompGt(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1746,7 +1746,7 @@ static CVar CompGt(Expr expr)
 **
 *F  CompGtBool( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  EXPR_GT
 */
-static CVar CompGtBool(Expr expr)
+static CVar CompGtBool(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1782,7 +1782,7 @@ static CVar CompGtBool(Expr expr)
 **
 *F  CompLe( <expr> )  . . . . . . . . . . . . . . . . . . . . . . . . .  EXPR_LE
 */
-static CVar CompLe(Expr expr)
+static CVar CompLe(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1818,7 +1818,7 @@ static CVar CompLe(Expr expr)
 **
 *F  CompLeBool( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  EXPR_LE
 */
-static CVar CompLeBool(Expr expr)
+static CVar CompLeBool(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1854,7 +1854,7 @@ static CVar CompLeBool(Expr expr)
 **
 *F  CompIn( <expr> )  . . . . . . . . . . . . . . . . . . . . . . . . .  EXPR_IN
 */
-static CVar CompIn(Expr expr)
+static CVar CompIn(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1885,7 +1885,7 @@ static CVar CompIn(Expr expr)
 **
 *F  CompInBool( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  EXPR_IN
 */
-static CVar CompInBool(Expr expr)
+static CVar CompInBool(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1916,7 +1916,7 @@ static CVar CompInBool(Expr expr)
 **
 *F  CompSum( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . . . EXPR_SUM
 */
-static CVar CompSum(Expr expr)
+static CVar CompSum(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1960,7 +1960,7 @@ static CVar CompSum(Expr expr)
 **
 *F  CompAInv( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  EXPR_AINV
 */
-static CVar CompAInv(Expr expr)
+static CVar CompAInv(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -2001,7 +2001,7 @@ static CVar CompAInv(Expr expr)
 **
 *F  CompDiff( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  EXPR_DIFF
 */
-static CVar CompDiff(Expr expr)
+static CVar CompDiff(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -2045,7 +2045,7 @@ static CVar CompDiff(Expr expr)
 **
 *F  CompProd( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  EXPR_PROD
 */
-static CVar CompProd(Expr expr)
+static CVar CompProd(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -2089,7 +2089,7 @@ static CVar CompProd(Expr expr)
 **
 *F  CompQuo( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . . . EXPR_QUO
 */
-static CVar CompQuo(Expr expr)
+static CVar CompQuo(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -2120,7 +2120,7 @@ static CVar CompQuo(Expr expr)
 **
 *F  CompMod( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . . . EXPR_MOD
 */
-static CVar CompMod(Expr expr)
+static CVar CompMod(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -2156,7 +2156,7 @@ static CVar CompMod(Expr expr)
 **
 *F  CompPow( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . . . EXPR_POW
 */
-static CVar CompPow(Expr expr)
+static CVar CompPow(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -2235,7 +2235,7 @@ void C_SET_LIMB8(Obj bag, UInt limbnumber, UInt8 value)
 }
 
 
-static CVar CompIntExpr(Expr expr)
+static CVar CompIntExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;
     Int                 siz;
@@ -2286,7 +2286,7 @@ static CVar CompIntExpr(Expr expr)
 **
 *F  CompTildeExpr( <expr> )  . . . . . . . . . . . . . . . . . . EXPR_TILDE
 */
-static CVar CompTildeExpr(Expr expr)
+static CVar CompTildeExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Emit( "if ( ! STATE(Tilde) ) {\n");
     Emit( "    ErrorMayQuit(\"'~' does not have a value here\", 0, 0);\n" );
@@ -2307,7 +2307,7 @@ static CVar CompTildeExpr(Expr expr)
 **
 *F  CompTrueExpr( <expr> )  . . . . . . . . . . . . . . . . . . . EXPR_TRUE
 */
-static CVar CompTrueExpr(Expr expr)
+static CVar CompTrueExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // value, result
 
@@ -2329,7 +2329,7 @@ static CVar CompTrueExpr(Expr expr)
 **
 *F  CompFalseExpr( <expr> ) . . . . . . . . . . . . . . . . . .  EXPR_FALSE
 */
-static CVar CompFalseExpr(Expr expr)
+static CVar CompFalseExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // value, result
 
@@ -2351,7 +2351,7 @@ static CVar CompFalseExpr(Expr expr)
 **
 *F  CompCharExpr( <expr> )  . . . . . . . . . . . . . . . . . . . EXPR_CHAR
 */
-static CVar CompCharExpr(Expr expr)
+static CVar CompCharExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
 
@@ -2373,7 +2373,7 @@ static CVar CompCharExpr(Expr expr)
 **
 *F  CompPermExpr( <expr> )  . . . . . . . . . . . . . . . . . . . EXPR_PERM
 */
-static CVar CompPermExpr(Expr expr)
+static CVar CompPermExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                perm;           // result
     CVar                lcyc;           // one cycle as list
@@ -2436,12 +2436,12 @@ static CVar CompPermExpr(Expr expr)
 **
 *F  CompListExpr( <expr> )  . . . . . . . . . . . . . . . . . . . EXPR_LIST
 */
-static CVar CompListExpr1(Expr expr);
-static void CompListExpr2(CVar list, Expr expr);
-static CVar CompRecExpr1(Expr expr);
-static void CompRecExpr2(CVar rec, Expr expr);
+static CVar CompListExpr1(Expr expr) GAP_GC_CANSAFEPOINT;
+static void CompListExpr2(CVar list, Expr expr) GAP_GC_CANSAFEPOINT;
+static CVar CompRecExpr1(Expr expr) GAP_GC_CANSAFEPOINT;
+static void CompRecExpr2(CVar rec, Expr expr) GAP_GC_CANSAFEPOINT;
 
-static CVar CompListExpr(Expr expr)
+static CVar CompListExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                list;           // list, result
 
@@ -2457,7 +2457,7 @@ static CVar CompListExpr(Expr expr)
 **
 *F  CompListTildeExpr( <expr> ) . . . . . . . . . . . . . . EXPR_LIST_TILDE
 */
-static CVar CompListTildeExpr(Expr expr)
+static CVar CompListTildeExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                list;           // list value, result
     CVar                tilde;          // old value of tilde
@@ -2569,7 +2569,7 @@ static void CompListExpr2(CVar list, Expr expr)
 **
 *F  CompRangeExpr( <expr> ) . . . . . . . . . . . . . . . . . .  EXPR_RANGE
 */
-static CVar CompRangeExpr(Expr expr)
+static CVar CompRangeExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                range;          // range, result
     CVar                first;          // first  element
@@ -2624,7 +2624,7 @@ static CVar CompRangeExpr(Expr expr)
 **
 *F  CompStringExpr( <expr> )  . . . . . . . . . . compile a string expression
 */
-static CVar CompStringExpr(Expr expr)
+static CVar CompStringExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                string;         // string value, result
     Obj                 str = 0;        // the actual string object
@@ -2653,7 +2653,7 @@ static CVar CompStringExpr(Expr expr)
 **
 *F  CompRecExpr( <expr> ) . . . . . . . . . . . . . . . . . . . .  EXPR_REC
 */
-static CVar CompRecExpr(Expr expr)
+static CVar CompRecExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                rec;            // record value, result
 
@@ -2669,7 +2669,7 @@ static CVar CompRecExpr(Expr expr)
 **
 *F  CompRecTildeExpr( <expr> )  . . . . . . . . . . . . . .  EXPR_REC_TILDE
 */
-static CVar CompRecTildeExpr(Expr expr)
+static CVar CompRecTildeExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                rec;            // record value, result
     CVar                tilde;          // old value of tilde
@@ -2794,7 +2794,7 @@ static void CompRecExpr2(CVar rec, Expr expr)
 **
 *F  CompRefLVar( <expr> ) . . . . . . .  EXPR_REF_LVAR
 */
-static CVar CompRefLVar(Expr expr)
+static CVar CompRefLVar(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // value, result
     LVar                lvar;           // local variable
@@ -2822,7 +2822,7 @@ static CVar CompRefLVar(Expr expr)
 **
 *F  CompIsbLVar( <expr> ) . . . . . . . . . . . . . . . . . . . .  EXPR_ISB_LVAR
 */
-static CVar CompIsbLVar(Expr expr)
+static CVar CompIsbLVar(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                isb;            // isbound, result
     CVar                val;            // value
@@ -2860,7 +2860,7 @@ static CVar CompIsbLVar(Expr expr)
 **
 *F  CompRefHVar( <expr> ) . . . . . . . . . . . . . . . . . . . .  EXPR_REF_HVAR
 */
-static CVar CompRefHVar(Expr expr)
+static CVar CompRefHVar(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // value, result
     HVar                hvar;           // higher variable
@@ -2888,7 +2888,7 @@ static CVar CompRefHVar(Expr expr)
 **
 *F  CompIsbHVar( <expr> ) . . . . . . . . . . . . . . . . . . . .  EXPR_ISB_HVAR
 */
-static CVar CompIsbHVar(Expr expr)
+static CVar CompIsbHVar(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                isb;            // isbound, result
     CVar                val;            // value
@@ -2923,7 +2923,7 @@ static CVar CompIsbHVar(Expr expr)
 **
 *F  CompRefGVar( <expr> ) . . . . . . . . . . . . . . . . . . . .  EXPR_REF_GVAR
 */
-static CVar CompRefGVar(Expr expr)
+static CVar CompRefGVar(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // value, result
     GVar                gvar;           // higher variable
@@ -2977,7 +2977,7 @@ static CVar CompRefGVarFopy(Expr expr)
 **
 *F  CompIsbGVar( <expr> ) . . . . . . . . . . . . . . . . . . . .  EXPR_ISB_GVAR
 */
-static CVar CompIsbGVar(Expr expr)
+static CVar CompIsbGVar(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                isb;            // isbound, result
     CVar                val;            // value, result
@@ -3011,7 +3011,7 @@ static CVar CompIsbGVar(Expr expr)
 **
 *F  CompElmList( <expr> ) . . . . . . . . . . . . . . . . . . . .  EXPR_ELM_LIST
 */
-static CVar CompElmList(Expr expr)
+static CVar CompElmList(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                elm;            // element, result
     CVar                list;           // list
@@ -3057,7 +3057,7 @@ static CVar CompElmList(Expr expr)
 **
 *F  CompElmsList( <expr> )  . . . . . . . . . . . . . . . . . . . EXPR_ELMS_LIST
 */
-static CVar CompElmsList(Expr expr)
+static CVar CompElmsList(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                elms;           // elements, result
     CVar                list;           // list
@@ -3152,7 +3152,7 @@ static CVar CompElmsListLev(Expr expr)
 **
 *F  CompIsbList( <expr> ) . . . . . . . . . . . . . . . . . . . .  EXPR_ISB_LIST
 */
-static CVar CompIsbList(Expr expr)
+static CVar CompIsbList(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                isb;            // isbound, result
     CVar                list;           // list
@@ -3187,7 +3187,7 @@ static CVar CompIsbList(Expr expr)
 **
 *F  CompElmRecName( <expr> )  . . . . . . . . . . . . . . . .  EXPR_ELM_REC_NAME
 */
-static CVar CompElmRecName(Expr expr)
+static CVar CompElmRecName(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                elm;            // element, result
     CVar                record;         // the record, left operand
@@ -3221,7 +3221,7 @@ static CVar CompElmRecName(Expr expr)
 **
 *F  CompElmRecExpr( <expr> )  . . . . . . . . . . . . . . . .  EXPR_ELM_REC_EXPR
 */
-static CVar CompElmRecExpr(Expr expr)
+static CVar CompElmRecExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                elm;            // element, result
     CVar                record;         // the record, left operand
@@ -3255,7 +3255,7 @@ static CVar CompElmRecExpr(Expr expr)
 **
 *F  CompIsbRecName( <expr> )  . . . . . . . . . . . . . . . .  EXPR_ISB_REC_NAME
 */
-static CVar CompIsbRecName(Expr expr)
+static CVar CompIsbRecName(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                isb;            // isbound, result
     CVar                record;         // the record, left operand
@@ -3289,7 +3289,7 @@ static CVar CompIsbRecName(Expr expr)
 **
 *F  CompIsbRecExpr( <expr> )  . . . . . . . . . . . . . . . .  EXPR_ISB_REC_EXPR
 */
-static CVar CompIsbRecExpr(Expr expr)
+static CVar CompIsbRecExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                isb;            // isbound, result
     CVar                record;         // the record, left operand
@@ -3323,7 +3323,7 @@ static CVar CompIsbRecExpr(Expr expr)
 **
 *F  CompElmPosObj( <expr> ) . . . . . . . . . . . . . . . . . .  EXPR_ELM_POSOBJ
 */
-static CVar CompElmPosObj(Expr expr)
+static CVar CompElmPosObj(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                elm;            // element, result
     CVar                list;           // list
@@ -3358,7 +3358,7 @@ static CVar CompElmPosObj(Expr expr)
 **
 *F  CompIsbPosObj( <expr> ) . . . . . . . . . . . . . . . . . .  EXPR_ISB_POSOBJ
 */
-static CVar CompIsbPosObj(Expr expr)
+static CVar CompIsbPosObj(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                isb;            // isbound, result
     CVar                list;           // list
@@ -3393,7 +3393,7 @@ static CVar CompIsbPosObj(Expr expr)
 **
 *F  CompElmObjName( <expr> )  . . . . . . . . . . . . . . . EXPR_ELM_COMOBJ_NAME
 */
-static CVar CompElmComObjName(Expr expr)
+static CVar CompElmComObjName(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                elm;            // element, result
     CVar                record;         // the record, left operand
@@ -3428,7 +3428,7 @@ static CVar CompElmComObjName(Expr expr)
 **
 *F  CompElmComObjExpr( <expr> ) . . . . . . . . . . . . . . EXPR_ELM_COMOBJ_EXPR
 */
-static CVar CompElmComObjExpr(Expr expr)
+static CVar CompElmComObjExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                elm;            // element, result
     CVar                record;         // the record, left operand
@@ -3462,7 +3462,7 @@ static CVar CompElmComObjExpr(Expr expr)
 **
 *F  CompIsbComObjName( <expr> ) . . . . . . . . . . . . . . EXPR_ISB_COMOBJ_NAME
 */
-static CVar CompIsbComObjName(Expr expr)
+static CVar CompIsbComObjName(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                isb;            // isbound, result
     CVar                record;         // the record, left operand
@@ -3496,7 +3496,7 @@ static CVar CompIsbComObjName(Expr expr)
 **
 *F  CompIsbComObjExpr( <expr> ) . . . . . . . . . . . . . . EXPR_ISB_COMOBJ_EXPR
 */
-static CVar CompIsbComObjExpr(Expr expr)
+static CVar CompIsbComObjExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                isb;            // isbound, result
     CVar                record;         // the record, left operand
@@ -3567,7 +3567,7 @@ static GVar G_Add;
 **
 *F  CompProccall0to6Args( <stat> )  . . . STAT_PROCCALL_0ARGS...STAT_PROCCALL_6ARGS
 */
-static void CompProccall0to6Args(Stat stat)
+static void CompProccall0to6Args(Stat stat) GAP_GC_CANSAFEPOINT
 {
     CVar                func;           // function
     CVar                args[8];        // arguments
@@ -3642,7 +3642,7 @@ static void CompProccall0to6Args(Stat stat)
 **
 *F  CompProccallXArgs . . . . . . . . . . . . . . . . . . .  STAT_PROCCALL_XARGS
 */
-static void CompProccallXArgs(Stat stat)
+static void CompProccallXArgs(Stat stat) GAP_GC_CANSAFEPOINT
 {
     CVar                func;           // function
     CVar                argl;           // argument list
@@ -3694,7 +3694,7 @@ static void CompProccallXArgs(Stat stat)
 **
 *F  CompProccallXArgs( <expr> ) . . . . . . . . . . . . . .  STAT_PROCCALL_OPTS
 */
-static void CompProccallOpts(Stat stat)
+static void CompProccallOpts(Stat stat) GAP_GC_CANSAFEPOINT
 {
   CVar opts = CompExpr(READ_STAT(stat, 0));
   GVar pushOptions;
@@ -3733,7 +3733,7 @@ static void CompSeqStat(Stat stat)
 **
 *F  CompIf( <stat> )  . . . . . . . . STAT_IF/STAT_IF_ELSE/STAT_IF_ELIF/STAT_IF_ELIF_ELSE
 */
-static void CompIf(Stat stat)
+static void CompIf(Stat stat) GAP_GC_CANSAFEPOINT
 {
     CVar                cond;           // condition
     UInt                nr;             // number of branches
@@ -3870,7 +3870,7 @@ static void CompIf(Stat stat)
 **
 *F  CompFor( <stat> ) . . . . . . . STAT_FOR...STAT_FOR3/STAT_FOR_RANGE...STAT_FOR_RANGE3
 */
-static void CompFor(Stat stat)
+static void CompFor(Stat stat) GAP_GC_CANSAFEPOINT
 {
     UInt                var;            // loop variable
     Char                vart;           // variable type
@@ -4112,7 +4112,7 @@ static void CompFor(Stat stat)
 **
 *F  CompWhile( <stat> ) . . . . . . . . . . . . . . . . .  STAT_WHILE...STAT_WHILE3
 */
-static void CompWhile(Stat stat)
+static void CompWhile(Stat stat) GAP_GC_CANSAFEPOINT
 {
     CVar                cond;           // condition
     Int                 pass;           // current pass
@@ -4172,7 +4172,7 @@ static void CompWhile(Stat stat)
 **
 *F  CompRepeat( <stat> )  . . . . . . . . . . . . . . .  STAT_REPEAT...STAT_REPEAT3
 */
-static void CompRepeat(Stat stat)
+static void CompRepeat(Stat stat) GAP_GC_CANSAFEPOINT
 {
     CVar                cond;           // condition
     Int                 pass;           // current pass
@@ -4416,7 +4416,7 @@ static void CompUnbHVar(Stat stat)
 **
 *F  CompAssGVar( <stat> ) . . . . . . . . . . . . . . . . . . . .  STAT_ASS_GVAR
 */
-static void CompAssGVar(Stat stat)
+static void CompAssGVar(Stat stat) GAP_GC_CANSAFEPOINT
 {
     GVar                gvar;           // global variable
     CVar                rhs;            // right hand side
@@ -4443,7 +4443,7 @@ static void CompAssGVar(Stat stat)
 **
 *F  CompUnbGVar( <stat> ) . . . . . . . . . . . . . . . . . . . .  STAT_UNB_GVAR
 */
-static void CompUnbGVar(Stat stat)
+static void CompUnbGVar(Stat stat) GAP_GC_CANSAFEPOINT
 {
     GVar                gvar;           // global variable
 
@@ -4650,7 +4650,7 @@ static void CompUnbList(Stat stat)
 **
 *F  CompAssRecName( <stat> )  . . . . . . . . . . . . . . . .  STAT_ASS_REC_NAME
 */
-static void CompAssRecName(Stat stat)
+static void CompAssRecName(Stat stat) GAP_GC_CANSAFEPOINT
 {
     CVar                record;         // record, left operand
     UInt                rnam;           // name, left operand
@@ -4718,7 +4718,7 @@ static void CompAssRecExpr(Stat stat)
 **
 *F  CompUnbRecName( <stat> )  . . . . . . . . . . . . . . . .  STAT_UNB_REC_NAME
 */
-static void CompUnbRecName(Stat stat)
+static void CompUnbRecName(Stat stat) GAP_GC_CANSAFEPOINT
 {
     CVar                record;         // record, left operand
     UInt                rnam;           // name, left operand
@@ -4841,7 +4841,7 @@ static void CompUnbPosObj(Stat stat)
 **
 *F  CompAssComObjName( <stat> ) . . . . . . . . . . . . . . STAT_ASS_COMOBJ_NAME
 */
-static void CompAssComObjName(Stat stat)
+static void CompAssComObjName(Stat stat) GAP_GC_CANSAFEPOINT
 {
     CVar                record;         // record, left operand
     UInt                rnam;           // name, left operand
@@ -4909,7 +4909,7 @@ static void CompAssComObjExpr(Stat stat)
 **
 *F  CompUnbComObjName( <stat> ) . . . . . . . . . . . . . . STAT_UNB_COMOBJ_NAME
 */
-static void CompUnbComObjName(Stat stat)
+static void CompUnbComObjName(Stat stat) GAP_GC_CANSAFEPOINT
 {
     CVar                record;         // record, left operand
     UInt                rnam;           // name, left operand
@@ -4975,7 +4975,7 @@ static void CompEmpty(Stat stat)
 **
 *F  CompInfo( <stat> )  . . . . . . . . . . . . . . . . . . . . . . .  STAT_INFO
 */
-static void CompInfo(Stat stat)
+static void CompInfo(Stat stat) GAP_GC_CANSAFEPOINT
 {
     CVar                tmp;
     CVar                sel;
@@ -5090,7 +5090,7 @@ static void CompAssert3(Stat stat)
 */
 static Obj CompFunctions GAP_GC_GLOBALLY_ROOTED;
 
-static void CompFunc(Obj func)
+static void CompFunc(Obj func) GAP_GC_CANSAFEPOINT
 {
     Bag                 info;           // info bag for this function
     Int                 narg;           // number of arguments
@@ -5631,7 +5631,7 @@ static Int InitKernel (
 *F  PostRestore( <module> ) . . . . . . . . . . . . . after restore workspace
 */
 static Int PostRestore (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // get the identifiers of 'Length' and 'Add' (for inlining)
     G_Length = GVarName( "Length" );
@@ -5646,7 +5646,7 @@ static Int PostRestore (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     return PostRestore( module );
 }

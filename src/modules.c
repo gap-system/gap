@@ -137,7 +137,7 @@ static void RegisterModuleState(StructInitInfo * info)
 **
 *F  FuncGAP_CRC( <self>, <name> ) . . . . . . . create a crc value for a file
 */
-static Obj FuncGAP_CRC(Obj self, Obj filename)
+static Obj FuncGAP_CRC(Obj self, Obj filename) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, filename);
     return ObjInt_Int(SyGAPCRC(CONST_CSTR_STRING(filename)));
@@ -237,7 +237,7 @@ static const char * SyLoadModule(const Char * name, InitInfoFunc * func)
 **
 *F  FuncIS_LOADABLE_DYN( <self>, <name> ) . test if a dyn. module is loadable
 */
-static Obj FuncIS_LOADABLE_DYN(Obj self, Obj filename)
+static Obj FuncIS_LOADABLE_DYN(Obj self, Obj filename) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, filename);
 
@@ -278,7 +278,7 @@ static Obj FuncIS_LOADABLE_DYN(Obj self, Obj filename)
 **
 *F  FuncLOAD_DYN( <self>, <name> ) . . . . . . . try to load a dynamic module
 */
-static Obj FuncLOAD_DYN(Obj self, Obj filename)
+static Obj FuncLOAD_DYN(Obj self, Obj filename) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, filename);
 
@@ -336,7 +336,7 @@ static Obj FuncLOAD_DYN(Obj self, Obj filename)
 **
 *F  FuncLOAD_STAT( <self>, <name> ) . . . . . . . try to load a static module
 */
-static Obj FuncLOAD_STAT(Obj self, Obj filename)
+static Obj FuncLOAD_STAT(Obj self, Obj filename) GAP_GC_CANSAFEPOINT
 {
     StructInitInfo * info = 0;
 
@@ -363,7 +363,7 @@ static Obj FuncLOAD_STAT(Obj self, Obj filename)
 **
 *F  FuncSHOW_STAT() . . . . . . . . . . . . . . . . . . . show static modules
 */
-static Obj FuncSHOW_STAT(Obj self)
+static Obj FuncSHOW_STAT(Obj self) GAP_GC_CANSAFEPOINT
 {
     Obj              modules = 0;
     Obj              name = 0;
@@ -406,7 +406,7 @@ static Obj FuncSHOW_STAT(Obj self)
 **
 *F  FuncLoadedModules( <self> ) . . . . . . . . . . . list all loaded modules
 */
-static Obj FuncLoadedModules(Obj self)
+static Obj FuncLoadedModules(Obj self) GAP_GC_CANSAFEPOINT
 {
     Int              i;
     StructInitInfo * m;
@@ -534,6 +534,7 @@ void InitResetFiltListTNumsFromTable(const Int * tab)
 }
 
 static Obj ValidatedArgList(const char * name, int nargs, const char * argStr)
+    GAP_GC_CANSAFEPOINT
 {
     Obj args = ArgStringToList(argStr);
     int len = LEN_PLIST(args);
@@ -633,7 +634,7 @@ void InitGVarOpersFromTable(const StructGVarOper * tab)
     GAP_GC_POP();
 }
 
-static void SetupFuncInfo(Obj func, const Char * cookie)
+static void SetupFuncInfo(Obj func, const Char * cookie) GAP_GC_CANSAFEPOINT
 {
     // The string <cookie> usually has the form "PATH/TO/FILE.c:FUNCNAME".
     // We check if that is the case, and if so, split it into the parts before
@@ -817,7 +818,7 @@ void ImportFuncFromLibrary(const Char * name, Obj * address)
 **
 *F  FuncExportToKernelFinished( <self> )  . . . . . . . . . . check functions
 */
-static Obj FuncExportToKernelFinished(Obj self)
+static Obj FuncExportToKernelFinished(Obj self) GAP_GC_CANSAFEPOINT
 {
     UInt i;
     Int  errs = 0;
@@ -1160,7 +1161,7 @@ static Int InitKernel(StructInitInfo * module)
 **
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-static Int InitLibrary(StructInitInfo * module)
+static Int InitLibrary(StructInitInfo * module) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable(GVarFuncs);

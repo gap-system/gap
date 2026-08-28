@@ -52,7 +52,7 @@ static inline UInt SIZEBAG_PERM(UInt deg)
 }
 
 template <typename T>
-static inline Obj NEW_PERM(UInt deg)
+static inline Obj NEW_PERM(UInt deg) GAP_GC_CANSAFEPOINT
 {
     return NewBag(T_PERM<T>::tnum, SIZEBAG_PERM<T>(deg));
 }

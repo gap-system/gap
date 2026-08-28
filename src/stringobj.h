@@ -189,7 +189,7 @@ EXPORT_INLINE void SET_LEN_STRING(Obj list, Int len) GAP_GC_NOTSAFEPOINT
 **  sets its length to len.
 **
 */
-Obj NEW_STRING(Int len);
+Obj NEW_STRING(Int len) GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
@@ -200,9 +200,9 @@ Obj NEW_STRING(Int len);
 **
 */
 
-Int GrowString(Obj list, UInt need);
+Int GrowString(Obj list, UInt need) GAP_GC_CANSAFEPOINT;
 
-EXPORT_INLINE void GROW_STRING(Obj list, Int len)
+EXPORT_INLINE void GROW_STRING(Obj list, Int len) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(IS_STRING_REP(list));
     GAP_ASSERT(len >= 0);
@@ -217,7 +217,7 @@ EXPORT_INLINE void GROW_STRING(Obj list, Int len)
 **
 **  'SHRINK_STRING' gives back not needed memory allocated by string.
 */
-EXPORT_INLINE void SHRINK_STRING(Obj list)
+EXPORT_INLINE void SHRINK_STRING(Obj list) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(IS_STRING_REP(list));
     ResizeBag(list, SIZEBAG_STRINGLEN(GET_LEN_STRING((list))));
@@ -293,7 +293,7 @@ BOOL IsString(Obj obj);
 **  'CopyToStringRep' copies the string <string> to a new mutable string in
 **  string representation.
 */
-Obj CopyToStringRep(Obj string);
+Obj CopyToStringRep(Obj string) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -304,7 +304,7 @@ Obj CopyToStringRep(Obj string);
 **  equal to <string>. This may return <string> if it already satisfies these
 **  criteria.
 */
-Obj ImmutableString(Obj string);
+Obj ImmutableString(Obj string) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -313,7 +313,7 @@ Obj ImmutableString(Obj string);
 **
 **  'ConvString' converts the string <string> to string representation.
 */
-void ConvString(Obj string);
+void ConvString(Obj string) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -324,7 +324,7 @@ void ConvString(Obj string);
 **  otherwise.   If <obj> is a  string it  changes  its representation to the
 **  string representation.
 */
-BOOL IsStringConv(Obj obj);
+BOOL IsStringConv(Obj obj) GAP_GC_CANSAFEPOINT;
 
 
 // Functions to create mutable and immutable GAP strings from C strings.
@@ -332,18 +332,19 @@ BOOL IsStringConv(Obj obj);
 // away for constant strings.
 
 EXPORT_INLINE Obj MakeStringWithLen(const char * buf, size_t len)
+    GAP_GC_CANSAFEPOINT
 {
     Obj result = NEW_STRING(len);
     memcpy(CHARS_STRING(result), buf, len);
     return result;
 }
 
-EXPORT_INLINE Obj MakeString(const char * cstr)
+EXPORT_INLINE Obj MakeString(const char * cstr) GAP_GC_CANSAFEPOINT
 {
     return MakeStringWithLen(cstr, strlen(cstr));
 }
 
-EXPORT_INLINE Obj MakeImmString(const char * cstr)
+EXPORT_INLINE Obj MakeImmString(const char * cstr) GAP_GC_CANSAFEPOINT
 {
     Obj result = MakeString(cstr);
     MakeImmutableNoRecurse(result);
@@ -351,6 +352,7 @@ EXPORT_INLINE Obj MakeImmString(const char * cstr)
 }
 
 EXPORT_INLINE Obj MakeImmStringWithLen(const char * buf, size_t len)
+    GAP_GC_CANSAFEPOINT
 {
     Obj result = MakeStringWithLen(buf, len);
     MakeImmutableNoRecurse(result);
@@ -365,7 +367,7 @@ EXPORT_INLINE Obj MakeImmStringWithLen(const char * buf, size_t len)
 **  'AppendCStr' appends <len> bytes of data taken from <buf> to <str>, where
 **  <str> must be a mutable GAP string object.
 */
-void AppendCStr(Obj str, const char * buf, UInt len);
+void AppendCStr(Obj str, const char * buf, UInt len) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -375,7 +377,7 @@ void AppendCStr(Obj str, const char * buf, UInt len);
 **  'AppendString' appends <str2> to the end of <str1>. Both <str1> and <str>
 **  must be a GAP string objects, and <str1> must be mutable.
 */
-void AppendString(Obj str1, Obj str2);
+void AppendString(Obj str1, Obj str2) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

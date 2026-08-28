@@ -82,7 +82,7 @@ UInt HaveInterrupt(void);
 /****************************************************************************
 **
 */
-UInt TakeInterrupt(void);
+UInt TakeInterrupt(void) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

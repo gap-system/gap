@@ -178,6 +178,7 @@ static Obj Func32Bits_Equal(Obj self, Obj l, Obj r)
 */
 template <typename UIntN>
 static Obj NBits_ExponentSums3(Obj obj, Obj vstart, Obj vend)
+    GAP_GC_CANSAFEPOINT
 {
     Int         start;          // the lowest generator number
     Int         end;            // the highest generator number
@@ -247,16 +248,19 @@ static Obj NBits_ExponentSums3(Obj obj, Obj vstart, Obj vend)
 }
 
 static Obj Func8Bits_ExponentSums3(Obj self, Obj obj, Obj vstart, Obj vend)
+    GAP_GC_CANSAFEPOINT
 {
     return NBits_ExponentSums3<UInt1>(obj, vstart, vend);
 }
 
 static Obj Func16Bits_ExponentSums3(Obj self, Obj obj, Obj vstart, Obj vend)
+    GAP_GC_CANSAFEPOINT
 {
     return NBits_ExponentSums3<UInt2>(obj, vstart, vend);
 }
 
 static Obj Func32Bits_ExponentSums3(Obj self, Obj obj, Obj vstart, Obj vend)
+    GAP_GC_CANSAFEPOINT
 {
     return NBits_ExponentSums3<UInt4>(obj, vstart, vend);
 }
@@ -266,17 +270,17 @@ static Obj Func32Bits_ExponentSums3(Obj self, Obj obj, Obj vstart, Obj vend)
 **
 *F  FuncNBits_ExponentSums1( <self>, <obj> )
 */
-static Obj Func8Bits_ExponentSums1(Obj self, Obj obj)
+static Obj Func8Bits_ExponentSums1(Obj self, Obj obj) GAP_GC_CANSAFEPOINT
 {
     return NBits_ExponentSums3<UInt1>(obj, INTOBJ_INT(1), INTOBJ_INT(RANK_WORD(obj)));
 }
 
-static Obj Func16Bits_ExponentSums1(Obj self, Obj obj)
+static Obj Func16Bits_ExponentSums1(Obj self, Obj obj) GAP_GC_CANSAFEPOINT
 {
     return NBits_ExponentSums3<UInt2>(obj, INTOBJ_INT(1), INTOBJ_INT(RANK_WORD(obj)));
 }
 
-static Obj Func32Bits_ExponentSums1(Obj self, Obj obj)
+static Obj Func32Bits_ExponentSums1(Obj self, Obj obj) GAP_GC_CANSAFEPOINT
 {
     return NBits_ExponentSums3<UInt4>(obj, INTOBJ_INT(1), INTOBJ_INT(RANK_WORD(obj)));
 }
@@ -287,7 +291,7 @@ static Obj Func32Bits_ExponentSums1(Obj self, Obj obj)
 *F  FuncNBits_ExponentSyllable( <self>, <w>, <i> )
 */
 template <typename UIntN>
-static Obj NBits_ExponentSyllable(Obj w, Obj pos)
+static Obj NBits_ExponentSyllable(Obj w, Obj pos) GAP_GC_CANSAFEPOINT
 {
     Int         ebits;          // number of bits in the exponent
     UInt        expm;           // signed exponent mask
@@ -316,16 +320,19 @@ static Obj NBits_ExponentSyllable(Obj w, Obj pos)
 }
 
 static Obj Func8Bits_ExponentSyllable(Obj self, Obj w, Obj pos)
+    GAP_GC_CANSAFEPOINT
 {
     return NBits_ExponentSyllable<UInt1>(w, pos);
 }
 
 static Obj Func16Bits_ExponentSyllable(Obj self, Obj w, Obj pos)
+    GAP_GC_CANSAFEPOINT
 {
     return NBits_ExponentSyllable<UInt2>(w, pos);
 }
 
 static Obj Func32Bits_ExponentSyllable(Obj self, Obj w, Obj pos)
+    GAP_GC_CANSAFEPOINT
 {
     return NBits_ExponentSyllable<UInt4>(w, pos);
 }
@@ -336,7 +343,7 @@ static Obj Func32Bits_ExponentSyllable(Obj self, Obj w, Obj pos)
 *F  FuncNBits_ExtRepOfObj( <self>, <obj> )
 */
 template <typename UIntN>
-static Obj NBits_ExtRepOfObj(Obj obj)
+static Obj NBits_ExtRepOfObj(Obj obj) GAP_GC_CANSAFEPOINT
 {
     Int         ebits;          // number of bits in the exponent
     UInt        expm;           // signed exponent mask
@@ -382,17 +389,17 @@ static Obj NBits_ExtRepOfObj(Obj obj)
     return lst;
 }
 
-static Obj Func8Bits_ExtRepOfObj(Obj self, Obj obj)
+static Obj Func8Bits_ExtRepOfObj(Obj self, Obj obj) GAP_GC_CANSAFEPOINT
 {
     return NBits_ExtRepOfObj<UInt1>(obj);
 }
 
-static Obj Func16Bits_ExtRepOfObj(Obj self, Obj obj)
+static Obj Func16Bits_ExtRepOfObj(Obj self, Obj obj) GAP_GC_CANSAFEPOINT
 {
     return NBits_ExtRepOfObj<UInt2>(obj);
 }
 
-static Obj Func32Bits_ExtRepOfObj(Obj self, Obj obj)
+static Obj Func32Bits_ExtRepOfObj(Obj self, Obj obj) GAP_GC_CANSAFEPOINT
 {
     return NBits_ExtRepOfObj<UInt4>(obj);
 }
@@ -403,7 +410,7 @@ static Obj Func32Bits_ExtRepOfObj(Obj self, Obj obj)
 *F  FuncNBits_GeneratorSyllable( <self>, <w>, <i> )
 */
 template <typename UIntN>
-static Obj NBits_GeneratorSyllable(Obj w, Obj pos)
+static Obj NBits_GeneratorSyllable(Obj w, Obj pos) GAP_GC_CANSAFEPOINT
 {
     Int         ebits;          // number of bits in the exponent
     Int         num;            // number of gen/exp pairs in <data>
@@ -423,16 +430,19 @@ static Obj NBits_GeneratorSyllable(Obj w, Obj pos)
 }
 
 static Obj Func8Bits_GeneratorSyllable(Obj self, Obj w, Obj pos)
+    GAP_GC_CANSAFEPOINT
 {
     return NBits_GeneratorSyllable<UInt1>(w, pos);
 }
 
 static Obj Func16Bits_GeneratorSyllable(Obj self, Obj w, Obj pos)
+    GAP_GC_CANSAFEPOINT
 {
     return NBits_GeneratorSyllable<UInt2>(w, pos);
 }
 
 static Obj Func32Bits_GeneratorSyllable(Obj self, Obj w, Obj pos)
+    GAP_GC_CANSAFEPOINT
 {
     return NBits_GeneratorSyllable<UInt4>(w, pos);
 }
@@ -443,7 +453,7 @@ static Obj Func32Bits_GeneratorSyllable(Obj self, Obj w, Obj pos)
 *F  FuncNBits_HeadByNumber( <self>, <l>, <gen> )
 */
 template <typename UIntN>
-static Obj NBits_HeadByNumber(Obj l, Obj r)
+static Obj NBits_HeadByNumber(Obj l, Obj r) GAP_GC_CANSAFEPOINT
 {
     Int         ebits;          // number of bits in the exponent
     UInt        genm;           // generator mask
@@ -488,17 +498,17 @@ static Obj NBits_HeadByNumber(Obj l, Obj r)
     return obj;
 }
 
-static Obj Func8Bits_HeadByNumber(Obj self, Obj l, Obj r)
+static Obj Func8Bits_HeadByNumber(Obj self, Obj l, Obj r) GAP_GC_CANSAFEPOINT
 {
     return NBits_HeadByNumber<UInt1>(l, r);
 }
 
-static Obj Func16Bits_HeadByNumber(Obj self, Obj l, Obj r)
+static Obj Func16Bits_HeadByNumber(Obj self, Obj l, Obj r) GAP_GC_CANSAFEPOINT
 {
     return NBits_HeadByNumber<UInt2>(l, r);
 }
 
-static Obj Func32Bits_HeadByNumber(Obj self, Obj l, Obj r)
+static Obj Func32Bits_HeadByNumber(Obj self, Obj l, Obj r) GAP_GC_CANSAFEPOINT
 {
     return NBits_HeadByNumber<UInt4>(l, r);
 }
@@ -654,7 +664,7 @@ static Obj Func32Bits_Less(Obj self, Obj l, Obj r)
 *F  FuncNBits_AssocWord( <self>, <type>, <data> )
 */
 template <typename UIntN>
-static Obj NBits_AssocWord(Obj type, Obj data)
+static Obj NBits_AssocWord(Obj type, Obj data) GAP_GC_CANSAFEPOINT
 {
     Int         ebits;          // number of bits in the exponent
     UInt        expm;           // unsigned exponent mask
@@ -701,16 +711,19 @@ static Obj NBits_AssocWord(Obj type, Obj data)
 }
 
 static Obj Func8Bits_AssocWord(Obj self, Obj type, Obj data)
+    GAP_GC_CANSAFEPOINT
 {
     return NBits_AssocWord<UInt1>(type, data);
 }
 
 static Obj Func16Bits_AssocWord(Obj self, Obj type, Obj data)
+    GAP_GC_CANSAFEPOINT
 {
     return NBits_AssocWord<UInt2>(type, data);
 }
 
 static Obj Func32Bits_AssocWord(Obj self, Obj type, Obj data)
+    GAP_GC_CANSAFEPOINT
 {
     return NBits_AssocWord<UInt4>(type, data);
 }
@@ -721,7 +734,7 @@ static Obj Func32Bits_AssocWord(Obj self, Obj type, Obj data)
 *F  FuncNBits_ObjByVector( <self>, <type>, <data> )
 */
 template <typename UIntN>
-static Obj NBits_ObjByVector(Obj type, Obj data)
+static Obj NBits_ObjByVector(Obj type, Obj data) GAP_GC_CANSAFEPOINT
 {
     Int         ebits;          // number of bits in the exponent
     UInt        expm;           // unsigned exponent mask
@@ -771,16 +784,19 @@ static Obj NBits_ObjByVector(Obj type, Obj data)
 }
 
 static Obj Func8Bits_ObjByVector(Obj self, Obj type, Obj data)
+    GAP_GC_CANSAFEPOINT
 {
     return NBits_ObjByVector<UInt1>(type, data);
 }
 
 static Obj Func16Bits_ObjByVector(Obj self, Obj type, Obj data)
+    GAP_GC_CANSAFEPOINT
 {
     return NBits_ObjByVector<UInt2>(type, data);
 }
 
 static Obj Func32Bits_ObjByVector(Obj self, Obj type, Obj data)
+    GAP_GC_CANSAFEPOINT
 {
     return NBits_ObjByVector<UInt4>(type, data);
 }
@@ -791,7 +807,7 @@ static Obj Func32Bits_ObjByVector(Obj self, Obj type, Obj data)
 *F  FuncNBits_Power( <self>, <l>, <r> )
 */
 template <typename UIntN>
-static Obj NBits_Power(Obj l, Obj r)
+static Obj NBits_Power(Obj l, Obj r) GAP_GC_CANSAFEPOINT
 {
     typedef typename OverflowType<UIntN>::type OInt;
 
@@ -1015,17 +1031,17 @@ static Obj NBits_Power(Obj l, Obj r)
     }
 }
 
-static Obj Func8Bits_Power(Obj self, Obj l, Obj r)
+static Obj Func8Bits_Power(Obj self, Obj l, Obj r) GAP_GC_CANSAFEPOINT
 {
     return NBits_Power<UInt1>(l, r);
 }
 
-static Obj Func16Bits_Power(Obj self, Obj l, Obj r)
+static Obj Func16Bits_Power(Obj self, Obj l, Obj r) GAP_GC_CANSAFEPOINT
 {
     return NBits_Power<UInt2>(l, r);
 }
 
-static Obj Func32Bits_Power(Obj self, Obj l, Obj r)
+static Obj Func32Bits_Power(Obj self, Obj l, Obj r) GAP_GC_CANSAFEPOINT
 {
     return NBits_Power<UInt4>(l, r);
 }
@@ -1036,7 +1052,7 @@ static Obj Func32Bits_Power(Obj self, Obj l, Obj r)
 *F  FuncNBits_Product( <self>, <l>, <r> )
 */
 template <typename UIntN>
-static Obj NBits_Product(Obj l, Obj r)
+static Obj NBits_Product(Obj l, Obj r) GAP_GC_CANSAFEPOINT
 {
     Int         ebits;          // number of bits in the exponent
     UInt        expm;           // signed exponent mask
@@ -1112,17 +1128,17 @@ static Obj NBits_Product(Obj l, Obj r)
     return obj;
 }
 
-static Obj Func8Bits_Product(Obj self, Obj l, Obj r)
+static Obj Func8Bits_Product(Obj self, Obj l, Obj r) GAP_GC_CANSAFEPOINT
 {
     return NBits_Product<UInt1>(l, r);
 }
 
-static Obj Func16Bits_Product(Obj self, Obj l, Obj r)
+static Obj Func16Bits_Product(Obj self, Obj l, Obj r) GAP_GC_CANSAFEPOINT
 {
     return NBits_Product<UInt2>(l, r);
 }
 
-static Obj Func32Bits_Product(Obj self, Obj l, Obj r)
+static Obj Func32Bits_Product(Obj self, Obj l, Obj r) GAP_GC_CANSAFEPOINT
 {
     return NBits_Product<UInt4>(l, r);
 }
@@ -1133,7 +1149,7 @@ static Obj Func32Bits_Product(Obj self, Obj l, Obj r)
 *F  FuncNBits_Quotient( <self>, <l>, <r> )
 */
 template <typename UIntN>
-static Obj NBits_Quotient(Obj l, Obj r)
+static Obj NBits_Quotient(Obj l, Obj r) GAP_GC_CANSAFEPOINT
 {
     Int         ebits;          // number of bits in the exponent
     UInt        expm;           // signed exponent mask
@@ -1210,17 +1226,17 @@ static Obj NBits_Quotient(Obj l, Obj r)
     return obj;
 }
 
-static Obj Func8Bits_Quotient(Obj self, Obj l, Obj r)
+static Obj Func8Bits_Quotient(Obj self, Obj l, Obj r) GAP_GC_CANSAFEPOINT
 {
     return NBits_Quotient<UInt1>(l, r);
 }
 
-static Obj Func16Bits_Quotient(Obj self, Obj l, Obj r)
+static Obj Func16Bits_Quotient(Obj self, Obj l, Obj r) GAP_GC_CANSAFEPOINT
 {
     return NBits_Quotient<UInt2>(l, r);
 }
 
-static Obj Func32Bits_Quotient(Obj self, Obj l, Obj r)
+static Obj Func32Bits_Quotient(Obj self, Obj l, Obj r) GAP_GC_CANSAFEPOINT
 {
     return NBits_Quotient<UInt4>(l, r);
 }
@@ -1297,7 +1313,7 @@ static Obj FuncNBits_NumberSyllables(Obj self, Obj w)
 * letter rep arithmetic */
 /**************************************************************************
 *F  FuncMULT_WOR_LETTREP( <self>, <a>,<b> ) */
-static Obj FuncMULT_WOR_LETTREP(Obj self, Obj a, Obj b)
+static Obj FuncMULT_WOR_LETTREP(Obj self, Obj a, Obj b) GAP_GC_CANSAFEPOINT
 {
   UInt l,m,i,j,newlen,as,bs,ae,be;
   Obj n;
@@ -1396,7 +1412,7 @@ static Obj FuncMULT_WOR_LETTREP(Obj self, Obj a, Obj b)
 }
 
 /*F  FuncMULT_BYT_LETTREP( <self>, <a>,<b> ) */
-static Obj FuncMULT_BYT_LETTREP(Obj self, Obj a, Obj b)
+static Obj FuncMULT_BYT_LETTREP(Obj self, Obj a, Obj b) GAP_GC_CANSAFEPOINT
 {
   UInt l,m,i,j,newlen,as,bs,ae,be;
   Obj n;
@@ -1577,7 +1593,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // export position numbers 'AWP_SOMETHING'
     ExportAsConstantGVar(AWP_FIRST_ENTRY);

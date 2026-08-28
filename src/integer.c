@@ -102,7 +102,7 @@ GAP_STATIC_ASSERT(GMP_LIMB_BITS == 8 * sizeof(UInt),
 GAP_STATIC_ASSERT(sizeof(mp_limb_t) == sizeof(UInt),
                   "sizeof(mp_limb_t) != sizeof(UInt)");
 
-static Obj ObjInt_UIntInv( UInt i );
+static Obj ObjInt_UIntInv( UInt i ) GAP_GC_CANSAFEPOINT;
 
 
 // debugging
@@ -294,7 +294,7 @@ typedef struct {
 **  Setup a fake mpz_t object for capturing the output of a GMP mpz_ function,
 **  with space for up to <size> limbs allocated.
 */
-static void NEW_FAKEMPZ( fake_mpz_t fake, UInt size )
+static void NEW_FAKEMPZ( fake_mpz_t fake, UInt size ) GAP_GC_CANSAFEPOINT
 {
   fake->v->_mp_alloc = size;
   fake->v->_mp_size = 0;
@@ -345,7 +345,7 @@ static void FAKEMPZ_GMPorINTOBJ( fake_mpz_t fake, Obj op )
 **
 **  This function converts a fake mpz_t into a GAP integer object.
 */
-static Obj GMPorINTOBJ_FAKEMPZ( fake_mpz_t fake )
+static Obj GMPorINTOBJ_FAKEMPZ( fake_mpz_t fake ) GAP_GC_CANSAFEPOINT
 {
   Obj obj = fake->obj;
   if ( fake->v->_mp_size == 0 ) {
@@ -376,7 +376,7 @@ static Obj GMPorINTOBJ_FAKEMPZ( fake_mpz_t fake )
 **
 **  This function converts an mpz_t into a GAP integer object.
 */
-static Obj GMPorINTOBJ_MPZ( mpz_t v )
+static Obj GMPorINTOBJ_MPZ( mpz_t v ) GAP_GC_CANSAFEPOINT
 {
     return MakeObjInt((const UInt *)v->_mp_d, v->_mp_size);
 }
@@ -794,7 +794,7 @@ void PrintInt ( Obj op )
 ** Convert the integer <op> to a string relative to the given base <base>.
 ** Here, base may range from 2 to 36.
 */
-static Obj StringIntBase(Obj op, int base)
+static Obj StringIntBase(Obj op, int base) GAP_GC_CANSAFEPOINT
 {
   int len;
   Obj res = 0;
@@ -847,7 +847,7 @@ static Obj StringIntBase(Obj op, int base)
 **  letters a..f are also allowed in <string> instead of A..F.
 **
 */
-static Obj FuncHexStringInt(Obj self, Obj n)
+static Obj FuncHexStringInt(Obj self, Obj n) GAP_GC_CANSAFEPOINT
 {
     RequireInt(SELF_NAME, n);
     return StringIntBase(n, 16);
@@ -861,7 +861,7 @@ static Obj FuncHexStringInt(Obj self, Obj n)
 ** This function does not check for overflow, so make sure that len*4 does
 ** not exceed the number of bits in mp_limb_t.
 **/
-static mp_limb_t hexstr2int( const UInt1 *p, UInt len )
+static mp_limb_t hexstr2int( const UInt1 *p, UInt len ) GAP_GC_CANSAFEPOINT
 {
   mp_limb_t n = 0;
   UInt1 a;
@@ -880,7 +880,7 @@ static mp_limb_t hexstr2int( const UInt1 *p, UInt len )
   return n;
 }
 
-static Obj FuncIntHexString(Obj self,  Obj str)
+static Obj FuncIntHexString(Obj self,  Obj str) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, str);
     return IntHexString(str);
@@ -1019,7 +1019,7 @@ Int CLog2Int(Int a)
 **
 **  Given to GAP-Level as "Log2Int".
 */
-static Obj FuncLog2Int(Obj self, Obj n)
+static Obj FuncLog2Int(Obj self, Obj n) GAP_GC_CANSAFEPOINT
 {
     RequireInt(SELF_NAME, n);
 
@@ -1049,7 +1049,7 @@ static Obj FuncLog2Int(Obj self, Obj n)
 **  `FuncSTRING_INT' returns an immutable string representing the integer <n>
 **
 */
-static Obj FuncSTRING_INT(Obj self, Obj n)
+static Obj FuncSTRING_INT(Obj self, Obj n) GAP_GC_CANSAFEPOINT
 {
     RequireInt(SELF_NAME, n);
     return StringIntBase(n, 10);
@@ -1137,7 +1137,7 @@ Obj IntStringInternal(Obj string, const Char *str)
 **  fail if the string is not a valid integer.
 **
 */
-static Obj FuncINT_STRING(Obj self, Obj string)
+static Obj FuncINT_STRING(Obj self, Obj string) GAP_GC_CANSAFEPOINT
 {
     if( !IS_STRING(string) ) {
         return Fail;
@@ -1237,7 +1237,7 @@ Int LtInt(Obj opL, Obj opR)
 **  cases to handle: each operand can be positive or negative, small or large
 **  integer.
 */
-static Obj SumOrDiffInt(Obj opL, Obj opR, Int sign)
+static Obj SumOrDiffInt(Obj opL, Obj opR, Int sign) GAP_GC_CANSAFEPOINT
 {
   UInt sizeL, sizeR;
   fake_mpz_t mpzL, mpzR, mpzResult;
@@ -1400,7 +1400,7 @@ Obj AbsInt( Obj op )
   return Fail;
 }
 
-static Obj FuncABS_INT(Obj self, Obj n)
+static Obj FuncABS_INT(Obj self, Obj n) GAP_GC_CANSAFEPOINT
 {
     RequireInt(SELF_NAME, n);
     Obj res = AbsInt(n);
@@ -1431,7 +1431,7 @@ Obj SignInt( Obj op )
   return Fail;
 }
 
-static Obj FuncSIGN_INT(Obj self, Obj n)
+static Obj FuncSIGN_INT(Obj self, Obj n) GAP_GC_CANSAFEPOINT
 {
     RequireInt(SELF_NAME, n);
     Obj res = SignInt(n);
@@ -1500,7 +1500,7 @@ Obj ProdInt(Obj opL, Obj opR)
 **
 *F  ProdIntObj(<n>,<op>)  . . . . . . . . product of an integer and an object
 */
-static Obj ProdIntObj ( Obj n, Obj op )
+static Obj ProdIntObj ( Obj n, Obj op ) GAP_GC_CANSAFEPOINT
 {
   Obj                 res = 0;        // result
   Obj                 tmp = 0;        // intermediate result
@@ -1579,7 +1579,7 @@ static Obj ProdIntObj ( Obj n, Obj op )
   return res;
 }
 
-static Obj FuncPROD_INT_OBJ(Obj self, Obj opL, Obj opR)
+static Obj FuncPROD_INT_OBJ(Obj self, Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
   return ProdIntObj( opL, opR );
 }
@@ -1663,7 +1663,7 @@ Obj PowInt ( Obj opL, Obj opR )
 **
 *F  PowObjInt(<op>,<n>) . . . . . . . . . . power of an object and an integer
 */
-static Obj PowObjInt(Obj op, Obj n)
+static Obj PowObjInt(Obj op, Obj n) GAP_GC_CANSAFEPOINT
 {
   Obj                 res = 0;        // result
   Obj                 tmp = 0;        // intermediate result
@@ -1735,7 +1735,7 @@ static Obj PowObjInt(Obj op, Obj n)
   return res;
 }
 
-static Obj FuncPOW_OBJ_INT(Obj self, Obj opL, Obj opR)
+static Obj FuncPOW_OBJ_INT(Obj self, Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
   return PowObjInt( opL, opR );
 }
@@ -2006,7 +2006,7 @@ Obj QuoInt(Obj opL, Obj opR)
 **  'Sign( Quo(<a>,<b>) ) = Sign(<a>) * Sign(<b>)'.  Dividing by 0  causes an
 **  error.  'Rem' (see "Rem") can be used to compute the remainder.
 */
-static Obj FuncQUO_INT(Obj self, Obj a, Obj b)
+static Obj FuncQUO_INT(Obj self, Obj a, Obj b) GAP_GC_CANSAFEPOINT
 {
     RequireInt(SELF_NAME, a);
     RequireInt(SELF_NAME, b);
@@ -2137,7 +2137,7 @@ Obj RemInt(Obj opL, Obj opR)
 **  same sign as <i> and its absolute value is strictly less than the
 **  absolute value of <k>.  Dividing by 0 causes an error.
 */
-static Obj FuncREM_INT(Obj self, Obj a, Obj b)
+static Obj FuncREM_INT(Obj self, Obj a, Obj b) GAP_GC_CANSAFEPOINT
 {
     RequireInt(SELF_NAME, a);
     RequireInt(SELF_NAME, b);
@@ -2217,7 +2217,7 @@ Obj GcdInt ( Obj opL, Obj opR )
 **  greatest common divisor is never negative, even if the arguments are.  We
 **  define $gcd( a, 0 ) = gcd( 0, a ) = abs( a )$ and $gcd( 0, 0 ) = 0$.
 */
-static Obj FuncGCD_INT(Obj self, Obj a, Obj b)
+static Obj FuncGCD_INT(Obj self, Obj a, Obj b) GAP_GC_CANSAFEPOINT
 {
     RequireInt(SELF_NAME, a);
     RequireInt(SELF_NAME, b);
@@ -2277,7 +2277,7 @@ Obj LcmInt(Obj opL, Obj opR)
     return result;
 }
 
-static Obj FuncLCM_INT(Obj self, Obj a, Obj b)
+static Obj FuncLCM_INT(Obj self, Obj a, Obj b) GAP_GC_CANSAFEPOINT
 {
     RequireInt(SELF_NAME, a);
     RequireInt(SELF_NAME, b);
@@ -2287,7 +2287,7 @@ static Obj FuncLCM_INT(Obj self, Obj a, Obj b)
 /****************************************************************************
 **
 */
-static Obj FuncFACTORIAL_INT(Obj self, Obj n)
+static Obj FuncFACTORIAL_INT(Obj self, Obj n) GAP_GC_CANSAFEPOINT
 {
     RequireNonnegativeSmallInt(SELF_NAME, n);
 
@@ -2417,7 +2417,7 @@ Obj BinomialInt(Obj n, Obj k)
     return result;
 }
 
-static Obj FuncBINOMIAL_INT(Obj self, Obj n, Obj k)
+static Obj FuncBINOMIAL_INT(Obj self, Obj n, Obj k) GAP_GC_CANSAFEPOINT
 {
     RequireInt(SELF_NAME, n);
     RequireInt(SELF_NAME, k);
@@ -2428,7 +2428,7 @@ static Obj FuncBINOMIAL_INT(Obj self, Obj n, Obj k)
 /****************************************************************************
 **
 */
-static Obj FuncJACOBI_INT(Obj self, Obj n, Obj m)
+static Obj FuncJACOBI_INT(Obj self, Obj n, Obj m) GAP_GC_CANSAFEPOINT
 {
   fake_mpz_t mpzL, mpzR;
   int result;
@@ -2453,7 +2453,7 @@ static Obj FuncJACOBI_INT(Obj self, Obj n, Obj m)
 /****************************************************************************
 **
 */
-static Obj FuncPVALUATION_INT(Obj self, Obj n, Obj p)
+static Obj FuncPVALUATION_INT(Obj self, Obj n, Obj p) GAP_GC_CANSAFEPOINT
 {
   fake_mpz_t mpzN, mpzP;
   mpz_t mpzResult;
@@ -2501,7 +2501,7 @@ static Obj FuncPVALUATION_INT(Obj self, Obj n, Obj p)
 /****************************************************************************
 **
 */
-static Obj FuncROOT_INT(Obj self, Obj n, Obj k)
+static Obj FuncROOT_INT(Obj self, Obj n, Obj k) GAP_GC_CANSAFEPOINT
 {
     fake_mpz_t n_mpz, result_mpz;
 
@@ -2615,7 +2615,7 @@ Obj InverseModInt(Obj base, Obj mod)
 /****************************************************************************
 **
 */
-static Obj FuncINVMODINT(Obj self, Obj base, Obj mod)
+static Obj FuncINVMODINT(Obj self, Obj base, Obj mod) GAP_GC_CANSAFEPOINT
 {
     RequireInt(SELF_NAME, base);
     RequireInt(SELF_NAME, mod);
@@ -2628,6 +2628,7 @@ static Obj FuncINVMODINT(Obj self, Obj base, Obj mod)
 **
 */
 static Obj FuncPOWERMODINT(Obj self, Obj base, Obj exp, Obj mod)
+    GAP_GC_CANSAFEPOINT
 {
   fake_mpz_t base_mpz, exp_mpz, mod_mpz, result_mpz;
   Obj result = 0;
@@ -2675,6 +2676,7 @@ static Obj FuncPOWERMODINT(Obj self, Obj base, Obj exp, Obj mod)
 **
 */
 static Obj FuncIS_PROBAB_PRIME_INT(Obj self, Obj n, Obj reps)
+    GAP_GC_CANSAFEPOINT
 {
   fake_mpz_t n_mpz;
   Int res;
@@ -2719,6 +2721,7 @@ static Obj FuncIS_PROBAB_PRIME_INT(Obj self, Obj n, Obj reps)
 **
 */
 static Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
+    GAP_GC_CANSAFEPOINT
 {
   Obj res = 0;
   Int i, n, q, r, qoff, len;
@@ -2791,31 +2794,32 @@ static Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
 **  The following functions only exist to enable use to test the conversion
 **  functions (Int_ObjInt, ObjInt_Int, etc.) via a regular .tst file.
 */
-static Obj FuncINTERNAL_TEST_CONV_INT(Obj self, Obj val)
+static Obj FuncINTERNAL_TEST_CONV_INT(Obj self, Obj val) GAP_GC_CANSAFEPOINT
 {
     Int ival = Int_ObjInt(val);
     return ObjInt_Int(ival);
 }
 
-static Obj FuncINTERNAL_TEST_CONV_UINT(Obj self, Obj val)
+static Obj FuncINTERNAL_TEST_CONV_UINT(Obj self, Obj val) GAP_GC_CANSAFEPOINT
 {
     UInt ival = UInt_ObjInt(val);
     return ObjInt_UInt(ival);
 }
 
 static Obj FuncINTERNAL_TEST_CONV_UINTINV(Obj self, Obj val)
+    GAP_GC_CANSAFEPOINT
 {
     UInt ival = UInt_ObjInt(val);
     return ObjInt_UIntInv(ival);
 }
 
-static Obj FuncINTERNAL_TEST_CONV_INT8(Obj self, Obj val)
+static Obj FuncINTERNAL_TEST_CONV_INT8(Obj self, Obj val) GAP_GC_CANSAFEPOINT
 {
     Int8 ival = Int8_ObjInt(val);
     return ObjInt_Int8(ival);
 }
 
-static Obj FuncINTERNAL_TEST_CONV_UINT8(Obj self, Obj val)
+static Obj FuncINTERNAL_TEST_CONV_UINT8(Obj self, Obj val) GAP_GC_CANSAFEPOINT
 {
     UInt8 ival = UInt8_ObjInt(val);
     return ObjInt_UInt8(ival);
@@ -3004,7 +3008,7 @@ static Int InitKernel ( StructInitInfo * module )
 **
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-static Int InitLibrary ( StructInitInfo *    module )
+static Int InitLibrary ( StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
   // init filters and functions
   InitGVarFiltsFromTable( GVarFilts );

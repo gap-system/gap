@@ -141,6 +141,7 @@ static inline Obj ELM_WPOBJ(Obj list, UInt pos)
 **  'SET_ELM_WPOBJ' sets the <pos>-th element of the WP object <wp> to <val>.
 */
 static inline void SET_ELM_WPOBJ(Obj list, UInt pos, Obj val)
+    GAP_GC_CANSAFEPOINT
 {
 #ifndef USE_JULIA_GC
     ADDR_OBJ(list)[pos] = val;
@@ -170,7 +171,7 @@ static inline void SET_ELM_WPOBJ(Obj list, UInt pos, Obj val)
 **  'GROW_WPOBJ' grows the weak pointer object <wp> if necessary to ensure
 **  that it has room for at least <need> elements.
 */
-static inline void GROW_WPOBJ(Obj wp, UInt need)
+static inline void GROW_WPOBJ(Obj wp, UInt need) GAP_GC_CANSAFEPOINT
 {
   UInt                plen;           // new physical length
   UInt                good;           // good new physical length
@@ -225,7 +226,7 @@ static inline void GROW_WPOBJ(Obj wp, UInt need)
 **  WP object.
 */
 
-static Obj FuncWeakPointerObj(Obj self, Obj list)
+static Obj FuncWeakPointerObj(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
   Obj wp;
   Int i;
@@ -312,7 +313,7 @@ static Int LengthWPObj(Obj wp)
 **  collection, as trailing items may evaporate.
 */
 
-static Obj FuncLengthWPObj(Obj self, Obj wp)
+static Obj FuncLengthWPObj(Obj self, Obj wp) GAP_GC_CANSAFEPOINT
 {
     RequireWPObj(SELF_NAME, wp);
     return INTOBJ_INT(LengthWPObj(wp));
@@ -328,6 +329,7 @@ static Obj FuncLengthWPObj(Obj self, Obj wp)
 */
 
 static Obj FuncSetElmWPObj(Obj self, Obj wp, Obj pos, Obj val)
+    GAP_GC_CANSAFEPOINT
 {
     RequireWPObj(SELF_NAME, wp);
     UInt ipos = GetPositiveSmallInt(SELF_NAME, pos);
@@ -398,7 +400,7 @@ static BOOL IsBoundElmWPObj(Obj wp, UInt ipos)
 **  GAP  handler for IsBound  test on WP object.   Remember that bindings can
 **  evaporate in any garbage collection.
 */
-static Obj FuncIsBoundElmWPObj(Obj self, Obj wp, Obj pos)
+static Obj FuncIsBoundElmWPObj(Obj self, Obj wp, Obj pos) GAP_GC_CANSAFEPOINT
 {
     RequireWPObj(SELF_NAME, wp);
     UInt ipos = GetPositiveSmallInt(SELF_NAME, pos);
@@ -414,7 +416,7 @@ static Obj FuncIsBoundElmWPObj(Obj self, Obj wp, Obj pos)
 **  GAP  handler for Unbind on WP object.
 */
 
-static Obj FuncUnbindElmWPObj(Obj self, Obj wp, Obj pos)
+static Obj FuncUnbindElmWPObj(Obj self, Obj wp, Obj pos) GAP_GC_CANSAFEPOINT
 {
     RequireWPObj(SELF_NAME, wp);
     UInt ipos = GetPositiveSmallInt(SELF_NAME, pos);
@@ -489,7 +491,7 @@ static Obj ElmDefWPList(Obj wp, Int ipos, Obj def)
 **  IsBound, relying on the fact  that fail can never  disappear in a garbage
 **  collection.
 */
-static Obj FuncElmWPObj(Obj self, Obj wp, Obj pos)
+static Obj FuncElmWPObj(Obj self, Obj wp, Obj pos) GAP_GC_CANSAFEPOINT
 {
     RequireWPObj(SELF_NAME, wp);
     UInt ipos = GetPositiveSmallInt(SELF_NAME, pos);
@@ -627,7 +629,7 @@ static void CopyWPObj(TraversalState * traversal, Obj copy, Obj original)
 **
 */
 
-static Obj CopyObjWPObj(Obj obj, Int mut)
+static Obj CopyObjWPObj(Obj obj, Int mut) GAP_GC_CANSAFEPOINT
 {
     Obj                 copy;           // copy, result
     Obj                 tmp = 0;        // temporary variable
@@ -909,7 +911,7 @@ static Int InitKernel (
 *F  InitLibrary(<module>) . . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFiltsFromTable( GVarFilts );

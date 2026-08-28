@@ -65,13 +65,15 @@ static void UnmarkTree(Obj tree);
 static UInt Mark(Obj tree, Obj reftree, Int indexx);
 static Int  AlmostEqual(Obj tree1, Int index1, Obj tree2, Int index2);
 static Int  Equal(Obj tree1, Int index1, Obj tree2, Int index2);
-static Obj  Mark2(Obj tree, Int index1, Obj reftree, Int index2);
+static Obj  Mark2(Obj tree, Int index1, Obj reftree, Int index2)
+    GAP_GC_CANSAFEPOINT;
 static UInt FindTree(Obj tree, Int indexx);
-static Obj  MakeFormulaVector(Obj tree, Obj pr);
+static Obj  MakeFormulaVector(Obj tree, Obj pr) GAP_GC_CANSAFEPOINT;
 static Int  Leftof(Obj tree1, Int index1, Obj tree2, Int index2);
 static Int  Leftof2(Obj tree1, Int index1, Obj tree2, Int index2);
 static Int  Earlier(Obj tree1, Int index1, Obj tree2, Int index2);
-static void FindNewReps(Obj tree, Obj reps, Obj pr, Obj max);
+static void FindNewReps(Obj tree, Obj reps, Obj pr, Obj max)
+    GAP_GC_CANSAFEPOINT;
 static void FindSubs(Obj tree,
                      Int x,
                      Obj list1,
@@ -667,6 +669,7 @@ static Obj MakeFormulaVector(Obj tree, Obj pr)
 **  the pc-presentation <pr>.
 */
 static Obj FuncMakeFormulaVector(Obj self, Obj tree, Obj pr)
+    GAP_GC_CANSAFEPOINT
 {
     if  (LEN_PLIST(tree) == 5)
         ErrorMayQuit("<tree> has to be a non-atom", 0, 0);
@@ -785,10 +788,10 @@ static Int Earlier(Obj tree1, Int index1, Obj tree2, Int index2)
 */
 
 // See below:
-static void GetReps(Obj list, Obj reps);
-static void FindNewReps2(Obj tree, Obj reps, Obj pr);
+static void GetReps(Obj list, Obj reps) GAP_GC_CANSAFEPOINT;
+static void FindNewReps2(Obj tree, Obj reps, Obj pr) GAP_GC_CANSAFEPOINT;
 
-static void GetPols(Obj list, Obj pr, Obj pols)
+static void GetPols(Obj list, Obj pr, Obj pols) GAP_GC_CANSAFEPOINT
 {
     Obj    lreps = 0,
            rreps = 0,
@@ -846,6 +849,7 @@ static void GetPols(Obj list, Obj pr, Obj pols)
 */
 
 static Obj FuncGetPols(Obj self, Obj list, Obj pr, Obj pols)
+    GAP_GC_CANSAFEPOINT
 {
     if  (LEN_PLIST(list) != 4)
         ErrorMayQuit("<list> must be a generalised representative not a tree",
@@ -865,7 +869,7 @@ static Obj FuncGetPols(Obj self, Obj list, Obj pr, Obj pols)
 */
 
 // See below:
-static void FindNewReps1(Obj tree, Obj reps);
+static void FindNewReps1(Obj tree, Obj reps) GAP_GC_CANSAFEPOINT;
 
 static void GetReps(Obj list, Obj reps)
 {
@@ -962,7 +966,7 @@ static void FindSubs1(Obj tree,
                       Int ar,
                       Int bl,
                       Int br,
-                      Obj reps);
+                      Obj reps) GAP_GC_CANSAFEPOINT;
 
 static void FindNewReps1(Obj tree, Obj reps)
 {
@@ -1064,7 +1068,7 @@ static void FindSubs2(Obj tree,
                       Int bl,
                       Int br,
                       Obj reps,
-                      Obj pr);
+                      Obj pr) GAP_GC_CANSAFEPOINT;
 
 static void
 FindNewReps2(Obj tree, Obj reps, Obj pr /*  pc-presentation for a
@@ -1297,6 +1301,7 @@ static void FindNewReps(Obj tree,
 */
 
 static Obj FuncFindNewReps(Obj self, Obj tree, Obj reps, Obj pr, Obj max)
+    GAP_GC_CANSAFEPOINT
 {
 
 #ifdef TEST_TREE
@@ -1578,7 +1583,7 @@ static void FindSubs(Obj tree,
                      Obj reps, // list of representatives for all trees
                      Obj pr,   // pc-presentation
                      Obj max   // needed to call 'FindNewReps'
-)
+) GAP_GC_CANSAFEPOINT
 {
    Int    i;  // loop variable
 
@@ -1752,7 +1757,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );

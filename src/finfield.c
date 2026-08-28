@@ -475,7 +475,7 @@ static Int EqFFE(Obj opL, Obj opR)
 **  'LtFFEFFE' returns 'True' if the  finite field element <opL> is  strictly
 **  less than the finite field element <opR> and 'False' otherwise.
 */
-static Int LtFFE(Obj opL, Obj opR)
+static Int LtFFE(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     FFV                 vL, vR;         // value of left and right
     FF                  fL, fR;         // field of left and right
@@ -603,7 +603,7 @@ static void PrFFE(Obj ffe)
 */
 static Obj SUM_FFE_LARGE GAP_GC_GLOBALLY_ROOTED;
 
-static Obj SumFFEFFE(Obj opL, Obj opR)
+static Obj SumFFEFFE(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     FFV                 vL, vR, vX;     // value of left, right, result
     FF                  fL, fR, fX;     // field of left, right, result
@@ -754,7 +754,7 @@ static Obj AInvFFE(Obj op)
 */
 static Obj DIFF_FFE_LARGE GAP_GC_GLOBALLY_ROOTED;
 
-static Obj DiffFFEFFE(Obj opL, Obj opR)
+static Obj DiffFFEFFE(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     FFV                 vL, vR, vX;     // value of left, right, result
     FF                  fL, fR, fX;     // field of left, right, result
@@ -856,7 +856,7 @@ static Obj DiffIntFFE(Obj opL, Obj opR)
 */
 static Obj PROD_FFE_LARGE GAP_GC_GLOBALLY_ROOTED;
 
-static Obj ProdFFEFFE(Obj opL, Obj opR)
+static Obj ProdFFEFFE(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     FFV                 vL, vR, vX;     // value of left, right, result
     FF                  fL, fR, fX;     // field of left, right, result
@@ -978,7 +978,7 @@ static Obj InvFFE(Obj op)
 */
 static Obj QUO_FFE_LARGE GAP_GC_GLOBALLY_ROOTED;
 
-static Obj QuoFFEFFE(Obj opL, Obj opR)
+static Obj QuoFFEFFE(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     FFV                 vL, vR, vX;     // value of left, right, result
     FF                  fL, fR, fX;     // field of left, right, result
@@ -1022,7 +1022,7 @@ static Obj QuoFFEFFE(Obj opL, Obj opR)
     return NEW_FFE( fX, vX );
 }
 
-static Obj QuoFFEInt(Obj opL, Obj opR)
+static Obj QuoFFEInt(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     FFV                 vL, vR, vX;     // value of left, right, result
     FF                  fX;             // field of result
@@ -1045,7 +1045,7 @@ static Obj QuoFFEInt(Obj opL, Obj opR)
     return NEW_FFE( fX, vX );
 }
 
-static Obj QuoIntFFE(Obj opL, Obj opR)
+static Obj QuoIntFFE(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     FFV                 vL, vR, vX;     // value of left, right, result
     FF                  fX;             // field of result
@@ -1080,7 +1080,7 @@ static Obj QuoIntFFE(Obj opL, Obj opR)
 **  'PowFFEInt' just does the conversions mentioned  above and then calls the
 **  function 'POW_FFV' to do the actual exponentiation.
 */
-static Obj PowFFEInt(Obj opL, Obj opR)
+static Obj PowFFEInt(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     FFV                 vL, vX;         // value of left, result
     Int                 vR;             // value of right
@@ -1121,7 +1121,7 @@ static Obj PowFFEInt(Obj opL, Obj opR)
 **
 *F  PowFFEFFE( <opL>, <opR> ) . . . . . . conjugate of a finite field element
 */
-static Obj PowFFEFFE(Obj opL, Obj opR)
+static Obj PowFFEFFE(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     // get the field for the result
     if ( CHAR_FF( FLD_FFE(opL) ) != CHAR_FF( FLD_FFE(opR) ) ) {
@@ -1170,7 +1170,7 @@ static Obj FiltIS_FFE(Obj self, Obj obj)
 */
 static Obj LOG_FFE_LARGE GAP_GC_GLOBALLY_ROOTED;
 
-static Obj FuncLOG_FFE_DEFAULT(Obj self, Obj opZ, Obj opR)
+static Obj FuncLOG_FFE_DEFAULT(Obj self, Obj opZ, Obj opR) GAP_GC_CANSAFEPOINT
 {
     FFV                 vZ, vR;         // value of left, right
     FF                  fZ, fR, fX;     // field of left, right, common
@@ -1261,7 +1261,7 @@ static Obj IntFF GAP_GC_GLOBALLY_ROOTED;
 static Int NumFF;
 #endif
 
-static Obj INT_FF(FF ff)
+static Obj INT_FF(FF ff) GAP_GC_CANSAFEPOINT
 {
     Obj                 conv;           // conversion table, result
     Int                 q;              // size of finite field
@@ -1307,7 +1307,7 @@ static Obj INT_FF(FF ff)
 }
 
 
-static Obj FuncINT_FFE_DEFAULT(Obj self, Obj z)
+static Obj FuncINT_FFE_DEFAULT(Obj self, Obj z) GAP_GC_CANSAFEPOINT
 {
     FFV                 v;              // value of finite field element
     FF                  ff;             // finite field
@@ -1353,7 +1353,7 @@ static Obj FuncINT_FFE_DEFAULT(Obj self, Obj z)
 */
 static Obj ZOp GAP_GC_GLOBALLY_ROOTED;
 
-static Obj FuncZ(Obj self, Obj q)
+static Obj FuncZ(Obj self, Obj q) GAP_GC_CANSAFEPOINT
 {
     FF                  ff;             // the finite field
 
@@ -1376,7 +1376,7 @@ static Obj FuncZ(Obj self, Obj q)
     return NEW_FFE(ff, (q == INTOBJ_INT(2)) ? 1 : 2);
 }
 
-static Obj FuncZ2(Obj self, Obj p, Obj d)
+static Obj FuncZ2(Obj self, Obj p, Obj d) GAP_GC_CANSAFEPOINT
 {
     FF   ff;
     Int  ip, id, id1;
@@ -1526,7 +1526,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // create the fields and integer conversion bags
     SuccFF = NEW_PLIST( T_PLIST, NUM_SHORT_FINITE_FIELDS );

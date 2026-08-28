@@ -133,7 +133,7 @@ EXPORT_INLINE void SET_BRK_CALL_TO(Expr expr) GAP_GC_NOTSAFEPOINT
 *F  FreeLVarsBag( <bag> )  . . . . . . . . . . . . . . . . . . free lvars bag
 */
 
-Bag  NewLVarsBag(UInt slots);
+Bag  NewLVarsBag(UInt slots) GAP_GC_CANSAFEPOINT;
 void FreeLVarsBag(Bag bag);
 
 /****************************************************************************
@@ -196,6 +196,7 @@ EXPORT_INLINE void SWITCH_TO_OLD_LVARS_AND_FREE(Obj old)
 **  variables.  The old local variables bag is return.
 */
 EXPORT_INLINE Obj SWITCH_TO_NEW_LVARS(Obj func, UInt narg, UInt nloc)
+    GAP_GC_CANSAFEPOINT
 {
     // create new lvars (may cause garbage collection)
     Obj           new_lvars = NewLVarsBag(narg + nloc);
@@ -287,7 +288,7 @@ EXPORT_INLINE Obj NAME_LVAR_WITH_CONTEXT(Obj context GAP_GC_PROPAGATES_ROOT,
 **
 **  'ObjLVar' returns the value of the local variable <lvar>.
 */
-Obj ObjLVar(UInt lvar);
+Obj ObjLVar(UInt lvar) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
