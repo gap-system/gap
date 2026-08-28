@@ -497,61 +497,6 @@ static NOINLINE void TryMarkRange(jl_ptls_t ptls, void * start, void * end)
 }
 
 // Julia callback
-static void GapRootScanner(int full) GAP_GC_NOTSAFEPOINT
-{
-    jl_ptls_t   ptls = jl_get_ptls_states();
-    jl_task_t * task = (jl_task_t *)jl_get_current_task();
-
-    ScannedRootTask = task;
-
-    // We figure out the end of the stack from the current task. While
-    // `stack_bottom` is passed to InitBags(), we cannot use that if
-    // current_task != root_task.
-    char *dummy, *stackend;
-    jl_active_task_stack(task, &dummy, &dummy, &dummy, &stackend);
-
-#if !defined(USE_GAP_INSIDE_JULIA)
-    // The following test overrides the stackend if the following two
-    // conditions hold:
-    //
-    // 1. GAP is not being used as a library, but is the main program
-    //    and in charge of the main() function.
-    // 2. The stack of the current task is that of the root task of the
-    //    main thread (which has thread id 0).
-    //
-    // The reason is that when called from GAP, jl_init() does not
-    // reliably know where the bottom of the initial stack is. However,
-    // GAP does have that information, so we use that instead.
-    if (task == RootTaskOfMainThread) {
-        stackend = (char *)GapStackBottom;
-    }
-#endif
-
-    // Allow installing a custom marking function. This is used for
-    // integrating GAP (possibly linked as a shared library) with other code
-    // bases which use their own form of garbage collection. For example,
-    // with Python (for SageMath).
-    if (ExtraMarkFuncBags)
-        (*ExtraMarkFuncBags)();
-
-    // We scan the stack of the current task from the stack pointer
-    // towards the stack bottom, ensuring that we also scan any
-    // references stored in registers.
-    jmp_buf registers;
-    GAP_SETJMP(registers);
-    TryMarkRange(ptls, registers, (char *)registers + sizeof(jmp_buf));
-    TryMarkRange(ptls, (char *)registers + sizeof(jmp_buf), stackend);
-
-    // mark all global objects
-    for (Int i = 0; i < GlobalCount; i++) {
-        Bag p = *GlobalAddr[i];
-        if (IS_BAG_REF(p)) {
-            JMark(ptls, p);
-        }
-    }
-}
-
-// Julia callback
 static void GapTaskScanner(jl_task_t * task, int root_task)
     GAP_GC_NOTSAFEPOINT
 {
@@ -579,6 +524,64 @@ static void GapTaskScanner(jl_task_t * task, int root_task)
 }
 
 #endif // DISABLE_STACK_SCAN
+
+// Julia callback
+static void GapRootScanner(int full) GAP_GC_NOTSAFEPOINT
+{
+    jl_ptls_t ptls = jl_get_ptls_states();
+
+#ifndef DISABLE_STACK_SCAN
+    jl_task_t * task = (jl_task_t *)jl_get_current_task();
+
+    ScannedRootTask = task;
+
+    // We figure out the end of the stack from the current task. While
+    // `stack_bottom` is passed to InitBags(), we cannot use that if
+    // current_task != root_task.
+    char *dummy, *stackend;
+    jl_active_task_stack(task, &dummy, &dummy, &dummy, &stackend);
+
+#if !defined(USE_GAP_INSIDE_JULIA)
+    // The following test overrides the stackend if the following two
+    // conditions hold:
+    //
+    // 1. GAP is not being used as a library, but is the main program
+    //    and in charge of the main() function.
+    // 2. The stack of the current task is that of the root task of the
+    //    main thread (which has thread id 0).
+    //
+    // The reason is that when called from GAP, jl_init() does not
+    // reliably know where the bottom of the initial stack is. However,
+    // GAP does have that information, so we use that instead.
+    if (task == RootTaskOfMainThread) {
+        stackend = (char *)GapStackBottom;
+    }
+#endif
+
+    // We scan the stack of the current task from the stack pointer
+    // towards the stack bottom, ensuring that we also scan any
+    // references stored in registers.
+    jmp_buf registers;
+    GAP_SETJMP(registers);
+    TryMarkRange(ptls, registers, (char *)registers + sizeof(jmp_buf));
+    TryMarkRange(ptls, (char *)registers + sizeof(jmp_buf), stackend);
+#endif // DISABLE_STACK_SCAN
+
+    // Allow installing a custom marking function. This is used for
+    // integrating GAP (possibly linked as a shared library) with other code
+    // bases which use their own form of garbage collection. For example,
+    // with Python (for SageMath).
+    if (ExtraMarkFuncBags)
+        (*ExtraMarkFuncBags)();
+
+    // mark all global objects
+    for (Int i = 0; i < GlobalCount; i++) {
+        Bag p = *GlobalAddr[i];
+        if (IS_BAG_REF(p)) {
+            JMark(ptls, p);
+        }
+    }
+}
 
 // Time spent in the process, in milliseconds.
 //
@@ -729,11 +732,13 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
 #endif
 
 #ifndef DISABLE_STACK_SCAN
-    // These callbacks potentially require access to the Julia
-    // TLS and thus need to be installed after initialization.
-    jl_gc_set_cb_root_scanner(GapRootScanner, 1);
     jl_gc_set_cb_task_scanner(GapTaskScanner, 1);
 #endif
+    // The root scanner also marks GAP's global bags, so it is required
+    // whether or not stacks are scanned conservatively. These callbacks
+    // potentially require access to the Julia TLS and thus need to be
+    // installed after initialization.
+    jl_gc_set_cb_root_scanner(GapRootScanner, 1);
     jl_gc_set_cb_pre_gc(PreGCHook, 1);
     jl_gc_set_cb_post_gc(PostGCHook, 1);
     // jl_gc_enable(0); /// DEBUGGING
@@ -784,13 +789,15 @@ void InitBags(UInt initial_size, Bag * stack_bottom)
 {
     TotalTime = 0;
 
-#if !defined(USE_GAP_INSIDE_JULIA) && !defined(DISABLE_STACK_SCAN)
+#if !defined(USE_GAP_INSIDE_JULIA)
     // initialize Julia memory interface. Note that this is only necessary
     // when we run standalone. In contrast, when GAP is loaded from GAP.jl
     // then GAP.jl invokes `GAP_InitJuliaMemoryInterface` at an appropriate
-    // point in time.
+    // point in time. This is needed whether or not we scan stacks
+    // conservatively: it is what starts Julia.
     GAP_InitJuliaMemoryInterface(0, 0);
 
+#ifndef DISABLE_STACK_SCAN
     GapStackBottom = stack_bottom;
 
     // If we are embedding Julia in GAP, remember the root task
@@ -798,6 +805,7 @@ void InitBags(UInt initial_size, Bag * stack_bottom)
     // task is calculated a bit differently than for other tasks.
     if (!IsUsingLibGap())
         RootTaskOfMainThread = (jl_task_t *)jl_get_current_task();
+#endif
 #endif
 }
 
