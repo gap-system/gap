@@ -89,6 +89,9 @@
 
 #ifdef SYS_IS_WINDOWS
 #include <direct.h>                     // for _mkdir
+#include <io.h>                         // for _get_osfhandle
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>                    // for the console API
 #endif
 
 
@@ -977,11 +980,60 @@ void syStopraw (
         fputs("gap: 'tcsetattr' could not turn off raw mode!\n",stderr);
 }
 
+#elif defined(SYS_IS_WINDOWS)
+
+// raw mode via the Windows console API
+
+static DWORD syOldMode;         // console input mode outside raw mode
+
+// update SyNrRows/SyNrCols from the current console window size
+static void syWinConsoleQuerySize(void)
+{
+    CONSOLE_SCREEN_BUFFER_INFO info;
+    HANDLE h = (HANDLE)_get_osfhandle(fileno(stdout));
+    if (!GetConsoleScreenBufferInfo(h, &info))
+        return;
+    if (!SyNrRowsLocked && info.srWindow.Bottom > info.srWindow.Top)
+        SyNrRows = info.srWindow.Bottom - info.srWindow.Top + 1;
+    if (!SyNrColsLocked && info.srWindow.Right > info.srWindow.Left) {
+        SyNrCols = info.srWindow.Right - info.srWindow.Left;  // never trust last column
+        if (SyNrCols < 20) SyNrCols = 20;
+        if (SyNrCols > MAXLENOUTPUTLINE) SyNrCols = MAXLENOUTPUTLINE;
+    }
+}
+
+UInt syStartraw(Int fid)
+{
+    HANDLE h = (HANDLE)_get_osfhandle(SyBufFileno(fid));
+    DWORD  mode;
+    if (!GetConsoleMode(h, &mode))
+        return 0;
+    syOldMode = mode;
+
+    // GAP processes input, echo and control characters itself; the console
+    // reports special keys as VT escape sequences, which the line editor
+    // already understands
+    mode &= ~(ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT | ENABLE_PROCESSED_INPUT);
+    mode |= ENABLE_VIRTUAL_TERMINAL_INPUT;
+    if (!SetConsoleMode(h, mode))
+        return 0;
+
+    // there is no SIGWINCH; pick up window size changes between line reads
+    syWinConsoleQuerySize();
+
+    return 1;
+}
+
+void syStopraw(Int fid)
+{
+    HANDLE h = (HANDLE)_get_osfhandle(SyBufFileno(fid));
+    SetConsoleMode(h, syOldMode);
+}
+
 #else
 
 // without termios raw mode is not available; the line editor then falls
 // back to plain line-buffered input (syFgetsNoEdit)
-// TODO(windows-port): implement raw mode via the Windows console API
 UInt syStartraw(Int fid)
 {
     return 0;
@@ -1130,6 +1182,19 @@ void InitWindowSize(void)
         (void) signal(SIGWINCH, syWindowChangeIntr);
     }
 #endif // TIOCGWINSZ
+
+#ifdef SYS_IS_WINDOWS
+    if (SyNrRows <= 0 || SyNrCols <= 0) {
+        CONSOLE_SCREEN_BUFFER_INFO info;
+        HANDLE h = (HANDLE)_get_osfhandle(fileno(stdout));
+        if (GetConsoleScreenBufferInfo(h, &info)) {
+            if (SyNrRows <= 0)
+                SyNrRows = info.srWindow.Bottom - info.srWindow.Top + 1;
+            if (SyNrCols <= 0)
+                SyNrCols = info.srWindow.Right - info.srWindow.Left + 1;
+        }
+    }
+#endif
 
 #ifdef USE_TERMCAP
 // note that if we define TERMCAP, this has to be linked with -ltermcap
