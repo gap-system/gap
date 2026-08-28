@@ -759,6 +759,15 @@ InstallMethod( ImagesRepresentative,
     return elm ^ aut!.power;
     end );
 
+InstallMethod( PreImagesRepresentative,
+    "for Frobenius automorphism and range element",
+    FamRangeEqFamElm,
+    [ IsFrobeniusAutomorphism, IsObject ],
+    function( aut, elm )
+    # the inverse is again a Frobenius automorphism (or the identity)
+    return ImagesRepresentative( InverseGeneralMapping( aut ), elm );
+    end );
+
 InstallMethod( CompositionMapping2,
     "for two Frobenius automorphisms",
     IsIdenticalObj,
