@@ -33,7 +33,7 @@
 **
 **  'NEW_RANGE' returns a new range.
 */
-Obj NEW_RANGE(Int len, Int low, Int inc);
+Obj NEW_RANGE(Int len, Int low, Int inc) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -168,14 +168,14 @@ Obj PosRange(Obj list, Obj val, Obj start);
 **
 *F  Range2Check( <first>, <last> )  . . . . . . . . . . . . . construct range
 */
-Obj Range2Check(Obj first, Obj last);
+Obj Range2Check(Obj first, Obj last) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  Range3Check( <first>, <second>, <last> )  . . . . . . . . construct range
 */
-Obj Range3Check(Obj first, Obj second, Obj last);
+Obj Range3Check(Obj first, Obj second, Obj last) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

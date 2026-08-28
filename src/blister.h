@@ -99,7 +99,7 @@ EXPORT_INLINE void SET_LEN_BLIST(Obj list, Int len) GAP_GC_NOTSAFEPOINT
 **  returns a new blist with <len> entries, all equal to 'false'.
 **
 */
-EXPORT_INLINE Obj NEW_BLIST(Int len)
+EXPORT_INLINE Obj NEW_BLIST(Int len) GAP_GC_CANSAFEPOINT
 {
     Obj blist;
     blist = NewBag(T_BLIST, SIZE_PLEN_BLIST(len));
@@ -246,7 +246,7 @@ EXPORT_INLINE void CLEAR_BIT_BLIST(Obj list, UInt pos) GAP_GC_NOTSAFEPOINT
 **  length  by one.  Otherwise  the boolean list is  converted to an ordinary
 **  list and the assignment is performed the ordinary way.
 */
-void AssBlist(Obj list, Int pos, Obj val);
+void AssBlist(Obj list, Int pos, Obj val) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -256,7 +256,7 @@ void AssBlist(Obj list, Int pos, Obj val);
 **  'ConvBlist' changes the representation of boolean  lists into the compact
 **  representation of type 'T_BLIST' described above.
 */
-void ConvBlist(Obj list);
+void ConvBlist(Obj list) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

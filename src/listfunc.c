@@ -48,7 +48,7 @@
 static void AddList3(Obj list,
                      Obj obj GAP_GC_ROOTED_BY_ARG_INDEXED(0, 2)
                          GAP_GC_MAYBE_UNROOTED,
-                     Int pos)
+                     Int pos) GAP_GC_CANSAFEPOINT
 {
     Int len;
     Int i;
@@ -99,6 +99,7 @@ void AddPlist(Obj list, Obj obj)
 static Obj AddListOper;
 
 static Obj FuncADD_LIST3(Obj self, Obj list, Obj obj, Obj pos)
+    GAP_GC_CANSAFEPOINT
 {
     if (!IS_POS_INTOBJ(pos)) {
         DoOperation3Args(self, list, obj, pos);
@@ -122,7 +123,7 @@ static Obj FuncADD_LIST3(Obj self, Obj list, Obj obj, Obj pos)
 }
 
 
-static Obj FuncADD_LIST(Obj self, Obj list, Obj obj)
+static Obj FuncADD_LIST(Obj self, Obj list, Obj obj) GAP_GC_CANSAFEPOINT
 {
     UInt tnum = TNUM_OBJ(list);
     if (FIRST_PLIST_TNUM <= tnum && tnum <= LAST_PLIST_TNUM) {
@@ -151,7 +152,7 @@ static Obj FuncADD_LIST(Obj self, Obj list, Obj obj)
 **  'RemList' removes the last object <obj> from the end of the list <list>,
 **  and returns it.
 */
-static Obj RemList(Obj list)
+static Obj RemList(Obj list) GAP_GC_CANSAFEPOINT
 {
     Int                 pos;
     Obj result;
@@ -164,7 +165,7 @@ static Obj RemList(Obj list)
     return result;
 }
 
-static Obj RemPlist(Obj list)
+static Obj RemPlist(Obj list) GAP_GC_CANSAFEPOINT
 {
     Int                 pos;
     Obj removed;
@@ -192,7 +193,7 @@ static Obj RemPlist(Obj list)
 
 static Obj RemListOper GAP_GC_GLOBALLY_ROOTED;
 
-static Obj FuncREM_LIST(Obj self, Obj list)
+static Obj FuncREM_LIST(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     // dispatch
     if ( IS_PLIST( list ) ) {
@@ -221,6 +222,7 @@ static Obj FuncREM_LIST(Obj self, Obj list)
 **  'Append' returns nothing, it is called only for its side effect.
 */
 static Obj FuncAPPEND_LIST_INTR(Obj self, Obj list1, Obj list2)
+    GAP_GC_CANSAFEPOINT
 {
     UInt                len1;           // length of the first list
     UInt                len2;           // length of the second list
@@ -285,7 +287,7 @@ static Obj FuncAPPEND_LIST_INTR(Obj self, Obj list1, Obj list2)
 
 static Obj AppendListOper GAP_GC_GLOBALLY_ROOTED;
 
-static Obj FuncAPPEND_LIST(Obj self, Obj list, Obj obj)
+static Obj FuncAPPEND_LIST(Obj self, Obj list, Obj obj) GAP_GC_CANSAFEPOINT
 {
     // dispatch
     if ( TNUM_OBJ( list ) < FIRST_EXTERNAL_TNUM ) {
@@ -357,6 +359,7 @@ UInt            PositionSortedDensePlist (
 }
 
 static Obj FuncPOSITION_SORTED_LIST(Obj self, Obj list, Obj obj)
+    GAP_GC_CANSAFEPOINT
 {
     RequireSmallList(SELF_NAME, list);
 
@@ -430,6 +433,7 @@ static UInt PositionSortedDensePlistComp(Obj list, Obj obj, Obj func)
 
 static Obj
 FuncPOSITION_SORTED_LIST_COMP(Obj self, Obj list, Obj obj, Obj func)
+    GAP_GC_CANSAFEPOINT
 {
     RequireSmallList(SELF_NAME, list);
     RequireFunction(SELF_NAME, func);
@@ -451,6 +455,7 @@ FuncPOSITION_SORTED_LIST_COMP(Obj self, Obj list, Obj obj, Obj func)
 **  Low-level implementations of PositionSortedBy for dense Plists and lists.
 */
 static Obj FuncPOSITION_SORTED_BY(Obj self, Obj list, Obj val, Obj func)
+    GAP_GC_CANSAFEPOINT
 {
     RequirePlainList(SELF_NAME, list);
     RequireFunction(SELF_NAME, func);
@@ -776,7 +781,7 @@ UInt            RemoveDupsDensePlist (
 **
 *F  FuncSORT_LIST( <self>, <list> ) . . . . . . . . . . . . . . . sort a list
 */
-static Obj FuncSORT_LIST(Obj self, Obj list)
+static Obj FuncSORT_LIST(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     RequireSmallList(SELF_NAME, list);
 
@@ -791,7 +796,7 @@ static Obj FuncSORT_LIST(Obj self, Obj list)
     return 0;
 }
 
-static Obj FuncSTABLE_SORT_LIST(Obj self, Obj list)
+static Obj FuncSTABLE_SORT_LIST(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     RequireSmallList(SELF_NAME, list);
 
@@ -812,7 +817,7 @@ static Obj FuncSTABLE_SORT_LIST(Obj self, Obj list)
 **
 *F  FuncSORT_LIST_COMP( <self>, <list>, <func> )  . . . . . . . . sort a list
 */
-static Obj FuncSORT_LIST_COMP(Obj self, Obj list, Obj func)
+static Obj FuncSORT_LIST_COMP(Obj self, Obj list, Obj func) GAP_GC_CANSAFEPOINT
 {
     RequireSmallList(SELF_NAME, list);
     RequireFunction(SELF_NAME, func);
@@ -828,6 +833,7 @@ static Obj FuncSORT_LIST_COMP(Obj self, Obj list, Obj func)
 }
 
 static Obj FuncSTABLE_SORT_LIST_COMP(Obj self, Obj list, Obj func)
+    GAP_GC_CANSAFEPOINT
 {
     RequireSmallList(SELF_NAME, list);
     RequireFunction(SELF_NAME, func);
@@ -848,6 +854,7 @@ static Obj FuncSTABLE_SORT_LIST_COMP(Obj self, Obj list, Obj func)
 *F  FuncSORT_PARA_LIST( <self>, <list> )  . . . . . . sort a list with shadow
 */
 static Obj FuncSORT_PARA_LIST(Obj self, Obj list, Obj shadow)
+    GAP_GC_CANSAFEPOINT
 {
     RequireSmallList(SELF_NAME, list);
     RequireSmallList(SELF_NAME, shadow);
@@ -865,6 +872,7 @@ static Obj FuncSORT_PARA_LIST(Obj self, Obj list, Obj shadow)
 }
 
 static Obj FuncSTABLE_SORT_PARA_LIST(Obj self, Obj list, Obj shadow)
+    GAP_GC_CANSAFEPOINT
 {
     RequireSmallList(SELF_NAME, list);
     RequireSmallList(SELF_NAME, shadow);
@@ -887,6 +895,7 @@ static Obj FuncSTABLE_SORT_PARA_LIST(Obj self, Obj list, Obj shadow)
 *F  FuncSORT_LIST_COMP( <self>, <list>, <func> )  . . . . . . . . sort a list
 */
 static Obj FuncSORT_PARA_LIST_COMP(Obj self, Obj list, Obj shadow, Obj func)
+    GAP_GC_CANSAFEPOINT
 {
     RequireSmallList(SELF_NAME, list);
     RequireSmallList(SELF_NAME, shadow);
@@ -905,6 +914,7 @@ static Obj FuncSORT_PARA_LIST_COMP(Obj self, Obj list, Obj shadow, Obj func)
 
 static Obj
 FuncSTABLE_SORT_PARA_LIST_COMP(Obj self, Obj list, Obj shadow, Obj func)
+    GAP_GC_CANSAFEPOINT
 {
     RequireSmallList(SELF_NAME, list);
     RequireSmallList(SELF_NAME, shadow);
@@ -951,7 +961,7 @@ static Obj FuncOnPoints(Obj self, Obj point, Obj elm)
 **  specifies  the componentwise operation    of group elements on  pairs  of
 **  points, which are represented by lists of length 2.
 */
-static Obj FuncOnPairs(Obj self, Obj pair, Obj elm)
+static Obj FuncOnPairs(Obj self, Obj pair, Obj elm) GAP_GC_CANSAFEPOINT
 {
     Obj                 img = 0;        // image, result
     Obj                 tmp = 0;        // temporary
@@ -990,7 +1000,7 @@ static Obj FuncOnPairs(Obj self, Obj pair, Obj elm)
 **  points, which are represented by lists.  'OnPairs' is the special case of
 **  'OnTuples' for tuples with two elements.
 */
-static Obj FuncOnTuples(Obj self, Obj tuple, Obj elm)
+static Obj FuncOnTuples(Obj self, Obj tuple, Obj elm) GAP_GC_CANSAFEPOINT
 {
     Obj                 img = 0;        // image, result
     Obj                 tmp = 0;        // temporary
@@ -1050,7 +1060,7 @@ static Obj FuncOnTuples(Obj self, Obj tuple, Obj elm)
 **  represented by sorted lists of points without duplicates (see "Sets").
 */
 
-static Obj FuncOnSets(Obj self, Obj set, Obj elm)
+static Obj FuncOnSets(Obj self, Obj set, Obj elm) GAP_GC_CANSAFEPOINT
 {
     Obj                 img = 0;        // handle of the image, result
     UInt                status;        // the elements are mutable
@@ -1171,6 +1181,7 @@ static Obj FuncOnLeftInverse(Obj self, Obj point, Obj elm)
 
 
 static Obj FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH(Obj self, Obj digraph)
+    GAP_GC_CANSAFEPOINT
 {
   UInt i,level,k,l,x,t,m;
   UInt now = 0,n;
@@ -1277,7 +1288,7 @@ static Obj FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH(Obj self, Obj digraph)
 **  Argument names in the manual: fromlst, fromind, fromstep, tolst, toind, tostep, n
 */
 
-static Obj FuncCOPY_LIST_ENTRIES(Obj self, Obj args)
+static Obj FuncCOPY_LIST_ENTRIES(Obj self, Obj args) GAP_GC_CANSAFEPOINT
 {
   Obj srclist;
   Int srcstart;
@@ -1419,6 +1430,7 @@ static Obj FuncCOPY_LIST_ENTRIES(Obj self, Obj args)
 
 
 static Obj FuncLIST_WITH_IDENTICAL_ENTRIES(Obj self, Obj n, Obj obj)
+    GAP_GC_CANSAFEPOINT
 {
     RequireNonnegativeSmallInt(SELF_NAME, n);
 
@@ -1510,7 +1522,7 @@ static int FoldLeftXHelp(Obj   gens,
                          Obj   abortValue,
                          Obj   args,
                          int   genIndex,
-                         int   valIndex)
+                         int   valIndex) GAP_GC_CANSAFEPOINT
 {
     Obj gen = 0;
     Obj iter = 0;
@@ -1597,6 +1609,7 @@ static int FoldLeftXHelp(Obj   gens,
 // FoldLeftXHelp, which performs short-circuiting via `abortValue`.
 Obj FuncFOLD_LEFT_X(
     Obj self, Obj gens, Obj foldFunc, Obj init, Obj abortValue)
+    GAP_GC_CANSAFEPOINT
 {
     if (!IS_PLIST(gens))
         return Fail;
@@ -1699,7 +1712,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarOpersFromTable( GVarOpers );

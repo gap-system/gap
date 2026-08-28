@@ -119,7 +119,7 @@ void InstallOpWrapper(voidfunc activate, voidfunc deactivate)
     Controllers[pos] = val;
 }
 
-static Obj FuncTraceInternalMethods(Obj self)
+static Obj FuncTraceInternalMethods(Obj self) GAP_GC_CANSAFEPOINT
 {
     if (TrackingActive) {
         return Fail;
@@ -153,7 +153,7 @@ static Obj FuncGET_TRACED_INTERNAL_METHODS_COUNTS(Obj self)
     return RecordedStats;
 }
 
-static Obj FuncClearTraceInternalMethodsCounts(Obj self)
+static Obj FuncClearTraceInternalMethodsCounts(Obj self) GAP_GC_CANSAFEPOINT
 {
     RecordedStats = NEW_PREC(0);
     return 0;
@@ -183,7 +183,7 @@ static StructGVarFunc GVarFuncs[] = {
 **
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-static Int InitLibrary(StructInitInfo * module)
+static Int InitLibrary(StructInitInfo * module) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable(GVarFuncs);

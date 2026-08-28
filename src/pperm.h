@@ -18,7 +18,7 @@ EXPORT_INLINE BOOL IS_PPERM(Obj f) GAP_GC_NOTSAFEPOINT
     return (TNUM_OBJ(f) == T_PPERM2 || TNUM_OBJ(f) == T_PPERM4);
 }
 
-Obj NEW_PPERM2(UInt deg);
+Obj NEW_PPERM2(UInt deg) GAP_GC_CANSAFEPOINT;
 
 EXPORT_INLINE UInt2 * ADDR_PPERM2(Obj f) GAP_GC_NOTSAFEPOINT
 {
@@ -40,9 +40,9 @@ EXPORT_INLINE UInt DEG_PPERM2(Obj f) GAP_GC_NOTSAFEPOINT
 }
 
 UInt CODEG_PPERM2(Obj f) GAP_GC_NOTSAFEPOINT;
-UInt RANK_PPERM2(Obj f);
+UInt RANK_PPERM2(Obj f) GAP_GC_CANSAFEPOINT;
 
-Obj NEW_PPERM4(UInt deg);
+Obj NEW_PPERM4(UInt deg) GAP_GC_CANSAFEPOINT;
 
 EXPORT_INLINE UInt4 * ADDR_PPERM4(Obj f) GAP_GC_NOTSAFEPOINT
 {
@@ -64,7 +64,7 @@ EXPORT_INLINE UInt DEG_PPERM4(Obj f) GAP_GC_NOTSAFEPOINT
 }
 
 UInt CODEG_PPERM4(Obj f) GAP_GC_NOTSAFEPOINT;
-UInt RANK_PPERM4(Obj f);
+UInt RANK_PPERM4(Obj f) GAP_GC_CANSAFEPOINT;
 
 EXPORT_INLINE UInt DEG_PPERM(Obj f) GAP_GC_NOTSAFEPOINT
 {
@@ -78,7 +78,7 @@ EXPORT_INLINE UInt CODEG_PPERM(Obj f) GAP_GC_NOTSAFEPOINT
     return (TNUM_OBJ(f) == T_PPERM2 ? CODEG_PPERM2(f) : CODEG_PPERM4(f));
 }
 
-EXPORT_INLINE UInt RANK_PPERM(Obj f)
+EXPORT_INLINE UInt RANK_PPERM(Obj f) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(IS_PPERM(f));
     return (TNUM_OBJ(f) == T_PPERM2 ? RANK_PPERM2(f) : RANK_PPERM4(f));
@@ -92,7 +92,7 @@ EXPORT_INLINE UInt RANK_PPERM(Obj f)
 **  PPerm <f>.
 */
 
-Obj OnTuplesPPerm(Obj set, Obj f);
+Obj OnTuplesPPerm(Obj set, Obj f) GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
@@ -102,7 +102,7 @@ Obj OnTuplesPPerm(Obj set, Obj f);
 **  partial perm <f>.
 */
 
-Obj OnSetsPPerm(Obj set, Obj f);
+Obj OnSetsPPerm(Obj set, Obj f) GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
@@ -111,7 +111,7 @@ Obj OnSetsPPerm(Obj set, Obj f);
 **  Returns a hash value for a partial permutation
 */
 
-Int HashFuncForPPerm(Obj f);
+Int HashFuncForPPerm(Obj f) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

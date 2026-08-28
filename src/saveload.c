@@ -771,7 +771,7 @@ static Obj FuncDumpWorkspace(Obj self, Obj fname)
 #endif // GAP_ENABLE_SAVELOAD
 
 
-static Obj FuncSaveWorkspace(Obj self, Obj filename)
+static Obj FuncSaveWorkspace(Obj self, Obj filename) GAP_GC_CANSAFEPOINT
 {
 #ifdef GAP_ENABLE_SAVELOAD
     return SaveWorkspace(filename);
@@ -835,7 +835,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );

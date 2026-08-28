@@ -22,7 +22,7 @@
 **
 **  Updates Last, Last2 and Last3 by the new result 'newLast'.
 */
-void UpdateLast(Obj newLast);
+void UpdateLast(Obj newLast) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -31,7 +31,7 @@ void UpdateLast(Obj newLast);
 **
 **  Updates Time to the difference SyTime() - startTime.
 */
-void UpdateTime(UInt startTime);
+void UpdateTime(UInt startTime) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -40,7 +40,7 @@ void UpdateTime(UInt startTime);
 */
 extern UInt ViewObjGVar;
 
-void ViewObjHandler(Obj obj);
+void ViewObjHandler(Obj obj) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -85,7 +85,8 @@ BOOL IsUsingLibGap(void);
 **
 *F  InitializeGap() . . . . . . . . . . . . . . . . . . . . .  initialize GAP
 */
-void InitializeGap(void * stackBottom, int argc, const char * argv[], BOOL handleSignals);
+void InitializeGap(void * stackBottom, int argc, const char * argv[], BOOL handleSignals)
+    GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
