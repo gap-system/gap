@@ -41,7 +41,7 @@
 **  will return the value of <gvar>  after evaluating <gvar>-s expression, or
 **  0 if <gvar> was not an automatic variable.
 */
-Obj ValGVar(UInt gvar);
+Obj ValGVar(UInt gvar) GAP_GC_GLOBALLY_ROOTED;
 
 #define VAL_GVAR(gvar)      ValGVar(gvar)
 
@@ -53,7 +53,7 @@ Obj ValGVar(UInt gvar);
 **  'ErrorMustEvalToFuncFunc' is a (variable number of  args)  function  that
 **  signals the error ``Function Calls: <func> must be a function''.
 */
-extern Obj ErrorMustEvalToFuncFunc;
+extern Obj ErrorMustEvalToFuncFunc GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
@@ -63,7 +63,7 @@ extern Obj ErrorMustEvalToFuncFunc;
 **  'ErrorMustHaveAssObjFunc' is a (variable number of  args)  function  that
 **  signals the error ``Variable: <<unknown>> must have an assigned value''.
 */
-extern Obj ErrorMustHaveAssObjFunc;
+extern Obj ErrorMustHaveAssObjFunc GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
@@ -74,9 +74,10 @@ extern Obj ErrorMustHaveAssObjFunc;
 **  'AssGVarWithoutReadOnlyCheck' does the same thing, while not checking if the
 **                            variable is read only.
 */
-void AssGVar(UInt gvar, Obj val);
+void AssGVar(UInt gvar, Obj val GAP_GC_MAYBE_UNROOTED);
 
-extern void AssGVarWithoutReadOnlyCheck(UInt gvar, Obj val);
+extern void AssGVarWithoutReadOnlyCheck(UInt gvar,
+                                        Obj  val GAP_GC_MAYBE_UNROOTED);
 
 
 /****************************************************************************
@@ -110,7 +111,7 @@ Obj ValGVarTL(UInt gvar);
 **  'NameGVar' returns the name of the global variable <gvar> as a GAP
 **  string.
 */
-Obj NameGVar(UInt gvar);
+Obj NameGVar(UInt gvar) GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
@@ -119,7 +120,7 @@ Obj NameGVar(UInt gvar);
 **
 **  'ExprGVar' returns the expression of the automatic global variable <gvar>.
 */
-Obj ExprGVar(UInt gvar);
+Obj ExprGVar(UInt gvar) GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
@@ -176,13 +177,15 @@ BOOL IsDeclaredGVar(UInt gvar);
 **
 **  Some convenient helpers
 */
-EXPORT_INLINE void AssReadOnlyGVar(UInt gvar, Obj val)
+EXPORT_INLINE void AssReadOnlyGVar(UInt gvar,
+                                   Obj  val GAP_GC_MAYBE_UNROOTED)
 {
     AssGVar(gvar, val);
     MakeReadOnlyGVar(gvar);
 }
 
-EXPORT_INLINE void AssConstantGVar(UInt gvar, Obj val)
+EXPORT_INLINE void AssConstantGVar(UInt gvar,
+                                   Obj  val GAP_GC_MAYBE_UNROOTED)
 {
     AssGVar(gvar, val);
     MakeConstantGVar(gvar);

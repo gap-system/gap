@@ -83,7 +83,7 @@
 **  'ObjsChar' contains all the character values.  That way we do not need to
 **  allocate new bags for new characters.
 */
-Obj ObjsChar [256];
+Obj ObjsChar [256] GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
@@ -94,7 +94,7 @@ Obj ObjsChar [256];
 **
 **  'TypeChar' is the function in 'TypeObjFuncs' for character values.
 */
-static Obj TYPE_CHAR;
+static Obj TYPE_CHAR GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeChar(Obj chr)
 {
@@ -462,12 +462,12 @@ Int             GrowString (
 **
 **  'TypeString' is the function in 'TypeObjFuncs' for strings.
 */
-static Obj TYPE_STRING_MUTABLE;
-static Obj TYPE_STRING_IMMUTABLE;
-static Obj TYPE_STRING_NSORT_MUTABLE;
-static Obj TYPE_STRING_NSORT_IMMUTABLE;
-static Obj TYPE_STRING_SSORT_MUTABLE;
-static Obj TYPE_STRING_SSORT_IMMUTABLE;
+static Obj TYPE_STRING_MUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_STRING_IMMUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_STRING_NSORT_MUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_STRING_NSORT_IMMUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_STRING_SSORT_MUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_STRING_SSORT_IMMUTABLE GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeString(Obj list)
 {
@@ -511,12 +511,13 @@ static Obj TypeStringSSort(Obj list)
 */
 static Obj CopyString(Obj list, Int mut)
 {
-    Obj                 copy;           // handle of the copy, result
+    Obj                 copy = 0;       // handle of the copy, result
 
     // immutable input is handled by COPY_OBJ
     GAP_ASSERT(IS_MUTABLE_OBJ(list));
 
     // make object for  copy
+    GAP_GC_PUSH1(&copy);
     copy = NewBag(TNUM_OBJ(list), SIZE_OBJ(list));
     if (!mut)
         MakeImmutableNoRecurse(copy);
@@ -530,6 +531,7 @@ static Obj CopyString(Obj list, Int mut)
            SIZE_OBJ(list)-sizeof(Obj) );
 
     // return the copy
+    GAP_GC_POP();
     return copy;
 }
 
@@ -656,16 +658,20 @@ void PrintString(Obj list)
 
 Obj FuncVIEW_STRING_FOR_STRING(Obj self, Obj string)
 {
+    Obj output = 0;
+
     if (!IS_STRING(string)) {
         RequireArgument(SELF_NAME, string, "must be a string");
     }
 
+    GAP_GC_PUSH2(&string, &output);
     if (!IS_STRING_REP(string)) {
         string = CopyToStringRep(string);
     }
 
-    Obj output = NEW_STRING(0);
+    output = NEW_STRING(0);
     OutputStringGeneric(string, ToStringOutputter, output);
+    GAP_GC_POP();
     return output;
 }
 
@@ -773,7 +779,7 @@ static BOOL IsbString(Obj list, Int pos)
 **  <pos> must be  a positive integer  less than  or  equal to  the length of
 **  <list>.
 */
-static inline Obj GET_ELM_STRING(Obj list, Int pos)
+static inline Obj GET_ELM_STRING(Obj list, Int pos) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_STRING_REP(list));
     GAP_ASSERT(pos > 0);
@@ -790,7 +796,7 @@ static inline Obj GET_ELM_STRING(Obj list, Int pos)
 **  'SET_ELM_STRING'  sets the  <pos>-th  character  of  the string  <list>.
 **  <val> must be a character and <list> stay a string after the assignment.
 */
-static inline void SET_ELM_STRING(Obj list, Int pos, Obj val)
+static inline void SET_ELM_STRING(Obj list, Int pos, Obj val) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_STRING_REP(list));
     GAP_ASSERT(pos > 0);
@@ -882,13 +888,15 @@ static Obj ElmString(Obj list, Int pos)
 */
 static Obj ElmsString(Obj list, Obj poss)
 {
-    Obj                 elms;         // selected sublist, result
+    Obj                 elms = 0;       // selected sublist, result
     Int                 lenList;        // length of <list>
     Char                elm;            // one element from <list>
     Int                 lenPoss;        // length of <positions>
     Int                 pos;            // <position> as integer
     Int                 inc;            // increment in a range
     Int                 i;              // loop variable
+
+    GAP_GC_PUSH1(&elms);
 
     // general code
     if ( ! IS_RANGE(poss) ) {
@@ -966,6 +974,7 @@ static Obj ElmsString(Obj list, Obj poss)
 
     }
 
+    GAP_GC_POP();
     return elms;
 }
 
@@ -1138,11 +1147,12 @@ static Obj PosString(Obj list, Obj val, Obj start)
 static void PlainString(Obj list)
 {
     Int                 lenList;        // logical length of the string
-    Obj                 tmp;            // handle of the list
+    Obj                 tmp = 0;        // handle of the list
     Int                 i;              // loop variable
 
     // find the length and allocate a temporary copy
     lenList = GET_LEN_STRING( list );
+    GAP_GC_PUSH1(&tmp);
     tmp = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(list), T_PLIST, lenList);
     SET_LEN_PLIST( tmp, lenList );
 
@@ -1157,6 +1167,7 @@ static void PlainString(Obj list)
 
     memcpy(ADDR_OBJ(list), CONST_ADDR_OBJ(tmp), SIZE_OBJ(tmp));
     CHANGED_BAG(list);
+    GAP_GC_POP();
 }
 
 
@@ -1169,7 +1180,7 @@ static void PlainString(Obj list)
 */
 BOOL (*IsStringFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
-static Obj IsStringFilt;
+static Obj IsStringFilt GAP_GC_GLOBALLY_ROOTED;
 
 static BOOL IsStringList(Obj list)
 {
@@ -1216,10 +1227,11 @@ Obj CopyToStringRep(
 {
     Int                 lenString;      // length of the string
     Obj                 elm;            // one element of the string
-    Obj                 copy;           // temporary string
+    Obj                 copy = 0;       // temporary string
     Int                 i;              // loop variable
 
     lenString = LEN_LIST(string);
+    GAP_GC_PUSH1(&copy);
     copy = NEW_STRING(lenString);
 
     if ( IS_STRING_REP(string) ) {
@@ -1234,6 +1246,7 @@ Obj CopyToStringRep(
         }
         CHARS_STRING(copy)[lenString] = '\0';
     }
+    GAP_GC_POP();
     return copy;
 }
 
@@ -1267,7 +1280,7 @@ void ConvString (
 {
     Int                 lenString;      // length of the string
     Obj                 elm;            // one element of the string
-    Obj                 tmp;            // temporary string
+    Obj                 tmp = 0;        // temporary string
     Int                 i;              // loop variable
 
     // do nothing if the string is already in the string representation
@@ -1278,6 +1291,7 @@ void ConvString (
 
 
     lenString = LEN_LIST(string);
+    GAP_GC_PUSH1(&tmp);
     tmp = NEW_STRING(lenString);
 
     // copy the string to the string representation
@@ -1292,6 +1306,7 @@ void ConvString (
     ResizeBag( string, SIZEBAG_STRINGLEN(lenString) );
     // copy data area from tmp
     memcpy(ADDR_OBJ(string), CONST_ADDR_OBJ(tmp), SIZE_OBJ(tmp));
+    GAP_GC_POP();
 }
 
 
@@ -1413,7 +1428,7 @@ static Obj FuncCONV_STRING(Obj self, Obj string)
 **
 *F  FiltIS_STRING_REP( <self>, <obj> )  . . . . test if value is a string rep
 */
-static Obj IsStringRepFilt;
+static Obj IsStringRepFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_STRING_REP(Obj self, Obj obj)
 {
@@ -1607,7 +1622,7 @@ static Obj FuncSplitStringInternal(Obj self, Obj string, Obj seps, Obj wspace)
 {
   const UInt1  *s;
   Int i, a, z, l, pos, len;
-  Obj res, part;
+  Obj res = 0, part = 0;
   UInt1 SPLITSTRINGSEPS[256] = { 0 };
   UInt1 SPLITSTRINGWSPACE[256] = { 0 };
 
@@ -1626,6 +1641,7 @@ static Obj FuncSplitStringInternal(Obj self, Obj string, Obj seps, Obj wspace)
   for(i=0; i<len; i++) SPLITSTRINGWSPACE[s[i]] = 1;
 
   // create the result (list of strings)
+  GAP_GC_PUSH2(&res, &part);
   res = NEW_PLIST(T_PLIST, 2);
   pos = 0;
 
@@ -1683,6 +1699,7 @@ static Obj FuncSplitStringInternal(Obj self, Obj string, Obj seps, Obj wspace)
     AssPlist(res, pos, part);
   }
 
+  GAP_GC_POP();
   return res;
 }
 

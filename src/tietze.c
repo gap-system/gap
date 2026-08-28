@@ -152,11 +152,11 @@ static Int CheckTietzeRelLengths(Obj tietze)
 */
 static Obj FuncTzSortC(Obj self, Obj tietze)
 {
-    Obj                 rels;           // relators list
+    Obj                 rels = 0;       // relators list
     Obj *               ptRels;         // pointer to this list
-    Obj                 lens;           // lengths list
+    Obj                 lens = 0;       // lengths list
     Obj *               ptLens;         // pointer to this list
-    Obj                 flags;          // handle of the flags list
+    Obj                 flags = 0;      // handle of the flags list
     Obj *               ptFlags;        // pointer to this list
     Int                 numrels;        // number of Tietze relators
     Int                 i, h, k;        // loop variables
@@ -165,9 +165,10 @@ static Obj FuncTzSortC(Obj self, Obj tietze)
     // check the Tietze stack
     CheckTietzeStack(tietze);
 
+    GAP_GC_PUSH3(&rels, &lens, &flags);
+
     // get and check the Tietze relators list
     rels = CheckTietzeRelators(tietze);
-    ptRels = ADDR_OBJ(rels);
     numrels = LEN_PLIST(rels);
 
     // get and check the Tietze lengths list
@@ -180,6 +181,8 @@ static Obj FuncTzSortC(Obj self, Obj tietze)
     CheckTietzeRelLengths(tietze);
 
     // sort the list
+    ptRels = ADDR_OBJ(rels);
+    ptLens = ADDR_OBJ(lens);
     ptFlags = ADDR_OBJ(flags);
     h = 1;
     while ( 9 * h + 4 < numrels )
@@ -216,6 +219,7 @@ static Obj FuncTzSortC(Obj self, Obj tietze)
         CHANGED_BAG(tietze);
     }
 
+    GAP_GC_POP();
     return 0;
 }
 
@@ -226,9 +230,9 @@ static Obj FuncTzSortC(Obj self, Obj tietze)
 */
 static Obj FuncTzRenumberGens(Obj self, Obj tietze)
 {
-    Obj                 rels;           // handle of the relators list
+    Obj                 rels = 0;       // handle of the relators list
     const Obj *         ptRels;         // pointer to this list
-    Obj                 invs;           // handle of the inverses list
+    Obj                 invs = 0;       // handle of the inverses list
     Obj *               ptInvs;         // pointer to this list
     Obj *               ptRel;          // pointer to the ith relator
     Int                 numgens;        // number of Tietze generators
@@ -240,13 +244,15 @@ static Obj FuncTzRenumberGens(Obj self, Obj tietze)
     // check the Tietze stack
     CheckTietzeStack(tietze);
 
+    GAP_GC_PUSH2(&rels, &invs);
+
     // get and check the Tietze relators list
     rels = CheckTietzeRelators(tietze);
-    ptRels = CONST_ADDR_OBJ(rels);
     numrels = LEN_PLIST(rels);
 
     // get and check the Tietze inverses list
     CheckTietzeInverses( tietze, &invs, &ptInvs, &numgens );
+    ptRels = CONST_ADDR_OBJ(rels);
 
     // Loop over all relators and replace the occurring generators
     for ( i = 1;  i <= numrels;  i++ ) {
@@ -263,6 +269,7 @@ static Obj FuncTzRenumberGens(Obj self, Obj tietze)
         }
     }
 
+    GAP_GC_POP();
     return 0;
 }
 
@@ -273,12 +280,12 @@ static Obj FuncTzRenumberGens(Obj self, Obj tietze)
 */
 static Obj FuncTzReplaceGens(Obj self, Obj tietze)
 {
-    Obj                 rels;           // handle of the relators list
+    Obj                 rels = 0;       // handle of the relators list
     const Obj *         ptRels;         // pointer to this list
-    Obj                 lens;           // handle of the lengths list
+    Obj                 lens = 0;       // handle of the lengths list
     Obj *               ptLens;         // pointer to this list
-    Obj                 flags;          // handle of the flags list
-    Obj                 invs;           // handle of the inverses list
+    Obj                 flags = 0;      // handle of the flags list
+    Obj                 invs = 0;       // handle of the inverses list
     Obj *               ptInvs;         // pointer to this list
     Obj                 rel;            // handle of a relator
     Obj *               ptRel;          // pointer to this relator
@@ -295,9 +302,10 @@ static Obj FuncTzReplaceGens(Obj self, Obj tietze)
     // check the Tietze stack
     CheckTietzeStack(tietze);
 
+    GAP_GC_PUSH4(&rels, &lens, &flags, &invs);
+
     // get and check the Tietze relators list
     rels = CheckTietzeRelators(tietze);
-    ptRels = CONST_ADDR_OBJ(rels);
     numrels = LEN_PLIST(rels);
 
     // get and check the Tietze lengths list
@@ -311,6 +319,8 @@ static Obj FuncTzReplaceGens(Obj self, Obj tietze)
 
     // get and check the Tietze inverses list
     CheckTietzeInverses( tietze, &invs, &ptInvs, &numgens );
+    ptRels = CONST_ADDR_OBJ(rels);
+    ptLens = ADDR_OBJ(lens);
 
     // loop over all relators
     for ( i = 1; i <= numrels; i++ ) {
@@ -385,6 +395,7 @@ static Obj FuncTzReplaceGens(Obj self, Obj tietze)
     }
     SET_ELM_PLIST(tietze, TZ_TOTAL, INTOBJ_INT(total));
 
+    GAP_GC_POP();
     return 0;
 }
 
@@ -395,17 +406,17 @@ static Obj FuncTzReplaceGens(Obj self, Obj tietze)
 */
 static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
 {
-    Obj                 rels;           // handle of the relators list
+    Obj                 rels = 0;       // handle of the relators list
     Obj *               ptRels;         // pointer to this list
-    Obj                 lens;           // handle of the lengths list
+    Obj                 lens = 0;       // handle of the lengths list
     Obj *               ptLens;         // pointer to this list
-    Obj                 flags;          // handle of the flags list
-    Obj                 invs;           // handle of the inverses list
+    Obj                 flags = 0;      // handle of the flags list
+    Obj                 invs = 0;       // handle of the inverses list
     Obj *               ptInvs;         // pointer to this list
     Obj *               ptWrd;          // pointer to this word
-    Obj                 iwrd;           // handle of the inverse word
+    Obj                 iwrd = 0;       // handle of the inverse word
     Obj *               ptIwrd;         // pointer to this word
-    Obj                 new;            // handle of a modified relator
+    Obj                 new = 0;        // handle of a modified relator
     Obj *               ptNew;          // pointer to this relator
     Obj                 rel;            // handle of a relator
     Obj *               ptRel;          // pointer to this relator
@@ -422,14 +433,15 @@ static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
     Int                 wleng;          // length of the replacing word
     Int                 occ;            // number of occurrences
     Int                 i, j;           // loop variables
-    Obj                 Idx;            // list of changed relators
+    Obj                 Idx = 0;        // list of changed relators
 
     // check the Tietze stack
     CheckTietzeStack(tietze);
 
+    GAP_GC_PUSH8(&rels, &lens, &flags, &invs, &Idx, &iwrd, &new, &word);
+
     // get and check the Tietze relators list
     rels = CheckTietzeRelators(tietze);
-    ptRels = ADDR_OBJ(rels);
     numrels = LEN_PLIST(rels);
 
     // get and check the Tietze lengths list
@@ -579,6 +591,7 @@ static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
 
     SET_ELM_PLIST(tietze, TZ_TOTAL, INTOBJ_INT(total));
 
+    GAP_GC_POP();
     return Idx;
 }
 
@@ -590,12 +603,13 @@ static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
 static Obj FuncTzOccurrences(Obj self, Obj args)
 {
     Obj                 tietze;         // handle of the Tietze stack
-    Obj                 rels;           // handle of the relators list
+    Obj                 rels = 0;       // handle of the relators list
     const Obj *         ptRels;         // pointer to this list
-    Obj                 cnts;           // list of the counts
-    Obj                 mins;           // list of minimal occurrence list
-    Obj                 lens;           // list of lengths of those
-    Obj                 rel;            // handle of a relator
+    Obj                 cnts = 0;       // list of the counts
+    Obj                 mins = 0;       // list of minimal occurrence list
+    Obj                 lens = 0;       // list of lengths of those
+    Obj                 aux = 0;        // auxiliary counter storage
+    Obj                 rel = 0;        // handle of a relator
     Obj *               ptRel;          // pointer to this relator
     Int                 numgens;        // number of Tietze generators
     Int                 numrels;        // number of Tietze relators
@@ -617,6 +631,8 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
     // check the first argument (Tietze stack)
     tietze = ELM_LIST( args, 1 );
     CheckTietzeStack(tietze);
+
+    GAP_GC_PUSH6(&rels, &cnts, &mins, &lens, &aux, &rel);
 
     // get and check the Tietze relators list
     rels = CheckTietzeRelators(tietze);
@@ -697,7 +713,7 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
         lens = NEW_PLIST(T_PLIST, numgens);
 
         // allocate an auxiliary list
-        Obj   aux = NEW_STRING((numgens + 1) * sizeof(Int));
+        aux = NEW_STRING((numgens + 1) * sizeof(Int));
         Int * ptAux = (Int *)ADDR_OBJ(aux);
         ptAux[0] = numgens;
         for (k = 1; k <= numgens; k++)
@@ -760,7 +776,9 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
         SET_LEN_PLIST( lens, k );
     }
 
-    return NewPlistFromArgs(cnts, mins, lens);
+    Obj result = NewPlistFromArgs(cnts, mins, lens);
+    GAP_GC_POP();
+    return result;
 }
 
 
@@ -771,13 +789,13 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
 static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
 {
     Obj                 tietze;         // handle of the Tietze stack
-    Obj                 rels;           // handle of the relators list
+    Obj                 rels = 0;       // handle of the relators list
     Obj *               ptRels;         // pointer to this list
-    Obj                 invs;           // handle of the inverses list
+    Obj                 invs = 0;       // handle of the inverses list
     Obj *               ptInvs;         // pointer to this list
-    Obj                 res;            // handle of the resulting list
+    Obj                 res = 0;        // handle of the resulting list
     Obj *               ptRes;          // pointer to this list
-    Obj                 rel;            // handle of a relator
+    Obj                 rel = 0;        // handle of a relator
     Obj *               ptRel;          // pointer to this relator
     Obj                 numObj;         // handle of generator number
     Obj                 invObj;         // handle of inverse gen number
@@ -798,9 +816,10 @@ static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
     tietze = ELM_LIST( args, 1 );
     CheckTietzeStack(tietze);
 
+    GAP_GC_PUSH4(&rels, &invs, &res, &rel);
+
     // get and check the Tietze relators list
     rels = CheckTietzeRelators(tietze);
-    ptRels = ADDR_OBJ(rels);
     numrels = LEN_PLIST(rels);
 
     // get and check the Tietze inverses list
@@ -831,6 +850,7 @@ static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
 
     // return, if num = numgens
     if ( num == numgens )  {
+        GAP_GC_POP();
         return res;
     }
 
@@ -922,6 +942,7 @@ static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
         }
     }
 
+    GAP_GC_POP();
     return res;
 }
 
@@ -933,13 +954,13 @@ static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
 static Obj FuncTzSearchC(Obj self, Obj args)
 {
     Obj                 tietze;         // handle of the Tietze stack
-    Obj                 rels;           // handle of the relators list
+    Obj                 rels = 0;       // handle of the relators list
     Obj *               ptRels;         // pointer to this list
-    Obj                 lens;           // handle of the lengths list
+    Obj                 lens = 0;       // handle of the lengths list
     Obj *               ptLens;         // pointer to this list
-    Obj                 invs;           // handle of the inverses list
+    Obj                 invs = 0;       // handle of the inverses list
     Obj *               ptInvs;         // pointer to this list
-    Obj                 flags;          // handle of the flags list
+    Obj                 flags = 0;      // handle of the flags list
     Obj *               ptFlags;        // pointer to this list
     Obj                 word;           // handle of the given relator
     Obj                 lo;             // handle of current list relator
@@ -989,9 +1010,10 @@ static Obj FuncTzSearchC(Obj self, Obj args)
     tietze = ELM_LIST( args, 1 );
     CheckTietzeStack(tietze);
 
+    GAP_GC_PUSH4(&rels, &lens, &invs, &flags);
+
     // get and check the Tietze relators list
     rels = CheckTietzeRelators(tietze);
-    ptRels = ADDR_OBJ(rels);
     numrels = LEN_PLIST(rels);
 
     // get and check the Tietze lengths list
@@ -999,13 +1021,15 @@ static Obj FuncTzSearchC(Obj self, Obj args)
 
     // get and check the Tietze flags list
     flags = CheckTietzeFlags(tietze, numrels);
-    ptFlags = ADDR_OBJ(flags);
 
     // check list <lens> to contain the relator lengths
     total = CheckTietzeRelLengths(tietze);
 
     // get and check the Tietze inverses list
     CheckTietzeInverses( tietze, &invs, &ptInvs, &numgens );
+    ptRels = ADDR_OBJ(rels);
+    ptLens = ADDR_OBJ(lens);
+    ptFlags = ADDR_OBJ(flags);
 
     // check the second argument
     tmp = ELM_LIST( args, 2 );
@@ -1050,6 +1074,7 @@ static Obj FuncTzSearchC(Obj self, Obj args)
         pos1++;
     }
     if ( pos1 > pos2 || pos1 == numrels ) {
+        GAP_GC_POP();
         return INTOBJ_INT(0);
     }
 
@@ -1404,6 +1429,7 @@ static Obj FuncTzSearchC(Obj self, Obj args)
     SET_ELM_PLIST(tietze, TZ_TOTAL, INTOBJ_INT(total));
 
     // return the number of altered relators
+    GAP_GC_POP();
     return INTOBJ_INT( count );
 }
 
@@ -1413,11 +1439,12 @@ static Obj FuncTzSearchC(Obj self, Obj args)
 static Obj FuncREDUCE_LETREP_WORDS_REW_SYS(Obj self, Obj tzrules, Obj a_w)
 {
  UInt n,lt,i,k,p,j,lrul,eq,rlen,newlen,a;
- Obj w,nw,rul;
+ Obj w = 0, nw = 0, rul = 0, wp = 0, rj = 0;
  Obj * wa;
  Obj * nwa;
 
  w=a_w;
+ GAP_GC_PUSH5(&w, &nw, &rul, &wp, &rj);
 
  // n := Length( w );
  n=LEN_PLIST(w);
@@ -1459,7 +1486,9 @@ static Obj FuncREDUCE_LETREP_WORDS_REW_SYS(Obj self, Obj tzrules, Obj a_w)
     while ((eq==1) && (j>0) ) {
 
      // eq := w[p] = rul[j];
-     eq=((ELM_LIST(w,p)==ELM_LIST(rul,j))?1:0);
+     wp = ELM_LIST(w, p);
+     rj = ELM_LIST(rul, j);
+     eq = ((wp == rj) ? 1 : 0);
 
      // p := p - 1;
      p--;
@@ -1554,6 +1583,7 @@ static Obj FuncREDUCE_LETREP_WORDS_REW_SYS(Obj self, Obj tzrules, Obj a_w)
  // od
 
  // return w;
+ GAP_GC_POP();
  return w;
 
 }

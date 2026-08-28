@@ -105,18 +105,20 @@ void SetRecursionDepth(Int depth)
 **  resulting from the procedure call, which in fact is always 0.
 */
 
-static Obj PushOptions;
-static Obj PopOptions;
+static Obj PushOptions GAP_GC_GLOBALLY_ROOTED;
+static Obj PopOptions GAP_GC_GLOBALLY_ROOTED;
 
 static ALWAYS_INLINE Obj EvalOrExecCall(Int ignoreResult, UInt nr, Stat call, Stat opts)
 {
-    Obj func;
+    Obj func = 0;
     Obj a[6] = { 0 };
     Obj args = 0;
-    Obj result;
+    Obj result = 0;
+    GAP_GC_PUSH9(&a[0], &a[1], &a[2], &a[3], &a[4], &a[5], &func, &args,
+                 &result);
 
     // evaluate the function
-    func = EVAL_EXPR( FUNC_CALL( call ) );
+    func = EVAL_EXPR(FUNC_CALL(call));
 
     // evaluate the arguments
     if (nr <= 6 && TNUM_OBJ(func) == T_FUNCTION) {
@@ -129,8 +131,8 @@ static ALWAYS_INLINE Obj EvalOrExecCall(Int ignoreResult, UInt nr, Stat call, St
         args = NEW_PLIST(T_PLIST, realNr);
         SET_LEN_PLIST(args, realNr);
         for (UInt i = 1; i <= realNr; i++) {
-            Obj argi = EVAL_EXPR(ARGI_CALL(call, i));
-            SET_ELM_PLIST(args, i, argi);
+            result = EVAL_EXPR(ARGI_CALL(call, i));
+            SET_ELM_PLIST(args, i, result);
             CHANGED_BAG(args);
         }
     }
@@ -176,6 +178,7 @@ static ALWAYS_INLINE Obj EvalOrExecCall(Int ignoreResult, UInt nr, Stat call, St
         // inside it; or a file containing a `QUIT` statement was read at the top
         // execution level (e.g. in init.g, before the primary REPL starts) after
         // which the function was called, and now we are returning from that
+        GAP_GC_POP();
         GAP_THROW();
     }
 
@@ -187,6 +190,7 @@ static ALWAYS_INLINE Obj EvalOrExecCall(Int ignoreResult, UInt nr, Stat call, St
         CALL_0ARGS(PopOptions);
     }
 
+    GAP_GC_POP();
     return result;
 }
 
@@ -528,7 +532,9 @@ static Obj DoExecFuncXargs(Obj func, Obj args)
     Bag  oldLvars; // old values bag
     UInt len;      // number of arguments
     UInt i;        // loop variable
-    Obj  result;
+    Obj  result = 0;
+
+    GAP_GC_PUSH1(&result);
 
     CHECK_RECURSION_BEFORE
 
@@ -563,6 +569,7 @@ static Obj DoExecFuncXargs(Obj func, Obj args)
 
     CHECK_RECURSION_AFTER
 
+    GAP_GC_POP();
     return result;
 }
 
@@ -573,7 +580,9 @@ static Obj DoPartialUnWrapFunc(Obj func, Obj args)
     UInt named;    // number of arguments
     UInt i;        // loop variable
     UInt len;
-    Obj  result;
+    Obj  result = 0;
+
+    GAP_GC_PUSH1(&result);
 
     CHECK_RECURSION_BEFORE
 
@@ -614,6 +623,7 @@ static Obj DoPartialUnWrapFunc(Obj func, Obj args)
 
     CHECK_RECURSION_AFTER
 
+    GAP_GC_POP();
     return result;
 }
 

@@ -63,7 +63,7 @@
 
 #include <gmp.h>
 
-static Obj Error;
+static Obj Error GAP_GC_GLOBALLY_ROOTED;
 
 static UInt SystemErrorCode;
 
@@ -408,7 +408,10 @@ static Obj FuncSHELL(Obj self,
 int realmain(int argc, const char * argv[])
 {
   UInt                type;                   // result of compile
-  Obj                 func;                   // function (compiler)
+  Obj                 func = 0;               // function (compiler)
+  Obj                 output = 0;             // output file name
+  Obj                 name = 0;               // function name
+  Obj                 magic = 0;              // magic string
 
   // initialize everything and read init.g which runs the GAP session
   InitializeGap(&argc, argc, argv, 1);
@@ -420,16 +423,17 @@ int realmain(int argc, const char * argv[])
       if ( ! OpenInput(&input, SyCompileInput) ) {
         return 1;
       }
+      GAP_GC_PUSH4(&func, &output, &name, &magic);
       func = READ_AS_FUNC(&input);
       if (!CloseInput(&input)) {
+          GAP_GC_POP();
           return 2;
       }
-      type = CompileFunc(
-                         MakeImmString(SyCompileOutput),
-                         func,
-                         MakeImmString(SyCompileName),
-                         SyGAPCRC(SyCompileInput),
-                         MakeImmString(SyCompileMagic1) );
+      output = MakeImmString(SyCompileOutput);
+      name = MakeImmString(SyCompileName);
+      magic = MakeImmString(SyCompileMagic1);
+      type = CompileFunc(output, func, name, SyGAPCRC(SyCompileInput), magic);
+      GAP_GC_POP();
       return ( type == 0 ) ? 1 : 0;
     }
   }
@@ -490,8 +494,8 @@ static Obj FuncRETURN_NOTHING(Obj self, Obj arg)
 */
 static Obj FuncSizeScreen(Obj self, Obj args)
 {
-  Obj                 size;           // argument and result list
-  Obj                 elm;            // one entry from size
+  Obj                 size = 0;       // argument and result list
+  Obj                 elm = 0;        // one entry from size
   UInt                len;            // length of lines on the screen
   UInt                nr;             // number of lines on the screen
 
@@ -500,6 +504,8 @@ static Obj FuncSizeScreen(Obj self, Obj args)
       ErrorMayQuit("SizeScreen: number of arguments must be 0 or 1 (not %d)",
                    LEN_LIST(args), 0);
   }
+
+  GAP_GC_PUSH2(&size, &elm);
 
   // get the arguments
   if ( LEN_LIST(args) == 0 ) {
@@ -552,6 +558,7 @@ static Obj FuncSizeScreen(Obj self, Obj args)
   size = NEW_PLIST( T_PLIST, 2 );
   PushPlist(size, ObjInt_UInt(SyNrCols));
   PushPlist(size, ObjInt_UInt(SyNrRows));
+  GAP_GC_POP();
   return size;
 
 }
@@ -561,12 +568,13 @@ static Obj FuncSizeScreen(Obj self, Obj args)
 **
 *F  FuncWindowCmd( <self>, <args> ) . . . . . . . .  execute a window command
 */
-static Obj WindowCmdString;
+static Obj WindowCmdString GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncWindowCmd(Obj self, Obj args)
 {
-  Obj             tmp;
-  Obj               list;
+  Obj             tmp = 0;
+  Obj             list = 0;
+  Obj             result = 0;
   Int             len;
   Int             n,  m;
   Int             i;
@@ -575,6 +583,7 @@ static Obj FuncWindowCmd(Obj self, Obj args)
   const Char *    qtr;
 
   RequireSmallList(SELF_NAME, args);
+  GAP_GC_PUSH3(&tmp, &list, &result);
   tmp = ELM_LIST(args, 1);
   if (!IsStringConv(tmp)) {
       RequireArgumentEx(SELF_NAME, tmp, "<cmd>", "must be a string");
@@ -677,14 +686,16 @@ static Obj FuncWindowCmd(Obj self, Obj args)
       tmp = MakeString("window system: ");
       SET_ELM_PLIST(list, 1, tmp);
       SET_LEN_PLIST(list, i - 1);
-      return CALL_XARGS(Error, list);
+      result = CALL_XARGS(Error, list);
   }
   else {
     for ( m = 1;  m <= i-2;  m++ )
       SET_ELM_PLIST( list, m, ELM_PLIST(list,m+1) );
     SET_LEN_PLIST( list, i-2 );
-    return list;
+    result = list;
   }
+  GAP_GC_POP();
+  return result;
 }
 
 
@@ -1001,13 +1012,15 @@ static Obj FuncGapExitCode(Obj self, Obj args)
     }
 
     Obj prev_exit_value = ObjInt_Int(SystemErrorCode);
+    GAP_GC_PUSH1(&prev_exit_value);
 
     if (LEN_LIST(args) == 1) {
         Obj code = ELM_PLIST(args, 1);
         RequireArgumentCondition("GapExitCode", code, SetExitValue(code),
                                  "Argument must be boolean or integer");
     }
-    return (Obj)prev_exit_value;
+    GAP_GC_POP();
+    return prev_exit_value;
 }
 
 
@@ -1068,7 +1081,7 @@ static Obj FuncSHOULD_QUIT_ON_BREAK(Obj self)
 ** The general idea is to put all kernel-specific info in here, and clean up
 ** the assortment of global variables previously used
 */
-static Obj KernelArgs;
+static Obj KernelArgs GAP_GC_GLOBALLY_ROOTED;
 
 static void InitKernelArgs(int argc, const char * argv[])
 {
@@ -1081,9 +1094,12 @@ static void InitKernelArgs(int argc, const char * argv[])
 
 static Obj FuncKERNEL_INFO(Obj self)
 {
-    Obj  res = NEW_PREC(0);
+    Obj  res = 0;
     UInt r;
-    Obj  tmp;
+    Obj  tmp = 0;
+
+    GAP_GC_PUSH2(&res, &tmp);
+    res = NEW_PREC(0);
 
     AssPRec(res, RNamName("GAP_ARCHITECTURE"), MakeImmString(GAPARCH));
     AssPRec(res, RNamName("KERNEL_VERSION"), MakeImmString(SyKernelVersion));
@@ -1159,6 +1175,7 @@ static Obj FuncKERNEL_INFO(Obj self)
 
     MakeImmutable(res);
 
+    GAP_GC_POP();
     return res;
 }
 

@@ -52,7 +52,7 @@
 */
 BOOL (*IsListFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
-static Obj IsListFilt;
+static Obj IsListFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_LIST(Obj self, Obj obj)
 {
@@ -78,12 +78,12 @@ static BOOL IsListObject(Obj obj)
 */
 BOOL (*IsSmallListFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
-static Obj IsSmallListFilt;
-static Obj HasIsSmallListFilt;
-static Obj LengthAttr;
-static Obj NumberRowsAttr;
-static Obj NumberColumnsAttr;
-static Obj SetIsSmallList;
+static Obj IsSmallListFilt GAP_GC_GLOBALLY_ROOTED;
+static Obj HasIsSmallListFilt GAP_GC_GLOBALLY_ROOTED;
+static Obj LengthAttr GAP_GC_GLOBALLY_ROOTED;
+static Obj NumberRowsAttr GAP_GC_GLOBALLY_ROOTED;
+static Obj NumberColumnsAttr GAP_GC_GLOBALLY_ROOTED;
+static Obj SetIsSmallList GAP_GC_GLOBALLY_ROOTED;
 
 static BOOL IsSmallListObject(Obj obj)
 {
@@ -239,13 +239,15 @@ static Int LenListError(Obj list)
 
 static Int LenListObject(Obj obj)
 {
-    Obj                 len;
+    Obj                 len = 0;
 
+    GAP_GC_PUSH1(&len);
     len = AttrLENGTH( LengthAttr, obj );
     if (!IS_NONNEG_INTOBJ(len)) {
         RequireArgumentEx("Length", len, 0,
                           "method must return a non-negative small integer");
     }
+    GAP_GC_POP();
     return INT_INTOBJ( len );
 }
 
@@ -294,7 +296,7 @@ static Obj LengthInternal(Obj obj)
 */
 BOOL (*IsbListFuncs[LAST_REAL_TNUM + 1])(Obj list, Int pos);
 
-static Obj             IsbListOper;
+static Obj             IsbListOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncISB_LIST(Obj self, Obj list, Obj pos)
 {
@@ -372,7 +374,7 @@ static Obj ElmDefListDefault(Obj list, Int pos, Obj def)
 **  `ElmDefListObject' is the `ELM_DEFAULT_LIST' function for objects.
 **
 */
-static Obj ElmDefListOper;
+static Obj ElmDefListOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj ElmDefListObject(Obj list, Int pos, Obj def)
 {
@@ -484,7 +486,7 @@ static Obj ElmListError(Obj list, Int pos)
 **  that <pos> is a positive integer.  The methods have to signal an error if
 **  <pos> is larger than the length of <list> or if the entry is not bound.
 */
-static Obj ElmListOper;
+static Obj ElmListOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj ElmListObject(Obj list, Int pos)
 {
@@ -513,7 +515,7 @@ static Obj FuncELM_MAT(Obj self, Obj mat, Obj row, Obj col)
     return ELM_MAT(mat, row, col);
 }
 
-static Obj ElmMatOper;
+static Obj ElmMatOper GAP_GC_GLOBALLY_ROOTED;
 
 Obj ELM_MAT(Obj mat, Obj row, Obj col)
 {
@@ -596,7 +598,7 @@ static Obj ElmsListError(Obj list, Obj poss)
 **
 **  `ElmsListObject' is the `ELMS_LIST' function for objects.
 */
-static Obj ElmsListOper;
+static Obj ElmsListOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj ElmsListObject(Obj list, Obj poss)
 {
@@ -630,12 +632,14 @@ Obj ElmsListDefault (
     Obj                 list,
     Obj                 poss )
 {
-    Obj                 elms;           // selected sublist, result
+    Obj                 elms = 0;       // selected sublist, result
     Obj                 elm;            // one element from <list>
     Int                 lenPoss;        // length of <positions>
     Int                 pos;            // <position> as integer
     Int                 inc;            // increment in a range
     Int                 i;              // loop variable
+
+    GAP_GC_PUSH1(&elms);
 
     // select no element
     if ( LEN_LIST(poss) == 0 ) {
@@ -731,6 +735,7 @@ Obj ElmsListDefault (
 
     }
 
+    GAP_GC_POP();
     return elms;
 }
 
@@ -787,7 +792,7 @@ void ElmsListLevelCheck (
 */
 void             (*UnbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
-static Obj             UnbListOper;
+static Obj             UnbListOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncUNB_LIST(Obj self, Obj list, Obj pos)
 {
@@ -835,7 +840,7 @@ void UNB_MAT(Obj mat, Obj row, Obj col)
 */
 void            (*AssListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos, Obj obj );
 
-static Obj AssListOper;
+static Obj AssListOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncASS_LIST(Obj self, Obj list, Obj pos, Obj obj)
 {
@@ -873,7 +878,7 @@ void ASSB_LIST (
     DoOperation3Args( AssListOper, list, pos, obj );
 }
 
-static Obj AssMatOper;
+static Obj AssMatOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncASS_MAT(Obj self, Obj mat, Obj row, Obj col, Obj obj)
 {
@@ -915,7 +920,7 @@ void ASS_MAT(Obj mat, Obj row, Obj col, Obj obj)
 */
 void            (*AsssListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj poss, Obj objs );
 
-static Obj             AsssListOper;
+static Obj             AsssListOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncASSS_LIST(Obj self, Obj list, Obj poss, Obj objs)
 {
@@ -1017,7 +1022,7 @@ static Obj FuncASSS_LIST_DEFAULT(Obj self, Obj list, Obj poss, Obj objs)
 */
 BOOL (*IsDenseListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
-static Obj IsDenseListFilt;
+static Obj IsDenseListFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_DENSE_LIST(Obj self, Obj obj)
 {
@@ -1043,7 +1048,7 @@ static BOOL IsDenseListObject(Obj obj)
 */
 BOOL (*IsHomogListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
-static Obj IsHomogListFilt;
+static Obj IsHomogListFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_HOMOG_LIST(Obj self, Obj obj)
 {
@@ -1068,7 +1073,7 @@ static BOOL IsHomogListObject(Obj obj)
 */
 BOOL (*IsTableListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
-static Obj IsTableListFilt;
+static Obj IsTableListFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_TABLE_LIST(Obj self, Obj obj)
 {
@@ -1094,7 +1099,7 @@ static BOOL IsTableListObject(Obj obj)
 */
 BOOL (*IsSSortListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
-static Obj IsSSortListProp;
+static Obj IsSSortListProp GAP_GC_GLOBALLY_ROOTED;
 
 static Obj PropIS_SSORT_LIST(Obj self, Obj obj)
 {
@@ -1172,7 +1177,7 @@ static Obj FuncIS_SSORT_LIST_DEFAULT(Obj self, Obj obj)
 */
 BOOL (*IsPossListFuncs[LAST_REAL_TNUM + 1])(Obj list);
 
-static Obj IsPossListProp;
+static Obj IsPossListProp GAP_GC_GLOBALLY_ROOTED;
 
 static Obj PropIS_POSS_LIST(Obj self, Obj obj)
 {
@@ -1238,7 +1243,7 @@ static Obj FuncIS_POSS_LIST_DEFAULT(Obj self, Obj obj)
 */
 Obj             (*PosListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj obj, Obj start );
 
-static Obj             PosListOper;
+static Obj             PosListOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj PosListHandler2(Obj self, Obj list, Obj obj)
 {
@@ -1615,7 +1620,7 @@ void            AsssListLevel (
 **
 *F  FuncEXTRACT_SUB_VECTOR( <self>, <vec>, <poss> ) . . `EXTRACT_SUB_VECTOR'
 */
-static Obj ExtractSubVectorOper;
+static Obj ExtractSubVectorOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncEXTRACT_SUB_VECTOR(Obj self, Obj vec, Obj poss)
 {
@@ -1632,18 +1637,20 @@ static Obj FuncEXTRACT_SUB_VECTOR(Obj self, Obj vec, Obj poss)
 **
 *F  FuncCOPY_SUB_VECTOR( <self>, <src>, <dst>, <scols>, <dcols> )
 */
-static Obj CopySubVectorOper;
+static Obj CopySubVectorOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncCOPY_SUB_VECTOR(
     Obj self, Obj src, Obj dst, Obj scols, Obj dcols)
 {
     if (IS_PLIST(src) && IS_PLIST(dst)) {
-        Obj rhss;
+        Obj rhss = 0;
 
+        GAP_GC_PUSH1(&rhss);
         CheckIsPossList("List Assignments", scols);
         CheckIsPossList("List Assignments", dcols);
         rhss = ELMS_LIST(src, scols);
         AsssListCheck(dst, dcols, rhss);
+        GAP_GC_POP();
         return 0;
     }
 
@@ -1655,17 +1662,19 @@ static Obj FuncCOPY_SUB_VECTOR(
 **
 *F  FuncEXTRACT_SUB_MATRIX( <self>, <mat>, <rows>, <cols> )
 */
-static Obj ExtractSubMatrixOper;
+static Obj ExtractSubMatrixOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncEXTRACT_SUB_MATRIX(Obj self, Obj mat, Obj rows, Obj cols)
 {
     if (IS_PLIST(mat)) {
-        Obj submat;
+        Obj submat = 0;
 
+        GAP_GC_PUSH1(&submat);
         CheckIsPossList("List Elements", rows);
         CheckIsPossList("List Elements", cols);
         submat = ELMS_LIST(mat, rows);
         ElmsListLevel(submat, cols, 1);
+        GAP_GC_POP();
         return submat;
     }
 
@@ -1678,15 +1687,16 @@ static Obj FuncEXTRACT_SUB_MATRIX(Obj self, Obj mat, Obj rows, Obj cols)
 *F  FuncCOPY_SUB_MATRIX( <self>, <src>, <dst>, <srows>, <drows>, <scols>,
 *F  <dcols> )
 */
-static Obj CopySubMatrixOper;
+static Obj CopySubMatrixOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncCOPY_SUB_MATRIX(
     Obj self, Obj src, Obj dst, Obj srows, Obj drows, Obj scols, Obj dcols)
 {
     if (IS_PLIST(src) && IS_PLIST(dst)) {
-        Obj srcsub;
-        Obj dstsub;
+        Obj srcsub = 0;
+        Obj dstsub = 0;
 
+        GAP_GC_PUSH2(&srcsub, &dstsub);
         CheckIsPossList("List Assignments", srows);
         CheckIsPossList("List Assignments", drows);
         CheckIsPossList("List Assignments", scols);
@@ -1696,6 +1706,7 @@ static Obj FuncCOPY_SUB_MATRIX(
         ElmsListLevel(srcsub, scols, 1);
         dstsub = ELMS_LIST(dst, drows);
         AsssListLevel(dstsub, dcols, srcsub, 1);
+        GAP_GC_POP();
         return 0;
     }
 
@@ -1731,12 +1742,16 @@ Obj PLAIN_LIST_COPY(Obj list)
     const Int len = LEN_LIST(list);
     if (len == 0)
         return NewEmptyPlist();
-    Obj res = NEW_PLIST(T_PLIST, len);
+    Obj res = 0;
+    GAP_GC_PUSH1(&res);
+    res = NEW_PLIST(T_PLIST, len);
     SET_LEN_PLIST(res, len);
     for (Int i = 1; i <= len; i++) {
-        SET_ELM_PLIST(res, i, ELMV0_LIST(list, i));
+        Obj elm = ELMV0_LIST(list, i);
+        SET_ELM_PLIST(res, i, elm);
         CHANGED_BAG(res);
     }
+    GAP_GC_POP();
     return res;
 }
 
@@ -1926,7 +1941,7 @@ void AsssListLevelCheck (
 **
 *F  FuncSWAP_MAT_ROWS( <self>, <mat>, <row1>, <row2> )
 */
-static Obj SwapMatRows;
+static Obj SwapMatRows GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncSWAP_MAT_ROWS(Obj self, Obj mat, Obj row1, Obj row2)
 {
@@ -1955,7 +1970,7 @@ static Obj FuncSWAP_MAT_ROWS(Obj self, Obj mat, Obj row1, Obj row2)
 **
 *F  FuncSWAP_MAT_COLS( <self>, <mat>, <col1>, <col2> )
 */
-static Obj SwapMatCols;
+static Obj SwapMatCols GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncSWAP_MAT_COLS(Obj self, Obj mat, Obj col1, Obj col2)
 {

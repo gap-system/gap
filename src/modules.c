@@ -170,9 +170,12 @@ Int ActivateModule(StructInitInfo * info)
         if (info->initLibrary) {
             // Start a new executor to run the outer function of the module in
             // global context
-            Bag oldLvars = SWITCH_TO_BOTTOM_LVARS();
+            Bag oldLvars = 0;
+            GAP_GC_PUSH1(&oldLvars);
+            oldLvars = SWITCH_TO_BOTTOM_LVARS();
             res = res || info->initLibrary(info);
             SWITCH_TO_OLD_LVARS(oldLvars);
+            GAP_GC_POP();
         }
     }
 
@@ -294,6 +297,9 @@ static Obj FuncLOAD_DYN(Obj self, Obj filename)
     if (res)
         ErrorQuit("LOAD_DYN: failed to load kernel module %g, %s",
                   (Int)filename, (Int)res);
+    if (init == 0)
+        ErrorQuit("LOAD_DYN: failed to find init function in kernel module %g",
+                  (Int)filename, 0);
 
     // get the description structure
     StructInitInfo * info = (*init)();
@@ -359,8 +365,8 @@ static Obj FuncLOAD_STAT(Obj self, Obj filename)
 */
 static Obj FuncSHOW_STAT(Obj self)
 {
-    Obj              modules;
-    Obj              name;
+    Obj              modules = 0;
+    Obj              name = 0;
     StructInitInfo * info;
     Int              k;
     Int              im;
@@ -375,6 +381,7 @@ static Obj FuncSHOW_STAT(Obj self)
     }
 
     // make a list of modules with crc values
+    GAP_GC_PUSH2(&modules, &name);
     modules = NEW_PLIST(T_PLIST, 2 * im);
 
     for (k = 0; CompInitFuncs[k]; k++) {
@@ -390,6 +397,7 @@ static Obj FuncSHOW_STAT(Obj self)
         PushPlist(modules, ObjInt_Int(info->crc));
     }
 
+    GAP_GC_POP();
     return modules;
 }
 
@@ -402,10 +410,11 @@ static Obj FuncLoadedModules(Obj self)
 {
     Int              i;
     StructInitInfo * m;
-    Obj              str;
-    Obj              list;
+    Obj              str = 0;
+    Obj              list = 0;
 
     // create a list
+    GAP_GC_PUSH2(&str, &list);
     list = NEW_PLIST(T_PLIST, NrModules * 3);
     SET_LEN_PLIST(list, NrModules * 3);
     for (i = 0; i < NrModules; i++) {
@@ -438,6 +447,7 @@ static Obj FuncLoadedModules(Obj self)
             CHANGED_BAG(list);
         }
     }
+    GAP_GC_POP();
     return list;
 }
 
@@ -550,13 +560,16 @@ static Obj ValidatedArgList(const char * name, int nargs, const char * argStr)
 void InitGVarFiltsFromTable(const StructGVarFilt * tab)
 {
     Int i;
+    Obj args = 0;
 
+    GAP_GC_PUSH1(&args);
     for (i = 0; tab[i].name != 0; i++) {
         UInt gvar = GVarName(tab[i].name);
         Obj  name = NameGVar(gvar);
-        Obj  args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
+        args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
         AssReadOnlyGVar(gvar, NewFilter(name, args, tab[i].handler));
     }
+    GAP_GC_POP();
 }
 
 
@@ -567,13 +580,16 @@ void InitGVarFiltsFromTable(const StructGVarFilt * tab)
 void InitGVarAttrsFromTable(const StructGVarAttr * tab)
 {
     Int i;
+    Obj args = 0;
 
+    GAP_GC_PUSH1(&args);
     for (i = 0; tab[i].name != 0; i++) {
         UInt gvar = GVarName(tab[i].name);
         Obj  name = NameGVar(gvar);
-        Obj  args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
+        args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
         AssReadOnlyGVar(gvar, NewAttribute(name, args, tab[i].handler));
     }
+    GAP_GC_POP();
 }
 
 /****************************************************************************
@@ -583,13 +599,17 @@ void InitGVarAttrsFromTable(const StructGVarAttr * tab)
 void InitGVarPropsFromTable(const StructGVarProp * tab)
 {
     Int i;
+    Obj args = 0;
 
+    GAP_GC_PUSH1(&args);
     for (i = 0; tab[i].name != 0; i++) {
         UInt gvar = GVarName(tab[i].name);
         Obj  name = NameGVar(gvar);
-        Obj  args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
-        AssReadOnlyGVar(gvar, NewProperty(name, args, tab[i].getter, tab[i].setter));
+        args = ValidatedArgList(tab[i].name, 1, tab[i].argument);
+        AssReadOnlyGVar(gvar,
+                        NewProperty(name, args, tab[i].getter, tab[i].setter));
     }
+    GAP_GC_POP();
 }
 
 
@@ -600,14 +620,17 @@ void InitGVarPropsFromTable(const StructGVarProp * tab)
 void InitGVarOpersFromTable(const StructGVarOper * tab)
 {
     Int i;
+    Obj args = 0;
 
+    GAP_GC_PUSH1(&args);
     for (i = 0; tab[i].name != 0; i++) {
         UInt gvar = GVarName(tab[i].name);
         Obj  name = NameGVar(gvar);
-        Obj  args = ValidatedArgList(tab[i].name, tab[i].nargs, tab[i].args);
+        args = ValidatedArgList(tab[i].name, tab[i].nargs, tab[i].args);
         AssReadOnlyGVar(
             gvar, NewOperation(name, tab[i].nargs, args, tab[i].handler));
     }
+    GAP_GC_POP();
 }
 
 static void SetupFuncInfo(Obj func, const Char * cookie)
@@ -618,9 +641,12 @@ static void SetupFuncInfo(Obj func, const Char * cookie)
     // the last two '/'-separated components.
     const Char * pos = strchr(cookie, ':');
     if (pos) {
-        Obj location = MakeImmString(pos + 1);
+        Obj location = 0;
+        Obj filename = 0;
+        Obj body_bag = 0;
+        GAP_GC_PUSH3(&location, &filename, &body_bag);
+        location = MakeImmString(pos + 1);
 
-        Obj  filename;
         char buffer[512];
         Int  len = 511 < (pos - cookie) ? 511 : pos - cookie;
         memcpy(buffer, cookie, len);
@@ -635,12 +661,13 @@ static void SetupFuncInfo(Obj func, const Char * cookie)
             start = buffer;
         filename = MakeImmString(start);
 
-        Obj body_bag = NewFunctionBody();
+        body_bag = NewFunctionBody();
         SET_FILENAME_BODY(body_bag, filename);
         SET_LOCATION_BODY(body_bag, location);
         SET_BODY_FUNC(func, body_bag);
         CHANGED_BAG(body_bag);
         CHANGED_BAG(func);
+        GAP_GC_POP();
     }
 }
 
@@ -651,15 +678,19 @@ static void SetupFuncInfo(Obj func, const Char * cookie)
 void InitGVarFuncsFromTable(const StructGVarFunc * tab)
 {
     Int i;
+    Obj args = 0;
+    Obj func = 0;
 
+    GAP_GC_PUSH2(&args, &func);
     for (i = 0; tab[i].name != 0; i++) {
         UInt gvar = GVarName(tab[i].name);
         Obj  name = NameGVar(gvar);
-        Obj  args = ValidatedArgList(tab[i].name, tab[i].nargs, tab[i].args);
-        Obj  func = NewFunction(name, tab[i].nargs, args, tab[i].handler);
+        args = ValidatedArgList(tab[i].name, tab[i].nargs, tab[i].args);
+        func = NewFunction(name, tab[i].nargs, args, tab[i].handler);
         SetupFuncInfo(func, tab[i].cookie);
         AssReadOnlyGVar(gvar, func);
     }
+    GAP_GC_POP();
 }
 
 
