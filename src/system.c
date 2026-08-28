@@ -719,6 +719,24 @@ void InitSystem(int argc, const char * argv[], BOOL handleSignals)
         if (GetConsoleMode(h, &mode))
             SetConsoleMode(h, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
     }
+
+    // GAP uses HOME for the user's home directory throughout (tilde
+    // expansion, ~/.gap, the history file). When it is not set, which it
+    // normally is not on Windows, derive it from USERPROFILE; either way
+    // normalize its backslashes to GAP's directory separator.
+    {
+        const char * home = getenv("HOME");
+        if (home == NULL || *home == '\0')
+            home = getenv("USERPROFILE");
+        if (home != NULL && *home != '\0') {
+            static char homebuf[GAP_PATH_MAX + 6] = "HOME=";
+            strxcat(homebuf, home, sizeof(homebuf));
+            for (char * p = homebuf; *p; p++)
+                if (*p == '\\')
+                    *p = '/';
+            _putenv(homebuf);
+        }
+    }
 #endif
 
     InitSysOpts();

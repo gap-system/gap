@@ -985,21 +985,50 @@ static Obj FuncREAD_GAP_ROOT(Obj self, Obj filename)
 }
 
 
+#ifdef SYS_IS_WINDOWS
+// the Windows temp directory from TEMP or TMP, with backslashes converted
+// to slashes; NULL if neither is set
+static const char * syWinTempDir(void)
+{
+    static char  buf[GAP_PATH_MAX];
+    const char * tmp = getenv("TEMP");
+    if (tmp == NULL || *tmp == '\0')
+        tmp = getenv("TMP");
+    if (tmp == NULL || *tmp == '\0')
+        return NULL;
+    gap_strlcpy(buf, tmp, sizeof(buf));
+    for (char * p = buf; *p; p++)
+        if (*p == '\\')
+            *p = '/';
+    return buf;
+}
+#endif
+
 /****************************************************************************
 **
 *F  FuncTmpName( <self> ) . . . . . . . . . . . . . . return a temporary name
 */
 static Obj FuncTmpName(Obj self)
 {
-    char name[100] = "/tmp/gaptempfile.XXXXXX";
+    char name[GAP_PATH_MAX] = "/tmp/gaptempfile.XXXXXX";
 #if defined(SYS_IS_CYGWIN32) || defined(SYS_IS_WINDOWS)
-    // If /tmp is missing, write into Window's temp directory
-    DIR* dir = opendir("/tmp");
-    if(dir) {
-        closedir(dir);
+    const char * wintmp = NULL;
+#ifdef SYS_IS_WINDOWS
+    wintmp = syWinTempDir();
+#endif
+    if (wintmp) {
+        gap_strlcpy(name, wintmp, sizeof(name));
+        gap_strlcat(name, "/gaptempfile.XXXXXX", sizeof(name));
     }
     else {
-        strcpy(name, "C:/WINDOWS/Temp/gaptempfile.XXXXXX");
+        // If /tmp is missing, write into Window's temp directory
+        DIR* dir = opendir("/tmp");
+        if(dir) {
+            closedir(dir);
+        }
+        else {
+            strcpy(name, "C:/WINDOWS/Temp/gaptempfile.XXXXXX");
+        }
     }
 #endif
     int fd = mkstemp(name);
@@ -1023,14 +1052,23 @@ static Obj FuncTmpDirectory(Obj self)
     }
     else {
 #if defined(SYS_IS_CYGWIN32) || defined(SYS_IS_WINDOWS)
-        // If /tmp is missing, write into Window's temp directory
-        DIR* dir = opendir("/tmp");
-        if(dir) {
-            closedir(dir);
-            name = MakeString("/tmp");
+        const char * wintmp = NULL;
+#ifdef SYS_IS_WINDOWS
+        wintmp = syWinTempDir();
+#endif
+        if (wintmp) {
+            name = MakeString(wintmp);
         }
         else {
-            name = MakeString("C:/WINDOWS/Temp/");
+            // If /tmp is missing, write into Window's temp directory
+            DIR* dir = opendir("/tmp");
+            if(dir) {
+                closedir(dir);
+                name = MakeString("/tmp");
+            }
+            else {
+                name = MakeString("C:/WINDOWS/Temp/");
+            }
         }
 #else
         name = MakeString("/tmp");
@@ -1117,6 +1155,12 @@ static Obj FuncGAP_getcwd(Obj self)
         SySetErrorNo();
         return Fail;
     }
+#ifdef SYS_IS_WINDOWS
+    // the C runtime reports backslashes; use GAP's directory separator
+    for (char * p = buf; *p; p++)
+        if (*p == '\\')
+            *p = '/';
+#endif
     return MakeImmString(buf);
 }
 
