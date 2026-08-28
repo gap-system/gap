@@ -46,6 +46,18 @@ GAP_STATIC_ASSERT(sizeof(void *) == SIZEOF_VOID_P, "sizeof(void *) is wrong");
 #define SYS_IS_CYGWIN32 1
 #endif
 
+// check for native Windows: mingw-w64 compilers predefine _WIN32; Cygwin
+// GCC deliberately does not, as Cygwin provides a POSIX layer and is thus
+// treated as a (quirky) Unix. Hence SYS_IS_WINDOWS and SYS_IS_CYGWIN32
+// are mutually exclusive.
+#if defined(_WIN32) || defined(_WIN64)
+#define SYS_IS_WINDOWS 1
+#endif
+
+#ifdef SYS_IS_WINDOWS
+// TODO(windows-port): provide a native subprocess implementation
+#define GAP_DISABLE_SUBPROCESS_CODE 1
+#endif
 
 // GAP_SETJMP and GAP_LONGJMP are used for error handling and for GASMAN's
 // register capture. On POSIX systems we use _setjmp/_longjmp, which do not
