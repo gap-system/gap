@@ -118,7 +118,7 @@ static void ASSERT_IS_TRANS(Obj f)
 }
 
 template <typename T>
-static inline Obj NEW_TRANS(UInt deg)
+static inline Obj NEW_TRANS(UInt deg) GAP_GC_CANSAFEPOINT
 {
     return NewBag(T_TRANS<T>::tnum, deg * sizeof(T) + 3 * sizeof(Obj));
 }
@@ -163,7 +163,7 @@ static inline UInt DEG_TRANS(Obj f) GAP_GC_NOTSAFEPOINT
 static Int GetPositiveListEntryEx(const char * funcname,
                            Obj          list,
                            Int          idx,
-                           const char * argname)
+                           const char * argname) GAP_GC_CANSAFEPOINT
 {
     Obj value = ELM_LIST(list, idx);
     if (!IS_POS_INTOBJ(value)) {
@@ -212,7 +212,7 @@ static Obj IdentityTrans GAP_GC_GLOBALLY_ROOTED;
 ** Forward declarations
 *******************************************************************************/
 
-static Obj FuncIMAGE_SET_TRANS(Obj self, Obj f);
+static Obj FuncIMAGE_SET_TRANS(Obj self, Obj f) GAP_GC_CANSAFEPOINT;
 
 /*******************************************************************************
 ** Internal functions for transformations
@@ -259,7 +259,7 @@ static inline void SET_EXT_TRANS(Obj f, Obj deg) GAP_GC_NOTSAFEPOINT
     ADDR_OBJ(f)[2] = deg;
 }
 
-static inline void ResizeTmpTrans(UInt len)
+static inline void ResizeTmpTrans(UInt len) GAP_GC_CANSAFEPOINT
 {
     Obj tmpTrans = TmpTrans;
     if (tmpTrans == (Obj)0) {
@@ -270,7 +270,7 @@ static inline void ResizeTmpTrans(UInt len)
     }
 }
 
-static inline UInt4 * ResizeInitTmpTrans(UInt len)
+static inline UInt4 * ResizeInitTmpTrans(UInt len) GAP_GC_CANSAFEPOINT
 {
     ResizeTmpTrans(len);
 
@@ -282,7 +282,7 @@ static inline UInt4 * ResizeInitTmpTrans(UInt len)
 // Find the rank, flat kernel, and image set (unsorted) of a transformation of
 // degree at most 65536.
 
-static UInt INIT_TRANS2(Obj f)
+static UInt INIT_TRANS2(Obj f) GAP_GC_CANSAFEPOINT
 {
     UInt    deg, rank, i, j;
     const UInt2 * ptf;
@@ -332,7 +332,7 @@ static UInt INIT_TRANS2(Obj f)
 // Find the rank, flat kernel, and image set (unsorted) of a transformation of
 // degree at least 65537.
 
-static UInt INIT_TRANS4(Obj f)
+static UInt INIT_TRANS4(Obj f) GAP_GC_CANSAFEPOINT
 {
     UInt    deg, rank, i, j;
     const UInt4 * ptf;
@@ -384,7 +384,7 @@ static UInt INIT_TRANS4(Obj f)
     return rank;
 }
 
-static UInt INIT_TRANS(Obj f)
+static UInt INIT_TRANS(Obj f) GAP_GC_CANSAFEPOINT
 {
    return (TNUM_OBJ(f) == T_TRANS2) ? INIT_TRANS2(f) : INIT_TRANS4(f);
 
@@ -406,7 +406,7 @@ UInt RANK_TRANS4(Obj f)
 // Retyping is the responsibility of the caller, this should only be called
 // after a call to SortPlistByRawObj.
 
-static void REMOVE_DUPS_PLIST_INTOBJ(Obj res)
+static void REMOVE_DUPS_PLIST_INTOBJ(Obj res) GAP_GC_CANSAFEPOINT
 {
     Obj  tmp;
     UInt i, k, len;
@@ -439,7 +439,7 @@ static void REMOVE_DUPS_PLIST_INTOBJ(Obj res)
 // Returns a transformation with list of images <list>, this does not check
 // that <list> is really a list or that its entries define a transformation.
 
-static Obj FuncTransformationNC(Obj self, Obj list)
+static Obj FuncTransformationNC(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     UInt    i, deg;
     UInt2 * ptf2;
@@ -473,6 +473,7 @@ static Obj FuncTransformationNC(Obj self, Obj list)
 // <src> is duplicate-free.
 
 static Obj FuncTransformationListListNC(Obj self, Obj src, Obj ran)
+    GAP_GC_CANSAFEPOINT
 {
     Int     deg, i, s, r;
     Obj     f = 0;
@@ -539,7 +540,7 @@ static Obj FuncTransformationListListNC(Obj self, Obj src, Obj ran)
 // a transformation, i.e.  that the maximum value in <ker> equals the length
 // of <img>.
 
-static Obj FuncTRANS_IMG_KER_NC(Obj self, Obj img, Obj ker)
+static Obj FuncTRANS_IMG_KER_NC(Obj self, Obj img, Obj ker) GAP_GC_CANSAFEPOINT
 {
     Obj     f = 0, copy_img = 0, copy_ker = 0;
     UInt2 * ptf2;
@@ -590,7 +591,7 @@ static Obj FuncTRANS_IMG_KER_NC(Obj self, Obj img, Obj ker)
 // Note that this does not return the same transformation as TRANS_IMG_KER_NC
 // with the same arguments.
 
-static Obj FuncIDEM_IMG_KER_NC(Obj self, Obj img, Obj ker)
+static Obj FuncIDEM_IMG_KER_NC(Obj self, Obj img, Obj ker) GAP_GC_CANSAFEPOINT
 {
     Obj     f = 0, copy_img = 0, copy_ker = 0;
     UInt2 * ptf2;
@@ -647,7 +648,7 @@ static Obj FuncIDEM_IMG_KER_NC(Obj self, Obj img, Obj ker)
 // Returns an idempotent transformation e with ker(e) = ker(f), where <f> is a
 // transformation.
 
-static Obj FuncLEFT_ONE_TRANS(Obj self, Obj f)
+static Obj FuncLEFT_ONE_TRANS(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     Obj  ker = 0, img = 0;
     UInt rank, n, i;
@@ -675,7 +676,7 @@ static Obj FuncLEFT_ONE_TRANS(Obj self, Obj f)
 // Returns an idempotent transformation e with im(e) = im(f), where <f> is a
 // transformation.
 
-static Obj FuncRIGHT_ONE_TRANS(Obj self, Obj f)
+static Obj FuncRIGHT_ONE_TRANS(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     Obj  ker = 0, img = 0;
     UInt deg, len, i, j, n;
@@ -709,7 +710,7 @@ static Obj FuncRIGHT_ONE_TRANS(Obj self, Obj f)
 // Returns the degree of the transformation <f>, i.e. the least value <n> such
 // that <f> fixes [n + 1, n + 2, .. ].
 
-static Obj FuncDegreeOfTransformation(Obj self, Obj f)
+static Obj FuncDegreeOfTransformation(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     UInt    n, i, deg;
     const UInt2 * ptf2;
@@ -762,7 +763,7 @@ static Obj FuncDegreeOfTransformation(Obj self, Obj f)
 // Returns the rank of transformation, i.e. number of distinct values in
 // [(1)f .. (n)f] where n = DegreeOfTransformation(f).
 
-static Obj FuncRANK_TRANS(Obj self, Obj f)
+static Obj FuncRANK_TRANS(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     RequireTransformation(SELF_NAME, f);
     Obj degree = 0;
@@ -777,7 +778,7 @@ static Obj FuncRANK_TRANS(Obj self, Obj f)
 // Returns the rank of the transformation <f> on [1 .. n], i.e. the number of
 // distinct values in [(1)f .. (n)f].
 
-static Obj FuncRANK_TRANS_INT(Obj self, Obj f, Obj n)
+static Obj FuncRANK_TRANS_INT(Obj self, Obj f, Obj n) GAP_GC_CANSAFEPOINT
 {
     UInt    rank, i, m, deg;
     const UInt2 * ptf2;
@@ -822,7 +823,7 @@ static Obj FuncRANK_TRANS_INT(Obj self, Obj f, Obj n)
 // distinct values in [(list[1])f .. (list[n])f], where <list> consists of
 // positive ints.
 
-static Obj FuncRANK_TRANS_LIST(Obj self, Obj f, Obj list)
+static Obj FuncRANK_TRANS_LIST(Obj self, Obj f, Obj list) GAP_GC_CANSAFEPOINT
 {
     UInt    rank, i, j, len, def;
     const UInt2 * ptf2;
@@ -881,7 +882,7 @@ static Obj FuncRANK_TRANS_LIST(Obj self, Obj f, Obj list)
 // Returns the flat kernel of transformation on
 // [1 .. DegreeOfTransformation(f)].
 
-static Obj FuncFLAT_KERNEL_TRANS(Obj self, Obj f)
+static Obj FuncFLAT_KERNEL_TRANS(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     RequireTransformation(SELF_NAME, f);
 
@@ -894,6 +895,7 @@ static Obj FuncFLAT_KERNEL_TRANS(Obj self, Obj f)
 // Returns the flat kernel of the transformation <f> on [1 .. n].
 
 static Obj FuncFLAT_KERNEL_TRANS_INT(Obj self, Obj f, Obj n)
+    GAP_GC_CANSAFEPOINT
 {
     Obj newObj = 0, *ptnew;
     const Obj *ptker;
@@ -946,7 +948,7 @@ static Obj FuncFLAT_KERNEL_TRANS_INT(Obj self, Obj f, Obj n)
 
 // Returns the kernel of a transformation <f> as a partition of [1 .. n].
 
-static Obj FuncKERNEL_TRANS(Obj self, Obj f, Obj n)
+static Obj FuncKERNEL_TRANS(Obj self, Obj f, Obj n) GAP_GC_CANSAFEPOINT
 {
     Obj     ker = 0, block = 0;
     UInt    i, j, deg, nr, m, rank, min;
@@ -1006,7 +1008,7 @@ static Obj FuncKERNEL_TRANS(Obj self, Obj f, Obj n)
 
 // Returns the set (pt)f ^ -1.
 
-static Obj FuncPREIMAGES_TRANS_INT(Obj self, Obj f, Obj pt)
+static Obj FuncPREIMAGES_TRANS_INT(Obj self, Obj f, Obj pt) GAP_GC_CANSAFEPOINT
 {
     UInt deg, nr, i, j;
     Obj  out = 0;
@@ -1055,7 +1057,7 @@ static Obj FuncPREIMAGES_TRANS_INT(Obj self, Obj f, Obj pt)
 // Returns the duplicate free list of images of the transformation f on
 // [1 .. n] where n = DEG_TRANS(f). Note that this might not be sorted.
 
-static Obj FuncUNSORTED_IMAGE_SET_TRANS(Obj self, Obj f)
+static Obj FuncUNSORTED_IMAGE_SET_TRANS(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     RequireTransformation(SELF_NAME, f);
 
@@ -1085,7 +1087,7 @@ static Obj FuncIMAGE_SET_TRANS(Obj self, Obj f)
 
 // Returns the image set of the transformation f on [1 .. n].
 
-static Obj FuncIMAGE_SET_TRANS_INT(Obj self, Obj f, Obj n)
+static Obj FuncIMAGE_SET_TRANS_INT(Obj self, Obj f, Obj n) GAP_GC_CANSAFEPOINT
 {
     Obj     im = 0, newObj = 0;
     UInt    deg, m, len, i, j, rank;
@@ -1168,7 +1170,7 @@ static Obj FuncIMAGE_SET_TRANS_INT(Obj self, Obj f, Obj n)
 
 // Returns the image list [(1)f .. (n)f] of the transformation f.
 
-static Obj FuncIMAGE_LIST_TRANS_INT(Obj self, Obj f, Obj n)
+static Obj FuncIMAGE_LIST_TRANS_INT(Obj self, Obj f, Obj n) GAP_GC_CANSAFEPOINT
 {
     const UInt2 * ptf2;
     const UInt4 * ptf4;
@@ -1213,7 +1215,7 @@ static Obj FuncIMAGE_LIST_TRANS_INT(Obj self, Obj f, Obj n)
 
 // Test if a transformation is the identity.
 
-static Obj FuncIS_ID_TRANS(Obj self, Obj f)
+static Obj FuncIS_ID_TRANS(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     const UInt2 * ptf2;
     const UInt4 * ptf4;
@@ -1245,7 +1247,7 @@ static Obj FuncIS_ID_TRANS(Obj self, Obj f)
 // Returns true if the transformation <f> is an idempotent and false if it is
 // not.
 
-static Obj FuncIS_IDEM_TRANS(Obj self, Obj f)
+static Obj FuncIS_IDEM_TRANS(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     const UInt2 * ptf2;
     const UInt4 * ptf4;
@@ -1281,7 +1283,7 @@ static Obj FuncIS_IDEM_TRANS(Obj self, Obj f)
 // Returns the least m and r such that f ^ (m + r) = f ^ m, where f is a
 // transformation.
 
-static Obj FuncIndexPeriodOfTransformation(Obj self, Obj f)
+static Obj FuncIndexPeriodOfTransformation(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     const UInt2 * ptf2;
     const UInt4 * ptf4;
@@ -1414,7 +1416,7 @@ static Obj FuncIndexPeriodOfTransformation(Obj self, Obj f)
 
 // Returns the least integer m such that f ^ m is an idempotent.
 
-static Obj FuncSMALLEST_IDEM_POW_TRANS(Obj self, Obj f)
+static Obj FuncSMALLEST_IDEM_POW_TRANS(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     Obj x = 0, ind = 0, per = 0, pow = 0;
 
@@ -1438,6 +1440,7 @@ static Obj FuncSMALLEST_IDEM_POW_TRANS(Obj self, Obj f)
 // <list>.
 
 static Obj FuncIsInjectiveListTrans(Obj self, Obj list, Obj obj)
+    GAP_GC_CANSAFEPOINT
 {
     UInt    n, i, j;
     const UInt2 * ptt2;
@@ -1503,7 +1506,7 @@ static Obj FuncIsInjectiveListTrans(Obj self, Obj list, Obj obj)
 // Returns a transformation g such that transformation f * g * f = f and
 // g * f * g = g, where f is a transformation.
 
-static Obj FuncInverseOfTransformation(Obj self, Obj f)
+static Obj FuncInverseOfTransformation(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     const UInt2 * ptf2;
     const UInt4 * ptf4;
@@ -1562,6 +1565,7 @@ static Obj FuncInverseOfTransformation(Obj self, Obj f)
 // the Semigroup package.
 
 static Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n)
+    GAP_GC_CANSAFEPOINT
 {
     const UInt2 * ptf2;
     const UInt4 * ptf4;
@@ -1646,7 +1650,7 @@ static Obj FuncON_KERNEL_ANTI_ACTION(Obj self, Obj ker, Obj f, Obj n)
 // transformation is not necessarily a permutation (mathematically), when n is
 // less than the largest moved point of p.
 
-static Obj FuncAS_TRANS_PERM_INT(Obj self, Obj p, Obj deg)
+static Obj FuncAS_TRANS_PERM_INT(Obj self, Obj p, Obj deg) GAP_GC_CANSAFEPOINT
 {
     const UInt2 *ptp2;
     UInt2 *ptf2;
@@ -1732,7 +1736,7 @@ static Obj FuncAS_TRANS_PERM_INT(Obj self, Obj p, Obj deg)
 // Returns a transformation <f> such that (i)f = (i)p for all i <= n where <p>
 // is a permutation <p> and <n> is the largest moved point of <p>.
 
-static Obj FuncAS_TRANS_PERM(Obj self, Obj p)
+static Obj FuncAS_TRANS_PERM(Obj self, Obj p) GAP_GC_CANSAFEPOINT
 {
     const UInt2 * ptPerm2;
     const UInt4 * ptPerm4;
@@ -1769,7 +1773,7 @@ static Obj FuncAS_TRANS_PERM(Obj self, Obj p)
 // Returns a permutation mathematically equal to the transformation <f> if
 // possible, and returns Fail if it is not possible
 
-static Obj FuncAS_PERM_TRANS(Obj self, Obj f)
+static Obj FuncAS_PERM_TRANS(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     const UInt2 *ptf2;
     const UInt4 *ptf4;
@@ -1808,7 +1812,7 @@ static Obj FuncAS_PERM_TRANS(Obj self, Obj f)
 // Returns the permutation of the image of the transformation <f> induced by
 // <f> if possible, and returns Fail if it is not possible.
 
-static Obj FuncPermutationOfImage(Obj self, Obj f)
+static Obj FuncPermutationOfImage(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     const UInt2 *ptf2;
     const UInt4 *ptf4;
@@ -1886,6 +1890,7 @@ static Obj FuncPermutationOfImage(Obj self, Obj f)
 // (unchecked) assumption that im(f) = im(g) and ker(f) = ker(g).
 
 static Obj FuncPermLeftQuoTransformationNC(Obj self, Obj f, Obj g)
+    GAP_GC_CANSAFEPOINT
 {
     const UInt2 *ptf2, *ptg2;
     const UInt4 *ptf4, *ptg4;
@@ -1995,6 +2000,7 @@ static Obj FuncPermLeftQuoTransformationNC(Obj self, Obj f, Obj g)
 // where (i)g = i for every other value of i.
 
 static Obj FuncRestrictedTransformation(Obj self, Obj f, Obj list)
+    GAP_GC_CANSAFEPOINT
 {
     UInt   deg, i, k, len;
     const UInt2 *ptf2;
@@ -2065,7 +2071,7 @@ static Obj FuncRestrictedTransformation(Obj self, Obj f, Obj list)
 // In the first form, this is similar to TRIM_TRANS except that a new
 // transformation is returned.
 
-static Obj FuncAS_TRANS_TRANS(Obj self, Obj f, Obj m)
+static Obj FuncAS_TRANS_TRANS(Obj self, Obj f, Obj m) GAP_GC_CANSAFEPOINT
 {
     const UInt2 *ptf2;
     const UInt4 *ptf4;
@@ -2128,7 +2134,7 @@ static Obj FuncAS_TRANS_TRANS(Obj self, Obj f, Obj m)
 // assumed that f is actually a transformation of [1 .. m], i.e. that i ^ f <=
 // m for all i in [1 .. m].
 
-static Obj FuncTRIM_TRANS(Obj self, Obj f, Obj m)
+static Obj FuncTRIM_TRANS(Obj self, Obj f, Obj m) GAP_GC_CANSAFEPOINT
 {
     UInt    deg, i;
     UInt4 * ptf;
@@ -2199,6 +2205,7 @@ Int HashFuncForTrans(Obj f)
 }
 
 static Obj FuncHASH_FUNC_FOR_TRANS(Obj self, Obj f, Obj data)
+    GAP_GC_CANSAFEPOINT
 {
     return INTOBJ_INT((HashFuncForTrans(f) % INT_INTOBJ(data)) + 1);
 }
@@ -2209,7 +2216,7 @@ static Obj FuncHASH_FUNC_FOR_TRANS(Obj self, Obj f, Obj data)
 
 // Returns the largest value i such that (i)f <> i or 0 if no such i exists.
 
-static Obj FuncLARGEST_MOVED_PT_TRANS(Obj self, Obj f)
+static Obj FuncLARGEST_MOVED_PT_TRANS(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     const UInt2 * ptf2;
     const UInt4 * ptf4;
@@ -2238,7 +2245,7 @@ static Obj FuncLARGEST_MOVED_PT_TRANS(Obj self, Obj f)
 
 // Returns the largest value in [(1)f .. (n)f] where n = LargestMovedPoint(f).
 
-static Obj FuncLARGEST_IMAGE_PT(Obj self, Obj f)
+static Obj FuncLARGEST_IMAGE_PT(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     const UInt2 * ptf2;
     const UInt4 * ptf4;
@@ -2287,7 +2294,7 @@ static Obj FuncLARGEST_IMAGE_PT(Obj self, Obj f)
 // not. Note that this differs from the GAP level function which returns
 // infinity if (i)f = i for all i.
 
-static Obj FuncSMALLEST_MOVED_PT_TRANS(Obj self, Obj f)
+static Obj FuncSMALLEST_MOVED_PT_TRANS(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     const UInt2 * ptf2;
     const UInt4 * ptf4;
@@ -2324,7 +2331,7 @@ static Obj FuncSMALLEST_MOVED_PT_TRANS(Obj self, Obj f)
 // this differs from the GAP level function which returns infinity if (i)f = i
 // for all i.
 
-static Obj FuncSMALLEST_IMAGE_PT(Obj self, Obj f)
+static Obj FuncSMALLEST_IMAGE_PT(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     const UInt2 * ptf2;
     const UInt4 * ptf4;
@@ -2362,7 +2369,7 @@ static Obj FuncSMALLEST_IMAGE_PT(Obj self, Obj f)
 // Returns the number of values <i> in [1 .. n] such that (i)f <> i, where n =
 // DegreeOfTransformation(f).
 
-static Obj FuncNR_MOVED_PTS_TRANS(Obj self, Obj f)
+static Obj FuncNR_MOVED_PTS_TRANS(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     UInt    nr, i, deg;
     const UInt2 * ptf2;
@@ -2395,7 +2402,7 @@ static Obj FuncNR_MOVED_PTS_TRANS(Obj self, Obj f)
 // Returns the set of values <i> in [1 .. n] such that (i)f <> i, where n =
 // DegreeOfTransformation(f).
 
-static Obj FuncMOVED_PTS_TRANS(Obj self, Obj f)
+static Obj FuncMOVED_PTS_TRANS(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     UInt    len, deg, i;
     Obj     out = 0;
@@ -2447,7 +2454,7 @@ static Obj FuncMOVED_PTS_TRANS(Obj self, Obj f)
 // ^ k) = j. The least number of representatives is returned and these
 // representatives are partitioned according to the component they belong to.
 
-static Obj FuncCOMPONENT_REPS_TRANS(Obj self, Obj f)
+static Obj FuncCOMPONENT_REPS_TRANS(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     UInt    deg, i, nr, pt, index;
     Obj     img = 0, out = 0, comp = 0;
@@ -2591,7 +2598,7 @@ static Obj FuncCOMPONENT_REPS_TRANS(Obj self, Obj f)
 // Returns the number of connected components of the transformation <f>,
 // thought of as a functional digraph with DegreeOfTransformation(f) vertices.
 
-static Obj FuncNR_COMPONENTS_TRANS(Obj self, Obj f)
+static Obj FuncNR_COMPONENTS_TRANS(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     UInt    nr, m, i, j, deg;
     const UInt2 * ptf2;
@@ -2639,7 +2646,7 @@ static Obj FuncNR_COMPONENTS_TRANS(Obj self, Obj f)
 // Returns the connected components of the transformation <f>, thought of as a
 // functional digraph with DegreeOfTransformation(f) vertices.
 
-static Obj FuncCOMPONENTS_TRANS(Obj self, Obj f)
+static Obj FuncCOMPONENTS_TRANS(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     const UInt2 * ptf2;
     const UInt4 * ptf4;
@@ -2758,7 +2765,7 @@ static Obj FuncCOMPONENTS_TRANS(Obj self, Obj f)
 // Returns the list of distinct values [pt, (pt)f, (pt)f ^ 2, ..] where <f> is
 // a transformation and <pt> is a positive integer.
 
-static Obj FuncCOMPONENT_TRANS_INT(Obj self, Obj f, Obj pt)
+static Obj FuncCOMPONENT_TRANS_INT(Obj self, Obj f, Obj pt) GAP_GC_CANSAFEPOINT
 {
     UInt    deg, cpt, len;
     Obj     out = 0;
@@ -2813,7 +2820,7 @@ static Obj FuncCOMPONENT_TRANS_INT(Obj self, Obj f, Obj pt)
 // Returns the cycle contained in the component of the transformation <f>
 // containing the positive integer <pt>.
 
-static Obj FuncCYCLE_TRANS_INT(Obj self, Obj f, Obj pt)
+static Obj FuncCYCLE_TRANS_INT(Obj self, Obj f, Obj pt) GAP_GC_CANSAFEPOINT
 {
     UInt    deg, cpt, len, i;
     Obj     out = 0;
@@ -2878,7 +2885,7 @@ static Obj FuncCYCLE_TRANS_INT(Obj self, Obj f, Obj pt)
 // Returns the cycles of the transformation <f>, thought of as a
 // functional digraph with DegreeOfTransformation(f) vertices.
 
-static Obj FuncCYCLES_TRANS(Obj self, Obj f)
+static Obj FuncCYCLES_TRANS(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
     const UInt2 * ptf2;
     const UInt4 * ptf4;
@@ -2972,7 +2979,7 @@ static Obj FuncCYCLES_TRANS(Obj self, Obj f)
 // Returns the cycles of the transformation <f> contained in the components of
 // any of the elements in <list>.
 
-static Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list)
+static Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list) GAP_GC_CANSAFEPOINT
 {
     const UInt2 * ptf2;
     const UInt4 * ptf4;
@@ -3096,7 +3103,7 @@ static Obj FuncCYCLES_TRANS_LIST(Obj self, Obj f, Obj list)
 // it is assumed (and not checked) that the transformation f is injective on
 // list.
 
-static Obj FuncINV_LIST_TRANS(Obj self, Obj list, Obj f)
+static Obj FuncINV_LIST_TRANS(Obj self, Obj list, Obj f) GAP_GC_CANSAFEPOINT
 {
     const UInt2 *ptf2;
     const UInt4 *ptf4;
@@ -3164,7 +3171,7 @@ static Obj FuncINV_LIST_TRANS(Obj self, Obj list, Obj f)
 // lists
 // of f and g in the above.
 
-static Obj FuncTRANS_IMG_CONJ(Obj self, Obj f, Obj g)
+static Obj FuncTRANS_IMG_CONJ(Obj self, Obj f, Obj g) GAP_GC_CANSAFEPOINT
 {
     Obj    perm = 0;
     const UInt2 *ptf2, *ptg2;
@@ -3318,7 +3325,7 @@ static Obj FuncTRANS_IMG_CONJ(Obj self, Obj f, Obj g)
 // kernel of transformation. This assumes (but doesn't check) that <p> is a
 // permutation of [1 .. Length(<ker>)] regardless of its degree.
 
-static Obj FuncPOW_KER_PERM(Obj self, Obj ker, Obj p)
+static Obj FuncPOW_KER_PERM(Obj self, Obj ker, Obj p) GAP_GC_CANSAFEPOINT
 {
     UInt    len, rank, i, dep, img, idx;
     Obj     out = 0, entry;
@@ -3455,7 +3462,7 @@ static Obj FuncPOW_KER_PERM(Obj self, Obj ker, Obj p)
 // transformation g such that g<f> ^ ker(x) = ker(x) = ker(gfx) and the action
 // of g<f> on ker(x) is the identity.
 template <typename TF, typename TG>
-static Obj INV_KER_TRANS(Obj X, Obj f)
+static Obj INV_KER_TRANS(Obj X, Obj f) GAP_GC_CANSAFEPOINT
 {
     Obj    g = 0;
     const TF * ptf;
@@ -3500,7 +3507,7 @@ static Obj INV_KER_TRANS(Obj X, Obj f)
     return g;
 }
 
-static Obj FuncINV_KER_TRANS(Obj self, Obj X, Obj f)
+static Obj FuncINV_KER_TRANS(Obj self, Obj X, Obj f) GAP_GC_CANSAFEPOINT
 {
     RequireTransformation(SELF_NAME, f);
     UInt len = LEN_LIST(X);
@@ -3529,6 +3536,7 @@ static Obj FuncINV_KER_TRANS(Obj self, Obj X, Obj f)
 // [0], then the third argument is ignored.
 
 static Obj FuncOnPosIntSetsTrans(Obj self, Obj set, Obj f, Obj n)
+    GAP_GC_CANSAFEPOINT
 {
     const UInt2 * ptf2;
     const UInt4 * ptf4;
@@ -3817,7 +3825,7 @@ static Int LtTrans(Obj f, Obj g)
 *******************************************************************************/
 
 template <typename TF, typename TG>
-static Obj ProdTrans(Obj f, Obj g)
+static Obj ProdTrans(Obj f, Obj g) GAP_GC_CANSAFEPOINT
 {
     typedef typename ResultType<TF, TG>::type Res;
 
@@ -3854,7 +3862,7 @@ static Obj ProdTrans(Obj f, Obj g)
 *******************************************************************************/
 
 template <typename TF, typename TP>
-static Obj ProdTransPerm(Obj f, Obj p)
+static Obj ProdTransPerm(Obj f, Obj p) GAP_GC_CANSAFEPOINT
 {
     typedef typename ResultType<TF, TP>::type Res;
 
@@ -3890,7 +3898,7 @@ static Obj ProdTransPerm(Obj f, Obj p)
 *******************************************************************************/
 
 template <typename TP, typename TF>
-static Obj ProdPermTrans(Obj p, Obj f)
+static Obj ProdPermTrans(Obj p, Obj f) GAP_GC_CANSAFEPOINT
 {
     typedef typename ResultType<TF, TP>::type Res;
 
@@ -3926,7 +3934,7 @@ static Obj ProdPermTrans(Obj p, Obj f)
 *******************************************************************************/
 
 template <typename TF, typename TP>
-static Obj PowTransPerm(Obj f, Obj p)
+static Obj PowTransPerm(Obj f, Obj p) GAP_GC_CANSAFEPOINT
 {
     typedef typename ResultType<TF, TP>::type Res;
 
@@ -3960,7 +3968,7 @@ static Obj PowTransPerm(Obj f, Obj p)
 *******************************************************************************/
 
 template <typename TL, typename TR>
-static Obj LQuoPermTrans(Obj opL, Obj opR)
+static Obj LQuoPermTrans(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     typedef typename ResultType<TL, TR>::type Res;
 
@@ -4000,7 +4008,7 @@ static Obj LQuoPermTrans(Obj opL, Obj opR)
 ** Apply a transformation to a point
 *******************************************************************************/
 
-static Obj PowIntTrans2(Obj point, Obj f)
+static Obj PowIntTrans2(Obj point, Obj f) GAP_GC_CANSAFEPOINT
 {
     Int img;
 
@@ -4017,7 +4025,7 @@ static Obj PowIntTrans2(Obj point, Obj f)
     return INTOBJ_INT(img);
 }
 
-static Obj PowIntTrans4(Obj point, Obj f)
+static Obj PowIntTrans4(Obj point, Obj f) GAP_GC_CANSAFEPOINT
 {
     Int img;
 
@@ -4467,7 +4475,7 @@ static Int InitKernel(StructInitInfo * module)
 **
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-static Int InitLibrary(StructInitInfo * module)
+static Int InitLibrary(StructInitInfo * module) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable(GVarFuncs);

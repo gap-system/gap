@@ -127,7 +127,7 @@ static inline void WRITE_SLOT(Obj container, int slot,
  *  ---------------------------------------
  */
 
-static void PrintObjSet(Obj set)
+static void PrintObjSet(Obj set) GAP_GC_CANSAFEPOINT
 {
   UInt i, size = CONST_ADDR_WORD(set)[OBJSET_SIZE];
   BOOL comma = FALSE;
@@ -146,7 +146,7 @@ static void PrintObjSet(Obj set)
   Pr(" ])", 0, 0);
 }
 
-static void PrintObjMap(Obj map)
+static void PrintObjMap(Obj map) GAP_GC_CANSAFEPOINT
 {
   UInt i, size = CONST_ADDR_WORD(map)[OBJSET_SIZE];
   BOOL comma = FALSE;
@@ -228,9 +228,9 @@ Obj NewObjSet(void) {
  *  that will be inserted right after compaction.
  */
 
-static void ResizeObjSet(Obj set, UInt bits);
+static void ResizeObjSet(Obj set, UInt bits) GAP_GC_CANSAFEPOINT;
 
-static void CheckObjSetForCleanUp(Obj set, UInt expand)
+static void CheckObjSetForCleanUp(Obj set, UInt expand) GAP_GC_CANSAFEPOINT
 {
   UInt size = CONST_ADDR_WORD(set)[OBJSET_SIZE];
   UInt bits = CONST_ADDR_WORD(set)[OBJSET_BITS];
@@ -506,9 +506,9 @@ Obj NewObjMap(void)
  *  that will be inserted right after compaction.
  */
 
-static void ResizeObjMap(Obj map, UInt bits);
+static void ResizeObjMap(Obj map, UInt bits) GAP_GC_CANSAFEPOINT;
 
-static void CheckObjMapForCleanUp(Obj map, UInt expand)
+static void CheckObjMapForCleanUp(Obj map, UInt expand) GAP_GC_CANSAFEPOINT
 {
   UInt size = CONST_ADDR_WORD(map)[OBJSET_SIZE];
   UInt bits = CONST_ADDR_WORD(map)[OBJSET_BITS];
@@ -826,7 +826,7 @@ static void CopyObjMap(TraversalState * traversal, Obj copy, Obj original)
  *  of the new set. If no argument is provided, an empty set is created.
  */
 
-static Obj FuncOBJ_SET(Obj self, Obj arg)
+static Obj FuncOBJ_SET(Obj self, Obj arg) GAP_GC_CANSAFEPOINT
 {
   Obj result = 0;
   Obj list = 0;
@@ -864,7 +864,7 @@ static Obj FuncOBJ_SET(Obj self, Obj arg)
  *  GAP function to add `obj` to `set`.
  */
 
-static Obj FuncADD_OBJ_SET(Obj self, Obj set, Obj obj)
+static Obj FuncADD_OBJ_SET(Obj self, Obj set, Obj obj) GAP_GC_CANSAFEPOINT
 {
     RequireArgumentCondition(SELF_NAME, set, TNUM_OBJ(set) == T_OBJSET,
                              "must be a mutable object set");
@@ -880,7 +880,7 @@ static Obj FuncADD_OBJ_SET(Obj self, Obj set, Obj obj)
  *  GAP function to remove `obj` from `set`.
  */
 
-static Obj FuncREMOVE_OBJ_SET(Obj self, Obj set, Obj obj)
+static Obj FuncREMOVE_OBJ_SET(Obj self, Obj set, Obj obj) GAP_GC_CANSAFEPOINT
 {
     RequireArgumentCondition(SELF_NAME, set, TNUM_OBJ(set) == T_OBJSET,
                              "must be a mutable object set");
@@ -897,7 +897,7 @@ static Obj FuncREMOVE_OBJ_SET(Obj self, Obj set, Obj obj)
  *  `false`.
  */
 
-static Obj FuncFIND_OBJ_SET(Obj self, Obj set, Obj obj)
+static Obj FuncFIND_OBJ_SET(Obj self, Obj set, Obj obj) GAP_GC_CANSAFEPOINT
 {
     RequireArgumentCondition(SELF_NAME, set, IS_OBJSET(set),
                              "must be an object set");
@@ -913,7 +913,7 @@ static Obj FuncFIND_OBJ_SET(Obj self, Obj set, Obj obj)
  *  GAP function to remove all objects from `set`.
  */
 
-static Obj FuncCLEAR_OBJ_SET(Obj self, Obj set)
+static Obj FuncCLEAR_OBJ_SET(Obj self, Obj set) GAP_GC_CANSAFEPOINT
 {
     RequireArgumentCondition(SELF_NAME, set, TNUM_OBJ(set) == T_OBJSET,
                              "must be a mutable object set");
@@ -929,7 +929,7 @@ static Obj FuncCLEAR_OBJ_SET(Obj self, Obj set)
  *  GAP function to return values in set as a list.
  */
 
-static Obj FuncOBJ_SET_VALUES(Obj self, Obj set)
+static Obj FuncOBJ_SET_VALUES(Obj self, Obj set) GAP_GC_CANSAFEPOINT
 {
     RequireArgumentCondition(SELF_NAME, set, IS_OBJSET(set),
                              "must be an object set");
@@ -949,7 +949,7 @@ static Obj FuncOBJ_SET_VALUES(Obj self, Obj set)
  *  provided, an empty map is created.
  */
 
-static Obj FuncOBJ_MAP(Obj self, Obj arg)
+static Obj FuncOBJ_MAP(Obj self, Obj arg) GAP_GC_CANSAFEPOINT
 {
   Obj result = 0;
   Obj list = 0;
@@ -989,6 +989,7 @@ static Obj FuncOBJ_MAP(Obj self, Obj arg)
  */
 
 static Obj FuncADD_OBJ_MAP(Obj self, Obj map, Obj key, Obj value)
+    GAP_GC_CANSAFEPOINT
 {
     RequireArgumentCondition(SELF_NAME, map, TNUM_OBJ(map) == T_OBJMAP,
                              "must be a mutable object map");
@@ -1007,6 +1008,7 @@ static Obj FuncADD_OBJ_MAP(Obj self, Obj map, Obj key, Obj value)
  */
 
 static Obj FuncFIND_OBJ_MAP(Obj self, Obj map, Obj key, Obj defvalue)
+    GAP_GC_CANSAFEPOINT
 {
     RequireArgumentCondition(SELF_NAME, map, IS_OBJMAP(map),
                              "must be an object map");
@@ -1025,7 +1027,7 @@ static Obj FuncFIND_OBJ_MAP(Obj self, Obj map, Obj key, Obj defvalue)
  *  function returns true if such an entry exists, false otherwise.
  */
 
-static Obj FuncCONTAINS_OBJ_MAP(Obj self, Obj map, Obj key)
+static Obj FuncCONTAINS_OBJ_MAP(Obj self, Obj map, Obj key) GAP_GC_CANSAFEPOINT
 {
     RequireArgumentCondition(SELF_NAME, map, IS_OBJMAP(map),
                              "must be an object map");
@@ -1042,7 +1044,7 @@ static Obj FuncCONTAINS_OBJ_MAP(Obj self, Obj map, Obj key)
  *  exists.
  */
 
-static Obj FuncREMOVE_OBJ_MAP(Obj self, Obj map, Obj key)
+static Obj FuncREMOVE_OBJ_MAP(Obj self, Obj map, Obj key) GAP_GC_CANSAFEPOINT
 {
     RequireArgumentCondition(SELF_NAME, map, TNUM_OBJ(map) == T_OBJMAP,
                              "must be a mutable object map");
@@ -1058,7 +1060,7 @@ static Obj FuncREMOVE_OBJ_MAP(Obj self, Obj map, Obj key)
  *  GAP function to remove all objects from `map`.
  */
 
-static Obj FuncCLEAR_OBJ_MAP(Obj self, Obj map)
+static Obj FuncCLEAR_OBJ_MAP(Obj self, Obj map) GAP_GC_CANSAFEPOINT
 {
     RequireArgumentCondition(SELF_NAME, map, TNUM_OBJ(map) == T_OBJMAP,
                              "must be a mutable object map");
@@ -1074,7 +1076,7 @@ static Obj FuncCLEAR_OBJ_MAP(Obj self, Obj map)
  *  GAP function to return values in set as a list.
  */
 
-static Obj FuncOBJ_MAP_VALUES(Obj self, Obj map)
+static Obj FuncOBJ_MAP_VALUES(Obj self, Obj map) GAP_GC_CANSAFEPOINT
 {
     RequireArgumentCondition(SELF_NAME, map, IS_OBJMAP(map),
                              "must be an object map");
@@ -1090,7 +1092,7 @@ static Obj FuncOBJ_MAP_VALUES(Obj self, Obj map)
  *  GAP function to return keys in set as a list.
  */
 
-static Obj FuncOBJ_MAP_KEYS(Obj self, Obj map)
+static Obj FuncOBJ_MAP_KEYS(Obj self, Obj map) GAP_GC_CANSAFEPOINT
 {
     RequireArgumentCondition(SELF_NAME, map, IS_OBJMAP(map),
                              "must be an object map");
@@ -1201,7 +1203,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );

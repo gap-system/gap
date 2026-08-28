@@ -25,7 +25,7 @@
 **
 **  'MakeFunction' makes a function from the function expression bag <fexp>.
 */
-Obj MakeFunction(Obj fexp);
+Obj MakeFunction(Obj fexp) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -41,9 +41,9 @@ Int  GetRecursionDepth(void) GAP_GC_NOTSAFEPOINT;
 void SetRecursionDepth(Int depth) GAP_GC_NOTSAFEPOINT;
 
 extern UInt RecursionTrapInterval;
-void        RecursionDepthTrap(void);
+void        RecursionDepthTrap(void) GAP_GC_CANSAFEPOINT;
 
-EXPORT_INLINE void CheckRecursionBefore( void )
+EXPORT_INLINE void CheckRecursionBefore( void ) GAP_GC_CANSAFEPOINT
 {
     Int depth = IncRecursionDepth();
     if ( RecursionTrapInterval &&

@@ -84,7 +84,7 @@ static inline UInt4 uint4frombytes(const UChar * s, UInt4 pos, UInt4 len)
   return res;
 }
 
-static Obj FuncInitRandomMT(Obj self, Obj initstr)
+static Obj FuncInitRandomMT(Obj self, Obj initstr) GAP_GC_CANSAFEPOINT
 {
   Obj str;
   const UChar *init_key;
@@ -419,6 +419,7 @@ void MurmurHash3_x64_128 ( const void * key, const int len,
 */
 static Obj
 FuncHASHKEY_BAG(Obj self, Obj obj, Obj seed, Obj offset, Obj maxlen)
+    GAP_GC_CANSAFEPOINT
 {
   Int n;
   if ( IS_INTOBJ(obj) )
@@ -526,7 +527,7 @@ static inline BitfieldFuncBag * BFB(Obj func) GAP_GC_NOTSAFEPOINT
     return (BitfieldFuncBag *)ADDR_OBJ(func);
 }
 
-static inline UInt MASK_BITFIELD_FUNC(Obj func)
+static inline UInt MASK_BITFIELD_FUNC(Obj func) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(TNUM_OBJ(func) == T_FUNCTION);
     GAP_ASSERT(SIZE_OBJ(func) == sizeof(BitfieldFuncBag));
@@ -534,13 +535,14 @@ static inline UInt MASK_BITFIELD_FUNC(Obj func)
 }
 
 static inline void SET_MASK_BITFIELD_FUNC(Obj func, UInt mask)
+    GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(TNUM_OBJ(func) == T_FUNCTION);
     GAP_ASSERT(SIZE_OBJ(func) == sizeof(BitfieldFuncBag));
     BFB(func)->mask = ObjInt_UInt(mask);
 }
 
-static inline UInt OFFSET_BITFIELD_FUNC(Obj func)
+static inline UInt OFFSET_BITFIELD_FUNC(Obj func) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(TNUM_OBJ(func) == T_FUNCTION);
     GAP_ASSERT(SIZE_OBJ(func) == sizeof(BitfieldFuncBag));
@@ -548,13 +550,14 @@ static inline UInt OFFSET_BITFIELD_FUNC(Obj func)
 }
 
 static inline void SET_OFFFSET_BITFIELD_FUNC(Obj func, UInt offset)
+    GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(TNUM_OBJ(func) == T_FUNCTION);
     GAP_ASSERT(SIZE_OBJ(func) == sizeof(BitfieldFuncBag));
     BFB(func)->offset = ObjInt_UInt(offset);
 }
 
-static Obj DoFieldGetter(Obj self, Obj data)
+static Obj DoFieldGetter(Obj self, Obj data) GAP_GC_CANSAFEPOINT
 {
     UInt x = GetSmallInt("Field getter", data);
     UInt mask = MASK_BITFIELD_FUNC(self);
@@ -562,7 +565,7 @@ static Obj DoFieldGetter(Obj self, Obj data)
     return INTOBJ_INT((x & mask) >> offset);
 }
 
-static Obj DoFieldSetter(Obj self, Obj data, Obj val)
+static Obj DoFieldSetter(Obj self, Obj data, Obj val) GAP_GC_CANSAFEPOINT
 {
     UInt x = GetSmallInt("Field Setter", data);
     UInt y = GetSmallInt("Field Setter", val);
@@ -571,7 +574,7 @@ static Obj DoFieldSetter(Obj self, Obj data, Obj val)
     return INTOBJ_INT((x & ~mask) | (y << offset));
 }
 
-static Obj DoBooleanFieldGetter(Obj self, Obj data)
+static Obj DoBooleanFieldGetter(Obj self, Obj data) GAP_GC_CANSAFEPOINT
 {
     UInt x = GetSmallInt("Boolean Field getter", data);
     UInt mask = MASK_BITFIELD_FUNC(self);
@@ -579,6 +582,7 @@ static Obj DoBooleanFieldGetter(Obj self, Obj data)
 }
 
 static Obj DoBooleanFieldSetter(Obj self, Obj data, Obj val)
+    GAP_GC_CANSAFEPOINT
 {
     UInt x = GetSmallInt("Boolean Field Setter", data);
     RequireTrueOrFalse("Boolean Field Setter", val);
@@ -591,7 +595,7 @@ static Obj DoBooleanFieldSetter(Obj self, Obj data, Obj val)
 }
 
 
-static Obj FuncBUILD_BITFIELDS(Obj self, Obj args)
+static Obj FuncBUILD_BITFIELDS(Obj self, Obj args) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(IS_PLIST(args));
     GAP_ASSERT(LEN_PLIST(args) >= 1 && ELM_PLIST(args, 1));
@@ -620,7 +624,7 @@ static Obj FuncBUILD_BITFIELDS(Obj self, Obj args)
 }
 
 
-static Obj FuncMAKE_BITFIELDS(Obj self, Obj widths)
+static Obj FuncMAKE_BITFIELDS(Obj self, Obj widths) GAP_GC_CANSAFEPOINT
 {
     RequireSmallList(SELF_NAME, widths);
     UInt nfields = LEN_LIST(widths);
@@ -764,7 +768,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );

@@ -198,7 +198,7 @@ extern inline struct CycModuleState *CycState(void)
 #define LastNCyc    (CycState()->LastNCyc)
 #endif
 
-static void GrowResultCyc(UInt size)
+static void GrowResultCyc(UInt size) GAP_GC_CANSAFEPOINT
 {
     Obj *res;
     UInt i;
@@ -239,7 +239,7 @@ static Obj TypeCyc(Obj cyc)
 **  In principle this is very easy, but it is complicated because we  do  not
 **  want to print stuff like '+1*', '-1*', 'E(<n>)^0', 'E(<n>)^1, etc.
 */
-static void PrintCyc(Obj cyc)
+static void PrintCyc(Obj cyc) GAP_GC_CANSAFEPOINT
 {
     UInt                n;              // order of the field
     UInt                len;            // number of terms
@@ -623,7 +623,7 @@ static void ConvertToBase(UInt n)
 **  combination of   linear  independent  roots,  they  would  work  also  if
 **  cyclotomic integers were written as polynomials in $e_n$.
 */
-static Obj Cyclotomic(UInt n, UInt m)
+static Obj Cyclotomic(UInt n, UInt m) GAP_GC_CANSAFEPOINT
 {
     Obj                 cyc;            // cyclotomic, result
     UInt                len;            // number of terms
@@ -803,6 +803,7 @@ static Obj Cyclotomic(UInt n, UInt m)
 static UInt4 CyclotomicsLimit = 1000000;
 
 static UInt FindCommonField(UInt nl, UInt nr, UInt *ml, UInt *mr)
+    GAP_GC_CANSAFEPOINT
 {
   UInt n,a,b,c;
   UInt8 n8;
@@ -855,7 +856,7 @@ static UInt FindCommonField(UInt nl, UInt nr, UInt *ml, UInt *mr)
   return n;
 }
 
-static Obj FuncSetCyclotomicsLimit(Obj self, Obj newlimit)
+static Obj FuncSetCyclotomicsLimit(Obj self, Obj newlimit) GAP_GC_CANSAFEPOINT
 {
     UInt ulimit = GetPositiveSmallInt(SELF_NAME, newlimit);
 
@@ -890,7 +891,7 @@ static Obj FuncGetCyclotomicsLimit(Obj self)
 **  This   function  is lengthy  because  we  try to  use immediate   integer
 **  arithmetic if possible to avoid the function call overhead.
 */
-static Obj SumCyc(Obj opL, Obj opR)
+static Obj SumCyc(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     UInt                nl, nr;         // order of left and right field
     UInt                n;              // order of smallest superfield
@@ -992,7 +993,7 @@ static Obj ZeroCyc(Obj op)
 **
 **  'AInvCyc' returns the additive inverse element of the cyclotomic <op>.
 */
-static Obj AInvCyc(Obj op)
+static Obj AInvCyc(Obj op) GAP_GC_CANSAFEPOINT
 {
     Obj                 res = 0;        // inverse, result
     UInt                len;            // number of terms
@@ -1044,7 +1045,7 @@ static Obj AInvCyc(Obj op)
 **  This   function  is lengthy  because  we  try to  use immediate   integer
 **  arithmetic if possible to avoid the function call overhead.
 */
-static Obj DiffCyc(Obj opL, Obj opR)
+static Obj DiffCyc(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     UInt                nl, nr;         // order of left and right field
     UInt                n;              // order of smallest superfield
@@ -1137,7 +1138,7 @@ static Obj DiffCyc(Obj opL, Obj opR)
 **  This   function  is lengthy  because  we  try to  use immediate   integer
 **  arithmetic if possible to avoid the function call overhead.
 */
-static Obj ProdCycInt(Obj opL, Obj opR)
+static Obj ProdCycInt(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     Obj                 hdP = 0;        // product, result
     UInt                len;            // number of terms
@@ -1226,7 +1227,7 @@ static Obj ProdCycInt(Obj opL, Obj opR)
 **  This   function  is lengthy  because  we  try to  use immediate   integer
 **  arithmetic if possible to avoid the function call overhead.
 */
-static Obj ProdCyc(Obj opL, Obj opR)
+static Obj ProdCyc(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     UInt                nl, nr;         // order of left and right field
     UInt                n;              // order of smallest superfield
@@ -1383,7 +1384,7 @@ static Obj OneCyc(Obj op)
 **  can compute the quotient $prd / (op * prd)$ with 'ProdCycInt'.
 *T better multiply only the *different* conjugates?
 */
-static Obj InvCyc(Obj op)
+static Obj InvCyc(Obj op) GAP_GC_CANSAFEPOINT
 {
     Obj                 prd = 0;        // product of conjugates
     Obj                 cycgen = 0;     // one conjugate as a cyclotomic
@@ -1451,7 +1452,7 @@ static Obj InvCyc(Obj op)
 **  'PowCyc' returns the <opR>th, which must be  an  integer,  power  of  the
 **  cyclotomic <opL>.  The left operand may also be an integer or a rational.
 */
-static Obj PowCyc(Obj opL, Obj opR)
+static Obj PowCyc(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     Obj                 pow = 0;        // power (result)
     Int                 exp;            // exponent (right operand)
@@ -1532,7 +1533,7 @@ static Obj PowCyc(Obj opL, Obj opR)
 */
 static Obj EOper GAP_GC_GLOBALLY_ROOTED;
 
-static Obj FuncE(Obj self, Obj n)
+static Obj FuncE(Obj self, Obj n) GAP_GC_CANSAFEPOINT
 {
     Obj *               res;            // pointer into result bag
 
@@ -1607,7 +1608,7 @@ static Obj FiltIS_CYC(Obj self, Obj val)
 */
 static Obj IsCycIntOper GAP_GC_GLOBALLY_ROOTED;
 
-static Obj FuncIS_CYC_INT(Obj self, Obj val)
+static Obj FuncIS_CYC_INT(Obj self, Obj val) GAP_GC_CANSAFEPOINT
 {
     UInt                len;            // number of terms
     const Obj *         cfs;            // pointer to the coefficients
@@ -1651,7 +1652,7 @@ static Obj FuncIS_CYC_INT(Obj self, Obj val)
 */
 static Obj ConductorAttr GAP_GC_GLOBALLY_ROOTED;
 
-static Obj AttrCONDUCTOR(Obj self, Obj cyc)
+static Obj AttrCONDUCTOR(Obj self, Obj cyc) GAP_GC_CANSAFEPOINT
 {
     UInt                n;              // N of the cyclotomic, result
     UInt                m;              // N of element of the list
@@ -1720,7 +1721,7 @@ static Obj AttrCONDUCTOR(Obj self, Obj cyc)
 */
 static Obj CoeffsCycOper GAP_GC_GLOBALLY_ROOTED;
 
-static Obj FuncCOEFFS_CYC(Obj self, Obj cyc)
+static Obj FuncCOEFFS_CYC(Obj self, Obj cyc) GAP_GC_CANSAFEPOINT
 {
     Obj                 list;           // list of coefficients, result
     UInt                n;              // order of field
@@ -1780,7 +1781,7 @@ static Obj FuncCOEFFS_CYC(Obj self, Obj cyc)
 */
 static Obj GaloisCycOper GAP_GC_GLOBALLY_ROOTED;
 
-static Obj FuncGALOIS_CYC(Obj self, Obj cyc, Obj ord)
+static Obj FuncGALOIS_CYC(Obj self, Obj cyc, Obj ord) GAP_GC_CANSAFEPOINT
 {
     Obj                 gal = 0;        // galois conjugate, result
     Obj                 sum = 0;        // sum of two coefficients
@@ -1948,7 +1949,7 @@ static Obj FuncGALOIS_CYC(Obj self, Obj cyc, Obj ord)
 */
 static Obj CycListOper GAP_GC_GLOBALLY_ROOTED;
 
-static Obj FuncCycList(Obj self, Obj list)
+static Obj FuncCycList(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     UInt                i;              // loop variable
     Obj *               res;            // pointer into result bag
@@ -2217,7 +2218,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // create the result buffer
     GrowResultCyc( 1024 );

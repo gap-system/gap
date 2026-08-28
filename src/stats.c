@@ -339,6 +339,7 @@ Obj NEXT_ITER GAP_GC_GLOBALLY_ROOTED;
 Obj STD_ITER GAP_GC_GLOBALLY_ROOTED;
 
 static ALWAYS_INLINE ExecStatus ExecForHelper(Stat stat, UInt nr)
+    GAP_GC_CANSAFEPOINT
 {
     UInt                var;            // variable
     UInt                vart;           // variable type
@@ -506,18 +507,18 @@ done:
     return result;
 }
 
-static ExecStatus ExecFor(Stat stat)
+static ExecStatus ExecFor(Stat stat) GAP_GC_CANSAFEPOINT
 {
     return ExecForHelper(stat, 1);
 }
 
 
-static ExecStatus ExecFor2(Stat stat)
+static ExecStatus ExecFor2(Stat stat) GAP_GC_CANSAFEPOINT
 {
     return ExecForHelper(stat, 2);
 }
 
-static ExecStatus ExecFor3(Stat stat)
+static ExecStatus ExecFor3(Stat stat) GAP_GC_CANSAFEPOINT
 {
     return ExecForHelper(stat, 3);
 }
@@ -547,6 +548,7 @@ static ExecStatus ExecFor3(Stat stat)
 **  and the remaining slots points to the statements.
 */
 static ALWAYS_INLINE ExecStatus ExecForRangeHelper(Stat stat, UInt nr)
+    GAP_GC_CANSAFEPOINT
 {
     UInt                lvar;           // local variable
     Int                 first;          // first value of range
@@ -626,17 +628,17 @@ done:
     return result;
 }
 
-static ExecStatus ExecForRange(Stat stat)
+static ExecStatus ExecForRange(Stat stat) GAP_GC_CANSAFEPOINT
 {
     return ExecForRangeHelper(stat, 1);
 }
 
-static ExecStatus ExecForRange2(Stat stat)
+static ExecStatus ExecForRange2(Stat stat) GAP_GC_CANSAFEPOINT
 {
     return ExecForRangeHelper(stat, 2);
 }
 
-static ExecStatus ExecForRange3(Stat stat)
+static ExecStatus ExecForRange3(Stat stat) GAP_GC_CANSAFEPOINT
 {
     return ExecForRangeHelper(stat, 3);
 }
@@ -912,7 +914,7 @@ static ExecStatus ExecEmpty(Stat stat)
 **  An info-statement is a statement of type 'STAT_INFO' with slots for the
 **  arguments.
 */
-static ExecStatus ExecInfo(Stat stat)
+static ExecStatus ExecInfo(Stat stat) GAP_GC_CANSAFEPOINT
 {
     Obj             selectors;
     Obj             level;
@@ -969,7 +971,7 @@ static ExecStatus ExecInfo(Stat stat)
 **  A 2 argument assert-statement is a statement of type 'STAT_ASSERT_2ARGS'
 **  with slots for the two arguments
 */
-static ExecStatus ExecAssert2Args(Stat stat)
+static ExecStatus ExecAssert2Args(Stat stat) GAP_GC_CANSAFEPOINT
 {
     Obj             level;
     Int             lev;
@@ -1003,7 +1005,7 @@ static ExecStatus ExecAssert2Args(Stat stat)
 **  A 3 argument assert-statement is a statement of type 'STAT_ASSERT_3ARGS'
 **  with slots for the three arguments.
 */
-static ExecStatus ExecAssert3Args(Stat stat)
+static ExecStatus ExecAssert3Args(Stat stat) GAP_GC_CANSAFEPOINT
 {
     Obj             level;
     Int             lev;
@@ -1046,7 +1048,7 @@ static ExecStatus ExecAssert3Args(Stat stat)
 **  one slot. This slot points to the expression whose value is to be
 **  returned.
 */
-static ExecStatus ExecReturnObj(Stat stat)
+static ExecStatus ExecReturnObj(Stat stat) GAP_GC_CANSAFEPOINT
 {
 #if !defined(HAVE_SIGNAL)
     // test for an interrupt
@@ -1143,7 +1145,7 @@ UInt TakeInterrupt( void )
 **  redispatches after a return from the break-loop.
 */
 
-static ExecStatus ExecIntrStat(Stat stat)
+static ExecStatus ExecIntrStat(Stat stat) GAP_GC_CANSAFEPOINT
 {
 
     // change the entries in 'ExecStatFuncs' back to the original
@@ -1278,7 +1280,7 @@ void PrintStat(Stat stat)
 **  this  is  ever called,   then GAP  is in  serious   trouble, such  as  an
 **  overwritten type field of a statement.
 */
-static void PrintUnknownStat(Stat stat)
+static void PrintUnknownStat(Stat stat) GAP_GC_CANSAFEPOINT
 {
     ErrorQuit("Panic: cannot print statement of type '%d'",
               (Int)TNUM_STAT(stat), 0);
@@ -1587,7 +1589,7 @@ static void PrintAssert3Args(Stat stat)
 **
 **  'PrintReturnObj' prints the return-value-statement <stat>.
 */
-static void PrintReturnObj(Stat stat)
+static void PrintReturnObj(Stat stat) GAP_GC_CANSAFEPOINT
 {
     Expr expr = READ_STAT(stat, 0);
     if (TNUM_EXPR(expr) == EXPR_REF_GVAR &&

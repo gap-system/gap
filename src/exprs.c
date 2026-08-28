@@ -129,7 +129,7 @@ static Obj EvalUnknownExpr(Expr expr)
 **  are   not a priori    known  to evaluate  to a    boolean value  (such as
 **  function calls).
 */
-static Obj EvalUnknownBool(Expr expr)
+static Obj EvalUnknownBool(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 val = 0;        // value, result
 
@@ -195,7 +195,7 @@ static Obj EvalOr(Expr expr)
 **
 **      if (index <= max) and (list[index] = 0)  then ... fi;
 */
-static Obj EvalAnd(Expr expr)
+static Obj EvalAnd(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 opL = 0;        // evaluated left  operand
     Obj                 opR = 0;        // evaluated right operand
@@ -279,7 +279,7 @@ static Obj EvalNot(Expr expr)
 **
 **  'EvalEq' evaluates the operands and then calls the 'EQ' macro.
 */
-static Obj EvalEq(Expr expr)
+static Obj EvalEq(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 val = 0;        // value, result
     Obj                 opL = 0;        // evaluated left  operand
@@ -315,7 +315,7 @@ static Obj EvalEq(Expr expr)
 **
 **  'EvalNe' is simply implemented as 'not <objL> = <objR>'.
 */
-static Obj EvalNe(Expr expr)
+static Obj EvalNe(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 val = 0;        // value, result
     Obj                 opL = 0;        // evaluated left  operand
@@ -351,7 +351,7 @@ static Obj EvalNe(Expr expr)
 **
 **  'EvalLt' evaluates the operands and then calls the 'LT' macro.
 */
-static Obj EvalLt(Expr expr)
+static Obj EvalLt(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 val = 0;        // value, result
     Obj                 opL = 0;        // evaluated left  operand
@@ -387,7 +387,7 @@ static Obj EvalLt(Expr expr)
 **
 **  'EvalGe' is simply implemented as 'not <objL> < <objR>'.
 */
-static Obj EvalGe(Expr expr)
+static Obj EvalGe(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 val = 0;        // value, result
     Obj                 opL = 0;        // evaluated left  operand
@@ -423,7 +423,7 @@ static Obj EvalGe(Expr expr)
 **
 **  'EvalGt' is simply implemented as '<objR> < <objL>'.
 */
-static Obj EvalGt(Expr expr)
+static Obj EvalGt(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 val = 0;        // value, result
     Obj                 opL = 0;        // evaluated left  operand
@@ -459,7 +459,7 @@ static Obj EvalGt(Expr expr)
 **
 **  'EvalLe' is simply implemented as 'not <objR> < <objR>'.
 */
-static Obj EvalLe(Expr expr)
+static Obj EvalLe(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 val = 0;        // value, result
     Obj                 opL = 0;        // evaluated left  operand
@@ -493,7 +493,7 @@ static Obj EvalLe(Expr expr)
 **  'false' otherwise.    'EvalIn' is  called  from  'EVAL_EXPR'  to evaluate
 **  expressions of type 'EXPR_IN'.
 */
-static Obj EvalIn(Expr expr)
+static Obj EvalIn(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 val = 0;        // value, result
     Obj                 opL = 0;        // evaluated left  operand
@@ -531,7 +531,7 @@ static Obj EvalIn(Expr expr)
 **
 **  'EvalSum' evaluates the operands and then calls the 'SUM' macro.
 */
-static Obj EvalSum(Expr expr)
+static Obj EvalSum(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 val = 0;        // value, result
     Obj                 opL = 0;        // evaluated left  operand
@@ -571,7 +571,7 @@ static Obj EvalSum(Expr expr)
 **
 **  'EvalAInv' evaluates the operand and then calls the 'AINV_SAMEMUT' macro.
 */
-static Obj EvalAInv(Expr expr)
+static Obj EvalAInv(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 val = 0;        // value, result
     Obj                 opL = 0;        // evaluated left  operand
@@ -604,7 +604,7 @@ static Obj EvalAInv(Expr expr)
 **
 **  'EvalDiff' evaluates the operands and then calls the 'DIFF' macro.
 */
-static Obj EvalDiff(Expr expr)
+static Obj EvalDiff(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 val = 0;        // value, result
     Obj                 opL = 0;        // evaluated left  operand
@@ -645,7 +645,7 @@ static Obj EvalDiff(Expr expr)
 **
 **  'EvalProd' evaluates the operands and then calls the 'PROD' macro.
 */
-static Obj EvalProd(Expr expr)
+static Obj EvalProd(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 val = 0;        // result
     Obj                 opL = 0;        // evaluated left  operand
@@ -686,7 +686,7 @@ static Obj EvalProd(Expr expr)
 **
 **  'EvalQuo' evaluates the operands and then calls the 'QUO' macro.
 */
-static Obj EvalQuo(Expr expr)
+static Obj EvalQuo(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 val = 0;        // value, result
     Obj                 opL = 0;        // evaluated left  operand
@@ -722,7 +722,7 @@ static Obj EvalQuo(Expr expr)
 **
 **  'EvalMod' evaluates the operands and then calls the 'MOD' macro.
 */
-static Obj EvalMod(Expr expr)
+static Obj EvalMod(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 val = 0;        // value, result
     Obj                 opL = 0;        // evaluated left  operand
@@ -758,7 +758,7 @@ static Obj EvalMod(Expr expr)
 **
 **  'EvalPow' evaluates the operands and then calls the 'POW' macro.
 */
-static Obj EvalPow(Expr expr)
+static Obj EvalPow(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 val = 0;        // value, result
     Obj                 opL = 0;        // evaluated left  operand
@@ -802,7 +802,7 @@ static Obj EvalIntExpr(Expr expr)
 **
 **  'EvalTildeExpr' evaluates the tilde expression and returns its value.
 */
-static Obj EvalTildeExpr(Expr expr)
+static Obj EvalTildeExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     if( ! (STATE(Tilde)) ) {
         ErrorQuit("'~' does not have a value here", 0, 0);
@@ -855,12 +855,12 @@ static Obj EvalCharExpr(Expr expr)
 **
 **  'EvalPermExpr' evaluates the permutation expression <expr>.
 */
-static Obj GetFromExpr(Obj cycle, Int j)
+static Obj GetFromExpr(Obj cycle, Int j) GAP_GC_CANSAFEPOINT
 {
     return EVAL_EXPR(READ_EXPR((Expr)cycle, j - 1));
 }
 
-static Obj EvalPermExpr(Expr expr)
+static Obj EvalPermExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 perm = 0;       // permutation, result
     UInt                m;              // maximal entry in permutation
@@ -905,7 +905,7 @@ static Obj EvalPermExpr(Expr expr)
 **  'EvalListExpr'  evaluates the list   expression, i.e., not  yet evaluated
 **  list, <expr> to a list value.
 */
-static Obj EvalListExpr(Expr expr)
+static Obj EvalListExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 list = 0;       // list value, result
     Obj                 sub = 0;        // value of a subexpression
@@ -974,7 +974,7 @@ static Obj EvalListExpr(Expr expr)
 **  are creating changes its representation, and thus must use ASS_LIST
 **  instead of SET_ELM_PLIST.
 */
-static Obj EvalListTildeExpr(Expr expr)
+static Obj EvalListTildeExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 list = 0;       // list value, result
     Obj                 tilde = 0;      // old value of tilde
@@ -1025,7 +1025,7 @@ static Obj EvalListTildeExpr(Expr expr)
 **
 **  'EvalRangeExpr' evaluates the range expression <expr> to a range value.
 */
-static Obj EvalRangeExpr(Expr expr)
+static Obj EvalRangeExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 range;          // range, result
     Obj                 val = 0;        // subvalue of range
@@ -1115,7 +1115,7 @@ static Obj CONVERT_FLOAT_LITERAL GAP_GC_GLOBALLY_ROOTED;
 static Obj FLOAT_LITERAL_CACHE GAP_GC_GLOBALLY_ROOTED;
 static Obj MAX_FLOAT_LITERAL_CACHE_SIZE GAP_GC_GLOBALLY_ROOTED;
 
-static Obj EvalFloatExprLazy(Expr expr)
+static Obj EvalFloatExprLazy(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 string = 0;     // string value
     UInt                 ix;
@@ -1174,10 +1174,10 @@ static Obj EvalFloatExprEager(Expr expr)
 **  'EvalRecExpr' just calls 'RecExpr1' and 'RecExpr2' to evaluate the record
 **  expression.
 */
-static Obj  RecExpr1(Expr expr);
-static void RecExpr2(Obj rec, Expr expr);
+static Obj  RecExpr1(Expr expr) GAP_GC_CANSAFEPOINT;
+static void RecExpr2(Obj rec, Expr expr) GAP_GC_CANSAFEPOINT;
 
-static Obj EvalRecExpr(Expr expr)
+static Obj EvalRecExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 rec = 0;        // record value, result
 
@@ -1207,7 +1207,7 @@ static Obj EvalRecExpr(Expr expr)
 **  expression    can refer to this variable    and its  subobjects to create
 **  objects that are not trees.
 */
-static Obj EvalRecTildeExpr(Expr expr)
+static Obj EvalRecTildeExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 rec = 0;        // record value, result
     Obj                 tilde = 0;      // old value of tilde
@@ -1726,7 +1726,7 @@ static void PrintRecExpr(Expr expr)
 }
 
 
-static Obj FuncFLUSH_FLOAT_LITERAL_CACHE(Obj self)
+static Obj FuncFLUSH_FLOAT_LITERAL_CACHE(Obj self) GAP_GC_CANSAFEPOINT
 {
 #ifdef HPCGAP
     FLOAT_LITERAL_CACHE = NewAtomicList(T_ALIST, 0);
@@ -1882,7 +1882,7 @@ static Int InitKernel (
 }
 
 
-static Int InitLibrary(StructInitInfo * module)
+static Int InitLibrary(StructInitInfo * module) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );

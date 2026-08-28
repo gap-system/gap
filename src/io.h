@@ -160,7 +160,8 @@ struct TypOutputFile {
 **  '*stdin*' for  that purpose.  This  file on   the other   hand  cannot be
 **  closed by 'CloseInput'.
 */
-UInt OpenInput(TypInputFile * input, const Char * filename);
+UInt OpenInput(TypInputFile * input, const Char * filename)
+    GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -169,7 +170,8 @@ UInt OpenInput(TypInputFile * input, const Char * filename);
 **
 **  The same as 'OpenInput' but for streams.
 */
-UInt OpenInputStream(TypInputFile * input, Obj stream, BOOL echo);
+UInt OpenInputStream(TypInputFile * input, Obj stream, BOOL echo)
+    GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -206,7 +208,7 @@ UInt CloseInput(TypInputFile * input);
 **  many   are too   many, but  16   files should  work everywhere.   Finally
 **  'OpenLog' will fail if there is already a current logfile.
 */
-UInt OpenLog(const Char * filename);
+UInt OpenLog(const Char * filename) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -247,7 +249,7 @@ UInt CloseLog(void);
 **  dependent  how many are too many,  but 16 files  should work  everywhere.
 **  Finally 'OpenInputLog' will fail if there is already a current logfile.
 */
-UInt OpenInputLog(const Char * filename);
+UInt OpenInputLog(const Char * filename) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -295,7 +297,7 @@ void SetPrompt(const char * prompt);
 **  dependent how many are  too many,  but  16 files should  work everywhere.
 **  Finally 'OpenOutputLog' will fail if there is already a current logfile.
 */
-UInt OpenOutputLog(const Char * filename);
+UInt OpenOutputLog(const Char * filename) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -355,7 +357,8 @@ UInt CloseOutputLog(void);
 **  If <append> is set to true, then 'OpenOutput' does not truncate the file
 **  to size 0 if it exists.
 */
-UInt OpenOutput(TypOutputFile * output, const Char * filename, BOOL append);
+UInt OpenOutput(TypOutputFile * output, const Char * filename, BOOL append)
+    GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -389,14 +392,14 @@ UInt CloseOutput(TypOutputFile * output);
 
 TypInputFile * GetCurrentInput(void);
 
-Char GetNextChar(TypInputFile * input);
-Char GET_NEXT_CHAR_NO_LC(TypInputFile * input);
-Char PEEK_NEXT_CHAR(TypInputFile * input);
-Char PEEK_CURR_CHAR(TypInputFile * input);
+Char GetNextChar(TypInputFile * input) GAP_GC_CANSAFEPOINT;
+Char GET_NEXT_CHAR_NO_LC(TypInputFile * input) GAP_GC_CANSAFEPOINT;
+Char PEEK_NEXT_CHAR(TypInputFile * input) GAP_GC_CANSAFEPOINT;
+Char PEEK_CURR_CHAR(TypInputFile * input) GAP_GC_CANSAFEPOINT;
 
 // skip the rest of the current line, ignoring line continuations
 // (used to handle comments)
-void SKIP_TO_END_OF_LINE(TypInputFile * input);
+void SKIP_TO_END_OF_LINE(TypInputFile * input) GAP_GC_CANSAFEPOINT;
 
 // get the number of the current line in the current thread's input
 Int GetInputLineNumber(TypInputFile * input);

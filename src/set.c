@@ -54,7 +54,7 @@ static BOOL IsPlainSet(Obj list)
 **  no duplicates, and is sorted.  As a side effect 'IsSet' changes the
 **  type of proper sets as appropriate.
 */
-static BOOL IsSet(Obj list)
+static BOOL IsSet(Obj list) GAP_GC_CANSAFEPOINT
 {
     if (IsPlainSet(list))
         return TRUE;
@@ -164,7 +164,7 @@ Obj SetList (
 **  'SetList' returns a new list even if the list <list> is already a  proper
 **  set, in this case it is equivalent to 'ShallowCopy' (see  "ShallowCopy").
 */
-static Obj FuncLIST_SORTED_LIST(Obj self, Obj list)
+static Obj FuncLIST_SORTED_LIST(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     Obj                 set;            // result
 
@@ -231,7 +231,7 @@ static Int EqSet(Obj listL, Obj listR)
     return 1;
 }
 
-static Obj FuncIS_EQUAL_SET(Obj self, Obj list1, Obj list2)
+static Obj FuncIS_EQUAL_SET(Obj self, Obj list1, Obj list2) GAP_GC_CANSAFEPOINT
 {
     RequireSmallList(SELF_NAME, list1);
     RequireSmallList(SELF_NAME, list2);
@@ -261,7 +261,7 @@ static Obj FuncIS_EQUAL_SET(Obj self, Obj list1, Obj list2)
 **  Either  argument may also  be a list that is  not a proper  set, in which
 **  case 'IsSubsetSet' silently applies 'Set' (see "Set") to it first.
 */
-static Obj FuncIS_SUBSET_SET(Obj self, Obj set1, Obj set2)
+static Obj FuncIS_SUBSET_SET(Obj self, Obj set1, Obj set2) GAP_GC_CANSAFEPOINT
 {
     UInt                len1;           // length of  the left  set
     UInt                len2;           // length of  the right set
@@ -327,7 +327,7 @@ static Obj FuncIS_SUBSET_SET(Obj self, Obj set1, Obj set2)
 **  'AddSet' does not return  anything, it is only  called for the side effect
 **  of changing <set>.
 */
-static Obj FuncADD_SET(Obj self, Obj set, Obj obj)
+static Obj FuncADD_SET(Obj self, Obj set, Obj obj) GAP_GC_CANSAFEPOINT
 {
   UInt                len;            // logical length of the list
   UInt                pos;            // position
@@ -441,7 +441,7 @@ static Obj FuncADD_SET(Obj self, Obj set, Obj obj)
 **  'RemoveSet'   does   not return anything,  it   is  only called  for  the
 **  side effect of changing <set>.
 */
-static Obj FuncREM_SET(Obj self, Obj set, Obj obj)
+static Obj FuncREM_SET(Obj self, Obj set, Obj obj) GAP_GC_CANSAFEPOINT
 {
     UInt                len;            // logical length of the list
     UInt                pos;            // position
@@ -489,7 +489,7 @@ static Obj FuncREM_SET(Obj self, Obj set, Obj obj)
 **
 */
 
-static Obj FuncUNITE_SET(Obj self, Obj set1, Obj set2)
+static Obj FuncUNITE_SET(Obj self, Obj set1, Obj set2) GAP_GC_CANSAFEPOINT
 {
     UInt                len1;           // length  of left  set
     UInt                len2;           // length  of right set
@@ -644,7 +644,7 @@ static UInt InterSetInner2( Obj set1, Obj set2, Obj setr, UInt len1, UInt len2)
 }
 
 
-static Obj FuncINTER_SET(Obj self, Obj set1, Obj set2)
+static Obj FuncINTER_SET(Obj self, Obj set1, Obj set2) GAP_GC_CANSAFEPOINT
 {
     UInt                len1;           // length  of left  set
     UInt                len2;           // length  of right set
@@ -806,7 +806,7 @@ static UInt SubtrSetInner2( Obj set1, Obj set2, UInt len1, UInt len2)
   return lenr;
 }
 
-static Obj FuncSUBTR_SET(Obj self, Obj set1, Obj set2)
+static Obj FuncSUBTR_SET(Obj self, Obj set1, Obj set2) GAP_GC_CANSAFEPOINT
 {
     UInt                len1;           // length  of left  set
     UInt                len2;           // length  of right set
@@ -900,7 +900,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
