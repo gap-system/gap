@@ -717,6 +717,22 @@ void InitSystem(int argc, const char * argv[], BOOL handleSignals)
         if (GetConsoleMode(h, &mode))
             SetConsoleMode(h, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
     }
+
+    // GAP relies on HOME (tilde expansion, ~/.gap, history): derive it from
+    // USERPROFILE when unset, and use slashes
+    {
+        const char * home = getenv("HOME");
+        if (home == NULL || *home == '\0')
+            home = getenv("USERPROFILE");
+        if (home != NULL && *home != '\0') {
+            static char homebuf[GAP_PATH_MAX + 6] = "HOME=";
+            strxcat(homebuf, home, sizeof(homebuf));
+            for (char * p = homebuf; *p; p++)
+                if (*p == '\\')
+                    *p = '/';
+            _putenv(homebuf);
+        }
+    }
 #endif
 
     InitSysOpts();
