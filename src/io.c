@@ -48,8 +48,9 @@
 #include <limits.h>
 
 
-static Char GetLine(TypInputFile * input);
-static void PutLine2(TypOutputFile * output, const Char * line, UInt len);
+static Char GetLine(TypInputFile * input) GAP_GC_CANSAFEPOINT;
+static void PutLine2(TypOutputFile * output, const Char * line, UInt len)
+    GAP_GC_CANSAFEPOINT;
 
 static Obj ReadLineFunc GAP_GC_GLOBALLY_ROOTED;
 static Obj WriteAllFunc GAP_GC_GLOBALLY_ROOTED;
@@ -265,6 +266,7 @@ UInt GetInputFilenameID(TypInputFile * input)
 }
 
 static void AddCachedFilename(SymbolTable * symtab, UInt id, Obj name)
+    GAP_GC_CANSAFEPOINT
 {
     AssPlist(FilenameCache, id, name);
 }
@@ -986,7 +988,7 @@ void SetPrompt(const char * prompt)
 **
 *F  GetLine2( <input>, <buffer>, <length> ) . . . . . . . . get a line, local
 */
-static Int GetLine2(TypInputFile * input)
+static Int GetLine2(TypInputFile * input) GAP_GC_CANSAFEPOINT
 {
     Char * buffer = input->line + 1;
     UInt   length = sizeof(input->line) - 1;
@@ -1165,7 +1167,7 @@ static void PutLine2(TypOutputFile * output, const Char * line, UInt len)
 **  'OutputLog' is not 0 and the output file is '*stdout*' or '*errout*'.
 **
 */
-static void PutLineTo(TypOutputFile * stream, UInt len)
+static void PutLineTo(TypOutputFile * stream, UInt len) GAP_GC_CANSAFEPOINT
 {
   PutLine2( stream, stream->line, len );
 
@@ -1241,7 +1243,7 @@ static Int nrLineBreak(TypOutputFile * stream)
 }
 
 
-static void PutChrTo(TypOutputFile * stream, Char ch)
+static void PutChrTo(TypOutputFile * stream, Char ch) GAP_GC_CANSAFEPOINT
 {
   Int                 i, hint, spos;
   Char                str [MAXLENOUTPUTLINE];
@@ -1414,7 +1416,7 @@ static Obj FuncToggleEcho(Obj self)
 **
 **  returns the current `Prompt' as GAP string.
 */
-static Obj FuncCPROMPT(Obj self)
+static Obj FuncCPROMPT(Obj self) GAP_GC_CANSAFEPOINT
 {
   Obj p;
   p = MakeString(STATE(Prompt));
@@ -1484,7 +1486,7 @@ static BOOL IsKeyword(const char * str) GAP_GC_NOTSAFEPOINT
 *F  FuncALL_KEYWORDS( )
 **
 */
-static Obj FuncALL_KEYWORDS(Obj self)
+static Obj FuncALL_KEYWORDS(Obj self) GAP_GC_CANSAFEPOINT
 {
     Obj l = 0, s = 0;
     GAP_GC_PUSH2(&l, &s);
@@ -1795,7 +1797,7 @@ static inline void FormatOutput(
   GAP_GC_POP();
 }
 
-static void putToTheStream(void *state, Char c)
+static void putToTheStream(void *state, Char c) GAP_GC_CANSAFEPOINT
 {
     PutChrTo((TypOutputFile *)state, c);
 }
@@ -1840,7 +1842,7 @@ void SPrTo(Char *buffer, UInt maxlen, const Char *format, Int arg1, Int arg2)
 }
 
 
-static Obj FuncINPUT_FILENAME(Obj self)
+static Obj FuncINPUT_FILENAME(Obj self) GAP_GC_CANSAFEPOINT
 {
     if (IO(Input) == 0)
         return MakeImmString("*defin*");
@@ -1898,6 +1900,7 @@ static Obj FuncPRINT_FORMATTING_ERROUT(Obj self)
 **  <status>, then call the function <func> with the arguments in <args>.
 */
 static Obj FuncCALL_WITH_FORMATTING_STATUS(Obj self, Obj status, Obj func, Obj args)
+    GAP_GC_CANSAFEPOINT
 {
     RequireTrueOrFalse(SELF_NAME, status);
     RequireSmallList(SELF_NAME, args);
@@ -1973,7 +1976,7 @@ static StructGVarFunc GVarFuncs [] = {
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     InitSymbolTableLibrary(&FilenameSymbolTable, 7079);
     FilenameCache = NEW_PLIST(T_PLIST, 0);
@@ -1985,7 +1988,7 @@ static Int InitLibrary (
 }
 
 static Int InitKernel (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     IO(Input) = 0;
     IO(Output) = 0;

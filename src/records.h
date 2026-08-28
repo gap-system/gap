@@ -34,7 +34,7 @@ Obj NAME_RNAM(UInt rnam) GAP_GC_NOTSAFEPOINT GAP_GC_GLOBALLY_ROOTED;
 **  'RNamName' returns  the record name with the  name  <name> (which is  a C
 **  string).
 */
-UInt RNamName(const Char * name);
+UInt RNamName(const Char * name) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -43,7 +43,7 @@ UInt RNamName(const Char * name);
 **
 **  'RNamIntg' returns the record name corresponding to the integer <intg>.
 */
-UInt RNamIntg(Int intg);
+UInt RNamIntg(Int intg) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -53,7 +53,7 @@ UInt RNamIntg(Int intg);
 **  'RNamObj' returns the record name  corresponding  to  the  object  <obj>,
 **  which currently must be a string or an integer.
 */
-UInt RNamObj(Obj obj);
+UInt RNamObj(Obj obj) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

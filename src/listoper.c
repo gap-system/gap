@@ -291,16 +291,19 @@ Obj             SumListList (
 }
 
 static Obj FuncSUM_SCL_LIST_DEFAULT(Obj self, Obj listL, Obj listR)
+    GAP_GC_CANSAFEPOINT
 {
     return SumSclList( listL, listR );
 }
 
 static Obj FuncSUM_LIST_SCL_DEFAULT(Obj self, Obj listL, Obj listR)
+    GAP_GC_CANSAFEPOINT
 {
     return SumListScl( listL, listR );
 }
 
 static Obj FuncSUM_LIST_LIST_DEFAULT(Obj self, Obj listL, Obj listR)
+    GAP_GC_CANSAFEPOINT
 {
     return SumListList( listL, listR );
 }
@@ -319,7 +322,7 @@ static Obj FuncSUM_LIST_LIST_DEFAULT(Obj self, Obj listL, Obj listR)
 **
 **  'ZeroListDefault' is a generic function for the zero.
 */
-static Obj ZeroListDefault(Obj list)
+static Obj ZeroListDefault(Obj list) GAP_GC_CANSAFEPOINT
 {
     Obj                 res = 0;
 // Obj                 elm;
@@ -378,13 +381,13 @@ static Obj ZeroListDefault(Obj list)
     return res;
 }
 
-static Obj FuncZERO_LIST_DEFAULT(Obj self, Obj list)
+static Obj FuncZERO_LIST_DEFAULT(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     return ZeroListDefault( list );
 }
 
 
-static Obj ZeroListMutDefault(Obj list)
+static Obj ZeroListMutDefault(Obj list) GAP_GC_CANSAFEPOINT
 {
     Obj                 res = 0;
 // Obj                 elm;
@@ -438,7 +441,7 @@ static Obj ZeroListMutDefault(Obj list)
     return res;
 }
 
-static Obj FuncZERO_MUT_LIST_DEFAULT(Obj self, Obj list)
+static Obj FuncZERO_MUT_LIST_DEFAULT(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     return ZeroListMutDefault( list );
 }
@@ -451,7 +454,7 @@ static Obj FuncZERO_MUT_LIST_DEFAULT(Obj self, Obj list)
    we want an immutable result, we can (a) reuse a single row of zeros
    (b) record that the result is a rectangular table */
 
-static Obj FuncZERO_ATTR_MAT(Obj self, Obj mat)
+static Obj FuncZERO_ATTR_MAT(Obj self, Obj mat) GAP_GC_CANSAFEPOINT
 {
   Obj zrow = 0;
   Obj row = 0;
@@ -487,7 +490,7 @@ static Obj FuncZERO_ATTR_MAT(Obj self, Obj mat)
 **  'AInvListDefault' is a generic function for the additive inverse.
 */
 
-static Obj AInvMutListDefault(Obj list)
+static Obj AInvMutListDefault(Obj list) GAP_GC_CANSAFEPOINT
 {
     Obj                 res = 0;
     Obj                 elm = 0;
@@ -539,12 +542,12 @@ static Obj AInvMutListDefault(Obj list)
     return res;
 }
 
-static Obj FuncAINV_MUT_LIST_DEFAULT(Obj self, Obj list)
+static Obj FuncAINV_MUT_LIST_DEFAULT(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     return AInvMutListDefault( list );
 }
 
-static Obj AInvListDefault(Obj list)
+static Obj AInvListDefault(Obj list) GAP_GC_CANSAFEPOINT
 {
     Obj                 res = 0;
     Obj                 elm = 0;
@@ -600,7 +603,7 @@ static Obj AInvListDefault(Obj list)
     return res;
 }
 
-static Obj FuncAINV_LIST_DEFAULT(Obj self, Obj list)
+static Obj FuncAINV_LIST_DEFAULT(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     return AInvListDefault( list );
 }
@@ -795,16 +798,19 @@ Obj             DiffListList (
 }
 
 static Obj FuncDIFF_SCL_LIST_DEFAULT(Obj self, Obj listL, Obj listR)
+    GAP_GC_CANSAFEPOINT
 {
     return DiffSclList( listL, listR );
 }
 
 static Obj FuncDIFF_LIST_SCL_DEFAULT(Obj self, Obj listL, Obj listR)
+    GAP_GC_CANSAFEPOINT
 {
     return DiffListScl( listL, listR );
 }
 
 static Obj FuncDIFF_LIST_LIST_DEFAULT(Obj self, Obj listL, Obj listR)
+    GAP_GC_CANSAFEPOINT
 {
     return DiffListList( listL, listR );
 }
@@ -964,17 +970,20 @@ Obj             ProdListList (
 }
 
 static Obj FuncPROD_SCL_LIST_DEFAULT(Obj self, Obj listL, Obj listR)
+    GAP_GC_CANSAFEPOINT
 {
     return ProdSclList( listL, listR );
 }
 
 static Obj FuncPROD_LIST_SCL_DEFAULT(Obj self, Obj listL, Obj listR)
+    GAP_GC_CANSAFEPOINT
 {
     return ProdListScl( listL, listR );
 }
 
 static Obj
 FuncPROD_LIST_LIST_DEFAULT(Obj self, Obj listL, Obj listR, Obj depthdiff)
+    GAP_GC_CANSAFEPOINT
 {
   Obj prod = 0;
   GAP_GC_PUSH1(&prod);
@@ -1014,7 +1023,7 @@ FuncPROD_LIST_LIST_DEFAULT(Obj self, Obj listL, Obj listR, Obj depthdiff)
 **  and 2 for a fully mutable result.
 */
 
-static Obj OneMatrix(Obj mat, UInt mut)
+static Obj OneMatrix(Obj mat, UInt mut) GAP_GC_CANSAFEPOINT
 {
     Obj                 res = 0;        // one, result
     Obj                 row = 0;        // one row of the result
@@ -1086,17 +1095,18 @@ static Obj OneMatrix(Obj mat, UInt mut)
     return res;
 }
 
-static Obj FuncONE_MATRIX_IMMUTABLE(Obj self, Obj list)
+static Obj FuncONE_MATRIX_IMMUTABLE(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     return OneMatrix( list,0 );
 }
 
 static Obj FuncONE_MATRIX_SAME_MUTABILITY(Obj self, Obj list)
+    GAP_GC_CANSAFEPOINT
 {
     return OneMatrix( list,1 );
 }
 
-static Obj FuncONE_MATRIX_MUTABLE(Obj self, Obj list)
+static Obj FuncONE_MATRIX_MUTABLE(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     return OneMatrix( list,2 );
 }
@@ -1120,7 +1130,7 @@ static Obj FuncONE_MATRIX_MUTABLE(Obj self, Obj list)
 **  calls to AddRowVector, etc.
 */
 
-static Obj InvMatrix(Obj mat, UInt mut)
+static Obj InvMatrix(Obj mat, UInt mut) GAP_GC_CANSAFEPOINT
 {
     Obj                 res = 0;        // power, result
     Obj                 row = 0;        // one row of the matrix
@@ -1265,17 +1275,18 @@ static Obj InvMatrix(Obj mat, UInt mut)
     return res;
 }
 
-static Obj FuncINV_MATRIX_MUTABLE(Obj self, Obj mat)
+static Obj FuncINV_MATRIX_MUTABLE(Obj self, Obj mat) GAP_GC_CANSAFEPOINT
 {
   return InvMatrix(mat, 2);
 }
 
 static Obj FuncINV_MATRIX_SAME_MUTABILITY(Obj self, Obj mat)
+    GAP_GC_CANSAFEPOINT
 {
   return InvMatrix(mat, 1);
 }
 
-static Obj FuncINV_MATRIX_IMMUTABLE(Obj self, Obj mat)
+static Obj FuncINV_MATRIX_IMMUTABLE(Obj self, Obj mat) GAP_GC_CANSAFEPOINT
 {
   return InvMatrix(mat, 0);
 }
@@ -1296,6 +1307,7 @@ static Obj MultVectorLeftOp GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncADD_ROW_VECTOR_5(
     Obj self, Obj list1, Obj list2, Obj mult, Obj from, Obj to)
+    GAP_GC_CANSAFEPOINT
 {
     Int ifrom = GetSmallInt("AddRowVector", from);
     Int ito = GetSmallInt("AddRowVector", to);
@@ -1328,6 +1340,7 @@ static Obj FuncADD_ROW_VECTOR_5(
 */
 static Obj FuncADD_ROW_VECTOR_5_FAST(
     Obj self, Obj list1, Obj list2, Obj mult, Obj from, Obj to)
+    GAP_GC_CANSAFEPOINT
 {
     Int ifrom = GetSmallInt("AddRowVector", from);
     Int ito = GetSmallInt("AddRowVector", to);
@@ -1365,6 +1378,7 @@ static Obj FuncADD_ROW_VECTOR_5_FAST(
 **  types of list -- this version just uses generic list ops
 */
 static Obj FuncADD_ROW_VECTOR_3(Obj self, Obj list1, Obj list2, Obj mult)
+    GAP_GC_CANSAFEPOINT
 {
   UInt i;
   UInt len = LEN_LIST(list1);
@@ -1395,6 +1409,7 @@ static Obj FuncADD_ROW_VECTOR_3(Obj self, Obj list1, Obj list2, Obj mult)
 **  plain lists of cyclotomics and mult is a small integers
 */
 static Obj FuncADD_ROW_VECTOR_3_FAST(Obj self, Obj list1, Obj list2, Obj mult)
+    GAP_GC_CANSAFEPOINT
 {
   UInt i;
   Obj e1 = 0, e2 = 0, prd = 0, sum = 0;
@@ -1432,6 +1447,7 @@ static Obj FuncADD_ROW_VECTOR_3_FAST(Obj self, Obj list1, Obj list2, Obj mult)
 **  types of list -- this version just uses generic list ops
 */
 static Obj FuncADD_ROW_VECTOR_2(Obj self, Obj list1, Obj list2)
+    GAP_GC_CANSAFEPOINT
 {
   UInt i;
   Obj el1 = 0, el2 = 0;
@@ -1461,6 +1477,7 @@ static Obj FuncADD_ROW_VECTOR_2(Obj self, Obj list1, Obj list2)
 **  plain lists of cyclotomics
 */
 static Obj FuncADD_ROW_VECTOR_2_FAST(Obj self, Obj list1, Obj list2)
+    GAP_GC_CANSAFEPOINT
 {
   UInt i;
   Obj e1 = 0, e2 = 0, sum = 0;
@@ -1494,6 +1511,7 @@ static Obj FuncADD_ROW_VECTOR_2_FAST(Obj self, Obj list1, Obj list2)
 **
 */
 static inline Obj MULT_VECTOR_LEFT_RIGHT_2(Obj list, Obj mult, UInt left)
+    GAP_GC_CANSAFEPOINT
 {
   UInt i;
   Obj prd = 0;
@@ -1518,11 +1536,13 @@ static inline Obj MULT_VECTOR_LEFT_RIGHT_2(Obj list, Obj mult, UInt left)
 }
 
 static Obj FuncMULT_VECTOR_LEFT_2(Obj self, Obj list, Obj mult)
+    GAP_GC_CANSAFEPOINT
 {
     return MULT_VECTOR_LEFT_RIGHT_2(list, mult, 1);
 }
 
 static Obj FuncMULT_VECTOR_RIGHT_2(Obj self, Obj list, Obj mult)
+    GAP_GC_CANSAFEPOINT
 {
     return MULT_VECTOR_LEFT_RIGHT_2(list, mult, 0);
 }
@@ -1569,6 +1589,7 @@ static Obj FuncMULT_VECTOR_2_FAST(Obj self, Obj list, Obj mult)
 
 
 static Obj FuncPROD_VEC_MAT_DEFAULT(Obj self, Obj vec, Obj mat)
+    GAP_GC_CANSAFEPOINT
 {
   Obj res = 0;
   Obj elt = 0;
@@ -1617,7 +1638,7 @@ static Obj FuncPROD_VEC_MAT_DEFAULT(Obj self, Obj vec, Obj mat)
 
 static Obj ConvertToMatrixRep;
 
-static Obj InvMatWithRowVecs(Obj mat, UInt mut)
+static Obj InvMatWithRowVecs(Obj mat, UInt mut) GAP_GC_CANSAFEPOINT
 {
   Obj                 res = 0;        // result
   Obj                 matcopy = 0;    // copy of mat
@@ -1766,17 +1787,18 @@ static Obj InvMatWithRowVecs(Obj mat, UInt mut)
 }
 
 
-static Obj FuncINV_MAT_DEFAULT_MUTABLE(Obj self, Obj mat)
+static Obj FuncINV_MAT_DEFAULT_MUTABLE(Obj self, Obj mat) GAP_GC_CANSAFEPOINT
 {
   return InvMatWithRowVecs(mat, 2);
 }
 
 static Obj FuncINV_MAT_DEFAULT_SAME_MUTABILITY(Obj self, Obj mat)
+    GAP_GC_CANSAFEPOINT
 {
   return InvMatWithRowVecs(mat, 1);
 }
 
-static Obj FuncINV_MAT_DEFAULT_IMMUTABLE(Obj self, Obj mat)
+static Obj FuncINV_MAT_DEFAULT_IMMUTABLE(Obj self, Obj mat) GAP_GC_CANSAFEPOINT
 {
   return InvMatWithRowVecs(mat, 0);
 }
@@ -1834,7 +1856,7 @@ FuncADD_TO_LIST_ENTRIES_PLIST_RANGE(Obj self, Obj list, Obj range, Obj x)
 **
 **  Examples:      x^2y^3 < y^7,   x^4 y^5 < x^3 y^6
 */
-static Obj FuncMONOM_TOT_DEG_LEX(Obj self, Obj u, Obj v)
+static Obj FuncMONOM_TOT_DEG_LEX(Obj self, Obj u, Obj v) GAP_GC_CANSAFEPOINT
 {
   Int4 i, lu, lv;
 
@@ -1940,7 +1962,7 @@ static Obj FuncMONOM_TOT_DEG_LEX(Obj self, Obj u, Obj v)
 **
 **  Examples:      x^2y^3 < y^7,   x^4 y^5 < x^3 y^6
 */
-static Obj FuncMONOM_GRLEX(Obj self, Obj u, Obj v)
+static Obj FuncMONOM_GRLEX(Obj self, Obj u, Obj v) GAP_GC_CANSAFEPOINT
 {
   Int4 i, lu, lv;
 
@@ -2020,6 +2042,7 @@ static Obj FuncMONOM_GRLEX(Obj self, Obj u, Obj v)
 **  the function assumes that all lists are plists.
 */
 static Obj FuncZIPPED_SUM_LISTS(Obj self, Obj z1, Obj z2, Obj zero, Obj f)
+    GAP_GC_CANSAFEPOINT
 {
   Int l1,l2,i;
   Int i1,i2;
@@ -2100,7 +2123,7 @@ static Obj FuncZIPPED_SUM_LISTS(Obj self, Obj z1, Obj z2, Obj zero, Obj f)
 **  implements the multiplication of monomials. Both must be plain lists
 **  of integers.
 */
-static Obj FuncMONOM_PROD(Obj self, Obj m1, Obj m2)
+static Obj FuncMONOM_PROD(Obj self, Obj m1, Obj m2) GAP_GC_CANSAFEPOINT
 {
    UInt a,b,l1,l2,i1,i2,i;
    Obj e = 0, f = 0, c = 0, prod = 0;
@@ -2342,7 +2365,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
 
   // init filters and functions

@@ -485,7 +485,7 @@ EXPORT_INLINE Obj TYPE_OBJ(Obj obj)
 **  is not a posobj/comobj/datobj, attempts to first convert it to one; if
 **  that fails, an error is raised.
 */
-void SET_TYPE_OBJ(Obj obj, Obj type);
+void SET_TYPE_OBJ(Obj obj, Obj type) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -679,7 +679,7 @@ Obj COPY_OBJ(Obj obj, Int mut);
 **
 */
 #if !defined(USE_THREADSAFE_COPYING)
-void PrepareCopy(Obj obj, Obj copy);
+void PrepareCopy(Obj obj, Obj copy) GAP_GC_CANSAFEPOINT;
 #endif
 
 
@@ -742,7 +742,7 @@ extern void (*MakeImmutableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 **
 **  'PrintObj' prints the object <obj>.
 */
-void PrintObj(Obj obj);
+void PrintObj(Obj obj) GAP_GC_CANSAFEPOINT;
 
 extern Obj PrintObjOper GAP_GC_GLOBALLY_ROOTED;
 
@@ -751,7 +751,7 @@ extern Obj PrintObjOper GAP_GC_GLOBALLY_ROOTED;
 **
 */
 UInt SetPrintObjState(UInt state); // returns the old state
-void SetPrintObjIndex(Int index);
+void SetPrintObjIndex(Int index) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -777,7 +777,7 @@ EXPORT_INLINE void PRINT_OBJ(Obj obj)
 **
 **  'ViewObj' views the object <obj>.
 */
-void ViewObj(Obj obj);
+void ViewObj(Obj obj) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -817,10 +817,10 @@ EXPORT_INLINE void SET_TYPE_COMOBJ(Obj obj, Obj val) GAP_GC_NOTSAFEPOINT
 *F  ElmComObj( <obj>, <rnam> )
 *F  IsbComObj( <obj>, <rnam> )
 */
-void AssComObj(Obj obj, UInt rnam, Obj val);
-void UnbComObj(Obj obj, UInt rnam);
-Obj  ElmComObj(Obj obj, UInt rnam);
-BOOL IsbComObj(Obj obj, UInt rnam);
+void AssComObj(Obj obj, UInt rnam, Obj val) GAP_GC_CANSAFEPOINT;
+void UnbComObj(Obj obj, UInt rnam) GAP_GC_CANSAFEPOINT;
+Obj  ElmComObj(Obj obj, UInt rnam) GAP_GC_CANSAFEPOINT;
+BOOL IsbComObj(Obj obj, UInt rnam) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -860,9 +860,9 @@ EXPORT_INLINE void SET_TYPE_POSOBJ(Obj obj, Obj val) GAP_GC_NOTSAFEPOINT
 *F  ElmPosbj( <obj>, <rnam> )
 *F  IsbPosbj( <obj>, <rnam> )
 */
-void AssPosObj(Obj obj, Int idx, Obj val);
-void UnbPosObj(Obj obj, Int idx);
-Obj  ElmPosObj(Obj obj, Int idx);
+void AssPosObj(Obj obj, Int idx, Obj val) GAP_GC_CANSAFEPOINT;
+void UnbPosObj(Obj obj, Int idx) GAP_GC_CANSAFEPOINT;
+Obj  ElmPosObj(Obj obj, Int idx) GAP_GC_CANSAFEPOINT;
 BOOL IsbPosObj(Obj obj, Int idx);
 
 
@@ -914,7 +914,7 @@ void SetTypeDatObj(Obj obj, Obj type)
 **  Note that <size> must include storage for the first slot of the bag,
 **  which points to the type object.
 */
-Obj NewKernelBuffer(UInt size);
+Obj NewKernelBuffer(UInt size) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

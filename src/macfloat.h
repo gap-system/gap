@@ -24,7 +24,7 @@ typedef double Double;
 Double VAL_MACFLOAT(Obj obj) GAP_GC_NOTSAFEPOINT;
 void SET_VAL_MACFLOAT(Obj obj, Double val) GAP_GC_NOTSAFEPOINT;
 BOOL IS_MACFLOAT(Obj obj) GAP_GC_NOTSAFEPOINT;
-Obj NEW_MACFLOAT(Double val);
+Obj NEW_MACFLOAT(Double val) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

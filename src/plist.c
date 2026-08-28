@@ -205,9 +205,9 @@ static Obj TYPE_LIST_EMPTY_MUTABLE GAP_GC_GLOBALLY_ROOTED;
 static Obj TYPE_LIST_EMPTY_IMMUTABLE GAP_GC_GLOBALLY_ROOTED;
 static Obj TYPE_LIST_HOM GAP_GC_GLOBALLY_ROOTED;
 
-static Obj TypePlistWithKTNum(Obj list, UInt * ktnum);
+static Obj TypePlistWithKTNum(Obj list, UInt * ktnum) GAP_GC_CANSAFEPOINT;
 
-static Int KTNumPlist(Obj list, Obj * famfirst)
+static Int KTNumPlist(Obj list, Obj * famfirst) GAP_GC_CANSAFEPOINT
 {
     BOOL isHom   = TRUE;    // is <list> homogeneous
     BOOL isDense = TRUE;    // is <list> dense
@@ -438,7 +438,7 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
 }
 
 
-static Int KTNumHomPlist(Obj list)
+static Int KTNumHomPlist(Obj list) GAP_GC_CANSAFEPOINT
 {
     BOOL isTable = FALSE;   // are <list>s elms all lists
     BOOL isRect  = FALSE;   // are <list>s elms all equal length
@@ -564,7 +564,7 @@ static Int KTNumHomPlist(Obj list)
     return res;
 }
 
-static Obj TypePlist(Obj list)
+static Obj TypePlist(Obj list) GAP_GC_CANSAFEPOINT
 {
     return TypePlistWithKTNum(list, 0);
 }
@@ -612,6 +612,7 @@ static Obj TypePlistEmpty(Obj list)
 }
 
 static Obj TypePlistHomHelper(Obj family, UInt tnum, UInt knr, Obj list)
+    GAP_GC_CANSAFEPOINT
 {
     // make sure tnum reflects mutability
     if (!IS_MUTABLE_OBJ(list))
@@ -713,7 +714,7 @@ static Obj TypePlistWithKTNum (
 #endif
 }
 
-static Obj TypePlistHom(Obj list)
+static Obj TypePlistHom(Obj list) GAP_GC_CANSAFEPOINT
 {
     Int                 tnum;           // TNUM of <list>
     Obj                 family = 0;     // family of elements
@@ -728,7 +729,7 @@ static Obj TypePlistHom(Obj list)
     return type;
 }
 
-static Obj TypePlistCyc(Obj list)
+static Obj TypePlistCyc(Obj list) GAP_GC_CANSAFEPOINT
 {
     Int                 tnum;           // TNUM of <list>
     Obj                 family = 0;     // family of elements
@@ -745,7 +746,7 @@ static Obj TypePlistCyc(Obj list)
     return type;
 }
 
-static Obj TypePlistFfe(Obj list)
+static Obj TypePlistFfe(Obj list) GAP_GC_CANSAFEPOINT
 {
     Int                 tnum;           // TNUM of <list>
     Obj                 family = 0;     // family of elements
@@ -789,7 +790,7 @@ Obj ShallowCopyPlist(Obj list)
 * Returns an empty plain list, but with space for len entries preallocated.
 *
 */
-static Obj FuncEmptyPlist(Obj self, Obj len)
+static Obj FuncEmptyPlist(Obj self, Obj len) GAP_GC_CANSAFEPOINT
 {
     RequireNonnegativeSmallInt(SELF_NAME, len);
     return NEW_PLIST(T_PLIST_EMPTY, INT_INTOBJ(len));
@@ -802,7 +803,7 @@ static Obj FuncEmptyPlist(Obj self, Obj len)
 *  Shrinks the bag of <list> to minimal possible size.
 *
 */
-static Obj FuncShrinkAllocationPlist(Obj self, Obj plist)
+static Obj FuncShrinkAllocationPlist(Obj self, Obj plist) GAP_GC_CANSAFEPOINT
 {
     RequirePlainList(SELF_NAME, plist);
     SHRINK_PLIST(plist, LEN_PLIST(plist));
@@ -868,7 +869,7 @@ static void CopyPlist(TraversalState * traversal, Obj copy, Obj original)
 **
 **  'CleanPlist' is the function in 'CleanObjFuncs' for plain lists.
 */
-static Obj CopyPlist(Obj list, Int mut)
+static Obj CopyPlist(Obj list, Int mut) GAP_GC_CANSAFEPOINT
 {
     Obj                 copy = 0;       // copy, result
     Obj                 tmp;            // temporary variable
@@ -932,7 +933,7 @@ static void CleanPlist(Obj list)
 **
 **  Is called from the 'EQ' binop so both  operands  are  already  evaluated.
 */
-static Int EqPlist(Obj left, Obj right)
+static Int EqPlist(Obj left, Obj right) GAP_GC_CANSAFEPOINT
 {
     Int                 lenL;           // length of the left operand
     Int                 lenR;           // length of the right operand
@@ -974,7 +975,7 @@ static Int EqPlist(Obj left, Obj right)
 **
 **  Is called from the 'LT' binop so both operands are already evaluated.
 */
-static Int LtPlist(Obj left, Obj right)
+static Int LtPlist(Obj left, Obj right) GAP_GC_CANSAFEPOINT
 {
     Int                 lenL;           // length of the left operand
     Int                 lenR;           // length of the right operand
@@ -1101,7 +1102,7 @@ static Obj Elm0vPlist(Obj list, Int pos)
 **  'ElmPlist'   is the   function    in 'ElmListFuncs'   for  plain   lists.
 **  'ElmvPlist' is the function in 'ElmvListFuncs' for plain lists.
 */
-static Obj ElmPlist(Obj list, Int pos)
+static Obj ElmPlist(Obj list, Int pos) GAP_GC_CANSAFEPOINT
 {
     Obj                 elm;            // the selected element, result
 
@@ -1124,7 +1125,7 @@ static Obj ElmPlist(Obj list, Int pos)
     return elm;
 }
 
-static Obj ElmPlistDense(Obj list, Int pos)
+static Obj ElmPlistDense(Obj list, Int pos) GAP_GC_CANSAFEPOINT
 {
     Obj                 elm;            // the selected element, result
 
@@ -1141,7 +1142,7 @@ static Obj ElmPlistDense(Obj list, Int pos)
     return elm;
 }
 
-static Obj ElmvPlist(Obj list, Int pos)
+static Obj ElmvPlist(Obj list, Int pos) GAP_GC_CANSAFEPOINT
 {
     Obj                 elm;            // the selected element, result
 
@@ -1184,7 +1185,7 @@ static Obj ElmvPlistDense(Obj list, Int pos)
 **  'ElmsPlist' is the function in 'ElmsListFuncs' for plain lists which are
 **  not known to be dense.
 */
-static Obj ElmsPlist(Obj list, Obj poss)
+static Obj ElmsPlist(Obj list, Obj poss) GAP_GC_CANSAFEPOINT
 {
     Obj                 elms = 0;       // selected sublist, result
     Int                 lenList;        // length of <list>
@@ -1297,7 +1298,7 @@ static Obj ElmsPlist(Obj list, Obj poss)
 
 // This version for lists which are known to be at least dense
 // and might be better
-static Obj ElmsPlistDense(Obj list, Obj poss)
+static Obj ElmsPlistDense(Obj list, Obj poss) GAP_GC_CANSAFEPOINT
 {
     Obj                 elms = 0;       // selected sublist, result
     Int                 lenList;        // length of <list>
@@ -1514,6 +1515,7 @@ void AssPlist(Obj list, Int pos,
 
 static void AssPlistXXX(Obj list, Int pos,
                         Obj val GAP_GC_ROOTED_BY_ARG_INDEXED(0, 1))
+    GAP_GC_CANSAFEPOINT
 {
     Int len = LEN_PLIST(list);
 
@@ -1531,6 +1533,7 @@ static void AssPlistXXX(Obj list, Int pos,
 
 static void AssPlistCyc(Obj list, Int pos,
                         Obj val GAP_GC_ROOTED_BY_ARG_INDEXED(0, 1))
+    GAP_GC_CANSAFEPOINT
 {
     Int len = LEN_PLIST(list);
 
@@ -1614,6 +1617,7 @@ void AssPlistFfe   (
 
 static void AssPlistDense(Obj list, Int pos,
                           Obj val GAP_GC_ROOTED_BY_ARG_INDEXED(0, 1))
+    GAP_GC_CANSAFEPOINT
 {
     Int len = LEN_PLIST(list);
 
@@ -1632,6 +1636,7 @@ static void AssPlistDense(Obj list, Int pos,
 
 static void AssPlistHomog(Obj list, Int pos,
                           Obj val GAP_GC_ROOTED_BY_ARG_INDEXED(0, 1))
+    GAP_GC_CANSAFEPOINT
 {
     Int len = LEN_PLIST(list);
 
@@ -1753,7 +1758,7 @@ void AssPlistEmpty (
 **
 **  'AsssPlist' is the function in 'AsssListFuncs' for plain lists.
 */
-static void AsssPlist(Obj list, Obj poss, Obj vals)
+static void AsssPlist(Obj list, Obj poss, Obj vals) GAP_GC_CANSAFEPOINT
 {
     Int                 lenPoss;        // length of <positions>
     Int                 pos;            // <position> as integer
@@ -1838,7 +1843,7 @@ static void AsssPlist(Obj list, Obj poss, Obj vals)
     }
 }
 
-static void AsssPlistXXX(Obj list, Obj poss, Obj vals)
+static void AsssPlistXXX(Obj list, Obj poss, Obj vals) GAP_GC_CANSAFEPOINT
 {
     // the list will probably loose its flags/properties
     CLEAR_FILTS_LIST(list);
@@ -1857,7 +1862,7 @@ static void AsssPlistXXX(Obj list, Obj poss, Obj vals)
 **
 **  'IsDensePlist' is the function in 'IsDenseListFuncs' for plain lists.
 */
-static BOOL IsDensePlist(Obj list)
+static BOOL IsDensePlist(Obj list) GAP_GC_CANSAFEPOINT
 {
     Int                 lenList;        // length of <list>
     Int                 i;              // loop variable
@@ -1894,7 +1899,7 @@ static BOOL IsDensePlist(Obj list)
 **
 **  'IsHomogPlist' is the function in 'IsHomogListFuncs' for plain lists.
 */
-static BOOL IsHomogPlist(Obj list)
+static BOOL IsHomogPlist(Obj list) GAP_GC_CANSAFEPOINT
 {
     Int                 tnum;
     tnum = KTNumPlist( list, (Obj *)0 );
@@ -1911,7 +1916,7 @@ static BOOL IsHomogPlist(Obj list)
 **
 **  'IsTablePlist' is the function in 'IsTableListFuncs' for plain lists.
 */
-static BOOL IsTablePlist(Obj list)
+static BOOL IsTablePlist(Obj list) GAP_GC_CANSAFEPOINT
 {
     Int                 tnum;
     tnum = KTNumPlist( list, (Obj *)0 );
@@ -1929,7 +1934,7 @@ static BOOL IsTablePlist(Obj list)
 **  'IsSSortPlist' is the function in 'IsSSortListFuncs' for plain lists.
 */
 
-static BOOL IsSSortPlist(Obj list)
+static BOOL IsSSortPlist(Obj list) GAP_GC_CANSAFEPOINT
 {
     Int                 lenList;
     Obj elm1;
@@ -2015,7 +2020,7 @@ static BOOL IsSSortPlist(Obj list)
     return FALSE;
 }
 
-static BOOL IsSSortPlistDense(Obj list)
+static BOOL IsSSortPlistDense(Obj list) GAP_GC_CANSAFEPOINT
 {
     Int                 lenList;
     Obj elm1;
@@ -2085,7 +2090,7 @@ static BOOL IsSSortPlistDense(Obj list)
 
 }
 
-static BOOL IsSSortPlistHom(Obj list)
+static BOOL IsSSortPlistHom(Obj list) GAP_GC_CANSAFEPOINT
 {
     Int                 lenList;
     Obj elm1;
@@ -2352,6 +2357,7 @@ static void LoadPlist(Obj list)
 *F  FuncASS_PLIST_DEFAULT( <self>, <plist>, <pos>, <val> )  . . `AssPlistXXX'
 */
 static Obj FuncASS_PLIST_DEFAULT(Obj self, Obj plist, Obj pos, Obj val)
+    GAP_GC_CANSAFEPOINT
 {
     Int                 p;
 
@@ -3635,7 +3641,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFiltsFromTable( GVarFilts );
