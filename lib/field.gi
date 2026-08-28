@@ -1322,7 +1322,7 @@ InstallMethod( PreImagesElm,
     FamRangeEqFamElm,
     [ IsFieldHomomorphism, IsObject ],
     function ( hom, elm )
-    if IsInjective( hom ) = 1 then
+    if IsInjective( hom ) then
       return [ PreImagesRepresentative( hom, elm ) ];
     elif IsZero( elm ) then
       return Source( hom );
