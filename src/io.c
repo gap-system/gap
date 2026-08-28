@@ -271,7 +271,7 @@ static void AddCachedFilename(SymbolTable * symtab, UInt id, Obj name)
 
 Obj GetCachedFilename(UInt id)
 {
-    return ELM_LIST(FilenameCache, id);
+    return ELM_PLIST(FilenameCache, id);
 }
 
 
