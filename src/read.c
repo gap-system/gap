@@ -2477,21 +2477,23 @@ static void RecreateStackNams(ReaderState * rs, Obj context)
 
 /****************************************************************************
 **
-*F  ReadEvalCommand() . . . . . . . . . . . . . . . . . . .  read one command
+*F  ReadEvalCommandInternal() . . . . . . read one command, evaluate or check
 **
-**  'ReadEvalCommand' reads one command and interprets it immediately.
+**  Shared implementation of 'ReadEvalCommand' and 'ReadCheckCommand'.
 **
-**  It does not expect the first symbol of its input already read and won't
-**  read the first symbol of the next input.
-**
-**  If 'dualSemicolon' is a non-zero pointer, then the integer it points to
-**  will be set to 1 if the command was followed by a double semicolon, else
-**  it is set to 0. If 'dualSemicolon' is zero then it is ignored.
+**  If 'checkOnly' is set, the command is parsed but not executed: the
+**  interpreter is switched into ignoring mode for the duration, so no
+**  statement has any effect, and 'IntrEnd' is skipped. If 'syntaxErrors' is
+**  non-zero, it must be a plist; diagnostics are then appended to it as
+**  records instead of being printed (see 'ScannerState.errors').
 */
-ExecStatus ReadEvalCommand(Obj            context,
-                           TypInputFile * input,
-                           Obj *          evalResult,
-                           BOOL *         dualSemicolon)
+static ExecStatus ReadEvalCommandInternal(Obj            context,
+                                          TypInputFile * input,
+                                          BOOL           checkOnly,
+                                          Obj            syntaxErrors,
+                                          Obj *          evalResult,
+                                          BOOL *         dualSemicolon,
+                                          BOOL *         errorAtEOF)
 {
     volatile ExecStatus status;
     volatile Obj        tilde;
@@ -2507,6 +2509,7 @@ ExecStatus ReadEvalCommand(Obj            context,
 
     GAP_ASSERT(input);
     rs->s.input = input;
+    rs->s.errors = syntaxErrors;
 
     ClearError();
 
@@ -2516,6 +2519,8 @@ ExecStatus ReadEvalCommand(Obj            context,
     // if scanning the first symbol produced a syntax error, abort
     if (rs->s.NrError) {
         FlushRestOfInputLine(input);
+        if (errorAtEOF)
+            *errorAtEOF = rs->s.firstErrorAtEOF;
         return STATUS_ERROR;
     }
 
@@ -2539,8 +2544,9 @@ ExecStatus ReadEvalCommand(Obj            context,
     lockSP = RegionLockSP();
 #endif
 
-    AssGVar(GVarName("READEVALCOMMAND_LINENUMBER"),
-            INTOBJ_INT(GetInputLineNumber(input)));
+    if (!checkOnly)
+        AssGVar(GVarName("READEVALCOMMAND_LINENUMBER"),
+                INTOBJ_INT(GetInputLineNumber(input)));
 
     // remember the old execution state and start an execution environment
     Bag oldLVars =
@@ -2553,6 +2559,12 @@ ExecStatus ReadEvalCommand(Obj            context,
 
     IntrBegin(&rs->intr);
     rs->intr.gapnameid = GetInputFilenameID(input);
+
+    // in check mode, parse with the interpreter ignoring everything; every
+    // interpreter action keeps 'ignoring' balanced when it is already
+    // positive, so nothing is executed and nothing is left on the stack
+    if (checkOnly)
+        rs->intr.ignoring = 1;
 
     switch (rs->s.Symbol) {
     // read an expression or an assignment or a procedure call
@@ -2588,8 +2600,13 @@ ExecStatus ReadEvalCommand(Obj            context,
     if (dualSemicolon)
         *dualSemicolon = (rs->s.Symbol == S_DUALSEMICOLON);
 
-    // end the interpreter
-    status = IntrEnd(&rs->intr, rs->s.NrError > 0, evalResult);
+    // end the interpreter; in check mode 'IntrEnd' must be skipped (nothing
+    // was interpreted, so there is no result on the stack), the status is
+    // derived from the error count alone
+    if (checkOnly)
+        status = rs->s.NrError > 0 ? STATUS_ERROR : STATUS_END;
+    else
+        status = IntrEnd(&rs->intr, rs->s.NrError > 0, evalResult);
 
     // restore the execution environment
     SWITCH_TO_OLD_LVARS(oldLVars);
@@ -2611,8 +2628,57 @@ ExecStatus ReadEvalCommand(Obj            context,
 
     ClearError();
 
+    if (errorAtEOF)
+        *errorAtEOF = rs->s.firstErrorAtEOF;
+
     // return whether a return-statement or a quit-statement were executed
     return status;
+}
+
+
+/****************************************************************************
+**
+*F  ReadEvalCommand() . . . . . . . . . . . . . . . . . . .  read one command
+**
+**  'ReadEvalCommand' reads one command and interprets it immediately.
+**
+**  It does not expect the first symbol of its input already read and won't
+**  read the first symbol of the next input.
+**
+**  If 'dualSemicolon' is a non-zero pointer, then the integer it points to
+**  will be set to 1 if the command was followed by a double semicolon, else
+**  it is set to 0. If 'dualSemicolon' is zero then it is ignored.
+*/
+ExecStatus ReadEvalCommand(Obj            context,
+                           TypInputFile * input,
+                           Obj *          evalResult,
+                           BOOL *         dualSemicolon)
+{
+    return ReadEvalCommandInternal(context, input, FALSE, 0, evalResult,
+                                   dualSemicolon, 0);
+}
+
+
+/****************************************************************************
+**
+*F  ReadCheckCommand()  . . . . . . . parse one command, but do not execute it
+**
+**  'ReadCheckCommand' parses one command from <input> without executing any
+**  of it and without printing anything. It returns 'STATUS_END' if a
+**  complete command was parsed, 'STATUS_EOF' if the input was exhausted
+**  before the first symbol of a command, and 'STATUS_ERROR' on a syntax
+**  error.
+**
+**  Diagnostics are appended to <syntaxErrors> (a plist) if it is non-zero.
+**  On 'STATUS_ERROR', if <errorAtEOF> is non-zero, the value it points to is
+**  set to TRUE iff the first syntax error was caused by the input ending,
+**  i.e., the input is a truncated prefix of potentially valid input.
+*/
+ExecStatus
+ReadCheckCommand(TypInputFile * input, Obj syntaxErrors, BOOL * errorAtEOF)
+{
+    return ReadEvalCommandInternal(0, input, TRUE, syntaxErrors, 0, 0,
+                                   errorAtEOF);
 }
 
 /****************************************************************************

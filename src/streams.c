@@ -224,6 +224,80 @@ static Obj FuncREAD_ALL_COMMANDS(
 }
 
 
+/****************************************************************************
+**
+*F  FuncCHECK_ALL_COMMANDS( <self>, <instream> )  . . . . classify some input
+**
+**  FuncCHECK_ALL_COMMANDS parses all statements from the stream <instream>
+**  without executing anything and without printing anything, and classifies
+**  the input. It returns a record with these components:
+**
+**  - 'status' is one of "complete" (the input consists of zero or more
+**    complete statements), "incomplete" (the input ends in the middle of a
+**    statement, i.e., it is a truncated prefix of potentially valid input,
+**    and a frontend should request more input), or "error" (the input
+**    contains a syntax error before its end).
+**
+**  - 'statements' is the number of complete statements parsed before the
+**    end of the input or the first erroneous statement.
+**
+**  - 'errors' is a list of records describing the diagnostics raised for
+**    the first erroneous statement, each with components 'message',
+**    'isError', 'line', 'pos', 'endLine' and 'endPos'.
+**
+**  This is the primitive alternative frontends (Jupyter kernels, REPLs with
+**  multi-line editing) need to decide whether input is ready for evaluation.
+**
+**  The classification is best-effort: a genuine syntax error whose first
+**  diagnostic coincides with the end of the input is reported as
+**  "incomplete"; it surfaces as an error once the completed input is
+**  evaluated.
+*/
+static Obj FuncCHECK_ALL_COMMANDS(Obj self, Obj instream)
+{
+    RequireInputStream(SELF_NAME, instream);
+
+    TypInputFile input;
+    if (!OpenInputStream(&input, instream, FALSE)) {
+        return Fail;
+    }
+
+    Obj                    errors = NEW_PLIST(T_PLIST, 0);
+    volatile UInt          nrStatements = 0;
+    const Char * volatile  status = "complete";
+    BOOL                   rethrow = FALSE;
+
+    GAP_TRY
+    {
+        while (1) {
+            BOOL       errorAtEOF = FALSE;
+            ExecStatus st = ReadCheckCommand(&input, errors, &errorAtEOF);
+            if (st == STATUS_EOF)
+                break;
+            if (st == STATUS_ERROR) {
+                status = errorAtEOF ? "incomplete" : "error";
+                break;
+            }
+            nrStatements++;
+        }
+    }
+    GAP_CATCH
+    {
+        rethrow = TRUE;
+    }
+
+    CloseInput(&input);
+    if (rethrow)
+        GAP_THROW();
+
+    Obj result = NEW_PREC(3);
+    AssPRec(result, RNamName("status"), MakeImmString(status));
+    AssPRec(result, RNamName("statements"), INTOBJ_INT(nrStatements));
+    AssPRec(result, RNamName("errors"), errors);
+    return result;
+}
+
+
 /*
  Returns a list with one or two entries. The first
  entry is set to "false" if there was any error
@@ -1747,6 +1821,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_1ARGS(READ, input),
     GVAR_FUNC_4ARGS(
         READ_ALL_COMMANDS, instream, echo, capture, resultCallback),
+    GVAR_FUNC_1ARGS(CHECK_ALL_COMMANDS, instream),
     GVAR_FUNC_2ARGS(READ_COMMAND_REAL, stream, echo),
     GVAR_FUNC_3ARGS(READ_STREAM_LOOP, stream, catchstderrout, context),
     GVAR_FUNC_1ARGS(READ_AS_FUNC, input),
