@@ -166,12 +166,6 @@ void CallbackForAllBags(void (*func)(Bag));
 /****************************************************************************
 **
 */
-#ifdef GAP_MEM_CHECK
-int enableMemCheck(const char * argv[], void * dummy);
-extern Int EnableMemCheck;
-#endif
-
-
 /****************************************************************************
 **
 *F  SetStackBottomBags(<stackBottom>)

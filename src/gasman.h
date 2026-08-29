@@ -855,6 +855,7 @@ extern void MarkArrayOfBags(const Bag array[], UInt count, void * ref)
 void InitGlobalBag(Bag * addr, const Char * cookie);
 
 
+
 /****************************************************************************
 **
 *F  InitFreeFuncBag(<type>,<free-func>) . . . . . .  install freeing function
