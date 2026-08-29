@@ -642,7 +642,7 @@ static Obj DoPartialUnWrapFunc(Obj func, Obj args) GAP_GC_CANSAFEPOINT
 Obj             MakeFunction (
     Obj                 fexp )
 {
-    Obj                 func;           // function, result
+    Obj                 func = 0;       // function, result
     ObjFunc             hdlr;           // handler
 
     if      ( NARG_FUNC(fexp) ==  0 )  hdlr = DoExecFunc0args;
@@ -655,6 +655,9 @@ Obj             MakeFunction (
     else if ( NARG_FUNC(fexp) >=  7 )  hdlr = DoExecFuncXargs;
     else if ( NARG_FUNC(fexp) == -1 )  hdlr = DoExecFunc1args;
     else /* NARG_FUNC(fexp) < -1 */    hdlr = DoPartialUnWrapFunc;
+
+    // <fexp> is read again after NewFunction below, which allocates
+    GAP_GC_PUSH2(&fexp, &func);
 
     // make the function
     func = NewFunction( NAME_FUNC( fexp ),
@@ -671,6 +674,7 @@ Obj             MakeFunction (
 #endif
 
     // return the function
+    GAP_GC_POP();
     return func;
 }
 
