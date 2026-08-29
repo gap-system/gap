@@ -1164,10 +1164,18 @@ static void MoveBagMemory(char * oldbase, char * newbase)
 
 static void MaybeMoveBags(void)
 {
-    static Int oldBase = 0;
+    static Int  oldBase = 0;
+    static UInt sinceLastMove = 0;
 
-    if (!EnableMemCheck)
+    if (EnableMemCheck <= 0)
         return;
+
+    // EnableMemCheck is the sampling period; see MemCheckCollect in julia_gc.c
+    // for what a period above 1 costs in precision.
+    if (++sinceLastMove < (UInt)EnableMemCheck)
+        return;
+
+    sinceLastMove = 0;
 
     Int newBase = oldBase + 1;
     // Memory buffer 0 is special, as we use that

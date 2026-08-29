@@ -16,9 +16,6 @@
 #include "system.h"
 
 #include "gaputils.h"
-#ifdef GAP_MEM_CHECK
-#include "gasman_intern.h"
-#endif
 #include "profile.h"
 #include "sysfiles.h"
 #include "sysopt.h"
