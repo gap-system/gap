@@ -123,6 +123,7 @@ BindGlobal("SIMPLE_GROUPS_ITERATOR_RANGE",10^27);
 ##  <#/GAPDoc>
 DeclareGlobalFunction("ClassicalIsomorphismTypeFiniteSimpleGroup");
 
+DeclareGlobalFunction("MinimalFaithfulPermutationDegreeOfSimpleGroupWithIsomorphismType");
 DeclareAttribute("DataAboutSimpleGroup",IsGroup,"mutable");
 
 #############################################################################
