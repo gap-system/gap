@@ -8,8 +8,8 @@ static GVar G_runtest;
 /* record names used in handlers */
 
 /* information for the functions */
-static Obj  NameFunc[3];
-static Obj FileName;
+static Obj NameFunc[3] GAP_GC_GLOBALLY_ROOTED;
+static Obj FileName GAP_GC_GLOBALLY_ROOTED;
 
 /* handler for function 2 */
 static Obj  HdlrFunc2 (
@@ -17,6 +17,7 @@ static Obj  HdlrFunc2 (
 {
  Obj t_1 = 0;
  Bag oldFrame;
+ GAP_GC_PUSH1(&t_1);
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
@@ -24,6 +25,7 @@ static Obj  HdlrFunc2 (
  /* return 1 + 2; */
  C_SUM_INTOBJS( t_1, INTOBJ_INT(1), INTOBJ_INT(2) )
  SWITCH_TO_OLD_FRAME(oldFrame);
+ GAP_GC_POP();
  return t_1;
 }
 
@@ -34,6 +36,7 @@ static Obj  HdlrFunc1 (
  Obj t_1 = 0;
  Obj t_2 = 0;
  Bag oldFrame;
+ GAP_GC_PUSH2(&t_1, &t_2);
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
@@ -53,6 +56,7 @@ static Obj  HdlrFunc1 (
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
+ GAP_GC_POP();
  return 0;
 }
 
@@ -94,8 +98,9 @@ static Int InitKernel ( StructInitInfo * module )
 /* 'InitLibrary' sets up gvars, rnams, functions */
 static Int InitLibrary ( StructInitInfo * module )
 {
- Obj func1;
- Obj body1;
+ Obj func1 = 0;
+ Obj body1 = 0;
+ GAP_GC_PUSH2(&func1, &body1);
  
  /* Complete Copy/Fopy registration */
  UpdateCopyFopyInfo();
@@ -109,6 +114,7 @@ static Int InitLibrary ( StructInitInfo * module )
  SET_BODY_FUNC( func1, body1 );
  CHANGED_BAG( func1 );
  CALL_0ARGS( func1 );
+ GAP_GC_POP();
  
  return 0;
  

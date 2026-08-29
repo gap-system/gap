@@ -105,6 +105,10 @@ static Int CompCheckListElements;
 */
 static Int CompPass;
 
+// how many GC frames the function being compiled pushed to root its
+// C locals; see EmitGCRootPushes below
+static Int CompGCFrames;
+
 
 /****************************************************************************
 **
@@ -973,6 +977,7 @@ static CVar CompFunccall0to6Args(Expr expr) GAP_GC_CANSAFEPOINT
     CVar                result;         // result, result
     CVar                func;           // function
     CVar                args [8];       // arguments
+    CVar                arglist;        // argument list, for the slow path
     Int                 narg;           // number of arguments
     Int                 i;              // loop variable
 
@@ -1020,14 +1025,21 @@ static CVar CompFunccall0to6Args(Expr expr) GAP_GC_CANSAFEPOINT
     Emit( " );\n" );
     Emit( "}\n" );
     Emit( "else {\n" );
-    Emit( "%c = DoOperation2Args( CallFuncListOper, %c, NewPlistFromArgs(", result, func);
+    // The argument list is freshly allocated and DoOperation2Args may
+    // collect, so put it in a temporary, which is rooted, rather than
+    // passing it straight down.
+    arglist = CVAR_TEMP( NewTemp( "arglist" ) );
+    Emit( "%c = NewPlistFromArgs(", arglist );
     if (narg >= 1) {
         Emit( " %c", args[1] );
     }
     for ( i = 2; i <= narg; i++ ) {
         Emit( ", %c", args[i] );
     }
-    Emit( " ) );\n" );
+    Emit( " );\n" );
+    Emit( "%c = DoOperation2Args( CallFuncListOper, %c, %c );\n",
+          result, func, arglist );
+    FreeTemp( TEMP_CVAR( arglist ) );
     Emit( "}\n" );
 
     // emit code for the check (sets the information for the result)
@@ -3579,6 +3591,7 @@ static void CompProccall0to6Args(Stat stat) GAP_GC_CANSAFEPOINT
 {
     CVar                func;           // function
     CVar                args[8];        // arguments
+    CVar                arglist;        // argument list, for the slow path
     UInt                narg;           // number of arguments
     UInt                i;              // loop variable
 
@@ -3628,14 +3641,18 @@ static void CompProccall0to6Args(Stat stat) GAP_GC_CANSAFEPOINT
     Emit( " );\n" );
     Emit( "}\n" );
     Emit( "else {\n" );
-    Emit( "DoOperation2Args( CallFuncListOper, %c, NewPlistFromArgs(", func);
+    // see the comment in CompFunccallXArgs
+    arglist = CVAR_TEMP( NewTemp( "arglist" ) );
+    Emit( "%c = NewPlistFromArgs(", arglist );
     if (narg >= 1) {
         Emit( " %c", args[1] );
     }
     for ( i = 2; i <= narg; i++ ) {
         Emit( ", %c", args[i] );
     }
-    Emit( " ) );\n" );
+    Emit( " );\n" );
+    Emit( "DoOperation2Args( CallFuncListOper, %c, %c );\n", func, arglist );
+    FreeTemp( TEMP_CVAR( arglist ) );
     Emit( "}\n" );
 
     // free the temporaries
@@ -4287,6 +4304,11 @@ static void CompReturnObj(Stat stat)
     // emit code to remove stack frame
     Emit( "SWITCH_TO_OLD_FRAME(oldFrame);\n" );
 
+    // drop the frames rooting this function's C locals
+    for ( Int i = 0; i < CompGCFrames; i++ ) {
+        Emit( "GAP_GC_POP();\n" );
+    }
+
     // emit code to return from function
     Emit( "return %c;\n", obj );
 
@@ -4308,6 +4330,11 @@ static void CompReturnVoid(Stat stat)
 
     // emit code to remove stack frame
     Emit( "SWITCH_TO_OLD_FRAME(oldFrame);\n" );
+
+    // drop the frames rooting this function's C locals
+    for ( Int i = 0; i < CompGCFrames; i++ ) {
+        Emit( "GAP_GC_POP();\n" );
+    }
 
     // emit code to return from function
     Emit( "return 0;\n" );
@@ -5091,6 +5118,77 @@ static void CompAssert3(Stat stat)
 
 /****************************************************************************
 **
+*F  NrGCRootsOfFunc(...) . . . . . number of C locals holding GAP objects
+*F  EmitGCRootPushes(...) . . . . . . . . . . . . root them in the generated code
+**
+**  A precise collector cannot see C locals, so compiled code must root the
+**  ones holding GAP objects: the arguments, the local variables not promoted
+**  to high variables, and the temporaries. The fixed-arity push macros take
+**  at most 9 slots and each declares the same frame variable, so more than 9
+**  roots means several frames in nested scopes. In practice almost all
+**  functions need one frame; the deepest in GAP's own compiled library needs
+**  four.
+*/
+#define GC_ROOTS_PER_FRAME 9
+
+static Int NrGCRootsOfFunc(Obj info, Int narg, Int nloc)
+{
+    Int n = narg + NTEMP_INFO(info);
+    for (Int i = 1; i <= nloc; i++) {
+        if (!CompGetUseHVar(i + narg))
+            n++;
+    }
+    return n;
+}
+
+// the <idx>-th such local, counting arguments, then locals, then temporaries
+static CVar GCRootOfFunc(Obj info, Int narg, Int nloc, Int idx)
+{
+    if (idx < narg)
+        return CVAR_LVAR(idx + 1);
+    idx -= narg;
+    for (Int i = 1; i <= nloc; i++) {
+        if (CompGetUseHVar(i + narg))
+            continue;
+        if (idx == 0)
+            return CVAR_LVAR(i + narg);
+        idx--;
+    }
+    return CVAR_TEMP(idx + 1);
+}
+
+static void EmitGCRootPushes(Obj info, Int narg, Int nloc)
+{
+    Int total = NrGCRootsOfFunc(info, narg, nloc);
+    Int done = 0;
+
+    CompGCFrames = 0;
+    while (done < total) {
+        Int k = total - done;
+        if (k > GC_ROOTS_PER_FRAME)
+            k = GC_ROOTS_PER_FRAME;
+
+        // each frame after the first needs its own scope, as they all
+        // declare the same frame variable
+        if (CompGCFrames > 0)
+            Emit("{\n");
+
+        Emit("GAP_GC_PUSH%d(", k);
+        for (Int j = 0; j < k; j++) {
+            if (j > 0)
+                Emit(", ");
+            Emit("&%c", GCRootOfFunc(info, narg, nloc, done + j));
+        }
+        Emit(");\n");
+
+        done += k;
+        CompGCFrames++;
+    }
+}
+
+
+/****************************************************************************
+**
 *F  CompFunc( <func> )  . . . . . . . . . . . . . . . . .  compile a function
 **
 **  'CompFunc' compiles the function <func>, i.e., it emits  the code for the
@@ -5176,7 +5274,7 @@ static void CompFunc(Obj func) GAP_GC_CANSAFEPOINT
         Emit( " Obj  args )\n" );
         Emit( "{\n" );
         for ( i = 1; i <= narg; i++ ) {
-            Emit( "Obj  %c;\n", CVAR_LVAR(i) );
+            Emit( "Obj  %c = 0;\n", CVAR_LVAR(i) );
         }
     }
 
@@ -5201,6 +5299,11 @@ static void CompFunc(Obj func) GAP_GC_CANSAFEPOINT
     // emit the code for the higher variables
     Emit( "Bag oldFrame;\n" );
 
+    // root the C locals holding GAP objects, before the first allocation
+    // below; every declaration above initialises its variable
+    Int savedGCFrames = CompGCFrames;
+    EmitGCRootPushes(info, narg, nloc);
+
     // emit the code to get the arguments for xarg functions
     if ( 6 < narg ) {
         Emit( "CHECK_NR_ARGS( %d, args )\n", narg );
@@ -5214,8 +5317,11 @@ static void CompFunc(Obj func) GAP_GC_CANSAFEPOINT
         for ( i = 1; i < narg; i++ ) {
             Emit( "%c = ELM_PLIST( args, %d );\n", CVAR_LVAR(i), i );
         }
-        Emit( "Obj x_temp_range = Range2Check(INTOBJ_INT(%d), INTOBJ_INT(LEN_PLIST(args)));\n", narg);
-        Emit( "%c = ELMS_LIST(args , x_temp_range);\n", CVAR_LVAR(narg));
+        CVar range = CVAR_TEMP( NewTemp( "range" ) );
+        Emit( "%c = Range2Check(INTOBJ_INT(%d), INTOBJ_INT(LEN_PLIST(args)));\n",
+              range, narg );
+        Emit( "%c = ELMS_LIST(args , %c);\n", CVAR_LVAR(narg), range );
+        FreeTemp( TEMP_CVAR( range ) );
     }
 
     // emit the code to switch to a new frame for outer functions
@@ -5240,6 +5346,13 @@ static void CompFunc(Obj func) GAP_GC_CANSAFEPOINT
 
     // compile the body
     CompStat( OFFSET_FIRST_STAT );
+
+    // close the scopes opened for the second and later GC frames; every path
+    // out of the body returns, so no pop is needed here
+    for ( i = 1; i < CompGCFrames; i++ ) {
+        Emit( "}\n" );
+    }
+    CompGCFrames = savedGCFrames;
 
     Emit( "}\n" );
 
@@ -5305,10 +5418,10 @@ Int CompileFunc(Obj filename, Obj func, Obj name, Int crc, Obj magic2)
             Emit( "static GVar G_%n;\n", NameGVar(i) );
         }
         if ( CompGetUseGVar( i ) & COMP_USE_GVAR_COPY ) {
-            Emit( "static Obj  GC_%n;\n", NameGVar(i) );
+            Emit( "static Obj  GC_%n GAP_GC_GLOBALLY_ROOTED;\n", NameGVar(i) );
         }
         if ( CompGetUseGVar( i ) & COMP_USE_GVAR_FOPY ) {
-            Emit( "static Obj  GF_%n;\n", NameGVar(i) );
+            Emit( "static Obj  GF_%n GAP_GC_GLOBALLY_ROOTED;\n", NameGVar(i) );
         }
     }
 
@@ -5394,8 +5507,10 @@ Int CompileFunc(Obj filename, Obj func, Obj name, Int crc, Obj magic2)
     Emit( "\n/* 'InitLibrary' sets up gvars, rnams, functions */\n" );
     Emit( "static Int InitLibrary ( StructInitInfo * module )\n" );
     Emit( "{\n" );
-    Emit( "Obj func1;\n" );
-    Emit( "Obj body1;\n" );
+    Emit( "Obj func1 = 0;\n" );
+    Emit( "Obj body1 = 0;\n" );
+    // func1 is held across the NewFunctionBody call below, which allocates
+    Emit( "GAP_GC_PUSH2(&func1, &body1);\n" );
     Emit( "\n/* Complete Copy/Fopy registration */\n" );
     Emit( "UpdateCopyFopyInfo();\n" );
     Emit( "FileName = MakeImmString( \"%g\" );\n", magic2 );
@@ -5407,6 +5522,7 @@ Int CompileFunc(Obj filename, Obj func, Obj name, Int crc, Obj magic2)
     Emit( "SET_BODY_FUNC( func1, body1 );\n" );
     Emit( "CHANGED_BAG( func1 );\n");
     Emit( "CALL_0ARGS( func1 );\n" );
+    Emit( "GAP_GC_POP();\n" );
     Emit( "\n" );
     Emit( "return 0;\n" );
     Emit( "\n}\n" );
