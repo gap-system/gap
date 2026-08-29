@@ -15,6 +15,7 @@ Examples:
 
 Environment overrides:
   JULIA_GC_ANALYZER_CLANG   path to clang to use
+  JULIA_GC_ANALYZER_CFLAGS  extra compiler flags, e.g. an include path
   JULIA_GC_ANALYZER_PLUGIN  path to libGCCheckerPlugin shared library
   JULIA_GC_ANALYZER_CHECKERS analyzer checker list
 USAGE
@@ -57,6 +58,7 @@ cmd=(
     "${cflags_array[@]}"
     "${cppflags_array[@]}"
     -fcolor-diagnostics
+    ${JULIA_GC_ANALYZER_CFLAGS:-}
     -x "$lang"
     "$source_file"
 )
