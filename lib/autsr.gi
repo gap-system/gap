@@ -1609,6 +1609,15 @@ local
           sub:=ac.stabilizer;
         fi;
       od;
+
+      # An automorphism in Aperm that was found by random search need not
+      # stabilize the classes, so it could have been cut from `sub`. The
+      # backtrack search below requires Aperm <= sub.
+      if not IsSubset(sub,Aperm) then
+        sub:=ClosureGroup(sub,Aperm);
+        Info(InfoMorph,2,"Reduction cut known elements, closure ",
+          IndexNC(sub,Aperm));
+      fi;
     fi;
 
     j:=Size(sub);
