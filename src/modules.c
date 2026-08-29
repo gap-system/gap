@@ -645,7 +645,8 @@ static void SetupFuncInfo(Obj func, const Char * cookie) GAP_GC_CANSAFEPOINT
         Obj location = 0;
         Obj filename = 0;
         Obj body_bag = 0;
-        GAP_GC_PUSH3(&location, &filename, &body_bag);
+        // <func> is used again after the allocations below
+        GAP_GC_PUSH4(&func, &location, &filename, &body_bag);
         location = MakeImmString(pos + 1);
 
         char buffer[512];

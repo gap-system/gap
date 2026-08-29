@@ -2509,7 +2509,8 @@ static Int PostRestore (
 static Int InitLibrary (
     StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
-    Obj tmpFunc, tmpBody;
+    Obj tmpFunc = 0, tmpBody = 0;
+    GAP_GC_PUSH2(&tmpFunc, &tmpBody);
 
     BottomLVars = NewBag(T_HVARS, 3 * sizeof(Obj));
     tmpFunc = NewFunctionC( "bottom", 0, "", 0 );
@@ -2517,10 +2518,12 @@ static Int InitLibrary (
     LVarsHeader * hdr = (LVarsHeader *)ADDR_OBJ(BottomLVars);
     hdr->func = tmpFunc;
     hdr->parent = Fail;
+    CHANGED_BAG(BottomLVars);
     tmpBody = NewFunctionBody();
     SET_BODY_FUNC( tmpFunc, tmpBody );
     // tmpFunc predates two allocations, tmpBody is young
     CHANGED_BAG( tmpFunc );
+    GAP_GC_POP();
 
     // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
