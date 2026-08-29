@@ -1786,8 +1786,9 @@ local
               jorb:=ShallowCopy(Orbit(AQP,j[1],C[2],C[1],asAutom));
               jorpo:=[Position(jorb,j[1]),Position(jorb,j[2])];
               if jorpo[2]=fail then
-                Append(jorb,Orbit(AQP,j[1],C[2],C[1],asAutom));
-            jorpo[2]:=Position(jorb,j[2]);
+                # the two subgroups lie in different orbits
+                Append(jorb,Orbit(AQP,j[2],C[2],C[1],asAutom));
+                jorpo[2]:=Position(jorb,j[2]);
               fi;
               if Length(jorb)>Length(j) then
             B:=ActionHomomorphism(AQP,jorb,C[2],C[1],asAutom);
