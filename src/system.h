@@ -108,6 +108,19 @@ enum {
 */
 void SyExit(UInt ret) NORETURN GAP_GC_CANSAFEPOINT;
 
+/****************************************************************************
+**
+**  Memory checking. What it does depends on the collector in use: GASMAN
+**  moves every bag on each allocation, to catch references into a bag's
+**  interior kept across a collection; the Julia GC collects on each
+**  allocation, to catch GAP objects reachable only from an unrooted C local.
+**  Both are very slow. The flag is defined by the collector.
+*/
+#ifdef GAP_MEM_CHECK
+int enableMemCheck(const char * argv[], void * dummy);
+extern Int EnableMemCheck;
+#endif
+
 
 /****************************************************************************
 **

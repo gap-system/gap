@@ -884,8 +884,10 @@ static Obj FuncGASMAN_LIMITS(Obj self) GAP_GC_CANSAFEPOINT
 
 #ifdef GAP_MEM_CHECK
 
+// 0 disables the checks; n > 0 runs them at every nth bag allocation.
 static Obj FuncGASMAN_MEM_CHECK(Obj self, Obj newval)
 {
+    RequireNonnegativeSmallInt(SELF_NAME, newval);
     EnableMemCheck = INT_INTOBJ(newval);
     return 0;
 }
