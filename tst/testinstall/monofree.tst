@@ -133,6 +133,10 @@ gap> FreeMonoid("bacon", "eggs", "beans");
 <free monoid on the generators [ bacon, eggs, beans ]>
 gap> FreeMonoid("shed");
 <free monoid on the generators [ shed ]>
+gap> FreeMonoid("shed", "shed");
+Error, FreeMonoid( <name1>, <name2>, ... ): the names must be distinct
+gap> FreeMonoid("a", "b", "c", "d", "b", "e", "f");
+Error, FreeMonoid( <name1>, <name2>, ... ): the names must be distinct
 
 # FreeMonoid( [ <name1>, <name2>, ... ] )
 gap> FreeMonoid(InfiniteListOfNames("a"));

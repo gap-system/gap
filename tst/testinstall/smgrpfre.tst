@@ -147,8 +147,8 @@ Error, usage: FreeSemigroup( [<wfilt>, ]<rank>[, <name>] )
 # generatorNames
 gap> FreeSemigroup(5 : generatorNames := false);
 Error, Cannot process the `generatorNames` option: the value must be either a \
-single string, or a list of sufficiently many nonempty strings (at least 5, in\
- this case)
+single string, or a list of sufficiently many distinct nonempty strings (at le\
+ast 5, in this case)
 gap> PushOptions( rec( generatorNames := fail ) );
 gap> FreeSemigroup(3 : generatorNames := "");
 <free semigroup on the generators [ 1, 2, 3 ]>
@@ -156,8 +156,8 @@ gap> FreeSemigroup(2 : generatorNames := "cool");
 <free semigroup on the generators [ cool1, cool2 ]>
 gap> FreeSemigroup(2 : generatorNames := ["red"]);
 Error, Cannot process the `generatorNames` option: the value must be either a \
-single string, or a list of sufficiently many nonempty strings (at least 2, in\
- this case)
+single string, or a list of sufficiently many distinct nonempty strings (at le\
+ast 2, in this case)
 gap> PushOptions( rec( generatorNames := fail ) );
 gap> FreeSemigroup(2 : generatorNames := ["red", "yellow"]);
 <free semigroup on the generators [ red, yellow ]>
