@@ -919,10 +919,77 @@ void RetypeBagIntern(Bag bag, UInt new_type)
     header->type = new_type;
 }
 
+
+/****************************************************************************
+**
+**  GAP_MEM_CHECK for the Julia GC
+**
+**  Under GASMAN, memory checking moves every bag on each allocation, to catch
+**  references kept into a bag's interior across a garbage collection. The
+**  Julia GC never moves a bag, so that class of bug cannot arise; the class
+**  that can is a GAP object reachable only from an unrooted C local, which a
+**  precise collector is free to reclaim.
+**
+**  To catch those, collect on every bag allocation. Anything the caller holds
+**  without rooting it is then freed at the first opportunity rather than at
+**  some unpredictable later one, which turns an intermittent crash into a
+**  reproducible one. It is correspondingly slow.
+**
+**  Enable at run time with GASMAN_MEM_CHECK(1), or from the start with
+**  --enableMemCheck.
+*/
+#ifdef GAP_MEM_CHECK
+
+Int EnableMemCheck = 0;
+
+int enableMemCheck(const char * argv[], void * dummy)
+{
+    fputs("# Warning: --enableMemCheck causes SEVERE slowdowns.\n", stderr);
+    // The sampling period from process start; see GASMAN_MEM_CHECK. Period 1
+    // cannot get through library loading, so a debugging session that needs
+    // the checks during startup sets GAP_MEMCHECK_PERIOD instead.
+    const char * period = getenv("GAP_MEMCHECK_PERIOD");
+    EnableMemCheck = period ? atoi(period) : 1;
+    if (EnableMemCheck <= 0)
+        EnableMemCheck = 1;
+    return 1;
+}
+
+// Collect now, so that anything not currently rooted is reclaimed here.
+//
+// EnableMemCheck is the sampling period. A period of 1 collects at every
+// allocation, which pins a rooting bug to the exact allocation that exposes
+// it, but is far too slow to reach the end of even a small test file. A larger
+// period trades that precision for the ability to run a whole suite: an
+// unrooted value now only dies if a sampled allocation falls in its window, so
+// a bug shows up as an ordinary crash somewhere in the file rather than at its
+// cause, and may take several runs to appear at all.
+static void MemCheckCollect(void) GAP_GC_CANSAFEPOINT
+{
+    static UInt sinceLastCollect = 0;
+
+    if (EnableMemCheck <= 0)
+        return;
+
+    if (++sinceLastCollect < (UInt)EnableMemCheck)
+        return;
+
+    sinceLastCollect = 0;
+    jl_gc_collect(JL_GC_FULL);
+}
+
+#else
+
+#define MemCheckCollect() ((void)0)
+
+#endif
+
 Bag NewBag(UInt type, UInt size)
 {
     Bag  bag;    // identifier of the new bag
     UInt alloc_size;
+
+    MemCheckCollect();
 
     alloc_size = sizeof(BagHeader) + size;
 
@@ -959,6 +1026,14 @@ Bag NewBag(UInt type, UInt size)
 
 UInt ResizeBag(Bag bag GAP_GC_MAYBE_UNROOTED, UInt new_size)
 {
+    // <bag> may be unrooted by the caller, so root it across the collection;
+    // the braces keep this frame out of the one pushed further below.
+    {
+        GAP_GC_PUSH1(&bag);
+        MemCheckCollect();
+        GAP_GC_POP();
+    }
+
     BagHeader * header = BAG_HEADER(bag);
     UInt        old_size = header->size;
 
