@@ -851,11 +851,15 @@ Expr CodeFuncExprEnd(CodeState * cs, UInt nr, BOOL pushExpr, Int endLine)
 {
     Expr                expr;           // function expression, result
     Stat                stat1;          // single statement of body
-    Obj                 fexp;           // function expression bag
+    Obj                 fexp = 0;       // function expression bag
     UInt                len;            // length of func. expr. list
     UInt                i;              // loop variable
 
     // get the function expression
+    // <fexp> is reachable through cs->CodeLVars only until that is
+    // reassigned below; after that this frame is what keeps it alive, and
+    // both AddValueToBody and MakeFunction allocate.
+    GAP_GC_PUSH1(&fexp);
     fexp = FUNC_LVARS(cs->CodeLVars);
 
     // get the body of the function
@@ -927,6 +931,7 @@ Expr CodeFuncExprEnd(CodeState * cs, UInt nr, BOOL pushExpr, Int endLine)
         if (pushExpr) {
             PushExpr(expr);
         }
+        GAP_GC_POP();
         return expr;
     }
 
@@ -935,6 +940,7 @@ Expr CodeFuncExprEnd(CodeState * cs, UInt nr, BOOL pushExpr, Int endLine)
         cs->CodeResult = MakeFunction(fexp);
     }
 
+    GAP_GC_POP();
     return 0;
 }
 
