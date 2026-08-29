@@ -27,6 +27,10 @@ if [[ ${1:-} == --analyze-one ]]; then
     cd "$here"
     src=$4
     log="$3/$(basename "$src").log"
+    # The compiled-code corpus lives outside src/ and includes "compiled.h"
+    case $src in
+        tst/test-compile/*) export JULIA_GC_ANALYZER_CFLAGS="-I src" ;;
+    esac
     if dev/run-julia-gc-analyzer.sh "$2" "$src" > "$log" 2>&1; then
         printf '  ok    %s\n' "$src"
     else
@@ -63,6 +67,14 @@ for f in src/*.c src/*.cc; do
         [[ $base == "$e" ]] && skip=1
     done
     [[ -n $skip ]] || sources+=("$f")
+done
+
+# GAP's compiler emits C that must root its own locals, and the checked-in
+# expected outputs of tst/test-compile are a stable sample of what it emits.
+# Analyzing them turns a codegen regression into a diagnostic here rather
+# than an intermittent crash much later.
+for f in tst/test-compile/*.dynamic.c; do
+    [[ -e $f ]] && sources+=("$f")
 done
 
 echo "Analyzing ${#sources[@]} translation units with $jobs job(s) into $log_dir/"
