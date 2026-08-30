@@ -139,7 +139,7 @@
 #endif
 
 // fill in the data "behind" bags
-struct OpaqueBag {
+struct GAP_GC_TRACKED_TYPE OpaqueBag {
     void * body;
 };
 GAP_STATIC_ASSERT(sizeof(void *) == sizeof(struct OpaqueBag),
