@@ -57,7 +57,8 @@ EXCLUDE=(boehm_gc.c gasman.c sysmem.c)
 
 cd "$here"
 mkdir -p "$log_dir"
-rm -f "$log_dir/failed"
+# clear previous results: a stale log is indistinguishable from a fresh one
+rm -f "$log_dir/failed" "$log_dir"/*.log
 
 sources=()
 for f in src/*.c src/*.cc; do
@@ -79,7 +80,8 @@ done
 
 echo "Analyzing ${#sources[@]} translation units with $jobs job(s) into $log_dir/"
 
-export JULIA_GC_ANALYZER_CHECKERS=${JULIA_GC_ANALYZER_CHECKERS:-julia.GCChecker}
+# The per-file runner picks the default checker list; an explicit
+# JULIA_GC_ANALYZER_CHECKERS in the environment reaches it either way.
 
 printf '%s\n' "${sources[@]}" \
     | xargs -P "$jobs" -n 1 "$0" --analyze-one "$build_dir" "$log_dir"
