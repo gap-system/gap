@@ -43,7 +43,7 @@ EOM
     exit 1
 fi
 
-checkers=${JULIA_GC_ANALYZER_CHECKERS:-core,julia.GCChecker}
+checkers=${JULIA_GC_ANALYZER_CHECKERS:-$GAP_ANALYZER_DEFAULT_CHECKERS}
 
 cmd=(
     "$clang_bin"
