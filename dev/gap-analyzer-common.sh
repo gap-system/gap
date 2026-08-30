@@ -13,6 +13,12 @@
 # JULIA_INCLUDE_DIR, JULIA_GC_ANALYZER_CLANG, JULIA_GC_ANALYZER_PLUGIN,
 # JULIA_CLANG_TIDY or JULIA_FIRST_DECL_PLUGIN.
 
+# The checker list Julia itself uses (CLANGSA_GC_CHECKERS in its src/Makefile).
+# Running julia.GCChecker on its own is not a supported configuration: without
+# core, paths are not terminated at noreturn calls, which produces spurious
+# "JL_GC_POP without corresponding push" reports.
+GAP_ANALYZER_DEFAULT_CHECKERS="core,julia.GCChecker,apiModeling,unix.cstring.CStringModeling,unix.DynamicMemoryModeling,nullability.NullPassedToNonnull,nullability.NullReturnedFromNonnull"
+
 split_shell_words() {
     local value=$1
     local -n out_ref=$2
