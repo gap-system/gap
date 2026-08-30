@@ -42,7 +42,7 @@
 Int SyStorKill;
 
 // fill in the data "behind" bags
-struct OpaqueBag {
+struct GAP_GC_TRACKED_TYPE OpaqueBag {
     void * body;
 #ifdef HPCGAP
     void * region;
