@@ -154,6 +154,12 @@
 // On a global, or on a function to mean its return value: always rooted.
 #define GAP_GC_GLOBALLY_ROOTED \
     __attribute__((annotate("julia_globally_rooted")))
+// On a struct: values of the type hold a GC-managed object, so the analyzer
+// tracks their rooting. Julia's own types are recognised by name; this is how
+// an embedder declares its own. Annotate the struct, not a typedef of it, so
+// that every typedef is covered.
+#define GAP_GC_TRACKED_TYPE \
+    __attribute__((annotate("julia_gc_tracked")))
 
 // Function does not hit GC safepoints.
 #define GAP_GC_NOTSAFEPOINT \
@@ -221,6 +227,7 @@ extern struct GCUNSAFEREGION *jl_gcunsaferegion;
 #define GAP_GC_MAYBE_UNROOTED
 #define GAP_GC_REQUIRE_ROOTED_SLOT
 #define GAP_GC_GLOBALLY_ROOTED
+#define GAP_GC_TRACKED_TYPE
 
 // A function holding nothing is flagged if it reaches a safepoint.
 #define GAP_GC_NOTSAFEPOINT
@@ -265,6 +272,7 @@ extern struct GCUNSAFEREGION *jl_gcunsaferegion;
 #define GAP_GC_MAYBE_UNROOTED
 #define GAP_GC_REQUIRE_ROOTED_SLOT
 #define GAP_GC_GLOBALLY_ROOTED
+#define GAP_GC_TRACKED_TYPE
 #define GAP_GC_NOTSAFEPOINT
 #define GAP_GC_CANSAFEPOINT
 #define GAP_GC_CANSAFEPOINT_ENTER
