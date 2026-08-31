@@ -99,10 +99,10 @@ typedef struct {
 **
 **  PtrArray  (declared indirectly by dynarray.h)
 **
-**  Used by the task stack scanning code to keep track of all (potential)
-**  GapObj pointers found in a stack. This is kept in an array so it can
-**  be reused if a task stack has to be scanned again but is provably
-**  unchanged.
+**  Used by the task stack scanning code to collect the (potential) GapObj
+**  pointers found in a stack, so that they can be marked after the scan
+**  has completed (marking during the scan would not be safe, as the scan
+**  may be aborted by a segmentation fault at any point).
 */
 typedef void * Ptr;
 
@@ -130,35 +130,6 @@ static inline int cmp_ptr(void * p, void * q)
 
 /****************************************************************************
 **
-**  TaskInfoTree
-**
-**  Used by the task stack scanning code to keep track of all tasks whose
-**  stacks have been scanned; for each task we store a PtrArray collecting
-**  all the (potential) GapObj pointers found in that task's stack.
-**
-**  TODO: what if a task is GCed, do we ever free the corresponding struct?
-**  Otherwise we have a leak.
-**  TODO: if a task is GCed and then later the same memory location is reused
-**  for a stack, are we safe?
-*/
-typedef struct {
-    jl_task_t * task;
-    PtrArray *  stack;
-} TaskInfo;
-
-static int CmpTaskInfo(TaskInfo i1, TaskInfo i2)
-{
-    return cmp_ptr(i1.task, i2.task);
-}
-
-#define ELEM_TYPE TaskInfo
-#define COMPARE CmpTaskInfo
-
-#include "baltree.h"
-
-
-/****************************************************************************
-**
 **  Global variables
 */
 
@@ -173,7 +144,6 @@ static jl_task_t * ScannedRootTask;
 #endif
 
 static size_t MaxPoolObjSize;
-static int    FullGC;
 static UInt   StartTime, TotalTime;
 
 #if !defined(USE_GAP_INSIDE_JULIA) && !defined(DISABLE_STACK_SCAN)
@@ -188,10 +158,6 @@ static TNumFreeFuncBags TabFreeFuncBags[NUM_TYPES];
 // HACK: TabMarkFuncBags is accessed by MarkCopyingSubBags in src/objects.c
 TNumMarkFuncBags TabMarkFuncBags[NUM_TYPES];
 
-#ifndef DISABLE_STACK_SCAN
-static TaskInfoTree * TaskStacks;
-static pthread_mutex_t TaskStacksMutex;
-#endif
 
 //
 // global bags
@@ -483,42 +449,24 @@ static void MarkFromList(jl_ptls_t ptls, PtrArray * arr)
     }
 }
 
-static void
-ScanTaskStack(int rescan, jl_task_t * task, void * start, void * end)
+static void ScanTaskStack(jl_task_t * task, void * start, void * end)
 {
-    if (jl_n_gcthreads > 1)
-        pthread_mutex_lock(&TaskStacksMutex);
-    TaskInfo   tmp = { task, NULL };
-    TaskInfo * taskinfo = TaskInfoTreeFind(TaskStacks, tmp);
-    PtrArray * stack;
-    if (taskinfo != NULL) {
-        stack = taskinfo->stack;
-        if (rescan)
-            PtrArraySetLen(stack, 0);
-    }
-    else {
-        tmp.stack = PtrArrayMake(1024);
-        stack = tmp.stack;
-        TaskInfoTreeInsert(TaskStacks, tmp);
-    }
-    if (jl_n_gcthreads > 1)
-        pthread_mutex_unlock(&TaskStacksMutex);
-    if (rescan) {
-        SafeScanTaskStack(stack, start, end);
-        // Remove duplicates
-        if (stack->len > 0) {
-            PtrArraySort(stack);
-            Int p = 0;
-            for (Int i = 1; i < stack->len; i++) {
-                if (stack->items[i] != stack->items[p]) {
-                    p++;
-                    stack->items[p] = stack->items[i];
-                }
+    PtrArray * stack = PtrArrayMake(1024);
+    SafeScanTaskStack(stack, start, end);
+    // Remove duplicates
+    if (stack->len > 0) {
+        PtrArraySort(stack);
+        Int p = 0;
+        for (Int i = 1; i < stack->len; i++) {
+            if (stack->items[i] != stack->items[p]) {
+                p++;
+                stack->items[p] = stack->items[i];
             }
-            PtrArraySetLen(stack, p + 1);
         }
+        PtrArraySetLen(stack, p + 1);
     }
     MarkFromList(jl_get_ptls_states(), stack);
+    PtrArrayDelete(stack);
 }
 
 static NOINLINE void TryMarkRange(jl_ptls_t ptls, void * start, void * end)
@@ -605,23 +553,6 @@ static void GapTaskScanner(jl_task_t * task, int root_task)
     if (task == ScannedRootTask)
         return;
 
-    int rescan = 1;
-    if (!FullGC) {
-        // This is a temp hack to work around a problem with the
-        // generational GC. Basically, task stacks are treated as roots
-        // and are therefore being scanned regardless of whether they
-        // are old or new, which can be expensive in the conservative
-        // case. In order to avoid that, we're manually checking whether
-        // the old flag is set for a task.
-        //
-        // This works specifically for task stacks as the current task
-        // is being scanned regardless and a write barrier will flip the
-        // age bit back to new if tasks are being switched.
-        jl_taggedvalue_t * tag = jl_astaggedvalue(task);
-        if (tag->bits.gc & 2)
-            rescan = 0;
-    }
-
     char *active_start, *active_end, *total_start, *total_end;
     jl_active_task_stack(task, &active_start, &active_end, &total_start,
                          &total_end);
@@ -637,7 +568,7 @@ static void GapTaskScanner(jl_task_t * task, int root_task)
         // therefore use a separate routine that scans from the
         // stack bottom until we reach the other end of the stack
         // or a guard page.
-        ScanTaskStack(rescan, task, active_start, active_end);
+        ScanTaskStack(task, active_start, active_end);
     }
 }
 
@@ -660,8 +591,6 @@ static UInt GCTime(void)
 // Julia callback
 static void PreGCHook(int full)
 {
-    FullGC = full;
-
     // This is the same code as in VarsBeforeCollectBags() for GASMAN.
     // It is necessary because ASS_LVAR() and related functionality
     // does not call CHANGED_BAG() for performance reasons. CHANGED_BAG()
@@ -791,10 +720,6 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
 #endif
 
 #ifndef DISABLE_STACK_SCAN
-    if (jl_n_gcthreads > 1)
-        pthread_mutex_init(&TaskStacksMutex, NULL);
-    TaskStacks = TaskInfoTreeMake();
-
     // These callbacks potentially require access to the Julia
     // TLS and thus need to be installed after initialization.
     jl_gc_set_cb_root_scanner(GapRootScanner, 1);

@@ -87,6 +87,9 @@ jobs:
           cd /tmp/GAPROOT
           patchdir=$GAPJLPATH/.github/workflows/GAP_patches/master
           if [ -d $patchdir ]; then
+            # HACK: delete julia_gc-rescan.patch manually for now, until it
+            # is gone from the GAP.jl repo
+            rm -f $patchdir/julia_gc-rescan.patch
             for f in $patchdir/*.patch; do
               echo "Applying patch ${f}"
               patch -p1 -d . < ${f}
