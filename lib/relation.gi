@@ -607,11 +607,11 @@ InstallMethod( HasseDiagramBinaryRelation,
         HDBRMinElts := function(list, rel)
 
             ## x minimal if
-            ##  {y in list | y<>x and y in PreImagesElm( rel,x)} is empty
+            ##  {y in list | y<>x and y in PreImagesElmNC( rel,x)} is empty
             ##
             return Filtered(list,
               x->IsEmpty(Filtered(list, y-> (y <> x) and
-                                              (y in PreImagesElm(rel,x)))));
+                                            (y in PreImagesElmNC(rel,x)))));
         end;
 
         ## return the elements which cover x in rel

@@ -395,7 +395,7 @@ local H,cl,a,c;
   H:=Image(hom,G);
   cl:=[];
   for c in ConjugacyClasses(H) do
-    a:=ConjugacyClass(G,PreImagesRepresentative(hom,Representative(c)));
+    a:=ConjugacyClass(G,PreImagesRepresentativeNC(hom,Representative(c)));
     if HasStabilizerOfExternalSet(c) then
       SetStabilizerOfExternalSet(a,PreImage(hom,StabilizerOfExternalSet(c)));
     fi;

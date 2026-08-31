@@ -441,7 +441,7 @@ local q,r,tg,dtg,pemb,ugens,g,gi,d,o,gens,genims,i,gr,img,l,mapi;
   #better: orbit algo
   #r:=ShallowCopy(RightTransversal(q,qu));
   #Sort(r,function(a,b) return 1^a<1^b;end);
-  #r:=List(r,i->PreImagesRepresentative(beta,i));
+  #r:=List(r,i->PreImagesRepresentativeNC(beta,i));
 
   # compute transversal with short words from orbit algorithm on points
   o:=[1];
@@ -1318,7 +1318,7 @@ local v,aiu,aiv,G,primes,irrel,ma,mao,mau,a,k,gens,imgs,q,dec,deco,piv,co;
   fi;
 
   gens:=SmallGeneratingSet(a);
-  imgs:=List(gens,x->Image(mau,Image(hom,PreImagesRepresentative(ma,x))));
+  imgs:=List(gens,x->Image(mau,Image(hom,PreImagesRepresentativeNC(ma,x))));
   q:=GroupHomomorphismByImages(a,Image(mau),gens,imgs);
   k:=KernelOfMultiplicativeGeneralMapping(q);
 
@@ -1329,7 +1329,7 @@ local v,aiu,aiv,G,primes,irrel,ma,mao,mau,a,k,gens,imgs,q,dec,deco,piv,co;
   dec:=EpimorphismFromFreeGroup(Group(gens));
   deco:=function(x)
     local i;
-    x:=ExponentSums(PreImagesRepresentative(dec,x));
+    x:=ExponentSums(PreImagesRepresentativeNC(dec,x));
     for i in [1..Length(aiv)] do
       x[i]:=x[i] mod aiv[i];
     od;
@@ -1366,7 +1366,7 @@ local hom,pcgs,impcgs;
   impcgs:=FamilyPcgs(Image(hom,M));
   pcgs:=PcgsByPcSequenceCons(IsPcgsDefaultRep,IsModuloPcgsFpGroupRep,
           ElementsFamily(FamilyObj(M)),
-          List(impcgs,i->PreImagesRepresentative(hom,i)),
+          List(impcgs,i->PreImagesRepresentativeNC(hom,i)),
           []
           );
   pcgs!.hom:=hom;

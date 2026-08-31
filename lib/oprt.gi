@@ -2942,7 +2942,7 @@ local   G,  D,  d,  e,  gens,  acts,  act,  xset,  hom,  p,  rep;
       rep := RepresentativeActionOp( ImagesSource( hom ), d, e,
                       OnPoints );
       if rep <> fail  then
-        rep := PreImagesRepresentative( hom, rep );
+        rep := PreImagesRepresentativeNC( hom, rep );
       fi;
       return rep;
     elif IsBound( D )  then
@@ -3411,7 +3411,7 @@ function( hom, elm )
     TryNextMethod();
   fi;
 
-  # PreImagesRepresentative does not test membership
+  # PreImagesRepresentativeNC does not test membership
   #if not elm in Image( hom )  then return fail; fi;
   xset:=UnderlyingExternalSet(hom);
   V := HomeEnumerator(xset);
@@ -3492,7 +3492,7 @@ function( hom, elm )
     TryNextMethod();
   fi;
 
-  # PreImagesRepresentative does not test membership
+  # PreImagesRepresentativeNC does not test membership
   #if not elm in Image( hom )  then return fail; fi;
   xset:=UnderlyingExternalSet(hom);
   V := HomeEnumerator(xset);

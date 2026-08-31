@@ -23,7 +23,7 @@ local genpreimages,  pre,kg,sz,ol,orb,pos,dom,one;
   genpreimages:=GeneratorsOfMagmaWithInverses( elms );
 
   genpreimages:= List(genpreimages,
-                    gen -> PreImagesRepresentative( map, gen ) );
+                    gen -> PreImagesRepresentativeNC( map, gen ) );
   if fail in genpreimages then
     TryNextMethod();
   fi;
@@ -1164,7 +1164,7 @@ local r, fgens, gens, kg;
   fi;
   fgens:=ShallowCopy(GeneratorsOfGroup(r));
   gens:=List(fgens,
-             i->PreImagesRepresentative(hom2,PreImagesRepresentative(hom1,i)));
+        i->PreImagesRepresentativeNC(hom2,PreImagesRepresentativeNC(hom1,i)));
   kg:=GeneratorsOfGroup(KernelOfMultiplicativeGeneralMapping(hom2));
   Append(gens,kg);
   Append(fgens,List(kg,i->One(r)));
@@ -1640,7 +1640,7 @@ InstallMethod( PreImagesSetNC, "constituent homomorphism",CollFamRangeEqFamElms,
     # create the preimage group
     H := EmptyStabChain( [  ], One( Source( hom ) ) );
     S := ConjugateStabChain( StabChainMutable( I ), H, x ->
-                 PreImagesRepresentative( hom, x ), hom!.conperm ^ -1 );
+                 PreImagesRepresentativeNC( hom, x ), hom!.conperm ^ -1 );
     T := H;
     while IsBound( T.stabilizer )  do
         AddGeneratorsExtendSchreierTree( T, GeneratorsOfGroup( K ) );
@@ -1983,7 +1983,7 @@ InstallGlobalFunction( PreImageSetStabBlocksHomomorphism, function( hom, I )
         H := PreImageSetStabBlocksHomomorphism( hom, I.stabilizer );
         ChangeStabChain( H, [ pnt ], false );
         for gen  in I.generators  do
-            pre := PreImagesRepresentative( hom, gen );
+            pre := PreImagesRepresentativeNC( hom, gen );
             if not IsBound( H.translabels[ pnt ^ pre ] )  then
                 AddGeneratorsExtendSchreierTree( H, [ pre ] );
             fi;

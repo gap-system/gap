@@ -416,7 +416,7 @@ InstallMethod( SubdirectProductOp,"permgroup", true,
     # over the generators of the kernel of $phi_2$.
     gens := [];
     for gen  in GeneratorsOfGroup( G1 )  do
-        Add( gens, gen^emb1 * PreImagesRepresentative(phi2,gen^phi1)^emb2 );
+        Add( gens, gen^emb1 * PreImagesRepresentativeNC(phi2,gen^phi1)^emb2 );
     od;
     for gen in GeneratorsOfGroup(
                    KernelOfMultiplicativeGeneralMapping( phi2 ) )  do
