@@ -996,9 +996,10 @@ end);
 
 #############################################################################
 ##
+#M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . . . . . . .  via images
 #M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . . .  via images
 ##
-InstallMethod( PreImagesRepresentative, "for PBG-Niceo",
+InstallMethod( PreImagesRepresentativeNC, "for PBG-Niceo",
     FamRangeEqFamElm,
     [ IsPreimagesByAsGroupGeneralMappingByImages and IsNiceMonomorphism,
       IsMultiplicativeElementWithInverse ], 0,
@@ -1006,9 +1007,22 @@ function( hom, elm )
 local p;
   # avoid the double dispatch for `AsGroupGeneralMappingByImages'
   PushOptions( rec( Run_In_GGMBI:= true ) );
-  p:=PreImagesRepresentative( AsGroupGeneralMappingByImages( hom ), elm );
+  p:=PreImagesRepresentativeNC( AsGroupGeneralMappingByImages( hom ), elm );
   PopOptions();
   return p;
+end );
+
+InstallMethod( PreImagesRepresentative, "for PBG-Niceo",
+    FamRangeEqFamElm,
+    [ IsPreimagesByAsGroupGeneralMappingByImages and IsNiceMonomorphism,
+      IsMultiplicativeElementWithInverse ], 0,
+function( hom, elm )
+  if not ( elm in Range(hom) ) then
+    Error( "<elm> is not in the range of mapping <hom>" );
+  elif not ( elm in Image(hom) ) then
+    return fail;
+  fi;
+  return PreImagesRepresentativeNC( hom, elm );
 end );
 
 #############################################################################

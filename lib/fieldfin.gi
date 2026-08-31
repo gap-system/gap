@@ -759,13 +759,25 @@ InstallMethod( ImagesRepresentative,
     return elm ^ aut!.power;
     end );
 
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
     "for Frobenius automorphism and range element",
     FamRangeEqFamElm,
     [ IsFrobeniusAutomorphism, IsObject ],
     function( aut, elm )
     # the inverse is again a Frobenius automorphism (or the identity)
     return ImagesRepresentative( InverseGeneralMapping( aut ), elm );
+    end );
+
+InstallMethod( PreImagesRepresentative,
+    "for Frobenius automorphism and range element",
+    FamRangeEqFamElm,
+    [ IsFrobeniusAutomorphism, IsObject ],
+    function( aut, elm )
+    # surjective, so range membership implies image membership
+    if not ( elm in Range( aut ) ) then
+        Error( "<elm> is not in the range of mapping <aut>" );
+    fi;
+    return PreImagesRepresentativeNC( aut, elm );
     end );
 
 InstallMethod( CompositionMapping2,

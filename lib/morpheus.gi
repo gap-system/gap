@@ -1075,9 +1075,10 @@ end);
 
 #############################################################################
 ##
-#M  PreImagesRepresentative   for OpHomAutomGrp
+#M  PreImagesRepresentativeNC   for OpHomAutomGrp
+#M  PreImagesRepresentative.    for OpHomAutomGrp
 ##
-InstallMethod(PreImagesRepresentative,"AutomGroup Niceomorphism",
+InstallMethod(PreImagesRepresentativeNC,"AutomGroup Niceomorphism",
   FamRangeEqFamElm,[IsActionHomomorphismAutomGroup,IsPerm],0,
 function(hom,elm)
 local xset,g,imgs;
@@ -1089,6 +1090,17 @@ local xset,g,imgs;
   elm:=GroupHomomorphismByImagesNC(g,g,BaseOfGroup(xset),imgs);
   SetIsBijective(elm,true);
   return elm;
+end);
+
+InstallMethod(PreImagesRepresentative,"AutomGroup Niceomorphism",
+  FamRangeEqFamElm,[IsActionHomomorphismAutomGroup,IsPerm],0,
+function(hom,elm)
+  if not (elm in Range(hom)) then
+    Error( "<elm> not in the range of mapping <hom>" );
+  elif not (elm in Image(hom)) then
+    return fail;
+  fi;
+  return PreImagesRepresentativeNC(hom,elm);
 end);
 
 
