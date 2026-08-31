@@ -23,7 +23,6 @@
 #include "funcs.h"
 #include "gap.h"
 #include "gapstate.h"
-#include "gaptime.h"
 #include "gasman.h"
 #include "objects.h"
 #include "plist.h"
@@ -37,6 +36,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/resource.h>
 #include <unistd.h>
 
 #include <julia.h>
@@ -637,6 +637,20 @@ static void GapTaskScanner(jl_task_t * task, int root_task)
 
 #endif // DISABLE_STACK_SCAN
 
+// Time spent in the process, in milliseconds.
+//
+// SyTime raises a GAP error when the clock cannot be read, which a GC hook
+// must not do: entering the error handler mid-collection runs GAP code. Read
+// the clock directly instead, and report 0 if it is unavailable. The Julia GC
+// is only supported on systems providing getrusage.
+static UInt GCTime(void)
+{
+    struct rusage buf;
+    if (getrusage(RUSAGE_SELF, &buf))
+        return 0;
+    return buf.ru_utime.tv_sec * 1000 + buf.ru_utime.tv_usec / 1000;
+}
+
 // Julia callback
 static void PreGCHook(int full)
 {
@@ -650,7 +664,7 @@ static void PreGCHook(int full)
     if (STATE(CurrLVars))
         CHANGED_BAG(STATE(CurrLVars));
 
-    StartTime = SyTime();
+    StartTime = GCTime();
 
 #ifndef REQUIRE_PRECISE_MARKING
     memset(MarkCache, 0, sizeof(MarkCache));
@@ -666,7 +680,7 @@ static void PostGCHook(int full)
 #ifndef DISABLE_STACK_SCAN
     ScannedRootTask = 0;
 #endif
-    TotalTime += SyTime() - StartTime;
+    TotalTime += GCTime() - StartTime;
 #ifdef COLLECT_MARK_CACHE_STATS
     /* printf("\n>>>Attempts: %ld\nHit rate: %lf\nCollision rate: %lf\n",
       (long) MarkCacheAttempts,
