@@ -38,7 +38,13 @@
 // constructs a mask that selects bits <from> to <to> inclusive of a UInt
 static inline UInt MaskForCopyBits(UInt from, UInt to)
 {
-    return ((to == BIPEB - 1) ? 0 : ((UInt)1 << (to + 1))) - ((UInt)1 << from);
+    UInt high = 0;
+    UInt low = 0;
+    if (to < BIPEB - 1)
+        high = (UInt)1 << (to + 1);
+    if (from < BIPEB)
+        low = (UInt)1 << from;
+    return high - low;
 }
 
 /* copies a block of bits from the UInt <from> to the one pointed at
@@ -52,10 +58,18 @@ CopyInWord(UInt * to, UInt startbit, UInt endbit, UInt from, Int shift)
 {
     UInt m = MaskForCopyBits(startbit + shift, endbit + shift);
     *to &= ~m;
-    if (shift >= 0)
-        *to |= ((from << shift) & m);
-    else
-        *to |= ((from >> -shift) & m);
+    if (shift >= 0) {
+        UInt lshift = (UInt)shift;
+        if (lshift >= BIPEB)
+            return;
+        *to |= ((from << lshift) & m);
+    }
+    else {
+        UInt rshift = (UInt)(-shift);
+        if (rshift >= BIPEB)
+            return;
+        *to |= ((from >> rshift) & m);
+    }
 }
 
 
@@ -72,6 +86,8 @@ static ALWAYS_INLINE void CopyBits(const UInt * fromblock,
         return;
     GAP_ASSERT(frombit < BIPEB);
     GAP_ASSERT(tobit < BIPEB);
+    if (frombit >= BIPEB || tobit >= BIPEB)
+        return;
     /* If the alignment of the two data blocks matches, things are relatively
      * easy
      */
@@ -126,13 +142,24 @@ static ALWAYS_INLINE void CopyBits(const UInt * fromblock,
         toblock++;
         nbits -= tailbits;
         tobit = 0;
+        if (frombit == BIPEB) {
+            frombit = 0;
+            fromblock++;
+        }
     }
 
     // Main loop for long copies fills whole blocks of destination
+    if (frombit >= BIPEB)
+        return;
     UInt m1 = MaskForCopyBits(frombit, BIPEB - 1);
     while (nbits >= BIPEB) {
-        x = (*fromblock++ & m1) >> frombit;
-        x |= (*fromblock & ~m1) << (BIPEB - frombit);
+        if (frombit == 0) {
+            x = *fromblock++;
+        }
+        else {
+            x = (*fromblock++ & m1) >> frombit;
+            x |= (*fromblock & ~m1) << (BIPEB - frombit);
+        }
         *toblock++ = x;
         nbits -= BIPEB;
     }
