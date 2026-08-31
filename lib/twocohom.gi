@@ -1277,6 +1277,81 @@ local e,one,m,r,a,c,is,i;
   return false;
 end );
 
+#############################################################################
+##
+##  Permutation degree still considered manageable when representing a group
+##  extension on the cosets of a module hyperplane.
+##
+BindGlobal("EXTENSION_COSET_ENUMERATION_MAXDEG",10^5);
+
+#############################################################################
+##
+#F  ModuleCoreOfSubspace( <module>, <bas> )
+##
+##  Basis of the largest submodule of <module> contained in the subspace
+##  spanned by <bas>, that is of the intersection of the images of this
+##  subspace under the group. Intersecting with the images under the module
+##  generators repeatedly reaches this intersection.
+##
+BindGlobal("ModuleCoreOfSubspace",function(module,bas)
+local old,gen;
+  while not IsEmpty(bas) do
+    old:=Length(bas);
+    for gen in module.generators do
+      bas:=SumIntersectionMat(bas,bas*gen)[2];
+      if IsEmpty(bas) then
+        return bas;
+      fi;
+    od;
+    if Length(bas)=old then
+      return bas;
+    fi;
+  od;
+  return bas;
+end);
+
+#############################################################################
+##
+#F  SubmoduleFreeSubspace( <module> )
+##
+##  Basis of a subspace of <module> that contains no nonzero submodule and is
+##  maximal with this property under greedy extension. In an extension of a
+##  group by <module> the corresponding subgroup has trivial core -- a normal
+##  subgroup contained in it lies in the module and thus is a submodule -- so
+##  the extension acts faithfully on its cosets. For an irreducible module
+##  this gives a hyperplane, and thus degree |G| times the field size.
+##
+BindGlobal("SubmoduleFreeSubspace",function(module)
+local bas,extend,v,bad;
+
+  extend:=function(v)
+  local new;
+    new:=Concatenation(bas,[v]);
+    if RankMat(new)>Length(bas)
+       and IsEmpty(ModuleCoreOfSubspace(module,new)) then
+      bas:=new;
+      return true;
+    fi;
+    return false;
+  end;
+
+  bas:=[];
+  for v in IdentityMat(module.dimension,module.field) do
+    extend(v);
+  od;
+
+  # a basis adapted to the module structure can do better than the standard
+  # one; random vectors are a cheap substitute
+  bad:=0;
+  while Length(bas)<module.dimension-1 and bad<module.dimension do
+    if not extend(Random(module.field^module.dimension)) then
+      bad:=bad+1;
+    fi;
+  od;
+
+  return bas;
+end);
+
 BindGlobal("WreathElm",function(b,l,m)
 local n,ran,r,d,p,i,j;
   n:=Length(l);
@@ -1440,7 +1515,7 @@ end);
 InstallGlobalFunction(FpGroupCocycle,function(arg)
 local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,sim,
       it,hom,trysy,prime,mindeg,fps,ei,mgens,mwrd,nn,newfree,mfpi,mmats,sub,
-      tab,tab0,evalprod,gensmrep,invsmrep,zerob,simi,simiq,#wasbold,
+      tab,tab0,evalprod,gensmrep,invsmrep,zerob,simi,simiq,bas,deg,#wasbold,
       #step,
       mon,ord,mn,melmvec,killgens,frew,fffam,ofgens,rws,formalinverse;
 
@@ -1680,6 +1755,7 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,sim,
   fi;
 
   if Length(arg)>2 and arg[3]=true then
+    new:=fail;
     if IsZero(z) and MTX.IsIrreducible(r.module) then
       # make SDP directly
       m:=PermrepSemidirectModule(r.group,r.module:cheap);
@@ -1688,6 +1764,44 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,sim,
       new:=GroupHomomorphismByImages(fp,p,GeneratorsOfGroup(fp),
         Concatenation(m.ggens,m.basis));
     else
+      # The extension acts faithfully on the cosets of a subspace of the
+      # module that contains no nonzero submodule, and enumerating them
+      # costs far less than the quotient lifting below. Every codimension
+      # of that subspace multiplies the degree by <prime> though, and the
+      # degree reduction afterwards then eats up the gain -- so insist on a
+      # hyperplane, as an irreducible module provides. (A one-dimensional
+      # module has none, its cosets are those of the trivial subgroup.)
+      bas:=SubmoduleFreeSubspace(r.module);
+      deg:=Size(r.group)*prime;
+      if Length(bas)>0 and Length(bas)=dim-1
+        and deg<=EXTENSION_COSET_ENUMERATION_MAXDEG then
+        Info(InfoExtReps,2,"Enumerate ",deg," cosets of module subspace");
+        tab:=CosetTableFromGensAndRels(gens,RelatorsOfFpGroup(fp),
+          List(bas,x->LinearCombinationPcgs(gens{[n+1..n+dim]},x)):
+          silent:=true,max:=Maximum(20*deg,CosetTableDefaultLimit));
+        if tab<>fail then
+          p:=Group(List(tab{[1,3..Length(tab)-1]},PermList));
+          StabChain(p,rec(limit:=Size(fp)));
+        fi;
+
+        if tab<>fail and Size(p)=Size(fp) then
+          new:=GroupHomomorphismByImagesNC(fp,p,GeneratorsOfGroup(fp),
+            GeneratorsOfGroup(p));
+
+          # this degree is far off the optimum, so -- unlike elsewhere -- a
+          # full reduction pays for itself here
+          if ValueOption("cheap")<>true then
+            e:=SmallerDegreePermutationRepresentation(p);
+            if NrMovedPoints(ImagesSource(e))<NrMovedPoints(p) then
+              new:=new*e;
+              p:=ImagesSource(e);
+            fi;
+          fi;
+        fi;
+      fi;
+    fi;
+
+    if new=fail then
 
       #sim:=IsomorphismSimplifiedFpGroup(fp);
       sim:=IdentityMapping(fp);
