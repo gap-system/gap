@@ -120,6 +120,13 @@ struct TypOutputFile {
     Int hints[3 * MAXHINTS + 1];
 };
 
+// Mark the objects held by the open input and output files. A precise
+// collector has no other way to reach them; see the definition in io.c.
+// This runs inside the collector, so neither it nor the callback may
+// allocate.
+typedef void (*MarkBagFunc)(Bag) GAP_GC_NOTSAFEPOINT;
+void MarkOpenFiles(MarkBagFunc mark) GAP_GC_NOTSAFEPOINT;
+
 
 /****************************************************************************
 **
