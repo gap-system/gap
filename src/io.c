@@ -326,6 +326,29 @@ static UInt OpenDefaultOutput(TypOutputFile * output)
 
 /****************************************************************************
 **
+*F  MarkOpenFiles() . . . . . mark the GAP objects held by open input/output
+**
+**  The TypInputFile and TypOutputFile structs almost always live on the C
+**  stack of whoever opened them, so a precise collector cannot find the
+**  objects they hold: a stream, and for input the line most recently read,
+**  which nothing else refers to. They are all reachable from the two stacks
+**  threaded through their prev pointers, so mark them from there. A struct is
+**  linked in only once its Obj fields are set, so walking is safe.
+*/
+void MarkOpenFiles(MarkBagFunc mark)
+{
+    for (TypInputFile * input = IO(Input); input; input = input->prev) {
+        mark(input->stream);
+        mark(input->sline);
+    }
+    for (TypOutputFile * output = IO(Output); output; output = output->prev) {
+        mark(output->stream);
+    }
+}
+
+
+/****************************************************************************
+**
 *F  OpenInput( <filename> ) . . . . . . . . . .  open a file as current input
 **
 **  'OpenInput' opens  the file with  the name <filename>  as  current input.
@@ -854,9 +877,11 @@ UInt OpenOutput(TypOutputFile * output, const Char * filename, BOOL append)
     memset(output, 0x47, sizeof(TypOutputFile));
 #endif
     output->prev = IO(Output);
-    IO(Output) = output;
     output->isstringstream = FALSE;
     output->stream = 0;
+    // Only now is the struct reachable from IO(Output), and MarkOpenFiles
+    // will read its stream field; it must be set before that, not after.
+    IO(Output) = output;
     output->file = file;
     output->line[0] = '\0';
     output->pos = 0;
@@ -894,9 +919,11 @@ UInt OpenOutputStream(TypOutputFile * output, Obj stream)
     memset(output, 0x47, sizeof(TypOutputFile));
 #endif
     output->prev = IO(Output);
+    output->stream = stream;
+    // See OpenOutput: publish only once stream is set. The call below is a
+    // safepoint, and by then this struct is already on the output stack.
     IO(Output) = output;
     output->isstringstream = (CALL_1ARGS(IsOutputStringStream, stream) == True);
-    output->stream = stream;
     output->file = -1;
     output->line[0] = '\0';
     output->pos = 0;
