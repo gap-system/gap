@@ -631,7 +631,7 @@ AS_CASE([$with_zlib],
   ],
   [yes],[],
   [*],[
-    ZLIB_SEARCH_PATH="$with_gmp"
+    ZLIB_SEARCH_PATH="$with_zlib"
   ]
 )
 
