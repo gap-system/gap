@@ -23,6 +23,7 @@
 #include "funcs.h"
 #include "gap.h"
 #include "gapstate.h"
+#include "io.h"
 #include "gasman.h"
 #include "objects.h"
 #include "plist.h"
@@ -526,6 +527,14 @@ static void GapTaskScanner(jl_task_t * task, int root_task)
 #endif // DISABLE_STACK_SCAN
 
 // Julia callback
+// Mark a bag reached while scanning roots. MarkBag is not usable here: it
+// takes the MarkData of the bag being traced, which root scanning has none of.
+static void MarkRootBag(Bag bag) GAP_GC_NOTSAFEPOINT
+{
+    if (IS_BAG_REF(bag))
+        JMark(jl_get_ptls_states(), (jl_value_t *)bag);
+}
+
 static void GapRootScanner(int full) GAP_GC_NOTSAFEPOINT
 {
     jl_ptls_t ptls = jl_get_ptls_states();
@@ -573,6 +582,10 @@ static void GapRootScanner(int full) GAP_GC_NOTSAFEPOINT
     // with Python (for SageMath).
     if (ExtraMarkFuncBags)
         (*ExtraMarkFuncBags)();
+
+    // The open input and output files hold objects in structs that usually
+    // live on a C stack, so they need marking of their own.
+    MarkOpenFiles(MarkRootBag);
 
     // mark all global objects
     for (Int i = 0; i < GlobalCount; i++) {
