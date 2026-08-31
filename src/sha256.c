@@ -359,7 +359,6 @@ Obj FuncGAP_SHA256_HMAC(Obj self, Obj key, Obj text)
     UInt1          k_ipad[64], k_opad[64];
     UInt1          digest[32];
     sha256_state_t st;
-    Obj            result;
 
     RequireStringRep(SELF_NAME, key);
     RequireStringRep(SELF_NAME, text);
@@ -399,13 +398,7 @@ Obj FuncGAP_SHA256_HMAC(Obj self, Obj key, Obj text)
     sha256_update(&st, digest, 32);
     sha256_final(&st);
 
-    result = NEW_PLIST(T_PLIST, 8);
-    SET_LEN_PLIST(result, 8);
-    for (i = 0; i < 8; i++) {
-        SET_ELM_PLIST(result, i + 1, ObjInt_UInt(st.r[i]));
-        CHANGED_BAG(result);
-    }
-    return result;
+    return sha256_words(st);
 }
 
 // Table of functions to export
