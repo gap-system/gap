@@ -1892,7 +1892,17 @@ DoOperationNArgs(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
     // zero-length array, which would result in undefined behavior (even
     // though we don't access the two arrays when n is zero). In addition, we
     // carefully avoid warnings in GCC due to -Wduplicated-branches.
+#ifdef USE_JULIA_GC
+    // types[] holds GAP objects and is live across the family predicate call
+    // in GetMethodUncached, which runs arbitrary GAP code. A precise collector
+    // cannot see a plain C array, so put it in a GC frame instead. ids[] needs
+    // no rooting: ID_TYPE yields the type's number, which is an immediate.
+    jl_value_t ** typeRoots;
+    GAP_GC_PUSHARGS(typeRoots, n > 0 ? n : 1);
+    Obj * types = (Obj *)typeRoots;
+#else
     Obj types[n > 0 ? n : +1];
+#endif
     Obj ids[n > 0 ? n : +1];
     Int prec;
     Obj method = 0;
@@ -1907,6 +1917,7 @@ DoOperationNArgs(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
         res = CallNArgs<n>(earlyMethod, a1, a2, a3, a4, a5, a6);
         if (res != TRY_NEXT_METHOD) {
             GAP_GC_POP();
+            GAP_GC_POP();   // the types[] frame
             return res;
         }
     }
@@ -1931,6 +1942,7 @@ DoOperationNArgs(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
         if (constructor) {
             if (!IS_FILTER(a1)) {
                 GAP_GC_POP();
+                GAP_GC_POP();   // the types[] frame
                 RequireArgumentEx("Constructor", a1, "the first argument",
                                   "must be a filter");
                 return 0;
@@ -2035,6 +2047,7 @@ DoOperationNArgs(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
     } while (res == TRY_NEXT_METHOD);
 
     GAP_GC_POP();
+    GAP_GC_POP();   // the types[] frame
     return res;
 }
 
