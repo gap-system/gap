@@ -279,16 +279,28 @@ static inline int JMarkTyped(jl_ptls_t ptls, void * obj, jl_datatype_t * ty)
     return jl_gc_mark_queue_obj(ptls, (jl_value_t *)obj);
 }
 
+// Check that `obj` is still allocated and not on a free list already,
+// by verifying that its type is a valid datatype object. A datatype is
+// either a pool object, or lives in a system or package image (e.g. the
+// types of GAP.jl bags after loading it from a precompiled image), as
+// indicated by the `in_image` bit in its header.
+static inline int ValidTypeOfMarkedObj(void * obj)
+{
+    jl_value_t * ty = jl_typeof(obj);
+    // for a freed pool object, `ty` is the freelist link: NULL or a
+    // pointer into a pool page; check before dereferencing it
+    if (ty == NULL)
+        return 0;
+    if (jl_gc_internal_obj_base_ptr(ty) != ty &&
+        !jl_astaggedvalue(ty)->bits.in_image)
+        return 0;
+    return jl_typeis(ty, jl_datatype_type);
+}
+
 static inline int JMark(jl_ptls_t ptls, void * obj)
 {
 #ifdef VALIDATE_MARKING
-    // Validate that `obj` is still allocated and not on a
-    // free list already. We verify this by checking that the
-    // type is a pool object of type `jl_datatype_type`.
-    jl_value_t * ty = jl_typeof(obj);
-    if (jl_gc_internal_obj_base_ptr(ty) != ty)
-        abort();
-    if (!jl_typeis(ty, jl_datatype_type))
+    if (!ValidTypeOfMarkedObj(obj))
         abort();
 #endif
     return jl_gc_mark_queue_obj(ptls, (jl_value_t *)obj);
@@ -299,13 +311,7 @@ void MarkJuliaObjSafe(void * obj, void * ref)
 {
     if (!obj)
         return;
-    // Validate that `obj` is still allocated and not on a
-    // free list already. We verify this by checking that the
-    // type is a pool object of type `jl_datatype_type`.
-    jl_value_t * ty = jl_typeof(obj);
-    if (jl_gc_internal_obj_base_ptr(ty) != ty)
-        return;
-    if (!jl_typeis(ty, jl_datatype_type))
+    if (!ValidTypeOfMarkedObj(obj))
         return;
     if (jl_gc_mark_queue_obj(((MarkData *)ref)->ptls, (jl_value_t *)obj))
         ((MarkData *)ref)->youngRef++;
