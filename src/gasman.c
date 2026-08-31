@@ -2009,7 +2009,7 @@ static UInt CollectBags_Mark(UInt FullBags)
     }
 
     // mark from the stack
-    _setjmp(RegsBags);
+    GAP_SETJMP(RegsBags);
 #if defined(SYS_IS_SPARC)
     SparcStackFuncBags();
 #endif

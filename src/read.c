@@ -77,7 +77,7 @@
 #define TRY_IF_NO_ERROR                                                      \
     if (!rs->s.NrError) {                                                    \
         volatile Int recursionDepth = GetRecursionDepth();                   \
-        if (_setjmp(STATE(ReadJmpError))) {                                  \
+        if (GAP_SETJMP(STATE(ReadJmpError))) {                               \
             SetRecursionDepth(recursionDepth);                               \
             rs->s.NrError++;                                                 \
         }                                                                    \
