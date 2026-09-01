@@ -2310,8 +2310,15 @@ local
   origa:=a;
   makenewa:=function(makesmall)
   local map,as;
-    if not HasIsomorphismPermGroup(origa) and IsBound(origa!.makeaqiso) then
-      origa!.makeaqiso();
+    if not HasIsomorphismPermGroup(origa) then
+      if IsBound(origa!.makeaqiso) then
+        origa!.makeaqiso();
+      else
+        as:=NiceMonomorphism(origa:autactbase:=aab,someCharacteristics:=somechar,
+          directs:=aab,
+          delaypermrep:=true );
+        SetIsomorphismPermGroup(origa,as);
+      fi;
     fi;
     map:=IsomorphismPermGroup(origa);
     if makesmall then
@@ -2335,82 +2342,100 @@ local
       a:=Stabilizer(a,i,AsAutomorphism);
     fi;
   od;
-  makenewa(Length(GeneratorsOfGroup(a))>12);
 
-  iso:=fail;
+  conj:=fail;
+  if Length(GeneratorsOfGroup(a))>12 then
+    # does old quick test work without attempting generator reduction?
+    conj:=One(a);
+    K:=Image(e1,G);
+    L:=Image(e2,H);
+    map:=AGBoundedOrbrep(a,K,L,AsAutomorphism,20);
+    if map=false then
+      Info(InfoMorph,1,"Shortorb test noniso");
+      return fail;
+    elif map<>fail then
+      conj:=map.rep;
+      Info(InfoMorph,1,"Shortorb test iso found");
+    else
+      conj:=fail;
+    fi;
+  fi;
 
-  # now work in reverse through the characteristic factors
-  conj:=One(a);
-  K:=Image(e1,G);
-  L:=Image(e2,H);
-  map:=AGBoundedOrbrep(a,K,L,AsAutomorphism,100);
-  if map=false then
-    Info(InfoMorph,1,"Shortorb test noniso");
-    return fail;
-  elif map<>fail then
-    conj:=map.rep;
-    Info(InfoMorph,1,"Shortorb test iso found");
-  else
+  if conj=fail then
+    makenewa(Length(GeneratorsOfGroup(a))>12);
+    iso:=fail;
 
+    # now work in reverse through the characteristic factors
+    conj:=One(a);
+    K:=Image(e1,G);
+    L:=Image(e2,H);
+    map:=AGBoundedOrbrep(a,K,L,AsAutomorphism,100);
+    if map=false then
+      Info(InfoMorph,1,"Shortorb test noniso");
+      return fail;
+    elif map<>fail then
+      conj:=map.rep;
+      Info(InfoMorph,1,"Shortorb test iso found");
+    else
 
-    #as:=a;
-    Add(cG,TrivialSubgroup(d));
+      Add(cG,TrivialSubgroup(d));
 
-    SortBy(cG,x->-Size(x));
-    for i in cG do
-      u:=ClosureGroup(i,K);
-      v:=ClosureGroup(i,L);
-      if u<>v then
+      SortBy(cG,x->-Size(x));
+      for i in cG do
+        u:=ClosureGroup(i,K);
+        v:=ClosureGroup(i,L);
+        if u<>v then
 
-        # try cheap orbit stabilizer first
-        if iso<>fail then
-          map:=fail;
-        else
-          makenewa(Length(GeneratorsOfGroup(a))>8);
-          map:=AGBoundedOrbrep(a,u,v,AsAutomorphism,200);
-        fi;
-        if map=false then
-          Info(InfoMorph,1,"Shortorb factor noniso");
-          return fail;
-        elif map<>fail then
-          Info(InfoMorph,1,"Shortorb factor reduce ",map.orblen);
-          a:=SubgroupNC(Parent(a),map.stabgens);
-          makenewa(Length(GeneratorsOfGroup(a))>8);
-          map:=map.rep;
-          conj:=conj*map;
-          K:=Image(map,K);
-          a:=a^map;
-        else
-          if iso=fail then
-            Info(InfoMorph,1,"Shortorb failed, get delayed permrep");
-            makenewa(Length(GeneratorsOfGroup(a))>8);
-            iso:=IsomorphismPermGroup(a:autactbase:=aab);
-            api:=Image(iso,a);
-          fi;
-
-          if IsSolvableGroup(api) then
-            gens:=Pcgs(api);
+          # try cheap orbit stabilizer first
+          if iso<>fail then
+            map:=fail;
           else
-            gens:=SmallGeneratingSet(api);
+            makenewa(Length(GeneratorsOfGroup(a))>8);
+            map:=AGBoundedOrbrep(a,u,v,AsAutomorphism,200);
           fi;
-          pre:=List(gens,x->PreImagesRepresentative(iso,x));
-          map:=RepresentativeAction(SubgroupNC(Parent(a),pre),u,v,AsAutomorphism);
-          if map=fail then
+          if map=false then
+            Info(InfoMorph,1,"Shortorb factor noniso");
             return fail;
-          fi;
-          conj:=conj*map;
-          K:=Image(map,K);
+          elif map<>fail then
+            Info(InfoMorph,1,"Shortorb factor reduce ",map.orblen);
+            a:=SubgroupNC(Parent(a),map.stabgens);
+            makenewa(Length(GeneratorsOfGroup(a))>8);
+            map:=map.rep;
+            conj:=conj*map;
+            K:=Image(map,K);
+            a:=a^map;
+          else
+            if iso=fail then
+              Info(InfoMorph,1,"Shortorb failed, get delayed permrep");
+              makenewa(Length(GeneratorsOfGroup(a))>8);
+              iso:=IsomorphismPermGroup(a:autactbase:=aab);
+              api:=Image(iso,a);
+            fi;
 
-          if Size(i)>1 then
-            u:=Stabilizer(api,v,gens,pre,AsAutomorphism);
-            Info(InfoMorph,1,"Factor ",Size(d)/Size(i),": ",
-                "reduce by ",Size(api)/Size(u));
-            api:=u;
+            if IsSolvableGroup(api) then
+              gens:=Pcgs(api);
+            else
+              gens:=SmallGeneratingSet(api);
+            fi;
+            pre:=List(gens,x->PreImagesRepresentative(iso,x));
+            map:=RepresentativeAction(SubgroupNC(Parent(a),pre),u,v,AsAutomorphism);
+            if map=fail then
+              return fail;
+            fi;
+            conj:=conj*map;
+            K:=Image(map,K);
+
+            if Size(i)>1 then
+              u:=Stabilizer(api,v,gens,pre,AsAutomorphism);
+              Info(InfoMorph,1,"Factor ",Size(d)/Size(i),": ",
+                  "reduce by ",Size(api)/Size(u));
+              api:=u;
+            fi;
           fi;
         fi;
-      fi;
-    od;
+      od;
 
+    fi;
   fi;
 
   return GroupHomomorphismByImagesNC(G,H,GeneratorsOfGroup(G),
