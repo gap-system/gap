@@ -82,7 +82,10 @@ void AddPlist3(Obj list, Obj obj, Int pos)
         return;
     }
     if (pos <= len) {
+        // obj is stored only after the grow, which can collect
+        GAP_GC_PUSH1(&obj);
         GROW_PLIST(list, len + 1);
+        GAP_GC_POP();
         SET_LEN_PLIST(list, len + 1);
         Obj * ptr = ADDR_OBJ(list) + pos;
         SyMemmove(ptr + 1, ptr, sizeof(Obj) * (len - pos + 1));
@@ -160,7 +163,9 @@ static Obj RemList(Obj list) GAP_GC_CANSAFEPOINT
         ErrorMayQuit("Remove: <list> must not be empty", 0, 0);
     }
     result = ELM_LIST(list, pos);
+    GAP_GC_PUSH1(&result);
     UNB_LIST(list, pos);
+    GAP_GC_POP();
     return result;
 }
 
@@ -178,6 +183,9 @@ static Obj RemPlist(Obj list) GAP_GC_CANSAFEPOINT
     }
     removed = ELM_PLIST(list, pos);
     SET_ELM_PLIST(list, pos, 0);
+    // From here on nothing but this frame refers to the removed element,
+    // and SHRINK_PLIST below can collect.
+    GAP_GC_PUSH1(&removed);
     pos--;
     while ( 1 <= pos && ELM_PLIST( list, pos ) == 0 ) { pos--; }
     SET_LEN_PLIST(list, pos);
@@ -186,6 +194,7 @@ static Obj RemPlist(Obj list) GAP_GC_CANSAFEPOINT
     }
     if (4*pos*sizeof(Obj) < 3*SIZE_BAG(list))
       SHRINK_PLIST(list, pos);
+    GAP_GC_POP();
     return removed;
 }
 
