@@ -41,8 +41,13 @@
 #include "config.h"
 
 #ifdef SYS_IS_WINDOWS
+#include <fcntl.h>                      // for _O_RDONLY, _O_BINARY
 #include <io.h>                         // for _get_osfhandle
+#include <signal.h>                     // for SIGTERM, SIGINT
 #include <stdlib.h>                     // for malloc, free
+#ifndef SIGKILL
+#define SIGKILL 9                       // POSIX value, not known to mingw
+#endif
 #include <string.h>                     // for strlen, strpbrk
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -1110,6 +1115,303 @@ int CheckChildStatusChanged(int childPID, int status)
     return 0;
 }
 
+#ifdef SYS_IS_WINDOWS
+
+/****************************************************************************
+**
+**  IOStreams on native Windows, on top of anonymous pipes: the child's
+**  standard input, output and error are connected to pipes, with output
+**  and error sharing one pipe as they share the pty elsewhere. Unlike
+**  with a pty, the child does not consider its output a terminal, so
+**  fully interactive children may need their output buffering adjusted.
+*/
+
+enum { MAX_PIPE_STREAMS = 64 };
+
+typedef struct {
+    BOOL   inuse;
+    BOOL   eof;         // the read side saw end of file
+    BOOL   crlast;      // a chunk-final \r is held back, not yet delivered
+    HANDLE hProcess;    // the child process
+    HANDLE hWrite;      // to the child's standard input
+    int    readFD;      // C runtime view of the read side
+} WinPipeStream;
+
+static WinPipeStream WinStreams[MAX_PIPE_STREAMS];
+
+static UInt syWinQuoteArg(char * dst, UInt pos, const char * arg);
+
+static UInt WinStreamCheck(Obj stream)
+{
+    Int i = GetSmallInt("IOSTREAM", stream);
+    if (i < 0 || i >= MAX_PIPE_STREAMS || !WinStreams[i].inuse)
+        ErrorQuit("IOSTREAM %d is not in use", i, 0);
+    return i;
+}
+
+static Obj FuncCREATE_PTY_IOSTREAM(Obj self, Obj dir, Obj prog, Obj args)
+{
+    UInt                slot, i, len, pos;
+    char *              cmdline;
+    HANDLE              hInRead, hInWrite, hOutRead, hOutWrite;
+    STARTUPINFOA        si;
+    PROCESS_INFORMATION pi;
+    SECURITY_ATTRIBUTES sa = { sizeof(sa), NULL, TRUE };
+
+    RequirePlainList(SELF_NAME, args);
+    ConvString(dir);
+    ConvString(prog);
+    len = LEN_PLIST(args);
+    for (i = 1; i <= len; i++)
+        ConvString(ELM_PLIST(args, i));
+
+    for (slot = 0; slot < MAX_PIPE_STREAMS; slot++)
+        if (!WinStreams[slot].inuse)
+            break;
+    if (slot == MAX_PIPE_STREAMS)
+        return Fail;
+
+    // build the command line as in SyExecuteProcess; no garbage
+    // collection may happen from here until the strings are consumed
+    pos = 1 + 2 * GET_LEN_STRING(prog) + 4;
+    for (i = 1; i <= len; i++)
+        pos += 2 * GET_LEN_STRING(ELM_PLIST(args, i)) + 4;
+    cmdline = malloc(pos);
+    if (cmdline == NULL)
+        return Fail;
+    pos = 0;
+    cmdline[pos++] = '"';
+    for (const char * p = CONST_CSTR_STRING(prog); *p; p++)
+        cmdline[pos++] = *p == '/' ? '\\' : *p;
+    cmdline[pos++] = '"';
+    for (i = 1; i <= len; i++) {
+        cmdline[pos++] = ' ';
+        pos = syWinQuoteArg(cmdline, pos, CONST_CSTR_STRING(ELM_PLIST(args, i)));
+    }
+    cmdline[pos] = '\0';
+
+    if (!CreatePipe(&hInRead, &hInWrite, &sa, 0) ) {
+        free(cmdline);
+        return Fail;
+    }
+    if (!CreatePipe(&hOutRead, &hOutWrite, &sa, 0)) {
+        CloseHandle(hInRead);
+        CloseHandle(hInWrite);
+        free(cmdline);
+        return Fail;
+    }
+    // only the child side of each pipe may be inherited
+    SetHandleInformation(hInWrite, HANDLE_FLAG_INHERIT, 0);
+    SetHandleInformation(hOutRead, HANDLE_FLAG_INHERIT, 0);
+
+    // standard output and error must be distinct handles: with a shared
+    // one, a child rearranging its own standard error would take standard
+    // output down with it
+    HANDLE hErrWrite;
+    if (!DuplicateHandle(GetCurrentProcess(), hOutWrite, GetCurrentProcess(),
+                         &hErrWrite, 0, TRUE, DUPLICATE_SAME_ACCESS)) {
+        CloseHandle(hInRead);
+        CloseHandle(hInWrite);
+        CloseHandle(hOutRead);
+        CloseHandle(hOutWrite);
+        free(cmdline);
+        return Fail;
+    }
+
+    memset(&si, 0, sizeof(si));
+    si.cb = sizeof(si);
+    si.dwFlags = STARTF_USESTDHANDLES;
+    si.hStdInput = hInRead;
+    si.hStdOutput = hOutWrite;
+    si.hStdError = hErrWrite;
+
+    BOOL ok = CreateProcessA(CONST_CSTR_STRING(prog), cmdline, NULL, NULL,
+                             TRUE, 0, NULL, CONST_CSTR_STRING(dir), &si, &pi);
+    free(cmdline);
+    CloseHandle(hInRead);
+    CloseHandle(hOutWrite);
+    CloseHandle(hErrWrite);
+    if (!ok) {
+        CloseHandle(hInWrite);
+        CloseHandle(hOutRead);
+        return Fail;
+    }
+    CloseHandle(pi.hThread);
+
+    WinStreams[slot].inuse = TRUE;
+    WinStreams[slot].eof = FALSE;
+    WinStreams[slot].crlast = FALSE;
+    WinStreams[slot].hProcess = pi.hProcess;
+    WinStreams[slot].hWrite = hInWrite;
+    WinStreams[slot].readFD =
+        _open_osfhandle((intptr_t)hOutRead, _O_RDONLY | _O_BINARY);
+
+    return ObjInt_Int(slot);
+}
+
+// read at most maxlen bytes into buf; if block is non-zero, wait for at
+// least one byte. Return the number of bytes read, or -1 for "nothing
+// available"; a blocking return of zero bytes indicates end of file.
+static Int WinReadFromPipe(UInt s, char * buf, Int maxlen, UInt block)
+{
+    WinPipeStream * ws = &WinStreams[s];
+    HANDLE          h = (HANDLE)_get_osfhandle(ws->readFD);
+    DWORD           avail, got;
+    char            next;
+    Int             nread = 0;
+
+    while (nread < maxlen) {
+        // wait for data by polling instead of blocking in ReadFile: this
+        // keeps GAP responsive and never ties the pipe up in a read that
+        // the child could observe
+        while (1) {
+            if (!PeekNamedPipe(h, &next, 1, &got, &avail, NULL)) {
+                // pipe broken: end of file; deliver a held back \r first
+                ws->eof = TRUE;
+                if (ws->crlast) {
+                    buf[nread++] = '\r';
+                    ws->crlast = FALSE;
+                }
+                return nread;
+            }
+            if (avail > 0)
+                break;
+            if (!block || nread > 0)
+                return nread ? nread : -1;
+            Sleep(10);
+        }
+
+        // native children emit \r\n line endings, whereas the pty on POSIX
+        // systems delivers the child's bytes verbatim (StartChildProcess
+        // disables the \n to \r\n translation): squash \r\n to \n, leaving
+        // a lone \r alone. A \r ending a chunk is held back until its
+        // successor is known.
+        if (ws->crlast) {
+            ws->crlast = FALSE;
+            if (next != '\n') {
+                buf[nread++] = '\r';
+                continue;
+            }
+            ReadFile(h, &next, 1, &got, NULL);
+            buf[nread++] = '\n';
+            continue;
+        }
+        if (!ReadFile(h, buf + nread, maxlen - nread, &got, NULL) || got == 0) {
+            ws->eof = TRUE;
+            return nread;
+        }
+        char * chunk = buf + nread;
+        DWORD  in, out;
+        for (in = out = 0; in < got; in++) {
+            if (chunk[in] == '\r') {
+                if (in + 1 == got) {
+                    ws->crlast = TRUE;
+                    break;
+                }
+                if (chunk[in + 1] == '\n')
+                    continue;
+            }
+            chunk[out++] = chunk[in];
+        }
+        nread += out;
+        // the chunk may have consisted of a single held back \r; a blocking
+        // caller then keeps waiting rather than reporting end of file
+    }
+    return nread;
+}
+
+static Obj FuncWRITE_IOSTREAM(Obj self, Obj stream, Obj string, Obj len)
+{
+    UInt   s = WinStreamCheck(stream);
+    DWORD  written;
+    Int    todo = INT_INTOBJ(len);
+    Int    done = 0;
+
+    ConvString(string);
+    while (done < todo) {
+        if (!WriteFile(WinStreams[s].hWrite, CSTR_STRING(string) + done,
+                       todo - done, &written, NULL))
+            return Fail;
+        done += written;
+    }
+    return ObjInt_Int(done);
+}
+
+static Obj FuncREAD_IOSTREAM(Obj self, Obj stream, Obj len)
+{
+    UInt s = WinStreamCheck(stream);
+    Obj  string = NEW_STRING(INT_INTOBJ(len));
+    Int  ret = WinReadFromPipe(s, CSTR_STRING(string), INT_INTOBJ(len), 1);
+    if (ret == -1)
+        return Fail;
+    SET_LEN_STRING(string, ret);
+    ResizeBag(string, SIZEBAG_STRINGLEN(ret));
+    return string;
+}
+
+static Obj FuncREAD_IOSTREAM_NOWAIT(Obj self, Obj stream, Obj len)
+{
+    UInt s = WinStreamCheck(stream);
+    Obj  string = NEW_STRING(INT_INTOBJ(len));
+    Int  ret = WinReadFromPipe(s, CSTR_STRING(string), INT_INTOBJ(len), 0);
+    if (ret == -1)
+        return Fail;
+    SET_LEN_STRING(string, ret);
+    ResizeBag(string, SIZEBAG_STRINGLEN(ret));
+    return string;
+}
+
+static Obj FuncKILL_CHILD_IOSTREAM(Obj self, Obj stream)
+{
+    UInt s = WinStreamCheck(stream);
+    TerminateProcess(WinStreams[s].hProcess, 1);
+    return 0;
+}
+
+static Obj FuncSIGNAL_CHILD_IOSTREAM(Obj self, Obj stream, Obj sig)
+{
+    UInt s = WinStreamCheck(stream);
+    Int  signr = GetSmallInt(SELF_NAME, sig);
+    // there are no signals; treat the fatal ones as termination and
+    // ignore the rest
+    if (signr == SIGTERM || signr == SIGINT || signr == SIGKILL)
+        TerminateProcess(WinStreams[s].hProcess, 1);
+    return 0;
+}
+
+static Obj FuncCLOSE_PTY_IOSTREAM(Obj self, Obj stream)
+{
+    UInt s = WinStreamCheck(stream);
+
+    // closing its input gives the child a chance to exit on its own
+    CloseHandle(WinStreams[s].hWrite);
+    if (WaitForSingleObject(WinStreams[s].hProcess, 1000) != WAIT_OBJECT_0) {
+        TerminateProcess(WinStreams[s].hProcess, 1);
+        WaitForSingleObject(WinStreams[s].hProcess, INFINITE);
+    }
+    CloseHandle(WinStreams[s].hProcess);
+    _close(WinStreams[s].readFD);
+    WinStreams[s].inuse = FALSE;
+    return 0;
+}
+
+static Obj FuncIS_BLOCKED_IOSTREAM(Obj self, Obj stream)
+{
+    UInt s = WinStreamCheck(stream);
+    return (WinStreams[s].eof ||
+            WaitForSingleObject(WinStreams[s].hProcess, 0) == WAIT_OBJECT_0)
+               ? True
+               : False;
+}
+
+static Obj FuncFD_OF_IOSTREAM(Obj self, Obj stream)
+{
+    UInt s = WinStreamCheck(stream);
+    return ObjInt_Int(WinStreams[s].readFD);
+}
+
+#else
+
 static Obj FuncCREATE_PTY_IOSTREAM(Obj self, Obj dir, Obj prog, Obj args)
 {
     return Fail;
@@ -1154,6 +1456,8 @@ static Obj FuncFD_OF_IOSTREAM(Obj self, Obj stream)
 {
     return Fail;
 }
+
+#endif
 
 #ifdef SYS_IS_WINDOWS
 
