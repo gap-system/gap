@@ -377,6 +377,7 @@ UInt OpenInput(TypInputFile * input, const Char * filename)
 #endif
     input->prev = IO(Input);
     input->stream = 0;
+    input->sline = 0;
     input->file = file;
 
     // enable echo for stdin and errin
