@@ -509,7 +509,8 @@ static Obj FuncPOSITION_SORTED_BY(Obj self, Obj list, Obj val, Obj func)
 #define SORT_FUNC_NAME SORT_LIST
 #define SORT_FUNC_ARGS  Obj list
 #define SORT_ARGS list
-#define SORT_CREATE_LOCAL(name) Obj name ;
+#define SORT_CREATE_LOCAL(name) Obj name = 0;
+#define SORT_PUSH_LOCALS(a, b) GAP_GC_PUSH2(&a, &b)
 #define SORT_LEN_LIST() LEN_LIST(list)
 #define SORT_ASS_LIST_TO_LOCAL(t, i) t = ELMV_LIST(list, i)
 #define SORT_ASS_LOCAL_TO_LIST(i, j) ASS_LIST(list, i, j)
@@ -523,7 +524,8 @@ static Obj FuncPOSITION_SORTED_BY(Obj self, Obj list, Obj val, Obj func)
 #define SORT_FUNC_NAME SortDensePlist
 #define SORT_FUNC_ARGS Obj list
 #define SORT_ARGS list
-#define SORT_CREATE_LOCAL(name) Obj name ;
+#define SORT_CREATE_LOCAL(name) Obj name = 0;
+#define SORT_PUSH_LOCALS(a, b) GAP_GC_PUSH2(&a, &b)
 #define SORT_LEN_LIST() LEN_PLIST(list)
 #define SORT_ASS_LIST_TO_LOCAL(t, i) t = ELM_PLIST(list, i)
 #define SORT_ASS_LOCAL_TO_LIST(i, j)  \
@@ -541,7 +543,8 @@ static Obj FuncPOSITION_SORTED_BY(Obj self, Obj list, Obj val, Obj func)
 #define SORT_FUNC_NAME SortPlistByRawObj
 #define SORT_FUNC_ARGS Obj list
 #define SORT_ARGS list
-#define SORT_CREATE_LOCAL(name) Obj name;
+#define SORT_CREATE_LOCAL(name) Obj name = 0;
+#define SORT_PUSH_LOCALS(a, b) GAP_GC_PUSH2(&a, &b)
 #define SORT_LEN_LIST() LEN_PLIST(list)
 #define SORT_ASS_LIST_TO_LOCAL(t, i) t = ELM_PLIST(list, i)
 #define SORT_ASS_LOCAL_TO_LIST(i, j) SET_ELM_PLIST(list, i, j);
@@ -563,7 +566,8 @@ static Obj FuncPOSITION_SORTED_BY(Obj self, Obj list, Obj val, Obj func)
 #define SORT_FUNC_NAME SORT_LISTComp
 #define SORT_FUNC_ARGS Obj list, Obj func
 #define SORT_ARGS list, func
-#define SORT_CREATE_LOCAL(name) Obj name ;
+#define SORT_CREATE_LOCAL(name) Obj name = 0;
+#define SORT_PUSH_LOCALS(a, b) GAP_GC_PUSH2(&a, &b)
 #define SORT_LEN_LIST() LEN_LIST(list)
 #define SORT_ASS_LIST_TO_LOCAL(t, i) t = ELMV_LIST(list, i)
 #define SORT_ASS_LOCAL_TO_LIST(i, j) ASS_LIST(list, i, j)
@@ -578,7 +582,8 @@ static Obj FuncPOSITION_SORTED_BY(Obj self, Obj list, Obj val, Obj func)
 #define SORT_FUNC_NAME SortDensePlistComp
 #define SORT_FUNC_ARGS Obj list, Obj func
 #define SORT_ARGS list, func
-#define SORT_CREATE_LOCAL(name) Obj name ;
+#define SORT_CREATE_LOCAL(name) Obj name = 0;
+#define SORT_PUSH_LOCALS(a, b) GAP_GC_PUSH2(&a, &b)
 #define SORT_LEN_LIST() LEN_PLIST(list)
 #define SORT_ASS_LIST_TO_LOCAL(t, i) t = ELM_PLIST(list, i)
 #define SORT_ASS_LOCAL_TO_LIST(i, j) \
@@ -627,7 +632,8 @@ static Obj FuncPOSITION_SORTED_BY(Obj self, Obj list, Obj val, Obj func)
 #define SORT_FUNC_NAME SORT_PARA_LIST
 #define SORT_FUNC_ARGS Obj list, Obj shadow
 #define SORT_ARGS list, shadow
-#define SORT_CREATE_LOCAL(name) Obj name ; Obj name##s ; (void)(name##s) ;
+#define SORT_CREATE_LOCAL(name) Obj name = 0; Obj name##s = 0; (void)(name##s);
+#define SORT_PUSH_LOCALS(a, b) GAP_GC_PUSH4(&a, &a##s, &b, &b##s)
 #define SORT_LEN_LIST() LEN_LIST(list)
 #define SORT_ASS_LIST_TO_LOCAL(t, i) \
   t = ELMV_LIST(list, i); \
@@ -648,7 +654,8 @@ static Obj FuncPOSITION_SORTED_BY(Obj self, Obj list, Obj val, Obj func)
 #define SORT_FUNC_NAME SortParaDensePlist
 #define SORT_FUNC_ARGS Obj list, Obj shadow
 #define SORT_ARGS list, shadow
-#define SORT_CREATE_LOCAL(name) Obj name ; Obj name##s ; (void)(name##s) ;
+#define SORT_CREATE_LOCAL(name) Obj name = 0; Obj name##s = 0; (void)(name##s);
+#define SORT_PUSH_LOCALS(a, b) GAP_GC_PUSH4(&a, &a##s, &b, &b##s)
 #define SORT_LEN_LIST() LEN_PLIST(list)
 #define SORT_ASS_LIST_TO_LOCAL(t, i) \
   t = ELM_PLIST(list, i); \
@@ -669,7 +676,8 @@ static Obj FuncPOSITION_SORTED_BY(Obj self, Obj list, Obj val, Obj func)
 #define SORT_FUNC_NAME SORT_PARA_LISTComp
 #define SORT_FUNC_ARGS Obj list, Obj shadow, Obj func
 #define SORT_ARGS list, shadow, func
-#define SORT_CREATE_LOCAL(name) Obj name ; Obj name##s ; (void)(name##s) ;
+#define SORT_CREATE_LOCAL(name) Obj name = 0; Obj name##s = 0; (void)(name##s);
+#define SORT_PUSH_LOCALS(a, b) GAP_GC_PUSH4(&a, &a##s, &b, &b##s)
 #define SORT_LEN_LIST() LEN_LIST(list)
 #define SORT_ASS_LIST_TO_LOCAL(t, i) \
   t = ELMV_LIST(list, i); \
@@ -690,7 +698,8 @@ static Obj FuncPOSITION_SORTED_BY(Obj self, Obj list, Obj val, Obj func)
 #define SORT_FUNC_NAME SortParaDensePlistComp
 #define SORT_FUNC_ARGS Obj list, Obj shadow, Obj func
 #define SORT_ARGS list, shadow, func
-#define SORT_CREATE_LOCAL(name) Obj name ; Obj name##s ; (void)(name##s) ;
+#define SORT_CREATE_LOCAL(name) Obj name = 0; Obj name##s = 0; (void)(name##s);
+#define SORT_PUSH_LOCALS(a, b) GAP_GC_PUSH4(&a, &a##s, &b, &b##s)
 #define SORT_LEN_LIST() LEN_PLIST(list)
 #define SORT_ASS_LIST_TO_LOCAL(t, i) \
   t = ELM_PLIST(list, i); \
