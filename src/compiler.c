@@ -1130,6 +1130,8 @@ static CVar CompFuncExpr(Expr expr)
     Emit( "SET_ENDLINE_BODY(%c, %d);\n", tmp, GET_ENDLINE_BODY(BODY_FUNC(fexp)));
     Emit( "SET_FILENAME_BODY(%c, FileName);\n",tmp);
     Emit( "SET_BODY_FUNC(%c, %c);\n", func, tmp );
+    // the function may already be old by now, the body is young
+    Emit( "CHANGED_BAG(%c);\n", func );
     FreeTemp( TEMP_CVAR( tmp ) );
 
     // we know that the result is a function
