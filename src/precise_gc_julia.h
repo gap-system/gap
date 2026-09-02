@@ -60,6 +60,38 @@ extern "C++" {
 #define GAP_GC_PUSHARGS(rts, n) JL_GC_PUSHARGS(rts, n)
 #define GAP_GC_POP() JL_GC_POP()
 
+#ifdef GAP_MEM_CHECK
+// Under memory checking every push is recorded with its source location and
+// every pop checked against the record, so a frame pushed and never popped,
+// or popped from the wrong place, is reported at the pop that finds the
+// mismatch - not at a later collection walking a frame on dead stack.
+void GAP_GC_LedgerPush(void * frame, const char * file, int line);
+void GAP_GC_LedgerPop(void * frame, const char * file, int line);
+void GAP_GC_LedgerUnwind(void * frame);
+#undef GAP_GC_PUSH1
+#undef GAP_GC_PUSH2
+#undef GAP_GC_PUSH3
+#undef GAP_GC_PUSH4
+#undef GAP_GC_PUSH5
+#undef GAP_GC_PUSH6
+#undef GAP_GC_PUSH7
+#undef GAP_GC_PUSH8
+#undef GAP_GC_PUSH9
+#undef GAP_GC_PUSHARGS
+#undef GAP_GC_POP
+#define GAP_GC_PUSH1(a) JL_GC_PUSH1(GAP_GC_ROOT_(a)); GAP_GC_LedgerPush(jl_pgcstack, __FILE__, __LINE__)
+#define GAP_GC_PUSH2(a, b) JL_GC_PUSH2(GAP_GC_ROOT_(a), GAP_GC_ROOT_(b)); GAP_GC_LedgerPush(jl_pgcstack, __FILE__, __LINE__)
+#define GAP_GC_PUSH3(a, b, c) JL_GC_PUSH3(GAP_GC_ROOT_(a), GAP_GC_ROOT_(b), GAP_GC_ROOT_(c)); GAP_GC_LedgerPush(jl_pgcstack, __FILE__, __LINE__)
+#define GAP_GC_PUSH4(a, b, c, d) JL_GC_PUSH4(GAP_GC_ROOT_(a), GAP_GC_ROOT_(b), GAP_GC_ROOT_(c), GAP_GC_ROOT_(d)); GAP_GC_LedgerPush(jl_pgcstack, __FILE__, __LINE__)
+#define GAP_GC_PUSH5(a, b, c, d, e) JL_GC_PUSH5(GAP_GC_ROOT_(a), GAP_GC_ROOT_(b), GAP_GC_ROOT_(c), GAP_GC_ROOT_(d), GAP_GC_ROOT_(e)); GAP_GC_LedgerPush(jl_pgcstack, __FILE__, __LINE__)
+#define GAP_GC_PUSH6(a, b, c, d, e, f) JL_GC_PUSH6(GAP_GC_ROOT_(a), GAP_GC_ROOT_(b), GAP_GC_ROOT_(c), GAP_GC_ROOT_(d), GAP_GC_ROOT_(e), GAP_GC_ROOT_(f)); GAP_GC_LedgerPush(jl_pgcstack, __FILE__, __LINE__)
+#define GAP_GC_PUSH7(a, b, c, d, e, f, g) JL_GC_PUSH7(GAP_GC_ROOT_(a), GAP_GC_ROOT_(b), GAP_GC_ROOT_(c), GAP_GC_ROOT_(d), GAP_GC_ROOT_(e), GAP_GC_ROOT_(f), GAP_GC_ROOT_(g)); GAP_GC_LedgerPush(jl_pgcstack, __FILE__, __LINE__)
+#define GAP_GC_PUSH8(a, b, c, d, e, f, g, h) JL_GC_PUSH8(GAP_GC_ROOT_(a), GAP_GC_ROOT_(b), GAP_GC_ROOT_(c), GAP_GC_ROOT_(d), GAP_GC_ROOT_(e), GAP_GC_ROOT_(f), GAP_GC_ROOT_(g), GAP_GC_ROOT_(h)); GAP_GC_LedgerPush(jl_pgcstack, __FILE__, __LINE__)
+#define GAP_GC_PUSH9(a, b, c, d, e, f, g, h, i) JL_GC_PUSH9(GAP_GC_ROOT_(a), GAP_GC_ROOT_(b), GAP_GC_ROOT_(c), GAP_GC_ROOT_(d), GAP_GC_ROOT_(e), GAP_GC_ROOT_(f), GAP_GC_ROOT_(g), GAP_GC_ROOT_(h), GAP_GC_ROOT_(i)); GAP_GC_LedgerPush(jl_pgcstack, __FILE__, __LINE__)
+#define GAP_GC_PUSHARGS(rts, n) JL_GC_PUSHARGS(rts, n); GAP_GC_LedgerPush(jl_pgcstack, __FILE__, __LINE__)
+#define GAP_GC_POP() (GAP_GC_LedgerPop(jl_pgcstack, __FILE__, __LINE__), JL_GC_POP())
+#endif
+
 #ifdef GAP_KERNEL_DEBUG
 /****************************************************************************
 **
