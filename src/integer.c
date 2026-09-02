@@ -86,6 +86,7 @@
 #ifndef WARD_ENABLED
 
 #include <gmp.h>
+#include <limits.h>
 
 #if GMP_NAIL_BITS != 0
 #error Aborting compile: GAP does not support non-zero GMP nail size
@@ -2119,10 +2120,17 @@ Obj GcdInt ( Obj opL, Obj opR )
     if (sizeR != 1) {
       SWAP(Obj, opL, opR);
     }
+    // Use mpn_gcd_1, which takes the small operand as an mp_limb_t; the
+    // seemingly more natural mpz_gcd_ui takes an 'unsigned long', which
+    // cannot hold a full limb on LLP64 systems (native Windows)
     UInt r = AbsOfSmallInt(opR);
-    FAKEMPZ_GMPorINTOBJ(mpzL, opL);
-    r = mpz_gcd_ui(0, MPZ_FAKEMPZ(mpzL), r);
-    CHECK_FAKEMPZ(mpzL);
+    if (IS_INTOBJ(opL)) {
+        UInt l = AbsOfSmallInt(opL);
+        r = mpn_gcd_1((mp_srcptr)&l, 1, r);
+    }
+    else {
+        r = mpn_gcd_1((mp_srcptr)CONST_ADDR_INT(opL), SIZE_INT(opL), r);
+    }
     return ObjInt_UInt(r);
   }
 
@@ -2223,6 +2231,11 @@ static Obj FuncFACTORIAL_INT(Obj self, Obj n)
 {
     RequireNonnegativeSmallInt(SELF_NAME, n);
 
+    // mpz_fac_ui takes an 'unsigned long', which is smaller than a small
+    // integer on LLP64 systems (native Windows)
+    if ((UInt)INT_INTOBJ(n) > ULONG_MAX)
+        ErrorMayQuit("Factorial: <n> is too large", 0, 0);
+
     mpz_t mpzResult;
     mpz_init(mpzResult);
     mpz_fac_ui(mpzResult, INT_INTOBJ(n));
@@ -2296,10 +2309,17 @@ Obj BinomialInt(Obj n, Obj k)
         return Fail;
 
     UInt K = IS_INTOBJ(k) ? INT_INTOBJ(k) : VAL_LIMB0(k);
+
+    // mpz_bin_ui and mpz_bin_uiui take K and N as 'unsigned long', which
+    // cannot hold a full limb on LLP64 systems (native Windows)
+    if (K > ULONG_MAX)
+        return Fail;
+
     mpz_t mpzResult;
     mpz_init( mpzResult );
 
-    if (SIZE_INT_OR_INTOBJ(n) == 1) {
+    if (SIZE_INT_OR_INTOBJ(n) == 1 &&
+        (IS_INTOBJ(n) ? (UInt)INT_INTOBJ(n) : VAL_LIMB0(n)) <= ULONG_MAX) {
         UInt N = IS_INTOBJ(n) ? INT_INTOBJ(n) : VAL_LIMB0(n);
         mpz_bin_uiui(mpzResult, N, K);
     } else {
