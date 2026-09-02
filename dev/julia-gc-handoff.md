@@ -24,24 +24,37 @@ not a required path.
 The current expected Julia checkout state is:
 
 - branch: `mh/precise-julia-gc-for-gap`
-- tip commit: `1b50352c1d`
-- rebased onto upstream `origin/master` at `7e75a8061a`
+- tip commit: `bf12152801`
+- rebased onto upstream `origin/master` at `c1b783ae21`
 - upstream: none configured; this branch is intentionally local-only for now
 
 The current Julia-side commits this GAP work depends on are:
 
-- `611d5a73e7 Skip tagged immediates in JL_GC_PUSH roots`
-- `8dd8a5b6a1 Teach GC checker about GAP bag types`
-- `1b50352c1d clangsa: Preserve caller GC frames on noreturn`
+- `7ba07bc397 clangsa: Mark GC-tracked types with an attribute`
+- `3f93c78ca9 Skip tagged immediates in JL_GC_PUSH roots`
+- `bf12152801 clangsa: Annotate the remaining GC-managed types`
 
-Only the first of these is needed at run time; the other two only affect the
-static analyzer. The run-time one has no upstream equivalent yet, so GAP.jl
-cannot use a released Julia until it lands.
+Only the second is needed at run time; the other two only affect the static
+analyzer. The run-time one has no upstream equivalent yet, so GAP.jl cannot
+use a released Julia until it lands. GAP marks `struct OpaqueBag` with
+`JL_GC_TRACKED_TYPE` (as `GAP_GC_TRACKED_TYPE`), so no checker patch naming
+GAP's types is needed any more.
 
 If the Julia-side branch moves, update the branch name, tip commit, and commit
 list here.
 
 ## Julia Build and Analyzer Commands
+
+After a full Julia rebuild that picked up a new LLVM (upstream bumps it
+regularly), the clang headers the checker plugin needs are gone until the
+analysis dependencies are reinstalled; without that `make -C src clangsa`
+fails with `clang/AST/ParentMapContext.h file not found`, and the failed
+rebuild removes the old plugin, so GAP's analyzer sweep stops working too:
+
+```sh
+make -C src install-analysis-deps
+make -C src clangsa
+```
 
 The analyzer runs with the `clang` from Julia's optional analysis
 dependencies, which must match the LLVM version Julia itself is built against.
@@ -206,14 +219,16 @@ Minimal smoke test:
 Single translation unit analyzer examples:
 
 ```sh
-JULIA_GC_ANALYZER_CHECKERS=julia.GCChecker \
-  dev/run-julia-gc-analyzer.sh out-of-tree/julia-dev src/julia_gc.c
+dev/run-julia-gc-analyzer.sh out-of-tree/julia-dev src/julia_gc.c
 ```
 
 ```sh
-JULIA_GC_ANALYZER_CHECKERS=julia.GCChecker \
-  dev/run-julia-gc-analyzer.sh out-of-tree/julia-dev src/compiler.c
+dev/run-julia-gc-analyzer.sh out-of-tree/julia-dev src/compiler.c
 ```
+
+Do not narrow `JULIA_GC_ANALYZER_CHECKERS` to `julia.GCChecker` alone: without
+`core` the checker cannot see that a call does not return, and reports
+missing pops in every function that raises an error.
 
 Full Julia-GC rebuild:
 
@@ -236,14 +251,99 @@ Known pitfall:
   and the patched Julia scanner skips tagged immediates while reading them.
   `JL_GC_PUSHARGS` stores values directly and uses Julia-specific low-bit tag
   semantics, so `GAP_GC_PUSHARGS` must not be used for arrays that can contain
-  GAP immediate values. `src/vecgf2.c` is the one remaining `GAP_GC_PUSHARGS`
-  user; its roots are all bags, never immediates.
+  GAP immediate values. The `GAP_GC_PUSHARGS` users are `src/vecgf2.c` and the
+  type array in `DoOperationNArgs` (`src/opers.cc`); their roots are all bags,
+  never immediates.
 - Do not assume GAP CLI modes are interchangeable for scripted reproductions.
   In particular, my ad hoc attempts to feed `.tst` files through improvised
   `-r` or stdin workflows produced misleading
   `Variable: 'gap' must have a value` errors that were not the real bug under
   investigation. Prefer the known-good commands above unless and until the
   exact GAP CLI semantics are re-checked.
+
+## GC Stress Mode and Dead-Reference Diagnostics
+
+A rooting bug under a precise collector only shows when a collection lands
+in its window, so the suite passes most runs and crashes elsewhere on the
+others. Memory checking removes the luck: every bag allocation collects.
+
+Build:
+
+```sh
+../../configure --with-gc=julia --with-julia=$JULIA \
+  --enable-memory-checking --enable-debug \
+  CFLAGS="-g -O2 -DDISABLE_STACK_SCAN" CXXFLAGS="-g -O2 -DDISABLE_STACK_SCAN"
+```
+
+`CFLAGS=` given to configure replaces GAP's default `-g -O2` rather than
+adding to it; always spell the defaults out.
+
+`GASMAN_MEM_CHECK(n)` collects at every `n`th allocation, `0` turns it off.
+Period 1 cannot get through library loading; start GAP normally and enable
+it around the workload. Period 1000 gets through `testinstall` in hours.
+Smaller periods find more but which allocations get sampled depends on the
+period, so a failure at one period can pass at another.
+
+Known reproducer of the class of bug this finds:
+
+```sh
+./gap -q -A -T -c 'GASMAN_MEM_CHECK(37); Irr(SmallGroup(240,109)); QUIT_GAP(0);'
+```
+
+This failed deterministically at period 37 and passed at 100 and 1000. It
+was `Remove(list)` returning an element it had already let die, fixed in
+`src/listfunc.c`.
+
+A second one, from the same family, at period 1:
+
+```
+keys := List([1..40], i -> (i*7919) mod 101);;
+sh := List([1..40], i -> rec(i := i));;
+GASMAN_MEM_CHECK(1);
+SortParallel(keys, sh, function(a, b) local s; s := String(a); return a < b; end);
+ForAll(sh, IsRecord);
+```
+
+The shadow element is shifted out of its list and held only by a C
+temporary while the comparison allocates; the comparison never sees it, so
+nothing roots it. Plain `Sort` with the same comparison is safe only because
+the comparison's parameters root the elements it is given - do not take that
+as evidence the kernel is rooting them. Fixed in `src/sortbase.h`.
+
+What the build prints when it finds one (under `GAP_MEM_CHECK`, before
+Julia's own marker aborts on the bad type tag):
+
+```
+### dead child 0x1175700f0 in a bag of tnum 55 (immutable plain list of cyclotomics)
+    dead bag: tnum 4 (cyclotomic) size 36
+    parent: 29 slots; [0]:imm [1]:imm ... [28]=DEAD
+    GAP stack: Gcd ? List IrrBaumClausen for a (solvable) group Irr ...
+```
+
+followed by a C backtrace. The parent is the bag still holding the dead
+reference, and the GAP stack is within one allocation of the code that let
+the element go: every allocation collects, so the parent became reachable
+between two consecutive allocations. Julia's own dump of the mark queue is
+useless here - GAP bags print as `ERROR in jl_`.
+
+Where to look once you have the parent: the analyzer cannot see this shape,
+because a value loaded from a rooted list counts as rooted by the list, and
+the checker has no way to notice the slot being cleared or the list being
+resized underneath it. So audit by hand for
+
+- load an element from a container, take it out of the container (clear
+  the slot, unbind, shrink, shift another element over it), hit a
+  safepoint, then return or store it, and
+- resize a container before the value about to be stored has any other root.
+
+Pitfalls when reproducing:
+
+- Under `lldb`, pass Julia's safepoint signals through or the run hangs:
+  `process handle SIGSEGV SIGBUS SIGUSR2 -s false -n false -p true`.
+- Run with `-T` and stdin from `/dev/null`; a break loop waiting on a
+  terminal looks like a hang.
+- A run that never prints anything is a segfault before the first output;
+  macOS keeps the report in `~/Library/Logs/DiagnosticReports/gap-*.ips`.
 
 ## Refresh Checklist
 
