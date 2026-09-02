@@ -89,6 +89,9 @@ static void PREFIXNAME(Shell)(SORT_FUNC_ARGS, Int start, Int end)
   UInt h;   // gap width in the shellsort
   SORT_CREATE_LOCAL(v);
   SORT_CREATE_LOCAL(w);
+  // v leaves the list while it is compared and shifted; nothing else
+  // refers to it then, and the comparison may collect.
+  SORT_PUSH_LOCALS(v, w);
   UInt i, k; // loop variables
 
   // sort the list with a shellsort
@@ -114,6 +117,7 @@ static void PREFIXNAME(Shell)(SORT_FUNC_ARGS, Int start, Int end)
     h = h / 3;
   }
   SORT_FILTER_CHECKS();
+  GAP_GC_POP();
 }
 
 // Swap values at indices a and b
@@ -124,8 +128,12 @@ static inline void PREFIXNAME(Swap)(SORT_FUNC_ARGS, Int a, Int b)
   SORT_CREATE_LOCAL(u);
   SORT_ASS_LIST_TO_LOCAL(t, a);
   SORT_ASS_LIST_TO_LOCAL(u, b);
+  // once t is stored, only this frame holds u until it is stored too, and a
+  // generic ASS_LIST may collect
+  SORT_PUSH_LOCALS(t, u);
   SORT_ASS_LOCAL_TO_LIST(b, t);
   SORT_ASS_LOCAL_TO_LIST(a, u);
+  GAP_GC_POP();
 }
 
 // Compare values at indices a and b
@@ -214,6 +222,9 @@ static void PREFIXNAME(Insertion)(SORT_FUNC_ARGS, Int start, Int end)
 {
   SORT_CREATE_LOCAL(v);
   SORT_CREATE_LOCAL(w);
+  // v leaves the list while it is compared and shifted; nothing else
+  // refers to it then, and the comparison may collect.
+  SORT_PUSH_LOCALS(v, w);
   UInt i, k; // loop variables
 
   // sort the list with insertion sort
@@ -230,6 +241,7 @@ static void PREFIXNAME(Insertion)(SORT_FUNC_ARGS, Int start, Int end)
     }
     SORT_ASS_LOCAL_TO_LIST(k, v);
   }
+  GAP_GC_POP();
 }
 
 /* This function performs an insertion sort with a limit to the number
@@ -239,6 +251,9 @@ static Obj PREFIXNAME(LimitedInsertion)(SORT_FUNC_ARGS, Int start, Int end)
 {
   SORT_CREATE_LOCAL(v);
   SORT_CREATE_LOCAL(w);
+  // v leaves the list while it is compared and shifted; nothing else
+  // refers to it then, and the comparison may collect.
+  SORT_PUSH_LOCALS(v, w);
   UInt i, k;     // loop variables
   Int limit = 8; // how long do we try to insertion sort?
                  // sort the list with insertion sort
@@ -250,6 +265,7 @@ static Obj PREFIXNAME(LimitedInsertion)(SORT_FUNC_ARGS, Int start, Int end)
       limit--;
       if (limit == 0) {
         SORT_ASS_LOCAL_TO_LIST(k, v);
+        GAP_GC_POP();
         return False;
       }
 
@@ -261,6 +277,7 @@ static Obj PREFIXNAME(LimitedInsertion)(SORT_FUNC_ARGS, Int start, Int end)
     }
     SORT_ASS_LOCAL_TO_LIST(k, v);
   }
+  GAP_GC_POP();
   return True;
 }
 
@@ -398,6 +415,7 @@ void PREFIXNAME(Merge)(SORT_FUNC_ARGS) GAP_GC_CANSAFEPOINT {
 #undef SORT_FUNC_ARGS
 #undef SORT_ARGS
 #undef SORT_CREATE_LOCAL
+#undef SORT_PUSH_LOCALS
 #undef SORT_LEN_LIST
 #undef SORT_ASS_LIST_TO_LOCAL
 #undef SORT_ASS_LOCAL_TO_LIST
