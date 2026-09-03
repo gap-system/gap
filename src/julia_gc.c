@@ -483,10 +483,19 @@ static UInt MarkCacheHits, MarkCacheAttempts, MarkCacheCollisions;
 **
 **  Allocate memory for a new bag.
 **/
+#ifdef GAP_MEM_CHECK
+static void MemCheckCollect(void) GAP_GC_CANSAFEPOINT;
+#else
+#define MemCheckCollect() ((void)0)
+#endif
+
 static void * AllocateBagMemory(jl_ptls_t ptls, UInt type, UInt size)
     GAP_GC_CANSAFEPOINT
 {
     // HOOK: return `size` bytes memory of TNUM `type`.
+    // Sample here as well: this allocation can collect too, and a caller
+    // that holds a fresh object only in a C local loses it exactly here.
+    MemCheckCollect();
     void * result;
     if (size <= MaxPoolObjSize) {
         result = (void *)jl_gc_alloc_typed(ptls, size, DatatypeSmallBag);
@@ -1376,7 +1385,12 @@ Bag NewBag(UInt type, UInt size)
     bag = jl_gc_alloc_typed(ptls, sizeof(void *), DatatypeGapObj);
     bag->body = 0;
 
+    // The body allocation can collect. Nothing else references the fresh
+    // masterpointer yet, so root it here; its zero body keeps the marker
+    // from following it.
+    GAP_GC_PUSH1(&bag);
     BagHeader * header = AllocateBagMemory(ptls, type, alloc_size);
+    GAP_GC_POP();
     header->type = type;
     header->flags = 0;
     header->size = size;
