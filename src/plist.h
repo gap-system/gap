@@ -332,10 +332,19 @@ EXPORT_INLINE Obj NewPlistFromArray(const Obj * list, Int length)
         return NewEmptyPlist();
     }
 
+    // <list> is C memory a precise collector cannot see, typically the
+    // argument array of NewPlistFromArgs, so the allocation must not let
+    // the collector run: the copy is the only step before the barrier
+    GAP_GC_NOCOLLECT_BEGIN();
     Obj o = NEW_PLIST(T_PLIST, length);
     SET_LEN_PLIST(o, length);
     memcpy(BASE_PTR_PLIST(o), list, length * sizeof(Obj));
     CHANGED_BAG(o);
+    // re-enabling the collector runs a collection it deferred, so the new
+    // list must be rooted by then; <list> is no longer needed
+    GAP_GC_PUSH1(&o);
+    GAP_GC_NOCOLLECT_END();
+    GAP_GC_POP();
     return o;
 }
 

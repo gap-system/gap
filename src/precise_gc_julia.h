@@ -44,6 +44,13 @@ extern "C++" {
 #define GAP_GC_PUSHARGS(rts, n) JL_GC_PUSHARGS(rts, n)
 #define GAP_GC_POP() JL_GC_POP()
 
+// Keep the collector from running between BEGIN and END. For the rare
+// code that must allocate while it still holds objects in memory no frame
+// can describe, such as a caller's C array. Nothing in between may block or
+// allocate much: the collector's debt keeps growing until END.
+#define GAP_GC_NOCOLLECT_BEGIN() int __gc_was_enabled = jl_gc_enable(0)
+#define GAP_GC_NOCOLLECT_END() jl_gc_enable(__gc_was_enabled)
+
 #ifdef GAP_MEM_CHECK
 // Under memory checking every push is recorded with its source location and
 // every pop checked against the record, so a frame pushed and never popped,
@@ -123,6 +130,8 @@ static inline BOOL GAP_IsRootedSlot(const void * slot) GAP_GC_NOTSAFEPOINT
     ((void)0)
 #define GAP_GC_PUSHARGS(rts, n) ((void)0)
 #define GAP_GC_POP() ((void)0)
+#define GAP_GC_NOCOLLECT_BEGIN() ((void)0)
+#define GAP_GC_NOCOLLECT_END() ((void)0)
 
 #ifdef GAP_KERNEL_DEBUG
 // Conservative collectors find these structs by scanning the C stack, so

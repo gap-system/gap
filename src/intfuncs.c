@@ -658,9 +658,13 @@ static Obj FuncMAKE_BITFIELDS(Obj self, Obj widths) GAP_GC_CANSAFEPOINT
     PushPlist(names, MakeImmString("<field getter>"));
     PushPlist(names, MakeImmString("<boolean field setter>"));
     PushPlist(names, MakeImmString("<boolean field getter>"));
-    dataArgs = NewPlistFromArgs(MakeImmString("data"));
-    dataValArgs =
-        NewPlistFromArgs(MakeImmString("data"), MakeImmString("val"));
+    // build the name lists one element at a time: the second MakeImmString
+    // allocates while the first result would only be held in a C temporary
+    dataArgs = NEW_PLIST(T_PLIST, 1);
+    PushPlist(dataArgs, MakeImmString("data"));
+    dataValArgs = NEW_PLIST(T_PLIST, 2);
+    PushPlist(dataValArgs, MakeImmString("data"));
+    PushPlist(dataValArgs, MakeImmString("val"));
 
     setters = NEW_PLIST_IMM(T_PLIST_DENSE, nfields);
     getters = NEW_PLIST_IMM(T_PLIST_DENSE, nfields);
