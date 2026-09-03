@@ -280,7 +280,65 @@ adding to it; always spell the defaults out.
 
 `GASMAN_MEM_CHECK(n)` collects at every `n`th allocation, `0` turns it off.
 Period 1 cannot get through library loading; start GAP normally and enable
-it around the workload. Period 1000 gets through `testinstall` in hours.
+it around the workload. To cover startup itself, set the period from the
+environment and pass `--enableMemCheck`:
+
+```sh
+GAP_MEMCHECK_PERIOD=200 ./gap --enableMemCheck -l . -q -A -T
+```
+
+Period 500 boots and gets through the first 40 test files in about 25
+minutes with the checks live from the first allocation. Every allocation
+is a sample point, the body allocation inside NewBag and ResizeBag
+included - that is where a caller loses an object it holds only in a C
+local. Expect `weakptr.tst` to differ under any period: it encodes when
+the collector runs.
+
+To turn an intermittent report into a deterministic one, sample densely only
+around the point where it was seen. The abort output carries an allocation
+count; `GAP_MEMCHECK_START` and `GAP_MEMCHECK_STOP` bound the checks to
+that range of bag allocations, and period 1 there costs only minutes:
+
+```sh
+GAP_MEMCHECK_START=15000 GAP_MEMCHECK_STOP=45000 GAP_MEMCHECK_PERIOD=1 \
+  ./gap --enableMemCheck -l . -q -A -T
+```
+
+The sampled collections are full by default. A full collection cannot expose
+a missing write barrier: it reaches the young child of a promoted parent
+through the parent. Only a young collection frees such a child, so to hunt
+barrier bugs set `GAP_MEMCHECK_FULL_EVERY=n`: n-1 of every n samples are
+then young collections, cheap enough for period 1 over a whole test file,
+and the nth is a full one that validates the old parents and reports the
+dead child.
+
+```sh
+GAP_MEMCHECK_PERIOD=1 GAP_MEMCHECK_FULL_EVERY=100 \
+  ./gap --enableMemCheck -l . -q -A -T
+```
+
+Two more memory-checking aids: every `GAP_GC_PUSH*` is recorded with its
+source location and every `GAP_GC_POP` checked against that record, so a
+push without a pop is reported at the pop that finds the mismatch, and the
+dead-reference report lists the recorded frames. That record alone cannot
+see an unwind that skipped `GAP_GC_RESTORE_STACK_STATE`: `GAP_GC_POP`
+hands over the chain top, so the pops after such an unwind quietly pop the
+dead frames instead of their own and keep chain and ledger consistent.
+Both push and pop therefore also compare the frame with the current stack
+pointer - a frame below it belongs to a function that has returned - and
+abort at the first push or pop that touches such a frame.
+
+A root pushed before it is initialised is the hardest case: the collector
+reads whatever the stack held, which differs between builds, so a fault in
+the optimized build (the marker dereferencing a small constant such as
+`0x110050`) can be absent from every memory-checking build. Configure one
+more memory-checking build with `-ftrivial-auto-var-init=pattern` added to
+`CFLAGS` and `CXXFLAGS`: every uninitialised local then holds `0xAA` bytes,
+and the push records abort at the push whose slot carries that pattern,
+independent of collection timing. And
+`GAP_MEMCHECK_MARK_ANYWAY=1` marks a child the validator rejected instead of
+aborting, which distinguishes a genuinely dead object (Julia then aborts on
+its type tag) from one the validator misjudged. Period 1000 gets through `testinstall` in hours.
 Smaller periods find more but which allocations get sampled depends on the
 period, so a failure at one period can pass at another.
 
