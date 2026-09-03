@@ -106,7 +106,7 @@ typedef struct {
 } GAP_TryCatchEnv;
 
 // helper function for use by GAP_TRY and GAP_CATCH
-static inline int gap_safe_trycatch(GAP_TryCatchEnv * env)
+static inline int gap_safe_trycatch(GAP_TryCatchEnv * env) GAP_GC_NOTSAFEPOINT
 {
     memcpy(env->jb, STATE(ReadJmpError), sizeof(jmp_buf));
     env->recursionDepth = GetRecursionDepth();
@@ -115,7 +115,7 @@ static inline int gap_safe_trycatch(GAP_TryCatchEnv * env)
     return 0;
 }
 
-static inline int gap_restore_trycatch(GAP_TryCatchEnv * env)
+static inline int gap_restore_trycatch(GAP_TryCatchEnv * env) GAP_GC_NOTSAFEPOINT
 {
     memcpy(STATE(ReadJmpError), env->jb, sizeof(jmp_buf));
     GAP_GC_RESTORE_STACK_STATE(env->gcStack);
