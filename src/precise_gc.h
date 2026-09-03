@@ -100,10 +100,11 @@
  *     SET_ELM_PLIST(list, 1, elm);
  *     GAP_GC_POP();
  *
- * Use the fixed-arity GAP_GC_PUSH1 .. GAP_GC_PUSH9 for GAP `Obj` locals.
- * GAP_GC_PUSHARGS stores values rather than addresses and reads them with
- * Julia's low-bit tag semantics, which collide with GAP's tagged immediates,
- * so it is only safe for arrays that can never hold an immediate.
+ * Use the fixed-arity GAP_GC_PUSH1 .. GAP_GC_PUSH9 for GAP `Obj` locals, and
+ * GAP_GC_PUSHARGS for an array of them; the latter stores the values
+ * themselves, in a frame it allocates on the C stack. Both kinds may hold
+ * GAP's tagged immediates: Julia's root scanner skips those since
+ * JuliaLang/julia#62889, which precise mode requires anyway.
  *
  * The annotations below let a callee describe its rooting to the analyzer, so
  * that callers need no frame of their own. `GAP_GC_ROOTED_BY_ARG(0)` on
