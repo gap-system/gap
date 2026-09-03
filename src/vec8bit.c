@@ -742,6 +742,7 @@ static void ConvVec8Bit(Obj list, UInt q) GAP_GC_CANSAFEPOINT
     // written below: from then on the body no longer matches the list
     // tnum, and a precise collector would scan the bytes as references.
     type = TypeVec8Bit(q, IS_MUTABLE_OBJ(list));
+    GAP_GC_PUSH1(&type);
 
     firstthree[0] = ELM0_LIST(list, 1);
     firstthree[1] = ELM0_LIST(list, 2);
@@ -788,6 +789,7 @@ static void ConvVec8Bit(Obj list, UInt q) GAP_GC_CANSAFEPOINT
     SET_FIELD_VEC8BIT(list, q);
     if (nsize != SIZE_OBJ(list))
         ResizeWordSizedBag(list, nsize);
+    GAP_GC_POP();
 }
 
 /****************************************************************************
