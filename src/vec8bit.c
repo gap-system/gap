@@ -980,10 +980,11 @@ void PlainVec8Bit(Obj list)
     q = FIELD_VEC8BIT(list);
     info = GetFieldInfo8Bit(q);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
-
+    // grow first: the grow can collect, and the packed bytes must not yet
+    // be scanned as list entries
+    if (SIZE_OBJ(list) < (len + 1) * sizeof(Obj))
+        ResizeBag(list, (len + 1) * sizeof(Obj));
     RetypeBagSM(list, (len == 0) ? T_PLIST_EMPTY : T_PLIST_FFE);
-
-    GROW_PLIST(list, (UInt)len);
     SET_LEN_PLIST(list, len);
 
     if (len != 0) {

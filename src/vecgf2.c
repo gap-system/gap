@@ -1276,12 +1276,12 @@ static void PlainGF2Vec(Obj list)
         ErrorMayQuit("Cannot convert a locked GF2 vector into a plain list",
                      0, 0);
 
-    // resize the list and retype it, in this order
+    // grow first: the grow can collect, and the bit blocks must not yet be
+    // scanned as list entries
     len = LEN_GF2VEC(list);
-
+    if (SIZE_OBJ(list) < (len + 1) * sizeof(Obj))
+        ResizeBag(list, (len + 1) * sizeof(Obj));
     RetypeBagSM(list, (len == 0) ? T_PLIST_EMPTY : T_PLIST_FFE);
-
-    GROW_PLIST(list, (UInt)len);
     SET_LEN_PLIST(list, len);
 
     // keep the first entry because setting the second destroys the first
