@@ -985,7 +985,7 @@ DeclareGlobalFunction( "Images" );
 ##  <C>PreImagesElm</C> was renamed <C>PreImagesElmNC</C>
 ##  throughout the library, and the new <C>PreImagesElm</C> checks that
 ##  <A>elm</A> is an element of the image before calling <C>PreImagesElmNC</C>.
-##  If <A>elm</A> is in the range but not in the image then <A>fail</A>
+##  If <A>elm</A> is in the range but not in the image then <K>fail</K>
 ##  is returned.
 ##  If <A>elm</A> is not even in the range then an error is signalled.
 ##  <P/>
@@ -1015,7 +1015,7 @@ DeclareOperation( "PreImagesElmNC", [ IsGeneralMapping, IsObject ] );
 ##  <A>map</A>.
 ##  <P/>
 ##  If <A>elm</A> is not an element of the image of <A>map</A>
-##  then an error message is returned.
+##  then an error is signalled.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1043,7 +1043,7 @@ DeclareOperation( "PreImageElm",
 ##  was renamed <C>PreImagesRepresentativeNC</C> throughout the library,
 ##  and the new <C>PreImagesRepresentative</C> checks that <A>elm</A> is an
 ##  element of the image before calling <C>PreImagesRepresentativeNC</C>.
-##  If <A>elm</A> is in the range but not in the image then <A>fail</A>
+##  If <A>elm</A> is in the range but not in the image then <K>fail</K>
 ##  is returned.
 ##  If <A>elm</A> is not even in the range then an error is signalled.
 ##  <P/>
@@ -1117,7 +1117,7 @@ DeclareOperation( "PreImagesSetNC", [ IsGeneralMapping, IsListOrCollection ] );
 ##  so that <A>map</A> should be injective and surjective.
 ##  In the third form it delegates to <Ref Oper="PreImagesSet"/>.
 ##  <P/>
-##  If the second argument is not an element or a subset of the image of
+##  If the second argument is not an element or a subset of the range of
 ##  the first argument, an error is signalled.
 ##  </Description>
 ##  </ManSection>
