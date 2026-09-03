@@ -488,6 +488,29 @@ EXPORT_INLINE Bag NewWordSizedBag(UInt type, UInt size)
 
 /****************************************************************************
 **
+*F  GAP_GC_SAVE_STACK_STATE() . . . . . . . record the collector's root stack
+*F  GAP_GC_RESTORE_STACK_STATE(<state>) . . . . . . . . . . . . restore it
+**
+**  A GAP error 'longjmp's out of the call chain that raised it. Whatever
+**  that chain registered with the collector - the Julia GC keeps a chain of
+**  root frames on the C stack - is never unregistered, and points into
+**  stack that is gone. So every place that sets up such a jump saves the
+**  state before, and restores it on the error path. Collectors that find
+**  their roots by scanning the C stack have nothing to record.
+*/
+typedef void * GAP_GCStackState;
+
+#if defined(USE_JULIA_GC)
+GAP_GCStackState GAP_GC_SAVE_STACK_STATE(void) JL_NOTSAFEPOINT;
+void GAP_GC_RESTORE_STACK_STATE(GAP_GCStackState state) JL_NOTSAFEPOINT;
+#else
+#define GAP_GC_SAVE_STACK_STATE() ((GAP_GCStackState)0)
+#define GAP_GC_RESTORE_STACK_STATE(state) ((void)(state))
+#endif
+
+
+/****************************************************************************
+**
 *F  RetypeBag(<bag>,<new>) . . . . . . . . . . . . . change the type of a bag
 *F  RetypeBagIntern(<bag>,<new>) . . . . . . . . . . . . . internal interface
 **

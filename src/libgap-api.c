@@ -608,6 +608,7 @@ jmp_buf * GAP_GetReadJmpError(void)
 
 static volatile sig_atomic_t EnterStackCount = 0;
 static volatile Int RecursionDepth;
+static volatile GAP_GCStackState GCStack;
 
 
 // These are wrapped by the macros GAP_EnterStack() and GAP_LeaveStack()
@@ -644,6 +645,7 @@ int GAP_Error_Prejmp_(const char * file, int line)
         return 1;
     }
     RecursionDepth = GetRecursionDepth();
+    GCStack = GAP_GC_SAVE_STACK_STATE();
     return 0;
 }
 
@@ -662,6 +664,7 @@ void GAP_Error_Postjmp_Returning_(void)
     if (EnterStackCount > 0) {
         EnterStackCount = -EnterStackCount;
     }
+    GAP_GC_RESTORE_STACK_STATE((GAP_GCStackState)GCStack);
     SetRecursionDepth(RecursionDepth);
 }
 
