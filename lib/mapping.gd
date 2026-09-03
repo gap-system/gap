@@ -1183,10 +1183,11 @@ DeclareGlobalFunction( "PreImages" );
 ##  and then maps the images under <A>map2</A>.
 ##  <P/>
 ##  (Note the reverse ordering of arguments in the composition via
-##  the multiplication <Ref Oper="\*"/>.
+##  the multiplication <Ref Oper="\*"/>.)
 ##  <P/>
 ##  <Ref Func="CompositionMapping2General"/> is the method that forms a
-##  composite mapping with two constituent mappings.
+##  composite mapping with two constituent mappings,
+##  see&nbsp;<Ref Filt="IsCompositionMappingRep"/>.
 ##  (This is used in some algorithms.)
 ##  </Description>
 ##  </ManSection>

@@ -4124,7 +4124,7 @@ InParentFOA( "RightTransversal", IsGroup, IsGroup, DeclareAttribute );
 ##  <Oper Name="IntermediateSubgroups" Arg='G, U'/>
 ##
 ##  <Description>
-##  returns a list of all subgroups of <A>G</A> that properly contain
+##  returns a list of all proper subgroups of <A>G</A> that properly contain
 ##  <A>U</A>; that is all subgroups between <A>G</A> and <A>U</A>.
 ##  It returns a record with a component <C>subgroups</C>, which is a list of
 ##  these subgroups, as well as a component <C>inclusions</C>,
@@ -4134,6 +4134,15 @@ InParentFOA( "RightTransversal", IsGroup, IsGroup, DeclareAttribute );
 ##  <M>j</M>,
 ##  the numbers <M>0</M> and <M>1 +</M> <C>Length(subgroups)</C> are used to
 ##  denote <A>U</A> and <A>G</A>, respectively.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> G:= DihedralGroup( IsPermGroup, 8 );;
+##  gap> IntermediateSubgroups( G, Centre( G ) );
+##  rec( inclusions := [ [ 0, 1 ], [ 0, 2 ], [ 0, 3 ], [ 1, 4 ], [ 2, 4 ],
+##        [ 3, 4 ] ],
+##    subgroups := [ Group([ (2,4), (1,3)(2,4) ]), Group([ (1,2,3,4) ]),
+##        Group([ (1,2)(3,4), (1,3)(2,4) ]) ] )
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
