@@ -12,7 +12,7 @@ gap> Size(GL(3,2))*Size(GL(3,5))*42;
 
 # nilpotent group which is not a p-group
 gap> gs:=[ExtraspecialGroup( 27, 3 ), DihedralGroup(32)];
-[ <pc group of size 27 with 3 generators>,
+[ <pc group of size 27 with 3 generators>, 
   <pc group of size 32 with 5 generators> ]
 gap> G:=DirectProduct(gs);
 <pc group of size 864 with 8 generators>
