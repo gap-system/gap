@@ -425,6 +425,7 @@ static Obj FuncLoadedModules(Obj self)
             CHANGED_BAG(list);
             str = MakeImmString(Modules[i].filename);
             SET_ELM_PLIST(list, 3 * i + 3, str);
+            CHANGED_BAG(list);
         }
         else if (IS_MODULE_STATIC(m->type)) {
             SET_ELM_PLIST(list, 3 * i + 1, ObjsChar[(Int)'s']);
@@ -434,6 +435,7 @@ static Obj FuncLoadedModules(Obj self)
             CHANGED_BAG(list);
             str = MakeImmString(Modules[i].filename);
             SET_ELM_PLIST(list, 3 * i + 3, str);
+            CHANGED_BAG(list);
         }
     }
     return list;

@@ -385,6 +385,7 @@ static Obj FuncALL_RNAMES(Obj self)
         name = NAME_RNAM( i );
         s = CopyToStringRep(name);
         SET_ELM_PLIST( copy, i, s );
+        CHANGED_BAG( copy );
     }
     SET_LEN_PLIST( copy, countRNam );
     return copy;

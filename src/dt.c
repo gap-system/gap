@@ -1624,6 +1624,8 @@ static void SetSubs(Obj list, Obj a, Obj tree)
         for  (j=1;  j <= len2;  j++)
             SET_DT_POS(tree, CELM( ELM_PLIST(list, i), j), ELM_PLIST(a, i) );
     }
+    // <tree> may be old and the entries of <a> young
+    CHANGED_BAG(tree);
 }
 
 
