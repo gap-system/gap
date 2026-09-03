@@ -332,10 +332,22 @@ EXPORT_INLINE Obj NewPlistFromArray(const Obj * list, Int length)
         return NewEmptyPlist();
     }
 
+#ifdef USE_JULIA_GC
+    // <list> is C memory a precise collector cannot see, typically the
+    // argument array of NewPlistFromArgs, and the allocation below can
+    // collect. Copy the entries into a GC frame first.
+    jl_value_t ** roots;
+    GAP_GC_PUSHARGS(roots, length);
+    memcpy(roots, list, length * sizeof(Obj));
+    list = (const Obj *)roots;
+#endif
     Obj o = NEW_PLIST(T_PLIST, length);
     SET_LEN_PLIST(o, length);
     memcpy(BASE_PTR_PLIST(o), list, length * sizeof(Obj));
     CHANGED_BAG(o);
+#ifdef USE_JULIA_GC
+    GAP_GC_POP();
+#endif
     return o;
 }
 
