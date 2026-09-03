@@ -1,47 +1,43 @@
 # Julia GC Handoff
 
-This file records the local Julia prerequisite for the GAP precise-GC work.
-Until the Julia-side work is published somewhere durable, this file is the
-source of truth for finding the Julia checkout used by this project.
+This file records what the GAP precise-GC work needs from Julia and how the
+analysis tooling is set up.
 
-## Local Convention
+## The Julia source checkout
 
-The local convention is that `dev/julia` is a symlink to the patched Julia
-checkout used for this work.
-
-All Julia commands documented in this GAP repository assume that `dev/julia`
-exists and points to that checkout.
-
-`dev/julia` is a local convenience path and should not be committed. Its target
-may vary from machine to machine.
-
-On the current machine, a known working target is
-`/Users/mhorn/Projekte/Julia/julia.spielwiese`, but that is only an example,
-not a required path.
+The static analyses need two things that are not part of a Julia binary
+installation: Julia's clang, and the analyzer plugins built from Julia's
+`src/clangsa`. Both come from a Julia *source* checkout in which
+`make -C src install-analysis-deps clangsa` has been run (that needs no Julia
+build, only the LLVM it downloads). When the Julia given to `configure` is
+such a checkout, built in place, `configure` creates the symlink `dev/julia`
+in the build directory pointing at it, and the scripts in `dev/` take clang
+and the plugins from there (a `dev/julia` in the source tree is honoured
+too). Otherwise they assume the configured Julia is such a checkout's `usr/`.
+Individual pieces can be overridden with the environment variables listed in
+each script.
 
 ## Expected Julia State
 
-The current expected Julia checkout state is:
+The Julia-side changes this GAP work depends on are two pull requests
+against JuliaLang/julia:
 
-- branch: `mh/precise-julia-gc-for-gap`
-- tip commit: `bf12152801`
-- rebased onto upstream `origin/master` at `c1b783ae21`
-- upstream: none configured; this branch is intentionally local-only for now
+- JuliaLang/julia#62889 `mh/gc_mark_stack-immediate-pointers`, "Skip tagged
+  immediates in JL_GC_PUSH roots": the run-time patch. Without it Julia's
+  root scanner dereferences a tagged immediate held in a `GAP_GC_PUSH*`
+  frame. It also extends the skip to `JL_GC_PUSHARGS` frames.
+- JuliaLang/julia#62928 `mh/JL_GC_TRACKED_TYPE`, "clangsa: Mark GC-tracked
+  types with an attribute": analyzer only. The checker recognises the types
+  it tracks by that attribute alone; GAP marks `struct OpaqueBag` with
+  `GAP_GC_TRACKED_TYPE`, which spells the same attribute.
 
-The current Julia-side commits this GAP work depends on are:
-
-- `7ba07bc397 clangsa: Mark GC-tracked types with an attribute`
-- `3f93c78ca9 Skip tagged immediates in JL_GC_PUSH roots`
-- `bf12152801 clangsa: Annotate the remaining GC-managed types`
-
-Only the second is needed at run time; the other two only affect the static
-analyzer. The run-time one has no upstream equivalent yet, so GAP.jl cannot
-use a released Julia until it lands. GAP marks `struct OpaqueBag` with
-`JL_GC_TRACKED_TYPE` (as `GAP_GC_TRACKED_TYPE`), so no checker patch naming
-GAP's types is needed any more.
-
-If the Julia-side branch moves, update the branch name, tip commit, and commit
-list here.
+For local work, use a checkout of JuliaLang/julia with both pull requests
+applied. Only the first is needed at run time; until it is in a Julia
+release, GAP.jl cannot use precise mode with a released Julia.
+`juliaup add pr62889` gives a prebuilt Julia of that pull request, enough to
+build and test precise mode; `juliaup add pr62928` gives one whose headers
+carry the attribute, which the analyzer needs. `.github/workflows/julia-gc.yml`
+uses both.
 
 ## Julia Build and Analyzer Commands
 
@@ -58,8 +54,9 @@ make -C src clangsa
 
 The analyzer runs with the `clang` from Julia's optional analysis
 dependencies, which must match the LLVM version Julia itself is built against.
-Julia moved to LLVM 22 in the range this branch was rebased over, so after a
-rebase install the matching tooling before rebuilding the plugin:
+After a Julia update that changes the LLVM version, install the matching
+tooling before rebuilding the plugin (`dev/julia` here and below is the
+symlink to the Julia checkout, in the build directory or the source tree):
 
 ```sh
 make -C dev/julia/src install-analysis-deps
@@ -74,9 +71,8 @@ Build Julia's GC analyzer plugin with:
 make -C dev/julia/src clangsa
 ```
 
-This project currently assumes that both a normal Julia build and a debug Julia
-build already exist under the checkout reached via `dev/julia`, and that the
-GC analyzer plugin has been built there before GAP analyzer runs are attempted.
+The GAP analyzer runs assume that the plugins have been built in the checkout
+reached via `dev/julia`.
 
 The GAP-side analyzer helper script is:
 
@@ -91,22 +87,38 @@ JULIA_GC_ANALYZER_CHECKERS=julia.GCChecker \
   dev/run-julia-gc-analyzer.sh out-of-tree/julia-dev src/objects.c
 ```
 
-## GAP Build Integration
+## GAP Build Directories
 
-The currently used out-of-tree GAP build directories are:
-
-- `out-of-tree/julia-dev`
-- `out-of-tree/julia-dev-debug`
-
-These builds are expected to be configured against the Julia checkout reached
-via `dev/julia`.
-
-The fast Julia-side rebuild workflow for analyzer work is currently:
+Everything here uses out-of-tree builds: a build directory anywhere in the
+file system, configured with the `configure` script of the source tree (see
+`README.buildsys.md`, section "Out-of-tree builds"). The directories used in
+this document live under `out-of-tree/` in the source tree; for example
 
 ```sh
-make -C dev/julia/src clangsa
+mkdir -p out-of-tree/julia-dev && cd out-of-tree/julia-dev
+../../configure --with-gc=julia --with-julia=$JULIA
+make -j4
+```
+
+where `$JULIA` is the Julia installation to build against (its `bin/julia`,
+or the prefix). This is the configuration the analyzer scripts run on:
+`dev/run-julia-gc-analyzer-all.sh out-of-tree/julia-dev`. The precise-mode
+configurations add `-DDISABLE_STACK_SCAN` to the compiler flags; `CFLAGS=`
+given to `configure` replaces GAP's default `-g -O2` rather than adding to
+it, so spell the defaults out:
+
+```sh
+../../configure --with-gc=julia --with-julia=$JULIA \
+  CFLAGS="-g -O2 -DDISABLE_STACK_SCAN" CXXFLAGS="-g -O2 -DDISABLE_STACK_SCAN"
+```
+
+After changing the analyzer plugins, rebuild them and then the GAP build
+directories that are analyzed (`dev/julia` here is the build directory's
+symlink to the Julia checkout):
+
+```sh
+make -C out-of-tree/julia-dev/dev/julia/src clangsa
 make -C out-of-tree/julia-dev -j4
-make -C out-of-tree/julia-dev-debug -j4
 ```
 
 When running the analyzer, compile GAP first, then analyze one translation unit
@@ -194,16 +206,49 @@ safepoint, while its own body opts out of the analysis with
 
 ### Status
 
-As of 2026-08-28, against Julia `1b50352c1d`:
+As of 2026-09-13, against JuliaLang/julia#62889:
 
-- all 77 in-scope translation units are analyzer-clean,
-- the first-declaration check is clean,
-- the safepoint check is clean,
-- `make -C out-of-tree/julia-dev check` passes with `0 failures in 318 files`.
+- precise mode (`--enable-precise-gc`) passes `make check` with `0 failures
+  in 319 files`, under clang and GCC, optimized, debug and memory-checking;
+- all in-scope translation units are analyzer-clean, and the
+  first-declaration and safepoint checks are clean;
+- stack-scanning builds against stock Julia 1.10 and 1.13 pass as well: the
+  frames compile away there.
 
-Still outstanding: switching GAP off the Julia GC's stack scanner add-on and
-onto exact stack scanning, and carrying the same work into the packages that
-ship kernel extensions.
+## Open Items
+
+Known gaps, in the order they are worth closing:
+
+- `ArgList` in `src/read.c` is returned by value; its `nams` is held nowhere
+  else while the caller receives it. Candidate bug in precise mode.
+- `fake_mpz_t` in `src/integer.c` holds objects in a struct on the C stack,
+  at a dozen sites. Candidate bug in precise mode.
+- The safepoint check skips `src/julia_gc.c`: `GAP_InitJuliaMemoryInterface`
+  calls `jl_init`, which Julia annotates as entering the safepoint region.
+- Kernel extensions. The Julia GC analyzer runs on a package's sources
+  directly, with the flags of a precise build directory:
+
+  ```sh
+  dev/run-julia-gc-analyzer.sh out-of-tree/julia-precise /path/to/pkg/src/x.c
+  dev/run-safepoint-check.sh   out-of-tree/julia-precise /path/to/pkg/src/x.c
+  dev/run-first-decl-check.sh  out-of-tree/julia-precise /path/to/pkg/src/*.c
+  ```
+
+  A package keeps building against older kernels with a header that defines
+  the `GAP_GC_*` macros and annotations it uses as no-ops when
+  `GAP_GC_PUSH1` is undefined. JuliaInterface (GAP.jl, branch
+  `mh/precise-gc`, `pkg/JuliaInterface/src/gc_compat.h`) is the model and
+  passes GAP.jl's test suite in precise mode; the rest of the packages with
+  kernel extensions are still to do. Packages take the define from
+  `sysinfo.gap`, which `--enable-precise-gc` fills in; GAP.jl copies the
+  defines into the sysinfo it writes for package builds. `GAP_GC_PUSHARGS`
+  supplies its array in every mode, so package code can use it
+  unconditionally.
+- GAP.jl's error handling let GAP `longjmp` across Julia frames in the
+  GAP -> Julia -> GAP path, which precise frames turned from luck into a
+  crash; the same branch fixes it by tracking the try/catch depth at each
+  call from GAP into Julia. Other embedders with callbacks into GAP have
+  the same exposure.
 
 ## Working GAP Commands
 
@@ -246,14 +291,14 @@ See the Live GAP Status section above for the current sweep results.
 
 Known pitfall:
 
-- Use `GAP_GC_PUSH1` through `GAP_GC_PUSH9` for GAP `Obj` locals that may hold
-  tagged immediate values. These fixed-arity frames store addresses of locals,
-  and the patched Julia scanner skips tagged immediates while reading them.
-  `JL_GC_PUSHARGS` stores values directly and uses Julia-specific low-bit tag
-  semantics, so `GAP_GC_PUSHARGS` must not be used for arrays that can contain
-  GAP immediate values. The `GAP_GC_PUSHARGS` users are `src/vecgf2.c` and the
-  type array in `DoOperationNArgs` (`src/opers.cc`); their roots are all bags,
-  never immediates.
+- Use `GAP_GC_PUSH1` through `GAP_GC_PUSH9` for GAP `Obj` locals. These
+  fixed-arity frames store addresses of locals, and a GAP `Obj` may be a
+  tagged immediate: Julia's root scanner skips those only with
+  JuliaLang/julia#62889. That pull request also extends the skip to
+  `JL_GC_PUSHARGS` frames, which store values directly; GAP's two
+  `GAP_GC_PUSHARGS` users (`src/vecgf2.c`, and the type array in
+  `DoOperationNArgs` in `src/opers.cc`) hold bags only, so they do not
+  depend on that part.
 - Do not assume GAP CLI modes are interchangeable for scripted reproductions.
   In particular, my ad hoc attempts to feed `.tst` files through improvised
   `-r` or stdin workflows produced misleading
@@ -280,7 +325,65 @@ adding to it; always spell the defaults out.
 
 `GASMAN_MEM_CHECK(n)` collects at every `n`th allocation, `0` turns it off.
 Period 1 cannot get through library loading; start GAP normally and enable
-it around the workload. Period 1000 gets through `testinstall` in hours.
+it around the workload. To cover startup itself, set the period from the
+environment and pass `--enableMemCheck`:
+
+```sh
+GAP_MEMCHECK_PERIOD=200 ./gap --enableMemCheck -l . -q -A -T
+```
+
+Period 500 boots and gets through the first 40 test files in about 25
+minutes with the checks live from the first allocation. Every allocation
+is a sample point, the body allocation inside NewBag and ResizeBag
+included - that is where a caller loses an object it holds only in a C
+local. Expect `weakptr.tst` to differ under any period: it encodes when
+the collector runs.
+
+To turn an intermittent report into a deterministic one, sample densely only
+around the point where it was seen. The abort output carries an allocation
+count; `GAP_MEMCHECK_START` and `GAP_MEMCHECK_STOP` bound the checks to
+that range of bag allocations, and period 1 there costs only minutes:
+
+```sh
+GAP_MEMCHECK_START=15000 GAP_MEMCHECK_STOP=45000 GAP_MEMCHECK_PERIOD=1 \
+  ./gap --enableMemCheck -l . -q -A -T
+```
+
+The sampled collections are full by default. A full collection cannot expose
+a missing write barrier: it reaches the young child of a promoted parent
+through the parent. Only a young collection frees such a child, so to hunt
+barrier bugs set `GAP_MEMCHECK_FULL_EVERY=n`: n-1 of every n samples are
+then young collections, cheap enough for period 1 over a whole test file,
+and the nth is a full one that validates the old parents and reports the
+dead child.
+
+```sh
+GAP_MEMCHECK_PERIOD=1 GAP_MEMCHECK_FULL_EVERY=100 \
+  ./gap --enableMemCheck -l . -q -A -T
+```
+
+Two more memory-checking aids: every `GAP_GC_PUSH*` is recorded with its
+source location and every `GAP_GC_POP` checked against that record, so a
+push without a pop is reported at the pop that finds the mismatch, and the
+dead-reference report lists the recorded frames. That record alone cannot
+see an unwind that skipped `GAP_GC_RESTORE_STACK_STATE`: `GAP_GC_POP`
+hands over the chain top, so the pops after such an unwind quietly pop the
+dead frames instead of their own and keep chain and ledger consistent.
+Both push and pop therefore also compare the frame with the current stack
+pointer - a frame below it belongs to a function that has returned - and
+abort at the first push or pop that touches such a frame.
+
+A root pushed before it is initialised is the hardest case: the collector
+reads whatever the stack held, which differs between builds, so a fault in
+the optimized build (the marker dereferencing a small constant such as
+`0x110050`) can be absent from every memory-checking build. Configure one
+more memory-checking build with `-ftrivial-auto-var-init=pattern` added to
+`CFLAGS` and `CXXFLAGS`: every uninitialised local then holds `0xAA` bytes,
+and the push records abort at the push whose slot carries that pattern,
+independent of collection timing. And
+`GAP_MEMCHECK_MARK_ANYWAY=1` marks a child the validator rejected instead of
+aborting, which distinguishes a genuinely dead object (Julia then aborts on
+its type tag) from one the validator misjudged. Period 1000 gets through `testinstall` in hours.
 Smaller periods find more but which allocations get sampled depends on the
 period, so a failure at one period can pass at another.
 
