@@ -823,6 +823,16 @@ UInt TotalGCTime(void)
     return TotalTime;
 }
 
+GAP_GCStackState GAP_GC_SAVE_STACK_STATE(void) JL_NOTSAFEPOINT
+{
+    return (GAP_GCStackState)jl_pgcstack;
+}
+
+void GAP_GC_RESTORE_STACK_STATE(GAP_GCStackState state) JL_NOTSAFEPOINT
+{
+    jl_pgcstack = (jl_gcframe_t *)state;
+}
+
 BOOL IsGapObj(void * p)
 {
     return jl_typeis(p, DatatypeGapObj);
