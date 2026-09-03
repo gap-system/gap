@@ -294,7 +294,13 @@ static Obj  HdlrFunc1 (
  /* range2 := function ( a, b )
       return [ a .. b ];
   end; */
- t_1 = NewFunction( NameFunc[2], 2, NewPlistFromArgs(MakeImmString("a"), MakeImmString("b")), HdlrFunc2 );
+ t_2 = NEW_PLIST( T_PLIST, 2 );
+ SET_LEN_PLIST( t_2, 2 );
+ SET_ELM_PLIST( t_2, 1, MakeImmString("a") );
+ CHANGED_BAG( t_2 );
+ SET_ELM_PLIST( t_2, 2, MakeImmString("b") );
+ CHANGED_BAG( t_2 );
+ t_1 = NewFunction( NameFunc[2], 2, t_2, HdlrFunc2 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 1);
@@ -307,7 +313,15 @@ static Obj  HdlrFunc1 (
  /* range3 := function ( a, b, c )
       return [ a, b .. c ];
   end; */
- t_1 = NewFunction( NameFunc[3], 3, NewPlistFromArgs(MakeImmString("a"), MakeImmString("b"), MakeImmString("c")), HdlrFunc3 );
+ t_2 = NEW_PLIST( T_PLIST, 3 );
+ SET_LEN_PLIST( t_2, 3 );
+ SET_ELM_PLIST( t_2, 1, MakeImmString("a") );
+ CHANGED_BAG( t_2 );
+ SET_ELM_PLIST( t_2, 2, MakeImmString("b") );
+ CHANGED_BAG( t_2 );
+ SET_ELM_PLIST( t_2, 3, MakeImmString("c") );
+ CHANGED_BAG( t_2 );
+ t_1 = NewFunction( NameFunc[3], 3, t_2, HdlrFunc3 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 2);

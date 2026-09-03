@@ -1105,20 +1105,28 @@ static CVar CompFuncExpr(Expr expr)
 
     // make the function (all the pieces are in global variables)
     Int narg = NARG_FUNC(fexp);
-    Emit( "%c = NewFunction( NameFunc[%d], %d", func, nr, narg );
     if (narg != 0) {
         Obj nams = NAMS_FUNC(fexp);
         if (narg < 0)
             narg = -narg;
-        Emit( ", NewPlistFromArgs(" );
-        Emit( "MakeImmString(\"%g\")", ELM_PLIST(nams, 1) );
-        for (Int i = 2; i <= narg; i++) {
-            Emit( ", MakeImmString(\"%g\")", ELM_PLIST(nams, i) );
+        // Build the argument names in a temporary, one element at a time:
+        // each MakeImmString allocates, and only the list keeps the earlier
+        // names alive across that. NewFunction allocates too, and the list
+        // must survive that as well.
+        CVar nams_cvar = CVAR_TEMP( NewTemp( "nams" ) );
+        Emit( "%c = NEW_PLIST( T_PLIST, %d );\n", nams_cvar, narg );
+        Emit( "SET_LEN_PLIST( %c, %d );\n", nams_cvar, narg );
+        for (Int i = 1; i <= narg; i++) {
+            Emit( "SET_ELM_PLIST( %c, %d, MakeImmString(\"%g\") );\n",
+                  nams_cvar, i, ELM_PLIST(nams, i) );
+            Emit( "CHANGED_BAG( %c );\n", nams_cvar );
         }
-        Emit( ")" );
+        Emit( "%c = NewFunction( NameFunc[%d], %d, %c",
+              func, nr, NARG_FUNC(fexp), nams_cvar );
+        FreeTemp( TEMP_CVAR( nams_cvar ) );
     }
     else {
-        Emit( ", 0" );
+        Emit( "%c = NewFunction( NameFunc[%d], %d, 0", func, nr, narg );
     }
     Emit( ", HdlrFunc%d );\n", nr );
 

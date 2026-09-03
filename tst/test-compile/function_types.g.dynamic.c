@@ -479,7 +479,11 @@ static Obj  HdlrFunc1 (
       Print( "f1:", a, "\n" );
       return;
   end; */
- t_1 = NewFunction( NameFunc[2], 1, NewPlistFromArgs(MakeImmString("a")), HdlrFunc2 );
+ t_2 = NEW_PLIST( T_PLIST, 1 );
+ SET_LEN_PLIST( t_2, 1 );
+ SET_ELM_PLIST( t_2, 1, MakeImmString("a") );
+ CHANGED_BAG( t_2 );
+ t_1 = NewFunction( NameFunc[2], 1, t_2, HdlrFunc2 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 1);
@@ -493,7 +497,13 @@ static Obj  HdlrFunc1 (
       Print( "f2:", a, ":", b, "\n" );
       return;
   end; */
- t_1 = NewFunction( NameFunc[3], 2, NewPlistFromArgs(MakeImmString("a"), MakeImmString("b")), HdlrFunc3 );
+ t_2 = NEW_PLIST( T_PLIST, 2 );
+ SET_LEN_PLIST( t_2, 2 );
+ SET_ELM_PLIST( t_2, 1, MakeImmString("a") );
+ CHANGED_BAG( t_2 );
+ SET_ELM_PLIST( t_2, 2, MakeImmString("b") );
+ CHANGED_BAG( t_2 );
+ t_1 = NewFunction( NameFunc[3], 2, t_2, HdlrFunc3 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 5);
@@ -507,7 +517,11 @@ static Obj  HdlrFunc1 (
       Print( "f3:", a, "\n" );
       return;
   end; */
- t_1 = NewFunction( NameFunc[4], -1, NewPlistFromArgs(MakeImmString("a")), HdlrFunc4 );
+ t_2 = NEW_PLIST( T_PLIST, 1 );
+ SET_LEN_PLIST( t_2, 1 );
+ SET_ELM_PLIST( t_2, 1, MakeImmString("a") );
+ CHANGED_BAG( t_2 );
+ t_1 = NewFunction( NameFunc[4], -1, t_2, HdlrFunc4 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 9);
@@ -521,7 +535,13 @@ static Obj  HdlrFunc1 (
       Print( "f4:", a, ":", b, "\n" );
       return;
   end; */
- t_1 = NewFunction( NameFunc[5], -2, NewPlistFromArgs(MakeImmString("a"), MakeImmString("b")), HdlrFunc5 );
+ t_2 = NEW_PLIST( T_PLIST, 2 );
+ SET_LEN_PLIST( t_2, 2 );
+ SET_ELM_PLIST( t_2, 1, MakeImmString("a") );
+ CHANGED_BAG( t_2 );
+ SET_ELM_PLIST( t_2, 2, MakeImmString("b") );
+ CHANGED_BAG( t_2 );
+ t_1 = NewFunction( NameFunc[5], -2, t_2, HdlrFunc5 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 13);
@@ -535,7 +555,11 @@ static Obj  HdlrFunc1 (
       Print( "f5:", a\,b, "\n" );
       return;
   end; */
- t_1 = NewFunction( NameFunc[6], 1, NewPlistFromArgs(MakeImmString("a,b")), HdlrFunc6 );
+ t_2 = NEW_PLIST( T_PLIST, 1 );
+ SET_LEN_PLIST( t_2, 1 );
+ SET_ELM_PLIST( t_2, 1, MakeImmString("a,b") );
+ CHANGED_BAG( t_2 );
+ t_1 = NewFunction( NameFunc[6], 1, t_2, HdlrFunc6 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 18);
