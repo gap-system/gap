@@ -3006,11 +3006,11 @@ DeclareGlobalFunction("OnTuplesTuples");
 
 #############################################################################
 ##
-#F  AsAutomorphism( <sub>, <autom> )
+#F  OnGroupsAsAutomorphism( <sub>, <autom> )
 ##
-##  <#GAPDoc Label="AsAutomorphism">
+##  <#GAPDoc Label="OnGroupsAsAutomorphism">
 ##  <ManSection>
-##  <Func Name="AsAutomorphism" Arg='sub, autom'/>
+##  <Func Name="OnGroupsAsAutomorphism" Arg='sub, autom'/>
 ##
 ##  <Description>
 ##  returns the image of the structure <A>sub</A> under the automorphism
@@ -3035,19 +3035,19 @@ DeclareGlobalFunction("OnTuplesTuples");
 ##  gap> a:=AutomorphismGroup(g);;
 ##  gap> u:=Subgroup(g,[(1,2)]);
 ##  Group([ (1,2) ])
-##  gap> orb:=Orbit(a,u,AsAutomorphism);;
+##  gap> orb:=Orbit(a,u,OnGroupsAsAutomorphism);;
 ##  gap> Length(orb);
 ##  3
-##  gap> Size(Stabilizer(a,u,AsAutomorphism));
+##  gap> Size(Stabilizer(a,u,OnGroupsAsAutomorphism));
 ##  2
-##  gap> Size(Action(a,orb,AsAutomorphism));
+##  gap> Size(Action(a,orb,OnGroupsAsAutomorphism));
 ##  6
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareGlobalFunction( "AsAutomorphism" );
+DeclareGlobalFunction( "OnGroupsAsAutomorphism" );
 
 #############################################################################
 ##

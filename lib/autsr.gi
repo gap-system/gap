@@ -239,13 +239,6 @@ local
   len:=Length(ocr.generators);
   dim:=Length(pcgs);
 
-#  not used
-#  tmp := ocr.moduleMap( ocr.identity );
-#  L0  := Concatenation( List( [ 1 .. len ], x -> tmp ) );
-#  ConvertToVectorRep(L0,ocr.field);
-#  R := ListWithIdenticalEntries( len * dim,Zero( ocr.field ) );
-#  ConvertToVectorRep(R,ocr.field);
-
   rels:=ocr.relators;
   mat:=List([1..len*dim],x->[]);
   for i in mat do
@@ -954,7 +947,7 @@ end);
 # nevertheless faster..
 
 #AsIsomorphism
-InstallGlobalFunction(AsAutomorphism,
+InstallGlobalFunction(OnGroupsAsAutomorphism,
   function(subgroup,autom) return Image(autom,subgroup);end);
 
 # option somechar may be a list of characteristic subgroups, or a record with
@@ -1393,7 +1386,7 @@ local
           Info(InfoMorph,3,"radical automorphism stabilizer");
           SetIsGroupOfAutomorphismsFiniteGroup(rada,true);
           NiceMonomorphism(rada:autactbase:=fail,someCharacteristics:=fail);
-          rada:=Stabilizer(rada,N,AsAutomorphism);
+          rada:=Stabilizer(rada,N,OnGroupsAsAutomorphism);
         fi;
       fi;
     until split or fratsim;
@@ -1587,7 +1580,7 @@ local
       moves:=false;
       for i in class do
         if not i in classorb then
-          set:=Orbit(sub,i,k,kpre,AsAutomorphism);
+          set:=Orbit(sub,i,k,kpre,OnGroupsAsAutomorphism);
           classorb:=Union(classorb,set);
           moves:=moves or Length(set)>1;
         fi;
@@ -1595,7 +1588,7 @@ local
       if moves then
         set:=Set(List(class,x->Position(classorb,x)));
         Info(InfoMorph,3,"orbslen=",Length(classorb));
-        kperm:=List(k,x->Permutation(x,classorb,k,kpre,AsAutomorphism));
+        kperm:=List(k,x->Permutation(x,classorb,k,kpre,OnGroupsAsAutomorphism));
         acthom:=GroupHomomorphismByImagesNC(sub,Group(kperm),k,kperm);
 
         stb:=Stabilizer(Range(acthom),set,OnSets);
@@ -1725,7 +1718,7 @@ local
               Info(InfoMorph,3,"radical automorphism stabilizer");
               NiceMonomorphism(rada:autactbase:=fail,someCharacteristics:=fail);
               SetIsGroupOfAutomorphismsFiniteGroup(rada,true);
-              rada:=Stabilizer(rada,k,AsAutomorphism);
+              rada:=Stabilizer(rada,k,OnGroupsAsAutomorphism);
             fi;
           od;
           # move back to bad degree
@@ -1804,15 +1797,15 @@ local
           for j in u do
             if IsList(j) then
               # stabilizer set of subgroups
-              jorb:=ShallowCopy(Orbit(AQP,j[1],C[2],C[1],AsAutomorphism));
+              jorb:=ShallowCopy(Orbit(AQP,j[1],C[2],C[1],OnGroupsAsAutomorphism));
               jorpo:=[Position(jorb,j[1]),Position(jorb,j[2])];
               if jorpo[2]=fail then
                 # the two subgroups lie in different orbits
-                Append(jorb,Orbit(AQP,j[2],C[2],C[1],asAutom));
+                Append(jorb,Orbit(AQP,j[2],C[2],C[1],OnGroupsAsAutomorphism));
                 jorpo[2]:=Position(jorb,j[2]);
               fi;
               if Length(jorb)>Length(j) then
-            B:=ActionHomomorphism(AQP,jorb,C[2],C[1],AsAutomorphism);
+            B:=ActionHomomorphism(AQP,jorb,C[2],C[1],OnGroupsAsAutomorphism);
             substb:=Group(List(C[2],x->ImagesRepresentative(B,x)),());
             substb:=Stabilizer(substb,Set(jorpo),OnSets);
             substb:=PreImage(B,substb);
@@ -1824,7 +1817,7 @@ local
 
 
         else
-          substb:=Stabilizer(AQP,j,C[2],C[1],AsAutomorphism);
+          substb:=Stabilizer(AQP,j,C[2],C[1],OnGroupsAsAutomorphism);
           Info(InfoMorph,2,"Stabilize characteristic subgroup ",Size(j),
         " :",Size(AQP)/Size(substb) );
         fi;
@@ -2339,7 +2332,7 @@ local
   for i in cG do
     if not ForAll(GeneratorsOfGroup(a),x->Image(x,i)=i) then
       makenewa(Length(GeneratorsOfGroup(a))>12);
-      a:=Stabilizer(a,i,AsAutomorphism);
+      a:=Stabilizer(a,i,OnGroupsAsAutomorphism);
     fi;
   od;
 
@@ -2349,7 +2342,7 @@ local
     conj:=One(a);
     K:=Image(e1,G);
     L:=Image(e2,H);
-    map:=AGBoundedOrbrep(a,K,L,AsAutomorphism,20);
+    map:=AGBoundedOrbrep(a,K,L,OnGroupsAsAutomorphism,20);
     if map=false then
       Info(InfoMorph,1,"Shortorb test noniso");
       return fail;
@@ -2369,7 +2362,7 @@ local
     conj:=One(a);
     K:=Image(e1,G);
     L:=Image(e2,H);
-    map:=AGBoundedOrbrep(a,K,L,AsAutomorphism,100);
+    map:=AGBoundedOrbrep(a,K,L,OnGroupsAsAutomorphism,100);
     if map=false then
       Info(InfoMorph,1,"Shortorb test noniso");
       return fail;
@@ -2391,7 +2384,7 @@ local
             map:=fail;
           else
             makenewa(Length(GeneratorsOfGroup(a))>8);
-            map:=AGBoundedOrbrep(a,u,v,AsAutomorphism,200);
+            map:=AGBoundedOrbrep(a,u,v,OnGroupsAsAutomorphism,200);
           fi;
           if map=false then
             Info(InfoMorph,1,"Shortorb factor noniso");
@@ -2418,7 +2411,8 @@ local
               gens:=SmallGeneratingSet(api);
             fi;
             pre:=List(gens,x->PreImagesRepresentative(iso,x));
-            map:=RepresentativeAction(SubgroupNC(Parent(a),pre),u,v,AsAutomorphism);
+            map:=RepresentativeAction(SubgroupNC(Parent(a),pre),u,v,
+                   OnGroupsAsAutomorphism);
             if map=fail then
               return fail;
             fi;
@@ -2426,7 +2420,7 @@ local
             K:=Image(map,K);
 
             if Size(i)>1 then
-              u:=Stabilizer(api,v,gens,pre,AsAutomorphism);
+              u:=Stabilizer(api,v,gens,pre,OnGroupsAsAutomorphism);
               Info(InfoMorph,1,"Factor ",Size(d)/Size(i),": ",
                   "reduce by ",Size(api)/Size(u));
               api:=u;
