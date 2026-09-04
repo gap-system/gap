@@ -1212,24 +1212,24 @@ InstallMethod( NaturalHomomorphismBySubAlgebraModule,
     if IsLeftAlgebraModuleElementCollection( V ) then
         if IsRightAlgebraModuleElementCollection( V ) then
             left_op:= function( x, v )
-                 return ImagesRepresentative( f, x^PreImagesRepresentative( f, v ) );
+                 return ImagesRepresentative( f, x^PreImagesRepresentativeNC( f, v ) );
             end;
             right_op:= function( v, x )
-                 return ImagesRepresentative( f, PreImagesRepresentative( f, v )^x );
+                 return ImagesRepresentative( f, PreImagesRepresentativeNC( f, v )^x );
             end;
             qmod:= BiAlgebraModule( LeftActingAlgebra( V ),
                            RightActingAlgebra( V ),
                            left_op, right_op, quot );
         else
             left_op:= function( x, v )
-                 return ImagesRepresentative( f, x^PreImagesRepresentative( f, v ) );
+                 return ImagesRepresentative( f, x^PreImagesRepresentativeNC( f, v ) );
             end;
             qmod:= LeftAlgebraModule( LeftActingAlgebra( V ),
                            left_op, quot);
         fi;
     else
         right_op:= function( v, x )
-             return ImagesRepresentative( f, PreImagesRepresentative( f, v )^x );
+             return ImagesRepresentative( f, PreImagesRepresentativeNC( f, v )^x );
         end;
         qmod:= RightAlgebraModule( RightActingAlgebra( V ),
                        right_op, quot );

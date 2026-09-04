@@ -94,7 +94,7 @@ local l,iso,fp,stbc,gens;
         fp:=IsomorphismFpGroup(l);
         iso:=GroupHomomorphismByImagesNC(G,Range(fp),
                List(MappingGeneratorsImages(fp)[1],
-                    i->PreImagesRepresentative(iso,i)),
+                    i->PreImagesRepresentativeNC(iso,i)),
                MappingGeneratorsImages(fp)[2]);
         SetIsBijective(iso,true);
         return iso;
@@ -174,8 +174,8 @@ function( G, str )
         IsNaturalAlternatingGroup(H);
         new:=IsomorphismFpGroup(H,"@");
         gensH:=List(GeneratorsOfGroup(Image(new)),
-                      i->PreImagesRepresentative(new,i));
-        preiH := List( gensH, x -> PreImagesRepresentative( hom, x ) );
+                      i->PreImagesRepresentativeNC(new,i));
+        preiH := List( gensH, x -> PreImagesRepresentativeNC( hom, x ) );
 
         c     := Length( gensH );
 
@@ -193,7 +193,7 @@ function( G, str )
             w := MappedWord( rel, gensT, gensE{[1..c]} );
             t := MappedWord( rel, gensT, imgsE{[1..c]} );
             if not t = One( G ) then
-                t := PreImagesRepresentative( free, t );
+                t := PreImagesRepresentativeNC( free, t );
                 t := MappedWord( t, gensF, gensE{[c+1..n+c]} );
             else
                 t := One( E );
@@ -207,7 +207,7 @@ function( G, str )
                 w := Comm( gensE[c+j], gensE[i] );
                 t := Comm( imgsE[c+j], imgsE[i] );
                 if not t = One( G ) then
-                    t := PreImagesRepresentative( free, t );
+                    t := PreImagesRepresentativeNC( free, t );
                     t := MappedWord( t, gensF, gensE{[c+1..n+c]} );
                 else
                     t := One( E );
@@ -303,7 +303,7 @@ function(g,str,N)
         gens:=Union(gens,Union(List(ser,SmallGeneratingSet)));
       fi;
       if f<>g then
-        gens:=List(gens,x->PreImagesRepresentative(hom,x));
+        gens:=List(gens,x->PreImagesRepresentativeNC(hom,x));
         ser:=List(ser,x->PreImage(hom,x));
       fi;
       # change generators to make split
@@ -408,7 +408,8 @@ function(g,str,N)
       fgens:=GeneratorsOfGroup(f);
       auts:=List(GeneratorsOfGroup(g),i->
              GroupHomomorphismByImagesNC(f,f,fgens,
-               List(fgens,j->Image(hom,PreImagesRepresentative(hom,j)^i)):noassert));
+               List(fgens,
+                 j->Image(hom,PreImagesRepresentativeNC(hom,j)^i)):noassert));
       for j in auts do
         SetIsBijective(j,true);
       od;
@@ -437,7 +438,7 @@ function(g,str,N)
       else
         a:=IsomorphismFpGroup(sf:noassert);
       fi;
-      ad:=List(GeneratorsOfGroup(Range(a)),i->PreImagesRepresentative(a,i));
+      ad:=List(GeneratorsOfGroup(Range(a)),i->PreImagesRepresentativeNC(a,i));
       lad:=Length(ad);
 
       n:=Length(orb);
@@ -472,7 +473,7 @@ function(g,str,N)
         fp:=fg/rels;
         a:=GroupHomomorphismByImagesNC(f,fp,fgens,GeneratorsOfGroup(fp):noassert);
       fi;
-      Append(gens,List(fgens,i->PreImagesRepresentative(hom,i)));
+      Append(gens,List(fgens,i->PreImagesRepresentativeNC(hom,i)));
 
       # here we really want a composed homomorphism, to avoid extra work for
       # a new stabilizer chain
@@ -651,7 +652,7 @@ local fpq, qgens, qreps, fpqg, rels, pcgs, p, f, qimg, idx, nimg, decomp,
       ngen, fp, hom2, di, source, dih, dec, i, j;
   fpq:=Range(hom);
   qgens:=GeneratorsOfGroup(fpq);
-  qreps:=List(qgens,i->PreImagesRepresentative(hom,i));
+  qreps:=List(qgens,i->PreImagesRepresentativeNC(hom,i));
   fpqg:=FreeGeneratorsOfFpGroup(fpq);
   rels:=[];
   if IsModuloPcgs(mnsf) then
@@ -705,7 +706,7 @@ local fpq, qgens, qreps, fpqg, rels, pcgs, p, f, qimg, idx, nimg, decomp,
     ngen:=FreeGeneratorsOfFpGroup(p);
     # This is not really a pcgs, but treated as layer generators the same
     # way, thus use the same variable name
-    pcgs:=List(GeneratorsOfGroup(p),i->PreImagesRepresentative(mnsf,i));
+    pcgs:=List(GeneratorsOfGroup(p),i->PreImagesRepresentativeNC(mnsf,i));
     f:=FreeGroup(Length(fpqg)+Length(pcgs));
     qimg:=GeneratorsOfGroup(f){[1..Length(fpqg)]};
     idx:=[Length(fpqg)+1..Length(fpqg)+Length(pcgs)];
@@ -977,7 +978,7 @@ function( G, series, str )
 
         gensH := GeneratorsOfGroup( H );
         gensH := Filtered( gensH, x -> x <> One(H) );
-        preiH := List( gensH, x -> PreImagesRepresentative( hom, x ) );
+        preiH := List( gensH, x -> PreImagesRepresentativeNC( hom, x ) );
         c     := Length( gensH );
 
         # compute presentation of H
@@ -1000,7 +1001,7 @@ function( G, series, str )
             w := MappedWord( rel, gensT, gensE{[1..c]} );
             t := MappedWord( rel, gensT, imgsE{[1..c]} );
             if not t = One( G ) then
-                t := PreImagesRepresentative( free, t );
+                t := PreImagesRepresentativeNC( free, t );
                 t := MappedWord( t, gensF, gensE{[c+1..n+c]} );
             else
                 t := One( E );
@@ -1014,7 +1015,7 @@ function( G, series, str )
                 w := Comm( gensE[c+j], gensE[i] );
                 t := Comm( imgsE[c+j], imgsE[i] );
                 if not t = One( G ) then
-                    t := PreImagesRepresentative( free, t );
+                    t := PreImagesRepresentativeNC( free, t );
                     t := MappedWord( t, gensF, gensE{[c+1..n+c]} );
                 else
                     t := One( E );
@@ -1239,8 +1240,8 @@ local iso,fp,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
       for r in Rules(k) do
         left:=MappedWord(r[1],FreeGeneratorsOfFpMonoid(m),monreps);
         right:=MappedWord(r[2],FreeGeneratorsOfFpMonoid(m),monreps);
-        diff:=LeftQuotient(PreImagesRepresentative(iso,right),
-                PreImagesRepresentative(iso,left));
+        diff:=LeftQuotient(PreImagesRepresentativeNC(iso,right),
+                PreImagesRepresentativeNC(iso,left));
         diff:=ImagesRepresentative(iso,diff);
 
         left:=MappedWord(r[1],FreeGeneratorsOfFpMonoid(m),monreal);
@@ -1259,7 +1260,7 @@ local iso,fp,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
             if reduce(mgens[k])=mgens[k] then
               right:=fmgens[j]^-1*fmgens[k]*fmgens[j];
               #collect
-              right:=ImagesRepresentative(iso,PreImagesRepresentative(iso,right));
+              right:=ImagesRepresentative(iso,PreImagesRepresentativeNC(iso,right));
               right:=Product(List(LetterRepAssocWord(UnderlyingElement(right)),
                 x->mgens[Position(nums,x)]));
               right:=reduce(mgens[j]*right);
@@ -1331,7 +1332,7 @@ local pcgs,iso,fp,i,j,gens,numi,ord,fm,fam,mword,k,r,addrule,a,e,m;
   pcgs:=Pcgs(G);
   iso:=IsomorphismFpGroup(G);
   fp:=Range(iso);
-  if List(GeneratorsOfGroup(fp),x->PreImagesRepresentative(iso,x))<>pcgs then
+  if List(GeneratorsOfGroup(fp),x->PreImagesRepresentativeNC(iso,x))<>pcgs then
     Error("pcgs");
   fi;
   gens:=[];
@@ -1531,7 +1532,7 @@ local iso,n,fn,sz,bigcount,tryweyl;
     iso:=IsomorphismGroups(G,P);
     if iso<>fail then
       P:=List(GeneratorsOfGroup(H),
-        x->PreImagesRepresentative(iso,ImagesRepresentative(isp,x)));
+        x->PreImagesRepresentativeNC(iso,ImagesRepresentative(isp,x)));
       iso:=GroupHomomorphismByImagesNC(G,H,P,GeneratorsOfGroup(H));
     fi;
     return iso;
@@ -1739,13 +1740,13 @@ local isob,isos,iso,gens,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
   # force going to pc group, as this will give better ordering
   isob:=GroupHomomorphismByFunction(borel,Range(cb.fphom),
     x->ImagesRepresentative(cb.fphom,ImagesRepresentative(pciso,x)),
-    x->PreImagesRepresentative(pciso,PreImagesRepresentative(cb.fphom,x)));
+    x->PreImagesRepresentativeNC(pciso,PreImagesRepresentativeNC(cb.fphom,x)));
 
   b:=Range(isob);
 
   wgens:=GeneratorsOfGroup(weyl);
 
-  bgens:=List(GeneratorsOfGroup(b),x->PreImagesRepresentative(isob,x));
+  bgens:=List(GeneratorsOfGroup(b),x->PreImagesRepresentativeNC(isob,x));
   if newstyle and bgens<>GeneratorsOfGroup(borel) then Error("gens");fi;
 
   bpairs:=Concatenation(List(bgens,x->[x,x^-1]));
@@ -1890,7 +1891,7 @@ local isob,isos,iso,gens,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
     x:=UnderlyingElement(ImagesRepresentative(cb.monhom,x));
     x:=reduce(x,RelationsOfFpMonoid(monoid),mdag,fail);
     x:=ElementOfFpMonoid(FamilyObj(One(monoid)),x);
-    return PreImagesRepresentative(cb.monhom,x);
+    return PreImagesRepresentativeNC(cb.monhom,x);
   end;
 
   mdag:=EmptyKBDAG(Union(List(FreeGeneratorsOfFpMonoid(monoid),
@@ -1935,7 +1936,7 @@ local isob,isos,iso,gens,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
     x:=UnderlyingElement(ImagesRepresentative(cs.monhom,x));
     x:=reduce(x,RelationsOfFpMonoid(Range(cs.monhom)),wdag,fail);
     x:=ElementOfFpMonoid(FamilyObj(One(Range(cs.monhom))),x);
-    return PreImagesRepresentative(cs.monhom,x);
+    return PreImagesRepresentativeNC(cs.monhom,x);
   end;
 
   wdag:=EmptyKBDAG(Union(List(FreeGeneratorsOfFpMonoid(Range(cs.monhom)),
@@ -1977,7 +1978,7 @@ local isob,isos,iso,gens,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
   a:=Group(SmallGeneratingSet(group)); # so nothing stores
   csetperm:=List(GeneratorsOfGroup(a),x->Permutation(x,rt,OnRight));
   iso:=EpimorphismFromFreeGroup(a);
-  csetperm:=List(bgens,x->MappedWord(PreImagesRepresentative(iso,x),
+  csetperm:=List(bgens,x->MappedWord(PreImagesRepresentativeNC(iso,x),
     MappingGeneratorsImages(iso)[1],csetperm));
   act:=Group(csetperm,());
 
@@ -2025,7 +2026,7 @@ local isob,isos,iso,gens,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
     a:=PositionCanonical(rt,elm);
     b:=rti[a];
     rep:=RepresentativeAction(Image(bhom),a,dcnums[b][1]);
-    rep:=PreImagesRepresentative(bhom,rep);
+    rep:=PreImagesRepresentativeNC(bhom,rep);
     if single then
       a:=[CanonicalRightCosetElement(ac[1],rt[dcnums[b][1]]),rep];
     else
@@ -2085,9 +2086,8 @@ local isob,isos,iso,gens,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
 #    a:=Group(SmallGeneratingSet(group)); # so nothing stores
 #    csetperm:=List(GeneratorsOfGroup(a),x->Permutation(x,rt,OnRight));
 #    iso:=EpimorphismFromFreeGroup(a);
-#    csetperm:=List(bgens,x->MappedWord(PreImagesRepresentative(iso,x),MappingGeneratorsImages(iso)[1],csetperm));
-#    act:=Group(csetperm,());
-#
+#    csetperm:=List(bgens,x->MappedWord(PreImagesRepresentativeNC(iso,x),
+#       MappingGeneratorsImages(iso)[1],csetperm)); act:=Group(csetperm,());
 #    bhom:=GroupHomomorphismByImagesNC(borel,act,bgens,csetperm);
 #    #Assert(0,bhom<>fail);
 #
@@ -2130,7 +2130,7 @@ local isob,isos,iso,gens,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
 #      pos:=rti[PositionCanonical(rt,elm)];
 #      #rep:=RepresentativeAction(borel,PositionCanonical(rt,elm),
 #      #       PositionCanonical(rt,dcreps[pos]),bgens,csetperm,OnPoints);
-#      rep:=PreImagesRepresentative(bhom,
+#      rep:=PreImagesRepresentativeNC(bhom,
 #        RepresentativeAction(Range(bhom),PositionCanonical(rt,elm),
 #            PositionCanonical(rt,dcreps[pos])));
 #      rep:=[elm*rep/dcreps[pos],dcreps[pos],rep^-1];
@@ -2452,7 +2452,7 @@ if rule[1]=rule[2] then return;fi;
   else
 
     # BN-style reductions
-    pcgs:=List(GeneratorsOfGroup(b),x->PreImagesRepresentative(isob,x));
+    pcgs:=List(GeneratorsOfGroup(b),x->PreImagesRepresentativeNC(isob,x));
     # remove powers
     pcgs:=pcgs{
       Filtered([1..Length(pcgs)],i->not ForAny([1..i-1],
@@ -2466,7 +2466,7 @@ if rule[1]=rule[2] then return;fi;
 
       # which elements b*i can we write as i*\tilde b. Then b^i=\tilde b, that
       # is b\in B\cvap B^(i^-1)
-      pri:=PreImagesRepresentative(isos,i);
+      pri:=PreImagesRepresentativeNC(isos,i);
       stb:=Intersection(borel,borel^(pri^-1));
       Info(InfoFpGroup,2,i," ",Size(stb));
 
@@ -2522,14 +2522,14 @@ if rule[1]=rule[2] then return;fi;
       Info(InfoFpGroup,3,"borelrun ",Position(wo,i)," of ",Length(wo));
 
       # rewrite i*b*j as \tilde b*k*\hat b.
-      pri:=PreImagesRepresentative(isos,i);
+      pri:=PreImagesRepresentativeNC(isos,i);
       stb:=Intersection(borel^pri,borel);
 
       for j in wo do
         Info(InfoFpGroup,2,"DC:",i,", ",j," from ",Length(rels));
         for k in borelelm do #RightTransversal(borel,stb) do
-          a:=PreImagesRepresentative(isos,i)*k*
-            PreImagesRepresentative(isos,j);
+          a:=PreImagesRepresentativeNC(isos,i)*k*
+            PreImagesRepresentativeNC(isos,j);
           a:=decomp(a);
           a:=[nofob(ImagesRepresentative(isob,a[1])),
               nofow(ImagesRepresentative(isos,a[2])),
@@ -2695,7 +2695,7 @@ end);
 #  if List(mg,x->LetterRepAssocWord(UnderlyingElement(x)))<>
 #    List([1..Length(mg)],x->[x]) then Error("gens!"); fi;
 #  pre:=List(mg,x->LetterRepAssocWord(UnderlyingElement(
-#    PreImagesRepresentative(miso,x))));
+#    PreImagesRepresentativeNC(miso,x))));
 #  if ForAny(pre,x->Length(x)<>1) then Error("double");fi;
 #  Add(l,Concatenation(pre));
 #  if IsBound(m!.rewritingSystem) then
@@ -2907,7 +2907,7 @@ local d,f,group,act,g,sy,b,c,borel,weyl,a,i,iso,ucs,gens,gl;
     fi;
     c:=c[1];
     a:=SubgroupNC(group,List(GeneratorsOfGroup(weyl),
-      x->PreImagesRepresentative(c,x)));
+      x->PreImagesRepresentativeNC(c,x)));
     Size(a);
     a!.epiweyl:=weyl;
     weyl:=a;

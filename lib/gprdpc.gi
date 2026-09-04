@@ -421,7 +421,7 @@ local pg,ph,kg,kh,ig,ih,mg,mh,S,info;
   ig:=InducedPcgs(pg,kg);
   ih:=InducedPcgs(ph,kh);
   mg:=pg mod ig;
-  mh:=List(mg,i->PreImagesRepresentative(hh,Image(gh,i)));
+  mh:=List(mg,i->PreImagesRepresentativeNC(hh,Image(gh,i)));
   pg:=Concatenation(mg,ig,List(ih,i->One(G)));
   ph:=Concatenation(mh,List(ig,i->One(H)),ih);
   S:=SubdirProdPcGroups(G,pg,H,ph);
