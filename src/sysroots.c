@@ -226,11 +226,13 @@ void SySetGapRootPath(const Char * string)
 Obj SyGetGapRootPaths(void)
 {
     Obj tmp = NEW_PLIST_IMM(T_PLIST, MAX_GAP_DIRS);
+    GAP_GC_PUSH1(&tmp);
     for (int i = 0; i < MAX_GAP_DIRS; i++) {
         if (SyGapRootPaths[i][0]) {
             PushPlist(tmp, MakeImmString(SyGapRootPaths[i]));
         }
     }
     MakeImmutableNoRecurse(tmp);
+    GAP_GC_POP();
     return tmp;
 }

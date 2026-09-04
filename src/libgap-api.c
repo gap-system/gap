@@ -92,15 +92,20 @@ void GAP_CollectBags(BOOL full)
 
 Obj GAP_EvalString(const char * cmd)
 {
-    Obj instream;
-    Obj res;
-    Obj viewObjFunc, streamFunc;
+    Obj instream = 0;
+    Obj res = 0;
+    Obj string = 0;
+    Obj viewObjFunc = 0;
+    Obj streamFunc = 0;
 
+    GAP_GC_PUSH5(&instream, &res, &string, &viewObjFunc, &streamFunc);
     streamFunc = GAP_ValueGlobalVariable("InputTextString");
     viewObjFunc = GAP_ValueGlobalVariable("ViewObj");
 
-    instream = DoOperation1Args(streamFunc, MakeString(cmd));
+    string = MakeString(cmd);
+    instream = DoOperation1Args(streamFunc, string);
     res = READ_ALL_COMMANDS(instream, False, True, viewObjFunc);
+    GAP_GC_POP();
     return res;
 }
 
@@ -218,9 +223,10 @@ Obj GAP_CallFuncList(Obj func, Obj args)
 
 Obj GAP_CallFuncArray(Obj func, UInt narg, Obj args[])
 {
-    Obj result;
-    Obj list;
+    Obj result = 0;
+    Obj list = 0;
 
+    GAP_GC_PUSH2(&result, &list);
     if (TNUM_OBJ(func) == T_FUNCTION) {
 
         // call the function
@@ -258,66 +264,79 @@ Obj GAP_CallFuncArray(Obj func, UInt narg, Obj args[])
         result = DoOperation2Args(CallFuncListOper, func, list);
     }
 
+    GAP_GC_POP();
     return result;
 }
 
 Obj GAP_CallFunc0Args(Obj func)
 {
-    Obj result;
+    Obj result = 0;
+    Obj list = 0;
 
+    GAP_GC_PUSH2(&result, &list);
     if (TNUM_OBJ(func) == T_FUNCTION) {
         result = CALL_0ARGS(func);
     }
     else {
-        Obj list = NewEmptyPlist();
+        list = NewEmptyPlist();
         result = DoOperation2Args(CallFuncListOper, func, list);
     }
 
+    GAP_GC_POP();
     return result;
 }
 
 Obj GAP_CallFunc1Args(Obj func, Obj a1)
 {
-    Obj result;
+    Obj result = 0;
+    Obj list = 0;
 
+    GAP_GC_PUSH2(&result, &list);
     if (TNUM_OBJ(func) == T_FUNCTION) {
         result = CALL_1ARGS(func, a1);
     }
     else {
-        Obj list = NewPlistFromArgs(a1);
+        list = NewPlistFromArgs(a1);
         result = DoOperation2Args(CallFuncListOper, func, list);
     }
 
+    GAP_GC_POP();
     return result;
 }
 
 Obj GAP_CallFunc2Args(Obj func, Obj a1, Obj a2)
 {
-    Obj result;
+    Obj result = 0;
+    Obj list = 0;
 
+    GAP_GC_PUSH2(&result, &list);
     if (TNUM_OBJ(func) == T_FUNCTION) {
         result = CALL_2ARGS(func, a1, a2);
     }
     else {
-        Obj list = NewPlistFromArgs(a1, a2);
+        list = NewPlistFromArgs(a1, a2);
         result = DoOperation2Args(CallFuncListOper, func, list);
     }
 
+    GAP_GC_POP();
     return result;
 }
 
 Obj GAP_CallFunc3Args(Obj func, Obj a1, Obj a2, Obj a3)
 {
-    Obj result;
+    Obj result = 0;
+    Obj list = 0;
 
+    GAP_GC_PUSH2(&result, &list);
     if (TNUM_OBJ(func) == T_FUNCTION) {
         result = CALL_3ARGS(func, a1, a2, a3);
     }
     else {
-        Obj list = NewPlistFromArgs(a1, a2, a3);
+        list = NewPlistFromArgs(a1, a2, a3);
         result = DoOperation2Args(CallFuncListOper, func, list);
     }
 
+    GAP_GC_POP();
     return result;
 }
 
@@ -451,11 +470,11 @@ Obj GAP_NewRange(Int len, Int low, Int inc)
 //// matrix obj
 ////
 
-static Obj IsMatrixOrMatrixObjFilt;
-static Obj IsMatrixFilt;
-static Obj IsMatrixObjFilt;
-static Obj NrRowsAttr;
-static Obj NrColsAttr;
+static Obj IsMatrixOrMatrixObjFilt GAP_GC_GLOBALLY_ROOTED;
+static Obj IsMatrixFilt GAP_GC_GLOBALLY_ROOTED;
+static Obj IsMatrixObjFilt GAP_GC_GLOBALLY_ROOTED;
+static Obj NrRowsAttr GAP_GC_GLOBALLY_ROOTED;
+static Obj NrColsAttr GAP_GC_GLOBALLY_ROOTED;
 
 // Returns 1 if <obj> is a GAP matrix or matrix obj, 0 if not.
 int GAP_IsMatrixOrMatrixObj(Obj obj)
@@ -479,16 +498,24 @@ int GAP_IsMatrixObj(Obj obj)
 // If <mat> is not a GAP matrix obj, an error may be raised.
 UInt GAP_NrRows(Obj mat)
 {
-    Obj nrows = CALL_1ARGS(NrRowsAttr, mat);
-    return UInt_ObjInt(nrows);
+    Obj nrows = 0;
+    GAP_GC_PUSH1(&nrows);
+    nrows = CALL_1ARGS(NrRowsAttr, mat);
+    UInt result = UInt_ObjInt(nrows);
+    GAP_GC_POP();
+    return result;
 }
 
 // Returns the number of columns of the given GAP matrix or matrix obj.
 // If <mat> is not a GAP matrix or matrix obj, an error may be raised.
 UInt GAP_NrCols(Obj mat)
 {
-    Obj ncols = CALL_1ARGS(NrColsAttr, mat);
-    return UInt_ObjInt(ncols);
+    Obj ncols = 0;
+    GAP_GC_PUSH1(&ncols);
+    ncols = CALL_1ARGS(NrColsAttr, mat);
+    UInt result = UInt_ObjInt(ncols);
+    GAP_GC_POP();
+    return result;
 }
 
 // Assign <val> at the <row>, <col> into the GAP matrix or matrix obj <mat>.
@@ -496,9 +523,13 @@ UInt GAP_NrCols(Obj mat)
 // If <mat> is not a GAP matrix or matrix obj, an error may be raised.
 void GAP_AssMat(Obj mat, UInt row, UInt col, Obj val)
 {
-    Obj r = ObjInt_UInt(row);
-    Obj c = ObjInt_UInt(col);
+    Obj r = 0;
+    Obj c = 0;
+    GAP_GC_PUSH2(&r, &c);
+    r = ObjInt_UInt(row);
+    c = ObjInt_UInt(col);
     ASS_MAT(mat, r, c, val);
+    GAP_GC_POP();
 }
 
 // Returns the element at the <row>, <col> in the GAP matrix obj <mat>.
@@ -507,9 +538,15 @@ void GAP_AssMat(Obj mat, UInt row, UInt col, Obj val)
 // If <mat> is not a GAP matrix or matrix obj, an error may be raised.
 Obj GAP_ElmMat(Obj mat, UInt row, UInt col)
 {
-    Obj r = ObjInt_UInt(row);
-    Obj c = ObjInt_UInt(col);
-    return ELM_MAT(mat, r, c);
+    Obj r = 0;
+    Obj c = 0;
+    Obj result = 0;
+    GAP_GC_PUSH3(&r, &c, &result);
+    r = ObjInt_UInt(row);
+    c = ObjInt_UInt(col);
+    result = ELM_MAT(mat, r, c);
+    GAP_GC_POP();
+    return result;
 }
 
 
@@ -608,6 +645,7 @@ jmp_buf * GAP_GetReadJmpError(void)
 
 static volatile sig_atomic_t EnterStackCount = 0;
 static volatile Int RecursionDepth;
+static volatile GAP_GCStackState GCStack;
 
 
 // These are wrapped by the macros GAP_EnterStack() and GAP_LeaveStack()
@@ -644,6 +682,7 @@ int GAP_Error_Prejmp_(const char * file, int line)
         return 1;
     }
     RecursionDepth = GetRecursionDepth();
+    GCStack = GAP_GC_SAVE_STACK_STATE();
     return 0;
 }
 
@@ -662,6 +701,7 @@ void GAP_Error_Postjmp_Returning_(void)
     if (EnterStackCount > 0) {
         EnterStackCount = -EnterStackCount;
     }
+    GAP_GC_RESTORE_STACK_STATE((GAP_GCStackState)GCStack);
     SetRecursionDepth(RecursionDepth);
 }
 

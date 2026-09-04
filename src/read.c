@@ -77,7 +77,9 @@
 #define TRY_IF_NO_ERROR                                                      \
     if (!rs->s.NrError) {                                                    \
         volatile Int recursionDepth = GetRecursionDepth();                   \
+        volatile GAP_GCStackState gcStack = GAP_GC_SAVE_STACK_STATE();       \
         if (GAP_SETJMP(STATE(ReadJmpError))) {                               \
+            GAP_GC_RESTORE_STACK_STATE(gcStack);                             \
             SetRecursionDepth(recursionDepth);                               \
             rs->s.NrError++;                                                 \
         }                                                                    \
@@ -125,6 +127,17 @@ struct ReaderState {
 
 typedef struct ReaderState ReaderState;
 
+// A ReaderState lives on the C stack but holds GAP objects, which a precise
+// collector cannot see there. List the slots next to the struct and root them
+// with GAP_GC_PUSH_ROOTS; see CODE_STATE_ROOTS in code.h for the convention.
+#define READER_STATE_ROOTS(p)                                                \
+    SCANNER_STATE_ROOTS(&(p)->s), INTR_STATE_ROOTS(&(p)->intr),              \
+        &(p)->StackNams
+
+GAP_STATIC_ASSERT(offsetof(ReaderState, LoopNesting) + sizeof(UInt) ==
+                      sizeof(ReaderState),
+                  "ReaderState grew; check READER_STATE_ROOTS");
+
 
 /****************************************************************************
 **
@@ -133,13 +146,17 @@ typedef struct ReaderState ReaderState;
 **  is <Statements>. The functions 'ReadExpr' and 'ReadStats' must therefore
 **  be declared forward.
 */
-static void ReadExpr(ReaderState * rs, TypSymbolSet follow, Char mode);
+static void ReadExpr(ReaderState * rs, TypSymbolSet follow, Char mode)
+    GAP_GC_CANSAFEPOINT;
 
-static UInt ReadStats(ReaderState * rs, TypSymbolSet follow);
+static UInt ReadStats(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT;
 
-static void ReadFuncExprAbbrevSingle(ReaderState * rs, TypSymbolSet follow);
+static void ReadFuncExprAbbrevSingle(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT;
 
-static void ReadAtom(ReaderState * rs, TypSymbolSet follow, Char mode);
+static void ReadAtom(ReaderState * rs, TypSymbolSet follow, Char mode)
+    GAP_GC_CANSAFEPOINT;
 
 static void PushGlobalForLoopVariable(ReaderState * rs, UInt var)
 {
@@ -172,7 +189,7 @@ static UInt GlobalComesFromEnclosingForLoop(ReaderState * rs, UInt var)
 static void Match_(ReaderState * rs,
            UInt           symbol,
            const Char *   msg,
-           TypSymbolSet   skipto)
+           TypSymbolSet   skipto) GAP_GC_CANSAFEPOINT
 {
     if (rs->intr.startLine == 0 && symbol != S_ILLEGAL) {
         rs->intr.startLine = rs->s.SymbolStartLine[0];
@@ -184,6 +201,7 @@ static void Match_(ReaderState * rs,
 
 // match either a semicolon or a dual semicolon
 static void MatchSemicolon(ReaderState * rs, TypSymbolSet skipto)
+    GAP_GC_CANSAFEPOINT
 {
     Match_(rs, rs->s.Symbol == S_DUALSEMICOLON ? S_DUALSEMICOLON : S_SEMICOLON,
           ";", skipto);
@@ -192,7 +210,7 @@ static void MatchSemicolon(ReaderState * rs, TypSymbolSet skipto)
 // Search the plist 'nams' for a string equal to 'value' between and
 // including index 'start' and 'end' and return its index; return 0 if not
 // found.
-static UInt findValueInNams(Obj nams, const Char * val, UInt start, UInt end)
+static UInt findValueInNams(Obj nams, const Char * val, UInt start, UInt end) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(LEN_PLIST(nams) < MAX_FUNC_LVARS);
     for (UInt i = start; i <= end; i++) {
@@ -219,6 +237,7 @@ static UInt findValueInNams(Obj nams, const Char * val, UInt start, UInt end)
    empty options lists are handled further up
 */
 static void ReadFuncCallOption(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     volatile UInt rnam; // record component name
     if (rs->s.Symbol == S_IDENT) {
@@ -246,6 +265,7 @@ static void ReadFuncCallOption(ReaderState * rs, TypSymbolSet follow)
 }
 
 static void ReadFuncCallOptions(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
   volatile UInt nr;
   TRY_IF_NO_ERROR { IntrFuncCallOptionsBegin(&rs->intr); }
@@ -261,7 +281,7 @@ static void ReadFuncCallOptions(ReaderState * rs, TypSymbolSet follow)
   }
 }
 
-static Obj GAPInfo;
+static Obj GAPInfo GAP_GC_GLOBALLY_ROOTED;
 
 static UInt WarnOnUnboundGlobalsRNam;
 
@@ -320,6 +340,7 @@ GAP_STATIC_ASSERT(sizeof(LHSRef) <= 8, "LHSRef is too big");
 **
 */
 static UInt EvalRef(ReaderState * rs, const LHSRef ref, BOOL needExpr)
+    GAP_GC_CANSAFEPOINT
 {
     TRY_IF_NO_ERROR
     {
@@ -378,7 +399,7 @@ static UInt EvalRef(ReaderState * rs, const LHSRef ref, BOOL needExpr)
     return 0;
 }
 
-static void AssignRef(ReaderState * rs, const LHSRef ref)
+static void AssignRef(ReaderState * rs, const LHSRef ref) GAP_GC_CANSAFEPOINT
 {
     TRY_IF_NO_ERROR
     {
@@ -432,7 +453,7 @@ static void AssignRef(ReaderState * rs, const LHSRef ref)
     }
 }
 
-static void UnbindRef(ReaderState * rs, const LHSRef ref)
+static void UnbindRef(ReaderState * rs, const LHSRef ref) GAP_GC_CANSAFEPOINT
 {
     TRY_IF_NO_ERROR
     {
@@ -477,7 +498,7 @@ static void UnbindRef(ReaderState * rs, const LHSRef ref)
     }
 }
 
-static void IsBoundRef(ReaderState * rs, const LHSRef ref)
+static void IsBoundRef(ReaderState * rs, const LHSRef ref) GAP_GC_CANSAFEPOINT
 {
     TRY_IF_NO_ERROR
     {
@@ -527,6 +548,7 @@ static void IsBoundRef(ReaderState * rs, const LHSRef ref)
 **
 */
 static LHSRef ReadSelector(ReaderState * rs, TypSymbolSet follow, UInt level)
+    GAP_GC_CANSAFEPOINT
 {
     volatile LHSRef ref;
 
@@ -637,6 +659,7 @@ static LHSRef ReadSelector(ReaderState * rs, TypSymbolSet follow, UInt level)
 }
 
 static void ReadReferenceModifiers(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     UInt level = 0;
 
@@ -657,6 +680,7 @@ static void ReadReferenceModifiers(ReaderState * rs, TypSymbolSet follow)
 **  <Ident> :=  a|b|..|z|A|B|..|Z { a|b|..|z|A|B|..|Z|0|..|9|_ }
 */
 static LHSRef ReadVar(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     LHSRef ref = { R_INVALID, 0, {0}, {0} };
 
@@ -745,6 +769,7 @@ static LHSRef ReadVar(ReaderState * rs, TypSymbolSet follow)
 // Helper function to be called after `ReadVar`, before any further tokens
 // have been consumed via calls to `Match`.
 static void CheckUnboundGlobal(ReaderState * rs, LHSRef ref)
+    GAP_GC_CANSAFEPOINT
 {
     // only warn if we are accessing a global variable
     if (ref.type != R_GVAR)
@@ -818,6 +843,7 @@ static void CheckUnboundGlobal(ReaderState * rs, LHSRef ref)
 **        |  <Var> '(' [ <Expr> { ',' <Expr> } ] [':' [ <options> ]] ')'
 */
 static void ReadCallVarAss(ReaderState * rs, TypSymbolSet follow, Char mode)
+    GAP_GC_CANSAFEPOINT
 {
     volatile LHSRef ref = ReadVar(rs, follow);
     if (ref.type == R_INVALID)
@@ -837,21 +863,27 @@ static void ReadCallVarAss(ReaderState * rs, TypSymbolSet follow, Char mode)
     if (ref.type == R_GVAR && IsConstantGVar(ref.var) && ValGVar(ref.var)) {
         // deal with references
         if (mode == 'r' || (mode == 'x' && rs->s.Symbol != S_ASSIGN)) {
-            Obj val = ValAutoGVar(ref.var);
+            Obj val = 0;
+            GAP_GC_PUSH1(&val);
+            val = ValAutoGVar(ref.var);
             TRY_IF_NO_ERROR {
                 if (val == True) {
                     IntrTrueExpr(&rs->intr);
+                    GAP_GC_POP();
                     return;
                 }
                 else if (val == False) {
                     IntrFalseExpr(&rs->intr);
+                    GAP_GC_POP();
                     return;
                 }
                 else if (IS_INTOBJ(val)) {
                     IntrIntObjExpr(&rs->intr, val);
+                    GAP_GC_POP();
                     return;
                 }
             }
+            GAP_GC_POP();
         }
     }
 
@@ -920,6 +952,7 @@ static void ReadCallVarAss(ReaderState * rs, TypSymbolSet follow, Char mode)
 **  <Atom> := 'IsBound' '(' <Var> ')'
 */
 static void ReadIsBound(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     Match_(rs, S_ISBOUND, "IsBound", follow);
     Match_(rs, S_LPAREN, "(", follow);
@@ -942,7 +975,7 @@ static void ReadIsBound(ReaderState * rs, TypSymbolSet follow)
 **  <Perm> :=  ( <Expr> {, <Expr>} ) { ( <Expr> {, <Expr>} ) }
 **
 */
-static void ReadPerm(ReaderState * rs, TypSymbolSet follow)
+static void ReadPerm(ReaderState * rs, TypSymbolSet follow) GAP_GC_CANSAFEPOINT
 {
     volatile UInt       nrc;            // number of cycles
     volatile UInt       nrx;            // number of expressions in cycle
@@ -988,6 +1021,7 @@ static void ReadPerm(ReaderState * rs, TypSymbolSet follow)
 **         |  '[' <Expr> [',' <Expr>] '..' <Expr> ']'
 */
 static void ReadListExpr(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     volatile UInt       pos;            // actual position of element
     volatile UInt       nr;             // number of elements
@@ -1073,6 +1107,7 @@ static void ReadListExpr(ReaderState * rs, TypSymbolSet follow)
 **  <Record> := 'rec( [ <Ident>:=<Expr> {, <Ident>:=<Expr> } ] )'
 */
 static void ReadRecExpr(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     volatile UInt       rnam;           // record component name
     volatile UInt       nr;             // number of components
@@ -1170,10 +1205,11 @@ static ArgList ReadFuncArgList(ReaderState * rs,
                                TypSymbolSet   follow,
                                BOOL           isAtomic,
                                UInt           symbol,
-                               const Char *   symbolstr)
+                               const Char *   symbolstr) GAP_GC_CANSAFEPOINT
 {
     Int        narg;           // number of arguments
-    Obj        nams;           // list of local variables names
+    Obj        nams = 0;       // list of local variables names
+    Obj        name = 0;       // current argument name
 #ifdef HPCGAP
     LockQual   lockqual;
     Bag        locks = 0;      // locks of the function
@@ -1187,6 +1223,7 @@ static ArgList ReadFuncArgList(ReaderState * rs,
 
     // make and push the new local variables list (args and locals)
     narg = 0;
+    GAP_GC_PUSH2(&nams, &name);
     nams = NEW_PLIST(T_PLIST, 0);
     if (rs->s.Symbol != symbol) {
         goto start;
@@ -1228,7 +1265,8 @@ static ArgList ReadFuncArgList(ReaderState * rs,
             SyntaxError(&rs->s, "Name used for two arguments");
         }
         narg += 1;
-        PushPlist(nams, MakeImmString(rs->s.Value));
+        name = MakeImmString(rs->s.Value);
+        PushPlist(nams, name);
 #ifdef HPCGAP
         if (isAtomic) {
             GrowString(locks, narg);
@@ -1264,6 +1302,7 @@ static ArgList ReadFuncArgList(ReaderState * rs,
     if (locks)
         MakeImmutable(args.locks);
 #endif
+    GAP_GC_POP();
     return args;
 }
 
@@ -1273,7 +1312,7 @@ static void ReadFuncExprBody(ReaderState * rs,
                              BOOL           isAbbrev,
                              Int            nloc,
                              ArgList        args,
-                             Int            startLine)
+                             Int            startLine) GAP_GC_CANSAFEPOINT
 {
     volatile UInt nr;           // number of statements
 
@@ -1321,12 +1360,15 @@ static void ReadFuncExprBody(ReaderState * rs,
 *F  ReadLocals( <follow> )
 */
 static UInt ReadLocals(ReaderState * rs, TypSymbolSet follow, Obj nams)
+    GAP_GC_CANSAFEPOINT
 {
     UInt narg = LEN_PLIST(nams);
     UInt nloc = 0;
+    Obj  name = 0;
 
     Match_(rs, S_LOCAL, "local", follow);
 
+    GAP_GC_PUSH2(&nams, &name);
     while (1) {
         if (rs->s.Symbol == S_IDENT) {
             if (findValueInNams(nams, rs->s.Value, narg + 1, narg + nloc)) {
@@ -1336,7 +1378,8 @@ static UInt ReadLocals(ReaderState * rs, TypSymbolSet follow, Obj nams)
                 SyntaxError(&rs->s, "Name used for argument and local");
             }
             nloc += 1;
-            PushPlist(nams, MakeImmString(rs->s.Value));
+            name = MakeImmString(rs->s.Value);
+            PushPlist(nams, name);
             if (LEN_PLIST(nams) >= MAX_FUNC_LVARS) {
                 SyntaxError(&rs->s, "Too many function arguments and locals");
             }
@@ -1352,6 +1395,7 @@ static UInt ReadLocals(ReaderState * rs, TypSymbolSet follow, Obj nams)
     }
     MatchSemicolon(rs, STATBEGIN | S_END | follow);
 
+    GAP_GC_POP();
     return nloc;
 }
 
@@ -1368,6 +1412,7 @@ static UInt ReadLocals(ReaderState * rs, TypSymbolSet follow, Obj nams)
 **                'end'
 */
 static void ReadFuncExpr(ReaderState * rs, TypSymbolSet follow, Char mode)
+    GAP_GC_CANSAFEPOINT
 {
     Int     startLine;        // line number of function keyword
     BOOL    isAtomic = FALSE; // is this an atomic function?
@@ -1388,12 +1433,14 @@ static void ReadFuncExpr(ReaderState * rs, TypSymbolSet follow, Char mode)
     Match_(rs, S_LPAREN, "(", S_IDENT|S_RPAREN|S_LOCAL|STATBEGIN|S_END|follow);
 
     args = ReadFuncArgList(rs, follow, isAtomic, S_RPAREN, ")");
+    GAP_GC_PUSH1(&args.nams);
 
     if (rs->s.Symbol == S_LOCAL) {
         nloc = ReadLocals(rs, follow, args.nams);
     }
 
     ReadFuncExprBody(rs, follow, FALSE, nloc, args, startLine);
+    GAP_GC_POP();
 
     // 'end'
     Match_(rs, S_END, "while parsing a function: statement or 'end'", follow);
@@ -1411,15 +1458,18 @@ static void ReadFuncExpr(ReaderState * rs, TypSymbolSet follow, Char mode)
 **      <Function>      := '{' <ArgList> '}' '->' <Expr>
 */
 static void ReadFuncExprAbbrevMulti(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     Match_(rs, S_LBRACE, "{", follow);
 
     ArgList args = ReadFuncArgList(rs, follow, FALSE, S_RBRACE, "}");
+    GAP_GC_PUSH1(&args.nams);
 
     // match away the '->'
     Match_(rs, S_MAPTO, "->", follow);
 
     ReadFuncExprBody(rs, follow, TRUE, 0, args, GetInputLineNumber(rs->s.input));
+    GAP_GC_POP();
 }
 
 /****************************************************************************
@@ -1435,8 +1485,12 @@ static void ReadFuncExprAbbrevMulti(ReaderState * rs, TypSymbolSet follow)
 static void ReadFuncExprAbbrevSingle(ReaderState * rs, TypSymbolSet follow)
 {
     // make and push the new local variables list
-    Obj nams = NEW_PLIST(T_PLIST, 1);
-    PushPlist(nams, MakeImmString(rs->s.Value));
+    Obj nams = 0;
+    Obj name = 0;
+    GAP_GC_PUSH2(&nams, &name);
+    nams = NEW_PLIST(T_PLIST, 1);
+    name = MakeImmString(rs->s.Value);
+    PushPlist(nams, name);
 
     ArgList args;
     args.narg = 1;
@@ -1450,6 +1504,7 @@ static void ReadFuncExprAbbrevSingle(ReaderState * rs, TypSymbolSet follow)
     Match_(rs, S_MAPTO, "->", follow);
 
     ReadFuncExprBody(rs, follow, TRUE, 0, args, GetInputLineNumber(rs->s.input));
+    GAP_GC_POP();
 }
 
 /****************************************************************************
@@ -1478,6 +1533,7 @@ static void ReadFuncExprAbbrevSingle(ReaderState * rs, TypSymbolSet follow)
 **  <String>  := " { <any character> } "
 */
 static void ReadLiteral(ReaderState * rs, TypSymbolSet follow, Char mode)
+    GAP_GC_CANSAFEPOINT
 {
     if (rs->s.Symbol == S_DOT) {
         // HACK: The only way a dot could turn up here is in a floating point
@@ -1624,7 +1680,7 @@ static void ReadAtom(ReaderState * rs, TypSymbolSet follow, Char mode)
 **
 *F  ReadSign( <follow> )  . . . . . . . . . . . . . . read a sign, or nothing
 */
-static Int ReadSign(ReaderState * rs, TypSymbolSet follow)
+static Int ReadSign(ReaderState * rs, TypSymbolSet follow) GAP_GC_CANSAFEPOINT
 {
     if (rs->s.Symbol == S_PLUS) {
         Match_(rs, S_PLUS, "unary +", follow);
@@ -1647,6 +1703,7 @@ static Int ReadSign(ReaderState * rs, TypSymbolSet follow)
 **  <Factor> := {'+'|'-'} <Atom> [ '^' {'+'|'-'} <Atom> ]
 */
 static void ReadFactor(ReaderState * rs, TypSymbolSet follow, Char mode)
+    GAP_GC_CANSAFEPOINT
 {
     volatile Int        sign1;
     volatile Int        sign2;
@@ -1700,6 +1757,7 @@ static void ReadFactor(ReaderState * rs, TypSymbolSet follow, Char mode)
 **  <Term> := <Factor> { '*'|'/'|'mod' <Factor> }
 */
 static void ReadTerm(ReaderState * rs, TypSymbolSet follow, Char mode)
+    GAP_GC_CANSAFEPOINT
 {
     volatile UInt       symbol;
 
@@ -1732,6 +1790,7 @@ static void ReadTerm(ReaderState * rs, TypSymbolSet follow, Char mode)
 **  <Arith> := <Term> { '+'|'-' <Term> }
 */
 static void ReadAri(ReaderState * rs, TypSymbolSet follow, Char mode)
+    GAP_GC_CANSAFEPOINT
 {
     UInt                symbol;
 
@@ -1761,6 +1820,7 @@ static void ReadAri(ReaderState * rs, TypSymbolSet follow, Char mode)
 **  <Rel> := { 'not' } <Arith> { '=|<>|<|>|<=|>=|in' <Arith> }
 */
 static void ReadRel(ReaderState * rs, TypSymbolSet follow, Char mode)
+    GAP_GC_CANSAFEPOINT
 {
     volatile UInt       symbol;
     volatile UInt       isNot;
@@ -1808,6 +1868,7 @@ static void ReadRel(ReaderState * rs, TypSymbolSet follow, Char mode)
 **  <And> := <Rel> { 'and' <Rel> }
 */
 static void ReadAnd(ReaderState * rs, TypSymbolSet follow, Char mode)
+    GAP_GC_CANSAFEPOINT
 {
     // <Rel>
     ReadRel(rs, follow, mode);
@@ -1837,6 +1898,7 @@ static void ReadAnd(ReaderState * rs, TypSymbolSet follow, Char mode)
 */
 static void
 ReadQualifiedExpr(ReaderState * rs, TypSymbolSet follow, Char mode)
+    GAP_GC_CANSAFEPOINT
 {
 #ifdef HPCGAP
     volatile LockQual qual = LOCK_QUAL_NONE;
@@ -1907,6 +1969,7 @@ static void ReadExpr(ReaderState * rs, TypSymbolSet follow, Char mode)
 **  <Statement> := 'Unbind' '(' <Var> ')' ';'
 */
 static void ReadUnbind(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     Match_(rs, S_UNBIND, "Unbind", follow);
     Match_(rs, S_LPAREN, "(", follow);
@@ -1924,6 +1987,7 @@ static void ReadUnbind(ReaderState * rs, TypSymbolSet follow)
 **  <Statement> :=  ';'
 */
 static void ReadEmpty(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
   IntrEmpty(&rs->intr);
 }
@@ -1937,7 +2001,7 @@ static void ReadEmpty(ReaderState * rs, TypSymbolSet follow)
 **
 **  <Statement> := 'Info' '(' <Expr> ',' <Expr> { ',' <Expr> } ')' ';'
 */
-static void ReadInfo(ReaderState * rs, TypSymbolSet follow)
+static void ReadInfo(ReaderState * rs, TypSymbolSet follow) GAP_GC_CANSAFEPOINT
 {
     volatile UInt narg;     // number of arguments to print (or not)
 
@@ -1969,6 +2033,7 @@ static void ReadInfo(ReaderState * rs, TypSymbolSet follow)
 **  <Statement> := 'Assert' '(' <Expr> ',' <Expr> [ ',' <Expr> ]  ')' ';'
 */
 static void ReadAssert(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     TRY_IF_NO_ERROR { IntrAssertBegin(&rs->intr); }
     Match_(rs, S_ASSERT, "Assert", follow);
@@ -2002,7 +2067,7 @@ static void ReadAssert(ReaderState * rs, TypSymbolSet follow)
 **                 [ 'else'               <Statements> ]
 **                 'fi' ';'
 */
-static void ReadIf(ReaderState * rs, TypSymbolSet follow)
+static void ReadIf(ReaderState * rs, TypSymbolSet follow) GAP_GC_CANSAFEPOINT
 {
     volatile UInt       nrb;            // number of branches
     volatile UInt       nrs;            // number of statements in a body
@@ -2054,7 +2119,7 @@ static void ReadIf(ReaderState * rs, TypSymbolSet follow)
 **                     <Statements>
 **                 'od' ';'
 */
-static void ReadFor(ReaderState * rs, TypSymbolSet follow)
+static void ReadFor(ReaderState * rs, TypSymbolSet follow) GAP_GC_CANSAFEPOINT
 {
     volatile UInt       nrs;            // number of statements in body
 
@@ -2105,6 +2170,7 @@ static void ReadFor(ReaderState * rs, TypSymbolSet follow)
 **                 'od' ';'
 */
 static void ReadWhile(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     volatile UInt       nrs;            // number of statements in body
 
@@ -2143,6 +2209,7 @@ static void ReadWhile(ReaderState * rs, TypSymbolSet follow)
 **  they are simply placeholders.
 */
 static void ReadAtomic(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     volatile UInt       nrs;            // number of statements in body
     volatile UInt       nexprs;         // number of statements in body
@@ -2208,6 +2275,7 @@ static void ReadAtomic(ReaderState * rs, TypSymbolSet follow)
 **                'until' <Expr> ';'
 */
 static void ReadRepeat(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     volatile UInt       nrs;            // number of statements in body
 
@@ -2241,6 +2309,7 @@ static void ReadRepeat(ReaderState * rs, TypSymbolSet follow)
 **  <Statement> := 'break' ';'
 */
 static void ReadBreak(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     if (!rs->LoopNesting)
         SyntaxError(&rs->s, "'break' statement not enclosed in a loop");
@@ -2262,6 +2331,7 @@ static void ReadBreak(ReaderState * rs, TypSymbolSet follow)
 **  <Statement> := 'continue' ';'
 */
 static void ReadContinue(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     if (!rs->LoopNesting)
         SyntaxError(&rs->s, "'continue' statement not enclosed in a loop");
@@ -2288,6 +2358,7 @@ static void ReadContinue(ReaderState * rs, TypSymbolSet follow)
 **  a return statement is not a function call and should not look  like  one.
 */
 static void ReadReturn(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     // skip the return symbol
     Match_(rs, S_RETURN, "return", follow);
@@ -2315,6 +2386,7 @@ static void ReadReturn(ReaderState * rs, TypSymbolSet follow)
 **  <Statement> := 'TryNextMethod' '(' ')' ';'
 */
 static void ReadTryNext(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     Match_(rs, S_TRYNEXT, "TryNextMethod", follow);
     Match_(rs, S_LPAREN, "(", follow);
@@ -2325,13 +2397,14 @@ static void ReadTryNext(ReaderState * rs, TypSymbolSet follow)
     }
 }
 
-static void ReadHelp(ReaderState * rs, TypSymbolSet follow)
+static void ReadHelp(ReaderState * rs, TypSymbolSet follow) GAP_GC_CANSAFEPOINT
 {
     TRY_IF_NO_ERROR { IntrHelp(&rs->intr, rs->s.ValueObj); }
     rs->s.ValueObj = 0;
 }
 
 static void ReadPragma(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     TRY_IF_NO_ERROR { IntrPragma(&rs->intr, rs->s.ValueObj); }
     rs->s.ValueObj = 0;
@@ -2346,7 +2419,7 @@ static void ReadPragma(ReaderState * rs, TypSymbolSet follow)
 **
 **  <Statement> := 'quit' ';'
 */
-static void ReadQuit(ReaderState * rs, TypSymbolSet follow)
+static void ReadQuit(ReaderState * rs, TypSymbolSet follow) GAP_GC_CANSAFEPOINT
 {
     // skip the quit symbol
     Match_(rs, S_QUIT, "quit", follow);
@@ -2364,7 +2437,7 @@ static void ReadQuit(ReaderState * rs, TypSymbolSet follow)
 **
 **  <Statement> := 'QUIT' ';'
 */
-static void ReadQUIT(ReaderState * rs, TypSymbolSet follow)
+static void ReadQUIT(ReaderState * rs, TypSymbolSet follow) GAP_GC_CANSAFEPOINT
 {
     // skip the quit symbol
     Match_(rs, S_QQUIT, "QUIT", follow);
@@ -2399,6 +2472,7 @@ static void ReadQUIT(ReaderState * rs, TypSymbolSet follow)
 **              |  ';'
 */
 static Int TryReadStatement(ReaderState * rs, TypSymbolSet follow)
+    GAP_GC_CANSAFEPOINT
 {
     switch (rs->s.Symbol) {
     case S_IDENT:     ReadCallVarAss(rs, follow,'s'); break;
@@ -2452,6 +2526,7 @@ static UInt ReadStats(ReaderState * rs, TypSymbolSet follow)
 
 
 static void RecreateStackNams(ReaderState * rs, Obj context)
+    GAP_GC_CANSAFEPOINT
 {
     Obj stackNams = rs->StackNams;
     Obj lvars = context;
@@ -2500,10 +2575,17 @@ ExecStatus ReadEvalCommand(Obj            context,
 #ifdef HPCGAP
     int                 lockSP;
 #endif
+    Obj                 oldLVars = 0;
+    Obj                 evalResultObj = 0;
 
     ReaderState reader;
     ReaderState * volatile rs = &reader;
     memset(rs, 0, sizeof(ReaderState));
+
+    // Root the reader state before anything can allocate: Match_ below stores
+    // string and number literals into rs->s.ValueObj. The memset above
+    // initialised every slot, which pushing them requires.
+    GAP_GC_PUSH_ROOTS(9, (&oldLVars, &evalResultObj, READER_STATE_ROOTS(rs)));
 
     GAP_ASSERT(input);
     rs->s.input = input;
@@ -2516,11 +2598,13 @@ ExecStatus ReadEvalCommand(Obj            context,
     // if scanning the first symbol produced a syntax error, abort
     if (rs->s.NrError) {
         FlushRestOfInputLine(input);
+        GAP_GC_POP();
         return STATUS_ERROR;
     }
 
     // if we have hit <end-of-file>, then give up
     if (rs->s.Symbol == S_EOF) {
+        GAP_GC_POP();
         return STATUS_EOF;
     }
 
@@ -2543,7 +2627,7 @@ ExecStatus ReadEvalCommand(Obj            context,
             INTOBJ_INT(GetInputLineNumber(input)));
 
     // remember the old execution state and start an execution environment
-    Bag oldLVars =
+    oldLVars =
         context ? SWITCH_TO_OLD_LVARS(context) : SWITCH_TO_BOTTOM_LVARS();
 
     if (context)
@@ -2589,10 +2673,13 @@ ExecStatus ReadEvalCommand(Obj            context,
         *dualSemicolon = (rs->s.Symbol == S_DUALSEMICOLON);
 
     // end the interpreter
-    status = IntrEnd(&rs->intr, rs->s.NrError > 0, evalResult);
+    status = IntrEnd(&rs->intr, rs->s.NrError > 0,
+                     evalResult ? &evalResultObj : 0);
 
     // restore the execution environment
     SWITCH_TO_OLD_LVARS(oldLVars);
+    if (evalResult)
+        *evalResult = evalResultObj;
 
 #ifdef HPCGAP
     if (rs->s.NrError > 0) {
@@ -2612,8 +2699,30 @@ ExecStatus ReadEvalCommand(Obj            context,
     ClearError();
 
     // return whether a return-statement or a quit-statement were executed
+    GAP_GC_POP();
     return status;
 }
+
+// Begin the implicit 'function() ... end' that a whole file is read inside,
+// declaring any local variables the file opens with.
+//
+// 'nams' needs no root of its own here: PushPlist stores it into
+// rs->StackNams, which is rooted for the duration, and PushPlist's parameter
+// is annotated GAP_GC_ROOTED_BY_ARG(0) so the analyzer knows it too.
+static void BeginImplicitFunction(ReaderState * rs, TypInputFile * input)
+    GAP_GC_CANSAFEPOINT
+{
+    Obj nams = NEW_PLIST(T_PLIST, 0);
+    PushPlist(rs->StackNams, nams);
+
+    UInt nloc = 0;
+    if (rs->s.Symbol == S_LOCAL) {
+        nloc = ReadLocals(rs, 0, nams);
+    }
+
+    IntrFuncExprBegin(&rs->intr, 0, nloc, nams, GetInputLineNumber(input));
+}
+
 
 /****************************************************************************
 **
@@ -2631,8 +2740,8 @@ ExecStatus ReadEvalFile(TypInputFile * input, Obj * evalResult)
     volatile Obj        tilde;
     jmp_buf           readJmpError;
     volatile UInt       nr;
-    volatile Obj        nams;
-    volatile Int        nloc;
+    Obj                 oldLVars = 0;
+    Obj                 evalResultObj = 0;
 #ifdef HPCGAP
     volatile int        lockSP;
 #endif
@@ -2640,6 +2749,11 @@ ExecStatus ReadEvalFile(TypInputFile * input, Obj * evalResult)
     ReaderState reader;
     ReaderState * volatile rs = &reader;
     memset(rs, 0, sizeof(ReaderState));
+
+    // Root the reader state before anything can allocate: Match_ below stores
+    // string and number literals into rs->s.ValueObj. The memset above
+    // initialised every slot, which pushing them requires.
+    GAP_GC_PUSH_ROOTS(9, (&oldLVars, &evalResultObj, READER_STATE_ROOTS(rs)));
 
     GAP_ASSERT(input);
     rs->s.input = input;
@@ -2664,22 +2778,12 @@ ExecStatus ReadEvalFile(TypInputFile * input, Obj * evalResult)
     STATE(Tilde)     = 0;
 
     // remember the old execution state and start an execution environment
-    Bag oldLVars = SWITCH_TO_BOTTOM_LVARS();
+    oldLVars = SWITCH_TO_BOTTOM_LVARS();
 
     IntrBegin(&rs->intr);
     rs->intr.gapnameid = GetInputFilenameID(input);
 
-    // check for local variables
-    nams = NEW_PLIST(T_PLIST, 0);
-    PushPlist(rs->StackNams, nams);
-    nloc = 0;
-    if (rs->s.Symbol == S_LOCAL) {
-        nloc = ReadLocals(rs, 0, nams);
-    }
-
-    // fake the 'function ()'
-    IntrFuncExprBegin(&rs->intr, 0, nloc, nams,
-                      GetInputLineNumber(input));
+    BeginImplicitFunction(rs, input);
 
     // read the statements
     GAP_ASSERT(rs->LoopNesting == 0);
@@ -2698,10 +2802,13 @@ ExecStatus ReadEvalFile(TypInputFile * input, Obj * evalResult)
     }
 
     // end the interpreter
-    status = IntrEnd(&rs->intr, rs->s.NrError > 0, evalResult);
+    status = IntrEnd(&rs->intr, rs->s.NrError > 0,
+                     evalResult ? &evalResultObj : 0);
 
     // restore the execution environment
     SWITCH_TO_OLD_LVARS(oldLVars);
+    if (evalResult)
+        *evalResult = evalResultObj;
 
     // switch back to the old reader context
     memcpy( STATE(ReadJmpError), readJmpError, sizeof(jmp_buf) );
@@ -2715,6 +2822,7 @@ ExecStatus ReadEvalFile(TypInputFile * input, Obj * evalResult)
     ClearError();
 
     // return whether a return-statement or a quit-statement were executed
+    GAP_GC_POP();
     return status;
 }
 
@@ -2729,13 +2837,14 @@ Obj Call0ArgsInNewReader(Obj f)
 {
     // remember the old state
     volatile UInt userHasQuit = STATE(UserHasQuit);
-    volatile Obj  oldLvars;
-    volatile Obj  result = 0;
+    Obj           oldLvars = 0;
+    Obj           result = 0;
 
     // initialize everything
     STATE(UserHasQuit) = FALSE;
     oldLvars = SWITCH_TO_BOTTOM_LVARS();
 
+    GAP_GC_PUSH2(&oldLvars, &result);
     GAP_TRY
     {
         result = CALL_0ARGS(f);
@@ -2748,6 +2857,7 @@ Obj Call0ArgsInNewReader(Obj f)
     // switch back to the old state
     SWITCH_TO_OLD_LVARS(oldLvars);
     STATE(UserHasQuit) = userHasQuit;
+    GAP_GC_POP();
     return result;
 }
 
@@ -2762,13 +2872,14 @@ Obj Call1ArgsInNewReader(Obj f, Obj a)
 {
     // remember the old state
     volatile UInt userHasQuit = STATE(UserHasQuit);
-    volatile Obj  oldLvars;
-    volatile Obj  result = 0;
+    Obj           oldLvars = 0;
+    Obj           result = 0;
 
     // initialize everything
     STATE(UserHasQuit) = FALSE;
     oldLvars = SWITCH_TO_BOTTOM_LVARS();
 
+    GAP_GC_PUSH2(&oldLvars, &result);
     GAP_TRY
     {
         result = CALL_1ARGS(f, a);
@@ -2781,6 +2892,7 @@ Obj Call1ArgsInNewReader(Obj f, Obj a)
     // switch back to the old state
     SWITCH_TO_OLD_LVARS(oldLvars);
     STATE(UserHasQuit) = userHasQuit;
+    GAP_GC_POP();
     return result;
 }
 

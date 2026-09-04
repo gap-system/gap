@@ -56,7 +56,7 @@ enum {
 **  'IS_INTOBJ' returns 1 if the object <o> is an (immediate) integer object,
 **  and 0 otherwise.
 */
-EXPORT_INLINE BOOL IS_INTOBJ(Obj o)
+EXPORT_INLINE BOOL IS_INTOBJ(Obj o) GAP_GC_NOTSAFEPOINT
 {
     return (Int)o & 0x01;
 }
@@ -69,7 +69,7 @@ EXPORT_INLINE BOOL IS_INTOBJ(Obj o)
 **  'IS_POS_INTOBJ' returns 1 if the object <o> is an (immediate) integer
 **  object encoding a positive integer, and 0 otherwise.
 */
-EXPORT_INLINE BOOL IS_POS_INTOBJ(Obj o)
+EXPORT_INLINE BOOL IS_POS_INTOBJ(Obj o) GAP_GC_NOTSAFEPOINT
 {
     return ((Int)o & 0x01) && ((Int)o > 0x01);
 }
@@ -81,7 +81,7 @@ EXPORT_INLINE BOOL IS_POS_INTOBJ(Obj o)
 **  'IS_NONNEG_INTOBJ' returns 1 if the object <o> is an (immediate) integer
 **  object encoding a non-negative integer, and 0 otherwise.
 */
-EXPORT_INLINE BOOL IS_NONNEG_INTOBJ(Obj o)
+EXPORT_INLINE BOOL IS_NONNEG_INTOBJ(Obj o) GAP_GC_NOTSAFEPOINT
 {
     return ((Int)o & 0x01) && ((Int)o > 0);
 }
@@ -94,7 +94,7 @@ EXPORT_INLINE BOOL IS_NONNEG_INTOBJ(Obj o)
 **  'ARE_INTOBJS' returns 1 if the objects <o1> and <o2> are both (immediate)
 **  integer objects.
 */
-EXPORT_INLINE Int ARE_INTOBJS(Obj o1, Obj o2)
+EXPORT_INLINE Int ARE_INTOBJS(Obj o1, Obj o2) GAP_GC_NOTSAFEPOINT
 {
     return (Int)o1 & (Int)o2 & 0x01;
 }
@@ -112,7 +112,7 @@ EXPORT_INLINE Int ARE_INTOBJS(Obj o1, Obj o2)
 GAP_STATIC_ASSERT((-1) >> 1 == -1, "right shifts are not arithmetic");
 GAP_STATIC_ASSERT((-2) >> 1 == -1, "right shifts are not arithmetic");
 
-EXPORT_INLINE Int INT_INTOBJ(Obj o)
+EXPORT_INLINE Int INT_INTOBJ(Obj o) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_INTOBJ(o));
     return (Int)o >> 2;
@@ -126,6 +126,7 @@ EXPORT_INLINE Int INT_INTOBJ(Obj o)
 **  'INTOBJ_INT' converts the C integer <i> to an (immediate) integer object.
 */
 EXPORT_INLINE Obj INTOBJ_INT(Int i)
+    GAP_GC_NOTSAFEPOINT GAP_GC_GLOBALLY_ROOTED
 {
     Obj o;
     GAP_ASSERT(INT_INTOBJ_MIN <= i && i <= INT_INTOBJ_MAX);
@@ -138,7 +139,7 @@ EXPORT_INLINE Obj INTOBJ_INT(Int i)
 //
 // Check whether the sign and guard bit of the given word match.
 //
-EXPORT_INLINE int DETECT_INTOBJ_OVERFLOW(UInt o)
+EXPORT_INLINE int DETECT_INTOBJ_OVERFLOW(UInt o) GAP_GC_NOTSAFEPOINT
 {
     const UInt BITS_IN_UINT = sizeof(UInt) * 8;
     // extract sign bit + guard bit
@@ -159,7 +160,7 @@ EXPORT_INLINE int DETECT_INTOBJ_OVERFLOW(UInt o)
 **  <l> and <r> can be stored as (immediate) integer object  and 0 otherwise.
 **  The sum itself is stored in <o>.
 */
-EXPORT_INLINE int sum_intobjs(Obj * o, Obj l, Obj r)
+EXPORT_INLINE int sum_intobjs(Obj * o, Obj l, Obj r) GAP_GC_NOTSAFEPOINT
 {
     const Int tmp = (Int)l + (Int)r - 1;
     if (DETECT_INTOBJ_OVERFLOW(tmp))
@@ -178,7 +179,7 @@ EXPORT_INLINE int sum_intobjs(Obj * o, Obj l, Obj r)
 **  <l> and <r> can be stored as (immediate) integer object  and 0 otherwise.
 **  The difference itself is stored in <o>.
 */
-EXPORT_INLINE int diff_intobjs(Obj * o, Obj l, Obj r)
+EXPORT_INLINE int diff_intobjs(Obj * o, Obj l, Obj r) GAP_GC_NOTSAFEPOINT
 {
     const Int tmp = (Int)l - (Int)r + 1;
     if (DETECT_INTOBJ_OVERFLOW(tmp))
@@ -217,7 +218,7 @@ EXPORT_INLINE int diff_intobjs(Obj * o, Obj l, Obj r)
 
 
 #ifdef HAVE___BUILTIN_MUL_OVERFLOW
-EXPORT_INLINE Obj prod_intobjs(Int l, Int r)
+EXPORT_INLINE Obj prod_intobjs(Int l, Int r) GAP_GC_NOTSAFEPOINT
 {
     Int prod;
     if (__builtin_mul_overflow(l >> 1, r ^ 1, &prod))
@@ -232,7 +233,7 @@ EXPORT_INLINE Obj prod_intobjs(Int l, Int r)
 #define HalfInt Int2
 #endif
 
-EXPORT_INLINE Obj prod_intobjs(Int l, Int r)
+EXPORT_INLINE Obj prod_intobjs(Int l, Int r) GAP_GC_NOTSAFEPOINT
 {
     if (l == (Int)INTOBJ_INT(0) || r == (Int)INTOBJ_INT(0))
         return INTOBJ_INT(0);

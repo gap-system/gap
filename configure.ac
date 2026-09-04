@@ -474,8 +474,16 @@ if test "x$enable_valgrind" != "xno" -a "x$enable_memory_checking" != "xno"; the
 fi
 
 if test "x$with_gc" != "xgasman"; then
-    if test "x$enable_valgrind" != "xno" -o "x$enable_memory_checking" != "xno"; then
-        AC_MSG_ERROR([--enable-valgrind and --enable-memory-checking are only compatible with GASMAN])
+    if test "x$enable_valgrind" != "xno"; then
+        AC_MSG_ERROR([--enable-valgrind is only compatible with GASMAN])
+    fi
+fi
+
+dnl memory checking means something different for each collector: GASMAN
+dnl moves every bag on each allocation, the Julia GC collects on each one
+if test "x$with_gc" != "xgasman" -a "x$with_gc" != "xjulia"; then
+    if test "x$enable_memory_checking" != "xno"; then
+        AC_MSG_ERROR([--enable-memory-checking is only compatible with GASMAN and Julia])
     fi
 fi
 

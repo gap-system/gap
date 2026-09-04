@@ -70,7 +70,7 @@
 **
 **  Should be as accurate as possible,  because it  is  used  for  profiling.
 */
-UInt SyTime(void)
+UInt SyTime(void) GAP_GC_CANSAFEPOINT
 {
 #ifdef EMSCRIPTEN
     // Emscripten's standard library always returns the same values
@@ -219,13 +219,13 @@ static Int8 SyNanosecondsSinceEpochResolution(void)
 **  How much time execution of statements take is of course system dependent.
 **  The accuracy of this number is also system dependent.
 */
-static Obj FuncRuntime(Obj self)
+static Obj FuncRuntime(Obj self) GAP_GC_CANSAFEPOINT
 {
     return ObjInt_UInt(SyTime());
 }
 
 
-static Obj FuncRUNTIMES(Obj self)
+static Obj FuncRUNTIMES(Obj self) GAP_GC_CANSAFEPOINT
 {
     UInt          tmp;
     struct rusage buf;
@@ -236,22 +236,30 @@ static Obj FuncRUNTIMES(Obj self)
                      "%s (errno %d)",
                      (Int)strerror(errno), (Int)errno);
     }
-    tmp = buf.ru_utime.tv_sec * 1000 + buf.ru_utime.tv_usec / 1000;
-    ASS_LIST(res, 1, ObjInt_UInt(tmp));
+    {
+        GAP_GC_PUSH1(&res);
+        tmp = buf.ru_utime.tv_sec * 1000 + buf.ru_utime.tv_usec / 1000;
+        AssPlist(res, 1, ObjInt_UInt(tmp));
 
-    tmp = buf.ru_stime.tv_sec * 1000 + buf.ru_stime.tv_usec / 1000;
-    ASS_LIST(res, 2, ObjInt_UInt(tmp));
+        tmp = buf.ru_stime.tv_sec * 1000 + buf.ru_stime.tv_usec / 1000;
+        AssPlist(res, 2, ObjInt_UInt(tmp));
+        GAP_GC_POP();
+    }
 
     if (getrusage(RUSAGE_CHILDREN, &buf)) {
         ErrorMayQuit("RUNTIMES: call to getrusage(RUSAGE_CHILDREN) failed: "
                      "%s (errno %d)",
                      (Int)strerror(errno), (Int)errno);
     }
-    tmp = buf.ru_utime.tv_sec * 1000 + buf.ru_utime.tv_usec / 1000;
-    ASS_LIST(res, 3, ObjInt_UInt(tmp));
+    {
+        GAP_GC_PUSH1(&res);
+        tmp = buf.ru_utime.tv_sec * 1000 + buf.ru_utime.tv_usec / 1000;
+        AssPlist(res, 3, ObjInt_UInt(tmp));
 
-    tmp = buf.ru_stime.tv_sec * 1000 + buf.ru_stime.tv_usec / 1000;
-    ASS_LIST(res, 4, ObjInt_UInt(tmp));
+        tmp = buf.ru_stime.tv_sec * 1000 + buf.ru_stime.tv_usec / 1000;
+        AssPlist(res, 4, ObjInt_UInt(tmp));
+        GAP_GC_POP();
+    }
 
     return res;
 }
@@ -265,7 +273,7 @@ static Obj FuncRUNTIMES(Obj self)
 **  number of nanoseconds since some unspecified starting point. This
 **  function wraps SyNanosecondsSinceEpoch.
 */
-static Obj FuncNanosecondsSinceEpoch(Obj self)
+static Obj FuncNanosecondsSinceEpoch(Obj self) GAP_GC_CANSAFEPOINT
 {
     Int8 val = SyNanosecondsSinceEpoch();
     return val >= 0 ? ObjInt_Int8(val) : Fail;
@@ -327,7 +335,7 @@ static Int8 SyUnixEpochSecondsFromTimeT(time_t t)
 **  and useless for recording when something happened, which is what this is
 **  for.
 */
-static Obj FuncCurrentSecondsSinceEpoch(Obj self)
+static Obj FuncCurrentSecondsSinceEpoch(Obj self) GAP_GC_CANSAFEPOINT
 {
     Int8 secs;
 
@@ -367,9 +375,9 @@ static Obj FuncCurrentSecondsSinceEpoch(Obj self)
 **  contains information about the timers used for FuncNanosecondsSinceEpoch.
 **
 */
-static Obj FuncNanosecondsSinceEpochInfo(Obj self)
+static Obj FuncNanosecondsSinceEpochInfo(Obj self) GAP_GC_CANSAFEPOINT
 {
-    Obj          res, tmp;
+    Obj          res;
     Int8         resolution;
     const char * method = "unsupported";
     BOOL         monotonic = FALSE;
@@ -386,10 +394,8 @@ static Obj FuncNanosecondsSinceEpochInfo(Obj self)
 #endif
 
     res = NEW_PREC(4);
-    // Note this has to be "DYN" since we're not passing a
-    // literal but a const char *
-    tmp = MakeImmString(method);
-    AssPRec(res, RNamName("Method"), tmp);
+    GAP_GC_PUSH1(&res);
+    AssPRec(res, RNamName("Method"), MakeImmString(method));
     AssPRec(res, RNamName("Monotonic"), monotonic ? True : False);
     resolution = SyNanosecondsSinceEpochResolution();
     if (resolution > 0) {
@@ -400,6 +406,7 @@ static Obj FuncNanosecondsSinceEpochInfo(Obj self)
         AssPRec(res, RNamName("Resolution"), ObjInt_Int8(-resolution));
         AssPRec(res, RNamName("Reliable"), False);
     }
+    GAP_GC_POP();
     return res;
 }
 
@@ -409,7 +416,7 @@ static Obj FuncNanosecondsSinceEpochInfo(Obj self)
 *F  FuncSleep( <self>, <secs> )
 **
 */
-static Obj FuncSleep(Obj self, Obj secs)
+static Obj FuncSleep(Obj self, Obj secs) GAP_GC_CANSAFEPOINT
 {
     Int s = GetSmallInt(SELF_NAME, secs);
 
@@ -432,7 +439,7 @@ static Obj FuncSleep(Obj self, Obj secs)
 *F  FuncMicroSleep( <self>, <secs> )
 **
 */
-static Obj FuncMicroSleep(Obj self, Obj msecs)
+static Obj FuncMicroSleep(Obj self, Obj msecs) GAP_GC_CANSAFEPOINT
 {
     Int s = GetSmallInt(SELF_NAME, msecs);
 
@@ -485,7 +492,7 @@ static Int InitKernel(StructInitInfo * module)
 **
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-static Int InitLibrary(StructInitInfo * module)
+static Int InitLibrary(StructInitInfo * module) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable(GVarFuncs);

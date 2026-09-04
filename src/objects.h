@@ -44,7 +44,7 @@
 **  'IS_FFE'  returns 1  if the  object <o>  is  an  (immediate) finite field
 **  element and 0 otherwise.
 */
-EXPORT_INLINE BOOL IS_FFE(Obj o)
+EXPORT_INLINE BOOL IS_FFE(Obj o) GAP_GC_NOTSAFEPOINT
 {
     return (Int)o & 0x02;
 }
@@ -292,7 +292,7 @@ GAP_STATIC_ASSERT(LAST_REAL_TNUM <= 254, "LAST_REAL_TNUM is too large");
 **
 **  For immediate objects, objects flags are always 0.
 */
-EXPORT_INLINE uint8_t TEST_OBJ_FLAG(Obj obj, uint8_t flag)
+EXPORT_INLINE uint8_t TEST_OBJ_FLAG(Obj obj, uint8_t flag) GAP_GC_NOTSAFEPOINT
 {
     if (IS_BAG_REF(obj))
         return TEST_BAG_FLAG(obj, flag);
@@ -300,13 +300,13 @@ EXPORT_INLINE uint8_t TEST_OBJ_FLAG(Obj obj, uint8_t flag)
         return 0;
 }
 
-EXPORT_INLINE void SET_OBJ_FLAG(Obj obj, uint8_t flag)
+EXPORT_INLINE void SET_OBJ_FLAG(Obj obj, uint8_t flag) GAP_GC_NOTSAFEPOINT
 {
     if (IS_BAG_REF(obj))
         SET_BAG_FLAG(obj, flag);
 }
 
-EXPORT_INLINE void CLEAR_OBJ_FLAG(Obj obj, uint8_t flag)
+EXPORT_INLINE void CLEAR_OBJ_FLAG(Obj obj, uint8_t flag) GAP_GC_NOTSAFEPOINT
 {
     if (IS_BAG_REF(obj))
         CLEAR_BAG_FLAG(obj, flag);
@@ -335,7 +335,7 @@ enum {
 **
 **  'TNUM_OBJ' returns the type of the object <obj>.
 */
-EXPORT_INLINE UInt TNUM_OBJ(Obj obj)
+EXPORT_INLINE UInt TNUM_OBJ(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     if (IS_INTOBJ(obj))
         return T_INT;
@@ -375,7 +375,7 @@ EXPORT_INLINE const Char * TNAM_OBJ(Obj obj)
 **
 **  'SIZE_OBJ' returns the size of the object <obj>.
 */
-EXPORT_INLINE UInt SIZE_OBJ(Obj obj)
+EXPORT_INLINE UInt SIZE_OBJ(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     return SIZE_BAG(obj);
 }
@@ -388,12 +388,12 @@ EXPORT_INLINE UInt SIZE_OBJ(Obj obj)
 **  'ADDR_OBJ' returns the absolute address of the memory block of the object
 **  <obj>.
 */
-EXPORT_INLINE Obj *ADDR_OBJ(Obj obj)
+EXPORT_INLINE Obj *ADDR_OBJ(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     return PTR_BAG(obj);
 }
 
-EXPORT_INLINE const Obj *CONST_ADDR_OBJ(Obj obj)
+EXPORT_INLINE const Obj *CONST_ADDR_OBJ(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     return CONST_PTR_BAG(obj);
 }
@@ -485,7 +485,7 @@ EXPORT_INLINE Obj TYPE_OBJ(Obj obj)
 **  is not a posobj/comobj/datobj, attempts to first convert it to one; if
 **  that fails, an error is raised.
 */
-void SET_TYPE_OBJ(Obj obj, Obj type);
+void SET_TYPE_OBJ(Obj obj, Obj type) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -523,7 +523,7 @@ void MakeImmutable(Obj obj);
 **  mutability, i.e., in the range FIRST_IMM_MUT_TNUM to LAST_IMM_MUT_TNUM.
 **  It only modifies the TNUM, and does not make subobjects immutable.
 */
-EXPORT_INLINE void MakeImmutableNoRecurse(Obj obj)
+EXPORT_INLINE void MakeImmutableNoRecurse(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     UInt type = TNUM_OBJ(obj);
     GAP_ASSERT((FIRST_IMM_MUT_TNUM <= type) && (type <= LAST_IMM_MUT_TNUM));
@@ -679,7 +679,7 @@ Obj COPY_OBJ(Obj obj, Int mut);
 **
 */
 #if !defined(USE_THREADSAFE_COPYING)
-void PrepareCopy(Obj obj, Obj copy);
+void PrepareCopy(Obj obj, Obj copy) GAP_GC_CANSAFEPOINT;
 #endif
 
 
@@ -742,16 +742,16 @@ extern void (*MakeImmutableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 **
 **  'PrintObj' prints the object <obj>.
 */
-void PrintObj(Obj obj);
+void PrintObj(Obj obj) GAP_GC_CANSAFEPOINT;
 
-extern Obj PrintObjOper;
+extern Obj PrintObjOper GAP_GC_GLOBALLY_ROOTED;
 
 /****************************************************************************
 **
 **
 */
 UInt SetPrintObjState(UInt state); // returns the old state
-void SetPrintObjIndex(Int index);
+void SetPrintObjIndex(Int index) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -777,14 +777,14 @@ EXPORT_INLINE void PRINT_OBJ(Obj obj)
 **
 **  'ViewObj' views the object <obj>.
 */
-void ViewObj(Obj obj);
+void ViewObj(Obj obj) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  IS_COMOBJ( <obj> )  . . . . . . . . . . . is an object a component object
 */
-EXPORT_INLINE BOOL IS_COMOBJ(Obj obj)
+EXPORT_INLINE BOOL IS_COMOBJ(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     return TNUM_OBJ(obj) == T_COMOBJ;
 }
@@ -794,7 +794,7 @@ EXPORT_INLINE BOOL IS_COMOBJ(Obj obj)
 **
 *F  TYPE_COMOBJ( <obj> )  . . . . . . . . . . . .  type of a component object
 */
-EXPORT_INLINE Obj TYPE_COMOBJ(Obj obj)
+EXPORT_INLINE Obj TYPE_COMOBJ(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     return CONST_ADDR_OBJ(obj)[0];
 }
@@ -804,7 +804,7 @@ EXPORT_INLINE Obj TYPE_COMOBJ(Obj obj)
 **
 *F  SET_TYPE_COMOBJ( <obj>, <val> ) . . .  set the type of a component object
 */
-EXPORT_INLINE void SET_TYPE_COMOBJ(Obj obj, Obj val)
+EXPORT_INLINE void SET_TYPE_COMOBJ(Obj obj, Obj val) GAP_GC_NOTSAFEPOINT
 {
     ADDR_OBJ(obj)[0] = val;
 }
@@ -817,17 +817,17 @@ EXPORT_INLINE void SET_TYPE_COMOBJ(Obj obj, Obj val)
 *F  ElmComObj( <obj>, <rnam> )
 *F  IsbComObj( <obj>, <rnam> )
 */
-void AssComObj(Obj obj, UInt rnam, Obj val);
-void UnbComObj(Obj obj, UInt rnam);
-Obj  ElmComObj(Obj obj, UInt rnam);
-BOOL IsbComObj(Obj obj, UInt rnam);
+void AssComObj(Obj obj, UInt rnam, Obj val) GAP_GC_CANSAFEPOINT;
+void UnbComObj(Obj obj, UInt rnam) GAP_GC_CANSAFEPOINT;
+Obj  ElmComObj(Obj obj, UInt rnam) GAP_GC_CANSAFEPOINT;
+BOOL IsbComObj(Obj obj, UInt rnam) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  IS_POSOBJ( <obj> )  . . . . . . . . . .  is an object a positional object
 */
-EXPORT_INLINE BOOL IS_POSOBJ(Obj obj)
+EXPORT_INLINE BOOL IS_POSOBJ(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     return TNUM_OBJ(obj) == T_POSOBJ;
 }
@@ -837,7 +837,7 @@ EXPORT_INLINE BOOL IS_POSOBJ(Obj obj)
 **
 *F  TYPE_POSOBJ( <obj> )  . . . . . . . . . . . . type of a positional object
 */
-EXPORT_INLINE Obj TYPE_POSOBJ(Obj obj)
+EXPORT_INLINE Obj TYPE_POSOBJ(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     return CONST_ADDR_OBJ(obj)[0];
 }
@@ -847,7 +847,7 @@ EXPORT_INLINE Obj TYPE_POSOBJ(Obj obj)
 **
 *F  SET_TYPE_POSOBJ( <obj>, <val> ) . . . set the type of a positional object
 */
-EXPORT_INLINE void SET_TYPE_POSOBJ(Obj obj, Obj val)
+EXPORT_INLINE void SET_TYPE_POSOBJ(Obj obj, Obj val) GAP_GC_NOTSAFEPOINT
 {
     ADDR_OBJ(obj)[0] = val;
 }
@@ -860,9 +860,9 @@ EXPORT_INLINE void SET_TYPE_POSOBJ(Obj obj, Obj val)
 *F  ElmPosbj( <obj>, <rnam> )
 *F  IsbPosbj( <obj>, <rnam> )
 */
-void AssPosObj(Obj obj, Int idx, Obj val);
-void UnbPosObj(Obj obj, Int idx);
-Obj  ElmPosObj(Obj obj, Int idx);
+void AssPosObj(Obj obj, Int idx, Obj val) GAP_GC_CANSAFEPOINT;
+void UnbPosObj(Obj obj, Int idx) GAP_GC_CANSAFEPOINT;
+Obj  ElmPosObj(Obj obj, Int idx) GAP_GC_CANSAFEPOINT;
 BOOL IsbPosObj(Obj obj, Int idx);
 
 
@@ -870,7 +870,7 @@ BOOL IsbPosObj(Obj obj, Int idx);
 **
 *F  IS_DATOBJ( <obj> )  . . . . . . . . . . . . .  is an object a data object
 */
-EXPORT_INLINE BOOL IS_DATOBJ(Obj obj)
+EXPORT_INLINE BOOL IS_DATOBJ(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     return TNUM_OBJ(obj) == T_DATOBJ;
 }
@@ -880,7 +880,7 @@ EXPORT_INLINE BOOL IS_DATOBJ(Obj obj)
 **
 *F  TYPE_DATOBJ( <obj> )  . . . . . . . . . . . . . . . type of a data object
 */
-EXPORT_INLINE Obj TYPE_DATOBJ(Obj obj)
+EXPORT_INLINE Obj TYPE_DATOBJ(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     return CONST_ADDR_OBJ(obj)[0];
 }
@@ -892,12 +892,16 @@ EXPORT_INLINE Obj TYPE_DATOBJ(Obj obj)
 **
 **  'SetTypeDatobj' sets the kind <kind> of the data object <obj>.
 */
-EXPORT_INLINE void SET_TYPE_DATOBJ(Obj obj, Obj val)
+EXPORT_INLINE void SET_TYPE_DATOBJ(Obj obj, Obj val) GAP_GC_NOTSAFEPOINT
 {
     ADDR_OBJ(obj)[0] = val;
 }
 
-void SetTypeDatObj(Obj obj, Obj type);
+void SetTypeDatObj(Obj obj, Obj type)
+#ifndef HPCGAP
+    GAP_GC_NOTSAFEPOINT
+#endif
+    ;
 
 
 /****************************************************************************
@@ -910,7 +914,7 @@ void SetTypeDatObj(Obj obj, Obj type);
 **  Note that <size> must include storage for the first slot of the bag,
 **  which points to the type object.
 */
-Obj NewKernelBuffer(UInt size);
+Obj NewKernelBuffer(UInt size) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

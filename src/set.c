@@ -54,7 +54,7 @@ static BOOL IsPlainSet(Obj list)
 **  no duplicates, and is sorted.  As a side effect 'IsSet' changes the
 **  type of proper sets as appropriate.
 */
-static BOOL IsSet(Obj list)
+static BOOL IsSet(Obj list) GAP_GC_CANSAFEPOINT
 {
     if (IsPlainSet(list))
         return TRUE;
@@ -98,15 +98,16 @@ static BOOL IsSet(Obj list)
 Obj SetList (
     Obj                 list )
 {
-    Obj                 set;            // result set
+    Obj                 set = 0;        // result set
     Int                 lenSet;         // length of <set>
     Int                 lenList;        // length of <list>
-    Obj                 elm;            // one element of the list
+    Obj                 elm = 0;        // one element of the list
     UInt                status;        // the elements are mutable
     UInt                i;              // loop variable
 
     // make a dense copy
     lenList = LEN_LIST( list );
+    GAP_GC_PUSH2(&set, &elm);
     set = NEW_PLIST( T_PLIST, lenList );
     lenSet = 0;
     for ( i = 1; i <= lenList; i++ ) {
@@ -144,6 +145,7 @@ Obj SetList (
       }
 
     // return set
+    GAP_GC_POP();
     return set;
 }
 
@@ -162,7 +164,7 @@ Obj SetList (
 **  'SetList' returns a new list even if the list <list> is already a  proper
 **  set, in this case it is equivalent to 'ShallowCopy' (see  "ShallowCopy").
 */
-static Obj FuncLIST_SORTED_LIST(Obj self, Obj list)
+static Obj FuncLIST_SORTED_LIST(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     Obj                 set;            // result
 
@@ -229,17 +231,20 @@ static Int EqSet(Obj listL, Obj listR)
     return 1;
 }
 
-static Obj FuncIS_EQUAL_SET(Obj self, Obj list1, Obj list2)
+static Obj FuncIS_EQUAL_SET(Obj self, Obj list1, Obj list2) GAP_GC_CANSAFEPOINT
 {
     RequireSmallList(SELF_NAME, list1);
     RequireSmallList(SELF_NAME, list2);
+    GAP_GC_PUSH2(&list1, &list2);
     if (!IS_SSORT_LIST(list1)) list1 = SetList(list1);
     if (!IS_SSORT_LIST(list2)) list2 = SetList(list2);
 
     // and now compare them
-    if (IS_PLIST(list1) && IS_PLIST(list2))
-        return EqSet(list1, list2) ? True : False;
-    return EQ(list1, list2) ? True : False;
+    Obj res = (IS_PLIST(list1) && IS_PLIST(list2)) ?
+                  (EqSet(list1, list2) ? True : False) :
+                  (EQ(list1, list2) ? True : False);
+    GAP_GC_POP();
+    return res;
 }
 
 
@@ -256,17 +261,18 @@ static Obj FuncIS_EQUAL_SET(Obj self, Obj list1, Obj list2)
 **  Either  argument may also  be a list that is  not a proper  set, in which
 **  case 'IsSubsetSet' silently applies 'Set' (see "Set") to it first.
 */
-static Obj FuncIS_SUBSET_SET(Obj self, Obj set1, Obj set2)
+static Obj FuncIS_SUBSET_SET(Obj self, Obj set1, Obj set2) GAP_GC_CANSAFEPOINT
 {
     UInt                len1;           // length of  the left  set
     UInt                len2;           // length of  the right set
     UInt                i1;             // index into the left  set
     UInt                i2;             // index into the right set
-    Obj                 e1;             // element of left  set
-    Obj                 e2;             // element of right set
+    Obj                 e1 = 0;         // element of left  set
+    Obj                 e2 = 0;         // element of right set
 
     RequireSmallList(SELF_NAME, set1);
     RequireSmallList(SELF_NAME, set2);
+    GAP_GC_PUSH4(&set1, &set2, &e1, &e2);
     if (!IsPlainSet(set1)) set1 = SetList(set1);
     if (!IsPlainSet(set2)) set2 = SetList(set2);
 
@@ -294,7 +300,9 @@ static Obj FuncIS_SUBSET_SET(Obj self, Obj set1, Obj set2)
 
 
     // return 'true' if every element of <set2> appeared in <set1>
-    return ((i2 == len2 + 1) ? True : False);
+    Obj res = (i2 == len2 + 1) ? True : False;
+    GAP_GC_POP();
+    return res;
 }
 
 
@@ -319,7 +327,7 @@ static Obj FuncIS_SUBSET_SET(Obj self, Obj set1, Obj set2)
 **  'AddSet' does not return  anything, it is only  called for the side effect
 **  of changing <set>.
 */
-static Obj FuncADD_SET(Obj self, Obj set, Obj obj)
+static Obj FuncADD_SET(Obj self, Obj set, Obj obj) GAP_GC_CANSAFEPOINT
 {
   UInt                len;            // logical length of the list
   UInt                pos;            // position
@@ -433,7 +441,7 @@ static Obj FuncADD_SET(Obj self, Obj set, Obj obj)
 **  'RemoveSet'   does   not return anything,  it   is  only called  for  the
 **  side effect of changing <set>.
 */
-static Obj FuncREM_SET(Obj self, Obj set, Obj obj)
+static Obj FuncREM_SET(Obj self, Obj set, Obj obj) GAP_GC_CANSAFEPOINT
 {
     UInt                len;            // logical length of the list
     UInt                pos;            // position
@@ -481,18 +489,19 @@ static Obj FuncREM_SET(Obj self, Obj set, Obj obj)
 **
 */
 
-static Obj FuncUNITE_SET(Obj self, Obj set1, Obj set2)
+static Obj FuncUNITE_SET(Obj self, Obj set1, Obj set2) GAP_GC_CANSAFEPOINT
 {
     UInt                len1;           // length  of left  set
     UInt                len2;           // length  of right set
     UInt                i1;             // index into left  set
     UInt                i2;             // index into right set
-    Obj                 e1;             // element of left  set
-    Obj                 e2;             // element of right set
-    Obj                 TmpUnion;
+    Obj                 e1 = 0;         // element of left  set
+    Obj                 e2 = 0;         // element of right set
+    Obj                 TmpUnion = 0;
 
     RequireMutableSet(SELF_NAME, set1);
     RequireSmallList(SELF_NAME, set2);
+    GAP_GC_PUSH5(&set1, &set2, &e1, &e2, &TmpUnion);
     if (!IsPlainSet(set2)) set2 = SetList(set2);
 
     // get the logical lengths and the pointer
@@ -553,6 +562,7 @@ static Obj FuncUNITE_SET(Obj self, Obj set1, Obj set2)
     memcpy(ADDR_OBJ(set1), CONST_ADDR_OBJ(TmpUnion), size);
     CHANGED_BAG(set1);
 
+    GAP_GC_POP();
     return 0;
 }
 
@@ -634,7 +644,7 @@ static UInt InterSetInner2( Obj set1, Obj set2, Obj setr, UInt len1, UInt len2)
 }
 
 
-static Obj FuncINTER_SET(Obj self, Obj set1, Obj set2)
+static Obj FuncINTER_SET(Obj self, Obj set1, Obj set2) GAP_GC_CANSAFEPOINT
 {
     UInt                len1;           // length  of left  set
     UInt                len2;           // length  of right set
@@ -642,6 +652,7 @@ static Obj FuncINTER_SET(Obj self, Obj set1, Obj set2)
 
     RequireMutableSet(SELF_NAME, set1);
     RequireSmallList(SELF_NAME, set2);
+    GAP_GC_PUSH2(&set1, &set2);
     if (!IsPlainSet(set2)) set2 = SetList(set2);
 
     // get the logical lengths and the pointer
@@ -706,6 +717,7 @@ static Obj FuncINTER_SET(Obj self, Obj set1, Obj set2)
           }
       }
 
+    GAP_GC_POP();
     return 0;
 }
 
@@ -794,7 +806,7 @@ static UInt SubtrSetInner2( Obj set1, Obj set2, UInt len1, UInt len2)
   return lenr;
 }
 
-static Obj FuncSUBTR_SET(Obj self, Obj set1, Obj set2)
+static Obj FuncSUBTR_SET(Obj self, Obj set1, Obj set2) GAP_GC_CANSAFEPOINT
 {
     UInt                len1;           // length  of left  set
     UInt                len2;           // length  of right set
@@ -804,6 +816,7 @@ static Obj FuncSUBTR_SET(Obj self, Obj set1, Obj set2)
 
     RequireMutableSet(SELF_NAME, set1);
     RequireSmallList(SELF_NAME, set2);
+    GAP_GC_PUSH2(&set1, &set2);
     if (!IsPlainSet(set2)) set2 = SetList(set2);
 
     // get the logical lengths and the pointer
@@ -839,6 +852,7 @@ static Obj FuncSUBTR_SET(Obj self, Obj set1, Obj set2)
     else
       RESET_FILT_LIST(set1, FN_IS_NHOMOG);
 
+    GAP_GC_POP();
     return 0;
 }
 
@@ -886,7 +900,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );

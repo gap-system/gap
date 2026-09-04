@@ -129,9 +129,11 @@ static Obj EvalUnknownExpr(Expr expr)
 **  are   not a priori    known  to evaluate  to a    boolean value  (such as
 **  function calls).
 */
-static Obj EvalUnknownBool(Expr expr)
+static Obj EvalUnknownBool(Expr expr) GAP_GC_CANSAFEPOINT
 {
-    Obj                 val;            // value, result
+    Obj                 val = 0;        // value, result
+
+    GAP_GC_PUSH1(&val);
 
     // evaluate the expression
     val = EVAL_EXPR( expr );
@@ -142,6 +144,7 @@ static Obj EvalUnknownBool(Expr expr)
     }
 
     // return the value
+    GAP_GC_POP();
     return val;
 }
 
@@ -192,30 +195,37 @@ static Obj EvalOr(Expr expr)
 **
 **      if (index <= max) and (list[index] = 0)  then ... fi;
 */
-static Obj EvalAnd(Expr expr)
+static Obj EvalAnd(Expr expr) GAP_GC_CANSAFEPOINT
 {
-    Obj                 opL;            // evaluated left  operand
-    Obj                 opR;            // evaluated right operand
+    Obj                 opL = 0;        // evaluated left  operand
+    Obj                 opR = 0;        // evaluated right operand
     Expr                tmp;            // temporary expression
+
+    GAP_GC_PUSH2(&opL, &opR);
 
     // if the left operand is 'false', this is the result
     tmp = READ_EXPR(expr, 0);
     opL = EVAL_EXPR( tmp );
     if      ( opL == False ) {
+        GAP_GC_POP();
         return opL;
     }
 
     // if the left operand is 'true', the result is the right operand
     else if ( opL == True  ) {
         tmp = READ_EXPR(expr, 1);
-        return EVAL_BOOL_EXPR( tmp );
+        opR = EVAL_BOOL_EXPR( tmp );
+        GAP_GC_POP();
+        return opR;
     }
 
     // handle the 'and' of two filters
     else if (IS_FILTER(opL)) {
         tmp = READ_EXPR(expr, 1);
         opR = EVAL_EXPR( tmp );
-        return NewAndFilter(opL, opR);
+        opR = NewAndFilter(opL, opR);
+        GAP_GC_POP();
+        return opR;
     }
 
     // signal an error
@@ -239,9 +249,11 @@ static Obj EvalAnd(Expr expr)
 */
 static Obj EvalNot(Expr expr)
 {
-    Obj                 val;            // value, result
-    Obj                 op;             // evaluated operand
+    Obj                 val = 0;        // value, result
+    Obj                 op = 0;         // evaluated operand
     Expr                tmp;            // temporary expression
+
+    GAP_GC_PUSH2(&val, &op);
 
     // evaluate the operand to a boolean
     tmp = READ_EXPR(expr, 0);
@@ -251,6 +263,7 @@ static Obj EvalNot(Expr expr)
     val = (op == False ? True : False);
 
     // return the negated value
+    GAP_GC_POP();
     return val;
 }
 
@@ -266,12 +279,14 @@ static Obj EvalNot(Expr expr)
 **
 **  'EvalEq' evaluates the operands and then calls the 'EQ' macro.
 */
-static Obj EvalEq(Expr expr)
+static Obj EvalEq(Expr expr) GAP_GC_CANSAFEPOINT
 {
-    Obj                 val;            // value, result
-    Obj                 opL;            // evaluated left  operand
-    Obj                 opR;            // evaluated right operand
+    Obj                 val = 0;        // value, result
+    Obj                 opL = 0;        // evaluated left  operand
+    Obj                 opR = 0;        // evaluated right operand
     Expr                tmp;            // temporary expression
+
+    GAP_GC_PUSH3(&val, &opL, &opR);
 
     // get the operands
     tmp = READ_EXPR(expr, 0);
@@ -284,6 +299,7 @@ static Obj EvalEq(Expr expr)
     val = (EQ( opL, opR ) ? True : False);
 
     // return the value
+    GAP_GC_POP();
     return val;
 }
 
@@ -299,12 +315,14 @@ static Obj EvalEq(Expr expr)
 **
 **  'EvalNe' is simply implemented as 'not <objL> = <objR>'.
 */
-static Obj EvalNe(Expr expr)
+static Obj EvalNe(Expr expr) GAP_GC_CANSAFEPOINT
 {
-    Obj                 val;            // value, result
-    Obj                 opL;            // evaluated left  operand
-    Obj                 opR;            // evaluated right operand
+    Obj                 val = 0;        // value, result
+    Obj                 opL = 0;        // evaluated left  operand
+    Obj                 opR = 0;        // evaluated right operand
     Expr                tmp;            // temporary expression
+
+    GAP_GC_PUSH3(&val, &opL, &opR);
 
     // get the operands
     tmp = READ_EXPR(expr, 0);
@@ -317,6 +335,7 @@ static Obj EvalNe(Expr expr)
     val = (EQ( opL, opR ) ? False : True);
 
     // return the value
+    GAP_GC_POP();
     return val;
 }
 
@@ -332,12 +351,14 @@ static Obj EvalNe(Expr expr)
 **
 **  'EvalLt' evaluates the operands and then calls the 'LT' macro.
 */
-static Obj EvalLt(Expr expr)
+static Obj EvalLt(Expr expr) GAP_GC_CANSAFEPOINT
 {
-    Obj                 val;            // value, result
-    Obj                 opL;            // evaluated left  operand
-    Obj                 opR;            // evaluated right operand
+    Obj                 val = 0;        // value, result
+    Obj                 opL = 0;        // evaluated left  operand
+    Obj                 opR = 0;        // evaluated right operand
     Expr                tmp;            // temporary expression
+
+    GAP_GC_PUSH3(&val, &opL, &opR);
 
     // get the operands
     tmp = READ_EXPR(expr, 0);
@@ -350,6 +371,7 @@ static Obj EvalLt(Expr expr)
     val = (LT( opL, opR ) ? True : False);
 
     // return the value
+    GAP_GC_POP();
     return val;
 }
 
@@ -365,12 +387,14 @@ static Obj EvalLt(Expr expr)
 **
 **  'EvalGe' is simply implemented as 'not <objL> < <objR>'.
 */
-static Obj EvalGe(Expr expr)
+static Obj EvalGe(Expr expr) GAP_GC_CANSAFEPOINT
 {
-    Obj                 val;            // value, result
-    Obj                 opL;            // evaluated left  operand
-    Obj                 opR;            // evaluated right operand
+    Obj                 val = 0;        // value, result
+    Obj                 opL = 0;        // evaluated left  operand
+    Obj                 opR = 0;        // evaluated right operand
     Expr                tmp;            // temporary expression
+
+    GAP_GC_PUSH3(&val, &opL, &opR);
 
     // get the operands
     tmp = READ_EXPR(expr, 0);
@@ -383,6 +407,7 @@ static Obj EvalGe(Expr expr)
     val = (LT( opL, opR ) ? False : True);
 
     // return the value
+    GAP_GC_POP();
     return val;
 }
 
@@ -398,12 +423,14 @@ static Obj EvalGe(Expr expr)
 **
 **  'EvalGt' is simply implemented as '<objR> < <objL>'.
 */
-static Obj EvalGt(Expr expr)
+static Obj EvalGt(Expr expr) GAP_GC_CANSAFEPOINT
 {
-    Obj                 val;            // value, result
-    Obj                 opL;            // evaluated left  operand
-    Obj                 opR;            // evaluated right operand
+    Obj                 val = 0;        // value, result
+    Obj                 opL = 0;        // evaluated left  operand
+    Obj                 opR = 0;        // evaluated right operand
     Expr                tmp;            // temporary expression
+
+    GAP_GC_PUSH3(&val, &opL, &opR);
 
     // get the operands
     tmp = READ_EXPR(expr, 0);
@@ -416,6 +443,7 @@ static Obj EvalGt(Expr expr)
     val = (LT( opR, opL ) ? True : False);
 
     // return the value
+    GAP_GC_POP();
     return val;
 }
 
@@ -431,12 +459,14 @@ static Obj EvalGt(Expr expr)
 **
 **  'EvalLe' is simply implemented as 'not <objR> < <objR>'.
 */
-static Obj EvalLe(Expr expr)
+static Obj EvalLe(Expr expr) GAP_GC_CANSAFEPOINT
 {
-    Obj                 val;            // value, result
-    Obj                 opL;            // evaluated left  operand
-    Obj                 opR;            // evaluated right operand
+    Obj                 val = 0;        // value, result
+    Obj                 opL = 0;        // evaluated left  operand
+    Obj                 opR = 0;        // evaluated right operand
     Expr                tmp;            // temporary expression
+
+    GAP_GC_PUSH3(&val, &opL, &opR);
 
     // get the operands
     tmp = READ_EXPR(expr, 0);
@@ -449,6 +479,7 @@ static Obj EvalLe(Expr expr)
     val = (LT( opR, opL ) ? False : True);
 
     // return the value
+    GAP_GC_POP();
     return val;
 }
 
@@ -462,12 +493,14 @@ static Obj EvalLe(Expr expr)
 **  'false' otherwise.    'EvalIn' is  called  from  'EVAL_EXPR'  to evaluate
 **  expressions of type 'EXPR_IN'.
 */
-static Obj EvalIn(Expr expr)
+static Obj EvalIn(Expr expr) GAP_GC_CANSAFEPOINT
 {
-    Obj                 val;            // value, result
-    Obj                 opL;            // evaluated left  operand
-    Obj                 opR;            // evaluated right operand
+    Obj                 val = 0;        // value, result
+    Obj                 opL = 0;        // evaluated left  operand
+    Obj                 opR = 0;        // evaluated right operand
     Expr                tmp;            // temporary expression
+
+    GAP_GC_PUSH3(&val, &opL, &opR);
 
     // evaluate <opL>
     tmp = READ_EXPR(expr, 0);
@@ -482,6 +515,7 @@ static Obj EvalIn(Expr expr)
     val = (IN( opL, opR ) ? True : False);
 
     // return the value
+    GAP_GC_POP();
     return val;
 }
 
@@ -497,12 +531,14 @@ static Obj EvalIn(Expr expr)
 **
 **  'EvalSum' evaluates the operands and then calls the 'SUM' macro.
 */
-static Obj EvalSum(Expr expr)
+static Obj EvalSum(Expr expr) GAP_GC_CANSAFEPOINT
 {
-    Obj                 val;            // value, result
-    Obj                 opL;            // evaluated left  operand
-    Obj                 opR;            // evaluated right operand
+    Obj                 val = 0;        // value, result
+    Obj                 opL = 0;        // evaluated left  operand
+    Obj                 opR = 0;        // evaluated right operand
     Expr                tmp;            // temporary expression
+
+    GAP_GC_PUSH3(&val, &opL, &opR);
 
     // get the operands
     tmp = READ_EXPR(expr, 0);
@@ -520,6 +556,7 @@ static Obj EvalSum(Expr expr)
     }
 
     // return the value
+    GAP_GC_POP();
     return val;
 }
 
@@ -534,11 +571,13 @@ static Obj EvalSum(Expr expr)
 **
 **  'EvalAInv' evaluates the operand and then calls the 'AINV_SAMEMUT' macro.
 */
-static Obj EvalAInv(Expr expr)
+static Obj EvalAInv(Expr expr) GAP_GC_CANSAFEPOINT
 {
-    Obj                 val;            // value, result
-    Obj                 opL;            // evaluated left  operand
+    Obj                 val = 0;        // value, result
+    Obj                 opL = 0;        // evaluated left  operand
     Expr                tmp;            // temporary expression
+
+    GAP_GC_PUSH2(&val, &opL);
 
     // get the operands
     tmp = READ_EXPR(expr, 0);
@@ -549,6 +588,7 @@ static Obj EvalAInv(Expr expr)
     val = AINV_SAMEMUT(opL);
 
     // return the value
+    GAP_GC_POP();
     return val;
 }
 
@@ -564,12 +604,14 @@ static Obj EvalAInv(Expr expr)
 **
 **  'EvalDiff' evaluates the operands and then calls the 'DIFF' macro.
 */
-static Obj EvalDiff(Expr expr)
+static Obj EvalDiff(Expr expr) GAP_GC_CANSAFEPOINT
 {
-    Obj                 val;            // value, result
-    Obj                 opL;            // evaluated left  operand
-    Obj                 opR;            // evaluated right operand
+    Obj                 val = 0;        // value, result
+    Obj                 opL = 0;        // evaluated left  operand
+    Obj                 opR = 0;        // evaluated right operand
     Expr                tmp;            // temporary expression
+
+    GAP_GC_PUSH3(&val, &opL, &opR);
 
     // get the operands
     tmp = READ_EXPR(expr, 0);
@@ -587,6 +629,7 @@ static Obj EvalDiff(Expr expr)
     }
 
     // return the value
+    GAP_GC_POP();
     return val;
 }
 
@@ -602,12 +645,14 @@ static Obj EvalDiff(Expr expr)
 **
 **  'EvalProd' evaluates the operands and then calls the 'PROD' macro.
 */
-static Obj EvalProd(Expr expr)
+static Obj EvalProd(Expr expr) GAP_GC_CANSAFEPOINT
 {
-    Obj                 val;            // result
-    Obj                 opL;            // evaluated left  operand
-    Obj                 opR;            // evaluated right operand
+    Obj                 val = 0;        // result
+    Obj                 opL = 0;        // evaluated left  operand
+    Obj                 opR = 0;        // evaluated right operand
     Expr                tmp;            // temporary expression
+
+    GAP_GC_PUSH3(&val, &opL, &opR);
 
     // get the operands
     tmp = READ_EXPR(expr, 0);
@@ -625,6 +670,7 @@ static Obj EvalProd(Expr expr)
     }
 
     // return the value
+    GAP_GC_POP();
     return val;
 }
 
@@ -640,12 +686,14 @@ static Obj EvalProd(Expr expr)
 **
 **  'EvalQuo' evaluates the operands and then calls the 'QUO' macro.
 */
-static Obj EvalQuo(Expr expr)
+static Obj EvalQuo(Expr expr) GAP_GC_CANSAFEPOINT
 {
-    Obj                 val;            // value, result
-    Obj                 opL;            // evaluated left  operand
-    Obj                 opR;            // evaluated right operand
+    Obj                 val = 0;        // value, result
+    Obj                 opL = 0;        // evaluated left  operand
+    Obj                 opR = 0;        // evaluated right operand
     Expr                tmp;            // temporary expression
+
+    GAP_GC_PUSH3(&val, &opL, &opR);
 
     // get the operands
     tmp = READ_EXPR(expr, 0);
@@ -658,6 +706,7 @@ static Obj EvalQuo(Expr expr)
     val = QUO( opL, opR );
 
     // return the value
+    GAP_GC_POP();
     return val;
 }
 
@@ -673,12 +722,14 @@ static Obj EvalQuo(Expr expr)
 **
 **  'EvalMod' evaluates the operands and then calls the 'MOD' macro.
 */
-static Obj EvalMod(Expr expr)
+static Obj EvalMod(Expr expr) GAP_GC_CANSAFEPOINT
 {
-    Obj                 val;            // value, result
-    Obj                 opL;            // evaluated left  operand
-    Obj                 opR;            // evaluated right operand
+    Obj                 val = 0;        // value, result
+    Obj                 opL = 0;        // evaluated left  operand
+    Obj                 opR = 0;        // evaluated right operand
     Expr                tmp;            // temporary expression
+
+    GAP_GC_PUSH3(&val, &opL, &opR);
 
     // get the operands
     tmp = READ_EXPR(expr, 0);
@@ -691,6 +742,7 @@ static Obj EvalMod(Expr expr)
     val = MOD( opL, opR );
 
     // return the value
+    GAP_GC_POP();
     return val;
 }
 
@@ -706,12 +758,14 @@ static Obj EvalMod(Expr expr)
 **
 **  'EvalPow' evaluates the operands and then calls the 'POW' macro.
 */
-static Obj EvalPow(Expr expr)
+static Obj EvalPow(Expr expr) GAP_GC_CANSAFEPOINT
 {
-    Obj                 val;            // value, result
-    Obj                 opL;            // evaluated left  operand
-    Obj                 opR;            // evaluated right operand
+    Obj                 val = 0;        // value, result
+    Obj                 opL = 0;        // evaluated left  operand
+    Obj                 opR = 0;        // evaluated right operand
     Expr                tmp;            // temporary expression
+
+    GAP_GC_PUSH3(&val, &opL, &opR);
 
     // get the operands
     tmp = READ_EXPR(expr, 0);
@@ -724,6 +778,7 @@ static Obj EvalPow(Expr expr)
     val = POW( opL, opR );
 
     // return the value
+    GAP_GC_POP();
     return val;
 }
 
@@ -747,7 +802,7 @@ static Obj EvalIntExpr(Expr expr)
 **
 **  'EvalTildeExpr' evaluates the tilde expression and returns its value.
 */
-static Obj EvalTildeExpr(Expr expr)
+static Obj EvalTildeExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     if( ! (STATE(Tilde)) ) {
         ErrorQuit("'~' does not have a value here", 0, 0);
@@ -800,14 +855,14 @@ static Obj EvalCharExpr(Expr expr)
 **
 **  'EvalPermExpr' evaluates the permutation expression <expr>.
 */
-static Obj GetFromExpr(Obj cycle, Int j)
+static Obj GetFromExpr(Obj cycle, Int j) GAP_GC_CANSAFEPOINT
 {
     return EVAL_EXPR(READ_EXPR((Expr)cycle, j - 1));
 }
 
-static Obj EvalPermExpr(Expr expr)
+static Obj EvalPermExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
-    Obj                 perm;           // permutation, result
+    Obj                 perm = 0;       // permutation, result
     UInt                m;              // maximal entry in permutation
     Expr                cycle;          // one cycle of permutation
     UInt                i;              // loop variable
@@ -819,6 +874,7 @@ static Obj EvalPermExpr(Expr expr)
 
     // allocate the new permutation
     m = 0;
+    GAP_GC_PUSH1(&perm);
     perm = NEW_PERM4( 0 );
 
     // loop over the cycles
@@ -837,6 +893,7 @@ static Obj EvalPermExpr(Expr expr)
     TrimPerm(perm, m);
 
     // return the permutation
+    GAP_GC_POP();
     return perm;
 }
 
@@ -848,10 +905,10 @@ static Obj EvalPermExpr(Expr expr)
 **  'EvalListExpr'  evaluates the list   expression, i.e., not  yet evaluated
 **  list, <expr> to a list value.
 */
-static Obj EvalListExpr(Expr expr)
+static Obj EvalListExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
-    Obj                 list;           // list value, result
-    Obj                 sub;            // value of a subexpression
+    Obj                 list = 0;       // list value, result
+    Obj                 sub = 0;        // value of a subexpression
     Int                 len;            // logical length of the list
     Int                 i;              // loop variable
     Int                 dense;          // track whether list is dense
@@ -863,6 +920,8 @@ static Obj EvalListExpr(Expr expr)
     if (len == 0) {
         return NewEmptyPlist();
     }
+
+    GAP_GC_PUSH2(&list, &sub);
 
     // allocate the list value
     list = NEW_PLIST(T_PLIST, len);
@@ -893,6 +952,7 @@ static Obj EvalListExpr(Expr expr)
 
     SET_FILT_LIST(list, dense ? FN_IS_DENSE : FN_IS_NDENSE);
 
+    GAP_GC_POP();
     return list;
 }
 
@@ -914,11 +974,11 @@ static Obj EvalListExpr(Expr expr)
 **  are creating changes its representation, and thus must use ASS_LIST
 **  instead of SET_ELM_PLIST.
 */
-static Obj EvalListTildeExpr(Expr expr)
+static Obj EvalListTildeExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
-    Obj                 list;           // list value, result
-    Obj                 tilde;          // old value of tilde
-    Obj                 sub;            // value of a subexpression
+    Obj                 list = 0;       // list value, result
+    Obj                 tilde = 0;      // old value of tilde
+    Obj                 sub = 0;        // value of a subexpression
     Int                 len;            // logical length of the list
     Int                 i;              // loop variable
 
@@ -927,6 +987,8 @@ static Obj EvalListTildeExpr(Expr expr)
 
     // list expressions with tilde cannot be empty
     GAP_ASSERT(len > 0);
+
+    GAP_GC_PUSH3(&list, &tilde, &sub);
 
     // allocate the list value
     list = NEW_PLIST(T_PLIST, len);
@@ -952,6 +1014,7 @@ static Obj EvalListTildeExpr(Expr expr)
     // restore old value of '~'
     STATE(Tilde) = tilde;
 
+    GAP_GC_POP();
     return list;
 }
 
@@ -962,13 +1025,15 @@ static Obj EvalListTildeExpr(Expr expr)
 **
 **  'EvalRangeExpr' evaluates the range expression <expr> to a range value.
 */
-static Obj EvalRangeExpr(Expr expr)
+static Obj EvalRangeExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj                 range;          // range, result
-    Obj                 val;            // subvalue of range
+    Obj                 val = 0;        // subvalue of range
     Int                 low;            // low (as C integer)
     Int                 inc;            // increment (as C integer)
     Int                 high;           // high (as C integer)
+
+    GAP_GC_PUSH1(&val);
 
     // evaluate the low value
     val = EVAL_EXPR(READ_EXPR(expr, 0));
@@ -1020,6 +1085,7 @@ static Obj EvalRangeExpr(Expr expr)
     }
 
     // return the range
+    GAP_GC_POP();
     return range;
 }
 
@@ -1045,16 +1111,18 @@ static Obj EvalStringExpr(Expr expr)
 **  'EvalFloatExpr'   evaluates the  float  expression  <expr>  to a float
 **  value.
 */
-static Obj CONVERT_FLOAT_LITERAL;
-static Obj FLOAT_LITERAL_CACHE;
-static Obj MAX_FLOAT_LITERAL_CACHE_SIZE;
+static Obj CONVERT_FLOAT_LITERAL GAP_GC_GLOBALLY_ROOTED;
+static Obj FLOAT_LITERAL_CACHE GAP_GC_GLOBALLY_ROOTED;
+static Obj MAX_FLOAT_LITERAL_CACHE_SIZE GAP_GC_GLOBALLY_ROOTED;
 
-static Obj EvalFloatExprLazy(Expr expr)
+static Obj EvalFloatExprLazy(Expr expr) GAP_GC_CANSAFEPOINT
 {
-    Obj                 string;         // string value
+    Obj                 string = 0;     // string value
     UInt                 ix;
     Obj cache= 0;
-    Obj fl;
+    Obj fl = 0;
+
+    GAP_GC_PUSH3(&string, &cache, &fl);
 
     /* This code is safe for threads trying to create or update the
      * cache concurrently in that it won't crash, but may occasionally
@@ -1067,8 +1135,10 @@ static Obj EvalFloatExprLazy(Expr expr)
       cache = FLOAT_LITERAL_CACHE;
       assert(cache);
       fl = ELM0_LIST(cache, ix);
-      if (fl)
+      if (fl) {
+        GAP_GC_POP();
         return fl;
+      }
     }
     string = GET_VALUE_FROM_CURRENT_BODY(READ_EXPR(expr, 1));
     fl = CALL_1ARGS(CONVERT_FLOAT_LITERAL, string);
@@ -1076,6 +1146,7 @@ static Obj EvalFloatExprLazy(Expr expr)
       ASS_LIST(cache, ix, fl);
     }
 
+    GAP_GC_POP();
     return fl;
 }
 
@@ -1103,17 +1174,20 @@ static Obj EvalFloatExprEager(Expr expr)
 **  'EvalRecExpr' just calls 'RecExpr1' and 'RecExpr2' to evaluate the record
 **  expression.
 */
-static Obj  RecExpr1(Expr expr);
-static void RecExpr2(Obj rec, Expr expr);
+static Obj  RecExpr1(Expr expr) GAP_GC_CANSAFEPOINT;
+static void RecExpr2(Obj rec, Expr expr) GAP_GC_CANSAFEPOINT;
 
-static Obj EvalRecExpr(Expr expr)
+static Obj EvalRecExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
-    Obj                 rec;            // record value, result
+    Obj                 rec = 0;        // record value, result
+
+    GAP_GC_PUSH1(&rec);
 
     // evaluate the record expression
     rec = RecExpr1( expr );
     RecExpr2( rec, expr );
 
+    GAP_GC_POP();
     return rec;
 }
 
@@ -1133,10 +1207,12 @@ static Obj EvalRecExpr(Expr expr)
 **  expression    can refer to this variable    and its  subobjects to create
 **  objects that are not trees.
 */
-static Obj EvalRecTildeExpr(Expr expr)
+static Obj EvalRecTildeExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
-    Obj                 rec;            // record value, result
-    Obj                 tilde;          // old value of tilde
+    Obj                 rec = 0;        // record value, result
+    Obj                 tilde = 0;      // old value of tilde
+
+    GAP_GC_PUSH2(&rec, &tilde);
 
     // remember the old value of '~'
     tilde = STATE(Tilde);
@@ -1154,6 +1230,7 @@ static Obj EvalRecTildeExpr(Expr expr)
     STATE(Tilde) = tilde;
 
     // return the record value
+    GAP_GC_POP();
     return rec;
 }
 
@@ -1179,26 +1256,31 @@ static Obj EvalRecTildeExpr(Expr expr)
 */
 static Obj RecExpr1(Expr expr)
 {
-    Obj                 rec;            // record value, result
+    Obj                 rec = 0;        // record value, result
     Int                 len;            // number of components
 
     // get the number of components
     len = SIZE_EXPR( expr ) / (2*sizeof(Expr));
 
     // allocate the record value
+    GAP_GC_PUSH1(&rec);
     rec = NEW_PREC( len );
 
     // return the record
+    GAP_GC_POP();
     return rec;
 }
 
 static void RecExpr2(Obj rec, Expr expr)
 {
     UInt                rnam;           // name of component
-    Obj                 sub;            // value of subexpression
+    Obj                 sub = 0;        // value of subexpression
+    Obj                 name = 0;       // computed component name
     Int                 len;            // number of components
     Expr                tmp;            // temporary variable
     Int                 i;              // loop variable
+
+    GAP_GC_PUSH2(&sub, &name);
 
     // get the number of components
     len = SIZE_EXPR( expr ) / (2*sizeof(Expr));
@@ -1212,7 +1294,8 @@ static void RecExpr2(Obj rec, Expr expr)
             rnam = (UInt)INT_INTEXPR(tmp);
         }
         else {
-            rnam = RNamObj( EVAL_EXPR(tmp) );
+            name = EVAL_EXPR(tmp);
+            rnam = RNamObj(name);
         }
 
         // if the subexpression is empty (cannot happen for records)
@@ -1224,6 +1307,7 @@ static void RecExpr2(Obj rec, Expr expr)
         AssPRec(rec,rnam,sub);
     }
     SortPRecRNam(rec);
+    GAP_GC_POP();
 }
 
 
@@ -1642,7 +1726,7 @@ static void PrintRecExpr(Expr expr)
 }
 
 
-static Obj FuncFLUSH_FLOAT_LITERAL_CACHE(Obj self)
+static Obj FuncFLUSH_FLOAT_LITERAL_CACHE(Obj self) GAP_GC_CANSAFEPOINT
 {
 #ifdef HPCGAP
     FLOAT_LITERAL_CACHE = NewAtomicList(T_ALIST, 0);
@@ -1798,7 +1882,7 @@ static Int InitKernel (
 }
 
 
-static Int InitLibrary(StructInitInfo * module)
+static Int InitLibrary(StructInitInfo * module) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );

@@ -19,7 +19,8 @@
 **
 *F  CompileFunc( <filename>, <func>, <name>, <crc>, <magic2> ) . . compile
 */
-Int CompileFunc(Obj filename, Obj func, Obj name, Int crc, Obj magic2);
+Int CompileFunc(Obj filename, Obj func, Obj name, Int crc, Obj magic2)
+    GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

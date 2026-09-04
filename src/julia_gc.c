@@ -23,6 +23,7 @@
 #include "funcs.h"
 #include "gap.h"
 #include "gapstate.h"
+#include "io.h"
 #include "gasman.h"
 #include "objects.h"
 #include "plist.h"
@@ -106,7 +107,7 @@ typedef struct {
 */
 typedef void * Ptr;
 
-static inline int cmp_ptr(void * p, void * q)
+static inline int cmp_ptr(void * p, void * q) GAP_GC_NOTSAFEPOINT
 {
     // Comparing pointers in C without triggering undefined behavior
     // can be difficult. As the GC already assumes that the memory
@@ -139,6 +140,284 @@ static jl_datatype_t * DatatypeGapObj;
 static jl_datatype_t * DatatypeSmallBag;
 static jl_datatype_t * DatatypeLargeBag;
 
+#ifdef GAP_MEM_CHECK
+
+#include "calls.h"
+#include "stringobj.h"
+#include "vars.h"
+#include <execinfo.h>
+
+/****************************************************************************
+**
+**  Memory checking diagnostics
+**
+**  Under memory checking every allocation collects, so an object that is
+**  unrooted across a safepoint dies at once. What is then observed is the
+**  reuse of its cell, far from the mistake. These two checks catch it one
+**  collection earlier, where the parent still names the culprit:
+**
+**  ValidateGCFrames looks at every GC frame slot before Julia marks from it.
+**  Julia trusts frame slots outright, so a stale value there is only noticed
+**  when the marker trips over it, by which time the slot is unidentifiable.
+**
+**  ReportDeadChild is called from MarkBag when a child is not a live bag: a
+**  reference to a freed cell, seen at the first collection after the death
+**  and usually before the cell is reused. It prints the parent, where in it
+**  the dead reference sits, and the GAP call stack, which under memory
+**  checking is within one allocation of the code that dropped the root.
+*/
+
+// The bag whose mark function is currently running, for ReportDeadChild.
+static UInt MarkParentTnum = 0;
+static Bag  MarkParent = 0;
+
+static void AbortWithBacktrace(void) GAP_GC_NOTSAFEPOINT;
+
+// ---- push/pop ledger, see precise_gc_julia.h ----
+enum { LEDGER_MAX = 1 << 16 };
+static struct { void * frame; const char * file; int line; } Ledger[LEDGER_MAX];
+static UInt LedgerDepth = 0;
+static BOOL LedgerOverflow = FALSE;
+
+void GAP_GC_LedgerPush(void * frame, const char * file, int line)
+{
+    // The C stack grows down, so every live frame lies above this
+    // function's own locals. A predecessor below them belongs to a function
+    // that has already returned: a push without a pop, or an unwind that
+    // skipped GAP_GC_RESTORE_STACK_STATE. (Comparing with the new frame
+    // instead would misfire when inlining puts two frames' arrays into one
+    // physical stack frame in arbitrary order.)
+    jl_gcframe_t * prev = ((jl_gcframe_t *)frame)->prev;
+    if (prev && (void *)prev < (void *)&prev) {
+        fprintf(stderr, "\n### GC frame push at %s:%d links to frame %p, which "
+                "lies below the current stack pointer: that frame is dead\n",
+                file, line, (void *)prev);
+        AbortWithBacktrace();
+    }
+
+    // Every slot must be initialised before the push: the collector reads
+    // them all. Stack garbage in a slot crashes the marker only when a
+    // collection happens to run while the frame is live, and which garbage
+    // it is depends on the build. Compiling with
+    // -ftrivial-auto-var-init=pattern makes every uninitialised local hold
+    // 0xAA bytes, which this check recognises at the offending push. (The
+    // heap cannot be probed for arbitrary words: jl_gc_internal_obj_base_ptr
+    // trusts the page metadata it finds.)
+    jl_gcframe_t * f = (jl_gcframe_t *)frame;
+    if (f->nroots & 1) {
+        void ** roots = (void **)(f + 1);
+        for (UInt i = 0; i < (f->nroots >> 2); i++) {
+            void * v = *(void **)roots[i];
+            if (((UInt)v >> 32) != 0xAAAAAAAA)
+                continue;
+            fprintf(stderr, "\n### GC frame push at %s:%d: slot %lu holds %p, "
+                    "the fill pattern of an uninitialised local\n",
+                    file, line, (unsigned long)i, v);
+            AbortWithBacktrace();
+        }
+    }
+    if (LedgerDepth >= LEDGER_MAX) { LedgerOverflow = TRUE; return; }
+    Ledger[LedgerDepth].frame = frame;
+    Ledger[LedgerDepth].file = file;
+    Ledger[LedgerDepth].line = line;
+    LedgerDepth++;
+}
+
+void GAP_GC_LedgerPop(void * frame, const char * file, int line)
+{
+    if (LedgerOverflow) return;
+    if (LedgerDepth == 0) {
+        fprintf(stderr, "\n### GC frame pop at %s:%d with nothing pushed\n", file, line);
+        AbortWithBacktrace();
+    }
+    // GAP_GC_POP hands over the chain top, not the popping function's own
+    // frame, so after an unwind that skipped GAP_GC_RESTORE_STACK_STATE the
+    // pops would quietly pop the dead frames instead and keep chain and
+    // ledger consistent. A frame below this function's locals is dead.
+    if ((void *)frame < (void *)&frame) {
+        fprintf(stderr, "\n### GC frame pop at %s:%d pops frame %p, pushed at "
+                "%s:%d, which lies below the current stack pointer: an unwind "
+                "left it behind\n", file, line, frame,
+                Ledger[LedgerDepth - 1].file, Ledger[LedgerDepth - 1].line);
+        AbortWithBacktrace();
+    }
+    if (Ledger[LedgerDepth - 1].frame != frame) {
+        fprintf(stderr, "\n### GC frame pop at %s:%d pops frame %p, but the most "
+                "recent push, at %s:%d, made frame %p\n", file, line, frame,
+                Ledger[LedgerDepth - 1].file, Ledger[LedgerDepth - 1].line,
+                Ledger[LedgerDepth - 1].frame);
+        // show what the ledger thinks is above it
+        for (Int i = (Int)LedgerDepth - 1; i >= 0 && i >= (Int)LedgerDepth - 6; i--)
+            fprintf(stderr, "    ledger[%ld] %p from %s:%d\n", (long)i,
+                    Ledger[i].frame, Ledger[i].file, Ledger[i].line);
+        AbortWithBacktrace();
+    }
+    LedgerDepth--;
+}
+
+// The GC frames currently recorded, newest first, with who pushed them.
+static void DumpLedger(void)
+{
+    fprintf(stderr, "    GC frames (ledger, newest first, %lu total, jl_pgcstack=%p):\n",
+            (unsigned long)LedgerDepth, (void *)jl_pgcstack);
+    for (Int i = (Int)LedgerDepth - 1; i >= 0 && i >= (Int)LedgerDepth - 40; i--)
+        fprintf(stderr, "      [%ld] %p  %s:%d\n", (long)i, Ledger[i].frame,
+                Ledger[i].file, Ledger[i].line);
+    // the chain itself, which the ledger may have lost track of
+    fprintf(stderr, "    GC frames (chain, newest first%s):\n",
+            LedgerOverflow ? "; ledger overflowed" : "");
+    UInt k = 0;
+    for (jl_gcframe_t * f = jl_pgcstack; f && k < 40; f = f->prev, k++)
+        fprintf(stderr, "      %p  %s n=%lu%s\n", (void *)f,
+                (f->nroots & 1) ? "indirect" : "direct  ",
+                (unsigned long)(f->nroots >> 2),
+                (void *)f < (void *)&k ? "  DEAD (below the stack pointer)" : "");
+}
+
+// An error unwind restores jl_pgcstack to a saved value; drop everything
+// pushed after it.
+void GAP_GC_LedgerUnwind(void * frame)
+{
+    if (LedgerOverflow) return;
+    while (LedgerDepth > 0 && Ledger[LedgerDepth - 1].frame != frame &&
+           Ledger[LedgerDepth - 1].frame != (void *)((jl_gcframe_t *)frame))
+        LedgerDepth--;
+    // frame itself, if it was pushed by us, stays: it is not being popped
+}
+
+static void DumpLedger(void) GAP_GC_NOTSAFEPOINT;
+
+static void AbortWithBacktrace(void) GAP_GC_NOTSAFEPOINT
+{
+    DumpLedger();
+    void * trace[48];
+    int    size = backtrace(trace, 48);
+    backtrace_symbols_fd(trace, size, fileno(stderr));
+    abort();
+}
+
+static void ReportDeadChild(Bag bag, const char * what) GAP_GC_NOTSAFEPOINT
+{
+    fprintf(stderr, "\n### %s %p in a bag of tnum %lu (%s)\n", what,
+            (void *)bag, (unsigned long)MarkParentTnum,
+            TNAM_TNUM(MarkParentTnum));
+
+    // the dead bag's header is usually still intact - but a slot can also
+    // hold outright garbage, which must not be dereferenced
+    BagHeader * dh = BAG_HEADER(bag);
+    if (((UInt)bag >> 47) == 0 && jl_gc_internal_obj_base_ptr(dh) != 0)
+        fprintf(stderr, "    dead bag: tnum %lu (%s) size %lu\n",
+                (unsigned long)dh->type,
+                dh->type < NUM_TYPES ? TNAM_TNUM(dh->type) : "?",
+                (unsigned long)dh->size);
+    else
+        fprintf(stderr, "    (child is not a plausible heap address)\n");
+
+    // where it sits in the parent; for a plist slot 0 is the length
+    if (MarkParent) {
+        UInt        n = SIZE_BAG(MarkParent) / sizeof(Obj);
+        const Obj * c = CONST_PTR_BAG(MarkParent);
+        fprintf(stderr, "    parent: %lu slots;", (unsigned long)n);
+        for (UInt i = 0; i < n && i < 40; i++) {
+            // not every slot of every bag holds an Obj (a function bag holds
+            // handler pointers), so only name what is certainly a live bag
+            if (c[i] == bag)
+                fprintf(stderr, " [%lu]=DEAD", (unsigned long)i);
+            else if (IS_BAG_REF(c[i]) &&
+                     jl_gc_internal_obj_base_ptr(c[i]) == c[i])
+                fprintf(stderr, " [%lu]:%s", (unsigned long)i,
+                        TNAM_TNUM(TNUM_BAG(c[i])));
+            else
+                fprintf(stderr, " [%lu]:%s", (unsigned long)i,
+                        c[i] ? "?" : "0");
+        }
+        fprintf(stderr, "\n");
+    }
+
+    // a function bag: say which one, by handler symbol and name
+    if (MarkParent && MarkParentTnum == T_FUNCTION) {
+        const Obj * c = CONST_PTR_BAG(MarkParent);
+        for (int k = 0; k < 8; k++) {
+            Dl_info di;
+            if (c[k] && dladdr((void *)c[k], &di) && di.dli_sname) {
+                fprintf(stderr, "    function: handler[%d] = %s (%s)\n", k,
+                        di.dli_sname, di.dli_fname ? strrchr(di.dli_fname, '/') + 1 : "?");
+                break;
+            }
+        }
+        Obj nm = c[8];
+        if (nm && IS_BAG_REF(nm) && jl_gc_internal_obj_base_ptr(nm) == nm &&
+            IS_STRING_REP(nm))
+            fprintf(stderr, "    function name: %s\n", CONST_CSTR_STRING(nm));
+    }
+    fprintf(stderr, "    GAP stack:");
+    for (Obj lv = STATE(CurrLVars); lv && IS_BAG_REF(lv);
+         lv = PARENT_LVARS(lv)) {
+        Obj f = FUNC_LVARS(lv);
+        Obj nm = f ? NAME_FUNC(f) : 0;
+        fprintf(stderr, " %s",
+                nm && IS_STRING_REP(nm) ? CONST_CSTR_STRING(nm) : "?");
+        if (IsBottomLVars(lv))
+            break;
+    }
+    fprintf(stderr, "\n");
+    AbortWithBacktrace();
+}
+
+// Was <frame> pushed by a GAP_GC_PUSH*? Julia's own frames - its atexit
+// hooks, for instance - hold values the checks below do not understand:
+// image objects and tagged slots.
+static BOOL IsLedgerFrame(const void * frame) GAP_GC_NOTSAFEPOINT
+{
+    if (LedgerOverflow)
+        return TRUE;
+    for (UInt i = 0; i < LedgerDepth; i++)
+        if (Ledger[i].frame == frame)
+            return TRUE;
+    return FALSE;
+}
+
+static void ValidateGCFrames(void) GAP_GC_NOTSAFEPOINT
+{
+    UInt depth = 0;
+    for (jl_gcframe_t * f = jl_pgcstack; f; f = f->prev, depth++) {
+        if (!IsLedgerFrame(f))
+            continue;
+        UInt    n = f->nroots >> 2;
+        BOOL    indirect = (f->nroots & 1) != 0;
+        void ** roots = (void **)(f + 1);
+        for (UInt i = 0; i < n; i++) {
+            void * v = indirect ? *(void **)roots[i] : roots[i];
+            if (v == 0)
+                continue;
+            if (((UInt)v & 3) != 0) {
+                // Julia skips immediates in indirect frames, not direct ones
+                if (indirect)
+                    continue;
+                fprintf(stderr, "\n### GC frame %lu slot %lu (direct) holds "
+                        "an immediate %p\n", (unsigned long)depth,
+                        (unsigned long)i, v);
+            }
+            else if (jl_gc_internal_obj_base_ptr(v) == v) {
+                if (jl_typeof(v) == DatatypeGapObj)
+                    continue;
+                fprintf(stderr, "\n### GC frame %lu slot %lu (%s) holds %p, "
+                        "a Julia object that is not a bag: the bag died and "
+                        "its cell was reused\n", (unsigned long)depth,
+                        (unsigned long)i, indirect ? "indirect" : "direct", v);
+            }
+            else {
+                fprintf(stderr, "\n### GC frame %lu slot %lu (%s) holds a "
+                        "non-object %p\n", (unsigned long)depth,
+                        (unsigned long)i, indirect ? "indirect" : "direct", v);
+            }
+            AbortWithBacktrace();
+        }
+    }
+}
+
+#endif // GAP_MEM_CHECK
+
 #ifndef DISABLE_STACK_SCAN
 static jl_task_t * ScannedRootTask;
 #endif
@@ -151,7 +430,7 @@ static Bag *       GapStackBottom;
 static jl_task_t * RootTaskOfMainThread;
 #endif
 
-static TNumExtraMarkFuncBags ExtraMarkFuncBags;
+static TNumExtraMarkFuncBags ExtraMarkFuncBags GAP_GC_NOTSAFEPOINT;
 
 static TNumFreeFuncBags TabFreeFuncBags[NUM_TYPES];
 
@@ -204,9 +483,19 @@ static UInt MarkCacheHits, MarkCacheAttempts, MarkCacheCollisions;
 **
 **  Allocate memory for a new bag.
 **/
+#ifdef GAP_MEM_CHECK
+static void MemCheckCollect(void) GAP_GC_CANSAFEPOINT;
+#else
+#define MemCheckCollect() ((void)0)
+#endif
+
 static void * AllocateBagMemory(jl_ptls_t ptls, UInt type, UInt size)
+    GAP_GC_CANSAFEPOINT
 {
     // HOOK: return `size` bytes memory of TNUM `type`.
+    // Sample here as well: this allocation can collect too, and a caller
+    // that holds a fresh object only in a C local loses it exactly here.
+    MemCheckCollect();
     void * result;
     if (size <= MaxPoolObjSize) {
         result = (void *)jl_gc_alloc_typed(ptls, size, DatatypeSmallBag);
@@ -232,12 +521,25 @@ static void * AllocateBagMemory(jl_ptls_t ptls, UInt type, UInt size)
 **  the second time raises a warning, because a non-default marking function
 **  is being replaced.
 */
-static void MarkAllSubBagsDefault(Bag bag, void * ref)
+#ifdef GAP_MEM_CHECK
+// Set while the default marker runs: it scans bags whose module has not
+// registered a marking function yet (early in InitKernel), so its words are
+// not references and the dead-child checks must ignore them.
+static int MarkingConservatively = 0;
+#endif
+
+static void MarkAllSubBagsDefault(Bag bag, void * ref) GAP_GC_NOTSAFEPOINT
 {
+#ifdef GAP_MEM_CHECK
+    MarkingConservatively = 1;
+#endif
     MarkArrayOfBags(CONST_PTR_BAG(bag), SIZE_BAG(bag) / sizeof(Bag), ref);
+#ifdef GAP_MEM_CHECK
+    MarkingConservatively = 0;
+#endif
 }
 
-static inline int JMarkTyped(jl_ptls_t ptls, void * obj, jl_datatype_t * ty)
+static inline int JMarkTyped(jl_ptls_t ptls, void * obj, jl_datatype_t * ty) GAP_GC_NOTSAFEPOINT
 {
     // only traverse objects internally used by GAP
     if (!jl_typeis(obj, ty))
@@ -250,7 +552,7 @@ static inline int JMarkTyped(jl_ptls_t ptls, void * obj, jl_datatype_t * ty)
 // either a pool object, or lives in a system or package image (e.g. the
 // types of GAP.jl bags after loading it from a precompiled image), as
 // indicated by the `in_image` bit in its header.
-static inline int ValidTypeOfMarkedObj(void * obj)
+static inline int ValidTypeOfMarkedObj(void * obj) GAP_GC_NOTSAFEPOINT
 {
     jl_value_t * ty = jl_typeof(obj);
     // for a freed pool object, `ty` is the freelist link: NULL or a
@@ -263,7 +565,7 @@ static inline int ValidTypeOfMarkedObj(void * obj)
     return jl_typeis(ty, jl_datatype_type);
 }
 
-static inline int JMark(jl_ptls_t ptls, void * obj)
+static inline int JMark(jl_ptls_t ptls, void * obj) GAP_GC_NOTSAFEPOINT
 {
 #ifdef VALIDATE_MARKING
     if (!ValidTypeOfMarkedObj(obj))
@@ -273,7 +575,7 @@ static inline int JMark(jl_ptls_t ptls, void * obj)
 }
 
 // helper called directly by GAP.jl / JuliaInterface
-void MarkJuliaObjSafe(void * obj, void * ref)
+void MarkJuliaObjSafe(void * obj, void * ref) GAP_GC_NOTSAFEPOINT
 {
     if (!obj)
         return;
@@ -284,7 +586,7 @@ void MarkJuliaObjSafe(void * obj, void * ref)
 }
 
 // helper called directly by GAP.jl / JuliaInterface
-void MarkJuliaObj(void * obj, void * ref)
+void MarkJuliaObj(void * obj, void * ref) GAP_GC_NOTSAFEPOINT
 {
     if (!obj)
         return;
@@ -293,7 +595,7 @@ void MarkJuliaObj(void * obj, void * ref)
 }
 
 // helper called by MarkWeakPointerObj
-void MarkJuliaWeakRef(void * p, void * ref)
+void MarkJuliaWeakRef(void * p, void * ref) GAP_GC_NOTSAFEPOINT
 {
     // If `jl_nothing` gets passed in as an argument, it will not
     // be marked. This is harmless, because `jl_nothing` will always
@@ -359,7 +661,7 @@ void MarkJuliaWeakRef(void * p, void * ref)
 // the stack buffer or receive a segmentation fault due to hitting a guard
 // page.
 
-static void TryMark(jl_ptls_t ptls, void * p)
+static void TryMark(jl_ptls_t ptls, void * p) GAP_GC_NOTSAFEPOINT
 {
     jl_value_t * p2 = jl_gc_internal_obj_base_ptr(p);
     if (p2 && jl_typeis(p2, DatatypeGapObj)) {
@@ -372,13 +674,13 @@ static void TryMark(jl_ptls_t ptls, void * p)
     }
 }
 
-static inline int lt_ptr(void * a, void * b)
+static inline int lt_ptr(void * a, void * b) GAP_GC_NOTSAFEPOINT
 {
     return (uintptr_t)a < (uintptr_t)b;
 }
 
 // align pointer to full word if mis-aligned
-static inline void * align_ptr(void * p)
+static inline void * align_ptr(void * p) GAP_GC_NOTSAFEPOINT
 {
     uintptr_t u = (uintptr_t)p;
     u &= ~(sizeof(p) - 1);
@@ -386,6 +688,7 @@ static inline void * align_ptr(void * p)
 }
 
 static void FindLiveRangeReverse(PtrArray * arr, void * start, void * end)
+    GAP_GC_NOTSAFEPOINT
 {
     // HACK: the following deals with stacks of 'negative size' exposed by
     // Julia -- this was due to a bug on the Julia side. It was finally fixed
@@ -422,6 +725,7 @@ static void FindLiveRangeReverse(PtrArray * arr, void * start, void * end)
 }
 
 static void SafeScanTaskStack(PtrArray * stack, void * start, void * end)
+    GAP_GC_NOTSAFEPOINT
 {
     volatile jl_jmp_buf * old_safe_restore = jl_get_safe_restore();
     jl_jmp_buf            exc_buf;
@@ -442,7 +746,7 @@ static void SafeScanTaskStack(PtrArray * stack, void * start, void * end)
     jl_set_safe_restore((jl_jmp_buf *)old_safe_restore);
 }
 
-static void MarkFromList(jl_ptls_t ptls, PtrArray * arr)
+static void MarkFromList(jl_ptls_t ptls, PtrArray * arr) GAP_GC_NOTSAFEPOINT
 {
     for (Int i = 0; i < arr->len; i++) {
         JMark(ptls, arr->items[i]);
@@ -450,6 +754,7 @@ static void MarkFromList(jl_ptls_t ptls, PtrArray * arr)
 }
 
 static void ScanTaskStack(jl_task_t * task, void * start, void * end)
+    GAP_GC_NOTSAFEPOINT
 {
     PtrArray * stack = PtrArrayMake(1024);
     SafeScanTaskStack(stack, start, end);
@@ -470,6 +775,7 @@ static void ScanTaskStack(jl_task_t * task, void * start, void * end)
 }
 
 static NOINLINE void TryMarkRange(jl_ptls_t ptls, void * start, void * end)
+    GAP_GC_NOTSAFEPOINT
 {
     if (lt_ptr(end, start)) {
         SWAP(void *, start, end);
@@ -492,9 +798,61 @@ static NOINLINE void TryMarkRange(jl_ptls_t ptls, void * start, void * end)
 }
 
 // Julia callback
-static void GapRootScanner(int full)
+static void GapTaskScanner(jl_task_t * task, int root_task)
+    GAP_GC_NOTSAFEPOINT
 {
-    jl_ptls_t   ptls = jl_get_ptls_states();
+    // If this task has been scanned by GapRootScanner() already, skip it
+    if (task == ScannedRootTask)
+        return;
+
+    char *active_start, *active_end, *total_start, *total_end;
+    jl_active_task_stack(task, &active_start, &active_end, &total_start,
+                         &total_end);
+
+    if (active_start) {
+#if !defined(USE_GAP_INSIDE_JULIA)
+        if (task == RootTaskOfMainThread) {
+            active_end = (char *)GapStackBottom;
+        }
+#endif
+        // Unlike the stack of the current task that we scan in
+        // GapRootScanner, we do not know the stack pointer. We
+        // therefore use a separate routine that scans from the
+        // stack bottom until we reach the other end of the stack
+        // or a guard page.
+        ScanTaskStack(task, active_start, active_end);
+    }
+}
+
+#endif // DISABLE_STACK_SCAN
+
+// Julia callback
+// Mark a bag reached while scanning roots. MarkBag is not usable here: it
+// takes the MarkData of the bag being traced, which root scanning has none of.
+static void MarkRootBag(Bag bag) GAP_GC_NOTSAFEPOINT
+{
+#ifdef GAP_MEM_CHECK
+    // A root is 0 or a live bag; anything else is a slot that was never
+    // initialised (in a debug build it holds the 0x47 poison, whose low bits
+    // make IS_BAG_REF reject it quietly - do not let that pass).
+    if (bag && !(IS_BAG_REF(bag) && jl_gc_internal_obj_base_ptr(bag) == bag)) {
+        fprintf(stderr, "\n### root %p is neither 0 nor a live bag\n",
+                (void *)bag);
+        AbortWithBacktrace();
+    }
+#endif
+    if (IS_BAG_REF(bag))
+        JMark(jl_get_ptls_states(), (jl_value_t *)bag);
+}
+
+static void GapRootScanner(int full) GAP_GC_NOTSAFEPOINT
+{
+#ifdef GAP_MEM_CHECK
+    ValidateGCFrames();
+#endif
+    jl_ptls_t ptls = jl_get_ptls_states();
+
+#ifndef DISABLE_STACK_SCAN
     jl_task_t * task = (jl_task_t *)jl_get_current_task();
 
     ScannedRootTask = task;
@@ -522,13 +880,6 @@ static void GapRootScanner(int full)
     }
 #endif
 
-    // Allow installing a custom marking function. This is used for
-    // integrating GAP (possibly linked as a shared library) with other code
-    // bases which use their own form of garbage collection. For example,
-    // with Python (for SageMath).
-    if (ExtraMarkFuncBags)
-        (*ExtraMarkFuncBags)();
-
     // We scan the stack of the current task from the stack pointer
     // towards the stack bottom, ensuring that we also scan any
     // references stored in registers.
@@ -536,6 +887,18 @@ static void GapRootScanner(int full)
     GAP_SETJMP(registers);
     TryMarkRange(ptls, registers, (char *)registers + sizeof(jmp_buf));
     TryMarkRange(ptls, (char *)registers + sizeof(jmp_buf), stackend);
+#endif // DISABLE_STACK_SCAN
+
+    // Allow installing a custom marking function. This is used for
+    // integrating GAP (possibly linked as a shared library) with other code
+    // bases which use their own form of garbage collection. For example,
+    // with Python (for SageMath).
+    if (ExtraMarkFuncBags)
+        (*ExtraMarkFuncBags)();
+
+    // The open input and output files hold objects in structs that usually
+    // live on a C stack, so they need marking of their own.
+    MarkOpenFiles(MarkRootBag);
 
     // mark all global objects
     for (Int i = 0; i < GlobalCount; i++) {
@@ -546,41 +909,13 @@ static void GapRootScanner(int full)
     }
 }
 
-// Julia callback
-static void GapTaskScanner(jl_task_t * task, int root_task)
-{
-    // If this task has been scanned by GapRootScanner() already, skip it
-    if (task == ScannedRootTask)
-        return;
-
-    char *active_start, *active_end, *total_start, *total_end;
-    jl_active_task_stack(task, &active_start, &active_end, &total_start,
-                         &total_end);
-
-    if (active_start) {
-#if !defined(USE_GAP_INSIDE_JULIA)
-        if (task == RootTaskOfMainThread) {
-            active_end = (char *)GapStackBottom;
-        }
-#endif
-        // Unlike the stack of the current task that we scan in
-        // GapRootScanner, we do not know the stack pointer. We
-        // therefore use a separate routine that scans from the
-        // stack bottom until we reach the other end of the stack
-        // or a guard page.
-        ScanTaskStack(task, active_start, active_end);
-    }
-}
-
-#endif // DISABLE_STACK_SCAN
-
 // Time spent in the process, in milliseconds.
 //
 // SyTime raises a GAP error when the clock cannot be read, which a GC hook
 // must not do: entering the error handler mid-collection runs GAP code. Read
 // the clock directly instead, and report 0 if it is unavailable. The Julia GC
 // is only supported on systems providing getrusage.
-static UInt GCTime(void)
+static UInt GCTime(void) GAP_GC_NOTSAFEPOINT
 {
     struct rusage buf;
     if (getrusage(RUSAGE_SELF, &buf))
@@ -589,7 +924,7 @@ static UInt GCTime(void)
 }
 
 // Julia callback
-static void PreGCHook(int full)
+static void PreGCHook(int full) GAP_GC_NOTSAFEPOINT
 {
     // This is the same code as in VarsBeforeCollectBags() for GASMAN.
     // It is necessary because ASS_LVAR() and related functionality
@@ -610,7 +945,7 @@ static void PreGCHook(int full)
 }
 
 // Julia callback
-static void PostGCHook(int full)
+static void PostGCHook(int full) GAP_GC_NOTSAFEPOINT
 {
 #ifndef DISABLE_STACK_SCAN
     ScannedRootTask = 0;
@@ -628,6 +963,7 @@ static void PostGCHook(int full)
 // the Julia marking function for master pointer objects (i.e., this function
 // is called by the Julia GC whenever it marks a GAP master pointer object)
 static uintptr_t MPtrMarkFunc(jl_ptls_t ptls, jl_value_t * obj)
+    GAP_GC_NOTSAFEPOINT
 {
     if (!*(void **)obj)
         return 0;
@@ -647,17 +983,22 @@ static uintptr_t MPtrMarkFunc(jl_ptls_t ptls, jl_value_t * obj)
 // the Julia marking function for bags (i.e., this function is called by the
 // Julia GC whenever it marks a GAP bag object)
 static uintptr_t BagMarkFunc(jl_ptls_t ptls, jl_value_t * obj)
+    GAP_GC_NOTSAFEPOINT
 {
     BagHeader * hdr = (BagHeader *)obj;
     Bag         contents = (Bag)(hdr + 1);
     UInt        tnum = hdr->type;
     MarkData    ref = { ptls, 0 };
+#ifdef GAP_MEM_CHECK
+    MarkParentTnum = tnum;
+    MarkParent = (Bag)&contents;
+#endif
     TabMarkFuncBags[tnum]((Bag)&contents, &ref);
     return ref.youngRef;
 }
 
 // the Julia finalizer function for bags
-static void JFinalizer(jl_value_t * obj)
+static void JFinalizer(jl_value_t * obj) GAP_GC_NOTSAFEPOINT
 {
     BagHeader * hdr = (BagHeader *)obj;
     Bag         contents = (Bag)(hdr + 1);
@@ -673,7 +1014,7 @@ static void JFinalizer(jl_value_t * obj)
 // helper called directly by GAP.jl
 jl_datatype_t * GAP_DeclareGapObj(jl_sym_t *      name,
                                   jl_module_t *   module,
-                                  jl_datatype_t * parent)
+                                  jl_datatype_t * parent) GAP_GC_CANSAFEPOINT
 {
     return jl_new_foreign_type(name, module, parent, MPtrMarkFunc, NULL, 1,
                                0);
@@ -683,7 +1024,7 @@ jl_datatype_t * GAP_DeclareGapObj(jl_sym_t *      name,
 jl_datatype_t * GAP_DeclareBag(jl_sym_t *      name,
                                jl_module_t *   module,
                                jl_datatype_t * parent,
-                               int             large)
+                               int             large) GAP_GC_CANSAFEPOINT
 {
     return jl_new_foreign_type(name, module, parent, BagMarkFunc, JFinalizer,
                                1, large > 0);
@@ -700,6 +1041,7 @@ jl_datatype_t * GAP_DeclareBag(jl_sym_t *      name,
 // 'module' is NULL.
 void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
                                   jl_datatype_t * parent /* unused */)
+    GAP_GC_CANSAFEPOINT
 {
 #if defined(USE_GAP_INSIDE_JULIA)
     GAP_ASSERT(module != 0);
@@ -720,11 +1062,13 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
 #endif
 
 #ifndef DISABLE_STACK_SCAN
-    // These callbacks potentially require access to the Julia
-    // TLS and thus need to be installed after initialization.
-    jl_gc_set_cb_root_scanner(GapRootScanner, 1);
     jl_gc_set_cb_task_scanner(GapTaskScanner, 1);
 #endif
+    // The root scanner also marks GAP's global bags, so it is required
+    // whether or not stacks are scanned conservatively. These callbacks
+    // potentially require access to the Julia TLS and thus need to be
+    // installed after initialization.
+    jl_gc_set_cb_root_scanner(GapRootScanner, 1);
     jl_gc_set_cb_pre_gc(PreGCHook, 1);
     jl_gc_set_cb_post_gc(PostGCHook, 1);
     // jl_gc_enable(0); /// DEBUGGING
@@ -775,13 +1119,15 @@ void InitBags(UInt initial_size, Bag * stack_bottom)
 {
     TotalTime = 0;
 
-#if !defined(USE_GAP_INSIDE_JULIA) && !defined(DISABLE_STACK_SCAN)
+#if !defined(USE_GAP_INSIDE_JULIA)
     // initialize Julia memory interface. Note that this is only necessary
     // when we run standalone. In contrast, when GAP is loaded from GAP.jl
     // then GAP.jl invokes `GAP_InitJuliaMemoryInterface` at an appropriate
-    // point in time.
+    // point in time. This is needed whether or not we scan stacks
+    // conservatively: it is what starts Julia.
     GAP_InitJuliaMemoryInterface(0, 0);
 
+#ifndef DISABLE_STACK_SCAN
     GapStackBottom = stack_bottom;
 
     // If we are embedding Julia in GAP, remember the root task
@@ -789,6 +1135,7 @@ void InitBags(UInt initial_size, Bag * stack_bottom)
     // task is calculated a bit differently than for other tasks.
     if (!IsUsingLibGap())
         RootTaskOfMainThread = (jl_task_t *)jl_get_current_task();
+#endif
 #endif
 }
 
@@ -821,6 +1168,19 @@ void InitGlobalBag(Bag * addr, const Char * cookie)
 UInt TotalGCTime(void)
 {
     return TotalTime;
+}
+
+GAP_GCStackState GAP_GC_SAVE_STACK_STATE(void) JL_NOTSAFEPOINT
+{
+    return (GAP_GCStackState)jl_pgcstack;
+}
+
+void GAP_GC_RESTORE_STACK_STATE(GAP_GCStackState state) JL_NOTSAFEPOINT
+{
+#ifdef GAP_MEM_CHECK
+    GAP_GC_LedgerUnwind(state);
+#endif
+    jl_pgcstack = (jl_gcframe_t *)state;
 }
 
 BOOL IsGapObj(void * p)
@@ -892,10 +1252,118 @@ void RetypeBagIntern(Bag bag, UInt new_type)
     header->type = new_type;
 }
 
+
+/****************************************************************************
+**
+**  GAP_MEM_CHECK for the Julia GC
+**
+**  Under GASMAN, memory checking moves every bag on each allocation, to catch
+**  references kept into a bag's interior across a garbage collection. The
+**  Julia GC never moves a bag, so that class of bug cannot arise; the class
+**  that can is a GAP object reachable only from an unrooted C local, which a
+**  precise collector is free to reclaim.
+**
+**  To catch those, collect on every bag allocation. Anything the caller holds
+**  without rooting it is then freed at the first opportunity rather than at
+**  some unpredictable later one, which turns an intermittent crash into a
+**  reproducible one. It is correspondingly slow.
+**
+**  Enable at run time with GASMAN_MEM_CHECK(1), or from the start with
+**  --enableMemCheck.
+*/
+#ifdef GAP_MEM_CHECK
+
+Int EnableMemCheck = 0;
+
+int enableMemCheck(const char * argv[], void * dummy)
+{
+    fputs("# Warning: --enableMemCheck causes SEVERE slowdowns.\n", stderr);
+    // The sampling period from process start; see GASMAN_MEM_CHECK. Period 1
+    // cannot get through library loading, so a debugging session that needs
+    // the checks during startup sets GAP_MEMCHECK_PERIOD instead.
+    const char * period = getenv("GAP_MEMCHECK_PERIOD");
+    EnableMemCheck = period ? atoi(period) : 1;
+    if (EnableMemCheck <= 0)
+        EnableMemCheck = 1;
+    return 1;
+}
+
+// Collect now, so that anything not currently rooted is reclaimed here.
+//
+// EnableMemCheck is the sampling period. A period of 1 collects at every
+// allocation, which pins a rooting bug to the exact allocation that exposes
+// it, but is far too slow to reach the end of even a small test file. A larger
+// period trades that precision for the ability to run a whole suite: an
+// unrooted value now only dies if a sampled allocation falls in its window, so
+// a bug shows up as an ordinary crash somewhere in the file rather than at its
+// cause, and may take several runs to appear at all.
+static void MemCheckCollect(void) GAP_GC_CANSAFEPOINT
+{
+    static UInt sinceLastCollect = 0;
+    static UInt allocations = 0;
+    static Int  startAt = -1;
+
+    if (EnableMemCheck <= 0)
+        return;
+
+    // GAP_MEMCHECK_START=N delays the checks until the Nth allocation, so a
+    // window found by an earlier run can be sampled densely at a price paid
+    // only there.
+    static Int stopAt = -1;
+    if (startAt < 0) {
+        const char * env = getenv("GAP_MEMCHECK_START");
+        startAt = env ? atol(env) : 0;
+        if (startAt < 0)
+            startAt = 0;
+        env = getenv("GAP_MEMCHECK_STOP");
+        stopAt = env ? atol(env) : 0;    // 0: never stop
+    }
+    allocations++;
+    if (allocations < (UInt)startAt)
+        return;
+    if (stopAt > 0 && allocations > (UInt)stopAt)
+        return;
+
+    if (++sinceLastCollect < (UInt)EnableMemCheck)
+        return;
+
+    sinceLastCollect = 0;
+
+    // A full collection reaches every live object from the roots, so it can
+    // never expose a missing write barrier: the young child of a promoted
+    // parent is still marked through the parent. Only a young collection,
+    // which skips old objects and trusts the remembered set, frees such a
+    // child. GAP_MEMCHECK_FULL_EVERY=n makes n-1 of every n samples young
+    // collections (cheap enough for period 1) and the nth a full one, which
+    // validates the old parents and reports the dead child.
+    static Int fullEvery = -1;
+    static Int sample = 0;
+    if (fullEvery < 0) {
+        const char * env = getenv("GAP_MEMCHECK_FULL_EVERY");
+        fullEvery = env ? atol(env) : 1;
+        if (fullEvery < 1)
+            fullEvery = 1;
+    }
+    if (++sample < fullEvery) {
+        jl_gc_collect(JL_GC_INCREMENTAL);
+        return;
+    }
+    sample = 0;
+    jl_gc_collect(JL_GC_FULL);
+}
+
+#else
+
+#define MemCheckCollect() ((void)0)
+
+#endif
+
 Bag NewBag(UInt type, UInt size)
 {
     Bag  bag;    // identifier of the new bag
     UInt alloc_size;
+
+    MemCheckCollect();
 
     alloc_size = sizeof(BagHeader) + size;
 
@@ -917,7 +1385,12 @@ Bag NewBag(UInt type, UInt size)
     bag = jl_gc_alloc_typed(ptls, sizeof(void *), DatatypeGapObj);
     bag->body = 0;
 
+    // The body allocation can collect. Nothing else references the fresh
+    // masterpointer yet, so root it here; its zero body keeps the marker
+    // from following it.
+    GAP_GC_PUSH1(&bag);
     BagHeader * header = AllocateBagMemory(ptls, type, alloc_size);
+    GAP_GC_POP();
     header->type = type;
     header->flags = 0;
     header->size = size;
@@ -930,8 +1403,16 @@ Bag NewBag(UInt type, UInt size)
     return bag;
 }
 
-UInt ResizeBag(Bag bag, UInt new_size)
+UInt ResizeBag(Bag bag GAP_GC_MAYBE_UNROOTED, UInt new_size)
 {
+    // <bag> may be unrooted by the caller, so root it across the collection;
+    // the braces keep this frame out of the one pushed further below.
+    {
+        GAP_GC_PUSH1(&bag);
+        MemCheckCollect();
+        GAP_GC_POP();
+    }
+
     BagHeader * header = BAG_HEADER(bag);
     UInt        old_size = header->size;
 
@@ -951,10 +1432,18 @@ UInt ResizeBag(Bag bag, UInt new_size)
 
         // allocate new bag
         jl_ptls_t ptls = jl_get_ptls_states();
+        GAP_GC_PUSH1(&bag);
         header = AllocateBagMemory(ptls, header->type, alloc_size);
+        GAP_GC_POP();
 
         // copy bag header and data, and update size
         memcpy(header, BAG_HEADER(bag), sizeof(BagHeader) + old_size);
+#ifdef GAP_MEM_CHECK
+        // A grow moves the body. Anyone who cached a pointer into the old
+        // one now reads or writes freed memory, which stays silent until
+        // the cell is reused. Poison it so the stale access fails here.
+        memset(PTR_BAG(bag), 0xAB, old_size);
+#endif
 
         // update the master pointer
         bag->body = header + 1;
@@ -967,7 +1456,7 @@ UInt ResizeBag(Bag bag, UInt new_size)
     return 1;
 }
 
-inline void MarkBag(Bag bag, void * ref)
+inline void MarkBag(Bag bag, void * ref) GAP_GC_NOTSAFEPOINT
 {
     if (!IS_BAG_REF(bag))
         return;
@@ -981,9 +1470,52 @@ inline void MarkBag(Bag bag, void * ref)
     if (MarkCache[hash] != bag) {
         // not in the cache, so verify it explicitly
         if (jl_gc_internal_obj_base_ptr(p) != p) {
+#ifdef GAP_MEM_CHECK
+            // Some mark functions hand over raw integers that share a slot
+            // layout with bags - an LVARS bag's statement offset, a record's
+            // RNAM ids - and rely on being ignored here. Those are small; a
+            // heap address is not.
+            if ((UInt)bag >= ((UInt)1 << 32) && !MarkingConservatively) {
+                // GAP_MEMCHECK_MARK_ANYWAY: experiment - trust the mark
+                // function over the validator and mark the object. A live
+                // object then survives; a dead one makes Julia abort on its
+                // type tag, which tells the two apart.
+                static int markAnyway = -1;
+                if (markAnyway < 0)
+                    markAnyway = getenv("GAP_MEMCHECK_MARK_ANYWAY") != 0;
+                if (markAnyway) {
+                    static UInt n = 0;
+                    if (n++ < 20) {
+                        BagHeader * bh = BAG_HEADER(bag);
+                        fprintf(stderr, "### validator rejected child %p of tnum %lu (%s); "
+                                "marking anyway\n    tag=%p GapObj=%p SmallBag=%p LargeBag=%p "
+                                "base_ptr(child)=%p body=%p header{type=%lu size=%lu} "
+                                "base_ptr(body)=%p\n", (void *)bag,
+                                (unsigned long)MarkParentTnum, TNAM_TNUM(MarkParentTnum),
+                                jl_typeof(p), (void *)DatatypeGapObj, (void *)DatatypeSmallBag,
+                                (void *)DatatypeLargeBag, jl_gc_internal_obj_base_ptr(p),
+                                (void *)*(void **)bag, (unsigned long)bh->type,
+                                (unsigned long)bh->size, jl_gc_internal_obj_base_ptr(bh));
+                    }
+                    goto mark_anyway;
+                }
+                ReportDeadChild(bag, "dead child");
+            }
+#endif
             // not a valid object
             return;
         }
+#ifdef GAP_MEM_CHECK
+        {
+            void * ty = jl_typeof(p);
+            if (ty != DatatypeGapObj && ty != DatatypeSmallBag &&
+                ty != DatatypeLargeBag) {
+                if (MarkingConservatively)
+                    return;
+                ReportDeadChild(bag, "reused child");
+            }
+        }
+#endif
 #ifdef COLLECT_MARK_CACHE_STATS
         if (MarkCache[hash])
             MarkCacheCollisions++;
@@ -995,6 +1527,9 @@ inline void MarkBag(Bag bag, void * ref)
         MarkCacheHits++;
 #endif
     }
+#endif
+#ifdef GAP_MEM_CHECK
+mark_anyway:
 #endif
     // The following code is a performance optimization and
     // relies on Julia internals. It is functionally equivalent

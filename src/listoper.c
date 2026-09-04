@@ -47,8 +47,8 @@ Int             EqListList (
 {
     Int                 lenL;           // length of the left operand
     Int                 lenR;           // length of the right operand
-    Obj                 elmL;           // element of the left operand
-    Obj                 elmR;           // element of the right operand
+    Obj                 elmL = 0;       // element of the left operand
+    Obj                 elmR = 0;       // element of the right operand
     Int                 i;              // loop variable
 
     // get the lengths of the lists and compare them
@@ -59,21 +59,26 @@ Int             EqListList (
     }
 
     // loop over the elements and compare them
+    GAP_GC_PUSH2(&elmL, &elmR);
     for ( i = 1; i <= lenL; i++ ) {
         elmL = ELMV0_LIST( listL, i );
         elmR = ELMV0_LIST( listR, i );
         if ( elmL == 0 && elmR != 0 ) {
+            GAP_GC_POP();
             return 0;
         }
         else if ( elmR == 0 && elmL != 0 ) {
+            GAP_GC_POP();
             return 0;
         }
         else if ( ! EQ( elmL, elmR ) ) {
+            GAP_GC_POP();
             return 0;
         }
     }
 
     // no differences found, the lists are equal
+    GAP_GC_POP();
     return 1;
 }
 
@@ -97,8 +102,8 @@ Int             LtListList (
 {
     Int                 lenL;           // length of the left operand
     Int                 lenR;           // length of the right operand
-    Obj                 elmL;           // element of the left operand
-    Obj                 elmR;           // element of the right operand
+    Obj                 elmL = 0;       // element of the left operand
+    Obj                 elmR = 0;       // element of the right operand
     Int                 i;              // loop variable
 
     // get the lengths of the lists and compare them
@@ -106,21 +111,27 @@ Int             LtListList (
     lenR = LEN_LIST( listR );
 
     // loop over the elements and compare them
+    GAP_GC_PUSH2(&elmL, &elmR);
     for ( i = 1; i <= lenL && i <= lenR; i++ ) {
         elmL = ELMV0_LIST( listL, i );
         elmR = ELMV0_LIST( listR, i );
         if ( elmL == 0 && elmR != 0 ) {
+            GAP_GC_POP();
             return 1;
         }
         else if ( elmR == 0 && elmL != 0 ) {
+            GAP_GC_POP();
             return 0;
         }
         else if ( ! EQ( elmL, elmR ) ) {
-            return LT( elmL, elmR );
+            Int res = LT( elmL, elmR );
+            GAP_GC_POP();
+            return res;
         }
     }
 
     // reached the end of at least one list
+    GAP_GC_POP();
     return (lenL < lenR);
 }
 
@@ -169,14 +180,15 @@ Obj             SumSclList (
     Obj                 listL,
     Obj                 listR )
 {
-    Obj                 listS;          // sum, result
-    Obj                 elmS;           // one element of sum list
-    Obj                 elmR;           // one element of right operand
+    Obj                 listS = 0;      // sum, result
+    Obj                 elmS = 0;       // one element of sum list
+    Obj                 elmR = 0;       // one element of right operand
     Int                 len;            // length
     Int                 i;              // loop variable
 
     // make the result list
     len = LEN_LIST( listR );
+    GAP_GC_PUSH3(&listS, &elmS, &elmR);
     listS = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(listL) ||  IS_MUTABLE_OBJ(listR),
                            T_PLIST, len );
     SET_LEN_PLIST( listS, len );
@@ -192,6 +204,7 @@ Obj             SumSclList (
           }
     }
 
+    GAP_GC_POP();
     return listS;
 }
 
@@ -199,14 +212,15 @@ Obj             SumListScl (
     Obj                 listL,
     Obj                 listR )
 {
-    Obj                 listS;          // sum, result
-    Obj                 elmS;           // one element of sum list
-    Obj                 elmL;           // one element of left operand
+    Obj                 listS = 0;      // sum, result
+    Obj                 elmS = 0;       // one element of sum list
+    Obj                 elmL = 0;       // one element of left operand
     Int                 len;            // length
     Int                 i;              // loop variable
 
     // make the result list
     len = LEN_LIST( listL );
+    GAP_GC_PUSH3(&listS, &elmS, &elmL);
     listS = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(listR) || IS_MUTABLE_OBJ(listL),
                            T_PLIST, len );
     SET_LEN_PLIST( listS, len );
@@ -222,6 +236,7 @@ Obj             SumListScl (
           }
     }
 
+    GAP_GC_POP();
     return listS;
 }
 
@@ -229,10 +244,10 @@ Obj             SumListList (
     Obj                 listL,
     Obj                 listR )
 {
-    Obj                 listS;          // sum, result
-    Obj                 elmS;           // one element of the sum
-    Obj                 elmL;           // one element of the left list
-    Obj                 elmR;           // one element of the right list
+    Obj                 listS = 0;      // sum, result
+    Obj                 elmS = 0;       // one element of the sum
+    Obj                 elmL = 0;       // one element of the left list
+    Obj                 elmR = 0;       // one element of the right list
     Int                 lenL,lenR, lenS;// lengths
     Int                 i;              // loop variable
     UInt                mutS;
@@ -241,6 +256,7 @@ Obj             SumListList (
     lenL = LEN_LIST( listL );
     lenR = LEN_LIST( listR );
     lenS = (lenR > lenL) ? lenR : lenL;
+    GAP_GC_PUSH4(&listS, &elmS, &elmL, &elmR);
     listS = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR),
                            T_PLIST, lenS );
     SET_LEN_PLIST( listS, lenS );
@@ -273,20 +289,24 @@ Obj             SumListList (
         }
     }
 
+    GAP_GC_POP();
     return listS;
 }
 
 static Obj FuncSUM_SCL_LIST_DEFAULT(Obj self, Obj listL, Obj listR)
+    GAP_GC_CANSAFEPOINT
 {
     return SumSclList( listL, listR );
 }
 
 static Obj FuncSUM_LIST_SCL_DEFAULT(Obj self, Obj listL, Obj listR)
+    GAP_GC_CANSAFEPOINT
 {
     return SumListScl( listL, listR );
 }
 
 static Obj FuncSUM_LIST_LIST_DEFAULT(Obj self, Obj listL, Obj listR)
+    GAP_GC_CANSAFEPOINT
 {
     return SumListList( listL, listR );
 }
@@ -305,9 +325,9 @@ static Obj FuncSUM_LIST_LIST_DEFAULT(Obj self, Obj listL, Obj listR)
 **
 **  'ZeroListDefault' is a generic function for the zero.
 */
-static Obj ZeroListDefault(Obj list)
+static Obj ZeroListDefault(Obj list) GAP_GC_CANSAFEPOINT
 {
-    Obj                 res;
+    Obj                 res = 0;
 // Obj                 elm;
     Int                 len;
     Int                 i;
@@ -317,6 +337,8 @@ static Obj ZeroListDefault(Obj list)
     if (len == 0) {
         return NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(list), T_PLIST_EMPTY, 0);
     }
+    Obj tmp = 0;
+    GAP_GC_PUSH2(&res, &tmp);
     res = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(list), T_PLIST, len );
     SET_LEN_PLIST( res, len );
 
@@ -324,7 +346,7 @@ static Obj ZeroListDefault(Obj list)
     // For now, lets just do the simplest and safest thing
     for (i = 1; i <= len; i++ )
       {
-        Obj tmp = ELM0_LIST( list, i);
+        tmp = ELM0_LIST( list, i);
         if (tmp) {
           tmp = ZERO_SAMEMUT(tmp);
           SET_ELM_PLIST( res, i,tmp );
@@ -359,18 +381,19 @@ static Obj ZeroListDefault(Obj list)
           SET_FILT_LIST( res, FN_IS_NDENSE );
       }
 
+    GAP_GC_POP();
     return res;
 }
 
-static Obj FuncZERO_LIST_DEFAULT(Obj self, Obj list)
+static Obj FuncZERO_LIST_DEFAULT(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     return ZeroListDefault( list );
 }
 
 
-static Obj ZeroListMutDefault(Obj list)
+static Obj ZeroListMutDefault(Obj list) GAP_GC_CANSAFEPOINT
 {
-    Obj                 res;
+    Obj                 res = 0;
 // Obj                 elm;
     Int                 len;
     Int                 i;
@@ -380,6 +403,8 @@ static Obj ZeroListMutDefault(Obj list)
     if (len == 0) {
         return NewEmptyPlist();
     }
+    Obj tmp = 0;
+    GAP_GC_PUSH2(&res, &tmp);
     res = NEW_PLIST(  T_PLIST ,len );
     SET_LEN_PLIST( res, len );
 
@@ -387,7 +412,7 @@ static Obj ZeroListMutDefault(Obj list)
     // For now, lets just do the simplest and safest thing
     for (i = 1; i <= len; i++ )
       {
-        Obj tmp = ELM0_LIST( list, i);
+        tmp = ELM0_LIST( list, i);
         if (tmp) {
           tmp = ZERO_MUT(tmp);
           SET_ELM_PLIST( res, i,tmp );
@@ -417,10 +442,11 @@ static Obj ZeroListMutDefault(Obj list)
           SET_FILT_LIST( res, FN_IS_NDENSE );
       }
 
+    GAP_GC_POP();
     return res;
 }
 
-static Obj FuncZERO_MUT_LIST_DEFAULT(Obj self, Obj list)
+static Obj FuncZERO_MUT_LIST_DEFAULT(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     return ZeroListMutDefault( list );
 }
@@ -433,21 +459,25 @@ static Obj FuncZERO_MUT_LIST_DEFAULT(Obj self, Obj list)
    we want an immutable result, we can (a) reuse a single row of zeros
    (b) record that the result is a rectangular table */
 
-static Obj FuncZERO_ATTR_MAT(Obj self, Obj mat)
+static Obj FuncZERO_ATTR_MAT(Obj self, Obj mat) GAP_GC_CANSAFEPOINT
 {
-  Obj zrow;
+  Obj zrow = 0;
+  Obj row = 0;
   UInt len;
   UInt i;
-  Obj res;
+  Obj res = 0;
   len = LEN_LIST(mat);
   if (len == 0)
     return NewImmutableEmptyPlist();
-  zrow = ZERO_SAMEMUT(ELM_LIST(mat,1));
+  GAP_GC_PUSH3(&zrow, &row, &res);
+  row = ELM_LIST(mat,1);
+  zrow = ZERO_SAMEMUT(row);
   CheckedMakeImmutable(zrow);
   res = NEW_PLIST_IMM(T_PLIST_TAB_RECT, len);
   SET_LEN_PLIST(res,len);
   for (i = 1; i <= len; i++)
     SET_ELM_PLIST(res,i,zrow);
+  GAP_GC_POP();
   return res;
 }
 
@@ -465,10 +495,10 @@ static Obj FuncZERO_ATTR_MAT(Obj self, Obj mat)
 **  'AInvListDefault' is a generic function for the additive inverse.
 */
 
-static Obj AInvMutListDefault(Obj list)
+static Obj AInvMutListDefault(Obj list) GAP_GC_CANSAFEPOINT
 {
-    Obj                 res;
-    Obj                 elm;
+    Obj                 res = 0;
+    Obj                 elm = 0;
     Int                 len;
     Int                 i;
 
@@ -478,6 +508,7 @@ static Obj AInvMutListDefault(Obj list)
     if (len == 0) {
         return NewEmptyPlist();
     }
+    GAP_GC_PUSH2(&res, &elm);
     res = NEW_PLIST( T_PLIST , len );
     SET_LEN_PLIST( res, len );
 
@@ -513,18 +544,19 @@ static Obj AInvMutListDefault(Obj list)
         else if (HAS_FILT_LIST(list, FN_IS_NDENSE))
           SET_FILT_LIST( res, FN_IS_NDENSE );
       }
+    GAP_GC_POP();
     return res;
 }
 
-static Obj FuncAINV_MUT_LIST_DEFAULT(Obj self, Obj list)
+static Obj FuncAINV_MUT_LIST_DEFAULT(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     return AInvMutListDefault( list );
 }
 
-static Obj AInvListDefault(Obj list)
+static Obj AInvListDefault(Obj list) GAP_GC_CANSAFEPOINT
 {
-    Obj                 res;
-    Obj                 elm;
+    Obj                 res = 0;
+    Obj                 elm = 0;
     Int                 len;
     Int                 i;
 
@@ -533,6 +565,7 @@ static Obj AInvListDefault(Obj list)
     if (len == 0) {
         return NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(list), T_PLIST_EMPTY, 0);
     }
+    GAP_GC_PUSH2(&res, &elm);
     res = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(list), T_PLIST, len );
     SET_LEN_PLIST( res, len );
 
@@ -573,10 +606,11 @@ static Obj AInvListDefault(Obj list)
         else if (HAS_FILT_LIST(list, FN_IS_NDENSE))
           SET_FILT_LIST( res, FN_IS_NDENSE );
       }
+    GAP_GC_POP();
     return res;
 }
 
-static Obj FuncAINV_LIST_DEFAULT(Obj self, Obj list)
+static Obj FuncAINV_LIST_DEFAULT(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     return AInvListDefault( list );
 }
@@ -602,9 +636,9 @@ Obj             DiffSclList (
     Obj                 listL,
     Obj                 listR )
 {
-    Obj                 listD;          // difference, result
-    Obj                 elmD;           // one element of difference list
-    Obj                 elmR;           // one element of right operand
+    Obj                 listD = 0;      // difference, result
+    Obj                 elmD = 0;       // one element of difference list
+    Obj                 elmR = 0;       // one element of right operand
     Int                 len;            // length
     Int                 i;              // loop variable
     Int                 mut;
@@ -615,6 +649,7 @@ Obj             DiffSclList (
     if (len == 0) {
         return NEW_PLIST_WITH_MUTABILITY(mut, T_PLIST_EMPTY, 0);
     }
+    GAP_GC_PUSH3(&listD, &elmD, &elmR);
     listD = NEW_PLIST_WITH_MUTABILITY(mut, T_PLIST, len);
     SET_LEN_PLIST( listD, len );
 
@@ -638,6 +673,7 @@ Obj             DiffSclList (
          else if (HAS_FILT_LIST(listR, FN_IS_NDENSE))
            SET_FILT_LIST( listD, FN_IS_NDENSE );
       }
+    GAP_GC_POP();
     return listD;
 }
 
@@ -645,9 +681,9 @@ Obj             DiffListScl (
     Obj                 listL,
     Obj                 listR )
 {
-    Obj                 listD;          // difference, result
-    Obj                 elmD;           // one element of difference list
-    Obj                 elmL;           // one element of left operand
+    Obj                 listD = 0;      // difference, result
+    Obj                 elmD = 0;       // one element of difference list
+    Obj                 elmL = 0;       // one element of left operand
     Int                 len;            // length
     Int                 i;              // loop variable
     Int                 mut;
@@ -658,6 +694,7 @@ Obj             DiffListScl (
     if (len == 0) {
         return NEW_PLIST_WITH_MUTABILITY(mut, T_PLIST_EMPTY, 0);
     }
+    GAP_GC_PUSH3(&listD, &elmD, &elmL);
     listD = NEW_PLIST_WITH_MUTABILITY(mut, T_PLIST, len);
     SET_LEN_PLIST( listD, len );
 
@@ -682,6 +719,7 @@ Obj             DiffListScl (
          else if (HAS_FILT_LIST(listL, FN_IS_NDENSE))
            SET_FILT_LIST( listD, FN_IS_NDENSE );
       }
+    GAP_GC_POP();
     return listD;
 }
 
@@ -689,10 +727,10 @@ Obj             DiffListList (
     Obj                 listL,
     Obj                 listR )
 {
-    Obj                 listD;          // difference, result
-    Obj                 elmD;           // one element of the difference
-    Obj                 elmL;           // one element of the left list
-    Obj                 elmR;           // one element of the right list
+    Obj                 listD = 0;      // difference, result
+    Obj                 elmD = 0;       // one element of the difference
+    Obj                 elmL = 0;       // one element of the left list
+    Obj                 elmR = 0;       // one element of the right list
     Int                 i;              // loop variable
     UInt                mutD;
     Int                 mut;
@@ -705,6 +743,7 @@ Obj             DiffListList (
     if (lenD == 0) {
         return NEW_PLIST_WITH_MUTABILITY(mut, T_PLIST_EMPTY, 0);
     }
+    GAP_GC_PUSH4(&listD, &elmD, &elmL, &elmR);
     listD = NEW_PLIST_WITH_MUTABILITY(mut, T_PLIST, lenD);
     SET_LEN_PLIST( listD, lenD );
 
@@ -764,20 +803,24 @@ Obj             DiffListList (
              HAS_FILT_LIST(listL, FN_IS_DENSE))
       SET_FILT_LIST( listD, FN_IS_DENSE );
 
+    GAP_GC_POP();
     return listD;
 }
 
 static Obj FuncDIFF_SCL_LIST_DEFAULT(Obj self, Obj listL, Obj listR)
+    GAP_GC_CANSAFEPOINT
 {
     return DiffSclList( listL, listR );
 }
 
 static Obj FuncDIFF_LIST_SCL_DEFAULT(Obj self, Obj listL, Obj listR)
+    GAP_GC_CANSAFEPOINT
 {
     return DiffListScl( listL, listR );
 }
 
 static Obj FuncDIFF_LIST_LIST_DEFAULT(Obj self, Obj listL, Obj listR)
+    GAP_GC_CANSAFEPOINT
 {
     return DiffListList( listL, listR );
 }
@@ -808,9 +851,9 @@ Obj             ProdSclList (
     Obj                 listL,
     Obj                 listR )
 {
-    Obj                 listP;          // product, result
-    Obj                 elmP;           // one element of product list
-    Obj                 elmR;           // one element of right operand
+    Obj                 listP = 0;      // product, result
+    Obj                 elmP = 0;       // one element of product list
+    Obj                 elmR = 0;       // one element of right operand
     Int                 len;            // length
     Int                 i;              // loop variable
     Int                 mut;
@@ -821,6 +864,7 @@ Obj             ProdSclList (
     if (len == 0) {
         return NEW_PLIST_WITH_MUTABILITY(mut, T_PLIST_EMPTY, 0);
     }
+    GAP_GC_PUSH3(&listP, &elmP, &elmR);
     listP = NEW_PLIST_WITH_MUTABILITY(mut, T_PLIST, len);
     SET_LEN_PLIST( listP, len );
 
@@ -842,6 +886,7 @@ Obj             ProdSclList (
            SET_FILT_LIST( listP, FN_IS_NDENSE );
       }
 
+    GAP_GC_POP();
     return listP;
 }
 
@@ -849,9 +894,9 @@ Obj             ProdListScl (
     Obj                 listL,
     Obj                 listR )
 {
-    Obj                 listP;          // product, result
-    Obj                 elmP;           // one element of product list
-    Obj                 elmL;           // one element of left operand
+    Obj                 listP = 0;      // product, result
+    Obj                 elmP = 0;       // one element of product list
+    Obj                 elmL = 0;       // one element of left operand
     Int                 len;            // length
     Int                 i;              // loop variable
     Int                 mut;
@@ -862,6 +907,7 @@ Obj             ProdListScl (
     if (len == 0) {
         return NEW_PLIST_WITH_MUTABILITY(mut, T_PLIST_EMPTY, 0);
     }
+    GAP_GC_PUSH3(&listP, &elmP, &elmL);
     listP = NEW_PLIST_WITH_MUTABILITY(mut, T_PLIST, len);
     SET_LEN_PLIST( listP, len );
 
@@ -882,6 +928,7 @@ Obj             ProdListScl (
          else if (HAS_FILT_LIST(listL, FN_IS_NDENSE))
            SET_FILT_LIST( listP, FN_IS_NDENSE );
       }
+    GAP_GC_POP();
     return listP;
 }
 
@@ -889,10 +936,10 @@ Obj             ProdListList (
     Obj                 listL,
     Obj                 listR )
 {
-    Obj                 listP;          // product, result
-    Obj                 elmP;           // one summand of the product
-    Obj                 elmL;           // one element of the left list
-    Obj                 elmR;           // one element of the right list
+    Obj                 listP = 0;      // product, result
+    Obj                 elmP = 0;       // one summand of the product
+    Obj                 elmL = 0;       // one element of the left list
+    Obj                 elmR = 0;       // one element of the right list
     Int                 lenL,lenR,len; // length
     Int                 i;              // loop variable
     Int                 imm;
@@ -902,7 +949,7 @@ Obj             ProdListList (
     lenR = LEN_LIST( listR );
     len =  (lenL < lenR) ? lenL : lenR;
     // loop over the entries and multiply and accumulate
-    listP = 0;
+    GAP_GC_PUSH4(&listP, &elmP, &elmL, &elmR);
     imm = 0;
     for (i = 1; i <= len; i++)
       {
@@ -926,26 +973,32 @@ Obj             ProdListList (
     if (imm && IS_MUTABLE_OBJ(listP))
       CheckedMakeImmutable(listP);
 
-    if (!listP)
+    if (!listP) {
       ErrorMayQuit("Inner product multiplication of lists: no summands", 0, 0);
+    }
 
+    GAP_GC_POP();
     return listP;
 }
 
 static Obj FuncPROD_SCL_LIST_DEFAULT(Obj self, Obj listL, Obj listR)
+    GAP_GC_CANSAFEPOINT
 {
     return ProdSclList( listL, listR );
 }
 
 static Obj FuncPROD_LIST_SCL_DEFAULT(Obj self, Obj listL, Obj listR)
+    GAP_GC_CANSAFEPOINT
 {
     return ProdListScl( listL, listR );
 }
 
 static Obj
 FuncPROD_LIST_LIST_DEFAULT(Obj self, Obj listL, Obj listR, Obj depthdiff)
+    GAP_GC_CANSAFEPOINT
 {
-  Obj prod;
+  Obj prod = 0;
+  GAP_GC_PUSH1(&prod);
   prod = ProdListList( listL, listR );
 
   // possibly adjust mutability
@@ -966,6 +1019,7 @@ FuncPROD_LIST_LIST_DEFAULT(Obj self, Obj listL, Obj listR, Obj depthdiff)
                      "0 or 1, not %d",
                      INT_INTOBJ(depthdiff), 0);
     }
+  GAP_GC_POP();
   return prod;
 
 }
@@ -981,10 +1035,10 @@ FuncPROD_LIST_LIST_DEFAULT(Obj self, Obj listL, Obj listR, Obj depthdiff)
 **  and 2 for a fully mutable result.
 */
 
-static Obj OneMatrix(Obj mat, UInt mut)
+static Obj OneMatrix(Obj mat, UInt mut) GAP_GC_CANSAFEPOINT
 {
     Obj                 res = 0;        // one, result
-    Obj                 row;            // one row of the result
+    Obj                 row = 0;        // one row of the result
     Obj                 zero = 0;       // zero element
     Obj                 one = 0;        // one element
     UInt                len;            // length (and width) of matrix
@@ -996,15 +1050,17 @@ static Obj OneMatrix(Obj mat, UInt mut)
 
     // check that the operand is a *square* matrix
     len = LEN_LIST( mat );
-    if ( len != LEN_LIST( ELM_LIST( mat, 1 ) ) ) {
+    GAP_GC_PUSH4(&res, &row, &zero, &one);
+    row = ELM_LIST( mat, 1 );
+    if ( len != LEN_LIST( row ) ) {
         ErrorMayQuit("Matrix ONE: <mat> must be square (not %d by %d)",
-                     (Int)len, (Int)LEN_LIST(ELM_LIST(mat, 1)));
+                     (Int)len, (Int)LEN_LIST(row));
     }
 
     // get the zero and the one
     switch (mut) {
     case 0:
-      zero = ZERO_MUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
+      zero = ZERO_MUT( ELM_LIST( row, 1 ) );
       one = ONE_SAMEMUT(zero);
       CheckedMakeImmutable(zero);
       CheckedMakeImmutable(one);
@@ -1012,19 +1068,19 @@ static Obj OneMatrix(Obj mat, UInt mut)
       break;
 
     case 1:
-      zero = ZERO_MUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
+      zero = ZERO_MUT( ELM_LIST( row, 1 ) );
       one = ONE_SAMEMUT(zero);
       if (IS_MUTABLE_OBJ(mat))
         {
           cmut = TRUE;
-          rmut = IS_MUTABLE_OBJ(ELM_LIST(mat, 1));
+          rmut = IS_MUTABLE_OBJ(row);
         }
       else
           cmut = rmut = FALSE;
       break;
 
     case 2:
-      zero = ZERO_SAMEMUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
+      zero = ZERO_SAMEMUT( ELM_LIST( row, 1 ) );
       one  = ONE( zero );
       cmut = rmut = TRUE;
       break;
@@ -1048,20 +1104,22 @@ static Obj OneMatrix(Obj mat, UInt mut)
         MakeImmutableNoRecurse(res);
 
     // return the identity matrix
+    GAP_GC_POP();
     return res;
 }
 
-static Obj FuncONE_MATRIX_IMMUTABLE(Obj self, Obj list)
+static Obj FuncONE_MATRIX_IMMUTABLE(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     return OneMatrix( list,0 );
 }
 
 static Obj FuncONE_MATRIX_SAME_MUTABILITY(Obj self, Obj list)
+    GAP_GC_CANSAFEPOINT
 {
     return OneMatrix( list,1 );
 }
 
-static Obj FuncONE_MATRIX_MUTABLE(Obj self, Obj list)
+static Obj FuncONE_MATRIX_MUTABLE(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     return OneMatrix( list,2 );
 }
@@ -1085,13 +1143,14 @@ static Obj FuncONE_MATRIX_MUTABLE(Obj self, Obj list)
 **  calls to AddRowVector, etc.
 */
 
-static Obj InvMatrix(Obj mat, UInt mut)
+static Obj InvMatrix(Obj mat, UInt mut) GAP_GC_CANSAFEPOINT
 {
     Obj                 res = 0;        // power, result
-    Obj                 row;            // one row of the matrix
-    Obj                 row2;           // another row of the matrix
-    Obj                 elm;            // one element of the matrix
-    Obj                 elm2;           // another element of the matrix
+    Obj                 row = 0;        // one row of the matrix
+    Obj                 row2 = 0;       // another row of the matrix
+    Obj                 row3 = 0;       // another row of the matrix
+    Obj                 elm = 0;        // one element of the matrix
+    Obj                 elm2 = 0;       // another element of the matrix
     Obj                 zero = 0;       // zero element
     Obj                 one = 0;        // one element
     UInt                len;            // length (and width) of matrix
@@ -1103,15 +1162,18 @@ static Obj InvMatrix(Obj mat, UInt mut)
 
     // check that the operand is a *square* matrix
     len = LEN_LIST( mat );
-    if ( len != LEN_LIST( ELM_LIST( mat, 1 ) ) ) {
+    GAP_GC_PUSH8(&res, &row, &row2, &row3, &elm, &elm2, &zero, &one);
+    row = ELM_LIST( mat, 1 );
+    if ( len != LEN_LIST( row ) ) {
         ErrorMayQuit("Matrix INV: <mat> must be square (not %d by %d)",
-                     (Int)len, (Int)LEN_LIST(ELM_LIST(mat, 1)));
+                     (Int)len, (Int)LEN_LIST(row));
     }
 
     // get the zero and the one
     switch (mut) {
     case 0:
-        zero = ZERO_MUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
+        elm = ELM_LIST( row, 1 );
+        zero = ZERO_MUT( elm );
         one = ONE_SAMEMUT(zero);
         CheckedMakeImmutable(zero);
         CheckedMakeImmutable(one);
@@ -1119,18 +1181,20 @@ static Obj InvMatrix(Obj mat, UInt mut)
         break;
 
     case 1:
-        zero = ZERO_MUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
+        elm = ELM_LIST( row, 1 );
+        zero = ZERO_MUT( elm );
         one = ONE_SAMEMUT(zero);
         if (IS_MUTABLE_OBJ(mat)) {
             cmut = TRUE;
-            rmut = IS_MUTABLE_OBJ(ELM_LIST(mat, 1));
+            rmut = IS_MUTABLE_OBJ(row);
         }
         else
             cmut = rmut = FALSE;
         break;
 
     case 2:
-        zero = ZERO_SAMEMUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
+        elm = ELM_LIST( row, 1 );
+        zero = ZERO_SAMEMUT( elm );
         one  = ONE( zero );
         cmut = rmut = TRUE;
         break;
@@ -1155,7 +1219,7 @@ static Obj InvMatrix(Obj mat, UInt mut)
         row = ELM_PLIST( res, i );
         row2 = ELM_LIST( mat, i );
         for ( k = 1; k <= len; k++ ) {
-            SET_ELM_PLIST( row, k + len, ELM_LIST( row2, k )  );
+            SET_ELM_PLIST( row, k + len, ELM_LIST( row2, k ) );
             CHANGED_BAG( row );
         }
     }
@@ -1166,23 +1230,27 @@ static Obj InvMatrix(Obj mat, UInt mut)
 
         // find a nonzero entry in this column
         for ( i = k-len; i <= len; i++ ) {
-            if ( ! EQ( ELM_PLIST( ELM_PLIST(res,i), k ), zero ) )
+            if ( ! EQ( ELM_PLIST( ELM_PLIST(res, i), k ), zero ) )
                break;
         }
         if ( len < i ) {
+            GAP_GC_POP();
             return Fail;
         }
 
         // make the row the <k>-th row and normalize it
         row = ELM_PLIST( res, i );
-        SET_ELM_PLIST( res, i, ELM_PLIST( res, k-len ) );
+        row2 = ELM_PLIST( res, k-len );
+        SET_ELM_PLIST( res, i, row2 );
         SET_ELM_PLIST( res, k-len, row );
+        elm = ELM_PLIST( row, k );
         if (mut < 2)
-          elm2 = INV_SAMEMUT( ELM_PLIST( row, k ) );
+          elm2 = INV_SAMEMUT( elm );
         else
-          elm2 = INV( ELM_PLIST( row, k ) );
+          elm2 = INV( elm );
         for ( l = 1; l <= 2*len; l++ ) {
-            elm = PROD( elm2, ELM_PLIST( row, l ) );
+            elm = ELM_PLIST( row, l );
+            elm = PROD( elm2, elm );
             SET_ELM_PLIST( row, l, elm );
             CHANGED_BAG( row );
         }
@@ -1190,14 +1258,17 @@ static Obj InvMatrix(Obj mat, UInt mut)
         // clear all entries in this column
         for ( i = 1; i <= len; i++ ) {
             row2 = ELM_PLIST( res, i );
+            elm = ELM_PLIST( row2, k );
             if (mut < 2)
-              elm = AINV_MUT( ELM_PLIST( row2, k ) );
+              elm = AINV_MUT( elm );
             else
-              elm = AINV_SAMEMUT( ELM_PLIST( row2, k ) );
+              elm = AINV_SAMEMUT( elm );
             if ( i != k-len && ! EQ(elm,zero) ) {
                 for ( l = 1; l <= 2*len; l++ ) {
-                    elm2 = PROD( elm, ELM_PLIST( row, l ) );
-                    elm2 = SUM( ELM_PLIST( row2, l ), elm2 );
+                    elm2 = ELM_PLIST( row, l );
+                    elm2 = PROD( elm, elm2 );
+                    row3 = ELM_PLIST( row2, l );
+                    elm2 = SUM( row3, elm2 );
                     SET_ELM_PLIST( row2, l, elm2 );
                     CHANGED_BAG( row2 );
                 }
@@ -1217,20 +1288,22 @@ static Obj InvMatrix(Obj mat, UInt mut)
     if (!cmut)
         MakeImmutableNoRecurse(res);
 
+    GAP_GC_POP();
     return res;
 }
 
-static Obj FuncINV_MATRIX_MUTABLE(Obj self, Obj mat)
+static Obj FuncINV_MATRIX_MUTABLE(Obj self, Obj mat) GAP_GC_CANSAFEPOINT
 {
   return InvMatrix(mat, 2);
 }
 
 static Obj FuncINV_MATRIX_SAME_MUTABILITY(Obj self, Obj mat)
+    GAP_GC_CANSAFEPOINT
 {
   return InvMatrix(mat, 1);
 }
 
-static Obj FuncINV_MATRIX_IMMUTABLE(Obj self, Obj mat)
+static Obj FuncINV_MATRIX_IMMUTABLE(Obj self, Obj mat) GAP_GC_CANSAFEPOINT
 {
   return InvMatrix(mat, 0);
 }
@@ -1246,24 +1319,29 @@ static Obj FuncINV_MATRIX_IMMUTABLE(Obj self, Obj mat)
 
 // We need these to redispatch when the user has supplied a replacement value.
 
-static Obj AddRowVectorOp;
-static Obj MultVectorLeftOp;
+static Obj AddRowVectorOp GAP_GC_GLOBALLY_ROOTED;
+static Obj MultVectorLeftOp GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncADD_ROW_VECTOR_5(
     Obj self, Obj list1, Obj list2, Obj mult, Obj from, Obj to)
+    GAP_GC_CANSAFEPOINT
 {
     Int ifrom = GetSmallInt("AddRowVector", from);
     Int ito = GetSmallInt("AddRowVector", to);
+    Obj el1 = 0;
+    Obj el2 = 0;
     if (ito > LEN_LIST(list1) || ito > LEN_LIST(list2))
         ErrorMayQuit("AddRowVector: Upper limit too large", 0, 0);
+    GAP_GC_PUSH2(&el1, &el2);
     for (Int i = ifrom; i <= ito; i++) {
-        Obj el1 = ELM_LIST(list1, i);
-        Obj el2 = ELM_LIST(list2, i);
+        el1 = ELM_LIST(list1, i);
+        el2 = ELM_LIST(list2, i);
         el2 = PROD(mult, el2);
         el1 = SUM(el1, el2);
         ASS_LIST(list1, i, el1);
         CHANGED_BAG(list1);
     }
+    GAP_GC_POP();
     return 0;
 }
 
@@ -1279,16 +1357,19 @@ static Obj FuncADD_ROW_VECTOR_5(
 */
 static Obj FuncADD_ROW_VECTOR_5_FAST(
     Obj self, Obj list1, Obj list2, Obj mult, Obj from, Obj to)
+    GAP_GC_CANSAFEPOINT
 {
     Int ifrom = GetSmallInt("AddRowVector", from);
     Int ito = GetSmallInt("AddRowVector", to);
     if (ito > LEN_LIST(list1) || ito > LEN_LIST(list2))
         ErrorMayQuit("AddRowVector: Upper limit too large", 0, 0);
 
-    Obj prd, sum;
+    Obj prd = 0, sum = 0;
+    Obj e1 = 0, e2 = 0;
+    GAP_GC_PUSH4(&prd, &sum, &e1, &e2);
     for (Int i = ifrom; i <= ito; i++) {
-        Obj e1 = ELM_PLIST(list1, i);
-        Obj e2 = ELM_PLIST(list2, i);
+        e1 = ELM_PLIST(list1, i);
+        e2 = ELM_PLIST(list2, i);
         if (!ARE_INTOBJS(e2, mult) || !PROD_INTOBJS(prd, e2, mult)) {
             prd = PROD(e2, mult);
         }
@@ -1300,6 +1381,7 @@ static Obj FuncADD_ROW_VECTOR_5_FAST(
         else
             SET_ELM_PLIST(list1, i, sum);
     }
+    GAP_GC_POP();
     return 0;
 }
 
@@ -1314,11 +1396,13 @@ static Obj FuncADD_ROW_VECTOR_5_FAST(
 **  types of list -- this version just uses generic list ops
 */
 static Obj FuncADD_ROW_VECTOR_3(Obj self, Obj list1, Obj list2, Obj mult)
+    GAP_GC_CANSAFEPOINT
 {
   UInt i;
   UInt len = LEN_LIST(list1);
-  Obj el1, el2;
+  Obj el1 = 0, el2 = 0;
   RequireSameLength(SELF_NAME, list1, list2);
+  GAP_GC_PUSH2(&el1, &el2);
   for (i = 1; i <= len; i++)
     {
       el1 = ELMW_LIST(list1,i);
@@ -1328,6 +1412,7 @@ static Obj FuncADD_ROW_VECTOR_3(Obj self, Obj list1, Obj list2, Obj mult)
       ASS_LIST(list1,i,el1);
       CHANGED_BAG(list1);
     }
+  GAP_GC_POP();
   return 0;
 }
 
@@ -1342,11 +1427,13 @@ static Obj FuncADD_ROW_VECTOR_3(Obj self, Obj list1, Obj list2, Obj mult)
 **  plain lists of cyclotomics and mult is a small integers
 */
 static Obj FuncADD_ROW_VECTOR_3_FAST(Obj self, Obj list1, Obj list2, Obj mult)
+    GAP_GC_CANSAFEPOINT
 {
   UInt i;
-  Obj e1,e2, prd, sum;
+  Obj e1 = 0, e2 = 0, prd = 0, sum = 0;
   UInt len = LEN_PLIST(list1);
   RequireSameLength(SELF_NAME, list1, list2);
+  GAP_GC_PUSH4(&e1, &e2, &prd, &sum);
   for (i = 1; i <= len; i++)
     {
       e1 = ELM_PLIST(list1,i);
@@ -1363,7 +1450,8 @@ static Obj FuncADD_ROW_VECTOR_3_FAST(Obj self, Obj list1, Obj list2, Obj mult)
         }
       else
           SET_ELM_PLIST(list1,i,sum);
-    }
+	    }
+  GAP_GC_POP();
   return 0;
 }
 
@@ -1378,11 +1466,13 @@ static Obj FuncADD_ROW_VECTOR_3_FAST(Obj self, Obj list1, Obj list2, Obj mult)
 **  types of list -- this version just uses generic list ops
 */
 static Obj FuncADD_ROW_VECTOR_2(Obj self, Obj list1, Obj list2)
+    GAP_GC_CANSAFEPOINT
 {
   UInt i;
-  Obj el1,el2;
+  Obj el1 = 0, el2 = 0;
   UInt len = LEN_LIST(list1);
   RequireSameLength(SELF_NAME, list1, list2);
+  GAP_GC_PUSH2(&el1, &el2);
   for (i = 1; i <= len; i++)
     {
       el1 = ELMW_LIST(list1,i);
@@ -1391,6 +1481,7 @@ static Obj FuncADD_ROW_VECTOR_2(Obj self, Obj list1, Obj list2)
       ASS_LIST(list1,i,el1);
       CHANGED_BAG(list1);
     }
+  GAP_GC_POP();
   return 0;
 }
 
@@ -1405,11 +1496,13 @@ static Obj FuncADD_ROW_VECTOR_2(Obj self, Obj list1, Obj list2)
 **  plain lists of cyclotomics
 */
 static Obj FuncADD_ROW_VECTOR_2_FAST(Obj self, Obj list1, Obj list2)
+    GAP_GC_CANSAFEPOINT
 {
   UInt i;
-  Obj e1,e2, sum;
+  Obj e1 = 0, e2 = 0, sum = 0;
   UInt len = LEN_PLIST(list1);
   RequireSameLength(SELF_NAME, list1, list2);
+  GAP_GC_PUSH3(&e1, &e2, &sum);
   for (i = 1; i <= len; i++)
     {
       e1 = ELM_PLIST(list1,i);
@@ -1423,6 +1516,7 @@ static Obj FuncADD_ROW_VECTOR_2_FAST(Obj self, Obj list1, Obj list2)
       else
           SET_ELM_PLIST(list1,i,sum);
     }
+  GAP_GC_POP();
   return 0;
 }
 
@@ -1437,10 +1531,12 @@ static Obj FuncADD_ROW_VECTOR_2_FAST(Obj self, Obj list1, Obj list2)
 **
 */
 static inline Obj MULT_VECTOR_LEFT_RIGHT_2(Obj list, Obj mult, UInt left)
+    GAP_GC_CANSAFEPOINT
 {
   UInt i;
-  Obj prd;
+  Obj prd = 0;
   UInt len = LEN_LIST(list);
+  GAP_GC_PUSH1(&prd);
   if (left != 0)
       for (i = 1; i <= len; i++) {
           prd = ELMW_LIST(list, i);
@@ -1453,17 +1549,20 @@ static inline Obj MULT_VECTOR_LEFT_RIGHT_2(Obj list, Obj mult, UInt left)
           prd = ELMW_LIST(list, i);
           prd = PROD(prd, mult);
           ASS_LIST(list, i, prd);
-          CHANGED_BAG(list);
-      }
+	      CHANGED_BAG(list);
+	  }
+  GAP_GC_POP();
   return 0;
 }
 
 static Obj FuncMULT_VECTOR_LEFT_2(Obj self, Obj list, Obj mult)
+    GAP_GC_CANSAFEPOINT
 {
     return MULT_VECTOR_LEFT_RIGHT_2(list, mult, 1);
 }
 
 static Obj FuncMULT_VECTOR_RIGHT_2(Obj self, Obj list, Obj mult)
+    GAP_GC_CANSAFEPOINT
 {
     return MULT_VECTOR_LEFT_RIGHT_2(list, mult, 0);
 }
@@ -1482,8 +1581,9 @@ static Obj FuncMULT_VECTOR_RIGHT_2(Obj self, Obj list, Obj mult)
 static Obj FuncMULT_VECTOR_2_FAST(Obj self, Obj list, Obj mult)
 {
   UInt i;
-  Obj el,prd;
+  Obj el = 0, prd = 0;
   UInt len = LEN_PLIST(list);
+  GAP_GC_PUSH2(&el, &prd);
   for (i = 1; i <= len; i++)
     {
       el = ELM_PLIST(list,i);
@@ -1495,7 +1595,8 @@ static Obj FuncMULT_VECTOR_2_FAST(Obj self, Obj list, Obj mult)
         }
       else
           SET_ELM_PLIST(list,i,prd);
-    }
+	    }
+  GAP_GC_POP();
   return 0;
 }
 
@@ -1509,15 +1610,16 @@ static Obj FuncMULT_VECTOR_2_FAST(Obj self, Obj list, Obj mult)
 
 
 static Obj FuncPROD_VEC_MAT_DEFAULT(Obj self, Obj vec, Obj mat)
+    GAP_GC_CANSAFEPOINT
 {
-  Obj res;
-  Obj elt;
-  Obj vecr;
+  Obj res = 0;
+  Obj elt = 0;
+  Obj vecr = 0;
   UInt i,len;
-  Obj z;
-  res = (Obj) 0;
+  Obj z = 0;
   len = LEN_LIST(vec);
   RequireSameLength("<vec> * <mat>", vec, mat);
+  GAP_GC_PUSH4(&res, &elt, &vecr, &z);
   elt = ELMW_LIST(vec,1);
   z = ZERO_SAMEMUT(elt);
   for (i = 1; i <= len; i++)
@@ -1531,14 +1633,18 @@ static Obj FuncPROD_VEC_MAT_DEFAULT(Obj self, Obj vec, Obj mat)
               res = SHALLOW_COPY_OBJ(vecr);
               CALL_2ARGS(MultVectorLeftOp, res, elt);
             }
-          else
-            CALL_3ARGS(AddRowVectorOp, res, vecr, elt);
-        }
+	  else
+	    CALL_3ARGS(AddRowVectorOp, res, vecr, elt);
+	}
     }
   if (res == (Obj)0)
-    res = ZERO_SAMEMUT(ELMW_LIST(mat,1));
+    {
+      vecr = ELMW_LIST(mat,1);
+      res = ZERO_SAMEMUT(vecr);
+    }
   if (!IS_MUTABLE_OBJ(vec) && !IS_MUTABLE_OBJ(mat))
     CheckedMakeImmutable(res);
+  GAP_GC_POP();
   return res;
 }
 
@@ -1553,33 +1659,38 @@ static Obj FuncPROD_VEC_MAT_DEFAULT(Obj self, Obj vec, Obj mat)
 
 static Obj ConvertToMatrixRep;
 
-static Obj InvMatWithRowVecs(Obj mat, UInt mut)
+static Obj InvMatWithRowVecs(Obj mat, UInt mut) GAP_GC_CANSAFEPOINT
 {
-  Obj                 res;            // result
-  Obj                 matcopy;        // copy of mat
+  Obj                 res = 0;        // result
+  Obj                 matcopy = 0;    // copy of mat
   Obj                 row = 0;            // one row of matcopy
-  Obj                 row2;           // corresponding row of res
-  Obj                 row3;           // another row of matcopy
+  Obj                 row2 = 0;       // corresponding row of res
+  Obj                 row3 = 0;       // another row of matcopy
   Obj                 x = 0;              // one element of the matrix
-  Obj                 xi;             // 1/x
-  Obj                 y;              // another element of the matrix
-  Obj                 yi;             // -y
-  Obj                 zero;           // zero element
-  Obj                 zerov;          // zero vector
-  Obj                 one;            // one element
+  Obj                 xi = 0;         // 1/x
+  Obj                 y = 0;          // another element of the matrix
+  Obj                 yi = 0;         // -y
+  Obj                 zero = 0;       // zero element
+  Obj                 zerov = 0;      // zero vector
+  Obj                 one = 0;        // one element
   UInt                len;            // length (and width) of matrix
   UInt                i, k, j;        // loop variables
 
   // check that the operand is a *square* matrix
   len = LEN_LIST( mat );
-  if ( len != LEN_LIST( ELM_LIST( mat, 1 ) ) ) {
+  GAP_GC_PUSH9(&res, &matcopy, &row, &row2, &row3, &x, &xi, &y, &yi);
+  {
+  GAP_GC_PUSH3(&zero, &zerov, &one);
+  row = ELM_LIST( mat, 1 );
+  if ( len != LEN_LIST( row ) ) {
       ErrorMayQuit("Matrix INV: <mat> must be square (not %d by %d)",
-                   (Int)len, (Int)LEN_LIST(ELM_LIST(mat, 1)));
+                   (Int)len, (Int)LEN_LIST(row));
   }
 
   // get the zero and the one
-  zerov = ZERO_SAMEMUT(ELMW_LIST(mat, 1));
-  zero = ZERO_SAMEMUT(ELMW_LIST(ELMW_LIST(mat, 1), 1));
+  zerov = ZERO_SAMEMUT(row);
+  x = ELMW_LIST(row, 1);
+  zero = ZERO_SAMEMUT(x);
   one  = ONE( zero );
 
   // set up res (initially the identity) and matcopy
@@ -1593,7 +1704,8 @@ static Obj InvMatWithRowVecs(Obj mat, UInt mut)
       ASS_LIST(row,i,one);
       SET_ELM_PLIST(res,i,row);
       CHANGED_BAG(res);
-      row = SHALLOW_COPY_OBJ(ELM_LIST(mat,i));
+      row2 = ELM_LIST(mat,i);
+      row = SHALLOW_COPY_OBJ(row2);
       SET_ELM_PLIST(matcopy,i,row);
       CHANGED_BAG(matcopy);
     }
@@ -1616,15 +1728,21 @@ static Obj InvMatWithRowVecs(Obj mat, UInt mut)
 
       // if there isn't one then the matrix is not invertible
       if (j > len)
+        {
+        GAP_GC_POP();
+        GAP_GC_POP();
         return Fail;
+        }
 
       // Maybe swap two rows
       // But I will want this value anyway
       row2 = ELM_PLIST(res,j);
       if (j != i)
         {
-          SET_ELM_PLIST(matcopy,j,ELM_PLIST(matcopy,i));
-          SET_ELM_PLIST(res,j,ELM_PLIST(res,i));
+          row3 = ELM_PLIST(matcopy,i);
+          SET_ELM_PLIST(matcopy,j,row3);
+          row3 = ELM_PLIST(res,i);
+          SET_ELM_PLIST(res,j,row3);
           SET_ELM_PLIST(matcopy,i,row);
           SET_ELM_PLIST(res,i,row2);
         }
@@ -1685,21 +1803,25 @@ static Obj InvMatWithRowVecs(Obj mat, UInt mut)
       break;
     }
 
+  GAP_GC_POP();
+  GAP_GC_POP();
+  }
   return res;
 }
 
 
-static Obj FuncINV_MAT_DEFAULT_MUTABLE(Obj self, Obj mat)
+static Obj FuncINV_MAT_DEFAULT_MUTABLE(Obj self, Obj mat) GAP_GC_CANSAFEPOINT
 {
   return InvMatWithRowVecs(mat, 2);
 }
 
 static Obj FuncINV_MAT_DEFAULT_SAME_MUTABILITY(Obj self, Obj mat)
+    GAP_GC_CANSAFEPOINT
 {
   return InvMatWithRowVecs(mat, 1);
 }
 
-static Obj FuncINV_MAT_DEFAULT_IMMUTABLE(Obj self, Obj mat)
+static Obj FuncINV_MAT_DEFAULT_IMMUTABLE(Obj self, Obj mat) GAP_GC_CANSAFEPOINT
 {
   return InvMatWithRowVecs(mat, 0);
 }
@@ -1758,12 +1880,14 @@ FuncADD_TO_LIST_ENTRIES_PLIST_RANGE(Obj self, Obj list, Obj range, Obj x)
 **
 **  Examples:      x^2y^3 < y^7,   x^4 y^5 < x^3 y^6
 */
-static Obj FuncMONOM_TOT_DEG_LEX(Obj self, Obj u, Obj v)
+static Obj FuncMONOM_TOT_DEG_LEX(Obj self, Obj u, Obj v) GAP_GC_CANSAFEPOINT
 {
   Int4 i, lu, lv;
 
-  Obj  total;
-  Obj  lexico;
+  Obj  total = 0;
+  Obj  lexico = 0;
+  Obj  ai = 0;
+  Obj  bi = 0;
 
   if (!IS_PLIST(u) || !IS_DENSE_LIST(u)) {
       RequireArgument(SELF_NAME, u, "must be a dense plain list");
@@ -1775,51 +1899,78 @@ static Obj FuncMONOM_TOT_DEG_LEX(Obj self, Obj u, Obj v)
   lu = LEN_PLIST( u );
   lv = LEN_PLIST( v );
 
+  GAP_GC_PUSH4(&total, &lexico, &ai, &bi);
+
   // strip off common prefixes
   i = 1;
-  while ( i <= lu && i <= lv && EQ(ELM_PLIST( u,i ), ELM_PLIST( v,i )) )
+  while ( i <= lu && i <= lv ) {
+      ai = ELM_PLIST( u, i );
+      bi = ELM_PLIST( v, i );
+      if ( ! EQ(ai, bi) )
+          break;
       i++;
+  }
 
   // Is u a prefix of v ? Return true if u is a proper prefix.
-  if ( i > lu ) return (lu < lv) ? True : False;
+  if ( i > lu ) {
+      Obj result = (lu < lv) ? True : False;
+      GAP_GC_POP();
+      return result;
+  }
 
   // Is v a  prefix of u ?
-  if ( i > lv ) return False;
+  if ( i > lv ) {
+      GAP_GC_POP();
+      return False;
+  }
 
   // Now determine the lexicographic order.  The monomial is interpreted
   // as a string of indeterminates.
   if ( i % 2 == 1 ) {
     // The first difference between u and v is an indeterminate.
-    lexico = LT(ELM_PLIST( u, i ), ELM_PLIST( v, i )) ? True : False;
+    ai = ELM_PLIST( u, i );
+    bi = ELM_PLIST( v, i );
+    lexico = LT(ai, bi) ? True : False;
     i++;
   }
   else {
     // The first difference between u and v is an exponent.
-    lexico = LT(ELM_PLIST( v, i ), ELM_PLIST( u, i )) ? True : False;
+    ai = ELM_PLIST( u, i );
+    bi = ELM_PLIST( v, i );
+    lexico = LT(bi, ai) ? True : False;
   }
 
   // Now add up the remaining exponents in order to compare the total
   // degrees.
   total = INTOBJ_INT(0);
   while ( i <= lu && i <= lv )  {
-    C_SUM_FIA(  total, total, ELM_PLIST( u, i ) );
-    C_DIFF_FIA( total, total, ELM_PLIST( v, i ) );
+    ai = ELM_PLIST( u, i );
+    C_SUM_FIA(  total, total, ai );
+    bi = ELM_PLIST( v, i );
+    C_DIFF_FIA( total, total, bi );
     i += 2;
   }
 
   // Only one of the following while loops is executed
   while ( i <= lu ) {
-    C_SUM_FIA(  total, total, ELM_PLIST( u, i ) );
+    ai = ELM_PLIST( u, i );
+    C_SUM_FIA(  total, total, ai );
     i += 2;
   }
   while ( i <= lv ) {
-    C_DIFF_FIA( total, total, ELM_PLIST( v, i ) );
+    bi = ELM_PLIST( v, i );
+    C_DIFF_FIA( total, total, bi );
     i += 2;
   }
 
-  if ( EQ( total, INTOBJ_INT(0)) ) return lexico;
+  if ( EQ( total, INTOBJ_INT(0)) ) {
+    GAP_GC_POP();
+    return lexico;
+  }
 
-  return LT( total, INTOBJ_INT(0)) ? True : False;
+  Obj result = LT( total, INTOBJ_INT(0)) ? True : False;
+  GAP_GC_POP();
+  return result;
 }
 
 /****************************************************************************
@@ -1835,11 +1986,11 @@ static Obj FuncMONOM_TOT_DEG_LEX(Obj self, Obj u, Obj v)
 **
 **  Examples:      x^2y^3 < y^7,   x^4 y^5 < x^3 y^6
 */
-static Obj FuncMONOM_GRLEX(Obj self, Obj u, Obj v)
+static Obj FuncMONOM_GRLEX(Obj self, Obj u, Obj v) GAP_GC_CANSAFEPOINT
 {
   Int4 i, lu, lv;
 
-  Obj  total,ai,bi;
+  Obj  total = 0, ai = 0, bi = 0;
 
   if (!IS_PLIST(u) || !IS_DENSE_LIST(u)) {
       RequireArgument(SELF_NAME, u, "must be a dense plain list");
@@ -1851,19 +2002,25 @@ static Obj FuncMONOM_GRLEX(Obj self, Obj u, Obj v)
   lu = LEN_PLIST( u );
   lv = LEN_PLIST( v );
 
+  GAP_GC_PUSH3(&total, &ai, &bi);
+
   // compare the total degrees
   total = INTOBJ_INT(0);
   for (i=2;i<=lu;i+=2) {
-    C_SUM_FIA(  total, total, ELM_PLIST( u, i ) );
+    ai = ELM_PLIST( u, i );
+    C_SUM_FIA(  total, total, ai );
   }
 
   for (i=2;i<=lv;i+=2) {
-    C_DIFF_FIA(  total, total, ELM_PLIST( v, i ) );
+    bi = ELM_PLIST( v, i );
+    C_DIFF_FIA(  total, total, bi );
   }
 
   if ( ! (EQ( total, INTOBJ_INT(0))) ) {
     // degrees differ, use these
-    return LT( total, INTOBJ_INT(0)) ? True : False;
+    Obj result = LT( total, INTOBJ_INT(0)) ? True : False;
+    GAP_GC_POP();
+    return result;
   }
 
   // now use lexicographic ordering
@@ -1872,24 +2029,30 @@ static Obj FuncMONOM_GRLEX(Obj self, Obj u, Obj v)
     ai=ELM_PLIST(u,i);
     bi=ELM_PLIST(v,i);
     if (LT(bi,ai)) {
+      GAP_GC_POP();
       return True;
     }
     if (LT(ai,bi)) {
+      GAP_GC_POP();
       return False;
     }
     ai=ELM_PLIST(u,i+1);
     bi=ELM_PLIST(v,i+1);
     if (LT(ai,bi)) {
+      GAP_GC_POP();
       return True;
     }
     if (LT(bi,ai)) {
+      GAP_GC_POP();
       return False;
     }
     i+=2;
   }
   if (i<lv) {
+      GAP_GC_POP();
       return True;
   }
+  GAP_GC_POP();
   return False;
 }
 
@@ -1903,14 +2066,16 @@ static Obj FuncMONOM_GRLEX(Obj self, Obj u, Obj v)
 **  the function assumes that all lists are plists.
 */
 static Obj FuncZIPPED_SUM_LISTS(Obj self, Obj z1, Obj z2, Obj zero, Obj f)
+    GAP_GC_CANSAFEPOINT
 {
   Int l1,l2,i;
   Int i1,i2;
-  Obj sum,x,y;
-  Obj cmpfun,sumfun,a,b,c;
+  Obj sum = 0, x = 0, y = 0;
+  Obj cmpfun = 0, sumfun = 0, a = 0, b = 0, c = 0;
 
   l1=LEN_LIST(z1);
   l2=LEN_LIST(z2);
+  GAP_GC_PUSH8(&sum, &x, &y, &cmpfun, &sumfun, &a, &b, &c);
   cmpfun=ELM_LIST(f,1);
   sumfun=ELM_LIST(f,2);
   sum=NEW_PLIST(T_PLIST,0);
@@ -1962,14 +2127,15 @@ static Obj FuncZIPPED_SUM_LISTS(Obj self, Obj z1, Obj z2, Obj zero, Obj f)
   } // while
 
   for (i=i1;i<l1;i+=2) {
-    AddList(sum,ELM_PLIST(z1,i));
-    AddList(sum,ELM_PLIST(z1,i+1));
+    AddList(sum, ELM_PLIST(z1,i));
+    AddList(sum, ELM_PLIST(z1,i+1));
   }
 
   for (i=i2;i<l2;i+=2) {
-    AddList(sum,ELM_PLIST(z2,i));
-    AddList(sum,ELM_PLIST(z2,i+1));
+    AddList(sum, ELM_PLIST(z2,i));
+    AddList(sum, ELM_PLIST(z2,i+1));
   }
+  GAP_GC_POP();
   return sum;
 
 }
@@ -1981,11 +2147,12 @@ static Obj FuncZIPPED_SUM_LISTS(Obj self, Obj z1, Obj z2, Obj zero, Obj f)
 **  implements the multiplication of monomials. Both must be plain lists
 **  of integers.
 */
-static Obj FuncMONOM_PROD(Obj self, Obj m1, Obj m2)
+static Obj FuncMONOM_PROD(Obj self, Obj m1, Obj m2) GAP_GC_CANSAFEPOINT
 {
    UInt a,b,l1,l2,i1,i2,i;
-   Obj e,f,c,prod;
+   Obj e = 0, f = 0, c = 0, prod = 0;
 
+   GAP_GC_PUSH4(&e, &f, &c, &prod);
    prod=NEW_PLIST(T_PLIST,0);
    l1=LEN_LIST(m1);
    l2=LEN_LIST(m2);
@@ -2020,14 +2187,15 @@ static Obj FuncMONOM_PROD(Obj self, Obj m1, Obj m2)
    }
 
   for (i=i1;i<l1;i+=2) {
-    AddList(prod,ELM_PLIST(m1,i));
-    AddList(prod,ELM_PLIST(m1,i+1));
+    AddList(prod, ELM_PLIST(m1,i));
+    AddList(prod, ELM_PLIST(m1,i+1));
   }
 
   for (i=i2;i<l2;i+=2) {
-    AddList(prod,ELM_PLIST(m2,i));
-    AddList(prod,ELM_PLIST(m2,i+1));
+    AddList(prod, ELM_PLIST(m2,i));
+    AddList(prod, ELM_PLIST(m2,i+1));
   }
+  GAP_GC_POP();
   return prod;
 
 }
@@ -2221,7 +2389,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
 
   // init filters and functions

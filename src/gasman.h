@@ -37,6 +37,7 @@
 #define GAP_GASMAN_H
 
 #include "common.h"
+#include "precise_gc.h"
 
 
 /****************************************************************************
@@ -112,13 +113,13 @@ enum {
 **
 **  'BAG_HEADER' returns the header of the bag with the identifier <bag>.
 */
-EXPORT_INLINE BagHeader * BAG_HEADER(Bag bag)
+EXPORT_INLINE BagHeader * BAG_HEADER(Bag bag) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(bag);
     return ((*(BagHeader **)bag) - 1);
 }
 
-EXPORT_INLINE const BagHeader * CONST_BAG_HEADER(Bag bag)
+EXPORT_INLINE const BagHeader * CONST_BAG_HEADER(Bag bag) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(bag);
     return ((*(const BagHeader **)bag) - 1);
@@ -141,7 +142,7 @@ EXPORT_INLINE const BagHeader * CONST_BAG_HEADER(Bag bag)
 **  to  call  to  mark all subbags  of a  given bag (see "InitMarkFuncBags").
 **  Apart from that {\Gasman} does not care at all about types.
 */
-EXPORT_INLINE UInt TNUM_BAG(Bag bag)
+EXPORT_INLINE UInt TNUM_BAG(Bag bag) GAP_GC_NOTSAFEPOINT
 {
     return CONST_BAG_HEADER(bag)->type;
 }
@@ -173,17 +174,17 @@ EXPORT_INLINE UInt TNUM_BAG(Bag bag)
 **  of the form (1 << i). Currently, 'i' must be in the range from 0 to
 **  7 (inclusive).
 */
-EXPORT_INLINE uint8_t TEST_BAG_FLAG(Bag bag, uint8_t flag)
+EXPORT_INLINE uint8_t TEST_BAG_FLAG(Bag bag, uint8_t flag) GAP_GC_NOTSAFEPOINT
 {
     return CONST_BAG_HEADER(bag)->flags & flag;
 }
 
-EXPORT_INLINE void SET_BAG_FLAG(Bag bag, uint8_t flag)
+EXPORT_INLINE void SET_BAG_FLAG(Bag bag, uint8_t flag) GAP_GC_NOTSAFEPOINT
 {
     BAG_HEADER(bag)->flags |= flag;
 }
 
-EXPORT_INLINE void CLEAR_BAG_FLAG(Bag bag, uint8_t flag)
+EXPORT_INLINE void CLEAR_BAG_FLAG(Bag bag, uint8_t flag) GAP_GC_NOTSAFEPOINT
 {
     BAG_HEADER(bag)->flags &= ~flag;
 }
@@ -198,7 +199,7 @@ EXPORT_INLINE void CLEAR_BAG_FLAG(Bag bag, uint8_t flag)
 **
 **  See also 'IS_INTOBJ' and 'IS_FFE'.
 */
-EXPORT_INLINE BOOL IS_BAG_REF(Obj bag)
+EXPORT_INLINE BOOL IS_BAG_REF(Obj bag) GAP_GC_NOTSAFEPOINT
 {
     return bag && !((Int)bag & 0x03);
 }
@@ -217,7 +218,7 @@ EXPORT_INLINE BOOL IS_BAG_REF(Obj bag)
 **  the size of a bag when it allocates it with 'NewBag' and may later change
 **  it with 'ResizeBag' (see "NewBag" and "ResizeBag").
 */
-EXPORT_INLINE UInt SIZE_BAG(Bag bag)
+EXPORT_INLINE UInt SIZE_BAG(Bag bag) GAP_GC_NOTSAFEPOINT
 {
     return CONST_BAG_HEADER(bag)->size;
 }
@@ -232,7 +233,7 @@ EXPORT_INLINE UInt SIZE_BAG(Bag bag)
 **  atomic operations that require a memory barrier in between dereferencing
 **  the bag pointer and accessing the contents of the bag.
 */
-EXPORT_INLINE UInt SIZE_BAG_CONTENTS(const void *ptr)
+EXPORT_INLINE UInt SIZE_BAG_CONTENTS(const void *ptr) GAP_GC_NOTSAFEPOINT
 {
     return ((const BagHeader *)ptr)[-1].size;
 }
@@ -305,13 +306,13 @@ EXPORT_INLINE UInt SIZE_BAG_CONTENTS(const void *ptr)
 **  the application  must inform {\Gasman}  that it  has changed  the bag, by
 **  calling 'CHANGED_BAG(old)' in the above example (see "CHANGED_BAG").
 */
-EXPORT_INLINE Bag *PTR_BAG(Bag bag)
+EXPORT_INLINE Bag *PTR_BAG(Bag bag) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(bag != 0);
     return *(Bag**)bag;
 }
 
-EXPORT_INLINE const Bag *CONST_PTR_BAG(Bag bag)
+EXPORT_INLINE const Bag *CONST_PTR_BAG(Bag bag) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(bag != 0);
     return *(const Bag * const *)bag;
@@ -360,7 +361,7 @@ void SET_PTR_BAG(Bag bag, Bag *val);
 
 #if defined(USE_BOEHM_GC)
 
-EXPORT_INLINE void CHANGED_BAG(Bag bag)
+EXPORT_INLINE void CHANGED_BAG(Bag bag) GAP_GC_NOTSAFEPOINT
 {
 }
 
@@ -377,7 +378,7 @@ extern "C++" {
 }
 #endif
 
-EXPORT_INLINE void CHANGED_BAG(Bag bag)
+EXPORT_INLINE void CHANGED_BAG(Bag bag) GAP_GC_NOTSAFEPOINT
 {
     // The following is a copy of Julia's write barrier `jl_gc_wb_back` and
     // must be kept in sync with it. We cannot just call `jl_gc_wb_back`, as
@@ -405,7 +406,7 @@ BOOL IsGapObj(void *);
 **
 */
 
-void CHANGED_BAG(Bag b);
+void CHANGED_BAG(Bag b) GAP_GC_NOTSAFEPOINT;
 
 #elif defined(USE_GASMAN)
 
@@ -416,7 +417,7 @@ extern Bag   ChangedBags;
 BOOL         InWorkspaceRestore(void);
 #endif
 
-EXPORT_INLINE void CHANGED_BAG(Bag bag)
+EXPORT_INLINE void CHANGED_BAG(Bag bag) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(!InWorkspaceRestore());
     if (CONST_PTR_BAG(bag) <= YoungBags && LINK_BAG(bag) == bag) {
@@ -472,12 +473,12 @@ EXPORT_INLINE void CHANGED_BAG(Bag bag)
 **  areas of all bags may  change.  So you  must not keep any  pointers to or
 **  into the data areas of bags over calls to 'NewBag' (see "PTR_BAG").
 */
-Bag NewBag(UInt type, UInt size);
+Bag NewBag(UInt type, UInt size) GAP_GC_CANSAFEPOINT;
 
 
 // NewWordSizedBag is the same as NewBag, except it rounds 'size' up to
 // the next multiple of sizeof(UInt)
-EXPORT_INLINE Bag NewWordSizedBag(UInt type, UInt size)
+EXPORT_INLINE Bag NewWordSizedBag(UInt type, UInt size) GAP_GC_CANSAFEPOINT
 {
     UInt padding = 0;
     if(size % sizeof(UInt) != 0) {
@@ -485,6 +486,29 @@ EXPORT_INLINE Bag NewWordSizedBag(UInt type, UInt size)
     }
     return NewBag(type, size + padding);
 }
+
+/****************************************************************************
+**
+*F  GAP_GC_SAVE_STACK_STATE() . . . . . . . record the collector's root stack
+*F  GAP_GC_RESTORE_STACK_STATE(<state>) . . . . . . . . . . . . restore it
+**
+**  A GAP error 'longjmp's out of the call chain that raised it. Whatever
+**  that chain registered with the collector - the Julia GC keeps a chain of
+**  root frames on the C stack - is never unregistered, and points into
+**  stack that is gone. So every place that sets up such a jump saves the
+**  state before, and restores it on the error path. Collectors that find
+**  their roots by scanning the C stack have nothing to record.
+*/
+typedef void * GAP_GCStackState;
+
+#if defined(USE_JULIA_GC)
+GAP_GCStackState GAP_GC_SAVE_STACK_STATE(void) JL_NOTSAFEPOINT;
+void GAP_GC_RESTORE_STACK_STATE(GAP_GCStackState state) JL_NOTSAFEPOINT;
+#else
+#define GAP_GC_SAVE_STACK_STATE() ((GAP_GCStackState)0)
+#define GAP_GC_RESTORE_STACK_STATE(state) ((void)(state))
+#endif
+
 
 /****************************************************************************
 **
@@ -512,10 +536,10 @@ EXPORT_INLINE Bag NewWordSizedBag(UInt type, UInt size)
 **  'RetypeBagIntern' is the internal version of 'RetypeBag', implemented by
 **  the GC backend. It is called by 'RetypeBag'.
 */
-void RetypeBagIntern(Bag bag, UInt new_type);
+void RetypeBagIntern(Bag bag, UInt new_type) GAP_GC_NOTSAFEPOINT;
 
 #ifdef HPCGAP
-void RetypeBagIfWritable(Bag bag, UInt new_type);
+void RetypeBagIfWritable(Bag bag, UInt new_type) GAP_GC_NOTSAFEPOINT;
 #else
 #define RetypeBagIfWritable(x,y)     RetypeBag(x,y)
 #endif
@@ -523,10 +547,10 @@ void RetypeBagIfWritable(Bag bag, UInt new_type);
 #ifdef GAP_KERNEL_DEBUG
 // This helper tests whether the type change is "allowed". As such, it rejects
 // attempts to retype an immutable list or record into a mutable one.
-void PrecheckRetypeBag(Bag bag, UInt new_type);
+void PrecheckRetypeBag(Bag bag, UInt new_type) GAP_GC_NOTSAFEPOINT;
 #endif
 
-EXPORT_INLINE void RetypeBag(Bag bag, UInt new_type)
+EXPORT_INLINE void RetypeBag(Bag bag, UInt new_type) GAP_GC_NOTSAFEPOINT
 {
 #ifdef GAP_KERNEL_DEBUG
     PrecheckRetypeBag(bag, new_type);
@@ -543,7 +567,7 @@ EXPORT_INLINE void RetypeBag(Bag bag, UInt new_type)
 **  FIXME: for now, this checks the tnums; later, this will be turned
 **  into a check for an object flag
 */
-void RetypeBagSM(Bag bag, UInt new_type);
+void RetypeBagSM(Bag bag, UInt new_type) GAP_GC_CANSAFEPOINT;
 #ifdef HPCGAP
 void RetypeBagSMIfWritable(Bag bag, UInt new_type);
 #else
@@ -580,11 +604,13 @@ void RetypeBagSMIfWritable(Bag bag, UInt new_type);
 **  data areas of all bags may change.  So you must not keep  any pointers to
 **  or into the data areas of bags over calls to 'ResizeBag' (see "PTR_BAG").
 */
-UInt ResizeBag(Bag bag, UInt new_size);
+UInt ResizeBag(Bag bag GAP_GC_MAYBE_UNROOTED, UInt new_size)
+    GAP_GC_CANSAFEPOINT;
 
 // ResizedWordSizedBag is the same as ResizeBag, except it round 'size'
 // up to the next multiple of sizeof(UInt)
-EXPORT_INLINE UInt ResizeWordSizedBag(Bag bag, UInt size)
+EXPORT_INLINE UInt ResizeWordSizedBag(Bag bag GAP_GC_MAYBE_UNROOTED, UInt size)
+    GAP_GC_CANSAFEPOINT
 {
     UInt padding = 0;
     if(size % sizeof(UInt) != 0) {
@@ -614,14 +640,14 @@ EXPORT_INLINE UInt ResizeWordSizedBag(Bag bag, UInt size)
 **  of all bags may change.  So you must not keep any pointers to or into the
 **  data areas of bags over calls to 'CollectBags' (see "PTR_BAG").
 */
-UInt CollectBags(UInt size, UInt full);
+UInt CollectBags(UInt size, UInt full) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  SwapMasterPoint( <bag1>, <bag2> ) . . . swap pointer of <bag1> and <bag2>
 */
-void SwapMasterPoint(Bag bag1, Bag bag2);
+void SwapMasterPoint(Bag bag1, Bag bag2) GAP_GC_NOTSAFEPOINT;
 
 
 /****************************************************************************
@@ -698,7 +724,8 @@ Bag  MakeBagReadOnly(Bag bag);
 **  {\Gasman} already provides several marking functions, see below.
 */
 #define GAP_MARK_FUNC_WITH_REF 1
-typedef void (* TNumMarkFuncBags )( Bag bag, void * ref );
+typedef void (* TNumMarkFuncBags )( Bag bag, void * ref )
+    GAP_GC_NOTSAFEPOINT;
 void InitMarkFuncBags(UInt type, TNumMarkFuncBags mark_func);
 
 #if !defined(USE_THREADSAFE_COPYING) && !defined(USE_BOEHM_GC)
@@ -714,7 +741,7 @@ extern TNumMarkFuncBags TabMarkFuncBags[NUM_TYPES];
 **  simply returns.  For example   in  {\GAP} the  bags for   large  integers
 **  contain only the digits and no identifiers of bags.
 */
-void MarkNoSubBags(Bag bag, void * ref);
+void MarkNoSubBags(Bag bag, void * ref) GAP_GC_NOTSAFEPOINT;
 
 
 /****************************************************************************
@@ -728,10 +755,10 @@ void MarkNoSubBags(Bag bag, void * ref);
 **  the indicated number as bag identifiers as their initial entries.
 **  These functions mark those subbags and return.
 */
-void MarkOneSubBags(Bag bag, void * ref);
-void MarkTwoSubBags(Bag bag, void * ref);
-void MarkThreeSubBags(Bag bag, void * ref);
-void MarkFourSubBags(Bag bag, void * ref);
+void MarkOneSubBags(Bag bag, void * ref) GAP_GC_NOTSAFEPOINT;
+void MarkTwoSubBags(Bag bag, void * ref) GAP_GC_NOTSAFEPOINT;
+void MarkThreeSubBags(Bag bag, void * ref) GAP_GC_NOTSAFEPOINT;
+void MarkFourSubBags(Bag bag, void * ref) GAP_GC_NOTSAFEPOINT;
 
 
 /****************************************************************************
@@ -750,14 +777,14 @@ void MarkFourSubBags(Bag bag, void * ref);
 **  bag identifiers for the elements  of the  list or 0   if an entry has  no
 **  assigned value.
 */
-void MarkAllSubBags(Bag bag, void * ref);
+void MarkAllSubBags(Bag bag, void * ref) GAP_GC_NOTSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  MarkAllButFirstSubBags(<bag>) . . . .  marks all subbags except the first
 */
-void MarkAllButFirstSubBags(Bag bag, void * ref);
+void MarkAllButFirstSubBags(Bag bag, void * ref) GAP_GC_NOTSAFEPOINT;
 
 
 /****************************************************************************
@@ -778,7 +805,7 @@ EXPORT_INLINE void MarkBag( Bag bag, void * ref )
 {
 }
 #else
-void MarkBag(Bag bag, void * ref);
+void MarkBag(Bag bag, void * ref) GAP_GC_NOTSAFEPOINT;
 #endif
 
 
@@ -789,7 +816,8 @@ void MarkBag(Bag bag, void * ref);
 **  'MarkArrayOfBags' iterates over <count> all bags in the given array,
 **  and marks each bag using MarkBag.
 */
-extern void MarkArrayOfBags(const Bag array[], UInt count, void * ref);
+extern void MarkArrayOfBags(const Bag array[], UInt count, void * ref)
+    GAP_GC_NOTSAFEPOINT;
 
 
 /****************************************************************************
@@ -818,6 +846,7 @@ extern void MarkArrayOfBags(const Bag array[], UInt count, void * ref);
 void InitGlobalBag(Bag * addr, const Char * cookie);
 
 
+
 /****************************************************************************
 **
 *F  InitFreeFuncBag(<type>,<free-func>) . . . . . .  install freeing function
@@ -838,7 +867,7 @@ void InitGlobalBag(Bag * addr, const Char * cookie);
 **  their types) are called before or after the freeing function for <bag>.
 */
 typedef void            (* TNumFreeFuncBags ) (
-            Bag                 bag );
+            Bag                 bag ) GAP_GC_NOTSAFEPOINT;
 
 void InitFreeFuncBag(UInt type, TNumFreeFuncBags free_func);
 
@@ -874,7 +903,7 @@ int RegisterAfterCollectFuncBags(TNumCollectFuncBags func);
 // This is used for integrating GAP (possibly linked as a shared library) with
 // other code bases which use their own form of garbage collection. For
 // example, with Python (for SageMath).
-typedef void (*TNumExtraMarkFuncBags)(void);
+typedef void (*TNumExtraMarkFuncBags)(void) GAP_GC_NOTSAFEPOINT;
 void SetExtraMarkFuncBags(TNumExtraMarkFuncBags func);
 
 /****************************************************************************
@@ -894,7 +923,7 @@ void SetExtraMarkFuncBags(TNumExtraMarkFuncBags func);
 **  address of the argument 'argc' of the 'main' function of the application,
 **  i.e., '(Bag\*)\&argc'.
 */
-void InitBags(UInt initialSize, Bag * stackStart);
+void InitBags(UInt initialSize, Bag * stackStart) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

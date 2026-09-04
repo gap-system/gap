@@ -54,8 +54,8 @@
 #endif
 
 
-static Obj IsInputStream;
-static Obj IsOutputStream;
+static Obj IsInputStream GAP_GC_GLOBALLY_ROOTED;
+static Obj IsOutputStream GAP_GC_GLOBALLY_ROOTED;
 
 #define RequireInputStream(funcname, op)                                     \
     RequireArgumentCondition(funcname, op,                                   \
@@ -75,7 +75,7 @@ static Obj IsOutputStream;
 
 static UInt OpenInputFileOrStream(const char *   funcname,
                                   TypInputFile * input,
-                                  Obj            inputObj)
+                                  Obj            inputObj) GAP_GC_CANSAFEPOINT
 {
     if (IsStringConv(inputObj)) {
         return OpenInput(input, CONST_CSTR_STRING(inputObj));
@@ -132,9 +132,15 @@ static UInt OpenInputFileOrStream(const char *   funcname,
 **  its content.
 */
 Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
+    GAP_GC_CANSAFEPOINT
 {
-    volatile Obj outstream = 0;
-    volatile Obj outstreamString = 0;
+    Obj outstream = 0;
+    Obj outstreamString = 0;
+    Obj resultList = 0;
+    Obj result = 0;
+    Obj evalResult = 0;
+    Obj tmp = 0;
+    Obj copy = 0;
 
     RequireInputStream("READ_ALL_COMMANDS", instream);
 
@@ -144,6 +150,8 @@ Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
         return Fail;
     }
 
+    GAP_GC_PUSH7(&outstream, &outstreamString, &resultList, &result,
+                 &evalResult, &tmp, &copy);
     if (capture == True) {
         outstreamString = NEW_STRING(0);
         outstream = DoOperation2Args(ValGVar(GVarName("OutputTextString")),
@@ -152,10 +160,11 @@ Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
     TypOutputFile output;
     if (outstream && !OpenOutputStream(&output, outstream)) {
         CloseInput(&input);
+        GAP_GC_POP();
         return Fail;
     }
 
-    volatile Obj resultList = NEW_PLIST(T_PLIST, 16);
+    resultList = NEW_PLIST(T_PLIST, 16);
     BOOL rethrow = FALSE;
 
     GAP_TRY
@@ -167,14 +176,13 @@ Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
             }
 
             BOOL dualSemicolon;
-            Obj  evalResult;
 
             ExecStatus status = ReadEvalCommand(0, &input, &evalResult, &dualSemicolon);
             if (status == STATUS_EOF || status == STATUS_QUIT ||
                 status == STATUS_QQUIT)
                 break;
 
-            Obj result = NEW_PLIST(T_PLIST, 5);
+            result = NEW_PLIST(T_PLIST, 5);
             AssPlist(result, 1, False);
             PushPlist(resultList, result);
 
@@ -188,7 +196,7 @@ Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
                 }
 
                 if (evalResult && IS_FUNC(resultCallback) && !dualSemicolon) {
-                    Obj tmp = CALL_1ARGS(resultCallback, evalResult);
+                    tmp = CALL_1ARGS(resultCallback, evalResult);
                     AssPlist(result, 4, tmp);
                 }
             }
@@ -196,7 +204,7 @@ Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
             if (capture == True) {
                 // Flush output
                 Pr("\03", 0, 0);
-                Obj copy = CopyToStringRep(outstreamString);
+                copy = CopyToStringRep(outstreamString);
                 SET_LEN_STRING(outstreamString, 0);
                 AssPlist(result, 5, copy);
             }
@@ -211,14 +219,18 @@ Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
         CloseOutput(&output);
     CloseInput(&input);
 
-    if (rethrow)
+    if (rethrow) {
+        GAP_GC_POP();
         GAP_THROW();
+    }
 
+    GAP_GC_POP();
     return resultList;
 }
 
 static Obj FuncREAD_ALL_COMMANDS(
     Obj self, Obj instream, Obj echo, Obj capture, Obj resultCallback)
+    GAP_GC_CANSAFEPOINT
 {
     return READ_ALL_COMMANDS(instream, echo, capture, resultCallback);
 }
@@ -232,18 +244,21 @@ static Obj FuncREAD_ALL_COMMANDS(
  the command. If it not present, the command returned nothing.
 */
 static Obj FuncREAD_COMMAND_REAL(Obj self, Obj stream, Obj echo)
+    GAP_GC_CANSAFEPOINT
 {
-    Obj result;
-    Obj evalResult;
+    Obj result = 0;
+    Obj evalResult = 0;
 
     RequireInputStream(SELF_NAME, stream);
 
+    GAP_GC_PUSH2(&result, &evalResult);
     result = NEW_PLIST(T_PLIST, 2);
     AssPlist(result, 1, False);
 
     // open the stream, read a command, and close it again
     TypInputFile input;
     if (!OpenInputStream(&input, stream, echo == True)) {
+        GAP_GC_POP();
         return result;
     }
     ExecStatus status;
@@ -255,14 +270,19 @@ static Obj FuncREAD_COMMAND_REAL(Obj self, Obj stream, Obj echo)
     GAP_CATCH
     {
         CloseInput(&input);
+        GAP_GC_POP();
         GAP_THROW();
     }
     CloseInput(&input);
 
-    if (status == STATUS_EOF || status == STATUS_QQUIT)
+    if (status == STATUS_EOF || status == STATUS_QQUIT) {
+        GAP_GC_POP();
         return result;
-    else if (STATE(UserHasQuit) || STATE(UserHasQUIT))
+    }
+    else if (STATE(UserHasQuit) || STATE(UserHasQUIT)) {
+        GAP_GC_POP();
         return result;
+    }
     else if (status == STATUS_RETURN)
         Pr("'return' must not be used in file read-eval loop\n", 0, 0);
 
@@ -270,6 +290,7 @@ static Obj FuncREAD_COMMAND_REAL(Obj self, Obj stream, Obj echo)
     if (evalResult) {
         AssPlist(result, 2, evalResult);
     }
+    GAP_GC_POP();
     return result;
 }
 
@@ -282,7 +303,7 @@ static Obj FuncREAD_COMMAND_REAL(Obj self, Obj stream, Obj echo)
 
 static UInt LastReadValueGVar;
 
-static void READ_INNER(TypInputFile * input)
+static void READ_INNER(TypInputFile * input) GAP_GC_CANSAFEPOINT
 {
     if (STATE(UserHasQuit))
       {
@@ -451,6 +472,7 @@ Int READ_GAP_ROOT ( const Char * filename )
 **  example be used to capture the output of a function into a string.
 */
 static Obj FuncCALL_WITH_STREAM(Obj self, Obj stream, Obj func, Obj args)
+    GAP_GC_CANSAFEPOINT
 {
     RequireOutputStream(SELF_NAME, stream);
     RequireSmallList(SELF_NAME, args);
@@ -460,7 +482,8 @@ static Obj FuncCALL_WITH_STREAM(Obj self, Obj stream, Obj func, Obj args)
         ErrorQuit("CALL_WITH_STREAM: cannot open stream for output", 0, 0);
     }
 
-    Obj result;
+    Obj result = 0;
+    GAP_GC_PUSH1(&result);
     GAP_TRY
     {
         result = CallFuncList(func, args);
@@ -468,6 +491,7 @@ static Obj FuncCALL_WITH_STREAM(Obj self, Obj stream, Obj func, Obj args)
     GAP_CATCH
     {
         CloseOutput(&output);
+        GAP_GC_POP();
         GAP_THROW();
     }
 
@@ -475,6 +499,7 @@ static Obj FuncCALL_WITH_STREAM(Obj self, Obj stream, Obj func, Obj args)
         ErrorQuit("CALL_WITH_STREAM: cannot close output", 0, 0);
     }
 
+    GAP_GC_POP();
     return result;
 }
 
@@ -491,7 +516,7 @@ static Obj FuncCALL_WITH_STREAM(Obj self, Obj stream, Obj func, Obj args)
 **  input   from  '*stdin*'  and  '*errin*'  and  output  to  '*stdout*'  and
 **  '*errout*' will no longer be echoed to a file.
 */
-static Obj FuncCLOSE_LOG_TO(Obj self)
+static Obj FuncCLOSE_LOG_TO(Obj self) GAP_GC_CANSAFEPOINT
 {
     if ( ! CloseLog() ) {
         ErrorQuit("LogTo: cannot close the logfile", 0, 0);
@@ -513,7 +538,7 @@ static Obj FuncCLOSE_LOG_TO(Obj self)
 **  '*stdout*'  and  '*errout*',  to  the  file  with  the  name  <filename>.
 **  The file is created if it does not  exist,  otherwise  it  is  truncated.
 */
-static Obj FuncLOG_TO(Obj self, Obj filename)
+static Obj FuncLOG_TO(Obj self, Obj filename) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, filename);
     if ( ! OpenLog( CONST_CSTR_STRING(filename) ) ) {
@@ -528,7 +553,7 @@ static Obj FuncLOG_TO(Obj self, Obj filename)
 **
 *F  FuncLOG_TO_STREAM( <stream> ) . . . . . . . . . start logging to a stream
 */
-static Obj FuncLOG_TO_STREAM(Obj self, Obj stream)
+static Obj FuncLOG_TO_STREAM(Obj self, Obj stream) GAP_GC_CANSAFEPOINT
 {
     RequireOutputStream(SELF_NAME, stream);
     if ( ! OpenLogStream(stream) ) {
@@ -551,7 +576,7 @@ static Obj FuncLOG_TO_STREAM(Obj self, Obj stream)
 **  that input from  '*stdin*' and '*errin*' will   no longer be  echoed to a
 **  file.
 */
-static Obj FuncCLOSE_INPUT_LOG_TO(Obj self)
+static Obj FuncCLOSE_INPUT_LOG_TO(Obj self) GAP_GC_CANSAFEPOINT
 {
     if ( ! CloseInputLog() ) {
         ErrorQuit("InputLogTo: cannot close the logfile", 0, 0);
@@ -572,7 +597,7 @@ static Obj FuncCLOSE_INPUT_LOG_TO(Obj self)
 **  files, '*stdin*' and '*errin*' to the file with the name <filename>.  The
 **  file is created if it does not exist, otherwise it is truncated.
 */
-static Obj FuncINPUT_LOG_TO(Obj self, Obj filename)
+static Obj FuncINPUT_LOG_TO(Obj self, Obj filename) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, filename);
     if ( ! OpenInputLog( CONST_CSTR_STRING(filename) ) ) {
@@ -587,7 +612,7 @@ static Obj FuncINPUT_LOG_TO(Obj self, Obj filename)
 **
 *F  FuncINPUT_LOG_TO_STREAM( <stream> ) . . . . . . start logging to a stream
 */
-static Obj FuncINPUT_LOG_TO_STREAM(Obj self, Obj stream)
+static Obj FuncINPUT_LOG_TO_STREAM(Obj self, Obj stream) GAP_GC_CANSAFEPOINT
 {
     RequireOutputStream(SELF_NAME, stream);
     if ( ! OpenInputLogStream(stream) ) {
@@ -610,7 +635,7 @@ static Obj FuncINPUT_LOG_TO_STREAM(Obj self, Obj stream)
 **  so that output from '*stdin*' and '*errin*' will no longer be echoed to a
 **  file.
 */
-static Obj FuncCLOSE_OUTPUT_LOG_TO(Obj self)
+static Obj FuncCLOSE_OUTPUT_LOG_TO(Obj self) GAP_GC_CANSAFEPOINT
 {
     if ( ! CloseOutputLog() ) {
         ErrorQuit("OutputLogTo: cannot close the logfile", 0, 0);
@@ -631,7 +656,7 @@ static Obj FuncCLOSE_OUTPUT_LOG_TO(Obj self)
 **  files, '*stdin*' and '*errin*' to the file with the name <filename>.  The
 **  file is created if it does not exist, otherwise it is truncated.
 */
-static Obj FuncOUTPUT_LOG_TO(Obj self, Obj filename)
+static Obj FuncOUTPUT_LOG_TO(Obj self, Obj filename) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, filename);
     if ( ! OpenOutputLog( CONST_CSTR_STRING(filename) ) ) {
@@ -646,7 +671,7 @@ static Obj FuncOUTPUT_LOG_TO(Obj self, Obj filename)
 **
 *F  FuncOUTPUT_LOG_TO_STREAM( <stream> ) . . . . .  start logging to a stream
 */
-static Obj FuncOUTPUT_LOG_TO_STREAM(Obj self, Obj stream)
+static Obj FuncOUTPUT_LOG_TO_STREAM(Obj self, Obj stream) GAP_GC_CANSAFEPOINT
 {
     RequireOutputStream(SELF_NAME, stream);
     if ( ! OpenOutputLogStream(stream) ) {
@@ -661,7 +686,7 @@ static Obj FuncOUTPUT_LOG_TO_STREAM(Obj self, Obj stream)
 **
 *F  FuncPrint( <self>, <args> ) . . . . . . . . . . . . . . . .  print <args>
 */
-static Obj FuncPrint(Obj self, Obj args)
+static Obj FuncPrint(Obj self, Obj args) GAP_GC_CANSAFEPOINT
 {
     volatile Obj        arg;
     volatile UInt       i;
@@ -684,6 +709,7 @@ static Obj FuncPrint(Obj self, Obj args)
 }
 
 static Obj PRINT_OR_APPEND_TO_FILE_OR_STREAM(Obj args, int append, int file)
+    GAP_GC_CANSAFEPOINT
 {
     const char * volatile funcname = append ? "AppendTo" : "PrintTo";
     volatile Obj        arg;
@@ -749,13 +775,13 @@ static Obj PRINT_OR_APPEND_TO_FILE_OR_STREAM(Obj args, int append, int file)
 
     return 0;
 }
-static Obj PRINT_OR_APPEND_TO(Obj args, int append)
+static Obj PRINT_OR_APPEND_TO(Obj args, int append) GAP_GC_CANSAFEPOINT
 {
     return PRINT_OR_APPEND_TO_FILE_OR_STREAM(args, append, 1);
 }
 
 
-static Obj PRINT_OR_APPEND_TO_STREAM(Obj args, int append)
+static Obj PRINT_OR_APPEND_TO_STREAM(Obj args, int append) GAP_GC_CANSAFEPOINT
 {
     return PRINT_OR_APPEND_TO_FILE_OR_STREAM(args, append, 0);
 }
@@ -764,7 +790,7 @@ static Obj PRINT_OR_APPEND_TO_STREAM(Obj args, int append)
 **
 *F  FuncPRINT_TO( <self>, <args> )  . . . . . . . . . . . . . .  print <args>
 */
-static Obj FuncPRINT_TO(Obj self, Obj args)
+static Obj FuncPRINT_TO(Obj self, Obj args) GAP_GC_CANSAFEPOINT
 {
     return PRINT_OR_APPEND_TO(args, 0);
 }
@@ -774,7 +800,7 @@ static Obj FuncPRINT_TO(Obj self, Obj args)
 **
 *F  FuncPRINT_TO_STREAM( <self>, <args> ) . . . . . . . . . . .  print <args>
 */
-static Obj FuncPRINT_TO_STREAM(Obj self, Obj args)
+static Obj FuncPRINT_TO_STREAM(Obj self, Obj args) GAP_GC_CANSAFEPOINT
 {
     /* Note that FuncPRINT_TO_STREAM and FuncAPPEND_TO_STREAM do exactly the
        same, they only differ in the function name they print as part
@@ -787,7 +813,7 @@ static Obj FuncPRINT_TO_STREAM(Obj self, Obj args)
 **
 *F  FuncAPPEND_TO( <self>, <args> ) . . . . . . . . . . . . . . append <args>
 */
-static Obj FuncAPPEND_TO(Obj self, Obj args)
+static Obj FuncAPPEND_TO(Obj self, Obj args) GAP_GC_CANSAFEPOINT
 {
     return PRINT_OR_APPEND_TO(args, 1);
 }
@@ -797,7 +823,7 @@ static Obj FuncAPPEND_TO(Obj self, Obj args)
 **
 *F  FuncAPPEND_TO_STREAM( <self>, <args> )  . . . . . . . . . . append <args>
 */
-static Obj FuncAPPEND_TO_STREAM(Obj self, Obj args)
+static Obj FuncAPPEND_TO_STREAM(Obj self, Obj args) GAP_GC_CANSAFEPOINT
 {
     /* Note that FuncPRINT_TO_STREAM and FuncAPPEND_TO_STREAM do exactly the
        same, they only differ in the function name they print as part
@@ -812,7 +838,7 @@ static Obj FuncAPPEND_TO_STREAM(Obj self, Obj args)
 **
 **  Read the current input and close the input stream.
 */
-static Obj FuncREAD(Obj self, Obj inputObj)
+static Obj FuncREAD(Obj self, Obj inputObj) GAP_GC_CANSAFEPOINT
 {
     TypInputFile input;
     if (!OpenInputFileOrStream(SELF_NAME, &input, inputObj))
@@ -847,7 +873,7 @@ static Obj FuncREAD(Obj self, Obj inputObj)
 static Obj FuncREAD_STREAM_LOOP(Obj self,
                                 Obj instream,
                                 Obj outstream,
-                                Obj ctx)
+                                Obj ctx) GAP_GC_CANSAFEPOINT
 {
     Int res;
     volatile Obj context = ctx;
@@ -939,13 +965,14 @@ static Obj FuncREAD_STREAM_LOOP(Obj self,
 **
 *F  FuncREAD_AS_FUNC( <self>, <input> ) . read a file or stream as a function
 */
-static Obj FuncREAD_AS_FUNC(Obj self, Obj inputObj)
+static Obj FuncREAD_AS_FUNC(Obj self, Obj inputObj) GAP_GC_CANSAFEPOINT
 {
     TypInputFile input;
     if (!OpenInputFileOrStream(SELF_NAME, &input, inputObj))
         return False;
 
-    Obj func;
+    Obj func = 0;
+    GAP_GC_PUSH1(&func);
 
     GAP_TRY
     {
@@ -954,12 +981,14 @@ static Obj FuncREAD_AS_FUNC(Obj self, Obj inputObj)
     GAP_CATCH
     {
         CloseInput(&input);
+        GAP_GC_POP();
         GAP_THROW();
     }
 
     if (!CloseInput(&input)) {
         ErrorQuit("Panic: READ_AS_FUNC cannot close input", 0, 0);
     }
+    GAP_GC_POP();
     return func;
 }
 
@@ -968,7 +997,7 @@ static Obj FuncREAD_AS_FUNC(Obj self, Obj inputObj)
 **
 *F  FuncREAD_GAP_ROOT( <self>, <filename> ) . . . . . . . . . . . read a file
 */
-static Obj FuncREAD_GAP_ROOT(Obj self, Obj filename)
+static Obj FuncREAD_GAP_ROOT(Obj self, Obj filename) GAP_GC_CANSAFEPOINT
 {
     Char filenamecpy[GAP_PATH_MAX];
 
@@ -985,7 +1014,7 @@ static Obj FuncREAD_GAP_ROOT(Obj self, Obj filename)
 **
 *F  FuncTmpName( <self> ) . . . . . . . . . . . . . . return a temporary name
 */
-static Obj FuncTmpName(Obj self)
+static Obj FuncTmpName(Obj self) GAP_GC_CANSAFEPOINT
 {
     char name[100] = "/tmp/gaptempfile.XXXXXX";
 #ifdef SYS_IS_CYGWIN32
@@ -1010,10 +1039,11 @@ static Obj FuncTmpName(Obj self)
 **
 *F  FuncTmpDirectory( <self> )  . . . . . . . .  return a temporary directory
 */
-static Obj FuncTmpDirectory(Obj self)
+static Obj FuncTmpDirectory(Obj self) GAP_GC_CANSAFEPOINT
 {
     Obj name = 0;
     char * env_tmpdir = getenv("TMPDIR");
+    GAP_GC_PUSH1(&name);
     if (env_tmpdir != NULL) {
         name = MakeString(env_tmpdir);
     }
@@ -1035,8 +1065,11 @@ static Obj FuncTmpDirectory(Obj self)
     const char * extra = "/gaptempdirXXXXXX";
     AppendCStr(name, extra, strlen(extra));
 
-    if (mkdtemp(CSTR_STRING(name)) == 0)
+    if (mkdtemp(CSTR_STRING(name)) == 0) {
+        GAP_GC_POP();
         return Fail;
+    }
+    GAP_GC_POP();
     return name;
 }
 
@@ -1045,7 +1078,7 @@ static Obj FuncTmpDirectory(Obj self)
 **
 *F  FuncRemoveFile( <self>, <name> )  . . . . . . . . . .  remove file <name>
 */
-static Obj FuncRemoveFile(Obj self, Obj filename)
+static Obj FuncRemoveFile(Obj self, Obj filename) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, filename);
 
@@ -1057,7 +1090,7 @@ static Obj FuncRemoveFile(Obj self, Obj filename)
 **
 *F  FuncCreateDir( <self>, <name> )  . . . . . . . . . . . . create directory
 */
-static Obj FuncCreateDir(Obj self, Obj filename)
+static Obj FuncCreateDir(Obj self, Obj filename) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, filename);
 
@@ -1069,7 +1102,7 @@ static Obj FuncCreateDir(Obj self, Obj filename)
 **
 *F  FuncRemoveDir( <self>, <name> )  . . . . . . . . . . . . remove directory
 */
-static Obj FuncRemoveDir(Obj self, Obj filename)
+static Obj FuncRemoveDir(Obj self, Obj filename) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, filename);
 
@@ -1081,7 +1114,7 @@ static Obj FuncRemoveDir(Obj self, Obj filename)
 **
 *F  FuncIS_DIR( <self>, <path> )  . . . . . check whether something is a dir
 */
-static Obj FuncIS_DIR(Obj self, Obj path)
+static Obj FuncIS_DIR(Obj self, Obj path) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, path);
 
@@ -1093,7 +1126,7 @@ static Obj FuncIS_DIR(Obj self, Obj path)
 **
 *F  FuncGAP_getcwd( <self> ) . . . . . . . . . get working directory pathname
 */
-static Obj FuncGAP_getcwd(Obj self)
+static Obj FuncGAP_getcwd(Obj self) GAP_GC_CANSAFEPOINT
 {
     char * res;
     char   buf[GAP_PATH_MAX];
@@ -1110,7 +1143,7 @@ static Obj FuncGAP_getcwd(Obj self)
 **
 *F  FuncGAP_chdir( <self>, <path> ) . . . .  change current working directory
 */
-static Obj FuncGAP_chdir(Obj self, Obj path)
+static Obj FuncGAP_chdir(Obj self, Obj path) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, path);
 
@@ -1126,7 +1159,7 @@ static Obj FuncGAP_chdir(Obj self, Obj path)
 **
 *F  FuncGAP_realpath( <self>, <path> ) . . . .  TODO
 */
-static Obj FuncGAP_realpath(Obj self, Obj path)
+static Obj FuncGAP_realpath(Obj self, Obj path) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, path);
     char resolved_path[GAP_PATH_MAX];
@@ -1152,12 +1185,13 @@ static Obj FuncGAP_realpath(Obj self, Obj path)
 static UInt ErrorMessageRNam;
 static UInt ErrorNumberRNam;
 
-static Obj FuncLastSystemError(Obj self)
+static Obj FuncLastSystemError(Obj self) GAP_GC_CANSAFEPOINT
 {
-    Obj             err;
-    Obj             msg;
+    Obj             err = 0;
+    Obj             msg = 0;
 
     // constructed an error record
+    GAP_GC_PUSH2(&err, &msg);
     err = NEW_PREC(0);
 
     // check if an errors has occurred
@@ -1175,6 +1209,7 @@ static Obj FuncLastSystemError(Obj self)
     }
 
     // return the error record
+    GAP_GC_POP();
     return err;
 }
 
@@ -1183,7 +1218,7 @@ static Obj FuncLastSystemError(Obj self)
 **
 *F  FuncIsExistingFile( <self>, <name> )  . . . . . . does file <name> exists
 */
-static Obj FuncIsExistingFile(Obj self, Obj filename)
+static Obj FuncIsExistingFile(Obj self, Obj filename) GAP_GC_CANSAFEPOINT
 {
     Int             res;
 
@@ -1199,7 +1234,7 @@ static Obj FuncIsExistingFile(Obj self, Obj filename)
 **
 *F  FuncIsReadableFile( <self>, <name> )  . . . . . . is file <name> readable
 */
-static Obj FuncIsReadableFile(Obj self, Obj filename)
+static Obj FuncIsReadableFile(Obj self, Obj filename) GAP_GC_CANSAFEPOINT
 {
     Int             res;
 
@@ -1215,7 +1250,7 @@ static Obj FuncIsReadableFile(Obj self, Obj filename)
 **
 *F  FuncIsWritableFile( <self>, <name> )  . . . . . . is file <name> writable
 */
-static Obj FuncIsWritableFile(Obj self, Obj filename)
+static Obj FuncIsWritableFile(Obj self, Obj filename) GAP_GC_CANSAFEPOINT
 {
     Int             res;
 
@@ -1231,7 +1266,7 @@ static Obj FuncIsWritableFile(Obj self, Obj filename)
 **
 *F  FuncIsExecutableFile( <self>, <name> )  . . . . is file <name> executable
 */
-static Obj FuncIsExecutableFile(Obj self, Obj filename)
+static Obj FuncIsExecutableFile(Obj self, Obj filename) GAP_GC_CANSAFEPOINT
 {
     Int             res;
 
@@ -1248,6 +1283,7 @@ static Obj FuncIsExecutableFile(Obj self, Obj filename)
 *F  FuncIsDirectoryPath( <self>, <name> ) . . . .  is file <name> a directory
 */
 static Obj FuncIsDirectoryPathString(Obj self, Obj filename)
+    GAP_GC_CANSAFEPOINT
 {
     Int             res;
 
@@ -1270,11 +1306,12 @@ static Obj FuncIsDirectoryPathString(Obj self, Obj filename)
 **  reason for the error can be found with 'LastSystemError();' in GAP.
 **
 */
-static Obj FuncLIST_DIR(Obj self, Obj dirname)
+static Obj FuncLIST_DIR(Obj self, Obj dirname) GAP_GC_CANSAFEPOINT
 {
     DIR *dir;
     struct dirent *entry;
-    Obj res;
+    Obj res = 0;
+    Obj name = 0;
 
     RequireStringRep(SELF_NAME, dirname);
 
@@ -1284,11 +1321,14 @@ static Obj FuncLIST_DIR(Obj self, Obj dirname)
         SySetErrorNo();
         return Fail;
     }
+    GAP_GC_PUSH2(&res, &name);
     res = NEW_PLIST(T_PLIST, 16);
     while ((entry = readdir(dir))) {
-        PushPlist(res, MakeImmString(entry->d_name));
+        name = MakeImmString(entry->d_name);
+        PushPlist(res, name);
     }
     closedir(dir);
+    GAP_GC_POP();
     return res;
 }
 
@@ -1301,7 +1341,7 @@ static Obj FuncLIST_DIR(Obj self, Obj dirname)
 **
 *F  FuncCLOSE_FILE( <self>, <fid> ) . . . . . . . . . . . . .  close a stream
 */
-static Obj FuncCLOSE_FILE(Obj self, Obj fid)
+static Obj FuncCLOSE_FILE(Obj self, Obj fid) GAP_GC_CANSAFEPOINT
 {
     Int ifid = GetSmallInt(SELF_NAME, fid);
 
@@ -1315,7 +1355,7 @@ static Obj FuncCLOSE_FILE(Obj self, Obj fid)
 **
 *F  FuncINPUT_TEXT_FILE( <self>, <name> ) . . . . . . . . . . . open a stream
 */
-static Obj FuncINPUT_TEXT_FILE(Obj self, Obj filename)
+static Obj FuncINPUT_TEXT_FILE(Obj self, Obj filename) GAP_GC_CANSAFEPOINT
 {
     Int             fid;
 
@@ -1334,7 +1374,7 @@ static Obj FuncINPUT_TEXT_FILE(Obj self, Obj filename)
 **
 *F  FuncIS_END_OF_FILE( <self>, <fid> ) . . . . . . . . . . .  is end of file
 */
-static Obj FuncIS_END_OF_FILE(Obj self, Obj fid)
+static Obj FuncIS_END_OF_FILE(Obj self, Obj fid) GAP_GC_CANSAFEPOINT
 {
     Int ifid = GetSmallInt(SELF_NAME, fid);
 
@@ -1348,6 +1388,7 @@ static Obj FuncIS_END_OF_FILE(Obj self, Obj fid)
 *F  FuncOUTPUT_TEXT_FILE( <self>, <name>, <append>, <comp> )  . open a stream
 */
 static Obj FuncOUTPUT_TEXT_FILE(Obj self, Obj filename, Obj append, Obj comp)
+    GAP_GC_CANSAFEPOINT
 {
     Int             fid;
 
@@ -1374,7 +1415,7 @@ static Obj FuncOUTPUT_TEXT_FILE(Obj self, Obj filename, Obj append, Obj comp)
 **
 *F  FuncPOSITION_FILE( <self>, <fid> )  . . . . . . . . .  position of stream
 */
-static Obj FuncPOSITION_FILE(Obj self, Obj fid)
+static Obj FuncPOSITION_FILE(Obj self, Obj fid) GAP_GC_CANSAFEPOINT
 {
     Int ifid = GetSmallInt(SELF_NAME, fid);
 
@@ -1395,7 +1436,7 @@ static Obj FuncPOSITION_FILE(Obj self, Obj fid)
 **
 *F  FuncREAD_BYTE_FILE( <self>, <fid> ) . . . . . . . . . . . . . read a byte
 */
-static Obj FuncREAD_BYTE_FILE(Obj self, Obj fid)
+static Obj FuncREAD_BYTE_FILE(Obj self, Obj fid) GAP_GC_CANSAFEPOINT
 {
     Int ifid = GetSmallInt(SELF_NAME, fid);
 
@@ -1412,18 +1453,19 @@ static Obj FuncREAD_BYTE_FILE(Obj self, Obj fid)
 **
 **  This uses fgets and works only if there are no zero characters in <fid>.
 */
-static Obj FuncREAD_LINE_FILE(Obj self, Obj fid)
+static Obj FuncREAD_LINE_FILE(Obj self, Obj fid) GAP_GC_CANSAFEPOINT
 {
     Char            buf[256];
     Char *          cstr;
     Int             len, buflen;
     UInt            lstr;
-    Obj             str;
+    Obj             str = 0;
 
     Int ifid = GetSmallInt(SELF_NAME, fid);
 
     // read <fid> until we see a newline or eof or we've read at least
     // one byte and more are not immediately available
+    GAP_GC_PUSH1(&str);
     str = NEW_STRING(0);
     len = 0;
     while (1) {
@@ -1447,6 +1489,7 @@ static Obj FuncREAD_LINE_FILE(Obj self, Obj fid)
     ResizeBag( str, SIZEBAG_STRINGLEN(len) );
 
     // and return
+    GAP_GC_POP();
     return len == 0 ? Fail : str;
 }
 
@@ -1460,13 +1503,13 @@ static Obj FuncREAD_LINE_FILE(Obj self, Obj fid)
 **   (c) we have read <limit> bytes (-1 indicates no limit)
 */
 
-static Obj FuncREAD_ALL_FILE(Obj self, Obj fid, Obj limit)
+static Obj FuncREAD_ALL_FILE(Obj self, Obj fid, Obj limit) GAP_GC_CANSAFEPOINT
 {
     Char            buf[20000];
     Int             len;
     // Length of string read this loop (or negative for error)
     UInt            lstr;
-    Obj             str;
+    Obj             str = 0;
     UInt            csize;
 
     Int ifid = GetSmallInt(SELF_NAME, fid);
@@ -1474,6 +1517,7 @@ static Obj FuncREAD_ALL_FILE(Obj self, Obj fid, Obj limit)
 
     /* read <fid> until we see  eof or we've read at least
        one byte and more are not immediately available */
+    GAP_GC_PUSH1(&str);
     str = NEW_STRING(0);
     len = 0;
     lstr = 0;
@@ -1542,6 +1586,7 @@ static Obj FuncREAD_ALL_FILE(Obj self, Obj fid, Obj limit)
     ResizeBag( str, SIZEBAG_STRINGLEN(len) );
 
     // and return
+    GAP_GC_POP();
     return len == 0 ? Fail : str;
 }
 
@@ -1550,6 +1595,7 @@ static Obj FuncREAD_ALL_FILE(Obj self, Obj fid, Obj limit)
 *F  FuncSEEK_POSITION_FILE( <self>, <fid>, <pos> )  . seek position of stream
 */
 static Obj FuncSEEK_POSITION_FILE(Obj self, Obj fid, Obj pos)
+    GAP_GC_CANSAFEPOINT
 {
     Int             ret;
 
@@ -1565,7 +1611,7 @@ static Obj FuncSEEK_POSITION_FILE(Obj self, Obj fid, Obj pos)
 **
 *F  FuncWRITE_BYTE_FILE( <self>, <fid>, <byte> )  . . . . . . .  write a byte
 */
-static Obj FuncWRITE_BYTE_FILE(Obj self, Obj fid, Obj ch)
+static Obj FuncWRITE_BYTE_FILE(Obj self, Obj fid, Obj ch) GAP_GC_CANSAFEPOINT
 {
     Int ifid = GetSmallInt(SELF_NAME, fid);
     Int ich = GetSmallInt(SELF_NAME, ch);
@@ -1580,6 +1626,7 @@ static Obj FuncWRITE_BYTE_FILE(Obj self, Obj fid, Obj ch)
 *F  FuncWRITE_STRING_FILE_NC( <self>, <fid>, <string> ) .write a whole string
 */
 static Obj FuncWRITE_STRING_FILE_NC(Obj self, Obj fid, Obj str)
+    GAP_GC_CANSAFEPOINT
 {
     Int             len = 0, l, ret;
     const char      *ptr;
@@ -1603,7 +1650,7 @@ static Obj FuncWRITE_STRING_FILE_NC(Obj self, Obj fid, Obj str)
     return True;
 }
 
-static Obj FuncREAD_STRING_FILE(Obj self, Obj fid)
+static Obj FuncREAD_STRING_FILE(Obj self, Obj fid) GAP_GC_CANSAFEPOINT
 {
     Int ifid = GetSmallInt(SELF_NAME, fid);
     return SyReadStringFid(ifid);
@@ -1613,7 +1660,7 @@ static Obj FuncREAD_STRING_FILE(Obj self, Obj fid)
 **
 *F  FuncFD_OF_FILE( <fid> )
 */
-static Obj FuncFD_OF_FILE(Obj self, Obj fid)
+static Obj FuncFD_OF_FILE(Obj self, Obj fid) GAP_GC_CANSAFEPOINT
 {
     Int fd = GetSmallInt(SELF_NAME, fid);
     Int fdi = SyBufFileno(fd);
@@ -1639,7 +1686,7 @@ static Obj FuncUNIXSelect(Obj self,
                           Obj outlist,
                           Obj exclist,
                           Obj timeoutsec,
-                          Obj timeoutusec)
+                          Obj timeoutusec) GAP_GC_CANSAFEPOINT
 {
   fd_set infds,outfds,excfds;
   struct timeval tv;
@@ -1829,7 +1876,7 @@ static Int InitKernel (
 *F  PostRestore( <module> ) . . . . . . . . . . . . . after restore workspace
 */
 static Int PostRestore (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // file access test functions
     ErrorNumberRNam  = RNamName("number");
@@ -1847,7 +1894,7 @@ static Int PostRestore (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );

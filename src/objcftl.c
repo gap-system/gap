@@ -37,15 +37,15 @@ static ModuleStateOffset CFTLStateOffset = -1;
 
 struct CFTLModuleState {
 #endif
-    DECL_MODULE_STATE Obj WORD_STACK;
-    DECL_MODULE_STATE Obj WORD_EXPONENT_STACK;
-    DECL_MODULE_STATE Obj SYLLABLE_STACK;
-    DECL_MODULE_STATE Obj EXPONENT_STACK;
+    DECL_MODULE_STATE Obj WORD_STACK GAP_GC_GLOBALLY_ROOTED;
+    DECL_MODULE_STATE Obj WORD_EXPONENT_STACK GAP_GC_GLOBALLY_ROOTED;
+    DECL_MODULE_STATE Obj SYLLABLE_STACK GAP_GC_GLOBALLY_ROOTED;
+    DECL_MODULE_STATE Obj EXPONENT_STACK GAP_GC_GLOBALLY_ROOTED;
 #ifdef HPCGAP
 };
 
 // for debugging from GDB / lldb, we mark this as extern inline
-extern inline struct CFTLModuleState *CFTLState(void)
+extern inline struct CFTLModuleState *CFTLState(void) GAP_GC_NOTSAFEPOINT
 {
     return (struct CFTLModuleState *)StateSlotsAtOffset(CFTLStateOffset);
 }
@@ -56,7 +56,7 @@ extern inline struct CFTLModuleState *CFTLState(void)
 #define EXPONENT_STACK  (CFTLState()->EXPONENT_STACK)
 #endif
 
-static inline Obj IncInt(Obj x)
+static inline Obj IncInt(Obj x) GAP_GC_CANSAFEPOINT
 {
     if (IS_INTOBJ(x) && x != INTOBJ_MAX) {
         return (Obj)((Int)x + (Int)4);
@@ -64,7 +64,7 @@ static inline Obj IncInt(Obj x)
     return SumInt(x, INTOBJ_INT(1));
 }
 
-static inline Obj DecInt(Obj x)
+static inline Obj DecInt(Obj x) GAP_GC_CANSAFEPOINT
 {
     if (IS_INTOBJ(x) && x != INTOBJ_MIN) {
         return (Obj)((Int)x - (Int)4);
@@ -72,7 +72,7 @@ static inline Obj DecInt(Obj x)
     return DiffInt(x, INTOBJ_INT(1));
 }
 
-static inline Obj FastAInvInt(Obj x)
+static inline Obj FastAInvInt(Obj x) GAP_GC_CANSAFEPOINT
 {
     if (IS_INTOBJ(x) && x != INTOBJ_MIN)
         return INTOBJ_INT(-INT_INTOBJ(x));
@@ -115,8 +115,9 @@ static void AddIn(Obj list, Obj w, Obj e)
 {
 
   Int    g,  i;
-  Obj    r,  s,  t;
+  Obj    r = 0, s = 0, t = 0;
 
+  GAP_GC_PUSH3(&r, &s, &t);
   for( i = 1; i < LEN_PLIST(w); i += 2 ) {
       g = INT_INTOBJ( ELM_PLIST( w, i ) );
 
@@ -129,9 +130,10 @@ static void AddIn(Obj list, Obj w, Obj e)
       SET_ELM_PLIST( list, g, s );  CHANGED_BAG( list );
   }
 
+  GAP_GC_POP();
 }
 
-static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
+static Obj CollectPolycyc(Obj pcp, Obj list, Obj word) GAP_GC_CANSAFEPOINT
 {
     Int    ngens   = INT_INTOBJ( CONST_ADDR_OBJ(pcp)[ PC_NUMBER_OF_GENERATORS ] );
     Obj    commute = CONST_ADDR_OBJ(pcp)[ PC_COMMUTE ];
@@ -148,14 +150,14 @@ static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
     Obj    sst  = SYLLABLE_STACK;
     Obj    est  = EXPONENT_STACK;
 
-    Obj    conj=0, iconj=0;   /*QQ initialize to please compiler */
+    Obj    conj = 0, iconj = 0;
 
     Int    st;
 
     Int    g, syl, h, hh;
 
-    Obj    e, ee, ge, mge, we, s, t;
-    Obj    w, x = (Obj)0, y = (Obj)0;
+    Obj    e = 0, ee = 0, ge = 0, mge = 0, we = 0, s = 0, t = 0;
+    Obj    w = 0, x = 0, y = 0;
 
 
     if( LEN_PLIST(word) == 0 ) return (Obj)0;
@@ -166,6 +168,10 @@ static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
     if( LEN_PLIST(word) % 2 != 0 ) {
         ErrorQuit("Length of word odd", 0, 0);
     }
+
+    GAP_GC_PUSH9(&e, &ee, &ge, &mge, &we, &s, &t, &w, &x);
+    {
+    GAP_GC_PUSH3(&y, &conj, &iconj);
 
     st = 0;
     PUSH_STACK( word, INTOBJ_INT(1) );
@@ -346,10 +352,14 @@ static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
       }
     }
 
+    GAP_GC_POP();
+    }
+    GAP_GC_POP();
     return (Obj)0;
 }
 
 static Obj FuncCollectPolycyclic(Obj self, Obj pcp, Obj list, Obj word)
+    GAP_GC_CANSAFEPOINT
 {
   CollectPolycyc( pcp, list, word );
   return (Obj)0;
@@ -395,7 +405,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     ExportAsConstantGVar(PC_NUMBER_OF_GENERATORS);
     ExportAsConstantGVar(PC_GENERATORS);
@@ -419,7 +429,7 @@ static Int InitLibrary (
     return 0;
 }
 
-static Int InitModuleState(void)
+static Int InitModuleState(void) GAP_GC_CANSAFEPOINT
 {
     InitGlobalBag( &WORD_STACK, "WORD_STACK" );
     InitGlobalBag( &WORD_EXPONENT_STACK, "WORD_EXPONENT_STACK" );
