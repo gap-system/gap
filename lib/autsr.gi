@@ -2408,7 +2408,7 @@ local
             else
               gens:=SmallGeneratingSet(api);
             fi;
-            pre:=List(gens,x->PreImagesRepresentative(iso,x));
+            pre:=List(gens,x->PreImagesRepresentativeNC(iso,x));
             map:=RepresentativeAction(SubgroupNC(Parent(a),pre),u,v,
                    OnGroupsAsAutomorphism);
             if map=fail then
