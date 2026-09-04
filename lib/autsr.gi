@@ -1573,7 +1573,7 @@ local
     stabilizeSubgroupClass:=function(class)
     local k,kpre,classorb,i,set,kperm,acthom,stb,moves;
       k:=SmallGeneratingSet(sub);
-      kpre:=List(k,x->PreImagesRepresentative(AQiso,x));
+      kpre:=List(k,x->PreImagesRepresentativeNC(AQiso,x));
       classorb:=[];
       moves:=false;
       for i in class do
