@@ -1148,7 +1148,7 @@ local aug,r,sec,expwrd,rels,ab,s,m,img,gen,i,j,t1,t2,tn,d,pos;
   if (HasIsWholeFamily(u) and IsWholeFamily(u))
   # catch trivial case of rank 0 group
    or Length(GeneratorsOfGroup(FamilyObj(u)!.wholeGroup))=0 then
-    TryNextMethod();
+    return MaximalAbelianQuotient(u);
   fi;
 
   # get an augmented coset table from the group. Since we don't care about
