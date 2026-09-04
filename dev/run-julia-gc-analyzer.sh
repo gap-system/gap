@@ -45,6 +45,17 @@ fi
 
 checkers=${JULIA_GC_ANALYZER_CHECKERS:-$GAP_ANALYZER_DEFAULT_CHECKERS}
 
+# dev/gc-analyzer-silence.txt lists, per source file, checkers whose findings
+# in that file are known false positives: "<basename> <checker>[;<checker>]".
+silence_args=()
+silence_file=$(dirname "$0")/gc-analyzer-silence.txt
+if [[ -f $silence_file ]]; then
+    silenced=$(awk -v f="$(basename "$source_file")" '$1 == f { print $2 }' "$silence_file")
+    if [[ -n $silenced ]]; then
+        silence_args=(-Xanalyzer -analyzer-config -Xanalyzer "silence-checkers=$silenced")
+    fi
+fi
+
 cmd=(
     "$clang_bin"
     -D__clang_gcanalyzer__
@@ -55,6 +66,7 @@ cmd=(
     -Xclang -load
     -Xclang "$plugin"
     -Xclang "-analyzer-checker=${checkers}"
+    "${silence_args[@]}"
     "${cflags_array[@]}"
     "${cppflags_array[@]}"
     -fcolor-diagnostics
