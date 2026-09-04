@@ -9,7 +9,7 @@
 # $clang_tidy_bin and $first_decl_plugin for the first-declaration check.
 #
 # Nothing here is hardcoded to a particular checkout: the Julia tree is found
-# from the -I flag recorded in the build directory. Override any of it with
+# from what configure recorded in the build directory. Override any of it with
 # JULIA_INCLUDE_DIR, JULIA_GC_ANALYZER_CLANG, JULIA_GC_ANALYZER_PLUGIN,
 # JULIA_CLANG_TIDY or JULIA_FIRST_DECL_PLUGIN.
 
@@ -61,28 +61,22 @@ find_clang() {
         2>/dev/null | head -n 1
 }
 
-extract_julia_include() {
-    local cflags=$1
-    local token next
-    local -a tokens
-    split_shell_words "$cflags" tokens
-    for ((i = 0; i < ${#tokens[@]}; ++i)); do
-        token=${tokens[$i]}
-        if [[ $token == -I* ]]; then
-            next=${token#-I}
-            if [[ $next == *"/include/julia"* ]]; then
-                unquote "$next"
-                return 0
-            fi
-        elif [[ $token == "-isystem" ]] && (( i + 1 < ${#tokens[@]} )); then
-            next=${tokens[$((i + 1))]}
-            if [[ $next == *"/include/julia"* ]]; then
-                unquote "$next"
-                return 0
-            fi
+# The build directory's flag files carry include paths relative to that
+# directory (-I./build, -I../../src/extra); clang runs from the source
+# directory, so make them absolute.
+absolutize_includes() {
+    local build_dir=$1 var=$2 i token path
+    local -n arr=$var
+    for ((i = 0; i < ${#arr[@]}; ++i)); do
+        token=${arr[$i]}
+        if [[ $token == -I* ]] && [[ ${token#-I} != /* ]]; then
+            path=${token#-I}
+            arr[$i]="-I$(cd "$build_dir/$path" 2>/dev/null && pwd || echo "$path")"
+        elif [[ $token == "-isystem" ]] && (( i + 1 < ${#arr[@]} )) && [[ ${arr[$((i + 1))]} != /* ]]; then
+            path=${arr[$((i + 1))]}
+            arr[$((i + 1))]=$(cd "$build_dir/$path" 2>/dev/null && pwd || echo "$path")
         fi
     done
-    return 1
 }
 
 analyzer_setup() {
@@ -108,22 +102,34 @@ analyzer_setup() {
             ;;
     esac
 
-    local cppflags cflags cflags_c julia_include julia_root
+    local cppflags cflags julia_include julia_root
     cppflags=$(cat "$build_dir/cnf/GAP-CPPFLAGS")
-    cflags_c=$(cat "$build_dir/cnf/GAP-CFLAGS")
     if [[ $lang == c++ ]]; then
         cflags=$(cat "$build_dir/cnf/GAP-CXXFLAGS")
     else
-        cflags=$cflags_c
+        cflags=$(cat "$build_dir/cnf/GAP-CFLAGS")
     fi
 
-    julia_include=${JULIA_INCLUDE_DIR:-$(extract_julia_include "$cflags $cppflags $cflags_c" || true)}
+    # configure records the Julia the build was configured against
+    julia_include=${JULIA_INCLUDE_DIR:-$(sed -n 's/^JULIA_INCLUDEDIR = //p' "$build_dir/GNUmakefile")}
     if [[ -z ${julia_include:-} ]]; then
-        echo "error: could not infer Julia include dir from build flags" >&2
+        echo "error: $build_dir/GNUmakefile records no Julia; configure it with --with-gc=julia" >&2
         exit 1
     fi
 
-    julia_root=$(cd "$julia_include/../.." && pwd)
+    # The analyzer plugins and Julia's clang come from a Julia source checkout.
+    # configure points dev/julia in the build directory at it when the Julia
+    # it was given is one; a dev/julia in the source tree serves as well.
+    # Otherwise the configured Julia is assumed to be such a checkout's usr/.
+    local src_dir
+    src_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+    if [[ -d "$build_dir/dev/julia/src" ]]; then
+        julia_root=$(cd "$build_dir/dev/julia" && pwd -P)
+    elif [[ -d "$src_dir/dev/julia/src" ]]; then
+        julia_root=$(cd "$src_dir/dev/julia" && pwd -P)
+    else
+        julia_root=$(cd "$julia_include/../.." && pwd)
+    fi
     plugin=${JULIA_GC_ANALYZER_PLUGIN:-$(find_plugin "$julia_root")}
     clang_bin=${JULIA_GC_ANALYZER_CLANG:-$(find_clang "$julia_root")}
     first_decl_plugin=${JULIA_FIRST_DECL_PLUGIN:-$(find_first_decl_plugin "$julia_root")}
@@ -144,6 +150,7 @@ EOM
 
     split_shell_words "$cflags" cflags_array
     split_shell_words "$cppflags" cppflags_array
+    absolutize_includes "$build_dir" cppflags_array
 }
 
 # Prepend the macOS SDK path, which Julia's clang does not find on its own.
