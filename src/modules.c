@@ -903,9 +903,9 @@ void LoadModules(void)
             }
             else {
                 // and dynamic case
+#ifdef HAVE_DLOPEN
                 InitInfoFunc init;
 
-#ifdef HAVE_DLOPEN
                 const char * res = SyLoadModule(buf, &init);
                 if (init == 0) {
                     Panic("failed to load dynamic module %s, %s\n", buf, res);

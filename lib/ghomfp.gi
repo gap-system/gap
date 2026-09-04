@@ -1271,8 +1271,11 @@ local v,aiu,aiv,G,primes,irrel,ma,mao,mau,a,k,gens,imgs,q,dec,deco,piv,co;
                             Filtered(aiu,z->IsInt(z/x)));
 
   Info(InfoFpGroup,1,"Larger by factor ",Product(aiv)/Product(aiu));
-  #ma:=MaximalAbelianQuotient(v);
-  ma:=SubFPMaxAbelian(v);
+  if IsSubgroupFpGroup(v) then
+    ma:=SubFPMaxAbelian(v);
+  else
+    ma:=MaximalAbelianQuotient(v);
+  fi;
 
   mao:=ma; # keep original one, as preimage of subgroup will be easier.
   a:=Image(ma);
