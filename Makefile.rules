@@ -559,9 +559,19 @@ endif
 build/gap-nocomp$(EXEEXT): $(OBJS_NOCOMP) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
 	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $(OBJS_NOCOMP) $(GAP_LIBS) -o $@
 
+ifeq ($(cross_compiling),yes)
+# generating these C files requires running GAP, which is impossible when
+# cross-compiling; instead build GAP natively first and copy the generated
+# files into src/, where the rules above pick them up
+build/c_%.c: $(srcdir)/lib/%.g
+	$(error cannot generate $@ when cross-compiling; build GAP natively \
+	first and copy build/c_oper1.c, build/c_type1.c, build/ffdata.c and \
+	build/ffdata.h from there into this checkout's src/ directory)
+else
 build/c_%.c: $(srcdir)/lib/%.g build/gap-nocomp$(EXEEXT)
 	@$(MKDIR_P) $(@D)
 	@"$(abs_srcdir)"/cnf/gap-c-gen.sh $< $@ $(basename $(notdir $<)) build/gap-nocomp$(EXEEXT)
+endif
 .PRECIOUS: build/c_%.c
 
 
@@ -569,8 +579,10 @@ build/c_%.c: $(srcdir)/lib/%.g build/gap-nocomp$(EXEEXT)
 # The "ffdata" target regenerates build/ffdata.{c,h} using etc/ffgen.c
 ########################################################################
 
+# ffgen runs on the build machine, so it is compiled with the build
+# compiler that configure determined (its output is target independent)
 ffgen: $(srcdir)/etc/ffgen.c build/config.h
-	$(QUIET_CC)$(CC) -Wall -Wextra $(GAP_CPPFLAGS) $< -o $@
+	$(QUIET_CC)$(CC_FOR_BUILD) $(CPPFLAGS_FOR_BUILD) $(CFLAGS_FOR_BUILD) $(LDFLAGS_FOR_BUILD) -Wall -Wextra $< -o $@
 
 build/ffdata.h build/ffdata.c: ffgen
 	./ffgen -b build/ffdata

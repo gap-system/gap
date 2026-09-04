@@ -61,6 +61,10 @@ dnl Get canonical host information
 dnl
 AC_CANONICAL_HOST
 
+dnl export to the Makefiles whether this is a cross build (ffgen and the
+dnl gac-generated C code cannot be produced by running target binaries then)
+AC_SUBST([cross_compiling])
+
 
 dnl
 dnl Check for working C and C++ compiler; insist on C99 and C++11 support
@@ -73,6 +77,19 @@ m4_if(m4_version_compare(m4_defn([AC_AUTOCONF_VERSION]), [2.70]), -1,
     [AC_PROG_CC_C99],
     [AC_PROG_CC])
 AC_PROG_CXX
+
+dnl ffgen must run on the build machine: when cross-compiling, find a
+dnl compiler for it, otherwise the target compiler serves
+AS_IF([test "x$cross_compiling" = xyes],
+  [AX_PROG_CC_FOR_BUILD],
+  [CC_FOR_BUILD=$CC
+   CFLAGS_FOR_BUILD=$CFLAGS
+   CPPFLAGS_FOR_BUILD=$CPPFLAGS
+   LDFLAGS_FOR_BUILD=$LDFLAGS])
+AC_SUBST([CC_FOR_BUILD])
+AC_SUBST([CFLAGS_FOR_BUILD])
+AC_SUBST([CPPFLAGS_FOR_BUILD])
+AC_SUBST([LDFLAGS_FOR_BUILD])
 AX_CXX_COMPILE_STDCXX(11)
 
 AC_LANG([C])

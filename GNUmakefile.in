@@ -49,6 +49,9 @@ build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
 
+# whether host and build differ
+cross_compiling = @cross_compiling@
+
 # compile and linker flags
 CFLAGS = @CFLAGS@
 CXXFLAGS = @CXXFLAGS@
@@ -96,6 +99,12 @@ PTHREAD_LIBS = @PTHREAD_LIBS@
 # build tools
 CC = @CC@
 CXX = @CXX@
+
+# compiler for programs that run on the build machine (ffgen)
+CC_FOR_BUILD = @CC_FOR_BUILD@
+CFLAGS_FOR_BUILD = @CFLAGS_FOR_BUILD@
+CPPFLAGS_FOR_BUILD = @CPPFLAGS_FOR_BUILD@
+LDFLAGS_FOR_BUILD = @LDFLAGS_FOR_BUILD@
 INSTALL = @INSTALL@
 MKDIR_P = @MKDIR_P@
 SED = @SED@

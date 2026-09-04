@@ -16,6 +16,12 @@
 /src/config.h.in
 /src/config.h.in~
 
+# generated files seeded from a native build when cross-compiling
+/src/ffdata.c
+/src/ffdata.h
+/src/c_oper1.c
+/src/c_type1.c
+
 **/__pycache__/
 
 /build/
