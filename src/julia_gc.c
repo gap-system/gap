@@ -63,7 +63,7 @@
 
 // if VALIDATE_MARKING is defined, the program is aborted if we ever
 // encounter a reference during marking that does not meet additional
-// validation criteria. These tests are compararively expensive and
+// validation criteria. These tests are comparatively expensive and
 // should not be enabled by default.
 // #define VALIDATE_MARKING
 

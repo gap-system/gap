@@ -81,7 +81,7 @@ end );
 
 #############################################################################
 ##
-##  The  following  functions work  with a lower trianguar matrix (LTM).  A
+##  The  following  functions work  with a lower triangular matrix (LTM).  A
 ##  LTM may have the following shape where . (*) denotes a (non-) zero entry:
 ##
 ##                      . . . . . . . . . . . . . .
@@ -498,7 +498,7 @@ BindGlobal( "UpdateWeightInfo", function( qs )
     Append( avector, [Length(avector)+1..n+nhwg] );
     qs!.collector![SCP_AVECTOR] := avector;
 
-    ##  Update the weight informataion
+    ##  Update the weight information
     class := class + 1;
     qs!.collector![SCP_CLASS] := class;
 

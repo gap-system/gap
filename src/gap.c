@@ -1447,7 +1447,7 @@ StructInitInfo * InitInfoGap ( void )
 **  does  assignments of auxiliary C   variables (for example, pointers  from
 **  objects, length of hash lists).  This function is only used for starting.
 **
-**  `PostRestore': Everything in  `InitLibrary' execpt  creating objects.  In
+**  `PostRestore': Everything in  `InitLibrary' except  creating objects.  In
 **  general    `InitLibrary'  will  create    all objects    and  then  calls
 **  `PostRestore'.  This function is only used when restoring.
 **

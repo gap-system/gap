@@ -307,7 +307,7 @@ BindGlobal( "Length_SemigroupIdealEnumerator", function( e )
 ##
 ##  Needed only for infinite semigroups which do not have their own \in
 ##  method e.g. finitely presented semigroups.
-##  For example a semigroup of matrices over a infinite domain.
+##  For example a semigroup of matrices over an infinite domain.
 ##
 ##  m := [[2,3],[4,5]];
 ##  s := Semigroup(m);

@@ -394,7 +394,7 @@ function(G)
 end);
 #
 
-InstallMethod(SymmetricInverseSemigroup, "for a integer",
+InstallMethod(SymmetricInverseSemigroup, "for an integer",
 [IsInt],
 function(n)
   local s;

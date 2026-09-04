@@ -1902,7 +1902,7 @@ InstallOtherMethod( EquivalenceClasses, "for a generic equivalence relation",
         local d, classes, iter, elm, p;
 
         ## If we already have a partition then return the equivalence
-        ##     class with first element as represenative
+        ##     class with first element as representative
         ##
         classes := [];
         if HasEquivalenceRelationPartition(E) then

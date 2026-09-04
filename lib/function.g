@@ -153,7 +153,7 @@ BIND_GLOBAL( "TYPE_FUNCTION_WITH_NAME", NewType( FunctionsFamily,
 
 #############################################################################
 ##
-#F  TYPE_OPERATION  . . . . . . . . . . . . . . . . . . . type of a operation
+#F  TYPE_OPERATION  . . . . . . . . . . . . . . . . . . . type of an operation
 ##
 ##  <ManSection>
 ##  <Func Name="TYPE_OPERATION" Arg='obj'/>

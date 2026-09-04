@@ -975,7 +975,7 @@ BindGlobal("DoSCMPermGpHom",function(arg)
         # if the element was not in the stabilizer chain
         if elm <> stb.identity  then
 
-          # if this stabilizer is trivial add an new level
+          # if this stabilizer is trivial add a new level
           if not IsBound( stb.stabilizer )  then
             l:=fail;
             if short and IsBound(stb.orb) then

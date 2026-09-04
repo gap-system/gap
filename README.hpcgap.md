@@ -69,7 +69,7 @@ using `IsHPCGAP`, like this:
   if IsHPCGAP then
      # perform HPC-GAP specific actions
   else
-    # perform altrnative actions for regular GAP
+    # perform alternative actions for regular GAP
   fi;
 ```
 

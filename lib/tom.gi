@@ -1936,7 +1936,7 @@ BindGlobal( "TestRow", function( tom, n )
         fi;
       od;
 
-      # deompose and test the tensor product
+      # decompose and test the tensor product
       dec:= DecomposedFixedPointVector(tom, b);
       if ForAny(Set(dec), x-> not IsInt(x) or (x < 0)) then
         Info(InfoTom,2, n, ".", i, " = ", dec);

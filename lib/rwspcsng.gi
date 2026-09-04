@@ -78,7 +78,7 @@ BindGlobal( "SingleCollector_CollectWord", function( sc, v, w )
             gns,        # the group generators
             ro,         # <ro>[g] contains the relative order of g
             nw,         # stack of words to process
-            lw,         # stack of number of syllabels in <nw>
+            lw,         # stack of number of syllables in <nw>
             pw,         # stack of position of the in <nw> to look at
             ew,         # stack of unprocessed exponents at position <pw>
             ge,         # stack of global exponents of the words in <nw>

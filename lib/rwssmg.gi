@@ -180,7 +180,7 @@ function(rws)
     for r in rules do
 
       for i in [1..Length(p[1])] do
-        # b is a sufix of p[1]
+        # b is a suffix of p[1]
         b := Subword(p[1],Length(p[1])-i+1,Length(p[1]));
 
         l := LengthOfLongestCommonPrefixOfTwoAssocWords(b,r[1]);

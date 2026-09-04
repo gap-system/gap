@@ -258,7 +258,7 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
             numgens,                # number of generators
             F,                      # a new free group
             span,                   # spanning tree
-            ggens,                  # parent group gens prallel to columns
+            ggens,                  # parent group gens parallel to columns
             gens,                   # new generators
             ngens,                  # number of new generators
             defs,                   # definitions of primary subgroup gens
@@ -1093,7 +1093,7 @@ InstallGlobalFunction( PresentationAugmentedCosetTable,
     # group generators.
     SetPrimaryGeneratorWords(T,aug.primaryGeneratorWords);
 
-    # Since T is mutable, we must set this attribite "manually"
+    # Since T is mutable, we must set this attribute "manually"
     SetTzOptions(T, TzOptions(T));
 
     # handle relators of length 1 or 2, but do not eliminate any primary
@@ -2312,7 +2312,7 @@ local ct,c,a,b,offset,x,to,p,dw,doa,aug;
             ct[x+offset][c]:=b;
             ct[-x+offset][b]:=c;
             if doa then
-              # transfer augemented entry
+              # transfer augmented entry
               aug[x+offset][c]:=aug[x+offset][a];
             fi;
           else

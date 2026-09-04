@@ -765,7 +765,7 @@ static Int  DisableMarkBagValidation = 0;
 #endif
 
 
-// We define MarkBag as a inline function here so that
+// We define MarkBag as an inline function here so that
 // the compiler can optimize the marking functions using it in the
 // "current translation unit", i.e. inside gasman.c.
 // Other marking functions don't get to inline MarkBag calls anymore,

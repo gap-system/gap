@@ -308,7 +308,7 @@ static void HandleCoinc (
                         c2 = INT_INTOBJ(ptPrev[c2]);
                     }
 
-                    // if the representatives differ we got a coincindence
+                    // if the representatives differ we got a coincidence
                     if ( c1 != c2 ) {
 
                         // take the smaller one as new representative

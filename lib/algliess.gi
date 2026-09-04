@@ -218,7 +218,7 @@ BindGlobal( "SimpleLieAlgebraTypeA_G", function( type, n, F )
         R:= CartanMatrixToPositiveRoots( C );
 
 
-        # We conctruct `epsmat', which satisfies
+        # We construct `epsmat', which satisfies
         #                  /
         #                 |-1 if i=j,
         #  epsmat[i][j] = |-1 if i and j are connected, and i>j
@@ -282,7 +282,7 @@ BindGlobal( "SimpleLieAlgebraTypeA_G", function( type, n, F )
             od;
             for j in [1..n] do
 
-                # We take care of the comutation relations of the form
+                # We take care of the commutation relations of the form
                 # [h_j,x_{\beta_i}]= < \beta_i, \alpha_j > x_{\beta_i}.
                 cc:= LinearCombination( R[i], C[j] );
                 if cc <> 0*cc then
@@ -311,7 +311,7 @@ BindGlobal( "SimpleLieAlgebraTypeA_G", function( type, n, F )
         # a simply laced root system, which has a diagram automorphism.
         # We take an epsilon function which is invariant under the diagram
         # automorphism. Furthermore, the permutation `perm' will represent
-        # the diagram aotomorphism as acting on the roots (so that
+        # the diagram automorphism as acting on the roots (so that
         # Permuted( r, perm ) is the result of applying the diagram
         # automorphism to the root r).
 
@@ -394,7 +394,7 @@ BindGlobal( "SimpleLieAlgebraTypeA_G", function( type, n, F )
 
         elif type = "G" then
 
-            # In this case we conctruct D_4.
+            # In this case we construct D_4.
             if n <> 2 then
                 Error( "<n> must be equal to 2");
             fi;
@@ -879,7 +879,7 @@ end );
 ##
 BindGlobal( "SimpleLieAlgebraTypeH", function( n, F )
 
-    local p,      # Chracteristic of 'F'.
+    local p,      # Characteristic of 'F'.
           m,      # The length of 'n'.
           i,j,    # Loop variables.
           noa,    # Integer.

@@ -1850,7 +1850,7 @@ InstallMethod( DeterminantMatDivFree,
                     for w in [u+1..n] do
 #T for b in [ n-u, n-u-1 .. 1 ] do
 
-                        ## translate indices to lower triangluar coordinates
+                        ## translate indices to lower triangular coordinates
                         ##
                         a := n-u+1; b := n-w+1; c := n-v+1;
 #T move a to for u ...
@@ -4036,7 +4036,7 @@ InstallMethod( RandomInvertibleMatrix,
 ##
 #F  RandomInvertibleMat( [rs ,] <m> [, <R>] ) . . . make a random invertible matrix
 ##
-##  'RandomInvertibleMat' returns a invertible   random matrix with  <m> rows
+##  'RandomInvertibleMat' returns an invertible   random matrix with  <m> rows
 ##  and columns  with elements  taken from  the  ring <R>, which defaults  to
 ##  'Integers'.
 ##
@@ -4275,7 +4275,7 @@ InstallGlobalFunction( SimultaneousEigenvalues,
             eispa,   # eigenspaces of the matrices
             eigen,   # exponents of simultaneous eigenvalues
             I,       # identity matrix
-            w,       # ksi^w is candidate for a eigenvalue
+            w,       # ksi^w is candidate for an eigenvalue
             null,    # basis of nullspace
             i, Split;
 

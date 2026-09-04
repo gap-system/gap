@@ -387,7 +387,7 @@ InstallGlobalFunction( IsGaussRat,
 ##  More precisely, they arise in the base conversion from (formally)
 ##  successively multiplying $\pm\zeta^i$ by
 ##  $1 = - \sum_{j=1}^{p-1} \zeta^{jn/p}$,
-##  for suitable prime diviors $p$ of $n$,
+##  for suitable prime divisors $p$ of $n$,
 ##  and then treating the summands $\pm\zeta^{i + jn/p}$ in the same way
 ##  until roots in the basis are reached.
 ##  It should be noted that all roots obtained this way are distinct.

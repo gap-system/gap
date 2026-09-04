@@ -184,7 +184,7 @@ InstallMethod( IsReesCongruence,
             return ForAny(Idempotents(s), x->IsMultiplicativeZero(s,x));
 
         elif Length(part)=1 then
-            # if there is one non singletion block
+            # if there is one non singleton block
             # check that it forms an ideal
             id := MagmaIdealByGenerators(s,part[1]);
 

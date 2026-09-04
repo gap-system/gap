@@ -1157,7 +1157,7 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,r,
         getrep, # function to get representative
         actsinv,# inverses of acts
         stopat, # index at which increasal stopped
-        notinc, # nr of steps in whiuch we did not increase
+        notinc, # nr of steps in which we did not increase
         stabsub,# stabilizer seed
         doml,   # maximal orbit length
         dict,   # dictionary

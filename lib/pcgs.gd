@@ -386,7 +386,7 @@ DeclareGlobalFunction( "BoundedRefinementEANormalSeries" );
 ##  <Prop Name="IsPcgsCentralSeries" Arg='pcgs'/>
 ##
 ##  <Description>
-##  returns <K>true</K> if the pcgs <A>pcgs</A> refines an central elementary
+##  returns <K>true</K> if the pcgs <A>pcgs</A> refines a central elementary
 ##  abelian series.
 ##  <Ref Attr="IndicesCentralNormalSteps"/> then gives the indices in the
 ##  pcgs, at which the subgroups of this series start.

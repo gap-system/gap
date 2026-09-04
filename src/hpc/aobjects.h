@@ -99,7 +99,7 @@ EXPORT_INLINE int CompareAndSwapObj(Obj *addr, Obj old, Obj new_) {
 **
 **  This construction ensures that while <obj> may be calculated more
 **  than once, all threads will share the same value; furthermore,
-**  reading an alreadu initialized value is generally very cheap,
+**  reading an already initialized value is generally very cheap,
 **  incurring the cost of a read, a read barrier, and a branch (which,
 **  after initialization, will generally predicted correctly by branch
 **  prediction logic).

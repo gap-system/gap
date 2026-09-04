@@ -121,7 +121,7 @@ as in this case).
 <P/>
 
 If no method has been installed which guarantees to produce a suitable
-objecty, a "No Method Found" error will be returned.
+object, a "No Method Found" error will be returned.
 <Log><![CDATA[
 gap> XCons(IsFullTransformationMonoid,4);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound

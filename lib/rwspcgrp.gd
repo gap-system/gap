@@ -24,7 +24,7 @@
 ##
 ##  <Description>
 ##  This category is set if the group defining a family of polycyclic
-##  elements is finite. It is used to impliy finiteness for groups generated
+##  elements is finite. It is used to imply finiteness for groups generated
 ##  by elements in this family.
 ##  </Description>
 ##  </ManSection>

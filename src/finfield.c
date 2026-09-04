@@ -53,7 +53,7 @@ static Obj TypeFF0;
 *V  TYPE_FFE  . . . . . kernel copy of GAP function TYPE_FFE
 *V  TYPE_FFE0 . . . . . kernel copy of GAP function TYPE_FFE0
 **
-**  These GAP functions are called to compute types of finite field elemnents
+**  These GAP functions are called to compute types of  finite field elements
 */
 static Obj TYPE_FFE;
 static Obj TYPE_FFE0;

@@ -2800,7 +2800,7 @@ end );
 ##  Elements of sparse rowspaces are represented by a list of the
 ##  form [ i1, c1, i2, c2, ...], where the ik are the indices of the
 ##  standard row vectors, and the ck are coefficients, and  i1<i2<...
-##  So if ek are the unit row vectos then such a sparse element represents
+##  So if ek are the unit row vectors then such a sparse element represents
 ##  c1*e{i1}+c2*e{i2}+...
 ##
 InstallMethod( ObjByExtRep,
@@ -2848,7 +2848,7 @@ end );
 #M  \+( <u>, <v> ) . . . . . . . . . . . .  for sparse rowspace elements
 #M  AdditiveInverseOp( <u> ) . . . . . . . . . . . . . . for a sparse rowspace element
 #M  \*( <scal>, <u> )  . . . . . for a sparse rowspace element and scalar
-#M  \*( <u>, <scal> ) . . . . . .for a sclalar and sparse rowspace element
+#M  \*( <u>, <scal> ) . . . . . .for a scalar and sparse rowspace element
 #M  \<( <u>, <v> )  . . . . . . . . . . . . for sparse rowspace elements
 #M  \=( <u>, <v> ) . . . . . . . . . . . . for sparse rowspace elements
 ##

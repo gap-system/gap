@@ -7507,7 +7507,7 @@ end );
 #T           sizes,      # sizes of normal subgroups
 #T           max,        # one maximal subgroup
 #T           maxes,      # list of maximal contained normal subgroups
-#T           actsize,    # actuel size of normal subgroups
+#T           actsize,    # actual size of normal subgroups
 #T           actmaxes,
 #T           latt;       # the lattice record
 #T

@@ -83,7 +83,7 @@ local ac,bc,mc,i,j,pc,ci,f,fam;
   f:=false;
   for i in ac do
     if f then
-      # only do it 2nd time (here to avoin doing once too often)
+      # only do it 2nd time (here to avoid doing once too often)
       bc:=ShiftedCoeffs(bc,1);
       ReduceCoeffsMod(bc,mc,p);
       ShrinkRowVector(bc);

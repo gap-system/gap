@@ -7,7 +7,7 @@
 **
 **  SPDX-License-Identifier: GPL-2.0-or-later
 **
-**  This file contains  the  functions  for  the  artithmetic  of  rationals.
+**  This file contains  the  functions  for  the  arithmetic  of   rationals.
 **
 **  Rationals  are  the union of  integers  and fractions.   A fraction  is a
 **  quotient of two integers where the denominator is relatively prime to the

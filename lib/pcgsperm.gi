@@ -1386,7 +1386,7 @@ local   pcgs;
       return fail;
   fi;
 
-  # set nomerator and denominator appropriately
+  # set numerator and denominator appropriately
   SetNumeratorOfModuloPcgs(pcgs,GeneratorsOfGroup(G));
   SetDenominatorOfModuloPcgs(pcgs,GeneratorsOfGroup(N));
 

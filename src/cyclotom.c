@@ -364,7 +364,7 @@ static Int EqCyc(Obj opL, Obj opR)
 **  Cyclotomics are first sorted according to the order of the primitive root
 **  they are written in.  That means that the rationals  are  smallest,  then
 **  come cyclotomics from $Q(e_3)$ followed by cyclotomics from $Q(e_4)$ etc.
-**  Cyclotomics from the same field are sorted lexicographicaly with  respect
+**  Cyclotomics from the same field are sorted lexicographically with respect
 **  to their representation in the base of this field.  That means  that  the
 **  cyclotomic with smaller coefficient for the first base root  is  smaller,
 **  for cyclotomics with the same first coefficient the second decides  which
@@ -1104,7 +1104,7 @@ static Obj DiffCyc(Obj opL, Obj opR)
 **
 *F  ProdCycInt( <opL>, <opR> )  . . .  product of a cyclotomic and an integer
 **
-**  'ProdCycInt'    returns the product  of a    cyclotomic and  a integer or
+**  'ProdCycInt'    returns the product  of a    cyclotomic and an integer or
 **  rational.  Which operand is the cyclotomic and which the integer does not
 **  matter.
 **

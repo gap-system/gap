@@ -2770,7 +2770,7 @@ end );
 #M  \+( <u>, <v> ) . . . . . . . . . . . . . . for two weight rep elements
 #M  AdditiveInverseOp( <u> ) . . . . . . . . . . . .  . . . for a weight rep element
 #M  \*( <scal>, <u> ) . . . . . . . . . . . .for a scalar and a weight rep elt
-#M  \*( <u>, <scal> ) . . . . . . . . . . . .for a wewight rep elt and a scalar
+#M  \*( <u>, <scal> ) . . . . . . . . . . . .for a weight rep elt and a scalar
 #M  ZeroOp( <u> ) . . . . . . . . . . . . .  for a weight rep element
 #M  \=( <u>, <v> ) . . . . . . . . . . . . . for two weight rep elements
 #M  \<( <u>, <v> ) . . . . . . . . . . . . . for two weight rep elements
@@ -3324,7 +3324,7 @@ InstallMethod( HighestWeightModule,
     rank:= Dimension(L) - 2*n;
 
     # `orbs' will be a list of lists of the form [ mult, wts ], where
-    # `wts' is a list of weights, and `mult' is theit multiplicity.
+    # `wts' is a list of weights, and `mult' is their multiplicity.
 
     char:= DominantCharacter( L, hw );
     orbs:= [ ];
