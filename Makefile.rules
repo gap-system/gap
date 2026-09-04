@@ -464,6 +464,11 @@ ifneq (,$(findstring cygwin,$(host_os)))
   LIBGAP_FULL = libgap$(SHLIB_EXT)
 
   LINK_SHLIB_FLAGS = -shared -Wl,--enable-auto-image-base -Wl,--out-implib,libgap.dll.a
+else ifneq (,$(findstring mingw,$(host_os)))
+  SHLIB_EXT=.dll
+  LIBGAP_FULL = libgap$(SHLIB_EXT)
+
+  LINK_SHLIB_FLAGS = -shared -Wl,--out-implib,libgap.dll.a
 else ifneq (,$(findstring darwin,$(host_os)))
   SHLIB_EXT=.dylib
   LIBGAP_FULL = libgap.$(SHLIB_MAJOR)$(SHLIB_EXT)
@@ -527,6 +532,21 @@ bin/$(GAPARCH)/gap.dll: libgap$(SHLIB_EXT)
 gap$(EXEEXT): build/obj/src/main.c.o libgap$(SHLIB_EXT) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
 	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) -Wl,--export-all-symbols $< $(GAP_LIBS) -L${abs_builddir} -lgap -o $@
 	@( if which peflags > /dev/null ; then peflags --cygwin-heap=2048 gap$(EXEEXT) ; fi )
+
+else ifneq (,$(findstring mingw,$(host_os)))
+
+# the default stack size is too small for GAP (see issue #1522)
+GAP_LDFLAGS += -Wl,--stack,16777216
+
+# Allow multiple definitions so we can declare a function multiple times with 'extern inline'
+GAP_LDFLAGS += -Wl,--allow-multiple-definition
+
+# For now gap.exe is a plain statically linked executable, and kernel
+# extensions are not supported.
+# TODO(windows-port): build gap.exe against libgap.dll as on Cygwin, so
+# that kernel extensions can resolve GAP symbols at load time.
+gap$(EXEEXT): build/obj/src/main.c.o $(OBJS) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $< $(OBJS) $(GAP_LIBS) -o $@
 
 else
 
@@ -816,6 +836,10 @@ zlib: $(ZLIB_FILES)
 ifneq (,$(findstring cygwin,$(host_os)))
 $(ZLIB_FILES):
 	MAKE=$(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)" $(srcdir)/cnf/build-cygwin-zlib.sh
+
+else ifneq (,$(findstring mingw,$(host_os)))
+$(ZLIB_FILES):
+	MAKE=$(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)" $(srcdir)/cnf/build-mingw-zlib.sh
 
 else
 
