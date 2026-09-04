@@ -152,7 +152,7 @@ local
     rels:=List(rels,x->ElementOfFpGroup(FamilyObj(One(fp)),x));
     new:=RestrictedMapping(nat,C)*hom;
     Assert(1,IsGroupGeneralMappingByImages(new)); # otherwise pre image=id
-    pre:=List(rels,x->PreImagesRepresentative(new,x));
+    pre:=List(rels,x->PreImagesRepresentativeNC(new,x));
     for i in [1..Length(rels)] do
       if not pre[i] in sub then
         Add(all,MappedWord(rels[i],
@@ -196,7 +196,7 @@ local
   fpg:=FreeGeneratorsOfFpGroup(Range(fphom));
   ocr.factorpres:=[fpg,RelatorsOfFpGroup(Range(fphom))];
   ocr.generators:=List(GeneratorsOfGroup(Range(fphom)),
-                        i->PreImagesRepresentative(fphom,i));
+                        i->PreImagesRepresentativeNC(fphom,i));
   OCAddMatrices(ocr,ocr.generators);
   OCAddRelations(ocr,ocr.generators);
   OCAddSumMatrices(ocr,ocr.generators);
@@ -376,12 +376,10 @@ BindGlobal("AGSRAutomLift",function(ocr,nat,fhom,miso)
     # allow deducing corresponding module aut.
     t:=ocr.trickrels;
     phom:=IdentityMapping(ocr.moduleauts);
-
-    #s:=List(t.gens,x->PreImagesRepresentative(nat,x));
-    #l:=List(t.gens,x->PreImagesRepresentative(nat,ImagesRepresentative(fhom,x)));
-
+    #s:=List(t.gens,x->PreImagesRepresentativeNC(nat,x));
+    #l:=List(t.gens,x->PreImagesRepresentativeNC(nat,ImagesRepresentative(fhom,x)));
     # word expression for images (to have some "hom-like" property
-    ws:=List(t.gens,x->PreImagesRepresentative(t.epi,ImagesRepresentative(fhom,x)));
+    ws:=List(t.gens,x->PreImagesRepresentativeNC(t.epi,ImagesRepresentative(fhom,x)));
     # evaluated in pregens
     l:=List(ws,x->MappedWord(x,GeneratorsOfGroup(t.free),t.pregens));
 
@@ -406,7 +404,7 @@ BindGlobal("AGSRAutomLift",function(ocr,nat,fhom,miso)
   fi;
 
   for ep in enum do
-    e:=PreImagesRepresentative(phom,ep);
+    e:=PreImagesRepresentativeNC(phom,ep);
     psim:=e*miso;
     psim:=psim^-1;
     w:=-List(v,i->i*psim);
@@ -640,7 +638,7 @@ local
 
       cnt:=0;
       for b in t do
-        new:=PreImagesRepresentative(hom,b);
+        new:=PreImagesRepresentativeNC(hom,b);
         if (pp=false or new^pp in S) and locond(new) then
           S:=ClosureGroup(S,new);
           have:=true;
@@ -1359,7 +1357,7 @@ local
         b:=MTX.BasisRadical(mo);
         fratsim:=Length(b)=0;
         if not fratsim then
-          b:=List(b,x->PreImagesRepresentative(hom,PcElementByExponents(MPcgs,x)));
+          b:=List(b,x->PreImagesRepresentativeNC(hom,PcElementByExponents(MPcgs,x)));
           N:=ClosureSubgroup(N,b);
           # insert in series
           for j in [Length(ser),Length(ser)-1..i+1] do
@@ -1465,8 +1463,8 @@ local
         if perm in Aperm then
           return true;
         fi;
-        aut:=PreImagesRepresentative(AQiso,perm);
-        newgens:=List(gens,x->PreImagesRepresentative(comiso,
+        aut:=PreImagesRepresentativeNC(AQiso,perm);
+        newgens:=List(gens,x->PreImagesRepresentativeNC(comiso,
           ImagesRepresentative(aut,ImagesRepresentative(comiso,x))));
 
         mo2:=GModuleByMats(LinearActionLayer(newgens,MPcgs),mo.field);
@@ -1504,9 +1502,9 @@ local
         if perm in Aperm then
           return true;
         fi;
-        aut:=PreImagesRepresentative(AQiso,perm);
+        aut:=PreImagesRepresentativeNC(AQiso,perm);
         newgens:=List(GeneratorsOfGroup(Q),
-          x->PreImagesRepresentative(q,Image(aut,ImagesRepresentative(q,x))));
+          x->PreImagesRepresentativeNC(q,Image(aut,ImagesRepresentative(q,x))));
         mo2:=GModuleByMats(LinearActionLayer(newgens,MPcgs),mo.field);
         return MTX.IsomorphismModules(mo,mo2)<>fail;
       end;
@@ -1523,9 +1521,9 @@ local
         if perm in Aperm then
           return true;
         fi;
-        aut:=PreImagesRepresentative(AQiso,perm);
+        aut:=PreImagesRepresentativeNC(AQiso,perm);
         newgens:=List(GeneratorsOfGroup(Q),
-          x->PreImagesRepresentative(q,Image(aut,ImagesRepresentative(q,x))));
+          x->PreImagesRepresentativeNC(q,Image(aut,ImagesRepresentative(q,x))));
         mo2:=GModuleByMats(LinearActionLayer(newgens,MPcgs),mo.field);
         iso:=MTX.IsomorphismModules(mo,mo2);
         if iso=fail then
@@ -1742,7 +1740,7 @@ local
           GeneratorsOfGroup(rf),
           List(GeneratorsOfGroup(rf),
             y->ImagesRepresentative(hom,ImagesRepresentative(j,
-                 PreImagesRepresentative(hom,y)))));
+                 PreImagesRepresentativeNC(hom,y)))));
         Assert(2,IsBijective(k));
         Add(ind,k);
       od;
@@ -1765,7 +1763,7 @@ local
         proj:=GroupHomomorphismByImagesNC(AQP,Image(resperm),
           B[2],List(GeneratorsOfGroup(res),x->ImagesRepresentative(resperm,x)));
         C:=PreImage(proj,Image(resperm,ind));
-        C:=List(SmallGeneratingSet(C),x->PreImagesRepresentative(AQiso,x));
+        C:=List(SmallGeneratingSet(C),x->PreImagesRepresentativeNC(AQiso,x));
         AQ:=Group(C);
         SetIsFinite(AQ,true);
         SetIsGroupOfAutomorphismsFiniteGroup(AQ,true);
@@ -1791,7 +1789,7 @@ local
           C:=MappingGeneratorsImages(AQiso);
           if C[2]<>GeneratorsOfGroup(AQP) then
             C:=[List(GeneratorsOfGroup(AQP),
-                     x->PreImagesRepresentative(AQiso,x)),
+                     x->PreImagesRepresentativeNC(AQiso,x)),
                  GeneratorsOfGroup(AQP)];
           fi;
           for j in u do
@@ -1826,7 +1824,7 @@ local
           substb:=SmallGeneratingSet(substb);
           AQP:=Group(substb);
           SetSize(AQP,B);
-          C:=[List(substb,x->PreImagesRepresentative(AQiso,x)),substb];
+          C:=[List(substb,x->PreImagesRepresentativeNC(AQiso,x)),substb];
         fi;
 
       od;
@@ -2433,6 +2431,6 @@ local
   fi;
 
   return GroupHomomorphismByImagesNC(G,H,GeneratorsOfGroup(G),
-    List(GeneratorsOfGroup(G),x->PreImagesRepresentative(e2,
+    List(GeneratorsOfGroup(G),x->PreImagesRepresentativeNC(e2,
          Image(conj,Image(e1,x)))));
 end);

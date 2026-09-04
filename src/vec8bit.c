@@ -738,9 +738,11 @@ static void ConvVec8Bit(Obj list, UInt q)
     if (nsize > SIZE_OBJ(list))
         ResizeWordSizedBag(list, nsize);
 
+    // Everything that may allocate happens before the first byte is
+    // written below: from then on the body no longer matches the list
+    // tnum, and a precise collector would scan the bytes as references.
+    type = TypeVec8Bit(q, IS_MUTABLE_OBJ(list));
 
-    // writing the first byte may clobber the third list entry
-    // before we have read it, so we take a copy
     firstthree[0] = ELM0_LIST(list, 1);
     firstthree[1] = ELM0_LIST(list, 2);
     firstthree[2] = ELM0_LIST(list, 3);
@@ -779,14 +781,13 @@ static void ConvVec8Bit(Obj list, UInt q)
     while ((ptr - BYTES_VEC8BIT(list)) % sizeof(UInt))
         *ptr++ = 0;
 
-    // retype and resize bag
-    if (nsize != SIZE_OBJ(list))
-        ResizeWordSizedBag(list, nsize);
-    SET_LEN_VEC8BIT(list, len);
-    SET_FIELD_VEC8BIT(list, q);
-    type = TypeVec8Bit(q, IS_MUTABLE_OBJ(list));
+    // retype first: the shrink is a safepoint and must see a data object
     SetTypeDatObj(list, type);
     RetypeBag(list, T_DATOBJ);
+    SET_LEN_VEC8BIT(list, len);
+    SET_FIELD_VEC8BIT(list, q);
+    if (nsize != SIZE_OBJ(list))
+        ResizeWordSizedBag(list, nsize);
 }
 
 /****************************************************************************
@@ -979,10 +980,11 @@ void PlainVec8Bit(Obj list)
     q = FIELD_VEC8BIT(list);
     info = GetFieldInfo8Bit(q);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
-
+    // grow first: the grow can collect, and the packed bytes must not yet
+    // be scanned as list entries
+    if (SIZE_OBJ(list) < (len + 1) * sizeof(Obj))
+        ResizeBag(list, (len + 1) * sizeof(Obj));
     RetypeBagSM(list, (len == 0) ? T_PLIST_EMPTY : T_PLIST_FFE);
-
-    GROW_PLIST(list, (UInt)len);
     SET_LEN_PLIST(list, len);
 
     if (len != 0) {

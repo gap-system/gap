@@ -278,6 +278,7 @@ static Obj  HdlrFunc2 (
  SET_ENDLINE_BODY(t_4, 5);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
+ CHANGED_BAG(t_3);
  if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
   t_2 = CALL_0ARGS( t_3 );
  }
@@ -304,6 +305,7 @@ static Obj  HdlrFunc2 (
  SET_ENDLINE_BODY(t_4, 6);
  SET_FILENAME_BODY(t_4, FileName);
  SET_BODY_FUNC(t_3, t_4);
+ CHANGED_BAG(t_3);
  if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
   t_2 = CALL_0ARGS( t_3 );
  }
@@ -364,6 +366,7 @@ static Obj  HdlrFunc2 (
  SET_ENDLINE_BODY(t_3, 13);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
+ CHANGED_BAG(t_2);
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -384,6 +387,7 @@ static Obj  HdlrFunc2 (
  SET_ENDLINE_BODY(t_3, 16);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
+ CHANGED_BAG(t_2);
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -404,6 +408,7 @@ static Obj  HdlrFunc2 (
  SET_ENDLINE_BODY(t_3, 18);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
+ CHANGED_BAG(t_2);
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -424,6 +429,7 @@ static Obj  HdlrFunc2 (
  SET_ENDLINE_BODY(t_3, 19);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
+ CHANGED_BAG(t_2);
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -481,6 +487,7 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 21);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
+ CHANGED_BAG(t_1);
  AssGVar( G_runtest, t_1 );
  
  /* return; */

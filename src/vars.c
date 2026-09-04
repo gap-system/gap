@@ -2365,6 +2365,8 @@ static Int InitLibrary (
     hdr->parent = Fail;
     tmpBody = NewFunctionBody();
     SET_BODY_FUNC( tmpFunc, tmpBody );
+    // tmpFunc predates two allocations, tmpBody is young
+    CHANGED_BAG( tmpFunc );
 
     // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );

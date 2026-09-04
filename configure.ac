@@ -817,8 +817,12 @@ AS_IF([test "x$with_julia" != xno ],[
   AS_IF([test "x$JULIA_CFLAGS" = x],[
     AS_IF([test -f "${JL_SHARE}/julia-config.jl"], [], [AC_MSG_ERROR([no julia-config.jl found])])
     JULIA_CFLAGS=$(${JULIA} --startup-file=no ${JL_SHARE}/julia-config.jl --cflags 2>/dev/null)
-    JULIA_CFLAGS=${JULIA_CFLAGS/-std=gnu99/}  # need to remove -std=gnu99 for our C11 and C++ code
     AS_IF([ test $? != 0 ], [AC_MSG_ERROR([failed to obtain JULIA_CFLAGS from julia-config.jl])])
+    JULIA_CFLAGS=${JULIA_CFLAGS/-std=gnu99/}  # need to remove -std=gnu99 for our C11 and C++ code
+    JULIA_CFLAGS=${JULIA_CFLAGS/-std=gnu11/}  # need to remove -std=gnu11 for our C++ code
+    # strip quotes: these flags are passed on to packages via sysinfo.gap,
+    # where they are subject to word splitting but not quote removal
+    JULIA_CFLAGS=${JULIA_CFLAGS//\'/}
   ])
   AC_MSG_RESULT([${JULIA_CFLAGS}])
 
