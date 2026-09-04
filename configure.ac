@@ -61,6 +61,9 @@ dnl Get canonical host information
 dnl
 AC_CANONICAL_HOST
 
+dnl for Makefile.rules: generated files cannot be built when cross-compiling
+AC_SUBST([cross_compiling])
+
 
 dnl
 dnl Check for working C and C++ compiler; insist on C99 and C++11 support
