@@ -2315,7 +2315,7 @@ local
     if makesmall then
       as:=SmallGeneratingSet(Image(map,a));
       if Length(as)<Length(GeneratorsOfGroup(a)) then
-        as:=List(as,x->PreImagesRepresentative(map,x));
+        as:=List(as,x->PreImagesRepresentativeNC(map,x));
         Info(InfoMorph,1,"Genreduction:",Length(GeneratorsOfGroup(a)),
           "=>",Length(as));
         a:=SubgroupNC(Parent(a),as);
