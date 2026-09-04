@@ -733,10 +733,12 @@ static void PlainBlist(Obj list)
     Int                 len;            // length of <list>
     UInt                i;              // loop variable
 
-    // resize the list and retype it, in this order
+    // grow first: the grow can collect, and the bit blocks must not yet be
+    // scanned as list entries
     len = LEN_BLIST(list);
+    if (SIZE_OBJ(list) < (len + 1) * sizeof(Obj))
+        ResizeBag(list, (len + 1) * sizeof(Obj));
     RetypeBagSM( list, T_PLIST );
-    GROW_PLIST( list, (UInt)len );
     SET_LEN_PLIST( list, len );
 
     // replace the bits by 'True' or 'False' as the case may be

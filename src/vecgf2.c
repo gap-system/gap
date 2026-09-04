@@ -1276,12 +1276,12 @@ static void PlainGF2Vec(Obj list)
         ErrorMayQuit("Cannot convert a locked GF2 vector into a plain list",
                      0, 0);
 
-    // resize the list and retype it, in this order
+    // grow first: the grow can collect, and the bit blocks must not yet be
+    // scanned as list entries
     len = LEN_GF2VEC(list);
-
+    if (SIZE_OBJ(list) < (len + 1) * sizeof(Obj))
+        ResizeBag(list, (len + 1) * sizeof(Obj));
     RetypeBagSM(list, (len == 0) ? T_PLIST_EMPTY : T_PLIST_FFE);
-
-    GROW_PLIST(list, (UInt)len);
     SET_LEN_PLIST(list, len);
 
     // keep the first entry because setting the second destroys the first
@@ -1360,28 +1360,31 @@ static void ConvGF2Vec(Obj list)
     // change its representation
     len = LEN_PLIST(list);
 
-    // We may have to resize the bag now because a length 1
-    // plain list is shorter than a length 1 GF2VEC
+    // Bring every element to GF2One or GF2Zero first: EQ may run GAP code
+    // and collect, and the packing below overwrites the list body, which
+    // must still be a list of references whenever a collection can happen.
+    for (i = 1; i <= len; i++) {
+        x = ELM_PLIST(list, i);
+        if (x == GF2One || x == GF2Zero)
+            continue;
+        if (EQ(x, GF2One))
+            SET_ELM_PLIST(list, i, GF2One);
+        else if (EQ(x, GF2Zero))
+            SET_ELM_PLIST(list, i, GF2Zero);
+        else
+            ErrorMayQuit(
+                "COPY_GF2VEC: argument must be a list of GF2 elements", 0,
+                0);
+    }
     if (SIZE_PLEN_GF2VEC(len) > SIZE_OBJ(list))
         ResizeBag(list, SIZE_PLEN_GF2VEC(len));
+    BOOL mutable = IS_PLIST_MUTABLE(list);
 
-    // now do the work
     block = 0;
     bit = 1;
     for (i = 1; i <= len; i++) {
-        x = ELM_PLIST(list, i);
-        if (x == GF2One)
+        if (ELM_PLIST(list, i) == GF2One)
             block |= bit;
-        else if (x != GF2Zero) {
-            // might be GF(2) elt written over bigger field
-            if (EQ(x, GF2One))
-                block |= bit;
-            else if (!EQ(x, GF2Zero))
-                ErrorMayQuit(
-                    "COPY_GF2VEC: argument must be a list of GF2 elements",
-                    0, 0);
-        }
-
         bit = bit << 1;
         if (bit == 0 || i == len) {
             BLOCK_ELM_GF2VEC(list, i) = block;
@@ -1390,16 +1393,11 @@ static void ConvGF2Vec(Obj list)
         }
     }
 
-    // retype and resize bag
-    ResizeWordSizedBag(list, SIZE_PLEN_GF2VEC(len));
-    SET_LEN_GF2VEC(list, len);
-    if (IS_PLIST_MUTABLE(list)) {
-        SetTypeDatObj(list, TYPE_LIST_GF2VEC);
-    }
-    else {
-        SetTypeDatObj(list, TYPE_LIST_GF2VEC_IMM);
-    }
+    // retype first: the shrink is a safepoint and must see a data object
+    SetTypeDatObj(list, mutable ? TYPE_LIST_GF2VEC : TYPE_LIST_GF2VEC_IMM);
     RetypeBag(list, T_DATOBJ);
+    SET_LEN_GF2VEC(list, len);
+    ResizeWordSizedBag(list, SIZE_PLEN_GF2VEC(len));
 }
 
 
