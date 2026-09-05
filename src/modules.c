@@ -610,34 +610,38 @@ void InitGVarOpersFromTable(const StructGVarOper * tab)
     }
 }
 
+const Char * ShortFilenameFromCookie(const Char * cookie, UInt * len)
+{
+    const Char * pos = strchr(cookie, ':');
+    GAP_ASSERT(pos != 0);
+
+    // walk back over the last two '/'-separated components
+    const Char * start = pos;
+    while (start > cookie && *(start - 1) != '/')
+        start--;
+    if (start > cookie) {
+        start--;
+        while (start > cookie && *(start - 1) != '/')
+            start--;
+    }
+
+    *len = pos - start;
+    return start;
+}
+
 static void SetupFuncInfo(Obj func, const Char * cookie)
 {
     // The string <cookie> usually has the form "PATH/TO/FILE.c:FUNCNAME".
-    // We check if that is the case, and if so, split it into the parts before
-    // and after the colon. In addition, the file path is cut to only contain
-    // the last two '/'-separated components.
-    const Char * pos = strchr(cookie, ':');
-    if (pos) {
-        Obj location = MakeImmString(pos + 1);
-
-        Obj  filename;
-        char buffer[512];
-        Int  len = 511 < (pos - cookie) ? 511 : pos - cookie;
-        memcpy(buffer, cookie, len);
-        buffer[len] = 0;
-
-        Char * start = strrchr(buffer, '/');
-        if (start) {
-            while (start > buffer && *(start - 1) != '/')
-                start--;
-        }
-        else
-            start = buffer;
-        filename = MakeImmString(start);
+    // We check if that is the case, and if so, extract the file path before
+    // the colon. In addition, the file path is cut to only contain the last
+    // two '/'-separated components.
+    if (strchr(cookie, ':')) {
+        UInt         len;
+        const Char * start = ShortFilenameFromCookie(cookie, &len);
+        Obj          filename = MakeImmStringWithLen(start, len);
 
         Obj body_bag = NewFunctionBody();
         SET_FILENAME_BODY(body_bag, filename);
-        SET_LOCATION_BODY(body_bag, location);
         SET_BODY_FUNC(func, body_bag);
         CHANGED_BAG(body_bag);
         CHANGED_BAG(func);
