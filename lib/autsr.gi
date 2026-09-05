@@ -104,11 +104,10 @@ end );
 # case the values of the relators on pre-images in G do not depend on the choice
 # of representatives and can be used to deduce the module automorphism
 # belonging to a factor group automorphism.
-BindGlobal("AGSRFindRels",function(nat,newgens)
+BindGlobal("AGSRFindRels",function(C,nat,newgens)
 local
   # -- setup --
   M,      # the module: kernel of the factor map `nat`
-  C,      # the centralizer of M in the source group
   p,      # the smallest prime dividing |M|
   # -- result accumulator --
   all,    # the collected relators (returned in the `rels` component)
@@ -130,28 +129,13 @@ local
   # -- loop counters --
   i,      # loop index over the relators
   cnt;    # iteration counter (bail out after too many attempts)
+
   M:=KernelOfMultiplicativeGeneralMapping(nat);
-  C:=Centralizer(Source(nat),M);
-  if not IsSubset(FrattiniSubgroup(C),M) then
-    return fail;
-  fi;
   p:=SmallestPrimeDivisor(Size(M));
   all:=[];
   pregens:=SmallGeneratingSet(C);
   gens:=List(pregens,x->ImagesRepresentative(nat,x));
   sub:=SubgroupNC(Image(nat),gens);
-
-  #if newgens=true then
-  #  # so generators new
-  #  sub:=TrivialSubgroup(Image(nat));
-  #  while Size(sub)<Size(Image(nat)) do
-  #    sub:=ClosureGroup(sub,ImagesRepresentative(nat,Random(C)));
-  #  od;
-  #else
-  #  sub:=Image(nat,C);
-  #fi;
-#
-  #gens:=SmallGeneratingSet(sub);
 
   epi:=EpimorphismFromFreeGroup(sub);
   free:=Source(epi);
@@ -167,6 +151,7 @@ local
     rels:=Filtered(RelatorsOfFpGroup(fp),x->ForAll(ExponentSums(x),x->x mod p=0));
     rels:=List(rels,x->ElementOfFpGroup(FamilyObj(One(fp)),x));
     new:=RestrictedMapping(nat,C)*hom;
+    Assert(1,IsGroupGeneralMappingByImages(new)); # otherwise pre image=id
     pre:=List(rels,x->PreImagesRepresentativeNC(new,x));
     for i in [1..Length(rels)] do
       if not pre[i] in sub then
@@ -183,6 +168,7 @@ end);
 
 BindGlobal("AGSRPrepareAutomLift",function(G,pcgs,nat)
 local
+  C,      # kernel centralizer
   # -- the cocycle setup record (main structure, returned) --
   ocr,    # the one-cohomology record collecting all data for the
           # automorphism lift
@@ -202,11 +188,7 @@ local
   i,      # loop index (over relators / matrix rows)
   g,      # loop index over generators
   v,      # loop variable over the rows of `RS`
-  cnt,    # counter bounding the search for module-automorphism relators
-  # -- vestigial (computed but never used) --
-  tmp,    # zero module vector; only feeds the unused `L0`
-  L0,     # assembled but never read afterwards
-  R;      # assembled but never read afterwards
+  cnt;    # counter bounding the search for module-automorphism relators
 
   ocr:=rec(group:=G,modulePcgs:=pcgs);
   fphom:=IsomorphismFpGroup(G);
@@ -231,11 +213,18 @@ local
       100
     then
     cnt:=0;
-    repeat
-      ocr.trickrels:=AGSRFindRels(nat,cnt>3);
-      cnt:=cnt+1;
-    until ocr.trickrels<>fail or 2^cnt>100*Size(ocr.moduleauts);
-  if ocr.trickrels=fail then Info(InfoMorph,1,"trickrels fails");fi;
+    C:=Centralizer(Source(nat),KernelOfMultiplicativeGeneralMapping(nat));
+    if not IsSubset(FrattiniSubgroup(C),
+      KernelOfMultiplicativeGeneralMapping(nat)) then
+
+      ocr.trickrels:=fail; # not possible
+    else
+      repeat
+        ocr.trickrels:=AGSRFindRels(C,nat,cnt>3);
+        cnt:=cnt+1;
+      until ocr.trickrels<>fail or 2^cnt>100*Size(ocr.moduleauts);
+    fi;
+    if ocr.trickrels=fail then Info(InfoMorph,1,"trickrels fails");fi;
   else
     ocr.trickrels:=fail;
   fi;
@@ -249,11 +238,6 @@ local
   # Initialize system.
   len:=Length(ocr.generators);
   dim:=Length(pcgs);
-  tmp := ocr.moduleMap( ocr.identity );
-  L0  := Concatenation( List( [ 1 .. len ], x -> tmp ) );
-  ConvertToVectorRep(L0,ocr.field);
-  R := ListWithIdenticalEntries( len * dim,Zero( ocr.field ) );
-  ConvertToVectorRep(R,ocr.field);
 
   rels:=ocr.relators;
   mat:=List([1..len*dim],x->[]);
@@ -862,6 +846,7 @@ local
   sel,    # indices of the subgroups sharing the current fingerprint
   # -- loop counter --
   i;      # loop variable over the distinct fingerprints
+
   fp:=function(x)
   local
     l;   # the fingerprint list being assembled (size, class data, abelian
@@ -959,6 +944,10 @@ end);
 # main automorphism method -- currently still using factor groups, but
 # nevertheless faster..
 
+#AsIsomorphism
+InstallGlobalFunction(OnGroupsAsAutomorphism,
+  function(subgroup,autom) return Image(autom,subgroup);end);
+
 # option somechar may be a list of characteristic subgroups, or a record with
 # component subgroups, orbits
 BindGlobal("AutomGrpSR",function(G)
@@ -966,8 +955,6 @@ local
   # -- nested helper functions --
   isBadPermrep,  # helper: heuristic test for whether a permutation degree
                  # should be reduced
-  asAutom,       # helper: apply an automorphism to a subgroup,
-                 # Image(hom,sub)
   makeaqiso,     # helper: build the permutation representation AQiso/AQP of
                  # the current AQ
   stablim,       # helper: stabilizer computation with an index limit
@@ -980,6 +967,7 @@ local
                  # subgroups)
   scharorb,      # characteristic orbits taken from the `someCharacteristics`
                  # record
+  directs,       # direct factors to be preserved, if given
   ff,            # the fitting-free lift setup of G
   r,             # the solvable radical of G, ff.radical
   rlgf,          # the LG-series layer boundaries of the radical
@@ -1077,6 +1065,7 @@ local
   jorpo,         # the positions of the pair inside `jorb`
   substb,        # the stabilizer subgroup enforcing a characteristic
                  # subgroup/orbit
+  stabilizeSubgroupClass, # fct to fix class of subgroups
   # -- loop counters --
   i,             # main loop index over the series steps
   j,             # loop index
@@ -1089,7 +1078,8 @@ local
     return NrMovedPoints(g)^3>Size(g)*Index(g,DerivedSubgroup(g));
   end;
 
-  asAutom:=function(sub,hom) return Image(hom,sub);end;
+  directs:=ValueOption("directs");
+  #if directs<>fail and not ForAll(directs,x->IsNormal(G,x)) then Error("DIR");fi;
 
   actbase:=ValueOption("autactbase");
   nosucl:=fail;
@@ -1368,9 +1358,7 @@ local
         fratsim:=Length(b)=0;
         if not fratsim then
           b:=List(b,x->PreImagesRepresentativeNC(hom,PcElementByExponents(MPcgs,x)));
-          for j in b do
-            N:=ClosureSubgroup(N,b);
-          od;
+          N:=ClosureSubgroup(N,b);
           # insert in series
           for j in [Length(ser),Length(ser)-1..i+1] do
             ser[j+1]:=ser[j];
@@ -1396,7 +1384,7 @@ local
           Info(InfoMorph,3,"radical automorphism stabilizer");
           SetIsGroupOfAutomorphismsFiniteGroup(rada,true);
           NiceMonomorphism(rada:autactbase:=fail,someCharacteristics:=fail);
-          rada:=Stabilizer(rada,N,asAutom);
+          rada:=Stabilizer(rada,N,OnGroupsAsAutomorphism);
         fi;
       fi;
     until split or fratsim;
@@ -1582,31 +1570,57 @@ local
       sub:=SubgroupProperty(sub,precond,Aperm);
     fi;
 
-    if IndexNC(sub,Aperm)>10^6 then
-      # try to find characteristic subgroups
-      Info(InfoMorph,2,"Use normal subgroup classes");
-      if nosucl=fail then nosucl:=AGSRNormalSubgroupClasses(G);fi;
-      nosuf:=List(nosucl,x->Set(List(x,y->Image(lhom,y))));
-      nosuf:=Filtered(nosuf,x->Size(x[1])>1 and Size(x[1])<Size(OQ));
-      SortBy(nosuf,Length);
-      for j in nosuf do
-        # stabilize class
-        k:=SmallGeneratingSet(sub);
-        ac:=OrbitStabilizerAlgorithm(sub,false,false,
-          k,List(k,x->PreImagesRepresentativeNC(AQiso,x)),
-          rec(pnt:=j,
-          act:=
-          function(set,phi)
-          #local phi;
-            #phi:=PreImagesRepresentativeNC(AQiso,perm);
-            return Set(List(set,x->Image(phi,x)));
-          end,
-          onlystab:=true));
-        Info(InfoMorph,3,"Improved index ",IndexNC(sub,ac.stabilizer));
-        if Size(ac.stabilizer)<Size(sub) then
-          sub:=ac.stabilizer;
+    stabilizeSubgroupClass:=function(class)
+    local k,kpre,classorb,i,set,kperm,acthom,stb,moves;
+      k:=SmallGeneratingSet(sub);
+      kpre:=List(k,x->PreImagesRepresentativeNC(AQiso,x));
+      classorb:=[];
+      moves:=false;
+      for i in class do
+        if not i in classorb then
+          set:=Orbit(sub,i,k,kpre,OnGroupsAsAutomorphism);
+          classorb:=Union(classorb,set);
+          moves:=moves or Length(set)>1;
         fi;
       od;
+      if moves then
+        set:=Set(List(class,x->Position(classorb,x)));
+        Info(InfoMorph,3,"orbslen=",Length(classorb));
+        kperm:=List(k,x->Permutation(x,classorb,k,kpre,OnGroupsAsAutomorphism));
+        acthom:=GroupHomomorphismByImagesNC(sub,Group(kperm),k,kperm);
+
+        stb:=Stabilizer(Range(acthom),set,OnSets);
+        stb:=PreImage(acthom,stb);
+        if IndexNC(sub,stb)>1 then
+          Info(InfoMorph,3,"Improved index ",IndexNC(sub,stb));
+          sub:=stb;
+          Aperm:=Intersection(Aperm,sub);
+        fi;
+      fi;
+    end;
+
+#    # do we want to preserve direct factors?
+
+    #
+    # do not bother if it is small
+    if IndexNC(sub,Aperm)>10^3 then
+      # try to stabilize classes of normal subgroups that must be
+      # automorphism invariant
+      Info(InfoMorph,2,"Use normal subgroup classes");
+      if nosucl=fail then
+        nosucl:=AGSRNormalSubgroupClasses(G:directs:=directs);
+        if directs<>fail then Add(nosucl,directs);fi;
+      fi;
+      nosuf:=Unique(List(nosucl,x->Set(List(x,y->Image(lhom,y)))));
+      nosuf:=Filtered(nosuf,x->Size(x[1])>1 and Size(x[1])<Size(OQ));
+      SortBy(nosuf,x->[Length(x),Size(x[1])]);
+      for j in nosuf do
+        # stabilize class
+        stabilizeSubgroupClass(j);
+      od;
+    elif directs<>fail then
+      nosuf:=List(directs,x->Image(lhom,x));
+      stabilizeSubgroupClass(nosuf);
     fi;
 
     j:=Size(sub);
@@ -1702,7 +1716,7 @@ local
               Info(InfoMorph,3,"radical automorphism stabilizer");
               NiceMonomorphism(rada:autactbase:=fail,someCharacteristics:=fail);
               SetIsGroupOfAutomorphismsFiniteGroup(rada,true);
-              rada:=Stabilizer(rada,k,asAutom);
+              rada:=Stabilizer(rada,k,OnGroupsAsAutomorphism);
             fi;
           od;
           # move back to bad degree
@@ -1781,15 +1795,15 @@ local
           for j in u do
             if IsList(j) then
               # stabilizer set of subgroups
-              jorb:=ShallowCopy(Orbit(AQP,j[1],C[2],C[1],asAutom));
+              jorb:=ShallowCopy(Orbit(AQP,j[1],C[2],C[1],OnGroupsAsAutomorphism));
               jorpo:=[Position(jorb,j[1]),Position(jorb,j[2])];
               if jorpo[2]=fail then
                 # the two subgroups lie in different orbits
-                Append(jorb,Orbit(AQP,j[2],C[2],C[1],asAutom));
+                Append(jorb,Orbit(AQP,j[2],C[2],C[1],OnGroupsAsAutomorphism));
                 jorpo[2]:=Position(jorb,j[2]);
               fi;
               if Length(jorb)>Length(j) then
-            B:=ActionHomomorphism(AQP,jorb,C[2],C[1],asAutom);
+            B:=ActionHomomorphism(AQP,jorb,C[2],C[1],OnGroupsAsAutomorphism);
             substb:=Group(List(C[2],x->ImagesRepresentative(B,x)),());
             substb:=Stabilizer(substb,Set(jorpo),OnSets);
             substb:=PreImage(B,substb);
@@ -1801,7 +1815,7 @@ local
 
 
         else
-          substb:=Stabilizer(AQP,j,C[2],C[1],asAutom);
+          substb:=Stabilizer(AQP,j,C[2],C[1],OnGroupsAsAutomorphism);
           Info(InfoMorph,2,"Stabilize characteristic subgroup ",Size(j),
         " :",Size(AQP)/Size(substb) );
         fi;
@@ -1918,7 +1932,7 @@ local
           i:=i+1;
         else
           l:=s[i];
-          for j in r do;
+          for j in r do
             l:=ClosureGroup(l,PcElementByExponents(pcgs,j));
           od;
           if Size(l)<Size(s[i-1]) and Size(l)>Size(s[i]) then
@@ -1972,7 +1986,8 @@ local
     p,   # the property / fingerprint list being assembled (return value)
     b;   # sorted abelian invariants, folded into the fingerprint
 
-    if ID_AVAILABLE(Size(a))<>fail then
+    if ID_AVAILABLE(Size(a))<>fail
+      and ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
       p:=ShallowCopy(-IdGroup(a)); # negative avoids clash with others
     else
       p:=[Size(a)];
@@ -2144,9 +2159,6 @@ end);
 # isomorphism available and there are many generators
 InstallGlobalFunction(PatheticIsomorphism,function(G,H)
 local
-  # -- nested helper function --
-  asAutomorphism,  # helper: apply an automorphism to a subgroup,
-                   # Image(hom,sub)
   # -- matched characteristic subgroups --
   d,               # NOTE: two roles -- the matched-characteristics
                    # record, then the direct product G x H
@@ -2183,15 +2195,14 @@ local
   iso,             # NOTE: two roles -- the isomorphism from a recursive
                    # call, and later a flag for whether the permutation
                    # representation has been built
+  makenewa,
+  origa,
   # -- loop counters --
   i,               # NOTE: two roles -- a loop index, and an
                    # IsomorphismPermGroup used to reduce a non-perm/pc input
                    # group
   j;               # loop index
 
-  asAutomorphism:=function(sub,hom)
-    return Image(hom,sub);
-  end;
 
   # TODO: use matgrp package
   if not (IsPermGroup(G) or IsPcGroup(G))  then
@@ -2286,90 +2297,137 @@ local
   a:=AutomorphismGroup(d:autactbase:=aab,someCharacteristics:=somechar,
     directs:=aab,
     delaypermrep:=true );
+
+  origa:=a;
+  makenewa:=function(makesmall)
+  local map,as;
+    if not HasIsomorphismPermGroup(origa) then
+      if IsBound(origa!.makeaqiso) then
+        origa!.makeaqiso();
+      else
+        as:=NiceMonomorphism(origa:autactbase:=aab,someCharacteristics:=somechar,
+          directs:=aab,
+          delaypermrep:=true );
+        SetIsomorphismPermGroup(origa,as);
+      fi;
+    fi;
+    map:=IsomorphismPermGroup(origa);
+    if makesmall then
+      as:=SmallGeneratingSet(Image(map,a));
+      if Length(as)<Length(GeneratorsOfGroup(a)) then
+        as:=List(as,x->PreImagesRepresentativeNC(map,x));
+        Info(InfoMorph,1,"Genreduction:",Length(GeneratorsOfGroup(a)),
+          "=>",Length(as));
+        a:=SubgroupNC(Parent(a),as);
+      fi;
+    fi;
+    SetIsGroupOfAutomorphismsFiniteGroup(a,true);
+    SetNiceMonomorphism(a,map);
+    SetIsomorphismPermGroup(a,map);
+  end;
+
+
   for i in cG do
     if not ForAll(GeneratorsOfGroup(a),x->Image(x,i)=i) then
-      a:=Stabilizer(a,i,asAutomorphism);
+      makenewa(Length(GeneratorsOfGroup(a))>12);
+      a:=Stabilizer(a,i,OnGroupsAsAutomorphism);
     fi;
   od;
 
-  iso:=fail;
-  #if NrMovedPoints(api)>5000 then
-  #  K:=SmallerDegreePermutationRepresentation(api);
-  #  Info(InfoMorph,2,"Permdegree reduced ",
-#         NrMovedPoints(api),"->",NrMovedPoints(Image(K)));
-#    iso:=iso*K;
-#    api:=Image(iso);
-#  fi;
+  conj:=fail;
+  if Length(GeneratorsOfGroup(a))>12 then
+    # does old quick test work without attempting generator reduction?
+    conj:=One(a);
+    K:=Image(e1,G);
+    L:=Image(e2,H);
+    map:=AGBoundedOrbrep(a,K,L,OnGroupsAsAutomorphism,20);
+    if map=false then
+      Info(InfoMorph,1,"Shortorb test noniso");
+      return fail;
+    elif map<>fail then
+      conj:=map.rep;
+      Info(InfoMorph,1,"Shortorb test iso found");
+    else
+      conj:=fail;
+    fi;
+  fi;
 
-  # now work in reverse through the characteristic factors
-  conj:=One(a);
-  K:=Image(e1,G);
-  L:=Image(e2,H);
-  map:=AGBoundedOrbrep(a,K,L,asAutomorphism,20);
-  if map=false then
-    Info(InfoMorph,1,"Shortorb test noniso");
-    return fail;
-  elif map<>fail then
-    conj:=map.rep;
-    Info(InfoMorph,1,"Shortorb test iso found");
-  else
+  if conj=fail then
+    makenewa(Length(GeneratorsOfGroup(a))>12);
+    iso:=fail;
 
-    as:=a;
-    Add(cG,TrivialSubgroup(d));
+    # now work in reverse through the characteristic factors
+    conj:=One(a);
+    K:=Image(e1,G);
+    L:=Image(e2,H);
+    map:=AGBoundedOrbrep(a,K,L,OnGroupsAsAutomorphism,100);
+    if map=false then
+      Info(InfoMorph,1,"Shortorb test noniso");
+      return fail;
+    elif map<>fail then
+      conj:=map.rep;
+      Info(InfoMorph,1,"Shortorb test iso found");
+    else
 
-    SortBy(cG,x->-Size(x));
-    for i in cG do
-      u:=ClosureGroup(i,K);
-      v:=ClosureGroup(i,L);
-      if u<>v then
+      Add(cG,TrivialSubgroup(d));
 
-        # try cheap orbit stabilizer first
-        if iso<>fail then
-          map:=fail;
-        else
-          map:=AGBoundedOrbrep(as,u,v,asAutomorphism,100);
-        fi;
-        if map=false then
-          Info(InfoMorph,1,"Shortorb factor noniso");
-          return fail;
-        elif map<>fail then
-          Info(InfoMorph,1,"Shortorb factor reduce ",map.orblen);
-          as:=SubgroupNC(Parent(as),map.stabgens);
-          map:=map.rep;
-          conj:=conj*map;
-          K:=Image(map,K);
-          as:=as^map;
-        else
-          if iso=fail then
-            Info(InfoMorph,1,"Shortorb failed, get delayed permrep");
-            if IsBound(a!.makeaqiso) then a!.makeaqiso();fi;
-            iso:=IsomorphismPermGroup(a:autactbase:=aab);
-            api:=Image(iso,as);
-          fi;
+      SortBy(cG,x->-Size(x));
+      for i in cG do
+        u:=ClosureGroup(i,K);
+        v:=ClosureGroup(i,L);
+        if u<>v then
 
-          if IsSolvableGroup(api) then
-            gens:=Pcgs(api);
+          # try cheap orbit stabilizer first
+          if iso<>fail then
+            map:=fail;
           else
-            gens:=SmallGeneratingSet(api);
+            makenewa(Length(GeneratorsOfGroup(a))>8);
+            map:=AGBoundedOrbrep(a,u,v,OnGroupsAsAutomorphism,200);
           fi;
-          pre:=List(gens,x->PreImagesRepresentativeNC(iso,x));
-          map:=RepresentativeAction(SubgroupNC(a,pre),u,v,asAutomorphism);
-          if map=fail then
+          if map=false then
+            Info(InfoMorph,1,"Shortorb factor noniso");
             return fail;
-          fi;
-          conj:=conj*map;
-          K:=Image(map,K);
+          elif map<>fail then
+            Info(InfoMorph,1,"Shortorb factor reduce ",map.orblen);
+            a:=SubgroupNC(Parent(a),map.stabgens);
+            makenewa(Length(GeneratorsOfGroup(a))>8);
+            map:=map.rep;
+            conj:=conj*map;
+            K:=Image(map,K);
+            a:=a^map;
+          else
+            if iso=fail then
+              Info(InfoMorph,1,"Shortorb failed, get delayed permrep");
+              makenewa(Length(GeneratorsOfGroup(a))>8);
+              iso:=IsomorphismPermGroup(a:autactbase:=aab);
+              api:=Image(iso,a);
+            fi;
 
-          if Size(i)>1 then
-            u:=Stabilizer(api,v,gens,pre,asAutomorphism);
-            Info(InfoMorph,1,"Factor ",Size(d)/Size(i),": ",
-                "reduce by ",Size(api)/Size(u));
-            api:=u;
+            if IsSolvableGroup(api) then
+              gens:=Pcgs(api);
+            else
+              gens:=SmallGeneratingSet(api);
+            fi;
+            pre:=List(gens,x->PreImagesRepresentativeNC(iso,x));
+            map:=RepresentativeAction(SubgroupNC(Parent(a),pre),u,v,
+                   OnGroupsAsAutomorphism);
+            if map=fail then
+              return fail;
+            fi;
+            conj:=conj*map;
+            K:=Image(map,K);
+
+            if Size(i)>1 then
+              u:=Stabilizer(api,v,gens,pre,OnGroupsAsAutomorphism);
+              Info(InfoMorph,1,"Factor ",Size(d)/Size(i),": ",
+                  "reduce by ",Size(api)/Size(u));
+              api:=u;
+            fi;
           fi;
         fi;
-      fi;
-    od;
+      od;
 
+    fi;
   fi;
 
   return GroupHomomorphismByImagesNC(G,H,GeneratorsOfGroup(G),

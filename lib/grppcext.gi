@@ -445,7 +445,9 @@ local ag, p1iso, agp, p2iso, DP, p1, p2, gens, genimgs, triso,s,i,u,opt,
     return rec(pairgens:=genimgs,
                permgens:=gens,
                isomorphism:=triso,
-               permgroup:=DP);
+               permgroup:=DP,
+               p1iso:=p1iso,
+               p2iso:=p2iso);
   else
     return false;
   fi;

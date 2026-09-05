@@ -3006,6 +3006,51 @@ DeclareGlobalFunction("OnTuplesTuples");
 
 #############################################################################
 ##
+#F  OnGroupsAsAutomorphism( <sub>, <autom> )
+##
+##  <#GAPDoc Label="OnGroupsAsAutomorphism">
+##  <ManSection>
+##  <Func Name="OnGroupsAsAutomorphism" Arg='sub, autom'/>
+##
+##  <Description>
+##  returns the image of the structure <A>sub</A> under the automorphism
+##  <A>autom</A>, that is <C>Image(<A>autom</A>,<A>sub</A>)</C>.
+##  <P/>
+##  This function is an <E>action function</E> in the sense of
+##  <Ref Sect="Basic Actions" BookName="ref"/> and thus is intended to be
+##  passed as last argument to functions such as
+##  <Ref Oper="Orbit" BookName="ref"/>, <Ref Oper="Stabilizer" BookName="ref"/>
+##  or <Ref Oper="Action" BookName="ref"/>. It describes the action of a group
+##  of automorphisms (or, more generally, of any group whose elements are
+##  endomorphisms of a common structure) on the subgroups, subalgebras or
+##  other substructures of this structure. The acting group must consist of
+##  mappings whose source contains <A>sub</A>; no test for this is performed.
+##  <P/>
+##  Note that this action is <E>not</E> the same as
+##  <Ref Func="OnPoints" BookName="ref"/> applied to the elements of
+##  <A>sub</A>: it is the whole structure that is mapped, and the result is
+##  again a structure of the same kind.
+##  <Example><![CDATA[
+##  gap> g:=Group((1,2),(3,4));;
+##  gap> a:=AutomorphismGroup(g);;
+##  gap> u:=Subgroup(g,[(1,2)]);
+##  Group([ (1,2) ])
+##  gap> orb:=Orbit(a,u,OnGroupsAsAutomorphism);;
+##  gap> Length(orb);
+##  3
+##  gap> Size(Stabilizer(a,u,OnGroupsAsAutomorphism));
+##  2
+##  gap> Size(Action(a,orb,OnGroupsAsAutomorphism));
+##  6
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "OnGroupsAsAutomorphism" );
+
+#############################################################################
+##
 #O  DomainForAction( <pnt>, <acts>, <act> )
 ##
 ##  <ManSection>
