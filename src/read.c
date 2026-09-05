@@ -77,7 +77,9 @@
 #define TRY_IF_NO_ERROR                                                      \
     if (!rs->s.NrError) {                                                    \
         volatile Int recursionDepth = GetRecursionDepth();                   \
+        volatile GAP_GCStackState gcStack = GAP_GC_SAVE_STACK_STATE();       \
         if (GAP_SETJMP(STATE(ReadJmpError))) {                               \
+            GAP_GC_RESTORE_STACK_STATE(gcStack);                             \
             SetRecursionDepth(recursionDepth);                               \
             rs->s.NrError++;                                                 \
         }                                                                    \

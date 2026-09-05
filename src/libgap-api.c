@@ -606,8 +606,15 @@ jmp_buf * GAP_GetReadJmpError(void)
 }
 
 
+// Only the outermost GAP_Enter() installs the jump target: GAP_Error_Setjmp()
+// asks GAP_Error_Prejmp_, which uses EnterStackCount to tell the outermost
+// entry from nested ones and saves the state to return to only for the
+// former. An error longjmps back to that outermost entry, where
+// GAP_Error_Postjmp_Returning_ restores the state. So one global variable
+// per piece of state suffices: right now RecursionDepth and GCStack.
 static volatile sig_atomic_t EnterStackCount = 0;
 static volatile Int RecursionDepth;
+static volatile GAP_GCStackState GCStack;
 
 
 // These are wrapped by the macros GAP_EnterStack() and GAP_LeaveStack()
@@ -644,6 +651,7 @@ int GAP_Error_Prejmp_(const char * file, int line)
         return 1;
     }
     RecursionDepth = GetRecursionDepth();
+    GCStack = GAP_GC_SAVE_STACK_STATE();
     return 0;
 }
 
@@ -662,6 +670,7 @@ void GAP_Error_Postjmp_Returning_(void)
     if (EnterStackCount > 0) {
         EnterStackCount = -EnterStackCount;
     }
+    GAP_GC_RESTORE_STACK_STATE(GCStack);
     SetRecursionDepth(RecursionDepth);
 }
 
