@@ -48,6 +48,10 @@
 #include <time.h>
 #include <unistd.h>
 
+#ifdef SYS_IS_WINDOWS
+#include <io.h>                         // for _mktemp
+#endif
+
 #ifdef HAVE_SELECT
 // For FuncUNIXSelect
 #include <sys/time.h>
@@ -981,21 +985,50 @@ static Obj FuncREAD_GAP_ROOT(Obj self, Obj filename)
 }
 
 
+#ifdef SYS_IS_WINDOWS
+// the Windows temp directory from TEMP or TMP, with backslashes converted
+// to slashes; NULL if neither is set
+static const char * syWinTempDir(void)
+{
+    static char  buf[GAP_PATH_MAX];
+    const char * tmp = getenv("TEMP");
+    if (tmp == NULL || *tmp == '\0')
+        tmp = getenv("TMP");
+    if (tmp == NULL || *tmp == '\0')
+        return NULL;
+    gap_strlcpy(buf, tmp, sizeof(buf));
+    for (char * p = buf; *p; p++)
+        if (*p == '\\')
+            *p = '/';
+    return buf;
+}
+#endif
+
 /****************************************************************************
 **
 *F  FuncTmpName( <self> ) . . . . . . . . . . . . . . return a temporary name
 */
 static Obj FuncTmpName(Obj self)
 {
-    char name[100] = "/tmp/gaptempfile.XXXXXX";
-#ifdef SYS_IS_CYGWIN32
-    // If /tmp is missing, write into Window's temp directory
-    DIR* dir = opendir("/tmp");
-    if(dir) {
-        closedir(dir);
+    char name[GAP_PATH_MAX] = "/tmp/gaptempfile.XXXXXX";
+#if defined(SYS_IS_CYGWIN32) || defined(SYS_IS_WINDOWS)
+    const char * wintmp = NULL;
+#ifdef SYS_IS_WINDOWS
+    wintmp = syWinTempDir();
+#endif
+    if (wintmp) {
+        gap_strlcpy(name, wintmp, sizeof(name));
+        gap_strlcat(name, "/gaptempfile.XXXXXX", sizeof(name));
     }
     else {
-        strcpy(name, "C:/WINDOWS/Temp/gaptempfile.XXXXXX");
+        // If /tmp is missing, write into Window's temp directory
+        DIR* dir = opendir("/tmp");
+        if(dir) {
+            closedir(dir);
+        }
+        else {
+            strcpy(name, "C:/WINDOWS/Temp/gaptempfile.XXXXXX");
+        }
     }
 #endif
     int fd = mkstemp(name);
@@ -1018,15 +1051,24 @@ static Obj FuncTmpDirectory(Obj self)
         name = MakeString(env_tmpdir);
     }
     else {
-#ifdef SYS_IS_CYGWIN32
-        // If /tmp is missing, write into Window's temp directory
-        DIR* dir = opendir("/tmp");
-        if(dir) {
-            closedir(dir);
-            name = MakeString("/tmp");
+#if defined(SYS_IS_CYGWIN32) || defined(SYS_IS_WINDOWS)
+        const char * wintmp = NULL;
+#ifdef SYS_IS_WINDOWS
+        wintmp = syWinTempDir();
+#endif
+        if (wintmp) {
+            name = MakeString(wintmp);
         }
         else {
-            name = MakeString("C:/WINDOWS/Temp/");
+            // If /tmp is missing, write into Window's temp directory
+            DIR* dir = opendir("/tmp");
+            if(dir) {
+                closedir(dir);
+                name = MakeString("/tmp");
+            }
+            else {
+                name = MakeString("C:/WINDOWS/Temp/");
+            }
         }
 #else
         name = MakeString("/tmp");
@@ -1035,8 +1077,18 @@ static Obj FuncTmpDirectory(Obj self)
     const char * extra = "/gaptempdirXXXXXX";
     AppendCStr(name, extra, strlen(extra));
 
+#ifdef HAVE_MKDTEMP
     if (mkdtemp(CSTR_STRING(name)) == 0)
         return Fail;
+#else
+    // without mkdtemp, pick a name first and create the directory
+    // afterwards; unlike mkdtemp this is racy
+    // TODO(windows-port): use a native atomic replacement
+    if (_mktemp(CSTR_STRING(name)) == 0)
+        return Fail;
+    if (SyMkdir(CSTR_STRING(name)) == -1)
+        return Fail;
+#endif
     return name;
 }
 
@@ -1103,6 +1155,12 @@ static Obj FuncGAP_getcwd(Obj self)
         SySetErrorNo();
         return Fail;
     }
+#ifdef SYS_IS_WINDOWS
+    // the C runtime reports backslashes; use GAP's directory separator
+    for (char * p = buf; *p; p++)
+        if (*p == '\\')
+            *p = '/';
+#endif
     return MakeImmString(buf);
 }
 
@@ -1131,7 +1189,11 @@ static Obj FuncGAP_realpath(Obj self, Obj path)
     RequireStringRep(SELF_NAME, path);
     char resolved_path[GAP_PATH_MAX];
 
+#ifdef SYS_IS_WINDOWS
+    if (NULL == _fullpath(resolved_path, CONST_CSTR_STRING(path), sizeof(resolved_path))) {
+#else
     if (NULL == realpath(CONST_CSTR_STRING(path), resolved_path)) {
+#endif
         SySetErrorNo();
         return Fail;
     }
@@ -1478,7 +1540,7 @@ static Obj FuncREAD_ALL_FILE(Obj self, Obj fid, Obj limit)
     len = 0;
     lstr = 0;
 
-#ifdef SYS_IS_CYGWIN32
+#if defined(SYS_IS_CYGWIN32) || defined(SYS_IS_WINDOWS)
  getmore:
 #endif
     while (ilim == -1 || len < ilim ) {
@@ -1519,7 +1581,7 @@ static Obj FuncREAD_ALL_FILE(Obj self, Obj fid, Obj limit)
 
     // fix the length of <str>
     len = GET_LEN_STRING(str);
-#ifdef SYS_IS_CYGWIN32
+#if defined(SYS_IS_CYGWIN32) || defined(SYS_IS_WINDOWS)
     // line end hackery
     UInt i = 0, j = 0;
     while (i < len) {

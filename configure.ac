@@ -61,6 +61,10 @@ dnl Get canonical host information
 dnl
 AC_CANONICAL_HOST
 
+dnl export to the Makefiles whether this is a cross build (ffgen and the
+dnl gac-generated C code cannot be produced by running target binaries then)
+AC_SUBST([cross_compiling])
+
 
 dnl
 dnl Check for working C and C++ compiler; insist on C99 and C++11 support
@@ -73,6 +77,19 @@ m4_if(m4_version_compare(m4_defn([AC_AUTOCONF_VERSION]), [2.70]), -1,
     [AC_PROG_CC_C99],
     [AC_PROG_CC])
 AC_PROG_CXX
+
+dnl ffgen must run on the build machine: when cross-compiling, find a
+dnl compiler for it, otherwise the target compiler serves
+AS_IF([test "x$cross_compiling" = xyes],
+  [AX_PROG_CC_FOR_BUILD],
+  [CC_FOR_BUILD=$CC
+   CFLAGS_FOR_BUILD=$CFLAGS
+   CPPFLAGS_FOR_BUILD=$CPPFLAGS
+   LDFLAGS_FOR_BUILD=$LDFLAGS])
+AC_SUBST([CC_FOR_BUILD])
+AC_SUBST([CFLAGS_FOR_BUILD])
+AC_SUBST([CPPFLAGS_FOR_BUILD])
+AC_SUBST([LDFLAGS_FOR_BUILD])
 AX_CXX_COMPILE_STDCXX(11)
 
 AC_LANG([C])
@@ -261,6 +278,15 @@ AS_IF([test "x$with_gc" = xdefault],
     AS_IF([test "x$enable_hpcgap" = xyes], [with_gc=boehm])
     AS_IF([test "x$with_julia" != xno], [with_gc=julia])
     ])
+dnl native Windows (mingw) supports only GASMAN so far
+AS_CASE([$host_os],
+  [mingw*],[
+    AS_IF([test "x$enable_hpcgap" = xyes],
+      [AC_MSG_ERROR([HPC-GAP is not yet supported on native Windows])])
+    AS_IF([test "x$with_gc" != xgasman],
+      [AC_MSG_ERROR([only GASMAN is supported on native Windows])])
+  ])
+
 AS_CASE([$with_gc],
     [none|no],  [AC_MSG_ERROR([cannot run GAP without a garbage collector])],
     [boehm],    [AC_SUBST([GC_SOURCES], [src/boehm_gc.c])
@@ -597,7 +623,10 @@ AS_IF([test x$gmp_found = xno],[
   GMP_PREFIX='${abs_builddir}/extern/install/gmp'
   GMP_CPPFLAGS='-I${abs_builddir}/extern/install/gmp/include'
   GMP_LDFLAGS='-L${abs_builddir}/extern/install/gmp/lib'
-  GMP_LIBS='-Wl,-rpath,${abs_builddir}/extern/install/gmp/lib -lgmp'
+  dnl the PE linker knows no rpath
+  AS_CASE([$host_os],
+    [mingw*],[GMP_LIBS='-lgmp'],
+    [GMP_LIBS='-Wl,-rpath,${abs_builddir}/extern/install/gmp/lib -lgmp'])
 ])
 
 AC_SUBST([BUILD_GMP])
@@ -675,7 +704,10 @@ AS_IF([test x$zlib_found = xno],[
   BUILD_ZLIB=yes
   ZLIB_CPPFLAGS='-I${abs_builddir}/extern/install/zlib/include'
   ZLIB_LDFLAGS='-L${abs_builddir}/extern/install/zlib/lib'
-  ZLIB_LIBS='-Wl,-rpath,${abs_builddir}/extern/install/zlib/lib -lz'
+  dnl the PE linker knows no rpath
+  AS_CASE([$host_os],
+    [mingw*],[ZLIB_LIBS='-lz'],
+    [ZLIB_LIBS='-Wl,-rpath,${abs_builddir}/extern/install/zlib/lib -lz'])
 ])
 
 AC_SUBST([BUILD_ZLIB])
@@ -969,7 +1001,7 @@ dnl
 dnl check for functionality related to child process handling,
 dnl including pseudo TTY support, signals, etc.
 AC_CHECK_HEADERS([termios.h])
-AC_CHECK_HEADERS([sys/ioctl.h sys/resource.h])
+AC_CHECK_HEADERS([sys/ioctl.h sys/resource.h sys/utsname.h])
 
 
 # openpty() is available on various BSD variants, but also in glibc.
@@ -1004,6 +1036,9 @@ AC_CHECK_TYPE([sig_atomic_t], [],
     [#include <signal.h>]
 )
 AC_CHECK_FUNCS([signal sigaction setpgid])
+
+dnl POSIX functions absent on native Windows (mingw)
+AC_CHECK_FUNCS([realpath readlink mkdtemp lstat ttyname])
 
 
 dnl

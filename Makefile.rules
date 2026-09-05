@@ -331,6 +331,13 @@ ifneq (,$(findstring cygwin,$(host_os)))
   # sure we care about "make install" on Cygwin, so I am not going to work on
   # this until someone specifically asks for it (and even then I'll require
   # that person to help test it)
+else ifneq (,$(findstring mingw,$(host_os)))
+  GAC_CFLAGS =
+  # Link kernel extensions against the import library of libgap.dll; the
+  # loader then resolves their dependency against the libgap.dll that is
+  # already loaded into the gap process, by module name, without searching
+  # the filesystem. (Same "make install" caveat as for Cygwin above.)
+  GAC_LDFLAGS = -shared -static-libgcc $(abs_builddir)/libgap.dll.a
 else
   ifneq (,$(findstring darwin,$(host_os)))
     GAC_CFLAGS = -fno-common
@@ -464,6 +471,11 @@ ifneq (,$(findstring cygwin,$(host_os)))
   LIBGAP_FULL = libgap$(SHLIB_EXT)
 
   LINK_SHLIB_FLAGS = -shared -Wl,--enable-auto-image-base -Wl,--out-implib,libgap.dll.a
+else ifneq (,$(findstring mingw,$(host_os)))
+  SHLIB_EXT=.dll
+  LIBGAP_FULL = libgap$(SHLIB_EXT)
+
+  LINK_SHLIB_FLAGS = -shared -Wl,--out-implib,libgap.dll.a
 else ifneq (,$(findstring darwin,$(host_os)))
   SHLIB_EXT=.dylib
   LIBGAP_FULL = libgap.$(SHLIB_MAJOR)$(SHLIB_EXT)
@@ -528,6 +540,24 @@ gap$(EXEEXT): build/obj/src/main.c.o libgap$(SHLIB_EXT) cnf/GAP-LDFLAGS cnf/GAP-
 	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) -Wl,--export-all-symbols $< $(GAP_LIBS) -L${abs_builddir} -lgap -o $@
 	@( if which peflags > /dev/null ; then peflags --cygwin-heap=2048 gap$(EXEEXT) ; fi )
 
+else ifneq (,$(findstring mingw,$(host_os)))
+
+# the default stack size is too small for GAP (see issue #1522)
+GAP_LDFLAGS += -Wl,--stack,16777216
+
+# Allow multiple definitions so we can declare a function multiple times with 'extern inline'
+GAP_LDFLAGS += -Wl,--allow-multiple-definition
+
+# link the GCC runtime statically, so that gap.exe and libgap.dll do not
+# depend on libgcc_s_seh-1.dll
+GAP_LDFLAGS += -static-libgcc
+
+# GAP proper lives in libgap.dll, which is built next to gap.exe, where the
+# loader finds it; gap.exe is a small stub, and kernel extensions link
+# against the import library libgap.dll.a
+gap$(EXEEXT): build/obj/src/main.c.o libgap$(SHLIB_EXT) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $< $(GAP_LIBS) -L${abs_builddir} -lgap -o $@
+
 else
 
 # create a symlink  libgap.so -> libgap.so.9   resp.  libgap.dylib -> libgap.9.dylib
@@ -559,9 +589,19 @@ endif
 build/gap-nocomp$(EXEEXT): $(OBJS_NOCOMP) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
 	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $(OBJS_NOCOMP) $(GAP_LIBS) -o $@
 
+ifeq ($(cross_compiling),yes)
+# generating these C files requires running GAP, which is impossible when
+# cross-compiling; instead build GAP natively first and copy the generated
+# files into src/, where the rules above pick them up
+build/c_%.c: $(srcdir)/lib/%.g
+	$(error cannot generate $@ when cross-compiling; build GAP natively \
+	first and copy build/c_oper1.c, build/c_type1.c, build/ffdata.c and \
+	build/ffdata.h from there into this checkout's src/ directory)
+else
 build/c_%.c: $(srcdir)/lib/%.g build/gap-nocomp$(EXEEXT)
 	@$(MKDIR_P) $(@D)
 	@"$(abs_srcdir)"/cnf/gap-c-gen.sh $< $@ $(basename $(notdir $<)) build/gap-nocomp$(EXEEXT)
+endif
 .PRECIOUS: build/c_%.c
 
 
@@ -569,8 +609,10 @@ build/c_%.c: $(srcdir)/lib/%.g build/gap-nocomp$(EXEEXT)
 # The "ffdata" target regenerates build/ffdata.{c,h} using etc/ffgen.c
 ########################################################################
 
+# ffgen runs on the build machine, so it is compiled with the build
+# compiler that configure determined (its output is target independent)
 ffgen: $(srcdir)/etc/ffgen.c build/config.h
-	$(QUIET_CC)$(CC) -Wall -Wextra $(GAP_CPPFLAGS) $< -o $@
+	$(QUIET_CC)$(CC_FOR_BUILD) $(CPPFLAGS_FOR_BUILD) $(CFLAGS_FOR_BUILD) $(LDFLAGS_FOR_BUILD) -Wall -Wextra $< -o $@
 
 build/ffdata.h build/ffdata.c: ffgen
 	./ffgen -b build/ffdata
@@ -804,6 +846,10 @@ zlib: $(ZLIB_FILES)
 ifneq (,$(findstring cygwin,$(host_os)))
 $(ZLIB_FILES):
 	MAKE=$(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)" $(srcdir)/cnf/build-cygwin-zlib.sh
+
+else ifneq (,$(findstring mingw,$(host_os)))
+$(ZLIB_FILES):
+	MAKE=$(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)" $(srcdir)/cnf/build-mingw-zlib.sh
 
 else
 

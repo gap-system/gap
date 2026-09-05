@@ -11,6 +11,21 @@ echo "=== START building $pkg ==="
 pkg=$1; shift
 src=$1; shift # directory with package sources -- must be an absolute path
 
+# when cross-compiling (detected via differing --build and --host among the
+# configure flags), the test binaries built by `make check` cannot run
+build_triple=
+host_triple=
+for arg in "$@"; do
+  case "$arg" in
+    --build=*) build_triple=${arg#--build=} ;;
+    --host=*)  host_triple=${arg#--host=} ;;
+  esac
+done
+skip_check=no
+if [[ -n "$host_triple" && "$host_triple" != "$build_triple" ]]; then
+  skip_check=yes
+fi
+
 builddir=extern/build/$pkg
 prefix="$PWD/extern/install/$pkg"
 
@@ -26,7 +41,9 @@ if [[ ( ! "$builddir/config.status" -nt "$src/configure" )
 fi
 
 $MAKE -C "$builddir"
-if ! $MAKE -C "$builddir" check; then
+if [[ "$skip_check" = yes ]]; then
+  echo "=== SKIPPING check for $pkg (cross-compiling) ==="
+elif ! $MAKE -C "$builddir" check; then
   echo "=== FAILED checking $pkg ==="
   echo "The copy of $pkg distributed with GAP has failed to pass its internal checks"
   echo "You can either install the library from a different source, or use"

@@ -51,6 +51,12 @@
 
 #include <sys/stat.h>
 
+#ifdef SYS_IS_WINDOWS
+#include <io.h>                         // for _setmode
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>                    // for GlobalMemoryStatusEx
+#endif
+
 #if defined(__APPLE__) && defined(__MACH__)
 // Workaround: TRUE / FALSE are also defined by the macOS Mach-O headers
 #define ENUM_DYLD_BOOL
@@ -570,6 +576,13 @@ static void InitSysOpts(void)
     Int SyStorMaxFromMem =
         (sysconf(_SC_PAGESIZE) * sysconf(_SC_PHYS_PAGES) * 3) / 4 / 1024;
     SyStorMax = SyStorMaxFromMem > SyStorMax ? SyStorMaxFromMem : SyStorMax;
+  #elif defined(SYS_IS_WINDOWS)
+    MEMORYSTATUSEX mem;
+    mem.dwLength = sizeof(mem);
+    if (GlobalMemoryStatusEx(&mem)) {
+        Int SyStorMaxFromMem = (Int)(mem.ullTotalPhys / 1024) * 3 / 4;
+        SyStorMax = SyStorMaxFromMem > SyStorMax ? SyStorMaxFromMem : SyStorMax;
+    }
   #endif
 #endif // defined(SYS_IS_64_BIT)
 
@@ -660,7 +673,7 @@ static void InitDotGapPath(void)
     if (home == 0)
         return;
 
-#if defined(__CYGWIN__)
+#if defined(__CYGWIN__) || defined(SYS_IS_WINDOWS)
     strxcpy(DotGapPath, home, sizeof(DotGapPath));
     strxcat(DotGapPath, "/_gap;", sizeof(DotGapPath));
 #else
@@ -689,6 +702,43 @@ static void InitDotGapPath(void)
 
 void InitSystem(int argc, const char * argv[], BOOL handleSignals)
 {
+#ifdef SYS_IS_WINDOWS
+    // make binary mode the default for all file descriptors, so that the C
+    // runtime does not translate line endings behind GAP's back (matching
+    // the behavior of Cygwin's binmode mounts); GAP handles CRLF itself
+    _fmode = _O_BINARY;
+    _setmode(fileno(stdin), _O_BINARY);
+    _setmode(fileno(stdout), _O_BINARY);
+    _setmode(fileno(stderr), _O_BINARY);
+
+    // let the console interpret ANSI escape sequences, as terminals on all
+    // other systems do
+    for (int fd = 1; fd <= 2; fd++) {
+        HANDLE h = (HANDLE)_get_osfhandle(fd);
+        DWORD  mode;
+        if (GetConsoleMode(h, &mode))
+            SetConsoleMode(h, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+    }
+
+    // GAP uses HOME for the user's home directory throughout (tilde
+    // expansion, ~/.gap, the history file). When it is not set, which it
+    // normally is not on Windows, derive it from USERPROFILE; either way
+    // normalize its backslashes to GAP's directory separator.
+    {
+        const char * home = getenv("HOME");
+        if (home == NULL || *home == '\0')
+            home = getenv("USERPROFILE");
+        if (home != NULL && *home != '\0') {
+            static char homebuf[GAP_PATH_MAX + 6] = "HOME=";
+            strxcat(homebuf, home, sizeof(homebuf));
+            for (char * p = homebuf; *p; p++)
+                if (*p == '\\')
+                    *p = '/';
+            _putenv(homebuf);
+        }
+    }
+#endif
+
     InitSysOpts();
 
     if (handleSignals) {

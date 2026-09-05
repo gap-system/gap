@@ -287,7 +287,8 @@ end);
 ##    In case of `-h' print a help screen and exit.
 ##
 CallAndInstallPostRestore( function()
-    local j, i, CommandLineOptions, opt, InitFiles, line, word, value, padspace;
+    local j, i, path, sep, addpathentry, CommandLineOptions, opt, InitFiles,
+          line, word, value, padspace;
 
     GAPInfo.KernelInfo:= KERNEL_INFO();
     GAPInfo.Version := GAPInfo.KernelInfo.KERNEL_VERSION;
@@ -330,21 +331,43 @@ CallAndInstallPostRestore( function()
         GAPInfo.DirectoriesTemporary:= [];
         GAPInfo.DirectoriesSystemPrograms:= [];
     fi;
+    # the PATH environment variable; on Windows its name usually is "Path"
+    path:= fail;
     if IsBound(GAPInfo.SystemEnvironment.PATH) then
+      path:= GAPInfo.SystemEnvironment.PATH;
+    elif IsBound(GAPInfo.SystemEnvironment.Path) then
+      path:= GAPInfo.SystemEnvironment.Path;
+    fi;
+    if path <> fail then
+      # on native Windows, PATH is ';' separated and entries use backslashes
+      # (ARCH_IS_WINDOWS is not defined yet at this point)
+      if POSITION_SUBSTRING( GAPInfo.Architecture, "mingw", 0 ) <> fail then
+        sep:= ';';
+      else
+        sep:= ':';
+      fi;
+      addpathentry:= function( entry )
+        local k;
+        if sep = ';' then
+          for k in [ 1 .. LENGTH( entry ) ] do
+            if entry[k] = '\\' then
+              entry[k]:= '/';
+            fi;
+          od;
+        fi;
+        ADD_LIST( GAPInfo.DirectoriesSystemPrograms, MakeImmutable( entry ) );
+      end;
       j:= 1;
-      for i in [1..LENGTH(GAPInfo.SystemEnvironment.PATH)] do
-        if GAPInfo.SystemEnvironment.PATH[i] = ':' then
+      for i in [1..LENGTH(path)] do
+        if path[i] = sep then
           if i > j then
-            ADD_LIST(GAPInfo.DirectoriesSystemPrograms,
-                  MakeImmutable(GAPInfo.SystemEnvironment.PATH{[j..i-1]}));
+            addpathentry(path{[j..i-1]});
           fi;
           j := i+1;
         fi;
       od;
-      if j <= LENGTH( GAPInfo.SystemEnvironment.PATH ) then
-        ADD_LIST( GAPInfo.DirectoriesSystemPrograms,
-            MakeImmutable(GAPInfo.SystemEnvironment.PATH{ [ j ..
-                LENGTH( GAPInfo.SystemEnvironment.PATH ) ] } ));
+      if j <= LENGTH( path ) then
+        addpathentry( path{ [ j .. LENGTH( path ) ] } );
       fi;
     fi;
 
@@ -561,6 +584,10 @@ end );
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL("ARCH_IS_WINDOWS",function()
+  # native Windows (mingw) has no POSIX tools
+  if POSITION_SUBSTRING (GAPInfo.Architecture, "mingw", 0) <> fail then
+    return true;
+  fi;
   # Exit early if we are not in Cygwin
   if POSITION_SUBSTRING (GAPInfo.Architecture, "cygwin", 0) = fail then
     return false;

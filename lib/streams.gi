@@ -1463,13 +1463,18 @@ end);
 ##
 #M  ReadAllLine( <iostream>[, <nofail>][, <IsAllLine>] ) . .  read whole line
 ##
-# this method serves pty based iostreams, which only exist on systems that
-# also have UNIXSelect
-if IsBound( UNIXSelect ) then
 InstallMethod( ReadAllLine, "iostream,boolean,function",
         [ IsInputOutputStreamByPtyRep and IsInputOutputStream, IsBool, IsFunction ],
     function(iostream, nofail, IsAllLine)
-    local line, fd, moreOfline;
+    local line, fd, wait, moreOfline;
+    # where available, UNIXSelect is used to wait for data; without it,
+    # ReadLine blocks on its own (referenced via its name so that reading
+    # this file does not warn when the kernel does not provide it)
+    if IsBoundGlobal("UNIXSelect") then
+        wait := ValueGlobal("UNIXSelect");
+    else
+        wait := fail;
+    fi;
     line := READ_IOSTREAM_NOWAIT(iostream![1], 1);
     if nofail or line <> fail then
         fd := FileDescriptorOfStream(iostream);
@@ -1477,7 +1482,9 @@ InstallMethod( ReadAllLine, "iostream,boolean,function",
           line := "";
         fi;
         while not IsAllLine(line) do
-            UNIXSelect([fd], [], [], fail, fail);
+            if wait <> fail then
+                wait([fd], [], [], fail, fail);
+            fi;
             moreOfline := ReadLine(iostream);
             if moreOfline = fail then
               Error("failed to find any more of line (iostream dead?)\n");
@@ -1487,7 +1494,6 @@ InstallMethod( ReadAllLine, "iostream,boolean,function",
     fi;
     return line;
 end);
-fi;
 
 InstallMethod( ReadAllLine, "iostream,boolean,function",
         [ IsInputOutputStream, IsBool, IsFunction ],

@@ -161,8 +161,8 @@ static inline void ENSURE_BAG(Bag bag)
 {
 // Note: This workaround is only required with the original GMP and not with
 // MPIR
-#if defined(SYS_IS_CYGWIN32) && defined(SYS_IS_64_BIT) &&                    \
-    !defined(__MPIR_VERSION)
+#if (defined(SYS_IS_CYGWIN32) || defined(SYS_IS_WINDOWS)) &&                 \
+    defined(SYS_IS_64_BIT) && !defined(__MPIR_VERSION)
     memset(PTR_BAG(bag), 0, SIZE_BAG(bag));
 #endif
 }

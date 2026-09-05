@@ -44,6 +44,17 @@
 #include <dlfcn.h>
 #endif
 
+#ifdef SYS_IS_WINDOWS
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>                    // for LoadLibrary
+#endif
+
+// dynamic loading of kernel extensions is available via dlopen on POSIX
+// systems and via LoadLibrary on native Windows
+#if defined(HAVE_DLOPEN) || defined(SYS_IS_WINDOWS)
+#define HAVE_DYNAMIC_MODULES 1
+#endif
+
 #include <stdio.h>      // for fprintf, stderr
 
 
@@ -227,6 +238,24 @@ static const char * SyLoadModule(const Char * name, InitInfoFunc * func)
 
     return 0;
 }
+#elif defined(SYS_IS_WINDOWS)
+static const char * SyLoadModule(const Char * name, InitInfoFunc * func)
+{
+    HMODULE handle = LoadLibraryA(name);
+    if (handle == NULL) {
+        static char errbuf[48];
+        *func = 0;
+        snprintf(errbuf, sizeof(errbuf), "LoadLibrary error %lu",
+                 (unsigned long)GetLastError());
+        return errbuf;
+    }
+
+    *func = (InitInfoFunc)GetProcAddress(handle, "Init__Dynamic");
+    if (*func == 0)
+        return "symbol 'Init__Dynamic' not found";
+
+    return 0;
+}
 #endif
 
 
@@ -238,7 +267,7 @@ static Obj FuncIS_LOADABLE_DYN(Obj self, Obj filename)
 {
     RequireStringRep(SELF_NAME, filename);
 
-#if !defined(HAVE_DLOPEN)
+#if !defined(HAVE_DYNAMIC_MODULES)
     return False;
 #else
 
@@ -279,7 +308,7 @@ static Obj FuncLOAD_DYN(Obj self, Obj filename)
 {
     RequireStringRep(SELF_NAME, filename);
 
-#if !defined(HAVE_DLOPEN)
+#if !defined(HAVE_DYNAMIC_MODULES)
     // no dynamic library support
     if (SyDebugLoading) {
         Pr("#I  LOAD_DYN: no support for dynamical loading\n", 0, 0);
@@ -905,7 +934,7 @@ void LoadModules(void)
             }
             else {
                 // and dynamic case
-#ifdef HAVE_DLOPEN
+#ifdef HAVE_DYNAMIC_MODULES
                 InitInfoFunc init;
 
                 const char * res = SyLoadModule(buf, &init);
