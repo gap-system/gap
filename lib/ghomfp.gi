@@ -1169,98 +1169,108 @@ end);
 
 #InstallMethod(MaximalAbelianQuotient,
 #        "subgroups of fp. abelian rewriting", true, [IsSubgroupFpGroup], 0,
-#function(u)
-#local aug,r,sec,expwrd,rels,ab,s,m,img,gen,i,j,t1,t2,tn,d,pos;
-#  if (HasIsWholeFamily(u) and IsWholeFamily(u))
-#  # catch trivial case of rank 0 group
-#   or Length(GeneratorsOfGroup(FamilyObj(u)!.wholeGroup))=0 then
-#    TryNextMethod();
-#  fi;
-#
-#  # get an augmented coset table from the group. Since we don't care about
-#  # any particular generating set, we let the function chose.
-#  aug:=AugmentedCosetTableInWholeGroup(u);
-#
-#  aug:=CopiedAugmentedCosetTable(aug);
-#
-#  r:=Length(aug.primaryGeneratorWords);
-#  Info( InfoFpGroup, 1, "Abelian presentation with ",
-#    Length(aug.subgroupGenerators), " generators");
-#
-#  # make vectors
-#  expwrd:=function(l)
-#  local v,i;
-#    v:=ListWithIdenticalEntries(r,0);
-#    for i in l do
-#      if i>0 then v:=v+sec[i];
-#      else v:=v-sec[-i];fi;
-#    od;
-#    return v;
-#  end;
-#
-#  # do GeneratorTranslation abelianized
-#  sec:=ShallowCopy(IdentityMat(r,1)); # initialize so next command works
-#
-#  t1:=aug.tree[1];
-#  t2:=aug.tree[2];
-#  tn:=aug.treeNumbers;
-#  if Length(tn)>0 then
-#    for i in [Length(sec)+1..Maximum(tn)] do
-#      sec[i]:=sec[AbsInt(t1[i])]*SignInt(t1[i])
-#            +sec[AbsInt(t2[i])]*SignInt(t2[i]);
-#    od;
-#  fi;
-#
-#  sec:=sec{aug.treeNumbers};
-#
-#  # now make relators abelian
-#  rels:=[];
-#  rels:=RewriteSubgroupRelators( aug, aug.groupRelators);
-#  rels:=List(rels,expwrd);
-#
-#  rels:=ReducedRelationMat(rels);
-#  if Length(rels)=0 then
-#    Add(rels,ListWithIdenticalEntries(r,0));
-#  fi;
-#  s:=NormalFormIntMat(rels,25); # 9+16: SNF with transforms, destructive
-#  d:=DiagonalOfMat(s.normal);
-#  pos:=Filtered([1..Length(d)],x->d[x]<>1);
-#  d:=d{pos};
-#  ab:=AbelianGroup(d);
-#  SetAbelianInvariants(u,d);
-#  SetAbelianInvariants(ab,d);
-#  if not IsFinite(ab) then SetReducedMultiplication(ab);fi;
-#
-#  gen:=ListWithIdenticalEntries(Length(rels[1]),One(ab));
-#  gen{pos}:=GeneratorsOfGroup(ab);
-#
-#  s:=s.coltrans;
-#  img:=[];
-#  for i in [1..Length(s)] do
-#    m:=One(ab);
-#    for j in [1..Length(gen)] do
-#      m:=m*gen[j]^s[i][j];
-#    od;
-#    Add(img,m);
-#  od;
-#  aug.primaryImages:=img;
-#  if ForAll(img,IsOne) then
-#    sec:=List(sec,x->img[1]);
-#  else
-#    sec:=List(sec,x->LinearCombinationPcgs(img,x));
-#  fi;
-#  aug.secondaryImages:=sec;
-#
-#  m:=List(aug.primaryGeneratorWords,x->ElementOfFpGroup(FamilyObj(One(u)),x));
-#  m:=GroupHomomorphismByImagesNC(u,ab,m,img:noassert);
-#
-#  # but give it `aug' as coset table, so we will use rewriting for images
-#  SetCosetTableFpHom(m,aug);
-#
-#  SetIsSurjective(m,true);
-#
-#  return m;
-#end);
+BindGlobal("SubFPMaxAbelian",
+function(u)
+local aug,r,sec,expwrd,rels,ab,s,m,img,gen,i,j,t1,t2,tn,d,pos,seco;
+  if (HasIsWholeFamily(u) and IsWholeFamily(u))
+  # catch trivial case of rank 0 group
+   or Length(GeneratorsOfGroup(FamilyObj(u)!.wholeGroup))=0 then
+    TryNextMethod();
+  fi;
+
+  # get an augmented coset table from the group. Since we don't care about
+  # any particular generating set, we let the function chose.
+  aug:=AugmentedCosetTableInWholeGroup(u);
+
+  aug:=CopiedAugmentedCosetTable(aug);
+
+  r:=Length(aug.primaryGeneratorWords);
+  Info( InfoFpGroup, 1, "Abelian presentation with ",
+    Length(aug.subgroupGenerators), " generators");
+
+  if r=0 then
+    # no generators, trivial subgroup
+    s:=AbelianGroup([1]);
+    return GroupHomomorphismByImagesNC(u,s,[],[]);
+  fi;
+
+  # make vectors
+  expwrd:=function(l)
+  local v,i;
+    v:=ListWithIdenticalEntries(r,0);
+    for i in l do
+      if i>0 then v:=v+sec[i];
+      else v:=v-sec[-i];fi;
+    od;
+    return v;
+  end;
+
+  # do GeneratorTranslation abelianized
+  sec:=ShallowCopy(IdentityMat(r,1)); # initialize so next command works
+
+  t1:=aug.tree[1];
+  t2:=aug.tree[2];
+  tn:=aug.treeNumbers;
+  if Length(tn)>0 then
+    for i in [Length(sec)+1..Maximum(tn)] do
+      sec[i]:=sec[AbsInt(t1[i])]*SignInt(t1[i])
+            +sec[AbsInt(t2[i])]*SignInt(t2[i]);
+    od;
+  fi;
+
+  seco:=sec;
+  sec:=sec{aug.treeNumbers};
+
+  # now make relators abelian
+  rels:=RewriteSubgroupRelators( aug, aug.groupRelators);
+  rels:=List(rels,expwrd);
+
+  rels:=ReducedRelationMat(rels);
+  if Length(rels)=0 then
+    Add(rels,ListWithIdenticalEntries(r,0));
+  fi;
+  s:=NormalFormIntMat(rels,25); # 1+8+16: SNF with transforms, destructive
+  d:=DiagonalOfMat(s.normal);
+  pos:=Filtered([1..Length(d)],x->d[x]<>1);
+  d:=d{pos};
+  ab:=AbelianGroup(d);
+  SetAbelianInvariants(u,AbelianInvariantsOfList(d));
+  SetAbelianInvariants(ab,AbelianInvariantsOfList(d));
+  if not IsFinite(ab) then SetReducedMultiplication(ab);fi;
+
+  gen:=ListWithIdenticalEntries(r,One(ab));
+  gen{pos}:=GeneratorsOfGroup(ab);
+
+  s:=s.coltrans;
+  img:=[];
+  for i in [1..Length(s)] do
+    m:=One(ab);
+    for j in [1..Length(gen)] do
+      m:=m*gen[j]^s[i][j];
+    od;
+    Add(img,m);
+  od;
+
+  aug.primaryImages:=img;
+
+  # seondary images. Note that we need the *old* numbering
+  if ForAll(img,IsOne) then
+    seco:=List(seco,x->img[1]);
+  else
+    seco:=List(seco,x->LinearCombinationPcgs(img,x));
+  fi;
+  aug.secondaryImages:=seco;
+
+  m:=List(aug.primaryGeneratorWords,x->ElementOfFpGroup(FamilyObj(One(u)),x));
+  m:=GroupHomomorphismByImagesNC(u,ab,m,img:noassert);
+
+  # but give it `aug' as coset table, so we will use rewriting for images
+  SetCosetTableFpHom(m,aug);
+
+  SetIsSurjective(m,true);
+
+  return m;
+end);
 
 # u must be a subgroup of the image of home
 InstallGlobalFunction(
@@ -1292,7 +1302,12 @@ local v,aiu,aiv,G,primes,irrel,ma,mao,mau,a,k,gens,imgs,q,dec,deco,piv,co;
                             Filtered(aiu,z->IsInt(z/x)));
 
   Info(InfoFpGroup,1,"Larger by factor ",Product(aiv)/Product(aiu));
-  ma:=MaximalAbelianQuotient(v);
+  if IsSubgroupFpGroup(v) then
+    ma:=SubFPMaxAbelian(v);
+  else
+    ma:=MaximalAbelianQuotient(v);
+  fi;
+
   mao:=ma; # keep original one, as preimage of subgroup will be easier.
   a:=Image(ma);
   k:=List(GeneratorsOfGroup(v),x->ImagesRepresentative(ma,x));
