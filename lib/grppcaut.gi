@@ -1128,9 +1128,9 @@ end );
 InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
     local spec, weights, first, m, pcgsU, F, pcgsF, A, i, s, n, p, H,
           pcgsH, pcgsN, N, epi, mats, M, autos, ocr, elms, e, list, imgs,
-          auto, tmp, hom, gens, P, C, B, D, pcsA, rels, iso, xset,
+          auto, tmp, hom, gens, P, C, B, D,DP, pcsA, rels, iso, xset,
           gensA, new,as,somechar,scharorb,asAutom,actbase,
-          quotimg,eN,field,spaces,sporb,npcgs,nM;
+          quotimg,eN,field,spaces,sporb,npcgs,nM,eDP,reducegens;
 
     asAutom:=function(sub,hom) return Image(hom,sub);end;
 
@@ -1310,6 +1310,34 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
           B:=SubgroupNC(B,SmallGeneratingSet(B));
         fi;
 
+        reducegens:=function(gp,cnt)
+        local imgs,sel,i,new;
+          if Length(GeneratorsOfGroup(gp))<=cnt then return gp;fi;
+          if eDP=fail then
+            eDP:=EXPermutationActionPairs(DP);
+            eDP.dir:=DirectProduct(Image(eDP.p1iso),Image(eDP.p2iso));
+            eDP.mapper:=function(elm)
+              return ImagesRepresentative(Embedding(eDP.dir,1),
+                ImagesRepresentative(eDP.p1iso,elm[1]))*
+              ImagesRepresentative(Embedding(eDP.dir,2),
+              ImagesRepresentative(eDP.p2iso,elm[2]));
+            end;
+          fi;
+          imgs:=List(GeneratorsOfGroup(gp),eDP.mapper);
+          new:=Group(imgs[1]);
+          sel:=[1];
+          for i in [2..Length(imgs)] do
+            if not imgs[i] in new then
+              new:=ClosureGroup(new,imgs[i]);
+              Add(sel,i);
+            fi;
+          od;
+          gp:=Group(GeneratorsOfGroup(gp){sel});
+          SetSize(gp,Size(new));
+          return gp;
+        end;
+        eDP:=fail;
+
         if weights[s][2] = 1 then
             #Info( InfoAutGrp, 2,"compute reduced gl ");
             #B := MormalizingReducedGL( spec, s, n, M );
@@ -1322,13 +1350,13 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
               SetIsGroupOfAutomorphismsFiniteGroup(A,true);
             fi;
 
-            D := DirectProduct( A, B );
+            DP := DirectProduct( A, B );
 
             Info( InfoAutGrp, 2,"compute compatible pairs in group of size ",
                                   Size(A), " x ",Size(B),", ",
-                                  Length(GeneratorsOfGroup(D))," generators");
+                                  Length(GeneratorsOfGroup(DP))," generators");
 
-            if Size(D)>10^10 and Size(A)>4 then
+            if Size(DP)>10^10 and Size(A)>4 then
               # translate to different pcgs to make tails A-invariant
               npcgs:=PcgsCharacteristicTails(F,A);
               C:=GroupWithGenerators(npcgs);
@@ -1338,9 +1366,9 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
                     Pcgs(F),M.generators);
               nM:=rec(field:=M.field,dimension:=M.dimension,
                       generators:=List(npcgs,x->ImagesRepresentative(as,x)));
-              C:=CompatiblePairs(C,nM,D);
+              C:=CompatiblePairs(C,nM,DP);
             else
-              C := CompatiblePairs( F, M, D );
+              C := CompatiblePairs( F, M, DP );
             fi;
         else
             #Info( InfoAutGrp, 2,"compute reduced gl ");
@@ -1354,17 +1382,21 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
               SetSize(A,as);
             fi;
 
-            D := DirectProduct( A, B );
+            DP := DirectProduct( A, B );
             if weights[s][1] > 1 then
                 Info( InfoAutGrp, 2,
                       "compute compatible pairs in group of size ",
                        Size(A), " x ",Size(B),", ",
                        Length(GeneratorsOfGroup(D))," generators");
-                D := CompatiblePairs( F, M, D );
+                D := CompatiblePairs( F, M, DP );
+              D:=reducegens(D,2);
+            else
+              D:=DP;
             fi;
             Info( InfoAutGrp,2, "compute inducible pairs in a group of size ",
                   Size( D ));
             C := InduciblePairs( D, epi, M );
+            C:=reducegens(C,20);
         fi;
         Unbind(A);Unbind(B);Unbind(D);
 

@@ -1766,7 +1766,7 @@ end);
 ##
 InstallGlobalFunction(Morphium,function(G,H,DoAuto)
 local combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
-      gens,i,c,hom,elms,price,result,inns,bcl,vsu;
+      gens,i,c,hom,elms,price,result,inns,bcl,vsu,costlimit;
 
   if IsSolvableGroup(G) and CanEasilyComputePcgs(G) then
     gens:=MinimalGeneratingSet(G);
@@ -1778,6 +1778,8 @@ local combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
 
   Ggc:=List(gens,i->First(Gcl,j->ForAny(j,j->ForAny(j.classes,k->i in k))));
   combi:=List(Ggc,i->Concatenation(List(i,i->i.classes)));
+
+  costlimit:=ValueOption("costlimit");
   price:=Product(combi,i->Sum(i,Size));
   Info(InfoMorph,1,"generating system ",Sum(Flat(combi),Size),
        " of price:",price,"");
@@ -1822,6 +1824,9 @@ local combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
       gens:=bg;
 
     else
+      if costlimit<>fail and price>costlimit*20 and Sum(Gcl,Length)>30 then
+        return -1;
+      fi;
       gens:=MorFindGeneratingSystem(G,Gcl);
     fi;
 
@@ -1943,10 +1948,9 @@ local combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
     fi;
     result.inner:=inns;
   else
-    dat:=ValueOption("costlimit");
-    if IsInt(dat) and Product(List(combi,x->Sum(x,Size)))>dat then
+    if IsInt(costlimit) and Product(List(combi,x->Sum(x,Size)))>costlimit then
       Info(InfoMorph,2,"Morpheus seems to be to costly: ",
-        Product(List(combi,x->Sum(x,Size)))," vs ",dat);
+        Product(List(combi,x->Sum(x,Size)))," vs ",costlimit);
       return -1; # not fail, as this is valid
     fi;
     result:=MorClassLoop(H,combi,result,7);
