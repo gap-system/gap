@@ -358,7 +358,7 @@ function( map, elm )
   if not ( elm in Range( map ) ) then
     Error( "<elm> is not in the range of <map>" );
   elif not ( elm in Image( map ) ) then
-    return fail;
+    return [];
   fi;
   return PreImagesElmNC( map, elm );
 end );
@@ -753,7 +753,7 @@ InstallMethod( PreImagesElm,
       if not ( elm in Range( map ) ) then
         Error( "<elm> is not in the range of <map>" );
       elif not ( elm in Image( map ) ) then
-        return fail;
+        return [];
       fi;
       return PreImagesElmNC( map, elm );
     end );

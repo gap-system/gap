@@ -1340,7 +1340,7 @@ InstallMethod( PreImagesElm,
     if not (elm in Range(hom)) then
       Error( "<elm> is not in the range of <hom>" );
     elif not (elm in Image(hom)) then
-      return fail;
+      return [];
     fi;
     return PreImagesElmNC( hom, elm );
     end );
