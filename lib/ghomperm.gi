@@ -2243,7 +2243,7 @@ function( hom )
 
           # # we could try to use stabilizer chains, but the homomorphism does
           # # not necessarily have one which acts in every orbit. So we use the
-          # # time-homoured transversal
+          # # time-honoured transversal
           # sliced:=RightTransversal(s,stb);
           # for pnt in sliced do
           #   Add(dom,bpt^pnt);

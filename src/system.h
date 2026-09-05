@@ -101,7 +101,7 @@ enum {
 **
 *F  SyExit( <ret> ) . . . . . . . . . . . . . exit GAP with return code <ret>
 **
-**  'SyExit' is the official  way  to  exit GAP, bus errors are the inoffical.
+**  'SyExit' is the official way to  exit GAP, bus errors are the unofficial.
 **  The function 'SyExit' must perform all the necessary cleanup operations.
 **  If ret is 0 'SyExit' should signal to a calling process that all is  ok.
 **  If ret is 1 'SyExit' should signal a  failure  to  the  calling process.

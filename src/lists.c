@@ -749,7 +749,7 @@ static Obj FuncELMS_LIST_DEFAULT(Obj self, Obj list, Obj poss)
 **
 *F  ElmsListCheck( <list>, <poss> ) . . . . . . . . . . . . . . . . ELMS_LIST
 **
-**  `ElmsListCheck' checks that <poss> is  a  positions lists before  calling
+**  `ElmsListCheck' checks that <poss> is  a  positions list  before  calling
 **  `ELMS_LIST'.
 */
 Obj ElmsListCheck (
@@ -765,7 +765,7 @@ Obj ElmsListCheck (
 **
 *F  ElmsListLevelCheck( <lists>, <poss>, <level> )  . . . . . . ElmsListLevel
 **
-**  `ElmsListLevelCheck'   checks that  <poss> is  a  positions  lists before
+**  `ElmsListLevelCheck'   checks that  <poss> is  a  positions  list  before
 **  calling `ElmsListLevel'.
 */
 void ElmsListLevelCheck (

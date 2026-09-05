@@ -7095,7 +7095,7 @@ InstallMethod( CharacterTableWithSortedClasses,
     new:= ConvertToLibraryCharacterTableNC(
                  rec( UnderlyingCharacteristic := 0 ) );
 
-    # Set supported attributes that do not need adjustion.
+    # Set supported attributes that do not need adjustment.
     for i in [ 3, 6 .. Length( SupportedCharacterTableInfo ) ] do
       if Tester( SupportedCharacterTableInfo[ i-2 ] )( tbl )
          and not ( "class" in SupportedCharacterTableInfo[i] ) then

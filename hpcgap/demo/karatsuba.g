@@ -8,7 +8,7 @@
 #############################################################################
 # 
 # Must be >=3 for correct work. May depend on the coefficients field.
-# We use some emprically determined value which may later depend on
+# We use some empirically determined value which may later depend on
 # a number of threads and on the ring of coefficients
 # 
 KARATSUBA_CUTOFF := 100; # for sequential mode

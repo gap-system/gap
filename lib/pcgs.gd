@@ -1475,7 +1475,7 @@ DeclareGlobalFunction( "LiftedInducedPcgs" );
 ##  <Description>
 ##  Constructs a pcgs that will use another pcgs (via an isomorphism pc
 ##  group) to determine exponents. The assumption is that exponents will be
-##  so expensive that a pc group collection is of neglegible cost.
+##  so expensive that a pc group collection is of negligible cost.
 ##  <A>pcgs</A> is the list of pc elements
 ##  desired. <A>decomp</A> is another pcgs with respect to which we can
 ##  compute exponents. It corresponds to the family pcgs <A>family</A> of an

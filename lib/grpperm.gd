@@ -520,7 +520,7 @@ DeclareGlobalFunction( "DiagonalSocleAction" );
 ##  domain is found.
 ##  <P/>
 ##  In contrast to <C>SmallerDegreePermutationRepresentation</C> little effort
-##  is spent on fincting completely different actions. The degree obtained
+##  is spent on finding completely different actions. The degree obtained
 ##  by <C>ReducedPermdegree</C> therefore in general is not that small, on the
 ##  other hand <C>ReducedPermdegree</C> works fast enough (and returns a
 ##  sufficiently well-behaved homomorphism) that it can be used within other

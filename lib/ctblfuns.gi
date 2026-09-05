@@ -2326,7 +2326,7 @@ InstallMethod( DeterminantOfCharacter,
 #T > (The latter function involves using algebraic numbers,
 #T > whereas  it might happen
 #T > that f has rational or integer coefficients ,
-#T > i.e. all the irrationalies cancel)
+#T > i.e. all the irrationalities cancel)
 #T
 #T For example, if the character values in question are rational
 #T one can use Galois sums of the irreducible characters of the cyclic

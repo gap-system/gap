@@ -2285,7 +2285,7 @@ end );
 # the tables produced internally are indexed at rec.offset+k for generator
 # number k, that is in the form ...,-2,-1,empty,1,2,...
 # This avoids lots of even/od decisions and the cost of the empty list is
-# neglegible.
+# negligible.
 
 BindGlobal( "NEWTC_Compress", function(DATA,purge)
 local ct,c,a,b,offset,x,to,p,dw,doa,aug;

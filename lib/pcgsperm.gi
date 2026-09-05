@@ -907,7 +907,7 @@ InstallGlobalFunction( PermpcgsPcGroupPcgs, function( pcgs, index, isPcgsCentral
     od;
     UpdatePolycyclicCollector( sc );
     m:=GroupByRwsNC( sc );
-    SetParentAttr(m,m); # some other routines are obnocious otherwise.
+    SetParentAttr(m,m); # some other routines are obnoxious otherwise.
     return m;
 end );
 

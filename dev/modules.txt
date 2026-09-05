@@ -10,7 +10,7 @@ each other:
 The first is a purely software engineering level of ``Modules''. A module is
 a piece of code which provides certain functionality via a defined set of
 interfacing functions. On a conceptual level the library is already split
-into modules, probably later this spearation will be made more explicit by
+into modules, probably later this separation will be made more explicit by
 attaching names and version numbers to modules.  Eventually it is intended
 to make modules identifiers that are not part of the interface to be
 inaccessible from outside the module.
