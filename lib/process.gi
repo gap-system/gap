@@ -261,3 +261,101 @@ InstallGlobalFunction( Exec, function( arg )
     Process( dir, shell, InputTextUser(), OutputTextUser(), [ cs, cmd ] );
 
 end );
+
+
+#############################################################################
+##
+#F  RunProcess( <cmd>[, <arg1>, ...][, <options>] ) . . . . . run a program
+##
+# The keys accepted in the options record of RunProcess. Rejecting anything
+# else keeps the door open for adding e.g. `error` once GAP can capture the
+# standard error stream of a child process (see issue #4657).
+BindGlobal( "RUN_PROCESS_OPTIONS", MakeImmutable( [ "directory", "input", "output" ] ) );
+
+InstallGlobalFunction( RunProcess, function( arg )
+    local opts, key, cmd, args, a, dir, input, output, result;
+
+    # an options record, if given at all, must be the final argument
+    if not IsEmpty(arg) and IsRecord(Last(arg)) then
+        opts := Remove(arg);
+    else
+        opts := rec();
+    fi;
+
+    for key in RecNames(opts) do
+        if not key in RUN_PROCESS_OPTIONS then
+            Error("unsupported option '", key, "'");
+        fi;
+    od;
+
+    if IsEmpty(arg) then
+        Error("must specify a command to execute");
+    fi;
+
+    cmd := arg[1];
+    if not IsString(cmd) then
+        Error("<cmd> must be a string");
+    fi;
+
+    # arguments are passed to the command verbatim; no shell ever sees them,
+    # so there is nothing to quote or escape here
+    args := [];
+    for a in arg{[ 2 .. Length(arg) ]} do
+        if IsInt(a) then
+            a := String(a);
+        elif IsString(a) then
+            a := ShallowCopy(a);
+            ConvertToStringRep(a);
+        else
+            Error("arguments must be strings or integers");
+        fi;
+        Add(args, a);
+    od;
+
+    # resolve the command name via the system PATH, unless it already is a path
+    if not '/' in cmd and not (ARCH_IS_WINDOWS() and '\\' in cmd) then
+        a := PathSystemProgram( cmd );
+        if a = fail and ARCH_IS_WINDOWS() then
+            a := PathSystemProgram( Concatenation( cmd, ".exe" ) );
+        fi;
+        if a = fail then
+            Error("could not locate executable for '", cmd, "'");
+        fi;
+        cmd := a;
+    fi;
+
+    dir := DirectoryCurrent();
+    if IsBound(opts.directory) then
+        dir := opts.directory;
+        if not IsDirectory(dir) then
+            Error("<options>.directory must be a directory object");
+        fi;
+    fi;
+
+    # unlike Exec, pass no input at all unless the caller asks for it
+    input := InputTextNone();
+    if IsBound(opts.input) then
+        input := opts.input;
+        if not IsInputStream(input) then
+            Error("<options>.input must be an input stream");
+        fi;
+    fi;
+
+    result := rec();
+
+    # unlike Exec, capture the output instead of printing it, unless the
+    # caller provides a stream of their own
+    if IsBound(opts.output) then
+        output := opts.output;
+        if not IsOutputStream(output) then
+            Error("<options>.output must be an output stream");
+        fi;
+    else
+        result.output := "";
+        output := OutputTextString(result.output, false);
+    fi;
+
+    result.status := Process( dir, cmd, input, output, args );
+
+    return result;
+end );
