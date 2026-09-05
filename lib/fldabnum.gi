@@ -1942,7 +1942,7 @@ InstallMethod( PreImagesElm,
     if not ( elm in Range(aut) ) then
         Error( "<elm> is not in the range of mapping <aut>" );
     elif not ( elm in Image(aut) ) then
-        return fail;
+        return [];
     fi;
     return PreImagesElmNC( aut, elm );
     end );

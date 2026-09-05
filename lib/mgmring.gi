@@ -1244,7 +1244,7 @@ InstallMethod( PreImagesElm,
     if not ( elm in Range( emb ) ) then
       Error( "<elm> is not in the range of mapping <emb>" );
     elif not ( elm in Image( emb ) ) then
-      return fail;
+      return [];
     fi;
     return PreImagesElmNC( emb, elm );
     end );
@@ -1374,7 +1374,7 @@ InstallMethod( PreImagesElm,
     if not ( elm in Range( emb ) ) then
       Error( "<elm> is not in the range of mapping <emb>" );
     elif not ( elm in Image( emb ) ) then
-      return fail;
+      return [];
     fi;
     return PreImagesElmNC( emb, elm );
     end );

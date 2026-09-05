@@ -1003,7 +1003,7 @@ InstallMethod( PreImagesElm,
         if not ( n in Range(rel) ) then
             Error( "<n> is not in the range of <rel>" );
         elif not ( n in Image(rel) ) then
-            return fail;
+            return [];
         fi;
         return PreImagesElmNC( rel, n );
     end );
@@ -1861,7 +1861,7 @@ InstallMethod( PreImagesElm,
         if not ( elm in Range( rel ) ) then ## ?? is there a Range(rel)?
             Error( "<elm> not in the range of <rel>" );
         elif not ( elm in Image( rel ) ) then ## ?? is there an Image(rel)?
-            return fail;
+            return [];
         fi;
         return PreImagesElmNC( rel, elm );
     end);

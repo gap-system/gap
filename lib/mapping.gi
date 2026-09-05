@@ -1096,14 +1096,14 @@ InstallMethod( PreImagesElmNC,
     end );
 
 InstallMethod( PreImagesElm,
-    "for general mapping with finite source, and element",
+    "for general mapping, and element",
     FamRangeEqFamElm,
     [ IsGeneralMapping, IsObject ], 0,
     function ( map, elm )
     if not ( elm in Range( map ) ) then
         Error( "<elm> is not in the range of <map>" );
     elif not ( elm in Image( map ) ) then
-        return fail;
+        return [];
     fi;
     return PreImagesElmNC( map, elm );
     end );
@@ -1137,7 +1137,7 @@ InstallMethod( PreImagesElm,
     if not ( elm in Range( map ) ) then
         Error( "<elm> is not in the range of <map>" );
     elif not ( elm in Image( map ) ) then
-        return fail;
+        return [];
     fi;
     return PreImagesElmNC( map, elm );
     end );
