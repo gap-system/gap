@@ -743,7 +743,7 @@ InstallOtherMethod( Length,
 ##
 BindGlobal( "InfBits_ExtRepOfObj", elm->elm![1] );
 InstallMethod( ExtRepOfObj,
-    "for a inf. bits assoc. word",
+    "for an inf. bits assoc. word",
     true,
     [ IsInfBitsAssocWord ], 0,
     InfBits_ExtRepOfObj );

@@ -153,7 +153,7 @@ DeclareGlobalFunction("AddRuleKBDAG");
 ##
 #F  DeleteRuleKBDAG(<dag>,<left>,<index>)
 ##
-## removes a rule with given left side (sgtored at position <index> from the
+## removes a rule with given left side (stored at position <index> from the
 ## DAG. Index numbers of all rules with higher index number will be shifted
 ##  one down.
 DeclareGlobalFunction("DeleteRuleKBDAG");

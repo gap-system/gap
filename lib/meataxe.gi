@@ -105,7 +105,7 @@ InstallGlobalFunction(InducedGModule, function(g, h, m)
        ghom:=GroupHomomorphismByImages(h,GL(hdim,F),gensh,mats);
    fi;
 
-   # set up transveral
+   # set up transversal
    r:=RightTransversal(g, h);
    index:=Length(r);
 
@@ -2432,7 +2432,7 @@ SMTX.Homomorphisms:= function(module1, module2)
    # When we find a vector that norms to zero in m1bas, then the image of this
    # under a homomorphism must be zero. This leads to a linear relation
    # amongst some vectors in imbas. We store up such relations, echelonizing as
-   # we go. At the end, if we have numrels subch independent relations, then
+   # we go. At the end, if we have numrels such independent relations, then
    # there will be imlen - numrels independent homomorphisms from module1 to module2,
    # which we can then calculate.
 
@@ -2677,7 +2677,7 @@ end;
 
 #############################################################################
 ##
-#F  SMTX.Homomorphism(module1,module2,mat) . . . define a module homorphism
+#F  SMTX.Homomorphism(module1,module2,mat) . . . define a module homomorphism
 ##
 ##  module1 and module2 should be meataxe modules of dimensions m and n
 ##  over the same algebra, and mat an mXn matrix over the field of
@@ -2699,7 +2699,7 @@ SMTX.Homomorphism:=function(module1, module2, mat)
   if Length(mat) <> dim1 or Length(mat[1]) <> dim2 then
     Error("matrix has wrong size for a homomorphism");
   fi;
-  # Check if it is a homorphism
+  # Check if it is a homomorphism
   mat:=ImmutableMatrix(F,mat);
   for i in [1..ng] do
     for j in [1..dim1] do

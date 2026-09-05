@@ -48,7 +48,7 @@ We aim to modify GASMAN without going to the trouble of a complete
 rewrite, so that it can cope with a workspace that consists of a
 number of separate memory extents, which we call \emph{sacks}. There
 is a frequent requirement in GASMAN to recognise whether an arbitrary
-value is a valid bag id. Part of the check involves conparisons with
+value is a valid bag id. Part of the check involves comparisons with
 the upper and lower bounds of the masterpointer area. To avoid slowing 
 this check down, we insist that the masterpointer area be entirely
 within one sack (the \emph{master sack}).

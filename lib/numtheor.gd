@@ -698,7 +698,7 @@ DeclareOperation( "Tau", [ IsObject ] );
 ##  for the nonzero integer <A>n</A>.
 ##  This is 0 for integers which are not squarefree, i.e.,
 ##  which are divided by a square <M>r^2</M>.
-##  Otherwise it is 1 if <A>n</A> has a even number and <M>-1</M> if <A>n</A>
+##  Otherwise it is 1 if <A>n</A> has an even number and <M>-1</M> if <A>n</A>
 ##  has an odd number of prime factors.
 ##  <P/>
 ##  The importance of <M>\mu</M> stems from the so called inversion formula.

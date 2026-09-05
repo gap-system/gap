@@ -814,7 +814,7 @@ end );
 ##  <P/>
 ##  Note that the method selection for constructors works slightly differently
 ##  than for usual operations.
-##  As stated above, applicabilty to the first argument in an argument tuple
+##  As stated above, applicability to the first argument in an argument tuple
 ##  is tested by determining whether the argument-filter is a <E>subset</E> of
 ##  <A>args-filts</A><M>[1]</M>.
 ##  <P/>

@@ -817,7 +817,7 @@ static void GetChar(ScannerState * s)
   // skip '\''
   Char c = GET_NEXT_CHAR();
 
-  // handle escape equences
+  // handle escape sequences
   if ( c == '\n' ) {
     SyntaxError(s, "Character literal must not include <newline>");
   } else {

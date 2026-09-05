@@ -58,7 +58,7 @@
 ##  packages are shown.
 ##  The <Package>Browse</Package> package provides the function
 ##  <Ref Func="BrowseUserPreferences" BookName="browse"/> which gives an
-##  overview of the known user preferenes and also admits editing the
+##  overview of the known user preferences and also admits editing the
 ##  values of the preferences. <P/>
 ##
 ##  The easiest way to  make use of user preferences is  probably to use the

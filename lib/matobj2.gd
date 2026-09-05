@@ -1804,7 +1804,7 @@ DeclareOperation( "[]", [IsMatrixOrMatrixObj,IsPosInt] );  # <mat>, <pos>
 # for matrices which are not row-lists. Efficient code will have to use MatElm and
 # SetMatElm instead.
 
-# TODO:   ... resp. it will use use M[i,j]
+# TODO:   ... resp. it will use M[i,j]
 # TODO: provide a default method which creates a proxy object for the given row
 # and translates accesses to it to corresponding MatElm / SetMatElm calls;
 #  creating such a proxy object prints an InfoWarning;

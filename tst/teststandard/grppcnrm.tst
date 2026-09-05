@@ -264,7 +264,7 @@ gap> r := [ [ 2, f4*f8^2 ], [ 6, f8 ], [ 7, f9 ], [ 2, 1, f8^2 ], [ 4, 1,
 > f60*f61*f62*f64 ], [ 45, 41, f60*f61*f62*f64*f65 ], [ 46, 41,
 > f61*f62*f64*f65 ], [ 47, 41, f62*f63*f65 ], ];;
 
-# create a group defined by a single collecotr
+# create a group defined by a single collector
 gap> rws := SingleCollector( f, [ 2, 3, 7, 3, 3, 3, 3, 3, 3, 7, 7, 2,
 > 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
 > 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,

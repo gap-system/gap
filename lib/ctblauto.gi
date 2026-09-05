@@ -915,7 +915,7 @@ InstallMethod( TransformingPermutations,
     nonfixedpoints:= Filtered( bij_col[2], x -> 1 < Length(x) );
 
     # Step 4:
-    # Compute a direct prouct of symmetric groups that covers the
+    # Compute a direct product of symmetric groups that covers the
     # group of table automorphisms of mat2, using column families
     # given by `bij_col[2]'.
 

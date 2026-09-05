@@ -552,7 +552,7 @@ Obj GAP_MakeString(const char * string);
 // C string of given length (in bytes).
 Obj GAP_MakeStringWithLen(const char * string, UInt len);
 
-// Returns a immutable GAP string containing a copy of the given NULL
+// Returns an immutable GAP string containing a copy of the given NULL
 // terminated C string.
 Obj GAP_MakeImmString(const char * string);
 

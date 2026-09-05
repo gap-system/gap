@@ -433,7 +433,7 @@ local P,g,op,act,a,pcgs,ma,mat,d,f,i,j,new,newmat,id,p,dodim,compldim,compl,
   ma:=new;
 
   # convert to grps
-  pccache:=[]; # avoid recerating different copies of same element
+  pccache:=[]; # avoid recreating different copies of same element
   pcelm:=function(vec)
   local e,p;
     e:=Immutable([vec]);
@@ -506,7 +506,7 @@ local g,        # group
       i,j,k,l,
       m,kp,     # loop
       kgens,    # generators of k
-      kconh,    # complemnt conjugacy storage
+      kconh,    # complement conjugacy storage
       opt,      # options record
       normal,   # flag for 'normal' option
       consider, # optional 'consider' function
@@ -566,7 +566,7 @@ local g,        # group
       ngrpsnorms,# dito, new level
       bgids,    # generators of b many 1's (used for copro)
       opr,      # operation on complements
-      xo;       # xternal orbits
+      xo;       # external orbits
 
   g:=arg[1];
   if Length(arg)>1 and IsRecord(Last(arg)) then

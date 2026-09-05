@@ -235,7 +235,7 @@ static Obj Multiplybound(Obj x, Obj y, Int anf, Int end, Obj dtpols)
     }
     len = LEN_PLIST(dtpols);
     help = LEN_PLIST(x);
-    // convert <x> into a exponent vector
+    // convert <x> into an exponent vector
     xk = NEW_PLIST( T_PLIST, len );
     SET_LEN_PLIST(xk, len );
     j = 1;

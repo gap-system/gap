@@ -907,7 +907,7 @@ InstallGlobalFunction( PermpcgsPcGroupPcgs, function( pcgs, index, isPcgsCentral
     od;
     UpdatePolycyclicCollector( sc );
     m:=GroupByRwsNC( sc );
-    SetParentAttr(m,m); # some other routines are obnocious otherwise.
+    SetParentAttr(m,m); # some other routines are obnoxious otherwise.
     return m;
 end );
 
@@ -1386,7 +1386,7 @@ local   pcgs;
       return fail;
   fi;
 
-  # set nomerator and denominator appropriately
+  # set numerator and denominator appropriately
   SetNumeratorOfModuloPcgs(pcgs,GeneratorsOfGroup(G));
   SetDenominatorOfModuloPcgs(pcgs,GeneratorsOfGroup(N));
 

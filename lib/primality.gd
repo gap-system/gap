@@ -13,7 +13,7 @@
 
 ##############################################################################
 ##
-##  Bibiliography
+##  Bibliography
 ##
 ##  http://www.ams.org/mathscinet-getitem?mr=572872
 ##  http://links.jstor.org/sici?sici=0025-5718%28197504%2929%3A130%3C620%3ANPCAFO%3E2.0.CO%3B2-N

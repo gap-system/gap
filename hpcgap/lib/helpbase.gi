@@ -127,7 +127,7 @@ BindGlobal( "TRANSATL", MakeImmutable(
 ##  substring "Size" or "size", since it's not possible to detect whether
 ##  "size" is a part of another word or a word itself (e.g. both spellings
 ##  "emphasize" and  "emphasise" may be used). However, this only creates
-##  a tiny and really neglectible overhead (try e.g. `??SizesCentralisers'
+##  a tiny and really negligible overhead (try e.g. `??SizesCentralisers'
 ##  or `??Centralizers, Normalizers and Intersections'); however it ensures
 ##  that help searches may be successful even if they use inconsistent
 ##  spelling. In practice, we expect that the majority of help searches

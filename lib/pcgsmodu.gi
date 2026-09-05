@@ -164,7 +164,7 @@ local   wd,  filter,  new,  i;
   fi;
 
   if Length(wd)=Length(Set(wd)) then
-    # the depths are all different. We can get the exponetnts from the
+    # the depths are all different. We can get the exponents from the
     # parent pcgs
     filter:=filter and IsNumeratorParentForExponentsRep;
   fi;
@@ -865,7 +865,7 @@ end );
 #M  ExponentsOfPcElement( <modulo-pcgs>, <elm>, <subrange> )
 ##
 
-# this methoid ought to be obsolete
+# this method ought to be obsolete
 InstallOtherMethod( ExponentsOfPcElement, "pcgs modulo pcgs, subrange",
     IsCollsElmsX, [ IsModuloPcgs and IsModuloPcgsRep, IsObject,IsList ], 0,
 function( pcgs, elm,range )
@@ -994,10 +994,10 @@ end );
 
 #############################################################################
 ##
-#M  NumeratorOfModuloPcgs( <modolo-tail-pcgs-by-list-rep> )
+#M  NumeratorOfModuloPcgs( <modulo-tail-pcgs-by-list-rep> )
 ##
 InstallMethod( NumeratorOfModuloPcgs,
-    "modolo-tail-pcgs-by-list-rep", true,
+    "modulo-tail-pcgs-by-list-rep", true,
     [ IsModuloPcgs and IsModuloTailPcgsByListRep],0,
 function( mpcgs )
 local home;
@@ -1008,10 +1008,10 @@ end );
 
 #############################################################################
 ##
-#M  DenominatorOfModuloPcgs( <modolo-tail-pcgs-by-list-rep> )
+#M  DenominatorOfModuloPcgs( <modulo-tail-pcgs-by-list-rep> )
 ##
 InstallMethod( DenominatorOfModuloPcgs,
-    "modolo-tail-pcgs-by-list-rep", true,
+    "modulo-tail-pcgs-by-list-rep", true,
     [ IsModuloPcgs and IsModuloTailPcgsByListRep],0,
 function( mpcgs )
 local home;

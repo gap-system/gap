@@ -355,7 +355,7 @@ that do not delegate to <Ref Oper="NewVector"/> and
 <Section Label="Available Representations of Vector Objects">
 <Heading>Available Representations of Vector Objects</Heading>
 
-The following filters define vector objects for which the the functionality
+The following filters define vector objects for which the functionality
 described in this chapter is supported.
 
 <#Include Label="IsGF2VectorRep">
@@ -369,7 +369,7 @@ described in this chapter is supported.
 <Section Label="Available Representations of Matrix Objects">
 <Heading>Available Representations of Matrix Objects</Heading>
 
-The following filters define matrix objects for which the the functionality
+The following filters define matrix objects for which the functionality
 described in this chapter is supported.
 
 <#Include Label="IsGF2MatrixRep">
