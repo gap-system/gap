@@ -664,7 +664,7 @@ void GAP_Error_Postjmp_Returning_(void)
     if (EnterStackCount > 0) {
         EnterStackCount = -EnterStackCount;
     }
-    GAP_GC_RESTORE_STACK_STATE((GAP_GCStackState)GCStack);
+    GAP_GC_RESTORE_STACK_STATE(GCStack);
     SetRecursionDepth(RecursionDepth);
 }
 
