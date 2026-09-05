@@ -807,7 +807,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
 
   dag:=EmptyKBDAG(Union(List(GeneratorsOfMonoid(FreeMonoidOfFpMonoid(mon)),
     LetterRepAssocWord)));
-  mal:=Maximum(List(tzrules,x->Length(x[1])));
+  mal:=MaximumList(List(tzrules,x->Length(x[1])),0); # 0 if there are no rules
   for i in [1..Length(tzrules)] do
     AddRuleKBDAG(dag,tzrules[i][1],i);
   od;
@@ -815,9 +815,19 @@ local field,fp,fpg,gens,hom,mats,fm,mon,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
   gens:=List(GeneratorsOfGroup(FamilyObj(fpg)!.wholeGroup),
     x->PreImagesRepresentativeNC(fp,x));
 
-  hom:=GroupHomomorphismByImagesNC(G,Group(mo.generators),
-    GeneratorsOfGroup(G),mo.generators);
-  mo:=GModuleByMats(List(gens,x->ImagesRepresentative(hom,x)),mo.field); # new gens
+  # a module built without generators carries a single dummy identity
+  # generator instead of one image per generator of G
+  if MTX.IsZeroGens(mo) then
+    new:=ListWithIdenticalEntries(Length(ogens),One(mo.generators[1]));
+  else
+    new:=mo.generators;
+  fi;
+
+  hom:=GroupHomomorphismByImagesNC(G,Group(mo.generators),ogens,new);
+  # new gens; `gens` can be empty, so state the dimension. It is taken from
+  # the matrices, as <mo> need not have a `dimension` component.
+  mo:=GModuleByMats(List(gens,x->ImagesRepresentative(hom,x)),
+    NrRows(mo.generators[1]),mo.field);
 
   l1:=GeneratorsOfGroup(fpg);
   l1:=Concatenation(l1,List(l1,Inverse));
@@ -898,7 +908,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
   mats:=List(GeneratorsOfMonoid(mon),
     x->ImagesRepresentative(hom,PreImagesRepresentativeNC(fp,
     PreImagesRepresentativeNC(fm,x)))); # matrices for monoid generators
-  one:=One(mats[1]);
+  one:=onemat; # `mats` can be empty
   nonone:=Filtered([1..Length(mats)],x->not IsOne(mats[x]));
   zero:=zerovec;
   dim:=Length(zero);
@@ -986,7 +996,9 @@ local field,fp,fpg,gens,hom,mats,fm,mon,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
 
   #eqs:=Filtered(TriangulizedMat(eqs),x->not IsZero(x));
   eqs:=ShallowCopy(BasisVectors(eqs));
-  if Length(eqs)=0 then
+  if nvars=0 then
+    eqs:=[]; # no tails, so no cocycles; IdentityMat would give NullMapMatrix
+  elif Length(eqs)=0 then
     # no conditions, so the whole space of tail vectors consists of cocycles
     eqs:=IdentityMat(nvars,field);
   else
@@ -1036,7 +1048,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
   bds:=List(bds,Immutable);
 
   if gens<>GeneratorsOfGroup(G) then
-    G:=GroupWithGenerators(gens);
+    G:=GroupWithGenerators(gens,One(G)); # `gens` can be empty
   fi;
   r:=rec(group:=G,module:=mo,cocycles:=eqs,coboundaries:=bds,zero:=zeroq,
          prime:=Size(field));
@@ -1299,9 +1311,18 @@ end);
 
 BindGlobal("PermrepSemidirectModule",function(G,module)
 local hom,mats,m,i,j,mo,bas,a,l,ugens,gi,r,cy,act,k,it,p;
-  if not MTX.IsIrreducible(module) then Error("reducible");fi;
   p:=Size(module.field);
   if not IsPrime(p) then Error("must be over prime field");fi;
+
+  if IsTrivial(G) then
+    # nothing acts, so the semidirect product is just the module
+    mo:=AbelianGroup(IsPermGroup,ListWithIdenticalEntries(module.dimension,p));
+    return rec(group:=mo,
+               ggens:=List(GeneratorsOfGroup(G),x->One(mo)),
+               basis:=AsList(Pcgs(mo)));
+  fi;
+
+  if not MTX.IsIrreducible(module) then Error("reducible");fi;
   k:=Length(module.generators);
   hom:=GroupHomomorphismByImagesNC(G,Group(module.generators),
     GeneratorsOfGroup(G),module.generators);
@@ -1680,7 +1701,7 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,sim,
   fi;
 
   if Length(arg)>2 and arg[3]=true then
-    if IsZero(z) and MTX.IsIrreducible(r.module) then
+    if IsZero(z) and (IsTrivial(r.group) or MTX.IsIrreducible(r.module)) then
       # make SDP directly
       m:=PermrepSemidirectModule(r.group,r.module:cheap);
       p:=m.group;
