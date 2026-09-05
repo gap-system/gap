@@ -1271,7 +1271,7 @@ local  G,  home,  # the supergroup (of <H> and <U>), the home pcgs
        N,   cent,   # elementary abelian factor, for affine action
        cls,     # classes in range/source of homomorphism
        opr,     # (elm^opr)=cls.representative
-       nexpo,indstep,Ldep,allcent;
+       nexpo,indstep,info,Ldep,allcent;
 
   # Treat the case of a trivial group.
   if IsTrivial( U )  then
@@ -1294,16 +1294,18 @@ local  G,  home,  # the supergroup (of <H> and <U>), the home pcgs
   # w.r.t. <home>.
 
   if IsPGroup( G )  then
-    home:=PcgsCentralSeries(G);
+    info:=PcgsCentralSeriesInfo(G);
+    home:=info.pcgs;
     eas:=CentralNormalSeriesByPcgs(home);
     cent:=ReturnTrue;
   else
-    home:=PcgsElementaryAbelianSeries(G);
+    info:=PcgsElementaryAbelianSeriesInfo(G);
+    home:=info.pcgs;
     eas:=EANormalSeriesByPcgs(home);
     cent:=PcClassFactorCentralityTest;
 
   fi;
-  indstep:=IndicesEANormalSteps(home);
+  indstep:=info.indices;
 
   Hp:=InducedPcgs(home,H);
 
@@ -1451,7 +1453,7 @@ local G,           # common parent
       KcapH,LcapH, # pcgs's of intersections with <H>
       N,   cent,   # elementary abelian factor, for affine action
       tra,         # transversal for candidates
-      nexpo,indstep,Ldep,allcent,
+      nexpo,indstep,info,Ldep,allcent,
       cl,  i;  # loop variables
 
     # Treat trivial cases.
@@ -1479,10 +1481,12 @@ local G,           # common parent
 
     eas:=fail;
     if IsPGroup( G ) then
-        home:=PcgsPCentralSeriesPGroup(G);
+        info:=PcgsPCentralSeriesPGroupInfo(G);
+        home:=info.pcgs;
         eas:=PCentralNormalSeriesByPcgsPGroup(home);
         if NT in eas then
           cent := ReturnTrue;
+          indstep:=info.indices;
         else
           eas:=fail; # useless
         fi;
@@ -1492,8 +1496,8 @@ local G,           # common parent
         home:=PcgsElementaryAbelianSeries([G,NT]);
         eas:=EANormalSeriesByPcgs(home);
         cent:=PcClassFactorCentralityTest;
+        indstep:=IndicesEANormalSteps(home);
     fi;
-    indstep:=IndicesEANormalSteps(home);
 
     # series to NT
     ea2:=List(eas,i->ClosureGroup(NT,i));
