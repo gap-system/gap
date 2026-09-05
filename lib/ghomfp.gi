@@ -1144,7 +1144,7 @@ end);
 #        "subgroups of fp. abelian rewriting", true, [IsSubgroupFpGroup], 0,
 BindGlobal("SubFPMaxAbelian",
 function(u)
-local aug,r,sec,expwrd,rels,ab,s,m,img,gen,i,j,t1,t2,tn,d,pos;
+local aug,r,sec,expwrd,rels,ab,s,m,img,gen,i,j,t1,t2,tn,d,pos,seco;
   if (HasIsWholeFamily(u) and IsWholeFamily(u))
   # catch trivial case of rank 0 group
    or Length(GeneratorsOfGroup(FamilyObj(u)!.wholeGroup))=0 then
@@ -1191,6 +1191,7 @@ local aug,r,sec,expwrd,rels,ab,s,m,img,gen,i,j,t1,t2,tn,d,pos;
     od;
   fi;
 
+  seco:=sec;
   sec:=sec{aug.treeNumbers};
 
   # now make relators abelian
@@ -1222,13 +1223,16 @@ local aug,r,sec,expwrd,rels,ab,s,m,img,gen,i,j,t1,t2,tn,d,pos;
     od;
     Add(img,m);
   od;
+
   aug.primaryImages:=img;
+
+  # seondary images. Note that we need the *old* numbering
   if ForAll(img,IsOne) then
-    sec:=List(sec,x->img[1]);
+    seco:=List(seco,x->img[1]);
   else
-    sec:=List(sec,x->LinearCombinationPcgs(img,x));
+    seco:=List(seco,x->LinearCombinationPcgs(img,x));
   fi;
-  aug.secondaryImages:=sec;
+  aug.secondaryImages:=seco;
 
   m:=List(aug.primaryGeneratorWords,x->ElementOfFpGroup(FamilyObj(One(u)),x));
   m:=GroupHomomorphismByImagesNC(u,ab,m,img:noassert);
