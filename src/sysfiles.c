@@ -640,7 +640,7 @@ void SyBufSetEOF(Int fid)
 **
 **  The following standard files names and file identifiers  are  guaranteed:
 **  'SyFopen( "*stdin*", "r", ..)' returns 0, the standard input file.
-**  'SyFopen( "*stdout*","w", ..)' returns 1, the standard outpt file.
+**  'SyFopen( "*stdout*","w", ..)' returns 1, the standard output file.
 **  'SyFopen( "*errin*", "r", ..)' returns 2, the brk loop input file.
 **  'SyFopen( "*errout*","w", ..)' returns 3, the error messages file.
 **

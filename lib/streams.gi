@@ -507,7 +507,7 @@ end );
 
 #############################################################################
 ##
-#R  IsInputTextFileRep  . . . . .  representation of a input text file stream
+#R  IsInputTextFileRep  . . . . .  representation of an input text file stream
 ##
 DeclareRepresentation(
     "IsInputTextFileRep",
@@ -517,7 +517,7 @@ DeclareRepresentation(
 
 #############################################################################
 ##
-#V  InputTextFileType . . . . . . . . . . .  type of a input text file stream
+#V  InputTextFileType . . . . . . . . . . .  type of an input text file stream
 ##
 InputTextFileType := NewType(
     StreamsFamily,
@@ -537,7 +537,7 @@ fi;
 
 #############################################################################
 ##
-#M  InputTextFile( <str> )  . . . . . . . . . create a input text file stream
+#M  InputTextFile( <str> )  . . . . . . . . . create an input text file stream
 ##
 InstallMethod( InputTextFile,
     "input text stream from file",

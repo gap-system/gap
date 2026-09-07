@@ -1,6 +1,6 @@
 Read("demo/bench.g");
 #
-# This is basically intended to be the simplkest natural parallel 
+# This is basically intended to be the simplest natural parallel 
 # implementation of Strassen-Winograd. Also included is a sequential version
 # and a parallel divide-and-conquer that does not use Strassen (so 8 recursive
 # calls instead of 7).

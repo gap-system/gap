@@ -3427,7 +3427,7 @@ InstallAccessToGenerators( IsMagmaRingModuloRelations and IsRingWithOne,
 #M  CentralIdempotentsOfAlgebra( <A> )
 ##
 ##   Let A be an associative algebra with one. We construct a maximal
-##   system of orthogonal primitive idemoptents in the centre of A.
+##   system of orthogonal primitive idempotents in the centre of A.
 ##   First we let B be the centre of A and Q the
 ##   the semisimple commutative associative algebra A/Rad(A).
 ##   We calculate a complete set of orthogonal idempotents in `Q'

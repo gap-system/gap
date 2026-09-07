@@ -2273,7 +2273,7 @@ end );
 ##  2 or 3, having a nondegenerate Killing form. Such Lie algebras are
 ##  semisimple. They are characterized as direct sums of simple Lie algebras,
 ##  and these have been classified: a simple Lie algebra is either an element
-##  of the "great" classes of simple Lie algebas (A_n, B_n, C_n, D_n), or
+##  of the "great" classes of simple Lie algebras (A_n, B_n, C_n, D_n), or
 ##  an exceptional algebra (E_6, E_7, E_8, F_4, G_2). This function finds
 ##  the type of the semisimple Lie algebra `L'. Since for the calculations
 ##  eigenvalues and eigenvectors of the action of a Cartan subalgebra are
@@ -2855,7 +2855,7 @@ InstallMethod( RootSystem,
           zero,       # zero of `F'
           hts,        # A list of the heights of the root vectors
           sorh,       # The set `Set( hts )'
-          sorR,       # The soreted set of roots
+          sorR,       # The sorted set of roots
           R,          # The root system.
           Rvecs,      # The root vectors.
           x,y,        # Canonical generators.
@@ -3155,7 +3155,7 @@ InstallMethod( ChevalleyBasis,
 
     # Now for every positive root vector `x' we set `y= -Image( f, x )'.
     # We compute a scalar `cf' such that `[x,y]=h', where `h' is the
-    # canonical Cartan element corresponding to the root (unquely determined).
+    # canonical Cartan element corresponding to the root (uniquely determined).
     # Then we have to multiply `x' and `y' by Sqrt( 2/cf ), in order to get
     # elements of a Chevalley basis.
 
@@ -4212,7 +4212,7 @@ local ReductionModuloTable,   #
       cf,                     # Coefficient.
       t1,t2,                  # Indices.
       max,                    # Maximum.
-      R,                      # Lists of commtators that have been defined.
+      R,                      # Lists of commutators that have been defined.
       Rw1,                    # A new roe of `R'.
       one,                    # One of the field.
       zero,                   # Zero of the field.

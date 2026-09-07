@@ -500,7 +500,7 @@ end );
 
 
 # Temporarily disabled -- See #569
-# Currently some group homomrophisms construct inverse maps that are really
+# Currently some group homomorphisms construct inverse maps that are really
 # restricted inverses (i.e. defined only on the image). Together with these
 # immediate methods this can cause wrong indications of IsSurjective etc.
 # for these maps. While this needs to be fixed in the future properly, the
@@ -962,7 +962,7 @@ InstallMethod( ImagesElm,
 
 #############################################################################
 ##
-#M  ImagesSet( <map>, <elms> )  . . for generel mapping and finite collection
+#M  ImagesSet( <map>, <elms> )  . . for general mapping and finite collection
 ##
 InstallMethod( ImagesSet,
     "for general mapping, and finite collection",

@@ -365,7 +365,7 @@ DeclareOperation( "ReadAll", [ IsInputStream, IsInt ] );
 ##  stream <A>input-stream</A>.  <Ref Oper="ReadByte"/> returns <K>fail</K> if there is no character
 ##  available, in particular if it is at the end of a file.
 ##  <P/>
-##  If <A>input-stream</A> is the input stream of  a input/output process, <Ref Oper="ReadByte"/>
+##  If <A>input-stream</A> is the input stream of  an input/output process, <Ref Oper="ReadByte"/>
 ##  may also return <K>fail</K> if no byte is currently available.
 ##  <P/>
 ##  <Ref Oper="ReadByte"/> is the basic operation for input streams. If a <Ref Oper="ReadByte"/>
@@ -397,7 +397,7 @@ DeclareOperation( "ReadByte", [ IsInputStream ] );
 ##  the input stream <A>input-stream</A>.  <Ref Oper="ReadLine"/> reads in the input until  a
 ##  newline is read or the end-of-stream is encountered.
 ##  <P/>
-##  If <A>input-stream</A> is the input stream of a input/output process, <Ref Oper="ReadLine"/>
+##  If <A>input-stream</A> is the input stream of an input/output process, <Ref Oper="ReadLine"/>
 ##  may also return <K>fail</K> or return an incomplete line if the other
 ##  process has not yet written any more. It will always wait (block) for at
 ##  least one byte to be available, but will then return as much input

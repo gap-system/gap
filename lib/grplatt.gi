@@ -2151,7 +2151,7 @@ local G,        # group
           " new normal subgroups (",Length(nnt)," total)");
     nt:=nnt;
 
-    # modify hohomorphisms
+    # modify homomorphisms
     if still then
       for i in [1..firsts] do
         l:=nt[i];

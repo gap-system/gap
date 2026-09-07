@@ -3143,7 +3143,7 @@ AClosVec(Obj  veclis,    // pointers to matrix vectors and their multiples
 
 
     // maybe we don't add this basis vector -- if this leaves us enough
-    // possibilitiies
+    // possibilities
     if (pos + cnt < l) {
         bd = AClosVec(veclis, ovec, osum, pos + 1, l, len, cnt, stop, bd, obv,
                       coords, bcoords);

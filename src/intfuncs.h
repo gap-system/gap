@@ -30,7 +30,7 @@ void MurmurHash3_x64_128(const void * key,
                          const UInt4  seed,
                          void *       out);
 
-// These three functions provide an wrappers around MurmurHash3
+// These three functions provide wrappers around MurmurHash3
 // for common use cases.
 // In particular, they deal with taking the output of MurmurHash3,
 // and transforming it into an Int which fits into a GAP

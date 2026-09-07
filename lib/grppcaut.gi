@@ -1060,7 +1060,7 @@ if Length(rans[i])=0 then Error("EGAD");fi;
   fi;
 
   # test for correctness. This is not an assertion for two reasons:
-  # - Assertions also turn on heavy checks for homomophisms that can slow
+  # - Assertions also turn on heavy checks for homomorphisms that can slow
   # the whole calculation down beyond reasonable
   # - This is a hard test which would slow testing down, implying that the
   # tests would be thrown out of the standard test suite.
@@ -1511,7 +1511,7 @@ InstallGlobalFunction(AutomorphismGroupFrattFreeGroup,function( G )
     gensK := Pcgs( K );
     gensG := Concatenation( gensK, gensF );
 
-    # create automorhisms
+    # create automorphisms
     Info( InfoAutGrp, 2, "get aut grp of socle ");
     A := AutomorphismGroupAbelianGroup( F );
 

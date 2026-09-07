@@ -15,7 +15,7 @@
 ##  Each entry IMFList[dim] of IMFList is a record which contains information
 ##  about the  Z-class  representative groups  (in case  dim < 12  or  dim in
 ##  {13,17,19,23}, or about the Q-class representative groups (in case dim in
-##  {12,14,15,16,18,20,21,22,24,25,26,27,28,29,30,31}) of diminsion dim. More
+##  {12,14,15,16,18,20,21,22,24,25,26,27,28,29,30,31}) of dimension dim. More
 ##  precisely, each of these records contains the following components:
 ##
 ##  IMFList[dim].size               the group size,

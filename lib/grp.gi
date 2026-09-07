@@ -1831,7 +1831,7 @@ local a,m,i,l;
     Add(l,a);
   od;
 
-  # now we know list is untained, store
+  # now we know list is untainted, store
   return l;
 
 end);
@@ -5440,7 +5440,7 @@ InstallMethod( MinimalNormalSubgroups,
     # force an IsNilpotent check
     # should have and IsSolvable check, as well,
     # but methods for solvable groups are only in CRISP
-    # which aggeressively checks for solvability, anyway
+    # which aggressively checks for solvability, anyway
     if (not HasIsNilpotentGroup(G) and IsNilpotentGroup(G)) then
       return MinimalNormalSubgroups( G );
     fi;

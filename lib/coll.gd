@@ -2284,7 +2284,7 @@ DeclareSynonym( "Set", SSortedList );
 ##  <Attr Name="AsList" Arg='listorcoll'/>
 ##
 ##  <Description>
-##  <Ref Attr="AsList"/> returns a immutable list <A>imm</A>.
+##  <Ref Attr="AsList"/> returns an immutable list <A>imm</A>.
 ##  If the argument is a list (which may contain holes),
 ##  then <C>Length( <A>imm</A> )</C> is the <Ref Attr="Length"/> value of
 ##  this list,

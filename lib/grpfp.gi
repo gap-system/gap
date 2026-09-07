@@ -2050,7 +2050,7 @@ local d,A,B,e1,e2,Ag,Bg,s,sg,u,v,map,sz;
     e2:=Length(Orbits(s,MovedPoints(s)));
     d:=ValueOption("reduce");
     if (d<>false and HasSize(s) and
-      # test proportiopnal to how much orbits added
+      # test proportional to how much orbits added
       (Random([1..e2+1])>e1) ) or d=true then
       d:=SmallerDegreePermutationRepresentation(s:cheap);
       A:=SubgroupNC(Range(d),List(GeneratorsOfGroup(s),x->ImagesRepresentative(d,x)));

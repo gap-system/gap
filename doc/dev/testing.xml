@@ -139,7 +139,7 @@ to check the validity of (in particular cross-references in)
 the &GAP; website.
 <P/>
 
-(Possible ingedients are <F>doc/test/CheckBooks.g</F> and
+(Possible ingredients are <F>doc/test/CheckBooks.g</F> and
 <F>dev/LinksOfAllHelpSections.g</F>.)
 <P/>
 
@@ -240,7 +240,7 @@ Then proceed as follows in the &GAP; root directory.
     Call <C>dev/ci.sh testpackagesloading</C>.
     This loads each accepted or deposited package in a new &GAP; session,
     then starts a new &GAP; session and calls <Ref BookName="ref" Func="LoadAllPackages"/>
-    to check that all packages may be loaded simultaneosuly.
+    to check that all packages may be loaded simultaneously.
     It require just a few minutes.
   </Item>
 </List>

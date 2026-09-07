@@ -346,7 +346,7 @@ function( a, b )
   return a![ELSPOS]=List(b,x->x![1]);
 end );
 
-InstallMethod( \=, "for plist an zmodnz vector",IsIdenticalObj,
+InstallMethod( \=, "for plist and zmodnz vector",IsIdenticalObj,
   [ IsPlistRep,IsZmodnZVectorRep],
 function(b,a)
   return a![ELSPOS]=List(b,x->x![1]);
@@ -986,7 +986,7 @@ InstallMethod( CopySubMatrix, "for two zmodnz matrices and four lists",
       Error( "<m> and <n> have different base domains" );
     fi;
     # This eventually should go into the kernel without creating
-    # a intermediate objects:
+    # intermediate objects:
     for i in [1..Length(srcrows)] do
         n![ROWSPOS][dstrows[i]]![ELSPOS]{dstcols} :=
                   m![ROWSPOS][srcrows[i]]![ELSPOS]{srccols};

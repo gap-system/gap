@@ -1320,7 +1320,7 @@ end );
 ##
 #F  RandomElmAsWord( <chain> )  . . . . . . .  random element written as word
 ##
-##  given an stabilizer chain <chain> for the group $G$, returns a uniformly
+##  given a stabilizer chain <chain> for the group $G$, returns a uniformly
 ##  distributed random element of $G$,
 ##  as a word in the strong generators
 ##

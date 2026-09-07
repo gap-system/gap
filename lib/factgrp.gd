@@ -331,7 +331,7 @@ DeclareGlobalFunction("UnlockNaturalHomomorphismsPool");
 ##  <Func Name="KnownNaturalHomomorphismsPool" Arg='G,N'/>
 ##
 ##  <Description>
-##  This function tests whether an homomorphism for
+##  This function tests whether a homomorphism for
 ##  <C>NaturalHomomorphismByNormalSubgroup(<A>G</A>,<A>N</A>)</C> is already known (or
 ##  computed trivially for <M>G=N</M> or <M>N=\langle1\rangle</M>).
 ##  </Description>

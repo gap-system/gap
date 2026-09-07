@@ -205,7 +205,7 @@ InstallMonomialOrdering(MonomialLexOrdering,
             has:=true;
             if a[ap+1]>b[i+1] then
 
-              # a exponent is bigger
+              # an exponent is bigger
               ret:=false; # unless a smaller (larger pos) variable found
             elif a[ap+1]<b[i+1] then
               # b exponent is bigger
@@ -350,7 +350,7 @@ InstallMonomialOrdering(MonomialGrlexOrdering,
             has:=true;
             if a[ap+1]>b[i+1] then
 
-              # a exponent is bigger
+              # an exponent is bigger
               ret:=false; # unless a smaller (larger pos) variable found
             elif a[ap+1]<b[i+1] then
               # b exponent is bigger

@@ -4302,7 +4302,7 @@ DeclareOperation( "SortedCharacters",
 ##  w.r.t.&nbsp;increasing class length, element order, or both.
 ##  <A>classes</A> and <A>orders</A> must be Booleans.
 ##  If <A>orders</A> is <K>true</K> then classes of element of smaller order
-##  precede classes of elements of larger order after peruting with
+##  precede classes of elements of larger order after permuting with
 ##  <M>\pi</M>.
 ##  If both <A>classes</A> and <A>orders</A> are <K>true</K> then
 ##  additionally classes of elements of the same order are sorted

@@ -482,7 +482,7 @@ InstallMethod( BlocksOp, "integers, with seed", true,
     # while there are points still to be merged into another block
     while fst <> 0  do
 
-        # get this point <a> and its repesentative <b>
+        # get this point <a> and its representative <b>
         a := fst;
         b := rep[fst];
 

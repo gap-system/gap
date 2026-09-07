@@ -2266,7 +2266,7 @@ InstallGlobalFunction( MinimalNonmonomialGroup, function( p, factsize )
           q,          # another name for `factsize'
           2m,         # exponent of size of Frattini factor of group $F$
           m,          # half of `2m'
-          facts,      # factors of cylotomic polynomial
+          facts,      # factors of cyclotomic polynomial
           coeff,      # coefficients vector of one factor in `facts'
           inv,        # inverse of first in `coeff'
           f,          # `GF(2)'

@@ -39,7 +39,7 @@ false
 gap> Size(ec);
 5
 gap> ######################################################################
-gap> ## 2. Check partital closure of an infinite block
+gap> ## 2. Check partial closure of an infinite block
 gap> ##    
 gap> ##    The semigroup has two generators, is commutative and has
 gap> ##    two blocks. One finite the other infinite.
@@ -63,7 +63,7 @@ gap> ##
 gap> HasEquivalenceRelationPartition(c);
 false
 gap> ######################################################################
-gap> ## 3. Check partital closure with an infinite number of blocks
+gap> ## 3. Check partial closure with an infinite number of blocks
 gap> ##
 gap> ##    Create a congruence with an infinite number of blocks
 gap> ## 

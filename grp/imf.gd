@@ -54,7 +54,7 @@ DeclareAttribute( "ImfRecord", IsGroup, "mutable" );
 ##
 ##  'BaseShortVectors' expects as argument an  orbit of short vectors  under
 ##  some  imf  matrix  group  of  dimension  dim,  say.  This  orbit  can  be
-##  considered  as  a set of generatos  of a  dim-dimensional  Q-vectorspace.
+##  considered  as  a set of generators  of a  dim-dimensional  Q-vectorspace.
 ##  'BaseShortVectors' determines a subset B of <orbit> which is a base
 ##  of that vectorspace, and it returns a list of two lists containing
 ##

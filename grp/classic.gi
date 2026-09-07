@@ -2057,7 +2057,7 @@ end );
 ##
 #F  IsSquareFFE( fld, e) . . . . . . . Tests whether <e> is a square in <fld>
 ##
-## For an finite field element <e> of <fld> this function returns
+## For a finite field element <e> of <fld> this function returns
 ## true if <e> is a square element in <fld> and otherwise false.
 BindGlobal( "IsSquareFFE", function( fld, e )
     local char, q;

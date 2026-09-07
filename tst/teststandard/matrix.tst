@@ -324,7 +324,7 @@ gap> nm=m-m;
 true
 gap> #T 
 gap> #T We cannot determine the default field in this case.
-gap> #T But can do some reasonabe things with the matrix. 
+gap> #T But can do some reasonable things with the matrix. 
 gap> #T 
 gap> pr := PolynomialRing(Integers);;
 gap> x := IndeterminatesOfPolynomialRing(pr)[1];;

@@ -56,7 +56,7 @@ do
 
 or, while your cursor is on the name of that function, press `<CTRL-]>`
 to jump to the first definition of that function. If for example an operation has
-several several methods installed, you can also do
+several methods installed, you can also do
 
     :ts <function-name>
 

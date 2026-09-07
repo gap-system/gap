@@ -407,7 +407,7 @@ InstallMethod( Coefficients,
 #F  SiftedVectorForGaussianRowSpace( <F>, <vectors>, <heads>, <v> )
 ##
 ##  is the remainder of the row vector <v> after sifting through the
-##  (mutable) <F>-basis with besis vectors <vectors> and heads information
+##  (mutable) <F>-basis with basis vectors <vectors> and heads information
 ##  <heads>.
 ##
 BindGlobal( "SiftedVectorForGaussianRowSpace",

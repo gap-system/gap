@@ -1081,7 +1081,7 @@ InstallReadlineMacro := function(name, fun)
   cfm.(pos) := fun;
   cfm.Names[pos] := name;
 end;
-# A sequence to invoce macro name ('ESC num C-x C-g'  sets GAPMacroNumber in
+# A sequence to invoke macro name ('ESC num C-x C-g'  sets GAPMacroNumber in
 # kernel and then any key that calls handled-by-GAP will do it)
 # We assume that 'C-xC-g' and <TAB> are not overwritten.
 InvocationReadlineMacro := function(name)

@@ -735,7 +735,7 @@ InstallMethod( SSortedList,
 ##  which stores the underlying list in the component `list'
 ##  and the current position in the component `pos'.
 ##
-##  It may happen that the underlying list is a enumerator of a domain
+##  It may happen that the underlying list is an enumerator of a domain
 ##  whose size cannot be computed easily.
 ##  In such cases, the methods for `IsDoneIterator' and `NextIterator'
 ##  shall avoid calling `Length' for the enumerator.
