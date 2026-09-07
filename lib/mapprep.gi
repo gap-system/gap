@@ -329,7 +329,7 @@ InstallMethod( PreImagesElm,
     if not ( elm in Range(com) ) then
       Error( "<elm> is not in the range of mapping <com>" );
     elif not ( elm in Image(com) ) then
-      return fail;
+      return [];
     fi;
     return PreImagesElmNC( com, elm );
     end );
@@ -738,7 +738,7 @@ InstallMethod( PreImagesElm,
     if not ( elm in Range(map) ) then
         Error( "<elm> is not in the range of <map>" );
     elif not ( elm in Image(map) ) then
-        return fail;
+        return [];
     fi;
     return PreImagesElmNC( map, elm );
     end );
@@ -1165,7 +1165,7 @@ InstallMethod( PreImagesElm,
     if not ( elm in Range(inv) ) then
         Error( "<elm> is not in the range of mapping <inv>" );
     elif not ( elm in Image(inv) ) then
-        return fail;
+        return [];
     fi;
     return PreImagesElmNC( inv, elm );
     end );
@@ -1450,7 +1450,7 @@ InstallMethod( PreImagesElm,
     if not ( elm in Range(id) ) then
         Error( "<elm> is not in the range of mapping <id>" );
     elif not ( elm in Image(id) ) then
-        return fail;
+        return [];
     fi;
     return PreImagesElmNC( id, elm );
   end );
@@ -1782,7 +1782,7 @@ InstallMethod( PreImagesElm,
     if not ( elm in Range(zero) ) then
       Error( "<elm> is not in the range of mapping <zero>" );
     elif not ( elm in Image(zero) ) then
-      return fail;
+      return [];
     fi;
     return PreImagesElmNC( zero, elm );
     end );
@@ -2060,7 +2060,7 @@ InstallMethod( PreImagesElm,
     if not ( elm in Range(res) ) then
       Error( "<elm> is not in the range of mapping <res>" );
     elif not ( elm in Image(res) ) then
-      return fail;
+      return [];
     fi;
     return PreImagesElmNC( res, elm );
     end );

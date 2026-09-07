@@ -985,7 +985,7 @@ DeclareGlobalFunction( "Images" );
 ##  <C>PreImagesElm</C> was renamed <C>PreImagesElmNC</C>
 ##  throughout the library, and the new <C>PreImagesElm</C> checks that
 ##  <A>elm</A> is an element of the image before calling <C>PreImagesElmNC</C>.
-##  If <A>elm</A> is in the range but not in the image then <K>fail</K>
+##  If <A>elm</A> is in the range but not in the image then the empty list
 ##  is returned.
 ##  If <A>elm</A> is not even in the range then an error is signalled.
 ##  <P/>

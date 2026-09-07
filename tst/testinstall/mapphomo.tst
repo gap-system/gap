@@ -110,7 +110,7 @@ RightCoset(Group([ (1,4)(2,3), (1,2)(3,4) ]),(1,2,4,3))
 gap> PreImagesRepresentative( hom, (4,6)(7,9) );
 (1,2,4,3)
 gap> PreImagesElm( hom, (4,5,6,7,8,9) );
-fail
+[  ]
 gap> PreImagesRepresentative( hom, (4,5,6,7,8,9) );
 fail
 gap> PreImagesElm( hom, (7,8,9) );

@@ -14,7 +14,7 @@ Error, <elm> is not in the range of mapping <hom>
 gap> PreImagesElm(f, (1,2));
 RightCoset(Group(()),(1,2))
 gap> PreImagesElm(f, (1,2,3));
-fail
+[  ]
 gap> PreImagesElm(f, (1,4));
 Error, <elm> is not in the range of <map>
 gap> PreImagesSet(f, Group((1,2)));
@@ -37,7 +37,7 @@ Error, <elm> is not in the range of <map>
 gap> PreImagesElm(map, (1,2));
 [ (1,2) ]
 gap> PreImagesElm(map, (1,2,3));
-fail
+[  ]
 gap> PreImagesElm(map, (1,4));
 Error, <elm> is not in the range of <map>
 gap> PreImagesSet(map, [(), (1,2,3)]);
@@ -59,7 +59,7 @@ Error, <elm> is not in the range of mapping <com>
 gap> PreImagesElm(comp, (1,2));
 [ (1,2) ]
 gap> PreImagesElm(comp, (1,2,3));
-fail
+[  ]
 gap> PreImagesElm(comp, (1,5));
 Error, <elm> is not in the range of mapping <com>
 gap> PreImagesSet(comp, [(), (1,2,3)]);
@@ -104,7 +104,7 @@ fail
 gap> PreImagesRepresentative(z, Z(9));
 Error, <elm> is not in the range of mapping <zero>
 gap> PreImagesElm(z, Z(3));
-fail
+[  ]
 gap> PreImagesElm(z, Z(9));
 Error, <elm> is not in the range of mapping <zero>
 gap> PreImagesSet(z, [0*Z(3), Z(3)]);
@@ -122,7 +122,7 @@ fail
 gap> PreImagesElm(mf, 4);
 [ 3, 4 ]
 gap> PreImagesElm(mf, 1);
-fail
+[  ]
 gap> PreImagesElm(mf, 7);
 Error, <elm> is not in the range of <map>
 
