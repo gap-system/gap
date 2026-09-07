@@ -1165,17 +1165,17 @@ InstallMethod( PreImagesSetNC,
     end );
 
 
+# Generic fallback: no family requirement, so that <elms> may live in a
+# different family than the elements of the range (e.g. residue class unions).
 InstallMethod( PreImagesSet,
-    "for general mapping, and finite collection",
-    CollFamRangeEqFamElms,
-    [ IsGeneralMapping, IsCollection ], 0,
+    "for general mapping, and list or collection",
+    true,
+    [ IsGeneralMapping, IsListOrCollection ], 0,
     function( map, elms )
-    local inter;
     if not IsSubset( Range( map ), elms ) then
       Error( "<elms> is not a subset of the range of <map>" );
     fi;
-    inter := Intersection( elms, Image( map ) );
-    return PreImagesSetNC( map, inter );
+    return PreImagesSetNC( map, Intersection( elms, Image( map ) ) );
     end );
 
 InstallMethod( PreImagesSetNC,
@@ -1220,21 +1220,22 @@ InstallMethod( PreImagesRange,
 
 #############################################################################
 ##
-#M  PreImagesRepresentative( <map>, <elm> )  . .  for s.p. gen. mapping & elm
+#M  PreImagesRepresentative( <map>, <elm> )  . . . . for gen. mapping & elm
 #M  PreImagesRepresentativeNC( <map>, <elm> )  .  for s.p. gen. mapping & elm
 ##
+# Generic fallback, also for general mappings that are neither s.p. nor
+# non-s.p. (e.g. mappings defined by packages).
 InstallMethod( PreImagesRepresentative,
-    "for s.p. general mapping, and element",
+    "for general mapping, and element",
     FamRangeEqFamElm,
-    [ IsSPGeneralMapping, IsObject ], 0,
+    [ IsGeneralMapping, IsObject ], 0,
     function( map, elm )
     if not elm in Range( map ) then
       Error( "<elm> is not in the range of <map>" );
-    elif not elm in Image( map )  then
+    elif not elm in Image( map ) then
       return fail;
-    else
-      return PreImagesRepresentativeNC( map, elm );
     fi;
+    return PreImagesRepresentativeNC( map, elm );
     end );
 
 InstallMethod( PreImagesRepresentativeNC,
@@ -1248,7 +1249,6 @@ InstallMethod( PreImagesRepresentativeNC,
 
 #############################################################################
 ##
-#M  PreImagesRepresentative( <map>, <elm> )
 #M  PreImagesRepresentativeNC( <map>, <elm> )
 ##
 InstallMethod( PreImagesRepresentativeNC,
@@ -1268,19 +1268,6 @@ InstallMethod( PreImagesRepresentativeNC,
 
     # pick one preimage, and return it.
     return Representative( pres );
-    end );
-
-InstallMethod( PreImagesRepresentative,
-    "for total non-s.p. general mapping, and element",
-    FamRangeEqFamElm,
-    [ IsNonSPGeneralMapping, IsObject ], 0,
-    function( map, elm )
-      if not elm in Range( map ) then
-        Error( "<elm> is not in the range of <map>" );
-      elif not elm in Image( map ) then
-        return fail;
-      fi;
-      return PreImagesRepresentativeNC( map, elm );
     end );
 
 
