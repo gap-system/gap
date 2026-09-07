@@ -104,7 +104,7 @@ end );
 # case the values of the relators on pre-images in G do not depend on the choice
 # of representatives and can be used to deduce the module automorphism
 # belonging to a factor group automorphism.
-BindGlobal("AGSRFindRels",function(C,nat,newgens)
+BindGlobal("AGSRFindRels",function(C,nat)
 local
   # -- setup --
   M,      # the module: kernel of the factor map `nat`
@@ -220,7 +220,7 @@ local
       ocr.trickrels:=fail; # not possible
     else
       repeat
-        ocr.trickrels:=AGSRFindRels(C,nat,cnt>3);
+        ocr.trickrels:=AGSRFindRels(C,nat);
         cnt:=cnt+1;
       until ocr.trickrels<>fail or 2^cnt>100*Size(ocr.moduleauts);
     fi;
@@ -1584,7 +1584,7 @@ local
         fi;
       od;
       if moves then
-        set:=Set(List(class,x->Position(classorb,x)));
+        set:=Set(class,x->Position(classorb,x));
         Info(InfoMorph,3,"orbslen=",Length(classorb));
         kperm:=List(k,x->Permutation(x,classorb,k,kpre,OnGroupsAsAutomorphism));
         acthom:=GroupHomomorphismByImagesNC(sub,Group(kperm),k,kperm);
@@ -1611,7 +1611,7 @@ local
         nosucl:=AGSRNormalSubgroupClasses(G:directs:=directs);
         if directs<>fail then Add(nosucl,directs);fi;
       fi;
-      nosuf:=Unique(List(nosucl,x->Set(List(x,y->Image(lhom,y)))));
+      nosuf:=Unique(List(nosucl,x->Set(x,y->Image(lhom,y))));
       nosuf:=Filtered(nosuf,x->Size(x[1])>1 and Size(x[1])<Size(OQ));
       SortBy(nosuf,x->[Length(x),Size(x[1])]);
       for j in nosuf do
