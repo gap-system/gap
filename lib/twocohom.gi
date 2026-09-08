@@ -815,9 +815,10 @@ local field,fp,fpg,gens,hom,mats,fm,mon,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
   gens:=List(GeneratorsOfGroup(FamilyObj(fpg)!.wholeGroup),
     x->PreImagesRepresentativeNC(fp,x));
 
-  # a module built without generators carries a single dummy identity
-  # generator instead of one image per generator of G
-  if MTX.IsZeroGens(mo) then
+  # A module built without generators carries a single dummy identity
+  # generator, so for the trivial group it cannot match the generators of G.
+  # Everywhere else the generators have to correspond one to one.
+  if MTX.IsZeroGens(mo) and IsTrivial(G) then
     new:=ListWithIdenticalEntries(Length(ogens),One(mo.generators[1]));
   else
     new:=mo.generators;
