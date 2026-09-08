@@ -79,7 +79,7 @@ UInt SyTime(void)
     // for some period of time. Use NanosecondsSinceEpoch() as
     // a substitute (it is not perfect, as NanosecondsSinceEpoch()
     // is walltime, while RUSAGE_SELF is CPU time).
-    return SyNanosecondsSinceEpoch()/1000000000;
+    return SyNanosecondsSinceEpoch() / 1000000;
 #else
     struct rusage buf;
 
