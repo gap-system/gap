@@ -1,4 +1,4 @@
-# Reported by don't know, # 5609
+# Reported by Jacopo Chen, # 5609
 gap> f := FreeGroup("a", "b", "c", "d", "e");;
 gap> a := f.1;;b := f.2;;c := f.3;;d := f.4;;e := f.5;;
 gap> g := f / [a^2, b^2, c^2, d^2, e^2, (a*b)^5, (a*c)^2, (a*d)^2, (a*e)^2,
