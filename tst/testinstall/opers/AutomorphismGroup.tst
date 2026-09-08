@@ -27,7 +27,7 @@ gap> G:=DihedralGroup(100);
 gap> IsFrattiniFree(G);
 false
 gap> AutomorphismGroup(G);
-<group of size 1000 with 4 generators>
+<group of size 1000 with 6 generators>
 
 # solvable Frattini-free groups, handled by AutomorphismGroupFrattFreeGroup
 gap> G:=SymmetricGroup(4);;
