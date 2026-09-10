@@ -491,6 +491,32 @@ static NOINLINE void TryMarkRange(jl_ptls_t ptls, void * start, void * end)
     }
 }
 
+// Julia callback
+static void GapTaskScanner(jl_task_t * task, int root_task)
+{
+    // If this task has been scanned by GapRootScanner() already, skip it
+    if (task == ScannedRootTask)
+        return;
+
+    char *active_start, *active_end, *total_start, *total_end;
+    jl_active_task_stack(task, &active_start, &active_end, &total_start,
+                         &total_end);
+
+    if (active_start) {
+#if !defined(USE_GAP_INSIDE_JULIA)
+        if (task == RootTaskOfMainThread) {
+            active_end = (char *)GapStackBottom;
+        }
+#endif
+        // Unlike the stack of the current task that we scan in
+        // GapRootScanner, we do not know the stack pointer. We
+        // therefore use a separate routine that scans from the
+        // stack bottom until we reach the other end of the stack
+        // or a guard page.
+        ScanTaskStack(task, active_start, active_end);
+    }
+}
+
 #endif // DISABLE_STACK_SCAN
 
 // Julia callback
@@ -550,36 +576,6 @@ static void GapRootScanner(int full)
         }
     }
 }
-
-#ifndef DISABLE_STACK_SCAN
-
-// Julia callback
-static void GapTaskScanner(jl_task_t * task, int root_task)
-{
-    // If this task has been scanned by GapRootScanner() already, skip it
-    if (task == ScannedRootTask)
-        return;
-
-    char *active_start, *active_end, *total_start, *total_end;
-    jl_active_task_stack(task, &active_start, &active_end, &total_start,
-                         &total_end);
-
-    if (active_start) {
-#if !defined(USE_GAP_INSIDE_JULIA)
-        if (task == RootTaskOfMainThread) {
-            active_end = (char *)GapStackBottom;
-        }
-#endif
-        // Unlike the stack of the current task that we scan in
-        // GapRootScanner, we do not know the stack pointer. We
-        // therefore use a separate routine that scans from the
-        // stack bottom until we reach the other end of the stack
-        // or a guard page.
-        ScanTaskStack(task, active_start, active_end);
-    }
-}
-
-#endif // DISABLE_STACK_SCAN
 
 // Time spent in the process, in milliseconds.
 //
