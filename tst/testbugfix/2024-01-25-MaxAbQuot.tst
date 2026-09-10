@@ -20,7 +20,7 @@ gap> s := Subgroup(g, [w1, w2, w3, w4, w5]);;
 gap> s1 := Subgroup(g, [w1, w2^-2, w3*w2^-1, w3^-1*w2^-1, w4*w2^-1,
 > w4^-1*w2^-1, w5*w2^-1, w5^-1*w2^-1]);;
 gap> s2:=Subgroup(g,[w1^-2, w2, w3, w4*w1^-1, w1*w2*w1^-1, w1*w3*w1^-1, w5]);;
-gap> ab := MaximalAbelianQuotient(s:verifyabelianquotient);;
+gap> ab := MaximalAbelianQuotient(s);;
 gap> q1 := GQuotients(s1, SymmetricGroup(2));;
 gap> q2 := GQuotients(s2, SymmetricGroup(2));;
 gap> k1 := Kernel(q1[7]);;

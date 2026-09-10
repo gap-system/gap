@@ -1268,7 +1268,7 @@ local aug,r,sec,expwrd,rels,ab,s,m,img,gen,i,j,t1,t2,tn,d,pos,seco;
 
   SetIsSurjective(m,true);
 
-  if ValueOption("verifyabelianquotient")=true or AssertionLevel()>=2 then
+  if ValueOption("verifyabelianquotient")=true or AssertionLevel()>=3 then
     d:=KernelOfMultiplicativeGeneralMapping(m);
     d:=CosetTableInWholeGroup(d);
     d:=List(d{[1,3..Length(d)-1]},PermList);
