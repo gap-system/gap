@@ -4,11 +4,15 @@ This repository contains the core GAP system sources.
 
 ## AI disclosure
 
-Any use of AI tools for preparing code, documentation, tests, commit messages,
-pull requests, issue comments, or reviews for this repository must be
-disclosed. Include a brief note saying which AI tool was used and what kind of
-assistance it provided. Add the AI tool as a Git co-author on all commits
-created by that tool (e.g. via an `Co-authored-by: ` line).
+1. Sign off every commit you create with an `Assisted-by: <tool> (<model>)` trailer naming both the
+   tool and the model behind it, for example `Assisted-by: Claude Code (Opus 5)`. Name the model,
+   not just the harness - it is what tells a later reader what actually produced the work. Do not
+   use `Co-authored-by:` for tools, and do not list a tool as an author; this trailer replaces any
+   co-author trailer your harness adds by default.
+2. Agents can only open PRs or post comments once the human user gives them explicit permission.
+3. Any use of AI tools for preparing code, documentation, tests, commit messages, pull requests,
+   issue comments, or reviews for this repository must be disclosed. Include a brief note saying
+   which AI tool was used and what kind of assistance it provided.
 
 ## Repository layout
 
