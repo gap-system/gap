@@ -559,9 +559,20 @@ endif
 build/gap-nocomp$(EXEEXT): $(OBJS_NOCOMP) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
 	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $(OBJS_NOCOMP) $(GAP_LIBS) -o $@
 
+ifeq ($(cross_compiling),yes)
+# these need just-built programs (gap-nocomp, ffgen), impossible when
+# cross-compiling: seed them from a native build into src/
+cross_seed_error = cannot generate $@ when cross-compiling; build GAP \
+  natively first and copy build/c_oper1.c, build/c_type1.c, \
+  build/ffdata.c and build/ffdata.h from there into this checkout's \
+  src/ directory
+build/c_%.c: $(srcdir)/lib/%.g
+	$(error $(cross_seed_error))
+else
 build/c_%.c: $(srcdir)/lib/%.g build/gap-nocomp$(EXEEXT)
 	@$(MKDIR_P) $(@D)
 	@"$(abs_srcdir)"/cnf/gap-c-gen.sh $< $@ $(basename $(notdir $<)) build/gap-nocomp$(EXEEXT)
+endif
 .PRECIOUS: build/c_%.c
 
 
@@ -572,8 +583,13 @@ build/c_%.c: $(srcdir)/lib/%.g build/gap-nocomp$(EXEEXT)
 ffgen: $(srcdir)/etc/ffgen.c build/config.h
 	$(QUIET_CC)$(CC) -Wall -Wextra $(GAP_CPPFLAGS) $< -o $@
 
+ifeq ($(cross_compiling),yes)
+build/ffdata.h build/ffdata.c:
+	$(error $(cross_seed_error))
+else
 build/ffdata.h build/ffdata.c: ffgen
 	./ffgen -b build/ffdata
+endif
 
 ########################################################################
 # The "tags" target regenerates the tags file using Exuberant Ctags

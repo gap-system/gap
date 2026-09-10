@@ -49,6 +49,9 @@ build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
 
+# whether host and build differ
+cross_compiling = @cross_compiling@
+
 # compile and linker flags
 CFLAGS = @CFLAGS@
 CXXFLAGS = @CXXFLAGS@
