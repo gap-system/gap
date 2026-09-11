@@ -40,7 +40,8 @@
 
 #include "config.h"
 
-#ifndef GAP_DISABLE_SUBPROCESS_CODE
+// the POSIX implementation, on top of fork and pseudo terminals
+#if !defined(GAP_DISABLE_SUBPROCESS_CODE) && !defined(SYS_IS_MINGW)
 
 #include <errno.h>
 #include <fcntl.h>
@@ -1127,7 +1128,7 @@ FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
     return res == 255 ? Fail : INTOBJ_INT(res);
 }
 
-#else // !defined(GAP_DISABLE_SUBPROCESS_CODE)
+#else // !defined(GAP_DISABLE_SUBPROCESS_CODE) && !defined(SYS_IS_MINGW)
 
 int CheckChildStatusChanged(int childPID, int status)
 {
@@ -1182,6 +1183,16 @@ static Obj FuncFD_OF_IOSTREAM(Obj self, Obj stream)
 static Obj
 FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
 {
+    // validate the arguments exactly as the real implementation does
+    RequireStringRep(SELF_NAME, dir);
+    RequireStringRep(SELF_NAME, prg);
+    GetSmallInt(SELF_NAME, in);
+    GetSmallInt(SELF_NAME, out);
+    RequirePlainList(SELF_NAME, args);
+    for (Int i = 1; i <= LEN_PLIST(args); i++) {
+        Obj tmp = ELM_PLIST(args, i);
+        RequireStringRep(SELF_NAME, tmp);
+    }
     return Fail;
 }
 
@@ -1225,7 +1236,7 @@ static StructGVarFunc GVarFuncs[] = {
 */
 static Int InitKernel(StructInitInfo * module)
 {
-#ifndef GAP_DISABLE_SUBPROCESS_CODE
+#if !defined(GAP_DISABLE_SUBPROCESS_CODE) && !defined(SYS_IS_MINGW)
     UInt i;
     PtyIOStreams[0].childPID = -1;
     for (i = 1; i < MAX_PTYS; i++) {

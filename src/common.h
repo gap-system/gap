@@ -46,6 +46,16 @@ GAP_STATIC_ASSERT(sizeof(void *) == SIZEOF_VOID_P, "sizeof(void *) is wrong");
 #define SYS_IS_CYGWIN32 1
 #endif
 
+// native Windows: mingw-w64 predefines _WIN32, Cygwin GCC does not, as
+// Cygwin is a POSIX system to GAP
+#ifdef _WIN32
+#define SYS_IS_MINGW 1
+#endif
+
+// either flavour of Windows
+#if defined(SYS_IS_CYGWIN32) || defined(SYS_IS_MINGW)
+#define SYS_IS_WINDOWS 1
+#endif
 
 // GAP_SETJMP and GAP_LONGJMP are used for error handling and for GASMAN's
 // register capture. On POSIX systems we use _setjmp/_longjmp, which do not
@@ -55,7 +65,7 @@ GAP_STATIC_ASSERT(sizeof(void *) == SIZEOF_VOID_P, "sizeof(void *) is wrong");
 // TODO(windows-port): Windows longjmp performs SEH stack unwinding; if that
 // misbehaves across GAP stack frames, switch to mingw's _setjmp(env, NULL).
 // Callers must include <setjmp.h> themselves.
-#ifdef SYS_IS_WINDOWS
+#ifdef SYS_IS_MINGW
 #define GAP_SETJMP(env) setjmp(env)
 #define GAP_LONGJMP(env, val) longjmp(env, val)
 #else
