@@ -124,7 +124,7 @@ static Obj LeadingExponentOfPcElement(Obj self, Obj pcgs, Obj w)
 *F  ExponentsOfPcElement( <self>, <pcgs>, <w> )
 */
 template <typename UIntN>
-static Obj ExponentsOfPcElement(Obj self, Obj pcgs, Obj w)
+static Obj ExponentsOfPcElement(Obj self, Obj pcgs, Obj w) GAP_GC_CANSAFEPOINT
 {
     UInt        len;            // length of pcgs
     Obj         el;             // exponents list
@@ -217,6 +217,7 @@ static Obj Func8Bits_LeadingExponentOfPcElement(Obj self, Obj pcgs, Obj w)
 *F  Func8Bits_ExponentsOfPcElement( <self>, <pcgs>, <w> )
 */
 static Obj Func8Bits_ExponentsOfPcElement(Obj self, Obj pcgs, Obj w)
+    GAP_GC_CANSAFEPOINT
 {
     return ExponentsOfPcElement<UInt1>(self, pcgs, w);
 }
@@ -256,6 +257,7 @@ static Obj Func16Bits_LeadingExponentOfPcElement(Obj self, Obj pcgs, Obj w)
 *F  Func16Bits_ExponentsOfPcElement( <self>, <pcgs>, <w> )
 */
 static Obj Func16Bits_ExponentsOfPcElement(Obj self, Obj pcgs, Obj w)
+    GAP_GC_CANSAFEPOINT
 {
     return ExponentsOfPcElement<UInt2>(self, pcgs, w);
 }
@@ -295,6 +297,7 @@ static Obj Func32Bits_LeadingExponentOfPcElement(Obj self, Obj pcgs, Obj w)
 *F  Func32Bits_ExponentsOfPcElement( <self>, <pcgs>, <w> )
 */
 static Obj Func32Bits_ExponentsOfPcElement(Obj self, Obj pcgs, Obj w)
+    GAP_GC_CANSAFEPOINT
 {
     return ExponentsOfPcElement<UInt4>(self, pcgs, w);
 }
@@ -349,7 +352,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // export position numbers 'PCWP_SOMETHING'
     ExportAsConstantGVar(PCWP_FIRST_ENTRY);

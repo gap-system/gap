@@ -4,31 +4,31 @@
 
 /* global variables used in handlers */
 static GVar G_PushOptions;
-static Obj  GF_PushOptions;
+static Obj  GF_PushOptions GAP_GC_GLOBALLY_ROOTED;
 static GVar G_PopOptions;
-static Obj  GF_PopOptions;
+static Obj  GF_PopOptions GAP_GC_GLOBALLY_ROOTED;
 static GVar G_Print;
-static Obj  GF_Print;
+static Obj  GF_Print GAP_GC_GLOBALLY_ROOTED;
 static GVar G_test__int__constants;
-static Obj  GF_test__int__constants;
+static Obj  GF_test__int__constants GAP_GC_GLOBALLY_ROOTED;
 static GVar G_test__func__calls;
-static Obj  GF_test__func__calls;
+static Obj  GF_test__func__calls GAP_GC_GLOBALLY_ROOTED;
 static GVar G_Display;
-static Obj  GF_Display;
+static Obj  GF_Display GAP_GC_GLOBALLY_ROOTED;
 static GVar G_test__cmp__ops;
-static Obj  GF_test__cmp__ops;
+static Obj  GF_test__cmp__ops GAP_GC_GLOBALLY_ROOTED;
 static GVar G_test__arith;
-static Obj  GF_test__arith;
+static Obj  GF_test__arith GAP_GC_GLOBALLY_ROOTED;
 static GVar G_test__tilde;
-static Obj  GF_test__tilde;
+static Obj  GF_test__tilde GAP_GC_GLOBALLY_ROOTED;
 static GVar G_test__list__rec__exprs;
-static Obj  GF_test__list__rec__exprs;
+static Obj  GF_test__list__rec__exprs GAP_GC_GLOBALLY_ROOTED;
 static GVar G_myglobal;
-static Obj  GC_myglobal;
+static Obj  GC_myglobal GAP_GC_GLOBALLY_ROOTED;
 static GVar G_test__IsBound__Unbind;
-static Obj  GF_test__IsBound__Unbind;
+static Obj  GF_test__IsBound__Unbind GAP_GC_GLOBALLY_ROOTED;
 static GVar G_test__loops;
-static Obj  GF_test__loops;
+static Obj  GF_test__loops GAP_GC_GLOBALLY_ROOTED;
 static GVar G_runtest;
 
 /* record names used in handlers */
@@ -39,8 +39,8 @@ static RNam R_b;
 static RNam R_d;
 
 /* information for the functions */
-static Obj  NameFunc[13];
-static Obj FileName;
+static Obj NameFunc[13] GAP_GC_GLOBALLY_ROOTED;
+static Obj FileName GAP_GC_GLOBALLY_ROOTED;
 
 /* handler for function 2 */
 static Obj  HdlrFunc2 (
@@ -51,9 +51,11 @@ static Obj  HdlrFunc2 (
  Obj t_1 = 0;
  Obj t_2 = 0;
  Obj t_3 = 0;
+ Obj t_4 = 0;
  (void)l_x;
  (void)l_y;
  Bag oldFrame;
+ GAP_GC_PUSH6(&l_x, &l_y, &t_1, &t_2, &t_3, &t_4);
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
@@ -69,7 +71,8 @@ static Obj  HdlrFunc2 (
   CALL_2ARGS( t_1, l_x, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_x, t_2 ) );
+  t_3 = NewPlistFromArgs( l_x, t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* y := 100000; */
@@ -82,7 +85,8 @@ static Obj  HdlrFunc2 (
   CALL_2ARGS( t_1, l_y, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_y, t_2 ) );
+  t_3 = NewPlistFromArgs( l_y, t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* Print( x = y, "\n" ); */
@@ -93,7 +97,8 @@ static Obj  HdlrFunc2 (
   CALL_2ARGS( t_1, t_2, t_3 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+  t_4 = NewPlistFromArgs( t_2, t_3 );
+  DoOperation2Args( CallFuncListOper, t_1, t_4 );
  }
  
  /* x := - 10 ^ 5; */
@@ -108,7 +113,8 @@ static Obj  HdlrFunc2 (
   CALL_2ARGS( t_1, l_x, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_x, t_2 ) );
+  t_3 = NewPlistFromArgs( l_x, t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* y := -100000; */
@@ -121,7 +127,8 @@ static Obj  HdlrFunc2 (
   CALL_2ARGS( t_1, l_y, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_y, t_2 ) );
+  t_3 = NewPlistFromArgs( l_y, t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* Print( x = y, "\n" ); */
@@ -132,7 +139,8 @@ static Obj  HdlrFunc2 (
   CALL_2ARGS( t_1, t_2, t_3 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+  t_4 = NewPlistFromArgs( t_2, t_3 );
+  DoOperation2Args( CallFuncListOper, t_1, t_4 );
  }
  
  /* x := 10 ^ 10; */
@@ -146,7 +154,8 @@ static Obj  HdlrFunc2 (
   CALL_2ARGS( t_1, l_x, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_x, t_2 ) );
+  t_3 = NewPlistFromArgs( l_x, t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* y := 10000000000; */
@@ -159,7 +168,8 @@ static Obj  HdlrFunc2 (
   CALL_2ARGS( t_1, l_y, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_y, t_2 ) );
+  t_3 = NewPlistFromArgs( l_y, t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* Print( x = y, "\n" ); */
@@ -170,7 +180,8 @@ static Obj  HdlrFunc2 (
   CALL_2ARGS( t_1, t_2, t_3 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+  t_4 = NewPlistFromArgs( t_2, t_3 );
+  DoOperation2Args( CallFuncListOper, t_1, t_4 );
  }
  
  /* x := - 10 ^ 10; */
@@ -185,7 +196,8 @@ static Obj  HdlrFunc2 (
   CALL_2ARGS( t_1, l_x, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_x, t_2 ) );
+  t_3 = NewPlistFromArgs( l_x, t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* y := -10000000000; */
@@ -198,7 +210,8 @@ static Obj  HdlrFunc2 (
   CALL_2ARGS( t_1, l_y, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_y, t_2 ) );
+  t_3 = NewPlistFromArgs( l_y, t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* Print( x = y, "\n" ); */
@@ -209,7 +222,8 @@ static Obj  HdlrFunc2 (
   CALL_2ARGS( t_1, t_2, t_3 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+  t_4 = NewPlistFromArgs( t_2, t_3 );
+  DoOperation2Args( CallFuncListOper, t_1, t_4 );
  }
  
  /* x := 10 ^ 20; */
@@ -223,7 +237,8 @@ static Obj  HdlrFunc2 (
   CALL_2ARGS( t_1, l_x, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_x, t_2 ) );
+  t_3 = NewPlistFromArgs( l_x, t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* y := 100000000000000000000; */
@@ -239,7 +254,8 @@ static Obj  HdlrFunc2 (
   CALL_2ARGS( t_1, l_y, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_y, t_2 ) );
+  t_3 = NewPlistFromArgs( l_y, t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* Print( x = y, "\n" ); */
@@ -250,7 +266,8 @@ static Obj  HdlrFunc2 (
   CALL_2ARGS( t_1, t_2, t_3 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+  t_4 = NewPlistFromArgs( t_2, t_3 );
+  DoOperation2Args( CallFuncListOper, t_1, t_4 );
  }
  
  /* x := - 10 ^ 20; */
@@ -265,7 +282,8 @@ static Obj  HdlrFunc2 (
   CALL_2ARGS( t_1, l_x, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_x, t_2 ) );
+  t_3 = NewPlistFromArgs( l_x, t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* y := - 100000000000000000000; */
@@ -282,7 +300,8 @@ static Obj  HdlrFunc2 (
   CALL_2ARGS( t_1, l_y, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_y, t_2 ) );
+  t_3 = NewPlistFromArgs( l_y, t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* Print( x = y, "\n" ); */
@@ -293,11 +312,13 @@ static Obj  HdlrFunc2 (
   CALL_2ARGS( t_1, t_2, t_3 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+  t_4 = NewPlistFromArgs( t_2, t_3 );
+  DoOperation2Args( CallFuncListOper, t_1, t_4 );
  }
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
+ GAP_GC_POP();
  return 0;
 }
 
@@ -308,6 +329,7 @@ static Obj  HdlrFunc4 (
 {
  Obj t_1 = 0;
  Bag oldFrame;
+ GAP_GC_PUSH2(&a_args, &t_1);
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
@@ -315,6 +337,7 @@ static Obj  HdlrFunc4 (
  /* return Length( args ); */
  C_LEN_LIST_FPL( t_1, a_args )
  SWITCH_TO_OLD_FRAME(oldFrame);
+ GAP_GC_POP();
  return t_1;
 }
 
@@ -325,7 +348,9 @@ static Obj  HdlrFunc5 (
 {
  Obj t_1 = 0;
  Obj t_2 = 0;
+ Obj t_3 = 0;
  Bag oldFrame;
+ GAP_GC_PUSH4(&a_args, &t_1, &t_2, &t_3);
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
@@ -337,11 +362,13 @@ static Obj  HdlrFunc5 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
+ GAP_GC_POP();
  return 0;
 }
 
@@ -356,6 +383,7 @@ static Obj  HdlrFunc3 (
  Obj t_4 = 0;
  (void)l_vararg__fun;
  Bag oldFrame;
+ GAP_GC_PUSH5(&l_vararg__fun, &t_1, &t_2, &t_3, &t_4);
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
@@ -363,7 +391,11 @@ static Obj  HdlrFunc3 (
  /* vararg_fun := function ( args... )
       return Length( args );
   end; */
- t_1 = NewFunction( NameFunc[4], -1, NewPlistFromArgs(MakeImmString("args")), HdlrFunc4 );
+ t_2 = NEW_PLIST( T_PLIST, 1 );
+ SET_LEN_PLIST( t_2, 1 );
+ SET_ELM_PLIST( t_2, 1, MakeImmString("args") );
+ CHANGED_BAG( t_2 );
+ t_1 = NewFunction( NameFunc[4], -1, t_2, HdlrFunc4 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 58);
@@ -379,7 +411,8 @@ static Obj  HdlrFunc3 (
   t_2 = CALL_0ARGS( l_vararg__fun );
  }
  else {
-  t_2 = DoOperation2Args( CallFuncListOper, l_vararg__fun, NewPlistFromArgs( ) );
+  t_3 = NewPlistFromArgs( );
+  t_2 = DoOperation2Args( CallFuncListOper, l_vararg__fun, t_3 );
  }
  CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
@@ -387,7 +420,8 @@ static Obj  HdlrFunc3 (
   CALL_2ARGS( t_1, t_2, t_3 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+  t_4 = NewPlistFromArgs( t_2, t_3 );
+  DoOperation2Args( CallFuncListOper, t_1, t_4 );
  }
  
  /* Print( vararg_fun( 1 ), "\n" ); */
@@ -396,7 +430,8 @@ static Obj  HdlrFunc3 (
   t_2 = CALL_1ARGS( l_vararg__fun, INTOBJ_INT(1) );
  }
  else {
-  t_2 = DoOperation2Args( CallFuncListOper, l_vararg__fun, NewPlistFromArgs( INTOBJ_INT(1) ) );
+  t_3 = NewPlistFromArgs( INTOBJ_INT(1) );
+  t_2 = DoOperation2Args( CallFuncListOper, l_vararg__fun, t_3 );
  }
  CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
@@ -404,7 +439,8 @@ static Obj  HdlrFunc3 (
   CALL_2ARGS( t_1, t_2, t_3 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+  t_4 = NewPlistFromArgs( t_2, t_3 );
+  DoOperation2Args( CallFuncListOper, t_1, t_4 );
  }
  
  /* Print( vararg_fun( 1, 2 ), "\n" ); */
@@ -413,7 +449,8 @@ static Obj  HdlrFunc3 (
   t_2 = CALL_2ARGS( l_vararg__fun, INTOBJ_INT(1), INTOBJ_INT(2) );
  }
  else {
-  t_2 = DoOperation2Args( CallFuncListOper, l_vararg__fun, NewPlistFromArgs( INTOBJ_INT(1), INTOBJ_INT(2) ) );
+  t_3 = NewPlistFromArgs( INTOBJ_INT(1), INTOBJ_INT(2) );
+  t_2 = DoOperation2Args( CallFuncListOper, l_vararg__fun, t_3 );
  }
  CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
@@ -421,7 +458,8 @@ static Obj  HdlrFunc3 (
   CALL_2ARGS( t_1, t_2, t_3 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+  t_4 = NewPlistFromArgs( t_2, t_3 );
+  DoOperation2Args( CallFuncListOper, t_1, t_4 );
  }
  
  /* Print( vararg_fun( 1, 2, 3 ), "\n" ); */
@@ -430,7 +468,8 @@ static Obj  HdlrFunc3 (
   t_2 = CALL_3ARGS( l_vararg__fun, INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3) );
  }
  else {
-  t_2 = DoOperation2Args( CallFuncListOper, l_vararg__fun, NewPlistFromArgs( INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3) ) );
+  t_3 = NewPlistFromArgs( INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3) );
+  t_2 = DoOperation2Args( CallFuncListOper, l_vararg__fun, t_3 );
  }
  CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
@@ -438,7 +477,8 @@ static Obj  HdlrFunc3 (
   CALL_2ARGS( t_1, t_2, t_3 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+  t_4 = NewPlistFromArgs( t_2, t_3 );
+  DoOperation2Args( CallFuncListOper, t_1, t_4 );
  }
  
  /* Print( vararg_fun( 1, 2, 3, 4 ), "\n" ); */
@@ -447,7 +487,8 @@ static Obj  HdlrFunc3 (
   t_2 = CALL_4ARGS( l_vararg__fun, INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3), INTOBJ_INT(4) );
  }
  else {
-  t_2 = DoOperation2Args( CallFuncListOper, l_vararg__fun, NewPlistFromArgs( INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3), INTOBJ_INT(4) ) );
+  t_3 = NewPlistFromArgs( INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3), INTOBJ_INT(4) );
+  t_2 = DoOperation2Args( CallFuncListOper, l_vararg__fun, t_3 );
  }
  CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
@@ -455,7 +496,8 @@ static Obj  HdlrFunc3 (
   CALL_2ARGS( t_1, t_2, t_3 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+  t_4 = NewPlistFromArgs( t_2, t_3 );
+  DoOperation2Args( CallFuncListOper, t_1, t_4 );
  }
  
  /* Print( vararg_fun( 1, 2, 3, 4, 5 ), "\n" ); */
@@ -464,7 +506,8 @@ static Obj  HdlrFunc3 (
   t_2 = CALL_5ARGS( l_vararg__fun, INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3), INTOBJ_INT(4), INTOBJ_INT(5) );
  }
  else {
-  t_2 = DoOperation2Args( CallFuncListOper, l_vararg__fun, NewPlistFromArgs( INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3), INTOBJ_INT(4), INTOBJ_INT(5) ) );
+  t_3 = NewPlistFromArgs( INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3), INTOBJ_INT(4), INTOBJ_INT(5) );
+  t_2 = DoOperation2Args( CallFuncListOper, l_vararg__fun, t_3 );
  }
  CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
@@ -472,7 +515,8 @@ static Obj  HdlrFunc3 (
   CALL_2ARGS( t_1, t_2, t_3 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+  t_4 = NewPlistFromArgs( t_2, t_3 );
+  DoOperation2Args( CallFuncListOper, t_1, t_4 );
  }
  
  /* Print( vararg_fun( 1, 2, 3, 4, 5, 6 ), "\n" ); */
@@ -481,7 +525,8 @@ static Obj  HdlrFunc3 (
   t_2 = CALL_6ARGS( l_vararg__fun, INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3), INTOBJ_INT(4), INTOBJ_INT(5), INTOBJ_INT(6) );
  }
  else {
-  t_2 = DoOperation2Args( CallFuncListOper, l_vararg__fun, NewPlistFromArgs( INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3), INTOBJ_INT(4), INTOBJ_INT(5), INTOBJ_INT(6) ) );
+  t_3 = NewPlistFromArgs( INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3), INTOBJ_INT(4), INTOBJ_INT(5), INTOBJ_INT(6) );
+  t_2 = DoOperation2Args( CallFuncListOper, l_vararg__fun, t_3 );
  }
  CHECK_FUNC_RESULT( t_2 );
  t_3 = MakeString( "\n" );
@@ -489,7 +534,8 @@ static Obj  HdlrFunc3 (
   CALL_2ARGS( t_1, t_2, t_3 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+  t_4 = NewPlistFromArgs( t_2, t_3 );
+  DoOperation2Args( CallFuncListOper, t_1, t_4 );
  }
  
  /* Print( vararg_fun( 1, 2, 3, 4, 5, 6, 7 ), "\n" ); */
@@ -515,7 +561,8 @@ static Obj  HdlrFunc3 (
   CALL_2ARGS( t_1, t_2, t_3 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+  t_4 = NewPlistFromArgs( t_2, t_3 );
+  DoOperation2Args( CallFuncListOper, t_1, t_4 );
  }
  
  /* Print( vararg_fun( "x", true, vararg_fun, 4, 5, 6, 7 ), "\n" ); */
@@ -546,7 +593,8 @@ static Obj  HdlrFunc3 (
   CALL_2ARGS( t_1, t_2, t_3 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+  t_4 = NewPlistFromArgs( t_2, t_3 );
+  DoOperation2Args( CallFuncListOper, t_1, t_4 );
  }
  
  /* Print( vararg_fun(  : myopt := true ), "\n" ); */
@@ -561,7 +609,8 @@ static Obj  HdlrFunc3 (
   t_2 = CALL_0ARGS( l_vararg__fun );
  }
  else {
-  t_2 = DoOperation2Args( CallFuncListOper, l_vararg__fun, NewPlistFromArgs( ) );
+  t_3 = NewPlistFromArgs( );
+  t_2 = DoOperation2Args( CallFuncListOper, l_vararg__fun, t_3 );
  }
  CHECK_FUNC_RESULT( t_2 );
  CALL_0ARGS( GF_PopOptions );
@@ -570,7 +619,8 @@ static Obj  HdlrFunc3 (
   CALL_2ARGS( t_1, t_2, t_3 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+  t_4 = NewPlistFromArgs( t_2, t_3 );
+  DoOperation2Args( CallFuncListOper, t_1, t_4 );
  }
  
  /* Print( vararg_fun(  : myopt := "value" ), "\n" ); */
@@ -585,7 +635,8 @@ static Obj  HdlrFunc3 (
   t_2 = CALL_0ARGS( l_vararg__fun );
  }
  else {
-  t_2 = DoOperation2Args( CallFuncListOper, l_vararg__fun, NewPlistFromArgs( ) );
+  t_3 = NewPlistFromArgs( );
+  t_2 = DoOperation2Args( CallFuncListOper, l_vararg__fun, t_3 );
  }
  CHECK_FUNC_RESULT( t_2 );
  CALL_0ARGS( GF_PopOptions );
@@ -594,14 +645,19 @@ static Obj  HdlrFunc3 (
   CALL_2ARGS( t_1, t_2, t_3 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+  t_4 = NewPlistFromArgs( t_2, t_3 );
+  DoOperation2Args( CallFuncListOper, t_1, t_4 );
  }
  
  /* vararg_fun := function ( args... )
       Display( Length( args ) );
       return;
   end; */
- t_1 = NewFunction( NameFunc[5], -1, NewPlistFromArgs(MakeImmString("args")), HdlrFunc5 );
+ t_2 = NEW_PLIST( T_PLIST, 1 );
+ SET_LEN_PLIST( t_2, 1 );
+ SET_ELM_PLIST( t_2, 1, MakeImmString("args") );
+ CHANGED_BAG( t_2 );
+ t_1 = NewFunction( NameFunc[5], -1, t_2, HdlrFunc5 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 89);
@@ -616,7 +672,8 @@ static Obj  HdlrFunc3 (
   CALL_0ARGS( l_vararg__fun );
  }
  else {
-  DoOperation2Args( CallFuncListOper, l_vararg__fun, NewPlistFromArgs( ) );
+  t_1 = NewPlistFromArgs( );
+  DoOperation2Args( CallFuncListOper, l_vararg__fun, t_1 );
  }
  
  /* vararg_fun( 1 ); */
@@ -624,7 +681,8 @@ static Obj  HdlrFunc3 (
   CALL_1ARGS( l_vararg__fun, INTOBJ_INT(1) );
  }
  else {
-  DoOperation2Args( CallFuncListOper, l_vararg__fun, NewPlistFromArgs( INTOBJ_INT(1) ) );
+  t_1 = NewPlistFromArgs( INTOBJ_INT(1) );
+  DoOperation2Args( CallFuncListOper, l_vararg__fun, t_1 );
  }
  
  /* vararg_fun( 1, 2 ); */
@@ -632,7 +690,8 @@ static Obj  HdlrFunc3 (
   CALL_2ARGS( l_vararg__fun, INTOBJ_INT(1), INTOBJ_INT(2) );
  }
  else {
-  DoOperation2Args( CallFuncListOper, l_vararg__fun, NewPlistFromArgs( INTOBJ_INT(1), INTOBJ_INT(2) ) );
+  t_1 = NewPlistFromArgs( INTOBJ_INT(1), INTOBJ_INT(2) );
+  DoOperation2Args( CallFuncListOper, l_vararg__fun, t_1 );
  }
  
  /* vararg_fun( 1, 2, 3 ); */
@@ -640,7 +699,8 @@ static Obj  HdlrFunc3 (
   CALL_3ARGS( l_vararg__fun, INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3) );
  }
  else {
-  DoOperation2Args( CallFuncListOper, l_vararg__fun, NewPlistFromArgs( INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3) ) );
+  t_1 = NewPlistFromArgs( INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3) );
+  DoOperation2Args( CallFuncListOper, l_vararg__fun, t_1 );
  }
  
  /* vararg_fun( 1, 2, 3, 4 ); */
@@ -648,7 +708,8 @@ static Obj  HdlrFunc3 (
   CALL_4ARGS( l_vararg__fun, INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3), INTOBJ_INT(4) );
  }
  else {
-  DoOperation2Args( CallFuncListOper, l_vararg__fun, NewPlistFromArgs( INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3), INTOBJ_INT(4) ) );
+  t_1 = NewPlistFromArgs( INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3), INTOBJ_INT(4) );
+  DoOperation2Args( CallFuncListOper, l_vararg__fun, t_1 );
  }
  
  /* vararg_fun( 1, 2, 3, 4, 5 ); */
@@ -656,7 +717,8 @@ static Obj  HdlrFunc3 (
   CALL_5ARGS( l_vararg__fun, INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3), INTOBJ_INT(4), INTOBJ_INT(5) );
  }
  else {
-  DoOperation2Args( CallFuncListOper, l_vararg__fun, NewPlistFromArgs( INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3), INTOBJ_INT(4), INTOBJ_INT(5) ) );
+  t_1 = NewPlistFromArgs( INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3), INTOBJ_INT(4), INTOBJ_INT(5) );
+  DoOperation2Args( CallFuncListOper, l_vararg__fun, t_1 );
  }
  
  /* vararg_fun( 1, 2, 3, 4, 5, 6 ); */
@@ -664,7 +726,8 @@ static Obj  HdlrFunc3 (
   CALL_6ARGS( l_vararg__fun, INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3), INTOBJ_INT(4), INTOBJ_INT(5), INTOBJ_INT(6) );
  }
  else {
-  DoOperation2Args( CallFuncListOper, l_vararg__fun, NewPlistFromArgs( INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3), INTOBJ_INT(4), INTOBJ_INT(5), INTOBJ_INT(6) ) );
+  t_1 = NewPlistFromArgs( INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3), INTOBJ_INT(4), INTOBJ_INT(5), INTOBJ_INT(6) );
+  DoOperation2Args( CallFuncListOper, l_vararg__fun, t_1 );
  }
  
  /* vararg_fun( 1, 2, 3, 4, 5, 6, 7 ); */
@@ -717,7 +780,8 @@ static Obj  HdlrFunc3 (
   CALL_0ARGS( l_vararg__fun );
  }
  else {
-  DoOperation2Args( CallFuncListOper, l_vararg__fun, NewPlistFromArgs( ) );
+  t_1 = NewPlistFromArgs( );
+  DoOperation2Args( CallFuncListOper, l_vararg__fun, t_1 );
  }
  CALL_0ARGS( GF_PopOptions );
  t_1 = NEW_PREC( 1 );
@@ -732,12 +796,14 @@ static Obj  HdlrFunc3 (
   CALL_0ARGS( l_vararg__fun );
  }
  else {
-  DoOperation2Args( CallFuncListOper, l_vararg__fun, NewPlistFromArgs( ) );
+  t_1 = NewPlistFromArgs( );
+  DoOperation2Args( CallFuncListOper, l_vararg__fun, t_1 );
  }
  CALL_0ARGS( GF_PopOptions );
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
+ GAP_GC_POP();
  return 0;
 }
 
@@ -750,8 +816,10 @@ static Obj  HdlrFunc6 (
  Obj t_2 = 0;
  Obj t_3 = 0;
  Obj t_4 = 0;
+ Obj t_5 = 0;
  (void)l_x;
  Bag oldFrame;
+ GAP_GC_PUSH6(&l_x, &t_1, &t_2, &t_3, &t_4, &t_5);
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
@@ -763,7 +831,8 @@ static Obj  HdlrFunc6 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* x := 2; */
@@ -778,7 +847,8 @@ static Obj  HdlrFunc6 (
   CALL_3ARGS( t_1, t_2, t_3, t_4 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3, t_4 ) );
+  t_5 = NewPlistFromArgs( t_2, t_3, t_4 );
+  DoOperation2Args( CallFuncListOper, t_1, t_5 );
  }
  
  /* Print( "1 = x is ", 1 = x, "\n" ); */
@@ -790,7 +860,8 @@ static Obj  HdlrFunc6 (
   CALL_3ARGS( t_1, t_2, t_3, t_4 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3, t_4 ) );
+  t_5 = NewPlistFromArgs( t_2, t_3, t_4 );
+  DoOperation2Args( CallFuncListOper, t_1, t_5 );
  }
  
  /* Print( "1 = 2 via if is " ); */
@@ -800,7 +871,8 @@ static Obj  HdlrFunc6 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* if 1 = 2 then */
@@ -814,7 +886,8 @@ static Obj  HdlrFunc6 (
    CALL_1ARGS( t_1, t_2 );
   }
   else {
-   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+   t_3 = NewPlistFromArgs( t_2 );
+   DoOperation2Args( CallFuncListOper, t_1, t_3 );
   }
   
  }
@@ -829,7 +902,8 @@ static Obj  HdlrFunc6 (
    CALL_1ARGS( t_1, t_2 );
   }
   else {
-   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+   t_3 = NewPlistFromArgs( t_2 );
+   DoOperation2Args( CallFuncListOper, t_1, t_3 );
   }
   
  }
@@ -842,7 +916,8 @@ static Obj  HdlrFunc6 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* if 1 = x then */
@@ -856,7 +931,8 @@ static Obj  HdlrFunc6 (
    CALL_1ARGS( t_1, t_2 );
   }
   else {
-   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+   t_3 = NewPlistFromArgs( t_2 );
+   DoOperation2Args( CallFuncListOper, t_1, t_3 );
   }
   
  }
@@ -871,7 +947,8 @@ static Obj  HdlrFunc6 (
    CALL_1ARGS( t_1, t_2 );
   }
   else {
-   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+   t_3 = NewPlistFromArgs( t_2 );
+   DoOperation2Args( CallFuncListOper, t_1, t_3 );
   }
   
  }
@@ -886,7 +963,8 @@ static Obj  HdlrFunc6 (
   CALL_3ARGS( t_1, t_2, t_3, t_4 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3, t_4 ) );
+  t_5 = NewPlistFromArgs( t_2, t_3, t_4 );
+  DoOperation2Args( CallFuncListOper, t_1, t_5 );
  }
  
  /* Print( "1 <> x is ", 1 <> x, "\n" ); */
@@ -898,7 +976,8 @@ static Obj  HdlrFunc6 (
   CALL_3ARGS( t_1, t_2, t_3, t_4 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3, t_4 ) );
+  t_5 = NewPlistFromArgs( t_2, t_3, t_4 );
+  DoOperation2Args( CallFuncListOper, t_1, t_5 );
  }
  
  /* Print( "1 <> 2 via if is " ); */
@@ -908,7 +987,8 @@ static Obj  HdlrFunc6 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* if 1 <> 2 then */
@@ -922,7 +1002,8 @@ static Obj  HdlrFunc6 (
    CALL_1ARGS( t_1, t_2 );
   }
   else {
-   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+   t_3 = NewPlistFromArgs( t_2 );
+   DoOperation2Args( CallFuncListOper, t_1, t_3 );
   }
   
  }
@@ -937,7 +1018,8 @@ static Obj  HdlrFunc6 (
    CALL_1ARGS( t_1, t_2 );
   }
   else {
-   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+   t_3 = NewPlistFromArgs( t_2 );
+   DoOperation2Args( CallFuncListOper, t_1, t_3 );
   }
   
  }
@@ -950,7 +1032,8 @@ static Obj  HdlrFunc6 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* if 1 <> x then */
@@ -964,7 +1047,8 @@ static Obj  HdlrFunc6 (
    CALL_1ARGS( t_1, t_2 );
   }
   else {
-   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+   t_3 = NewPlistFromArgs( t_2 );
+   DoOperation2Args( CallFuncListOper, t_1, t_3 );
   }
   
  }
@@ -979,7 +1063,8 @@ static Obj  HdlrFunc6 (
    CALL_1ARGS( t_1, t_2 );
   }
   else {
-   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+   t_3 = NewPlistFromArgs( t_2 );
+   DoOperation2Args( CallFuncListOper, t_1, t_3 );
   }
   
  }
@@ -994,7 +1079,8 @@ static Obj  HdlrFunc6 (
   CALL_3ARGS( t_1, t_2, t_3, t_4 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3, t_4 ) );
+  t_5 = NewPlistFromArgs( t_2, t_3, t_4 );
+  DoOperation2Args( CallFuncListOper, t_1, t_5 );
  }
  
  /* Print( "1 < x is ", 1 < x, "\n" ); */
@@ -1006,7 +1092,8 @@ static Obj  HdlrFunc6 (
   CALL_3ARGS( t_1, t_2, t_3, t_4 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3, t_4 ) );
+  t_5 = NewPlistFromArgs( t_2, t_3, t_4 );
+  DoOperation2Args( CallFuncListOper, t_1, t_5 );
  }
  
  /* Print( "1 < 2 via if is " ); */
@@ -1016,7 +1103,8 @@ static Obj  HdlrFunc6 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* if 1 < 2 then */
@@ -1030,7 +1118,8 @@ static Obj  HdlrFunc6 (
    CALL_1ARGS( t_1, t_2 );
   }
   else {
-   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+   t_3 = NewPlistFromArgs( t_2 );
+   DoOperation2Args( CallFuncListOper, t_1, t_3 );
   }
   
  }
@@ -1045,7 +1134,8 @@ static Obj  HdlrFunc6 (
    CALL_1ARGS( t_1, t_2 );
   }
   else {
-   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+   t_3 = NewPlistFromArgs( t_2 );
+   DoOperation2Args( CallFuncListOper, t_1, t_3 );
   }
   
  }
@@ -1058,7 +1148,8 @@ static Obj  HdlrFunc6 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* if 1 < x then */
@@ -1072,7 +1163,8 @@ static Obj  HdlrFunc6 (
    CALL_1ARGS( t_1, t_2 );
   }
   else {
-   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+   t_3 = NewPlistFromArgs( t_2 );
+   DoOperation2Args( CallFuncListOper, t_1, t_3 );
   }
   
  }
@@ -1087,7 +1179,8 @@ static Obj  HdlrFunc6 (
    CALL_1ARGS( t_1, t_2 );
   }
   else {
-   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+   t_3 = NewPlistFromArgs( t_2 );
+   DoOperation2Args( CallFuncListOper, t_1, t_3 );
   }
   
  }
@@ -1102,7 +1195,8 @@ static Obj  HdlrFunc6 (
   CALL_3ARGS( t_1, t_2, t_3, t_4 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3, t_4 ) );
+  t_5 = NewPlistFromArgs( t_2, t_3, t_4 );
+  DoOperation2Args( CallFuncListOper, t_1, t_5 );
  }
  
  /* Print( "1 <= x is ", 1 <= x, "\n" ); */
@@ -1114,7 +1208,8 @@ static Obj  HdlrFunc6 (
   CALL_3ARGS( t_1, t_2, t_3, t_4 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3, t_4 ) );
+  t_5 = NewPlistFromArgs( t_2, t_3, t_4 );
+  DoOperation2Args( CallFuncListOper, t_1, t_5 );
  }
  
  /* Print( "1 <= 2 via if is " ); */
@@ -1124,7 +1219,8 @@ static Obj  HdlrFunc6 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* if 1 <= 2 then */
@@ -1138,7 +1234,8 @@ static Obj  HdlrFunc6 (
    CALL_1ARGS( t_1, t_2 );
   }
   else {
-   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+   t_3 = NewPlistFromArgs( t_2 );
+   DoOperation2Args( CallFuncListOper, t_1, t_3 );
   }
   
  }
@@ -1153,7 +1250,8 @@ static Obj  HdlrFunc6 (
    CALL_1ARGS( t_1, t_2 );
   }
   else {
-   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+   t_3 = NewPlistFromArgs( t_2 );
+   DoOperation2Args( CallFuncListOper, t_1, t_3 );
   }
   
  }
@@ -1166,7 +1264,8 @@ static Obj  HdlrFunc6 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* if 1 <= x then */
@@ -1180,7 +1279,8 @@ static Obj  HdlrFunc6 (
    CALL_1ARGS( t_1, t_2 );
   }
   else {
-   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+   t_3 = NewPlistFromArgs( t_2 );
+   DoOperation2Args( CallFuncListOper, t_1, t_3 );
   }
   
  }
@@ -1195,7 +1295,8 @@ static Obj  HdlrFunc6 (
    CALL_1ARGS( t_1, t_2 );
   }
   else {
-   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+   t_3 = NewPlistFromArgs( t_2 );
+   DoOperation2Args( CallFuncListOper, t_1, t_3 );
   }
   
  }
@@ -1210,7 +1311,8 @@ static Obj  HdlrFunc6 (
   CALL_3ARGS( t_1, t_2, t_3, t_4 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3, t_4 ) );
+  t_5 = NewPlistFromArgs( t_2, t_3, t_4 );
+  DoOperation2Args( CallFuncListOper, t_1, t_5 );
  }
  
  /* Print( "1 > x is ", 1 > x, "\n" ); */
@@ -1222,7 +1324,8 @@ static Obj  HdlrFunc6 (
   CALL_3ARGS( t_1, t_2, t_3, t_4 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3, t_4 ) );
+  t_5 = NewPlistFromArgs( t_2, t_3, t_4 );
+  DoOperation2Args( CallFuncListOper, t_1, t_5 );
  }
  
  /* Print( "1 > 2 via if is " ); */
@@ -1232,7 +1335,8 @@ static Obj  HdlrFunc6 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* if 1 > 2 then */
@@ -1246,7 +1350,8 @@ static Obj  HdlrFunc6 (
    CALL_1ARGS( t_1, t_2 );
   }
   else {
-   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+   t_3 = NewPlistFromArgs( t_2 );
+   DoOperation2Args( CallFuncListOper, t_1, t_3 );
   }
   
  }
@@ -1261,7 +1366,8 @@ static Obj  HdlrFunc6 (
    CALL_1ARGS( t_1, t_2 );
   }
   else {
-   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+   t_3 = NewPlistFromArgs( t_2 );
+   DoOperation2Args( CallFuncListOper, t_1, t_3 );
   }
   
  }
@@ -1274,7 +1380,8 @@ static Obj  HdlrFunc6 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* if 1 > x then */
@@ -1288,7 +1395,8 @@ static Obj  HdlrFunc6 (
    CALL_1ARGS( t_1, t_2 );
   }
   else {
-   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+   t_3 = NewPlistFromArgs( t_2 );
+   DoOperation2Args( CallFuncListOper, t_1, t_3 );
   }
   
  }
@@ -1303,7 +1411,8 @@ static Obj  HdlrFunc6 (
    CALL_1ARGS( t_1, t_2 );
   }
   else {
-   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+   t_3 = NewPlistFromArgs( t_2 );
+   DoOperation2Args( CallFuncListOper, t_1, t_3 );
   }
   
  }
@@ -1318,7 +1427,8 @@ static Obj  HdlrFunc6 (
   CALL_3ARGS( t_1, t_2, t_3, t_4 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3, t_4 ) );
+  t_5 = NewPlistFromArgs( t_2, t_3, t_4 );
+  DoOperation2Args( CallFuncListOper, t_1, t_5 );
  }
  
  /* Print( "1 >= x is ", 1 >= x, "\n" ); */
@@ -1330,7 +1440,8 @@ static Obj  HdlrFunc6 (
   CALL_3ARGS( t_1, t_2, t_3, t_4 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3, t_4 ) );
+  t_5 = NewPlistFromArgs( t_2, t_3, t_4 );
+  DoOperation2Args( CallFuncListOper, t_1, t_5 );
  }
  
  /* Print( "1 >= 2 via if is " ); */
@@ -1340,7 +1451,8 @@ static Obj  HdlrFunc6 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* if 1 >= 2 then */
@@ -1354,7 +1466,8 @@ static Obj  HdlrFunc6 (
    CALL_1ARGS( t_1, t_2 );
   }
   else {
-   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+   t_3 = NewPlistFromArgs( t_2 );
+   DoOperation2Args( CallFuncListOper, t_1, t_3 );
   }
   
  }
@@ -1369,7 +1482,8 @@ static Obj  HdlrFunc6 (
    CALL_1ARGS( t_1, t_2 );
   }
   else {
-   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+   t_3 = NewPlistFromArgs( t_2 );
+   DoOperation2Args( CallFuncListOper, t_1, t_3 );
   }
   
  }
@@ -1382,7 +1496,8 @@ static Obj  HdlrFunc6 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* if 1 >= x then */
@@ -1396,7 +1511,8 @@ static Obj  HdlrFunc6 (
    CALL_1ARGS( t_1, t_2 );
   }
   else {
-   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+   t_3 = NewPlistFromArgs( t_2 );
+   DoOperation2Args( CallFuncListOper, t_1, t_3 );
   }
   
  }
@@ -1411,7 +1527,8 @@ static Obj  HdlrFunc6 (
    CALL_1ARGS( t_1, t_2 );
   }
   else {
-   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+   t_3 = NewPlistFromArgs( t_2 );
+   DoOperation2Args( CallFuncListOper, t_1, t_3 );
   }
   
  }
@@ -1419,6 +1536,7 @@ static Obj  HdlrFunc6 (
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
+ GAP_GC_POP();
  return 0;
 }
 
@@ -1430,6 +1548,7 @@ static Obj  HdlrFunc7 (
  Obj t_1 = 0;
  (void)l_x;
  Bag oldFrame;
+ GAP_GC_PUSH2(&l_x, &t_1);
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
@@ -1451,6 +1570,7 @@ static Obj  HdlrFunc7 (
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
+ GAP_GC_POP();
  return 0;
 }
 
@@ -1461,12 +1581,14 @@ static Obj  HdlrFunc8 (
  Obj l_x = 0;
  (void)l_x;
  Bag oldFrame;
+ GAP_GC_PUSH1(&l_x);
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
+ GAP_GC_POP();
  return 0;
 }
 
@@ -1485,6 +1607,7 @@ static Obj  HdlrFunc9 (
  (void)l_l;
  (void)l_x;
  Bag oldFrame;
+ GAP_GC_PUSH8(&l_l, &l_x, &t_1, &t_2, &t_3, &t_4, &t_5, &t_6);
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
@@ -1497,7 +1620,8 @@ static Obj  HdlrFunc9 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* Display( [ 1, 2, 3 ] ); */
@@ -1511,7 +1635,8 @@ static Obj  HdlrFunc9 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* Display( [ 1,, 3, [ 4, 5 ], rec(
@@ -1545,7 +1670,8 @@ static Obj  HdlrFunc9 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* l := [  ]; */
@@ -1575,7 +1701,8 @@ static Obj  HdlrFunc9 (
   CALL_1ARGS( t_1, l_l );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_l ) );
+  t_2 = NewPlistFromArgs( l_l );
+  DoOperation2Args( CallFuncListOper, t_1, t_2 );
  }
  
  /* Print( "l[1] = ", l[1], "\n" ); */
@@ -1587,7 +1714,8 @@ static Obj  HdlrFunc9 (
   CALL_3ARGS( t_1, t_2, t_3, t_4 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3, t_4 ) );
+  t_5 = NewPlistFromArgs( t_2, t_3, t_4 );
+  DoOperation2Args( CallFuncListOper, t_1, t_5 );
  }
  
  /* Print( "l[2] = ", l[1 + 1], "\n" ); */
@@ -1601,7 +1729,8 @@ static Obj  HdlrFunc9 (
   CALL_3ARGS( t_1, t_2, t_3, t_4 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3, t_4 ) );
+  t_5 = NewPlistFromArgs( t_2, t_3, t_4 );
+  DoOperation2Args( CallFuncListOper, t_1, t_5 );
  }
  
  /* Print( "l[3] = ", l![3], "\n" ); */
@@ -1613,7 +1742,8 @@ static Obj  HdlrFunc9 (
   CALL_3ARGS( t_1, t_2, t_3, t_4 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3, t_4 ) );
+  t_5 = NewPlistFromArgs( t_2, t_3, t_4 );
+  DoOperation2Args( CallFuncListOper, t_1, t_5 );
  }
  
  /* Print( "l[4] = ", l![2 + 2], "\n" ); */
@@ -1627,7 +1757,8 @@ static Obj  HdlrFunc9 (
   CALL_3ARGS( t_1, t_2, t_3, t_4 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3, t_4 ) );
+  t_5 = NewPlistFromArgs( t_2, t_3, t_4 );
+  DoOperation2Args( CallFuncListOper, t_1, t_5 );
  }
  
  /* x := rec(
@@ -1662,7 +1793,8 @@ static Obj  HdlrFunc9 (
   CALL_1ARGS( t_1, l_x );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_x ) );
+  t_2 = NewPlistFromArgs( l_x );
+  DoOperation2Args( CallFuncListOper, t_1, t_2 );
  }
  
  /* Print( "x.a = ", x.a, "\n" ); */
@@ -1674,7 +1806,8 @@ static Obj  HdlrFunc9 (
   CALL_3ARGS( t_1, t_2, t_3, t_4 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3, t_4 ) );
+  t_5 = NewPlistFromArgs( t_2, t_3, t_4 );
+  DoOperation2Args( CallFuncListOper, t_1, t_5 );
  }
  
  /* Print( "x.b = ", x.("b"), "\n" ); */
@@ -1687,7 +1820,8 @@ static Obj  HdlrFunc9 (
   CALL_3ARGS( t_1, t_2, t_3, t_4 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3, t_4 ) );
+  t_5 = NewPlistFromArgs( t_2, t_3, t_4 );
+  DoOperation2Args( CallFuncListOper, t_1, t_5 );
  }
  
  /* Print( "x.d = ", x!.d, "\n" ); */
@@ -1699,7 +1833,8 @@ static Obj  HdlrFunc9 (
   CALL_3ARGS( t_1, t_2, t_3, t_4 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3, t_4 ) );
+  t_5 = NewPlistFromArgs( t_2, t_3, t_4 );
+  DoOperation2Args( CallFuncListOper, t_1, t_5 );
  }
  
  /* Print( "x.e = ", x!.("e"), "\n" ); */
@@ -1712,11 +1847,13 @@ static Obj  HdlrFunc9 (
   CALL_3ARGS( t_1, t_2, t_3, t_4 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3, t_4 ) );
+  t_5 = NewPlistFromArgs( t_2, t_3, t_4 );
+  DoOperation2Args( CallFuncListOper, t_1, t_5 );
  }
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
+ GAP_GC_POP();
  return 0;
 }
 
@@ -1730,6 +1867,7 @@ static Obj  HdlrFunc10 (
  Obj t_3 = 0;
  (void)l_x;
  Bag oldFrame;
+ GAP_GC_PUSH4(&l_x, &t_1, &t_2, &t_3);
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
@@ -1741,7 +1879,8 @@ static Obj  HdlrFunc10 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* x := 42; */
@@ -1754,7 +1893,8 @@ static Obj  HdlrFunc10 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* Unbind( x ); */
@@ -1767,7 +1907,8 @@ static Obj  HdlrFunc10 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* Print( "Testing IsBound and Unbind for gvar\n" ); */
@@ -1777,7 +1918,8 @@ static Obj  HdlrFunc10 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* myglobal := 42; */
@@ -1791,7 +1933,8 @@ static Obj  HdlrFunc10 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* Unbind( myglobal ); */
@@ -1805,7 +1948,8 @@ static Obj  HdlrFunc10 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* Print( "Testing IsBound and Unbind for list\n" ); */
@@ -1815,7 +1959,8 @@ static Obj  HdlrFunc10 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* x := [ 1, 2, 3 ]; */
@@ -1833,7 +1978,8 @@ static Obj  HdlrFunc10 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* Unbind( x[2] ); */
@@ -1846,7 +1992,8 @@ static Obj  HdlrFunc10 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* Print( "Testing IsBound and Unbind for list with bang\n" ); */
@@ -1856,7 +2003,8 @@ static Obj  HdlrFunc10 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* x := [ 1, 2, 3 ]; */
@@ -1874,7 +2022,8 @@ static Obj  HdlrFunc10 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* Unbind( x![2] ); */
@@ -1887,7 +2036,8 @@ static Obj  HdlrFunc10 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* Print( "Testing IsBound and Unbind for record\n" ); */
@@ -1897,7 +2047,8 @@ static Obj  HdlrFunc10 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* x := rec(
@@ -1915,7 +2066,8 @@ static Obj  HdlrFunc10 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* Unbind( x.a ); */
@@ -1928,7 +2080,8 @@ static Obj  HdlrFunc10 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* Print( "Testing IsBound and Unbind for record with expr\n" ); */
@@ -1938,7 +2091,8 @@ static Obj  HdlrFunc10 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* x := rec(
@@ -1957,7 +2111,8 @@ static Obj  HdlrFunc10 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* Unbind( x.("a") ); */
@@ -1972,7 +2127,8 @@ static Obj  HdlrFunc10 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* Print( "Testing IsBound and Unbind for record with bang\n" ); */
@@ -1982,7 +2138,8 @@ static Obj  HdlrFunc10 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* x := rec(
@@ -2000,7 +2157,8 @@ static Obj  HdlrFunc10 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* Unbind( x!.a ); */
@@ -2013,7 +2171,8 @@ static Obj  HdlrFunc10 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* Print( "Testing IsBound and Unbind for record with bang and expr\n" ); */
@@ -2023,7 +2182,8 @@ static Obj  HdlrFunc10 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* x := rec(
@@ -2042,7 +2202,8 @@ static Obj  HdlrFunc10 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* Unbind( x!.("a") ); */
@@ -2057,11 +2218,13 @@ static Obj  HdlrFunc10 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
+ GAP_GC_POP();
  return 0;
 }
 
@@ -2072,8 +2235,10 @@ static Obj  HdlrFunc11 (
  Obj l_x = 0;
  Obj t_1 = 0;
  Obj t_2 = 0;
+ Obj t_3 = 0;
  (void)l_x;
  Bag oldFrame;
+ GAP_GC_PUSH4(&l_x, &t_1, &t_2, &t_3);
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
@@ -2085,7 +2250,8 @@ static Obj  HdlrFunc11 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* x := 0; */
@@ -2126,7 +2292,8 @@ static Obj  HdlrFunc11 (
      CALL_1ARGS( t_1, l_x );
     }
     else {
-     DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_x ) );
+     t_2 = NewPlistFromArgs( l_x );
+     DoOperation2Args( CallFuncListOper, t_1, t_2 );
     }
     
    }
@@ -2145,7 +2312,8 @@ static Obj  HdlrFunc11 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* x := 0; */
@@ -2188,7 +2356,8 @@ static Obj  HdlrFunc11 (
      CALL_1ARGS( t_1, l_x );
     }
     else {
-     DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( l_x ) );
+     t_2 = NewPlistFromArgs( l_x );
+     DoOperation2Args( CallFuncListOper, t_1, t_2 );
     }
     
    }
@@ -2205,7 +2374,8 @@ static Obj  HdlrFunc11 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* for x in [ 1 .. 100 ] do */
@@ -2242,7 +2412,8 @@ static Obj  HdlrFunc11 (
      CALL_1ARGS( t_2, l_x );
     }
     else {
-     DoOperation2Args( CallFuncListOper, t_2, NewPlistFromArgs( l_x ) );
+     t_3 = NewPlistFromArgs( l_x );
+     DoOperation2Args( CallFuncListOper, t_2, t_3 );
     }
     
    }
@@ -2254,6 +2425,7 @@ static Obj  HdlrFunc11 (
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
+ GAP_GC_POP();
  return 0;
 }
 
@@ -2263,7 +2435,9 @@ static Obj  HdlrFunc12 (
 {
  Obj t_1 = 0;
  Obj t_2 = 0;
+ Obj t_3 = 0;
  Bag oldFrame;
+ GAP_GC_PUSH3(&t_1, &t_2, &t_3);
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
@@ -2274,7 +2448,8 @@ static Obj  HdlrFunc12 (
   CALL_0ARGS( t_1 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( ) );
+  t_2 = NewPlistFromArgs( );
+  DoOperation2Args( CallFuncListOper, t_1, t_2 );
  }
  
  /* test_func_calls(  ); */
@@ -2283,7 +2458,8 @@ static Obj  HdlrFunc12 (
   CALL_0ARGS( t_1 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( ) );
+  t_2 = NewPlistFromArgs( );
+  DoOperation2Args( CallFuncListOper, t_1, t_2 );
  }
  
  /* test_cmp_ops(  ); */
@@ -2292,7 +2468,8 @@ static Obj  HdlrFunc12 (
   CALL_0ARGS( t_1 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( ) );
+  t_2 = NewPlistFromArgs( );
+  DoOperation2Args( CallFuncListOper, t_1, t_2 );
  }
  
  /* test_arith(  ); */
@@ -2301,7 +2478,8 @@ static Obj  HdlrFunc12 (
   CALL_0ARGS( t_1 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( ) );
+  t_2 = NewPlistFromArgs( );
+  DoOperation2Args( CallFuncListOper, t_1, t_2 );
  }
  
  /* test_tilde(  ); */
@@ -2310,7 +2488,8 @@ static Obj  HdlrFunc12 (
   CALL_0ARGS( t_1 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( ) );
+  t_2 = NewPlistFromArgs( );
+  DoOperation2Args( CallFuncListOper, t_1, t_2 );
  }
  
  /* test_list_rec_exprs(  ); */
@@ -2319,7 +2498,8 @@ static Obj  HdlrFunc12 (
   CALL_0ARGS( t_1 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( ) );
+  t_2 = NewPlistFromArgs( );
+  DoOperation2Args( CallFuncListOper, t_1, t_2 );
  }
  
  /* test_IsBound_Unbind(  ); */
@@ -2328,7 +2508,8 @@ static Obj  HdlrFunc12 (
   CALL_0ARGS( t_1 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( ) );
+  t_2 = NewPlistFromArgs( );
+  DoOperation2Args( CallFuncListOper, t_1, t_2 );
  }
  
  /* test_loops(  ); */
@@ -2337,7 +2518,8 @@ static Obj  HdlrFunc12 (
   CALL_0ARGS( t_1 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( ) );
+  t_2 = NewPlistFromArgs( );
+  DoOperation2Args( CallFuncListOper, t_1, t_2 );
  }
  
  /* Display( () ); */
@@ -2347,11 +2529,13 @@ static Obj  HdlrFunc12 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
+ GAP_GC_POP();
  return 0;
 }
 
@@ -2362,6 +2546,7 @@ static Obj  HdlrFunc1 (
  Obj t_1 = 0;
  Obj t_2 = 0;
  Bag oldFrame;
+ GAP_GC_PUSH2(&t_1, &t_2);
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
@@ -2758,6 +2943,7 @@ static Obj  HdlrFunc1 (
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
+ GAP_GC_POP();
  return 0;
 }
 
@@ -2860,8 +3046,9 @@ static Int InitKernel ( StructInitInfo * module )
 /* 'InitLibrary' sets up gvars, rnams, functions */
 static Int InitLibrary ( StructInitInfo * module )
 {
- Obj func1;
- Obj body1;
+ Obj func1 = 0;
+ Obj body1 = 0;
+ GAP_GC_PUSH2(&func1, &body1);
  
  /* Complete Copy/Fopy registration */
  UpdateCopyFopyInfo();
@@ -2875,6 +3062,7 @@ static Int InitLibrary ( StructInitInfo * module )
  SET_BODY_FUNC( func1, body1 );
  CHANGED_BAG( func1 );
  CALL_0ARGS( func1 );
+ GAP_GC_POP();
  
  return 0;
  

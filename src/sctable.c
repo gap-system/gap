@@ -54,6 +54,7 @@
 **  constants table <table>.
 */
 static Obj FuncSC_TABLE_ENTRY(Obj self, Obj table, Obj i, Obj j, Obj k)
+    GAP_GC_CANSAFEPOINT
 {
     Obj                 tmp;            // temporary
     Obj                 basis;          // basis  list
@@ -142,12 +143,13 @@ static Obj FuncSC_TABLE_ENTRY(Obj self, Obj table, Obj i, Obj j, Obj k)
 **  <list2> with respect to the structure constants table <table>.
 */
 static void SCTableProdAdd(Obj res, Obj coeff, Obj basis_coeffs, Int dim)
+    GAP_GC_CANSAFEPOINT
 {
     Obj                 basis;
     Obj                 coeffs;
     Int                 len;
     Obj                 k;
-    Obj                 c1, c2;
+    Obj                 c1 = 0, c2 = 0;
     Int                 l;
 
     basis  = ELM_LIST( basis_coeffs, 1 );
@@ -156,6 +158,7 @@ static void SCTableProdAdd(Obj res, Obj coeff, Obj basis_coeffs, Int dim)
     if ( LEN_LIST( coeffs ) != len ) {
         ErrorQuit("SCTableProduct: corrupted <table>", 0, 0);
     }
+    GAP_GC_PUSH2(&c1, &c2);
     for ( l = 1; l <= len; l++ ) {
         k = ELM_LIST( basis, l );
         if ( ! IS_INTOBJ(k) || INT_INTOBJ(k) <= 0 || dim < INT_INTOBJ(k) ) {
@@ -168,16 +171,18 @@ static void SCTableProdAdd(Obj res, Obj coeff, Obj basis_coeffs, Int dim)
         SET_ELM_PLIST( res, INT_INTOBJ(k), c2 );
         CHANGED_BAG( res );
     }
+    GAP_GC_POP();
 }
 
 static Obj FuncSC_TABLE_PRODUCT(Obj self, Obj table, Obj list1, Obj list2)
+    GAP_GC_CANSAFEPOINT
 {
-    Obj                 res;            // result list
-    Obj                 row;            // one row of sc table
-    Obj                 zero;           // zero from sc table
+    Obj                 res = 0;        // result list
+    Obj                 row = 0;        // one row of sc table
+    Obj                 zero = 0;       // zero from sc table
     Obj                 ai, aj;         // elements from list1
     Obj                 bi, bj;         // elements from list2
-    Obj                 c, c1, c2;      // products of above
+    Obj                 c = 0, c1 = 0, c2 = 0; // products of above
     Int                 dim;            // dimension of vectorspace
     Int                 i, j;           // loop variables
 
@@ -202,6 +207,7 @@ static Obj FuncSC_TABLE_PRODUCT(Obj self, Obj table, Obj list1, Obj list2)
     }
 
     // make the result list
+    GAP_GC_PUSH6(&res, &row, &zero, &c, &c1, &c2);
     res = NEW_PLIST( T_PLIST, dim );
     SET_LEN_PLIST( res, dim );
     for ( i = 1; i <= dim; i++ ) {
@@ -272,6 +278,7 @@ static Obj FuncSC_TABLE_PRODUCT(Obj self, Obj table, Obj list1, Obj list2)
         }
     }
 
+    GAP_GC_POP();
     return res;
 }
 
@@ -313,7 +320,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );

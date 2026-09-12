@@ -83,11 +83,15 @@ static Int SORT_COMP_CHECK_EQ(SORT_FUNC_ARGS, Obj a, Obj b) {
 }
 
 static void PREFIXNAME(Shell)(SORT_FUNC_ARGS, Int start, Int end)
+    GAP_GC_CANSAFEPOINT
 {
   UInt len; // length of the list
   UInt h;   // gap width in the shellsort
   SORT_CREATE_LOCAL(v);
   SORT_CREATE_LOCAL(w);
+  // v leaves the list while it is compared and shifted; nothing else
+  // refers to it then, and the comparison may collect.
+  SORT_PUSH_LOCALS(v, w);
   UInt i, k; // loop variables
 
   // sort the list with a shellsort
@@ -113,17 +117,23 @@ static void PREFIXNAME(Shell)(SORT_FUNC_ARGS, Int start, Int end)
     h = h / 3;
   }
   SORT_FILTER_CHECKS();
+  GAP_GC_POP();
 }
 
 // Swap values at indices a and b
 #define SWAP_INDICES PREFIXNAME(Swap)
-static inline void PREFIXNAME(Swap)(SORT_FUNC_ARGS, Int a, Int b) {
+static inline void PREFIXNAME(Swap)(SORT_FUNC_ARGS, Int a, Int b)
+    GAP_GC_CANSAFEPOINT {
   SORT_CREATE_LOCAL(t);
   SORT_CREATE_LOCAL(u);
   SORT_ASS_LIST_TO_LOCAL(t, a);
   SORT_ASS_LIST_TO_LOCAL(u, b);
+  // once t is stored, only this frame holds u until it is stored too, and a
+  // generic ASS_LIST may collect
+  SORT_PUSH_LOCALS(t, u);
   SORT_ASS_LOCAL_TO_LIST(b, t);
   SORT_ASS_LOCAL_TO_LIST(a, u);
+  GAP_GC_POP();
 }
 
 // Compare values at indices a and b
@@ -137,7 +147,8 @@ static inline int COMP_INDICES(SORT_FUNC_ARGS, Int a, Int b) {
 }
 
 // Sort 3 indices
-static inline void PREFIXNAME(Sort3)(SORT_FUNC_ARGS, Int a, Int b, Int c) {
+static inline void PREFIXNAME(Sort3)(SORT_FUNC_ARGS, Int a, Int b, Int c)
+    GAP_GC_CANSAFEPOINT {
   if (!(COMP_INDICES(SORT_ARGS, b, a))) {
     if (!(COMP_INDICES(SORT_ARGS, c, b)))
       return;
@@ -165,7 +176,8 @@ static inline void PREFIXNAME(Sort3)(SORT_FUNC_ARGS, Int a, Int b, Int c) {
  * partition_point
  */
 static inline BOOL PREFIXNAME(Partition)(SORT_FUNC_ARGS, Int start, Int end,
-                                        Int *partition_point) {
+                                        Int *partition_point)
+    GAP_GC_CANSAFEPOINT {
   Int left = start;
   Int right = end;
   BOOL first_pass = TRUE;
@@ -206,9 +218,13 @@ static inline BOOL PREFIXNAME(Partition)(SORT_FUNC_ARGS, Int start, Int end,
 }
 
 static void PREFIXNAME(Insertion)(SORT_FUNC_ARGS, Int start, Int end)
+    GAP_GC_CANSAFEPOINT
 {
   SORT_CREATE_LOCAL(v);
   SORT_CREATE_LOCAL(w);
+  // v leaves the list while it is compared and shifted; nothing else
+  // refers to it then, and the comparison may collect.
+  SORT_PUSH_LOCALS(v, w);
   UInt i, k; // loop variables
 
   // sort the list with insertion sort
@@ -225,14 +241,19 @@ static void PREFIXNAME(Insertion)(SORT_FUNC_ARGS, Int start, Int end)
     }
     SORT_ASS_LOCAL_TO_LIST(k, v);
   }
+  GAP_GC_POP();
 }
 
 /* This function performs an insertion sort with a limit to the number
  * of swaps performed -- if we pass that limit we abandon the sort */
 static Obj PREFIXNAME(LimitedInsertion)(SORT_FUNC_ARGS, Int start, Int end)
+    GAP_GC_CANSAFEPOINT
 {
   SORT_CREATE_LOCAL(v);
   SORT_CREATE_LOCAL(w);
+  // v leaves the list while it is compared and shifted; nothing else
+  // refers to it then, and the comparison may collect.
+  SORT_PUSH_LOCALS(v, w);
   UInt i, k;     // loop variables
   Int limit = 8; // how long do we try to insertion sort?
                  // sort the list with insertion sort
@@ -244,6 +265,7 @@ static Obj PREFIXNAME(LimitedInsertion)(SORT_FUNC_ARGS, Int start, Int end)
       limit--;
       if (limit == 0) {
         SORT_ASS_LOCAL_TO_LIST(k, v);
+        GAP_GC_POP();
         return False;
       }
 
@@ -255,12 +277,14 @@ static Obj PREFIXNAME(LimitedInsertion)(SORT_FUNC_ARGS, Int start, Int end)
     }
     SORT_ASS_LOCAL_TO_LIST(k, v);
   }
+  GAP_GC_POP();
   return True;
 }
 
 /* This function assumes it doesn't get called for ranges which are very small
  */
 static void PREFIXNAME(CheckBadPivot)(SORT_FUNC_ARGS, Int start, Int end, Int pivot)
+    GAP_GC_CANSAFEPOINT
 {
   Int length = end - start;
   if (pivot - start < length / 8) {
@@ -274,6 +298,7 @@ static void PREFIXNAME(CheckBadPivot)(SORT_FUNC_ARGS, Int start, Int end, Int pi
 }
 
 static void PREFIXNAME(QuickSort)(SORT_FUNC_ARGS, Int start, Int end, Int depth)
+    GAP_GC_CANSAFEPOINT
 {
   Int pivot;
   BOOL first_pass;
@@ -302,7 +327,7 @@ static void PREFIXNAME(QuickSort)(SORT_FUNC_ARGS, Int start, Int end, Int depth)
   }
 }
 
-void SORT_FUNC_NAME(SORT_FUNC_ARGS) {
+void SORT_FUNC_NAME(SORT_FUNC_ARGS) GAP_GC_CANSAFEPOINT {
   Int len = SORT_LEN_LIST();
   SORT_FILTER_CHECKS();
   PREFIXNAME(QuickSort)(SORT_ARGS, 1, len, CLog2Int(len) * 2 + 2);
@@ -311,7 +336,7 @@ void SORT_FUNC_NAME(SORT_FUNC_ARGS) {
 // Merge the consecutive ranges [b1..e1] and [e1+1..e2] in place,
 // Using the temporary buffer 'tempbuf'.
 static void PREFIXNAME(MergeRanges)(SORT_FUNC_ARGS, Int b1, Int e1, Int e2,
-                                    Obj tempbuf)
+                                    Obj tempbuf) GAP_GC_CANSAFEPOINT
 {
   Int pos1 = b1;
   Int pos2 = e1 + 1;
@@ -357,10 +382,11 @@ static void PREFIXNAME(MergeRanges)(SORT_FUNC_ARGS, Int b1, Int e1, Int e2,
   }
 }
 
-void PREFIXNAME(Merge)(SORT_FUNC_ARGS) {
+void PREFIXNAME(Merge)(SORT_FUNC_ARGS) GAP_GC_CANSAFEPOINT {
   Int len = SORT_LEN_LIST();
-  Obj buf = SORT_CREATE_TEMP_BUFFER(len);
   SORT_FILTER_CHECKS();
+  Obj buf = SORT_CREATE_TEMP_BUFFER(len);
+  GAP_GC_PUSH1(&buf);
   Int stepsize = 24;
   Int i;
   // begin with splitting into small steps we insertion sort
@@ -380,6 +406,7 @@ void PREFIXNAME(Merge)(SORT_FUNC_ARGS) {
     }
     stepsize *= 2;
   }
+  GAP_GC_POP();
 }
 
 #undef PREFIXNAME
@@ -388,6 +415,7 @@ void PREFIXNAME(Merge)(SORT_FUNC_ARGS) {
 #undef SORT_FUNC_ARGS
 #undef SORT_ARGS
 #undef SORT_CREATE_LOCAL
+#undef SORT_PUSH_LOCALS
 #undef SORT_LEN_LIST
 #undef SORT_ASS_LIST_TO_LOCAL
 #undef SORT_ASS_LOCAL_TO_LIST

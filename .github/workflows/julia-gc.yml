@@ -1,0 +1,148 @@
+name: Julia GC, precise mode
+
+# Build GAP against the Julia GC without the conservative stack scanner
+# (-DDISABLE_STACK_SCAN), run the test suite, and run Julia's GC static
+# analyzer over the kernel.
+#
+# Precise mode needs one Julia patch that is not upstream yet: the root
+# scanner must skip tagged immediates in GC frames, JuliaLang/julia#62889.
+# juliaup serves prebuilt binaries of open pull requests as channel "prNNNNN",
+# which is what JULIA_CHANNEL below selects. Once the patch is in a Julia
+# release, replace the channel with that version.
+#
+# The analyzer is a clang plugin that ships with Julia's sources, not with
+# its binaries. The checker recognises the types it tracks by an attribute
+# alone, JuliaLang/julia#62928, so it needs both the plugin built from that
+# pull request's sources (no Julia build, only its LLVM) and Julia headers
+# that carry the attribute: the analyzer job therefore uses that pull
+# request's channel throughout, and only compiles, never runs, GAP.
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - 'master'
+      - 'stable-*'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.ref_name != github.event.repository.default_branch || github.run_number }}
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
+
+env:
+  JULIA_CHANNEL: pr62889
+  JULIA_CHECKER_REF: refs/pull/62928/head
+  # configure replaces its default CFLAGS when CFLAGS is set, so repeat them
+  CFLAGS: "-g -O2 -DDISABLE_STACK_SCAN"
+  CXXFLAGS: "-g -O2 -DDISABLE_STACK_SCAN"
+  NO_COVERAGE: 1
+
+jobs:
+  test:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "testinstall, optimized"
+            configflags: ""
+          - name: "testinstall, debug"
+            configflags: "--enable-debug"
+          - name: "memory checking"
+            configflags: "--enable-memory-checking --enable-debug"
+    env:
+      CONFIGFLAGS: ${{ matrix.configflags }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: "Install dependencies"
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends libgmp-dev libreadline-dev zlib1g-dev
+      - name: "Install Julia"
+        run: |
+          curl -fsSL https://install.julialang.org | sh -s -- --yes --default-channel "$JULIA_CHANNEL"
+          echo "$HOME/.juliaup/bin" >> "$GITHUB_PATH"
+      - name: "Configure GAP"
+        run: dev/ci-configure-gap.sh
+      - name: "Build GAP"
+        run: dev/ci-build-gap.sh
+      - name: "Download packages"
+        run: dev/ci-download-pkgs.sh
+      - name: "Run tests"
+        if: ${{ !contains(matrix.configflags, 'memory-checking') }}
+        run: dev/ci.sh testinstall
+      - name: "Run tests under memory checking"
+        # Every 1000th allocation collects, mostly young collections, and any
+        # reference the collector cannot vouch for aborts with a report. The
+        # whole suite would take hours at this rate; boot and a sample of the
+        # tests that exercise the kernel's in-place conversions and the
+        # interpreter is what fits a CI run.
+        if: ${{ contains(matrix.configflags, 'memory-checking') }}
+        run: |
+          GAP_MEMCHECK_PERIOD=1000 GAP_MEMCHECK_FULL_EVERY=10 ./gap --enableMemCheck -q -A -T <<'GAP'
+          ok := true;;
+          for f in [ "syntaxtree.tst", "list.tst", "listgen.tst", "listindex.tst", "ElmsBlist.tst",
+                     "vecmat.tst", "stringobj.tst", "strings.tst", "recordname.tst",
+                     "function.tst", "callfunc.tst" ] do
+            Print("testing ", f, "\n");
+            ok := Test(Filename(DirectoriesLibrary("tst/testinstall"), f)) and ok;
+          od;
+          if not ok then ForceQuitGap(1); fi;
+          QuitGap(0);
+          GAP
+
+  analyzer:
+    name: "GC static analyzer"
+    runs-on: ubuntu-24.04
+    env:
+      JULIA_CHANNEL: pr62928
+    steps:
+      - uses: actions/checkout@v7
+      - name: "Check out the Julia sources with the checker"
+        uses: actions/checkout@v7
+        with:
+          repository: JuliaLang/julia
+          ref: ${{ env.JULIA_CHECKER_REF }}
+          path: extern/julia-src
+      - name: "Install dependencies"
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends libgmp-dev libreadline-dev zlib1g-dev
+      - name: "Install Julia"
+        run: |
+          curl -fsSL https://install.julialang.org | sh -s -- --yes --default-channel "$JULIA_CHANNEL"
+          echo "$HOME/.juliaup/bin" >> "$GITHUB_PATH"
+      - name: "Build the analyzer plugins"
+        # downloads Julia's LLVM and clang and compiles src/clangsa
+        run: |
+          make -C extern/julia-src/src install-analysis-deps
+          make -C extern/julia-src/src clangsa
+      - name: "Configure and build GAP"
+        # the analysis reads the build directory's flags and generated headers
+        run: |
+          dev/ci-configure-gap.sh
+          dev/ci-build-gap.sh
+      - name: "Run the analyses"
+        run: |
+          export JULIA_GC_ANALYZER_CLANG=$PWD/extern/julia-src/usr/tools/clang
+          export JULIA_GC_ANALYZER_PLUGIN=$PWD/extern/julia-src/usr/lib/libGCCheckerPlugin.so
+          export JULIA_FIRST_DECL_PLUGIN=$PWD/extern/julia-src/usr/lib/libFirstDeclAnnotationsPlugin.so
+          export JULIA_CLANG_TIDY=$PWD/extern/julia-src/usr/tools/clang-tidy
+          dev/run-julia-gc-analyzer-all.sh .
+          dev/run-first-decl-check.sh . src/*.c src/*.cc
+          # skipped: the files of the other collectors, which do not compile in
+          # a Julia GC build, and julia_gc.c, whose call of jl_init is flagged
+          # because Julia annotates jl_init as entering the safepoint region
+          for f in src/*.c src/*.cc; do
+            case $f in
+              src/boehm_gc.c|src/gasman.c|src/sysmem.c|src/julia_gc.c) continue ;;
+            esac
+            dev/run-safepoint-check.sh . "$f"
+          done
+      - name: "Upload the analyzer logs"
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gc-analysis
+          path: gc-analysis/

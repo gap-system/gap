@@ -477,8 +477,16 @@ if test "x$enable_valgrind" != "xno" -a "x$enable_memory_checking" != "xno"; the
 fi
 
 if test "x$with_gc" != "xgasman"; then
-    if test "x$enable_valgrind" != "xno" -o "x$enable_memory_checking" != "xno"; then
-        AC_MSG_ERROR([--enable-valgrind and --enable-memory-checking are only compatible with GASMAN])
+    if test "x$enable_valgrind" != "xno"; then
+        AC_MSG_ERROR([--enable-valgrind is only compatible with GASMAN])
+    fi
+fi
+
+dnl memory checking means something different for each collector: GASMAN
+dnl moves every bag on each allocation, the Julia GC collects on each one
+if test "x$with_gc" != "xgasman" -a "x$with_gc" != "xjulia"; then
+    if test "x$enable_memory_checking" != "xno"; then
+        AC_MSG_ERROR([--enable-memory-checking is only compatible with GASMAN and Julia])
     fi
 fi
 
@@ -816,6 +824,20 @@ AS_IF([test "x$with_julia" != xno ],[
   ])
   AC_MSG_RESULT([${JULIA_VERSION}])
 
+  # where julia.h lives; the GC analysis scripts in dev/ read this from the
+  # build directory's GNUmakefile instead of guessing it from compiler flags
+  AS_IF([test "x$JULIA" != x],[
+    JULIA_INCLUDEDIR=$(${JULIA} --startup-file=no -e 'print(normpath(joinpath(Sys.BINDIR, Base.INCLUDEDIR, "julia")))')
+    # If that Julia is a source checkout (built in place, so its usr/ sits in
+    # the checkout), point dev/julia in the build directory at the checkout:
+    # the GC analysis scripts take Julia's clang and their plugins from there.
+    JULIA_SRCDIR=$(${JULIA} --startup-file=no -e 'print(normpath(joinpath(Sys.BINDIR, "..", "..")))')
+    AS_IF([test -d "${JULIA_SRCDIR}/src/clangsa"],[
+      mkdir -p dev && ln -sfn "${JULIA_SRCDIR}" dev/julia
+      AC_MSG_NOTICE([dev/julia -> ${JULIA_SRCDIR}])
+    ])
+  ])
+
   AC_MSG_CHECKING([for JULIA_CFLAGS])
   AS_IF([test "x$JULIA_CFLAGS" = x],[
     AS_IF([test -f "${JL_SHARE}/julia-config.jl"], [], [AC_MSG_ERROR([no julia-config.jl found])])
@@ -856,6 +878,7 @@ AS_IF([test "x$with_julia" != xno ],[
 ])
 AC_SUBST([JULIA_VERSION])
 AC_SUBST([JULIA_CFLAGS])
+AC_SUBST([JULIA_INCLUDEDIR])
 AC_SUBST([JULIA_LDFLAGS])
 AC_SUBST([JULIA_LIBS])
 

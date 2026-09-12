@@ -37,6 +37,11 @@ then
   JULIA_PATH=$(pwd)
   popd
   CONFIGFLAGS="--with-julia=${JULIA_PATH}/bin/julia $CONFIGFLAGS"
+elif [[ -n $JULIA_CHANNEL ]]
+then
+  # a Julia installed by juliaup, e.g. a pull-request build such as pr62889
+  JULIA_BIN=$(julia "+$JULIA_CHANNEL" -e 'print(joinpath(Sys.BINDIR, "julia"))')
+  CONFIGFLAGS="--with-julia=${JULIA_BIN} $CONFIGFLAGS"
 fi
 
 

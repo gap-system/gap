@@ -32,12 +32,9 @@
 **
 *F  NEW_GF2VEC( <vec>, <type>, <len> )  . . . . . . . create a new GF2 vector
 */
-#define NEW_GF2VEC(vec, type, len)                                           \
-    do {                                                                     \
-        vec = NewBag(T_DATOBJ, SIZE_PLEN_GF2VEC(len));                       \
-        SetTypeDatObj(vec, type);                                            \
-        SET_LEN_GF2VEC(vec, len);                                            \
-    } while (0)
+Obj NewGF2VecKernel(Obj type, UInt len) GAP_GC_CANSAFEPOINT;
+
+#define NEW_GF2VEC(vec, type, len) ((vec) = NewGF2VecKernel(type, len))
 
 
 /****************************************************************************
@@ -106,6 +103,7 @@
 */
 #define SIZE_PLEN_GF2VEC(len)                                                \
     (2 * sizeof(Obj) + ((len) + BIPEB - 1) / BIPEB * sizeof(UInt))
+
 
 
 /****************************************************************************
@@ -202,48 +200,48 @@
 **
 *V  TYPE_LIST_GF2VEC  . . . . . . . . . . . . . . type of a GF2 vector object
 */
-extern Obj TYPE_LIST_GF2VEC;
+extern Obj TYPE_LIST_GF2VEC GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
 **
 *V  TYPE_LIST_GF2VEC_IMM  . . . . . .  type of an immutable GF2 vector object
 */
-extern Obj TYPE_LIST_GF2VEC_IMM;
+extern Obj TYPE_LIST_GF2VEC_IMM GAP_GC_GLOBALLY_ROOTED;
 
 /****************************************************************************
 **
 *V  TYPE_LIST_GF2VEC_IMM_LOCKED . . . type of an immutable GF2 vector object
 **                                          with locked representation
 */
-extern Obj TYPE_LIST_GF2VEC_IMM_LOCKED;
+extern Obj TYPE_LIST_GF2VEC_IMM_LOCKED GAP_GC_GLOBALLY_ROOTED;
 
 /****************************************************************************
 **
 *V  TYPE_LIST_GF2VEC_LOCKED. . . .  type of a GF2 vector object
 **                                          with locked representation
 */
-extern Obj TYPE_LIST_GF2VEC_LOCKED;
+extern Obj TYPE_LIST_GF2VEC_LOCKED GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
 **
 *V  TYPE_LIST_GF2MAT  . . . . . . . . . . . . . . type of a GF2 matrix object
 */
-extern Obj TYPE_LIST_GF2MAT;
+extern Obj TYPE_LIST_GF2MAT GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
 **
 *V  TYPE_LIST_GF2MAT_IMM  . . . . . .  type of an immutable GF2 matrix object
 */
-extern Obj TYPE_LIST_GF2MAT_IMM;
+extern Obj TYPE_LIST_GF2MAT_IMM GAP_GC_GLOBALLY_ROOTED;
 
 
-extern Obj IsGF2VectorRep;
-extern Obj IsGF2MatrixRep;
+extern Obj IsGF2VectorRep GAP_GC_GLOBALLY_ROOTED;
+extern Obj IsGF2MatrixRep GAP_GC_GLOBALLY_ROOTED;
 
-Obj ShallowCopyVecGF2(Obj vec);
+Obj ShallowCopyVecGF2(Obj vec) GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **

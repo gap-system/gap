@@ -73,7 +73,7 @@ typedef struct {
 static Int lastFreePackageTNUM = FIRST_PACKAGE_TNUM;
 
 
-static Obj TYPE_KERNEL_OBJECT;
+static Obj TYPE_KERNEL_OBJECT GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
@@ -158,7 +158,7 @@ static Obj FuncFAMILY_OBJ(Obj self, Obj obj)
 */
 Obj (*TypeObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
-static Obj TypeObjError(Obj obj)
+static Obj TypeObjError(Obj obj) GAP_GC_CANSAFEPOINT
 {
     ErrorQuit("Panic: basic object of type '%s' is unkind",
               (Int)TNAM_OBJ(obj), 0);
@@ -261,7 +261,7 @@ static Obj FuncTYPE_OBJ(Obj self, Obj obj)
 **
 *F  FuncSET_TYPE_OBJ( <self>, <obj>, <type> ) . . handler for 'SET_TYPE_OBJ'
 */
-static Obj FuncSET_TYPE_OBJ(Obj self, Obj obj, Obj type)
+static Obj FuncSET_TYPE_OBJ(Obj self, Obj obj, Obj type) GAP_GC_CANSAFEPOINT
 {
     SET_TYPE_OBJ( obj, type );
     return (Obj) 0;
@@ -280,9 +280,9 @@ static Obj FuncSET_TYPE_OBJ(Obj self, Obj obj, Obj type)
 */
 BOOL (*IsMutableObjFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
-static Obj IsMutableObjFilt;
+static Obj IsMutableObjFilt GAP_GC_GLOBALLY_ROOTED;
 
-static BOOL IsMutableObjError(Obj obj)
+static BOOL IsMutableObjError(Obj obj) GAP_GC_CANSAFEPOINT
 {
     ErrorQuit("Panic: tried to test mutability of unsupported type '%s'",
               (Int)TNAM_OBJ(obj), 0);
@@ -315,7 +315,7 @@ static Obj FiltIS_MUTABLE_OBJ(Obj self, Obj obj)
 
 #ifdef HPCGAP
 
-static Obj IsInternallyMutableObjFilt;
+static Obj IsInternallyMutableObjFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_INTERNALLY_MUTABLE_OBJ(Obj self, Obj obj)
 {
@@ -345,9 +345,9 @@ BOOL IsInternallyMutableObj(Obj obj)
 */
 BOOL (*IsCopyableObjFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
-static Obj IsCopyableObjFilt;
+static Obj IsCopyableObjFilt GAP_GC_GLOBALLY_ROOTED;
 
-static BOOL IsCopyableObjError(Obj obj)
+static BOOL IsCopyableObjError(Obj obj) GAP_GC_CANSAFEPOINT
 {
     ErrorQuit("Panic: tried to test copyability of unsupported type '%s'",
               (Int)TNAM_OBJ(obj), 0);
@@ -376,14 +376,14 @@ static Obj FiltIS_COPYABLE_OBJ(Obj self, Obj obj)
 */
 Obj (*ShallowCopyObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
-static Obj ShallowCopyObjOper;
+static Obj ShallowCopyObjOper GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
 **
 *F  ShallowCopyObjError( <obj> )  . . . . . . . . . . . . . . .  unknown type
 */
-static Obj ShallowCopyObjError(Obj obj)
+static Obj ShallowCopyObjError(Obj obj) GAP_GC_CANSAFEPOINT
 {
     ErrorQuit("Panic: tried to shallow copy object of unsupported type '%s'",
               (Int)TNAM_OBJ(obj), 0);
@@ -405,7 +405,7 @@ static Obj ShallowCopyObjConstant(Obj obj)
 **
 *F  ShallowCopyObjObject( <obj> ) . . . . . . . . . . . . . . . . call method
 */
-static Obj ShallowCopyObjObject(Obj obj)
+static Obj ShallowCopyObjObject(Obj obj) GAP_GC_CANSAFEPOINT
 {
     return DoOperation1Args( ShallowCopyObjOper, obj );
 }
@@ -415,7 +415,7 @@ static Obj ShallowCopyObjObject(Obj obj)
 **
 *F  ShallowCopyObjDefault( <obj> )  . . . . . . . . . .  default shallow copy
 */
-static Obj ShallowCopyObjDefault(Obj obj)
+static Obj ShallowCopyObjDefault(Obj obj) GAP_GC_CANSAFEPOINT
 {
     Obj                 new;
     const Obj *         o;
@@ -455,7 +455,9 @@ Obj CopyObj (
 #ifdef USE_THREADSAFE_COPYING
     return CopyReachableObjectsFrom(obj, 0, 0, !mut);
 #else
-    Obj                 new;            // copy of <obj>
+    Obj                 new = 0;        // copy of <obj>
+
+    GAP_GC_PUSH1(&new);
 
     // make a copy
     new = COPY_OBJ( obj, mut );
@@ -464,6 +466,7 @@ Obj CopyObj (
     CLEAN_OBJ( obj );
 
     // return the copy
+    GAP_GC_POP();
     return new;
 #endif
 }
@@ -578,7 +581,7 @@ void CLEAN_OBJ(Obj obj)
 
 #if !defined(USE_THREADSAFE_COPYING) && !defined(USE_BOEHM_GC)
 
-static void MarkCopyingSubBags(Obj obj, void * ref)
+static void MarkCopyingSubBags(Obj obj, void * ref) GAP_GC_NOTSAFEPOINT
 {
     Obj fpl = CONST_ADDR_OBJ(obj)[0];
 
@@ -597,7 +600,7 @@ static void MarkCopyingSubBags(Obj obj, void * ref)
 **
 *F  CopyObjError( <obj> ) . . . . . . . . . . . . . . . . . . .  unknown type
 */
-static Obj CopyObjError(Obj obj, Int mut)
+static Obj CopyObjError(Obj obj, Int mut) GAP_GC_CANSAFEPOINT
 {
     ErrorQuit("Panic: tried to copy object of unsupported type '%s'",
               (Int)TNAM_OBJ(obj), 0);
@@ -609,7 +612,7 @@ static Obj CopyObjError(Obj obj, Int mut)
 **
 *F  CleanObjError( <obj> )  . . . . . . . . . . . . . . . . . .  unknown type
 */
-static void CleanObjError(Obj obj)
+static void CleanObjError(Obj obj) GAP_GC_CANSAFEPOINT
 {
     ErrorQuit("Panic: tried to clean object of unsupported type '%s'",
               (Int)TNAM_OBJ(obj), 0);
@@ -630,10 +633,10 @@ static Obj CopyObjConstant(Obj obj, Int mut)
 **
 *F  CopyObjPosObj( <obj>, <mut> ) . . . . . . . . .  copy a positional object
 */
-static Obj CopyObjPosObj(Obj obj, Int mut)
+static Obj CopyObjPosObj(Obj obj, Int mut) GAP_GC_CANSAFEPOINT
 {
-    Obj                 copy;           // copy, result
-    Obj                 tmp;            // temporary variable
+    Obj                 copy = 0;       // copy, result
+    Obj                 tmp = 0;        // temporary variable
     UInt                i;              // loop variable
 
     // immutable input is handled by COPY_OBJ
@@ -643,6 +646,8 @@ static Obj CopyObjPosObj(Obj obj, Int mut)
     if ( ! IS_COPYABLE_OBJ(obj) ) {
         ErrorQuit("Panic: encountered mutable, non-copyable object", 0, 0);
     }
+
+    GAP_GC_PUSH2(&copy, &tmp);
 
     // make a copy
     copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
@@ -664,6 +669,7 @@ static Obj CopyObjPosObj(Obj obj, Int mut)
     }
 
     // return the copy
+    GAP_GC_POP();
     return copy;
 }
 
@@ -689,10 +695,10 @@ static void CleanObjPosObj(Obj obj)
 **
 *F  CopyObjComObj( <obj>, <mut> ) . . . . . . . . . . . . . . . copy a comobj
 */
-static Obj CopyObjComObj(Obj obj, Int mut)
+static Obj CopyObjComObj(Obj obj, Int mut) GAP_GC_CANSAFEPOINT
 {
-    Obj                 copy;           // copy, result
-    Obj                 tmp;            // temporary variable
+    Obj                 copy = 0;       // copy, result
+    Obj                 tmp = 0;        // temporary variable
 
     // immutable input is handled by COPY_OBJ
     GAP_ASSERT(IS_MUTABLE_OBJ(obj));
@@ -701,6 +707,8 @@ static Obj CopyObjComObj(Obj obj, Int mut)
     if ( ! IS_COPYABLE_OBJ(obj) ) {
         ErrorQuit("Panic: encountered mutable, non-copyable object", 0, 0);
     }
+
+    GAP_GC_PUSH2(&copy, &tmp);
 
     // make a copy
     copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
@@ -724,6 +732,7 @@ static Obj CopyObjComObj(Obj obj, Int mut)
     }
 
     // return the copy
+    GAP_GC_POP();
     return copy;
 }
 
@@ -748,9 +757,9 @@ static void CleanObjComObj(Obj obj)
 **
 *F  CopyObjDatObj( <obj>, <mut> ) . . . . . . . . . . . . . . . copy a datobj
 */
-static Obj CopyObjDatObj(Obj obj, Int mut)
+static Obj CopyObjDatObj(Obj obj, Int mut) GAP_GC_CANSAFEPOINT
 {
-    Obj                 copy;           // copy, result
+    Obj                 copy = 0;       // copy, result
 
     // immutable input is handled by COPY_OBJ
     GAP_ASSERT(IS_MUTABLE_OBJ(obj));
@@ -759,6 +768,8 @@ static Obj CopyObjDatObj(Obj obj, Int mut)
     if ( ! IS_COPYABLE_OBJ(obj) ) {
         ErrorQuit("Panic: encountered mutable, non-copyable object", 0, 0);
     }
+
+    GAP_GC_PUSH1(&copy);
 
     // make a copy
     copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
@@ -771,6 +782,7 @@ static Obj CopyObjDatObj(Obj obj, Int mut)
     PrepareCopy(obj, copy);
 
     // return the copy
+    GAP_GC_POP();
     return copy;
 }
 
@@ -813,7 +825,7 @@ static Obj FuncDEEP_COPY_OBJ(Obj self, Obj obj)
 **
 */
 
-static Obj PostMakeImmutableOp = 0;
+static Obj PostMakeImmutableOp GAP_GC_GLOBALLY_ROOTED = 0;
 
 void (*MakeImmutableObjFuncs[LAST_REAL_TNUM+1])( Obj );
 
@@ -835,7 +847,7 @@ void CheckedMakeImmutable( Obj obj )
 }
 #endif
 
-static void MakeImmutableError(Obj obj)
+static void MakeImmutableError(Obj obj) GAP_GC_CANSAFEPOINT
 {
   ErrorQuit("No make immutable function installed for a %s",
             (Int)TNAM_OBJ(obj), 0);
@@ -893,7 +905,7 @@ static Obj FuncMakeImmutable(Obj self, Obj obj)
   return obj;
 }
 
-static Obj FuncGET_TNAM_FROM_TNUM(Obj self, Obj obj)
+static Obj FuncGET_TNAM_FROM_TNUM(Obj self, Obj obj) GAP_GC_CANSAFEPOINT
 {
     UInt         tnum = GetBoundedInt(SELF_NAME, obj, 0, NUM_TYPES - 1);
     const char * name = TNAM_TNUM(tnum);
@@ -903,7 +915,7 @@ static Obj FuncGET_TNAM_FROM_TNUM(Obj self, Obj obj)
 
 // This function is used to keep track of which objects are already
 // being printed or viewed to trigger the use of ~ when needed.
-static inline BOOL IS_ON_PRINT_STACK(Obj obj)
+static inline BOOL IS_ON_PRINT_STACK(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     if (!(FIRST_RECORD_TNUM <= TNUM_OBJ(obj) &&
           TNUM_OBJ(obj) <= LAST_LIST_TNUM))
@@ -939,7 +951,7 @@ static void PrintInaccessibleObject(Obj obj)
 }
 #endif
 
-static void PRINT_PATH(Obj obj, Int idx)
+static void PRINT_PATH(Obj obj, Int idx) GAP_GC_CANSAFEPOINT
 {
     UInt tnum = TNUM_OBJ(obj);
     if (IS_PREC(obj)) {
@@ -1030,9 +1042,9 @@ void (* PrintObjFuncs [ LAST_REAL_TNUM  +1 ])( Obj obj );
 **
 *F  PrintObjObject( <obj> ) . . . . . . . . . . . . . . . . . print an object
 */
-Obj PrintObjOper;
+Obj PrintObjOper GAP_GC_GLOBALLY_ROOTED;
 
-static void PrintObjObject(Obj obj)
+static void PrintObjObject(Obj obj) GAP_GC_CANSAFEPOINT
 {
     DoOperation1Args( PrintObjOper, obj );
 }
@@ -1042,7 +1054,7 @@ static void PrintObjObject(Obj obj)
 **
 *F  FuncPRINT_OBJ( <self>, <obj> ) . . . . . . . . . . handler for 'PrintObj'
 */
-static Obj FuncPRINT_OBJ(Obj self, Obj obj)
+static Obj FuncPRINT_OBJ(Obj self, Obj obj) GAP_GC_CANSAFEPOINT
 {
     PrintObj( obj );
     return 0;
@@ -1065,7 +1077,7 @@ void SetPrintObjIndex(Int index)
     PrintObjIndices[depth - 1] = index;
 }
 
-static Obj FuncSET_PRINT_OBJ_INDEX(Obj self, Obj index)
+static Obj FuncSET_PRINT_OBJ_INDEX(Obj self, Obj index) GAP_GC_CANSAFEPOINT
 {
     SetPrintObjIndex(GetSmallInt(SELF_NAME, index));
     return 0;
@@ -1082,7 +1094,7 @@ static Obj FuncSET_PRINT_OBJ_INDEX(Obj self, Obj index)
 **  recursion works nicely.
 */
 
-static Obj ViewObjOper;
+static Obj ViewObjOper GAP_GC_GLOBALLY_ROOTED;
 
 void ViewObj(Obj obj)
 {
@@ -1132,7 +1144,7 @@ void ViewObj(Obj obj)
 **
 *F  FuncVIEW_OBJ( <self>, <obj> ) . . . . . . . . . . . handler for 'ViewObj'
 */
-static Obj FuncVIEW_OBJ(Obj self, Obj obj)
+static Obj FuncVIEW_OBJ(Obj self, Obj obj) GAP_GC_CANSAFEPOINT
 {
     ViewObj( obj );
     return 0;
@@ -1180,7 +1192,7 @@ static Obj FuncIS_COMOBJ(Obj self, Obj obj)
 **
 *F  FuncSET_TYPE_COMOBJ( <self>, <obj>, <type> ) . . .  'SET_TYPE_COMOBJ'
 */
-static Obj FuncSET_TYPE_COMOBJ(Obj self, Obj obj, Obj type)
+static Obj FuncSET_TYPE_COMOBJ(Obj self, Obj obj, Obj type) GAP_GC_CANSAFEPOINT
 {
     switch (TNUM_OBJ(obj)) {
     case T_PREC:
@@ -1307,7 +1319,7 @@ static Obj FuncIS_POSOBJ(Obj self, Obj obj)
 **
 *F  FuncSET_TYPE_POSOBJ( <self>, <obj>, <type> )  . . .  'SET_TYPE_POSOB'
 */
-static Obj FuncSET_TYPE_POSOBJ(Obj self, Obj obj, Obj type)
+static Obj FuncSET_TYPE_POSOBJ(Obj self, Obj obj, Obj type) GAP_GC_CANSAFEPOINT
 {
     switch (TNUM_OBJ(obj)) {
 #ifdef HPCGAP
@@ -1743,11 +1755,11 @@ static void LoadDatObj(Obj datobj)
 **  WARNING: at the moment the functions breaks on cloning `[1,~]'.  This can
 **  be fixed if necessary.
 */
-static Obj IsToBeDefinedObj;
+static Obj IsToBeDefinedObj GAP_GC_GLOBALLY_ROOTED;
 
-static Obj REREADING;
+static Obj REREADING GAP_GC_GLOBALLY_ROOTED;
 
-static Obj FuncCLONE_OBJ(Obj self, Obj dst, Obj src)
+static Obj FuncCLONE_OBJ(Obj self, Obj dst, Obj src) GAP_GC_CANSAFEPOINT
 {
     const Obj *     psrc;
     Obj *           pdst;
@@ -1780,6 +1792,8 @@ static Obj FuncCLONE_OBJ(Obj self, Obj dst, Obj src)
     }
 #endif
 
+    GAP_GC_PUSH1(&src);
+
     // if object is mutable, produce a structural copy
     if ( IS_MUTABLE_OBJ(src) ) {
         src = CopyObj( src, 1 );
@@ -1804,6 +1818,7 @@ static Obj FuncCLONE_OBJ(Obj self, Obj dst, Obj src)
     SET_PTR_BAG(dst, PTR_BAG(tmp));
 #endif
 
+    GAP_GC_POP();
     return 0;
 }
 
@@ -1817,7 +1832,7 @@ static Obj FuncCLONE_OBJ(Obj self, Obj dst, Obj src)
 **   This is inspired by the Smalltalk 'become:' operation.
 */
 
-static Obj FuncSWITCH_OBJ(Obj self, Obj obj1, Obj obj2)
+static Obj FuncSWITCH_OBJ(Obj self, Obj obj1, Obj obj2) GAP_GC_CANSAFEPOINT
 {
     if ( IS_INTOBJ(obj1) || IS_INTOBJ(obj2) ) {
         ErrorMayQuit("small integer objects cannot be switched", 0, 0);
@@ -1853,6 +1868,7 @@ static Obj FuncSWITCH_OBJ(Obj self, Obj obj1, Obj obj2)
 */
 
 static Obj FuncFORCE_SWITCH_OBJ(Obj self, Obj obj1, Obj obj2)
+    GAP_GC_CANSAFEPOINT
 {
     if ( IS_INTOBJ(obj1) || IS_INTOBJ(obj2) ) {
         ErrorMayQuit("small integer objects cannot be switched", 0, 0);
@@ -2192,7 +2208,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFiltsFromTable( GVarFilts );

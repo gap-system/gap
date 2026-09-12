@@ -107,14 +107,15 @@ static const CompilerT Compilers[];
 
 // plain list mapping statement tnums to strings
 // like "EXPR_INT"
-static Obj typeStrings;
+static Obj typeStrings GAP_GC_GLOBALLY_ROOTED;
 
 // plain record mapping strings like "EXPR_INT" to the
 // corresponding statement tnum
-static Obj typeRec;
+static Obj typeRec GAP_GC_GLOBALLY_ROOTED;
 
 
-static Obj ElmRecST(UInt1 tnum, Obj node, const char * name)
+static Obj ElmRecST(UInt1 tnum, Obj node GAP_GC_PROPAGATES_ROOT,
+                    const char * name) GAP_GC_CANSAFEPOINT
 {
     RequirePlainRec("ElmRecST", node);
     UInt rnam = RNamName(name);
@@ -126,9 +127,9 @@ static Obj ElmRecST(UInt1 tnum, Obj node, const char * name)
     return ElmPRec(node, rnam);
 }
 
-static Obj SyntaxTreeFunc(Obj result, Obj func);
+static Obj SyntaxTreeFunc(Obj result, Obj func) GAP_GC_CANSAFEPOINT;
 
-static UInt1 FIND_TNUM_FROM_STRING(Obj typestr)
+static UInt1 FIND_TNUM_FROM_STRING(Obj typestr) GAP_GC_CANSAFEPOINT
 {
     UInt rnam = RNamObj(typestr);
     if (IsbPRec(typeRec, rnam)) {
@@ -137,7 +138,7 @@ static UInt1 FIND_TNUM_FROM_STRING(Obj typestr)
     ErrorQuit("Unrecognized syntax tree node type %g", (Int)typestr, 0);
 }
 
-static UInt1 GetTypeTNum(Obj node)
+static UInt1 GetTypeTNum(Obj node) GAP_GC_CANSAFEPOINT
 {
     RequirePlainRec("GetTypeTNum", node);
     UInt type = RNamName("type");
@@ -147,21 +148,23 @@ static UInt1 GetTypeTNum(Obj node)
     return FIND_TNUM_FROM_STRING(ElmPRec(node, type));
 }
 
-static inline Obj NewSyntaxTreeNode(UInt1 tnum)
+static inline Obj NewSyntaxTreeNode(UInt1 tnum) GAP_GC_CANSAFEPOINT
 {
-    Obj result;
-    Obj typestr;
+    Obj result = 0;
+    Obj typestr = 0;
 
+    GAP_GC_PUSH2(&result, &typestr);
     typestr = ELM_LIST(typeStrings, tnum + 1);
     result = NEW_PREC(2);
     AssPRec(result, RNamName("type"), typestr);
+    GAP_GC_POP();
 
     return result;
 }
 
-static Obj SyntaxTreeCompiler(Expr expr)
+static Obj SyntaxTreeCompiler(Expr expr) GAP_GC_CANSAFEPOINT
 {
-    Obj       result;
+    Obj       result = 0;
     UInt1     tnum;
     CompilerT comp;
 
@@ -169,9 +172,11 @@ static Obj SyntaxTreeCompiler(Expr expr)
     tnum = TNUM_EXPR(expr);
     comp = Compilers[tnum];
 
+    GAP_GC_PUSH1(&result);
     result = NewSyntaxTreeNode(comp.tnum);
-
-    return comp.compile(result, expr);
+    result = comp.compile(result, expr);
+    GAP_GC_POP();
+    return result;
 }
 
 static Obj SyntaxTreeRNam(Expr expr)
@@ -179,27 +184,29 @@ static Obj SyntaxTreeRNam(Expr expr)
     return NAME_RNAM(expr);
 }
 
-static Expr SyntaxTreeCodeRNamObj(CodeState * cs, Obj node)
+static Expr SyntaxTreeCodeRNamObj(CodeState * cs, Obj node) GAP_GC_CANSAFEPOINT
 {
     return RNamObj(node);
 }
 
 
-static Obj SyntaxTreeDefaultCompiler(Obj result, Expr expr)
+static Obj SyntaxTreeDefaultCompiler(Obj result, Expr expr) GAP_GC_CANSAFEPOINT
 {
     int       i;
     UInt1     tnum;
     CompilerT comp;
     BOOL      didvariadic = 0;
     Int       offset = 0;
+    Obj       compiled = 0;
+    Obj       obj = 0;
 
     // TODO: GAP_ASSERT tnum range
     tnum = TNUM_EXPR(expr);
     comp = Compilers[tnum];
 
+    GAP_GC_PUSH2(&compiled, &obj);
     for (i = 0; i < comp.arity; i++) {
         UInt rnam = RNamName(comp.args[i].argname);
-        Obj  compiled;
 
         if (comp.args[i].argcomp) {
             Expr subexpr = READ_EXPR(expr, i + offset);
@@ -221,7 +228,7 @@ static Obj SyntaxTreeDefaultCompiler(Obj result, Expr expr)
             for (; offset < varlength; offset++) {
                 Expr subexpr = READ_EXPR(expr, i + offset);
                 // handle 0 to properly deal with EXPR_LIST
-                Obj obj = subexpr ? SyntaxTreeCompiler(subexpr) : 0;
+                obj = subexpr ? SyntaxTreeCompiler(subexpr) : 0;
                 PushPlist(compiled, obj);
             }
             // offset gets set one bigger final time around loop
@@ -232,13 +239,15 @@ static Obj SyntaxTreeDefaultCompiler(Obj result, Expr expr)
     }
 
     GAP_ASSERT(i + offset == SIZE_EXPR(expr) / sizeof(expr));
+    GAP_GC_POP();
     return result;
 }
 
-static Stat SyntaxTreeDefaultStatCoder(CodeState *, Obj);
-static Stat SyntaxTreeDefaultExprCoder(CodeState *, Obj);
+static Stat SyntaxTreeDefaultStatCoder(CodeState *, Obj) GAP_GC_CANSAFEPOINT;
+static Stat SyntaxTreeDefaultExprCoder(CodeState *, Obj) GAP_GC_CANSAFEPOINT;
 
 static Expr SyntaxTreeDefaultCoder(CodeState * cs, Obj node)
+    GAP_GC_CANSAFEPOINT
 {
 
     RequirePlainRec("SyntaxTreeDefaultCoder", node);
@@ -277,11 +286,13 @@ static Expr SyntaxTreeDefaultCoder(CodeState * cs, Obj node)
 
     Int  i;
     UInt offset = 0;
+    Obj  elem = 0;
 
+    GAP_GC_PUSH1(&elem);
     for (i = 0; i < arity; i++) {
         if (i == varargloc) {
             for (; offset < LEN_LIST(vararglist); offset++) {
-                Obj elem = ELM0_LIST(vararglist, offset + 1);
+                elem = ELM0_LIST(vararglist, offset + 1);
                 // Deal with empty entries in list expressions
                 if (elem == 0) {
                     WRITE_EXPR(cs, expr, i + offset, 0);
@@ -305,6 +316,7 @@ static Expr SyntaxTreeDefaultCoder(CodeState * cs, Obj node)
         }
     }
 
+    GAP_GC_POP();
     return expr;
 }
 
@@ -331,19 +343,19 @@ static Expr SyntaxTreeDefaultExprCoder(CodeState * cs, Obj node)
     return (Expr)SyntaxTreeDefaultCoder(cs, node);
 }
 
-static Expr SyntaxTreeCodeGVar(CodeState * cs, Obj name)
+static Expr SyntaxTreeCodeGVar(CodeState * cs, Obj name) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep("SyntaxTreeCodeGVar", name);
     return GVarName(CONST_CSTR_STRING(name));
 }
 
-static Obj SyntaxTreeRefLVar(Obj result, Expr expr)
+static Obj SyntaxTreeRefLVar(Obj result, Expr expr) GAP_GC_CANSAFEPOINT
 {
     AssPRec(result, RNamName("lvar"), INTOBJ_INT(LVAR_REF_LVAR(expr)));
     return result;
 }
 
-static Expr SyntaxTreeCodeRefLVar(CodeState * cs, Obj node)
+static Expr SyntaxTreeCodeRefLVar(CodeState * cs, Obj node) GAP_GC_CANSAFEPOINT
 {
     RequirePlainRec("SyntaxTreeCodeRefLVar", node);
     Obj lvar = ElmRecST(EXPR_REF_LVAR, node, "lvar");
@@ -351,21 +363,24 @@ static Expr SyntaxTreeCodeRefLVar(CodeState * cs, Obj node)
     return REF_LVAR_LVAR(INT_INTOBJ(lvar));
 }
 
-static Expr SyntaxTreeCodeObjInt(CodeState * cs, Obj node)
+static Expr SyntaxTreeCodeObjInt(CodeState * cs, Obj node) GAP_GC_CANSAFEPOINT
 {
     return UInt_ObjInt(node);
 }
 
-static Obj SyntaxTreeEvalCompiler(Obj result, Expr expr)
+static Obj SyntaxTreeEvalCompiler(Obj result, Expr expr) GAP_GC_CANSAFEPOINT
 {
     pauseProfiling();
-    Obj o = EVAL_EXPR(expr);
+    Obj o = 0;
+    GAP_GC_PUSH1(&o);
+    o = EVAL_EXPR(expr);
     unpauseProfiling();
     AssPRec(result, RNamName("value"), o);
+    GAP_GC_POP();
     return result;
 }
 
-static Obj SyntaxTreeFuncExpr(Obj result, Expr expr)
+static Obj SyntaxTreeFuncExpr(Obj result, Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj fexp = GET_VALUE_FROM_CURRENT_BODY(READ_EXPR(expr, 0));
 
@@ -374,12 +389,13 @@ static Obj SyntaxTreeFuncExpr(Obj result, Expr expr)
     return result;
 }
 
-static Obj SyntaxTreeRangeExpr(Obj result, Expr expr)
+static Obj SyntaxTreeRangeExpr(Obj result, Expr expr) GAP_GC_CANSAFEPOINT
 {
-    Obj first;
-    Obj second;
-    Obj last;
+    Obj first = 0;
+    Obj second = 0;
+    Obj last = 0;
 
+    GAP_GC_PUSH3(&first, &second, &last);
     if (SIZE_EXPR(expr) == 2 * sizeof(Expr)) {
         first = SyntaxTreeCompiler(READ_EXPR(expr, 0));
         last = SyntaxTreeCompiler(READ_EXPR(expr, 1));
@@ -397,10 +413,12 @@ static Obj SyntaxTreeRangeExpr(Obj result, Expr expr)
         AssPRec(result, RNamName("last"), last);
     }
 
+    GAP_GC_POP();
     return result;
 }
 
 static Expr SyntaxTreeCodeRangeExpr(CodeState * cs, Obj node)
+    GAP_GC_CANSAFEPOINT
 {
     RequirePlainRec("SyntaxTreeCodeRangeExpr", node);
     UInt hassecond = ISB_REC(node, RNamName("second"));
@@ -420,16 +438,17 @@ static Expr SyntaxTreeCodeRangeExpr(CodeState * cs, Obj node)
     return result;
 }
 
-static Obj SyntaxTreeRecExpr(Obj result, Expr expr)
+static Obj SyntaxTreeRecExpr(Obj result, Expr expr) GAP_GC_CANSAFEPOINT
 {
-    Obj  key;
-    Obj  val;
-    Obj  list;
-    Obj  subrec;
+    Obj  key = 0;
+    Obj  val = 0;
+    Obj  list = 0;
+    Obj  subrec = 0;
     Expr tmp;
     Int  i, len;
 
     len = SIZE_EXPR(expr) / (2 * sizeof(Expr));
+    GAP_GC_PUSH4(&key, &val, &list, &subrec);
     list = NEW_PLIST(T_PLIST, len);
 
     for (i = 1; i <= len; i++) {
@@ -453,20 +472,25 @@ static Obj SyntaxTreeRecExpr(Obj result, Expr expr)
     }
     AssPRec(result, RNamName("keyvalue"), list);
 
+    GAP_GC_POP();
     return result;
 }
 
-static Expr SyntaxTreeCodeRecExpr(CodeState * cs, Obj node)
+static Expr SyntaxTreeCodeRecExpr(CodeState * cs, Obj node) GAP_GC_CANSAFEPOINT
 {
     RequirePlainRec("SyntaxTreeCodeRecExpr", node);
     UInt1 tnum = GetTypeTNum(node);
     Obj   keyvalue = ElmRecST(tnum, node, "keyvalue");
     UInt  len = LEN_LIST(keyvalue);
     Expr  record = NewStatOrExpr(cs, tnum, 2 * len * sizeof(Expr), 0);
+    Obj   keyvaluepair = 0;
+    Obj   keynode = 0;
+    Obj   valuenode = 0;
+    GAP_GC_PUSH3(&keyvaluepair, &keynode, &valuenode);
     for (int i = 0; i < len; i++) {
-        Obj  keyvaluepair = ELM_LIST(keyvalue, i + 1);
-        Obj  keynode = ElmRecST(tnum, keyvaluepair, "key");
-        Obj  valuenode = ElmRecST(tnum, keyvaluepair, "value");
+        keyvaluepair = ELM_LIST(keyvalue, i + 1);
+        keynode = ElmRecST(tnum, keyvaluepair, "key");
+        valuenode = ElmRecST(tnum, keyvaluepair, "value");
         Expr key;
         if (IS_STRING(keynode)) {
             key = INTEXPR_INT(RNamObj(keynode));
@@ -478,17 +502,18 @@ static Expr SyntaxTreeCodeRecExpr(CodeState * cs, Obj node)
         WRITE_EXPR(cs, record, 2 * i, key);
         WRITE_EXPR(cs, record, 2 * i + 1, value);
     }
+    GAP_GC_POP();
     return record;
 }
 
-static Obj SyntaxTreeFloatLazy(Obj result, Expr expr)
+static Obj SyntaxTreeFloatLazy(Obj result, Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj string = GET_VALUE_FROM_CURRENT_BODY(READ_EXPR(expr, 1));
     AssPRec(result, RNamName("value"), string);
     return result;
 }
 
-static Obj SyntaxTreeFloatEager(Obj result, Expr expr)
+static Obj SyntaxTreeFloatEager(Obj result, Expr expr) GAP_GC_CANSAFEPOINT
 {
     Obj   value = GET_VALUE_FROM_CURRENT_BODY(READ_EXPR(expr, 0));
     Obj   string = GET_VALUE_FROM_CURRENT_BODY(READ_EXPR(expr, 1));
@@ -500,6 +525,7 @@ static Obj SyntaxTreeFloatEager(Obj result, Expr expr)
 }
 
 static Expr SyntaxTreeCodeFloatLazy(CodeState * cs, Obj node)
+    GAP_GC_CANSAFEPOINT
 {
     RequirePlainRec("SyntaxTreeCodeFloatLazy", node);
     Obj value = ElmRecST(EXPR_FLOAT_LAZY, node, "value");
@@ -507,6 +533,7 @@ static Expr SyntaxTreeCodeFloatLazy(CodeState * cs, Obj node)
 }
 
 static Expr SyntaxTreeCodeFloatEager(CodeState * cs, Obj node)
+    GAP_GC_CANSAFEPOINT
 {
     RequirePlainRec("SyntaxTreeCodeFloatEager", node);
     Obj  value = ElmRecST(EXPR_FLOAT_EAGER, node, "value");
@@ -519,16 +546,17 @@ static Expr SyntaxTreeCodeFloatEager(CodeState * cs, Obj node)
     return fl;
 }
 
-static Obj SyntaxTreeIf(Obj result, Stat stat)
+static Obj SyntaxTreeIf(Obj result, Stat stat) GAP_GC_CANSAFEPOINT
 {
-    Obj cond;
-    Obj then;
-    Obj pair;
-    Obj branches;
+    Obj cond = 0;
+    Obj then = 0;
+    Obj pair = 0;
+    Obj branches = 0;
 
     Int i, nr;
 
     nr = SIZE_STAT(stat) / (2 * sizeof(Stat));
+    GAP_GC_PUSH4(&cond, &then, &pair, &branches);
     branches = NEW_PLIST(T_PLIST, nr);
 
     AssPRec(result, RNamName("branches"), branches);
@@ -543,36 +571,43 @@ static Obj SyntaxTreeIf(Obj result, Stat stat)
 
         PushPlist(branches, pair);
     }
+    GAP_GC_POP();
     return result;
 }
 
-static Obj SyntaxTreeCompilePragma(Obj result, Stat stat)
+static Obj SyntaxTreeCompilePragma(Obj result, Stat stat) GAP_GC_CANSAFEPOINT
 {
     Obj message = GET_VALUE_FROM_CURRENT_BODY(READ_EXPR(stat, 0));
     AssPRec(result, RNamName("value"), message);
     return result;
 }
 
-static Expr SyntaxTreeCodeIf(CodeState * cs, Obj node)
+static Expr SyntaxTreeCodeIf(CodeState * cs, Obj node) GAP_GC_CANSAFEPOINT
 {
     RequirePlainRec("SyntaxTreeCodeIf", node);
     UInt1 tnum = GetTypeTNum(node);
     Obj   branches = ElmRecST(tnum, node, "branches");
     UInt  len = LEN_LIST(branches);
     Expr  ifexpr = NewStatOrExpr(cs, tnum, 2 * len * sizeof(Expr), 0);
+    Obj   condbodypair = 0;
+    Obj   conditionnode = 0;
+    Obj   bodynode = 0;
+    GAP_GC_PUSH3(&condbodypair, &conditionnode, &bodynode);
     for (int i = 0; i < len; i++) {
-        Obj  condbodypair = ELM_LIST(branches, i + 1);
-        Obj  conditionnode = ElmRecST(tnum, condbodypair, "condition");
-        Obj  bodynode = ElmRecST(tnum, condbodypair, "body");
+        condbodypair = ELM_LIST(branches, i + 1);
+        conditionnode = ElmRecST(tnum, condbodypair, "condition");
+        bodynode = ElmRecST(tnum, condbodypair, "body");
         Expr condition = SyntaxTreeDefaultExprCoder(cs, conditionnode);
         Stat body = SyntaxTreeDefaultStatCoder(cs, bodynode);
         WRITE_EXPR(cs, ifexpr, 2 * i, condition);
         WRITE_EXPR(cs, ifexpr, 2 * i + 1, body);
     }
+    GAP_GC_POP();
     return ifexpr;
 }
 
 static Expr SyntaxTreeCodeImmediateInteger(CodeState * cs, Obj node)
+    GAP_GC_CANSAFEPOINT
 {
     RequirePlainRec("SyntaxTreeCodeImmediateInteger", node);
     Obj value = ElmRecST(EXPR_INT, node, "value");
@@ -581,7 +616,7 @@ static Expr SyntaxTreeCodeImmediateInteger(CodeState * cs, Obj node)
     return INTEXPR_INT(INT_INTOBJ(value));
 }
 
-static Expr SyntaxTreeCodeValue(CodeState * cs, Obj node)
+static Expr SyntaxTreeCodeValue(CodeState * cs, Obj node) GAP_GC_CANSAFEPOINT
 {
     RequirePlainRec("SyntaxTreeCodeValue", node);
     UInt1 tnum = GetTypeTNum(node);
@@ -592,7 +627,7 @@ static Expr SyntaxTreeCodeValue(CodeState * cs, Obj node)
     return expr;
 }
 
-static Expr SyntaxTreeCodeChar(CodeState * cs, Obj node)
+static Expr SyntaxTreeCodeChar(CodeState * cs, Obj node) GAP_GC_CANSAFEPOINT
 {
     RequirePlainRec("SyntaxTreeCodeChar", node);
     Obj  chr = ElmRecST(EXPR_CHAR, node, "value");
@@ -604,9 +639,9 @@ static Expr SyntaxTreeCodeChar(CodeState * cs, Obj node)
 
 static Obj SyntaxTreeFunc(Obj result, Obj func)
 {
-    Obj stats;
+    Obj stats = 0;
 
-    Bag oldFrame;
+    Bag oldFrame = 0;
     Int narg;
     Int nloc;
 
@@ -630,16 +665,18 @@ static Obj SyntaxTreeFunc(Obj result, Obj func)
     AssPRec(result, RNamName("nams"), NAMS_FUNC(func));
 
     // switch to this function (so that 'READ_STAT' and 'READ_EXPR' work)
+    GAP_GC_PUSH2(&stats, &oldFrame);
     oldFrame = SWITCH_TO_NEW_LVARS(func, narg, nloc);
     stats = SyntaxTreeCompiler(OFFSET_FIRST_STAT);
     SWITCH_TO_OLD_LVARS(oldFrame);
 
     AssPRec(result, RNamName("stats"), stats);
+    GAP_GC_POP();
 
     return result;
 }
 
-static Expr SyntaxTreeCodeFunc(CodeState * cs, Obj node)
+static Expr SyntaxTreeCodeFunc(CodeState * cs, Obj node) GAP_GC_CANSAFEPOINT
 {
     RequirePlainRec("SyntaxTreeCodeFunc", node);
     Int narg = INT_INTOBJ(ElmRecST(EXPR_FUNC, node, "narg"));
@@ -653,25 +690,38 @@ static Expr SyntaxTreeCodeFunc(CodeState * cs, Obj node)
     Obj  stat_rec = ElmRecST(EXPR_FUNC, node, "stats");
     Obj  body_stats = ElmRecST(EXPR_FUNC, stat_rec, "statements");
     UInt nr_stats = LEN_LIST(body_stats);
+    Obj  current_stat = 0;
+    GAP_GC_PUSH1(&current_stat);
     for (int i = 1; i <= nr_stats; i++) {
-        Expr current =
-            SyntaxTreeDefaultStatCoder(cs, ELM_LIST(body_stats, i));
+        current_stat = ELM_LIST(body_stats, i);
+        Expr current = SyntaxTreeDefaultStatCoder(cs, current_stat);
         PushStat(current);
     }
+    GAP_GC_POP();
     return CodeFuncExprEnd(cs, nr_stats, FALSE, 0);
 }
 
-static Obj FuncSYNTAX_TREE_CODE(Obj self, Obj tree)
+static Obj FuncSYNTAX_TREE_CODE(Obj self, Obj tree) GAP_GC_CANSAFEPOINT
 {
     RequirePlainRec(SELF_NAME, tree);
+    Obj func = 0;
+    Obj name = 0;
+
+    // The coder state lives on the C stack but holds GAP objects, so root it
+    // before CodeBegin, which allocates. CodeBegin zeroes it again itself.
     CodeState cs;
+    memset(&cs, 0, sizeof(cs));
+    // 4 slots from CODE_STATE_ROOTS, plus func and name
+    GAP_GC_PUSH_ROOTS(6, (&func, &name, CODE_STATE_ROOTS(&cs)));
+
     CodeBegin(&cs);
     SyntaxTreeCodeFunc(&cs, tree);
-    Obj func = CodeEnd(&cs, 0);
+    func = CodeEnd(&cs, 0);
     if (IsbPRec(tree, RNamName("name"))) {
-        Obj name = ELM_REC(tree, RNamName("name"));
+        name = ELM_REC(tree, RNamName("name"));
         SET_NAME_FUNC(func, name);
     }
+    GAP_GC_POP();
     return func;
 }
 
@@ -937,16 +987,19 @@ static const CompilerT Compilers[] = {
         EXPR_ISB_COMOBJ_EXPR, ARG_EXPR_("comobj"), ARG_EXPR_("expression")),
 };
 
-static Obj FuncSYNTAX_TREE(Obj self, Obj func)
+static Obj FuncSYNTAX_TREE(Obj self, Obj func) GAP_GC_CANSAFEPOINT
 {
-    Obj result;
+    Obj result = 0;
 
     if (!IS_FUNC(func) || IsKernelFunction(func) || IS_OPERATION(func)) {
         RequireArgument(SELF_NAME, func, "must be a plain GAP function");
     }
 
+    GAP_GC_PUSH1(&result);
     result = NewSyntaxTreeNode(EXPR_FUNC);
-    return SyntaxTreeFunc(result, func);
+    result = SyntaxTreeFunc(result, func);
+    GAP_GC_POP();
+    return result;
 }
 
 static StructGVarFunc GVarFuncs[] = { GVAR_FUNC_1ARGS(SYNTAX_TREE, func),
@@ -964,20 +1017,24 @@ static Int InitKernel(StructInitInfo * module)
     return 0;
 }
 
-static Int InitLibrary(StructInitInfo * module)
+static Int InitLibrary(StructInitInfo * module) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable(GVarFuncs);
 
     typeStrings = NEW_PLIST(T_PLIST, ARRAY_SIZE(Compilers));
     typeRec = NEW_PREC(0);
+    Obj typestr = 0;
+    GAP_GC_PUSH1(&typestr);
     for (UInt tnum = 0; tnum < ARRAY_SIZE(Compilers); tnum++) {
         const char * str = Compilers[tnum].name;
         if (str) {
+            typestr = MakeImmString(str);
             AssPRec(typeRec, RNamName(str), ObjInt_UInt(tnum));
-            ASS_LIST(typeStrings, tnum + 1, MakeImmString(str));
+            ASS_LIST(typeStrings, tnum + 1, typestr);
         }
     }
+    GAP_GC_POP();
 
 
     return 0;

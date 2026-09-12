@@ -47,7 +47,7 @@
 **  inside a GAP identifier, i.e., is in the range 'a..zA..Z0-9_@', and
 **  FALSE otherwise.
 */
-EXPORT_INLINE BOOL IsIdent(char ch)
+EXPORT_INLINE BOOL IsIdent(char ch) GAP_GC_NOTSAFEPOINT
 {
     return isalnum((unsigned int)ch) || ch == '_' || ch == '@';
 }
@@ -61,7 +61,7 @@ EXPORT_INLINE BOOL IsIdent(char ch)
 **  the advantage that code using it is often easier to understand for human
 **  beings.
 */
-EXPORT_INLINE BOOL streq(const char * s1, const char * s2)
+EXPORT_INLINE BOOL streq(const char * s1, const char * s2) GAP_GC_NOTSAFEPOINT
 {
     return 0 == strcmp(s1, s2);
 }

@@ -105,18 +105,21 @@ void SetRecursionDepth(Int depth)
 **  resulting from the procedure call, which in fact is always 0.
 */
 
-static Obj PushOptions;
-static Obj PopOptions;
+static Obj PushOptions GAP_GC_GLOBALLY_ROOTED;
+static Obj PopOptions GAP_GC_GLOBALLY_ROOTED;
 
 static ALWAYS_INLINE Obj EvalOrExecCall(Int ignoreResult, UInt nr, Stat call, Stat opts)
+    GAP_GC_CANSAFEPOINT
 {
-    Obj func;
+    Obj func = 0;
     Obj a[6] = { 0 };
     Obj args = 0;
-    Obj result;
+    Obj result = 0;
+    GAP_GC_PUSH9(&a[0], &a[1], &a[2], &a[3], &a[4], &a[5], &func, &args,
+                 &result);
 
     // evaluate the function
-    func = EVAL_EXPR( FUNC_CALL( call ) );
+    func = EVAL_EXPR(FUNC_CALL(call));
 
     // evaluate the arguments
     if (nr <= 6 && TNUM_OBJ(func) == T_FUNCTION) {
@@ -129,8 +132,8 @@ static ALWAYS_INLINE Obj EvalOrExecCall(Int ignoreResult, UInt nr, Stat call, St
         args = NEW_PLIST(T_PLIST, realNr);
         SET_LEN_PLIST(args, realNr);
         for (UInt i = 1; i <= realNr; i++) {
-            Obj argi = EVAL_EXPR(ARGI_CALL(call, i));
-            SET_ELM_PLIST(args, i, argi);
+            result = EVAL_EXPR(ARGI_CALL(call, i));
+            SET_ELM_PLIST(args, i, result);
             CHANGED_BAG(args);
         }
     }
@@ -176,6 +179,7 @@ static ALWAYS_INLINE Obj EvalOrExecCall(Int ignoreResult, UInt nr, Stat call, St
         // inside it; or a file containing a `QUIT` statement was read at the top
         // execution level (e.g. in init.g, before the primary REPL starts) after
         // which the function was called, and now we are returning from that
+        GAP_GC_POP();
         GAP_THROW();
     }
 
@@ -187,6 +191,7 @@ static ALWAYS_INLINE Obj EvalOrExecCall(Int ignoreResult, UInt nr, Stat call, St
         CALL_0ARGS(PopOptions);
     }
 
+    GAP_GC_POP();
     return result;
 }
 
@@ -199,7 +204,7 @@ static ALWAYS_INLINE Obj EvalOrExecCall(Int ignoreResult, UInt nr, Stat call, St
 **  handled here
 */
 
-static ExecStatus ExecProccallOpts(Stat call)
+static ExecStatus ExecProccallOpts(Stat call) GAP_GC_CANSAFEPOINT
 {
     Expr opts = READ_STAT(call, 0);
     Expr real_call = READ_STAT(call, 1);
@@ -213,49 +218,49 @@ static ExecStatus ExecProccallOpts(Stat call)
 }
 
 
-static ExecStatus ExecProccall0args(Stat call)
+static ExecStatus ExecProccall0args(Stat call) GAP_GC_CANSAFEPOINT
 {
     EvalOrExecCall(1, 0, call, 0);
     return STATUS_END;
 }
 
-static ExecStatus ExecProccall1args(Stat call)
+static ExecStatus ExecProccall1args(Stat call) GAP_GC_CANSAFEPOINT
 {
     EvalOrExecCall(1, 1, call, 0);
     return STATUS_END;
 }
 
-static ExecStatus ExecProccall2args(Stat call)
+static ExecStatus ExecProccall2args(Stat call) GAP_GC_CANSAFEPOINT
 {
     EvalOrExecCall(1, 2, call, 0);
     return STATUS_END;
 }
 
-static ExecStatus ExecProccall3args(Stat call)
+static ExecStatus ExecProccall3args(Stat call) GAP_GC_CANSAFEPOINT
 {
     EvalOrExecCall(1, 3, call, 0);
     return STATUS_END;
 }
 
-static ExecStatus ExecProccall4args(Stat call)
+static ExecStatus ExecProccall4args(Stat call) GAP_GC_CANSAFEPOINT
 {
     EvalOrExecCall(1, 4, call, 0);
     return STATUS_END;
 }
 
-static ExecStatus ExecProccall5args(Stat call)
+static ExecStatus ExecProccall5args(Stat call) GAP_GC_CANSAFEPOINT
 {
     EvalOrExecCall(1, 5, call, 0);
     return STATUS_END;
 }
 
-static ExecStatus ExecProccall6args(Stat call)
+static ExecStatus ExecProccall6args(Stat call) GAP_GC_CANSAFEPOINT
 {
     EvalOrExecCall(1, 6, call, 0);
     return STATUS_END;
 }
 
-static ExecStatus ExecProccallXargs(Stat call)
+static ExecStatus ExecProccallXargs(Stat call) GAP_GC_CANSAFEPOINT
 {
     // pass in 7 (instead of NARG_SIZE_CALL(SIZE_STAT(call)))
     // to allow the compiler to perform better optimizations
@@ -272,7 +277,7 @@ static ExecStatus ExecProccallXargs(Stat call)
 **  handled here
 */
 
-static Obj EvalFunccallOpts(Expr call)
+static Obj EvalFunccallOpts(Expr call) GAP_GC_CANSAFEPOINT
 {
     Expr opts = READ_STAT(call, 0);
     Expr real_call = READ_STAT(call, 1);
@@ -299,42 +304,42 @@ static Obj EvalFunccallOpts(Expr call)
 **  'ARGI_CALL(<call>,<i>)'.  It returns the value returned by the function.
 */
 
-static Obj EvalFunccall0args(Expr call)
+static Obj EvalFunccall0args(Expr call) GAP_GC_CANSAFEPOINT
 {
     return EvalOrExecCall(0, 0, call, 0);
 }
 
-static Obj EvalFunccall1args(Expr call)
+static Obj EvalFunccall1args(Expr call) GAP_GC_CANSAFEPOINT
 {
     return EvalOrExecCall(0, 1, call, 0);
 }
 
-static Obj EvalFunccall2args(Expr call)
+static Obj EvalFunccall2args(Expr call) GAP_GC_CANSAFEPOINT
 {
     return EvalOrExecCall(0, 2, call, 0);
 }
 
-static Obj EvalFunccall3args(Expr call)
+static Obj EvalFunccall3args(Expr call) GAP_GC_CANSAFEPOINT
 {
     return EvalOrExecCall(0, 3, call, 0);
 }
 
-static Obj EvalFunccall4args(Expr call)
+static Obj EvalFunccall4args(Expr call) GAP_GC_CANSAFEPOINT
 {
     return EvalOrExecCall(0, 4, call, 0);
 }
 
-static Obj EvalFunccall5args(Expr call)
+static Obj EvalFunccall5args(Expr call) GAP_GC_CANSAFEPOINT
 {
     return EvalOrExecCall(0, 5, call, 0);
 }
 
-static Obj EvalFunccall6args(Expr call)
+static Obj EvalFunccall6args(Expr call) GAP_GC_CANSAFEPOINT
 {
     return EvalOrExecCall(0, 6, call, 0);
 }
 
-static Obj EvalFunccallXargs(Expr call)
+static Obj EvalFunccallXargs(Expr call) GAP_GC_CANSAFEPOINT
 {
     // pass in 7 (instead of NARG_SIZE_CALL(SIZE_EXPR(call)))
     // to allow the compiler to perform better optimizations
@@ -450,6 +455,7 @@ static void LockFuncArgs(Obj func, Int narg, const Obj * args)
 #endif
 
 static ALWAYS_INLINE Obj DoExecFunc(Obj func, Int narg, const Obj *arg)
+    GAP_GC_CANSAFEPOINT
 {
     Bag oldLvars; // old values bag
     Obj result;
@@ -482,53 +488,59 @@ static ALWAYS_INLINE Obj DoExecFunc(Obj func, Int narg, const Obj *arg)
     return result;
 }
 
-static Obj DoExecFunc0args(Obj func)
+static Obj DoExecFunc0args(Obj func) GAP_GC_CANSAFEPOINT
 {
     return DoExecFunc(func, 0, 0);
 }
 
-static Obj DoExecFunc1args(Obj func, Obj a1)
+static Obj DoExecFunc1args(Obj func, Obj a1) GAP_GC_CANSAFEPOINT
 {
     Obj arg[] = { a1 };
     return DoExecFunc(func, 1, arg);
 }
 
-static Obj DoExecFunc2args(Obj func, Obj a1, Obj a2)
+static Obj DoExecFunc2args(Obj func, Obj a1, Obj a2) GAP_GC_CANSAFEPOINT
 {
     Obj arg[] = { a1, a2 };
     return DoExecFunc(func, 2, arg);
 }
 
 static Obj DoExecFunc3args(Obj func, Obj a1, Obj a2, Obj a3)
+    GAP_GC_CANSAFEPOINT
 {
     Obj arg[] = { a1, a2, a3 };
     return DoExecFunc(func, 3, arg);
 }
 
 static Obj DoExecFunc4args(Obj func, Obj a1, Obj a2, Obj a3, Obj a4)
+    GAP_GC_CANSAFEPOINT
 {
     Obj arg[] = { a1, a2, a3, a4 };
     return DoExecFunc(func, 4, arg);
 }
 
 static Obj DoExecFunc5args(Obj func, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5)
+    GAP_GC_CANSAFEPOINT
 {
     Obj arg[] = { a1, a2, a3, a4, a5 };
     return DoExecFunc(func, 5, arg);
 }
 
 static Obj DoExecFunc6args(Obj func, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
+    GAP_GC_CANSAFEPOINT
 {
     Obj arg[] = { a1, a2, a3, a4, a5, a6 };
     return DoExecFunc(func, 6, arg);
 }
 
-static Obj DoExecFuncXargs(Obj func, Obj args)
+static Obj DoExecFuncXargs(Obj func, Obj args) GAP_GC_CANSAFEPOINT
 {
     Bag  oldLvars; // old values bag
     UInt len;      // number of arguments
     UInt i;        // loop variable
-    Obj  result;
+    Obj  result = 0;
+
+    GAP_GC_PUSH1(&result);
 
     CHECK_RECURSION_BEFORE
 
@@ -563,17 +575,20 @@ static Obj DoExecFuncXargs(Obj func, Obj args)
 
     CHECK_RECURSION_AFTER
 
+    GAP_GC_POP();
     return result;
 }
 
 
-static Obj DoPartialUnWrapFunc(Obj func, Obj args)
+static Obj DoPartialUnWrapFunc(Obj func, Obj args) GAP_GC_CANSAFEPOINT
 {
     Bag  oldLvars; // old values bag
     UInt named;    // number of arguments
     UInt i;        // loop variable
     UInt len;
-    Obj  result;
+    Obj  result = 0;
+
+    GAP_GC_PUSH1(&result);
 
     CHECK_RECURSION_BEFORE
 
@@ -614,6 +629,7 @@ static Obj DoPartialUnWrapFunc(Obj func, Obj args)
 
     CHECK_RECURSION_AFTER
 
+    GAP_GC_POP();
     return result;
 }
 
@@ -626,7 +642,7 @@ static Obj DoPartialUnWrapFunc(Obj func, Obj args)
 Obj             MakeFunction (
     Obj                 fexp )
 {
-    Obj                 func;           // function, result
+    Obj                 func = 0;       // function, result
     ObjFunc             hdlr;           // handler
 
     if      ( NARG_FUNC(fexp) ==  0 )  hdlr = DoExecFunc0args;
@@ -639,6 +655,9 @@ Obj             MakeFunction (
     else if ( NARG_FUNC(fexp) >=  7 )  hdlr = DoExecFuncXargs;
     else if ( NARG_FUNC(fexp) == -1 )  hdlr = DoExecFunc1args;
     else /* NARG_FUNC(fexp) < -1 */    hdlr = DoPartialUnWrapFunc;
+
+    // <fexp> is read again after NewFunction below, which allocates
+    GAP_GC_PUSH2(&fexp, &func);
 
     // make the function
     func = NewFunction( NAME_FUNC( fexp ),
@@ -655,6 +674,7 @@ Obj             MakeFunction (
 #endif
 
     // return the function
+    GAP_GC_POP();
     return func;
 }
 
@@ -665,7 +685,7 @@ Obj             MakeFunction (
 **
 **  'EvalFuncExpr' evaluates the function expression <expr> to a function.
 */
-static Obj EvalFuncExpr(Expr expr)
+static Obj EvalFuncExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     // get the function expression bag
     Obj fexp = GET_VALUE_FROM_CURRENT_BODY(READ_EXPR(expr, 0));
@@ -681,7 +701,7 @@ static Obj EvalFuncExpr(Expr expr)
 **
 **  'PrintFuncExpr' prints a function expression.
 */
-static void PrintFuncExpr(Expr expr)
+static void PrintFuncExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     // get the function expression bag
     Obj fexp = GET_VALUE_FROM_CURRENT_BODY(READ_EXPR(expr, 0));
@@ -764,6 +784,7 @@ static void PrintFunccallOpts(Expr call)
 */
 
 static Obj FuncSetRecursionTrapInterval(Obj self, Obj interval)
+    GAP_GC_CANSAFEPOINT
 {
     if (!IS_INTOBJ(interval) || INT_INTOBJ(interval) <= 5)
         RequireArgument(SELF_NAME, interval,
@@ -800,7 +821,7 @@ static StructGVarFunc GVarFuncs [] = {
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
