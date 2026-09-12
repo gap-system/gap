@@ -1892,7 +1892,7 @@ DoOperationNArgs(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
     // zero-length array, which would result in undefined behavior (even
     // though we don't access the two arrays when n is zero). In addition, we
     // carefully avoid warnings in GCC due to -Wduplicated-branches.
-#ifdef USE_JULIA_GC
+#ifdef GAP_GC_PRECISE
     // types[] holds GAP objects and is live across the family predicate call
     // in GetMethodUncached, which runs arbitrary GAP code. A precise collector
     // cannot see a plain C array, so put it in a GC frame instead. ids[] needs
