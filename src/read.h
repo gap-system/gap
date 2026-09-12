@@ -42,6 +42,25 @@ ExecStatus ReadEvalCommand(Obj            context,
 
 /****************************************************************************
 **
+*F  ReadCheckCommand()  . . . . . . . parse one command, but do not execute it
+**
+**  'ReadCheckCommand' parses one command from <input> without executing any
+**  of it and without printing anything. It returns 'STATUS_END' if a
+**  complete command was parsed, 'STATUS_EOF' if the input was exhausted
+**  before the first symbol of a command, and 'STATUS_ERROR' on a syntax
+**  error.
+**
+**  Diagnostics are appended to <syntaxErrors> (a plist) if it is non-zero.
+**  On 'STATUS_ERROR', if <errorAtEOF> is non-zero, the value it points to is
+**  set to TRUE iff the first syntax error was caused by the input ending,
+**  i.e., the input is a truncated prefix of potentially valid input.
+*/
+ExecStatus
+ReadCheckCommand(TypInputFile * input, Obj syntaxErrors, BOOL * errorAtEOF);
+
+
+/****************************************************************************
+**
 *F  ReadEvalFile()  . . . . . . . . . . . . . . . . . . . . . . . read a file
 **
 **  'ReadEvalFile' reads an entire file and returns (in 'evalResult') the
