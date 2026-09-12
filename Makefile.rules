@@ -331,6 +331,11 @@ ifneq (,$(findstring cygwin,$(host_os)))
   # sure we care about "make install" on Cygwin, so I am not going to work on
   # this until someone specifically asks for it (and even then I'll require
   # that person to help test it)
+else ifneq (,$(findstring mingw,$(host_os)))
+  GAC_CFLAGS =
+  # kernel extensions link against the import library; the loader resolves
+  # them against the loaded libgap.dll by name (same install caveat as Cygwin)
+  GAC_LDFLAGS = -shared -static-libgcc $(abs_builddir)/libgap.dll.a
 else
   ifneq (,$(findstring darwin,$(host_os)))
     GAC_CFLAGS = -fno-common
@@ -464,6 +469,11 @@ ifneq (,$(findstring cygwin,$(host_os)))
   LIBGAP_FULL = libgap$(SHLIB_EXT)
 
   LINK_SHLIB_FLAGS = -shared -Wl,--enable-auto-image-base -Wl,--out-implib,libgap.dll.a
+else ifneq (,$(findstring mingw,$(host_os)))
+  SHLIB_EXT=.dll
+  LIBGAP_FULL = libgap$(SHLIB_EXT)
+
+  LINK_SHLIB_FLAGS = -shared -Wl,--out-implib,libgap.dll.a
 else ifneq (,$(findstring darwin,$(host_os)))
   SHLIB_EXT=.dylib
   LIBGAP_FULL = libgap.$(SHLIB_MAJOR)$(SHLIB_EXT)
@@ -527,6 +537,21 @@ bin/$(GAPARCH)/gap.dll: libgap$(SHLIB_EXT)
 gap$(EXEEXT): build/obj/src/main.c.o libgap$(SHLIB_EXT) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
 	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) -Wl,--export-all-symbols $< $(GAP_LIBS) -L${abs_builddir} -lgap -o $@
 	@( if which peflags > /dev/null ; then peflags --cygwin-heap=2048 gap$(EXEEXT) ; fi )
+
+else ifneq (,$(findstring mingw,$(host_os)))
+
+# the default stack size is too small for GAP (see issue #1522)
+GAP_LDFLAGS += -Wl,--stack,16777216
+
+# Allow multiple definitions so we can declare a function multiple times with 'extern inline'
+GAP_LDFLAGS += -Wl,--allow-multiple-definition
+
+# static libgcc: the DLL must not depend on libgcc_s_seh-1.dll
+GAP_LDFLAGS += -static-libgcc
+
+# as on Cygwin: libgap.dll holds GAP, gap.exe is a stub
+gap$(EXEEXT): build/obj/src/main.c.o libgap$(SHLIB_EXT) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $< $(GAP_LIBS) -L${abs_builddir} -lgap -o $@
 
 else
 
@@ -820,6 +845,10 @@ zlib: $(ZLIB_FILES)
 ifneq (,$(findstring cygwin,$(host_os)))
 $(ZLIB_FILES):
 	MAKE=$(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)" $(srcdir)/cnf/build-cygwin-zlib.sh
+
+else ifneq (,$(findstring mingw,$(host_os)))
+$(ZLIB_FILES):
+	MAKE=$(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)" $(srcdir)/cnf/build-mingw-zlib.sh
 
 else
 
