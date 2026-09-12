@@ -23,7 +23,8 @@
  * Nothing here affects a normal build: without one of the defines below every
  * macro expands to nothing, so GASMAN and Boehm builds are unchanged. The
  * runtime rooting macros in "precise_gc_julia.h" behave the same way, and
- * expand to `((void)0)` unless the Julia GC is in use.
+ * expand to `((void)0)` unless GAP_GC_PRECISE is defined: the Julia GC
+ * without its conservative stack scan.
  *
  *
  *  The two analyses

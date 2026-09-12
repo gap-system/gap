@@ -244,7 +244,7 @@ static void FinishAndCallFakeFuncExpr(IntrState * intr, Obj stackNams)
 */
 void IntrBegin(IntrState * intr)
 {
-#if defined(GAP_KERNEL_DEBUG) && defined(USE_JULIA_GC)
+#if defined(GAP_KERNEL_DEBUG) && defined(GAP_GC_PRECISE)
     // An IntrState on the C stack is invisible to a precise collector unless
     // its creator rooted it; see INTR_STATE_ROOTS in intrprtr.h.
     GAP_ASSERT(GAP_IsRootedSlot(&intr->StackObj));
