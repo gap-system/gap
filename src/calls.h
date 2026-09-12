@@ -417,10 +417,6 @@ void InitHandlerFunc(ObjFunc hdlr, const Char * cookie);
 
 #ifdef USE_GASMAN
 
-const Char * CookieOfHandler(ObjFunc hdlr);
-
-ObjFunc HandlerOfCookie(const Char * cookie);
-
 void SortHandlers(UInt byWhat);
 
 void CheckAllHandlers(void);
