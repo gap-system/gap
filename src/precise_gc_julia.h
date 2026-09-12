@@ -7,9 +7,9 @@
 **
 **  SPDX-License-Identifier: GPL-2.0-or-later
 **
-**  This header exposes GAP-owned wrappers for runtime GC rooting. In Julia-GC
-**  builds it maps onto Julia's GC frame macros; in other configurations it
-**  compiles away to no-ops.
+**  This header exposes GAP-owned wrappers for runtime GC rooting. In precise
+**  mode (the Julia GC with DISABLE_STACK_SCAN) it maps onto Julia's GC frame
+**  macros; in every other configuration it compiles away to no-ops.
 */
 
 #ifndef GAP_PRECISE_GC_JULIA_H
@@ -25,6 +25,28 @@ extern "C++" {
 #ifdef __cplusplus
 }
 #endif
+
+// Precise mode: the Julia GC without the conservative stack scan. Only then
+// do the rooting macros push frames. With the scan on, the frames would be
+// redundant, and an unpatched Julia (JuliaLang/julia#62889) crashes on the
+// immediates they hold. The GC analyzer always sees the frames.
+#if defined(DISABLE_STACK_SCAN) || defined(__clang_gcanalyzer__)
+#define GAP_GC_PRECISE 1
+#endif
+
+#ifdef GAP_MEM_CHECK
+// Under memory checking every push is recorded with its source location and
+// every pop checked against the record, so a frame pushed and never popped,
+// or popped from the wrong place, is reported at the pop that finds the
+// mismatch - not at a later collection walking a frame on dead stack.
+void GAP_GC_LedgerPush(void * frame, const char * file, int line);
+void GAP_GC_LedgerPop(void * frame, const char * file, int line);
+void GAP_GC_LedgerUnwind(void * frame);
+#endif
+#endif
+
+
+#ifdef GAP_GC_PRECISE
 
 
 // A root may be the address of a volatile local (one that is modified
@@ -61,13 +83,6 @@ extern "C++" {
 #define GAP_GC_POP() JL_GC_POP()
 
 #ifdef GAP_MEM_CHECK
-// Under memory checking every push is recorded with its source location and
-// every pop checked against the record, so a frame pushed and never popped,
-// or popped from the wrong place, is reported at the pop that finds the
-// mismatch - not at a later collection walking a frame on dead stack.
-void GAP_GC_LedgerPush(void * frame, const char * file, int line);
-void GAP_GC_LedgerPop(void * frame, const char * file, int line);
-void GAP_GC_LedgerUnwind(void * frame);
 #undef GAP_GC_PUSH1
 #undef GAP_GC_PUSH2
 #undef GAP_GC_PUSH3
@@ -142,7 +157,7 @@ static inline BOOL GAP_IsRootedSlot(const void * slot) GAP_GC_NOTSAFEPOINT
 
 #ifdef GAP_KERNEL_DEBUG
 // Conservative collectors find these structs by scanning the C stack, so
-// there is nothing to assert; see the Julia branch above.
+// there is nothing to assert; see the precise branch above.
 static inline BOOL GAP_IsRootedSlot(const void * slot) GAP_GC_NOTSAFEPOINT
 {
     (void)slot;

@@ -645,7 +645,7 @@ void CodeBegin(CodeState * cs)
     GAP_ASSERT(CS(CountStat) == 0);
     GAP_ASSERT(CS(CountExpr) == 0);
 
-#if defined(GAP_KERNEL_DEBUG) && defined(USE_JULIA_GC)
+#if defined(GAP_KERNEL_DEBUG) && defined(GAP_GC_PRECISE)
     // A CodeState on the C stack is invisible to a precise collector unless its
     // creator rooted it; see CODE_STATE_ROOTS in code.h.
     GAP_ASSERT(GAP_IsRootedSlot(&cs->currBody));
