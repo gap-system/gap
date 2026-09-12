@@ -4181,7 +4181,7 @@ static Obj FuncKRONECKERPRODUCT_GF2MAT_GF2MAT(Obj self, Obj matl, Obj matr)
     Obj  mat = 0, type, row = 0, shift[BIPEB] = { 0 };
     UInt *       data;
     const UInt * datar;
-#ifdef USE_JULIA_GC
+#ifdef GAP_GC_PRECISE
     jl_value_t ** roots = 0;
 #define SET_KRON_ROOT(i, v) (roots[i] = (jl_value_t *)(v))
 #else
@@ -4200,7 +4200,9 @@ static Obj FuncKRONECKERPRODUCT_GF2MAT_GF2MAT(Obj self, Obj matl, Obj matr)
 
     mutable = IS_MUTABLE_OBJ(matl) || IS_MUTABLE_OBJ(matr);
 
+#ifdef GAP_GC_PRECISE
     GAP_GC_PUSHARGS(roots, BIPEB + 2);
+#endif
 
     // create a matrix
     mat = NewBag(T_POSOBJ, SIZE_PLEN_GF2MAT(nrowp));
