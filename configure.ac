@@ -282,6 +282,26 @@ AS_CASE([$with_gc],
 AC_MSG_RESULT([$with_gc])
 
 dnl
+dnl User setting: precise GC (off by default), Julia GC only
+dnl
+AC_ARG_ENABLE([precise-gc],
+    [AS_HELP_STRING([--enable-precise-gc],
+        [root C locals explicitly instead of scanning the C stack (Julia GC only)])],
+    [],
+    [enable_precise_gc=no]
+    )
+AC_MSG_CHECKING([whether to enable precise GC])
+AC_MSG_RESULT([$enable_precise_gc])
+
+dnl The define must reach kernel extensions, which take their flags from
+dnl sysinfo.gap; a -D in CFLAGS would not.
+AS_IF([test "x$enable_precise_gc" != "xno"],
+    [AS_IF([test "x$with_gc" != "xjulia"],
+        [AC_MSG_ERROR([--enable-precise-gc requires --with-gc=julia])])
+     GAP_DEFINE([DISABLE_STACK_SCAN=1])],
+)
+
+dnl
 dnl User setting: native thread-local storage (off by default)
 dnl See src/hpc/tls.h for more details on thread-local storage options.
 dnl

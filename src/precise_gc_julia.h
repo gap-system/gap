@@ -8,8 +8,9 @@
 **  SPDX-License-Identifier: GPL-2.0-or-later
 **
 **  This header exposes GAP-owned wrappers for runtime GC rooting. In precise
-**  mode (the Julia GC with DISABLE_STACK_SCAN) it maps onto Julia's GC frame
-**  macros; in every other configuration it compiles away to no-ops.
+**  mode (the Julia GC configured with --enable-precise-gc) it maps onto
+**  Julia's GC frame macros; in every other configuration it compiles away to
+**  no-ops, except that GAP_GC_PUSHARGS still supplies its array.
 */
 
 #ifndef GAP_PRECISE_GC_JULIA_H
@@ -26,8 +27,8 @@ extern "C++" {
 }
 #endif
 
-// Precise mode: the Julia GC without the conservative stack scan. Only then
-// do the rooting macros push frames. With the scan on, the frames would be
+// Precise mode: the Julia GC without the conservative stack scan, selected by
+// configure --enable-precise-gc. Only then do the rooting macros push frames. With the scan on, the frames would be
 // redundant, and an unpatched Julia (JuliaLang/julia#62889) crashes on the
 // immediates they hold. The GC analyzer always sees the frames.
 #if defined(DISABLE_STACK_SCAN) || defined(__clang_gcanalyzer__)
