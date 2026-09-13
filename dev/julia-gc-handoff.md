@@ -103,13 +103,11 @@ make -j4
 where `$JULIA` is the Julia installation to build against (its `bin/julia`,
 or the prefix). This is the configuration the analyzer scripts run on:
 `dev/run-julia-gc-analyzer-all.sh out-of-tree/julia-dev`. The precise-mode
-configurations add `-DDISABLE_STACK_SCAN` to the compiler flags; `CFLAGS=`
-given to `configure` replaces GAP's default `-g -O2` rather than adding to
-it, so spell the defaults out:
+configurations add `--enable-precise-gc`, which defines `DISABLE_STACK_SCAN`
+for the kernel and, through `sysinfo.gap`, for kernel extensions:
 
 ```sh
-../../configure --with-gc=julia --with-julia=$JULIA \
-  CFLAGS="-g -O2 -DDISABLE_STACK_SCAN" CXXFLAGS="-g -O2 -DDISABLE_STACK_SCAN"
+../../configure --with-gc=julia --with-julia=$JULIA --enable-precise-gc
 ```
 
 After changing the analyzer plugins, rebuild them and then the GAP build
@@ -315,13 +313,9 @@ others. Memory checking removes the luck: every bag allocation collects.
 Build:
 
 ```sh
-../../configure --with-gc=julia --with-julia=$JULIA \
-  --enable-memory-checking --enable-debug \
-  CFLAGS="-g -O2 -DDISABLE_STACK_SCAN" CXXFLAGS="-g -O2 -DDISABLE_STACK_SCAN"
+../../configure --with-gc=julia --with-julia=$JULIA --enable-precise-gc \
+  --enable-memory-checking --enable-debug
 ```
-
-`CFLAGS=` given to configure replaces GAP's default `-g -O2` rather than
-adding to it; always spell the defaults out.
 
 `GASMAN_MEM_CHECK(n)` collects at every `n`th allocation, `0` turns it off.
 Period 1 cannot get through library loading; start GAP normally and enable

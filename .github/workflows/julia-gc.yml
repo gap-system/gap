@@ -1,7 +1,7 @@
 name: Julia GC, precise mode
 
 # Build GAP against the Julia GC without the conservative stack scanner
-# (-DDISABLE_STACK_SCAN), run the test suite, and run Julia's GC static
+# (--enable-precise-gc), run the test suite, and run Julia's GC static
 # analyzer over the kernel.
 #
 # Precise mode needs one Julia patch that is not upstream yet: the root
@@ -32,9 +32,6 @@ concurrency:
 env:
   JULIA_CHANNEL: pr62889
   JULIA_CHECKER_REF: refs/pull/62928/head
-  # configure replaces its default CFLAGS when CFLAGS is set, so repeat them
-  CFLAGS: "-g -O2 -DDISABLE_STACK_SCAN"
-  CXXFLAGS: "-g -O2 -DDISABLE_STACK_SCAN"
   NO_COVERAGE: 1
 
 jobs:
@@ -46,11 +43,11 @@ jobs:
       matrix:
         include:
           - name: "testinstall, optimized"
-            configflags: ""
+            configflags: "--enable-precise-gc"
           - name: "testinstall, debug"
-            configflags: "--enable-debug"
+            configflags: "--enable-precise-gc --enable-debug"
           - name: "memory checking"
-            configflags: "--enable-memory-checking --enable-debug"
+            configflags: "--enable-precise-gc --enable-memory-checking --enable-debug"
     env:
       CONFIGFLAGS: ${{ matrix.configflags }}
     steps:
