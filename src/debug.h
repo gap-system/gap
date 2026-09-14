@@ -17,7 +17,11 @@
 // GAP_ASSERT is a version of 'assert' which is enabled by the
 // configure option --enable-debug
 #ifdef GAP_KERNEL_DEBUG
+#if defined(__clang_gcanalyzer__)
+#define GAP_ASSERT(x) ((void)sizeof(x))
+#else
 #define GAP_ASSERT(x) assert(x)
+#endif
 
 // Enable various GAP debugging features
 #define COUNT_BAGS

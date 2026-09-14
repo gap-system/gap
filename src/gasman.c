@@ -231,22 +231,22 @@ enum { BAG_SLACK = 0 };
 
 // TIGHT_WORDS_BAG defines the actual amount of space a Bag requires,
 // without BAG_SLACK.
-static inline UInt TIGHT_WORDS_BAG(UInt size)
+static inline UInt TIGHT_WORDS_BAG(UInt size) GAP_GC_NOTSAFEPOINT
 {
     return (size + sizeof(Bag) - 1) / sizeof(Bag);
 }
 
-static inline UInt WORDS_BAG(UInt size)
+static inline UInt WORDS_BAG(UInt size) GAP_GC_NOTSAFEPOINT
 {
     return TIGHT_WORDS_BAG(size) + BAG_SLACK;
 }
 
-static inline Bag *DATA(BagHeader *bag)
+static inline Bag *DATA(BagHeader *bag) GAP_GC_NOTSAFEPOINT
 {
     return (Bag *)(bag + 1);
 }
 
-static inline void SET_PTR_BAG(Bag bag, Bag *val)
+static inline void SET_PTR_BAG(Bag bag, Bag *val) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(bag != 0);
     bag->body = val;
@@ -673,7 +673,7 @@ void InitSweepFuncBags (
 **  the second time raises a warning, because a non-default marking function
 **  is being replaced.
 */
-static void MarkAllSubBagsDefault(Bag bag, void * ref)
+static void MarkAllSubBagsDefault(Bag bag, void * ref) GAP_GC_NOTSAFEPOINT
 {
     MarkArrayOfBags(CONST_PTR_BAG(bag), SIZE_BAG(bag) / sizeof(Bag), ref);
 }
@@ -1164,10 +1164,18 @@ static void MoveBagMemory(char * oldbase, char * newbase)
 
 static void MaybeMoveBags(void)
 {
-    static Int oldBase = 0;
+    static Int  oldBase = 0;
+    static UInt sinceLastMove = 0;
 
-    if (!EnableMemCheck)
+    if (EnableMemCheck <= 0)
         return;
+
+    // EnableMemCheck is the sampling period; see MemCheckCollect in julia_gc.c
+    // for what a period above 1 costs in precision.
+    if (++sinceLastMove < (UInt)EnableMemCheck)
+        return;
+
+    sinceLastMove = 0;
 
     Int newBase = oldBase + 1;
     // Memory buffer 0 is special, as we use that

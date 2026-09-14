@@ -105,6 +105,10 @@ static Int CompCheckListElements;
 */
 static Int CompPass;
 
+// how many GC frames the function being compiled pushed to root its
+// C locals; see EmitGCRootPushes below
+static Int CompGCFrames;
+
 
 /****************************************************************************
 **
@@ -265,7 +269,7 @@ static Int HasInfoCVar(CVar cvar, Int type)
 }
 
 
-static Bag NewInfoCVars(void)
+static Bag NewInfoCVars(void) GAP_GC_CANSAFEPOINT
 {
     Bag                 old;
     Bag                 new;
@@ -274,9 +278,11 @@ static Bag NewInfoCVars(void)
     return new;
 }
 
-static void CopyInfoCVars(Bag dst, Bag src)
+static void CopyInfoCVars(Obj dst GAP_GC_MAYBE_UNROOTED,
+                          Obj src GAP_GC_MAYBE_UNROOTED) GAP_GC_CANSAFEPOINT
 {
     Int                 i;
+    GAP_GC_PUSH2(&dst, &src);
     if ( SIZE_BAG(dst) < SIZE_BAG(src) )  ResizeBag( dst, SIZE_BAG(src) );
     if ( SIZE_BAG(src) < SIZE_BAG(dst) )  ResizeBag( src, SIZE_BAG(dst) );
     NR_INFO(dst)    = NR_INFO(src);
@@ -290,11 +296,14 @@ static void CopyInfoCVars(Bag dst, Bag src)
     for ( i = 1; i <= NTEMP_INFO(dst) && i <= NTEMP_INFO(src); i++ ) {
         TNUM_TEMP_INFO(dst,i) = TNUM_TEMP_INFO(src,i);
     }
+    GAP_GC_POP();
 }
 
-static void MergeInfoCVars(Bag dst, Bag src)
+static void MergeInfoCVars(Obj dst GAP_GC_MAYBE_UNROOTED,
+                           Obj src GAP_GC_MAYBE_UNROOTED) GAP_GC_CANSAFEPOINT
 {
     Int                 i;
+    GAP_GC_PUSH2(&dst, &src);
     if ( SIZE_BAG(dst) < SIZE_BAG(src) )  ResizeBag( dst, SIZE_BAG(src) );
     if ( SIZE_BAG(src) < SIZE_BAG(dst) )  ResizeBag( src, SIZE_BAG(dst) );
     if ( NTEMP_INFO(dst)<NTEMP_INFO(src) )  NTEMP_INFO(dst)=NTEMP_INFO(src);
@@ -304,23 +313,29 @@ static void MergeInfoCVars(Bag dst, Bag src)
     for ( i = 1; i <= NTEMP_INFO(dst) && i <= NTEMP_INFO(src); i++ ) {
         TNUM_TEMP_INFO(dst,i) &= TNUM_TEMP_INFO(src,i);
     }
+    GAP_GC_POP();
 }
 
-static BOOL IsEqInfoCVars(Bag dst, Bag src)
+static BOOL IsEqInfoCVars(Obj dst GAP_GC_MAYBE_UNROOTED,
+                          Obj src GAP_GC_MAYBE_UNROOTED) GAP_GC_CANSAFEPOINT
 {
     Int                 i;
+    GAP_GC_PUSH2(&dst, &src);
     if ( SIZE_BAG(dst) < SIZE_BAG(src) )  ResizeBag( dst, SIZE_BAG(src) );
     if ( SIZE_BAG(src) < SIZE_BAG(dst) )  ResizeBag( src, SIZE_BAG(dst) );
     for ( i = 1; i <= NLVAR_INFO(src); i++ ) {
         if ( TNUM_LVAR_INFO(dst,i) != TNUM_LVAR_INFO(src,i) ) {
+            GAP_GC_POP();
             return FALSE;
         }
     }
     for ( i = 1; i <= NTEMP_INFO(dst) && i <= NTEMP_INFO(src); i++ ) {
         if ( TNUM_TEMP_INFO(dst,i) != TNUM_TEMP_INFO(src,i) ) {
+            GAP_GC_POP();
             return FALSE;
         }
     }
+    GAP_GC_POP();
     return TRUE;
 }
 
@@ -341,7 +356,7 @@ static BOOL IsEqInfoCVars(Bag dst, Bag src)
 */
 typedef UInt4           Temp;
 
-static Temp NewTemp(const Char * name)
+static Temp NewTemp(const Char * name) GAP_GC_CANSAFEPOINT
 {
     Temp                temp;           // new temporary, result
     Bag                 info;           // information bag
@@ -356,7 +371,9 @@ static Temp NewTemp(const Char * name)
     // maybe make room for more temporaries
     if ( NTEMP_INFO( info ) < temp ) {
         if ( SIZE_BAG(info) < SIZE_INFO( NLVAR_INFO(info), temp ) ) {
+            GAP_GC_PUSH1(&info);
             ResizeBag( info, SIZE_INFO( NLVAR_INFO(info), temp+7 ) );
+            GAP_GC_POP();
         }
         NTEMP_INFO( info ) = temp;
     }
@@ -523,9 +540,9 @@ typedef UInt    GVar;
 #define COMP_USE_GVAR_COPY      (1 << 1)
 #define COMP_USE_GVAR_FOPY      (1 << 2)
 
-static Bag CompInfoGVar;
+static Bag CompInfoGVar GAP_GC_GLOBALLY_ROOTED;
 
-static void CompSetUseGVar(GVar gvar, UInt mode)
+static void CompSetUseGVar(GVar gvar, UInt mode) GAP_GC_CANSAFEPOINT
 {
     // only mark in pass 1
     if ( CompPass != 1 )  return;
@@ -565,9 +582,9 @@ typedef UInt    RNam;
 
 #define COMP_USE_RNAM_ID        (1 << 0)
 
-static Bag CompInfoRNam;
+static Bag CompInfoRNam GAP_GC_GLOBALLY_ROOTED;
 
-static void CompSetUseRNam(RNam rnam, UInt mode)
+static void CompSetUseRNam(RNam rnam, UInt mode) GAP_GC_CANSAFEPOINT
 {
     // only mark in pass 1
     if ( CompPass != 1 )  return;
@@ -652,15 +669,20 @@ static void Emit(const char * fmt, ...)
             // emit a GAP string
             else if ( *p == 'g' || *p == 'C' ) {
                 const Char f[] = { '%', *p, 0 };
-                Obj str = va_arg( ap, Obj );
+                Obj str = 0;
+                GAP_GC_PUSH1(&str);
+                str = va_arg( ap, Obj );
                 Pr(f, (Int)str, 0);
+                GAP_GC_POP();
             }
 
             // emit a name
             else if ( *p == 'n' ) {
-                Obj str = va_arg( ap, Obj );
+                Obj str = 0;
                 UInt i = 0;
                 Char c;
+                GAP_GC_PUSH1(&str);
+                str = va_arg( ap, Obj );
                 while ((c = CONST_CSTR_STRING(str)[i++])) {
                     if ( IsAlpha(c) || IsDigit(c) ) {
                         Pr("%c", (Int)c, 0);
@@ -672,6 +694,7 @@ static void Emit(const char * fmt, ...)
                         Pr("_%c%c",hex[((UInt)c)/16],hex[((UInt)c)%16]);
                     }
                 }
+                GAP_GC_POP();
             }
 
             // emit a C variable
@@ -688,10 +711,18 @@ static void Emit(const char * fmt, ...)
                     Pr("t_%d", TEMP_CVAR(cvar), 0);
                 }
                 else if ( LVAR_CVAR(cvar) <= narg ) {
-                    Emit( "a_%n", NAME_LVAR( LVAR_CVAR(cvar) ) );
+                    Obj name = 0;
+                    GAP_GC_PUSH1(&name);
+                    name = NAME_LVAR(LVAR_CVAR(cvar));
+                    Emit( "a_%n", name );
+                    GAP_GC_POP();
                 }
                 else {
-                    Emit( "l_%n", NAME_LVAR( LVAR_CVAR(cvar) ) );
+                    Obj name = 0;
+                    GAP_GC_PUSH1(&name);
+                    name = NAME_LVAR(LVAR_CVAR(cvar));
+                    Emit( "l_%n", name );
+                    GAP_GC_POP();
                 }
             }
 
@@ -705,10 +736,18 @@ static void Emit(const char * fmt, ...)
                     Pr("Int_ObjInt(t_%d)", TEMP_CVAR(cvar), 0);
                 }
                 else if ( LVAR_CVAR(cvar) <= narg ) {
-                    Emit( "Int_ObjInt(a_%n)", NAME_LVAR( LVAR_CVAR(cvar) ) );
+                    Obj name = 0;
+                    GAP_GC_PUSH1(&name);
+                    name = NAME_LVAR(LVAR_CVAR(cvar));
+                    Emit( "Int_ObjInt(a_%n)", name );
+                    GAP_GC_POP();
                 }
                 else {
-                    Emit( "Int_ObjInt(l_%n)", NAME_LVAR( LVAR_CVAR(cvar) ) );
+                    Obj name = 0;
+                    GAP_GC_PUSH1(&name);
+                    name = NAME_LVAR(LVAR_CVAR(cvar));
+                    Emit( "Int_ObjInt(l_%n)", name );
+                    GAP_GC_POP();
                 }
             }
 
@@ -757,14 +796,16 @@ static void Emit(const char * fmt, ...)
 **
 *F  CompCheckBound( <obj>, <name> ) emit code to check that <obj> has a value
 */
-static void CompCheckBound(CVar obj, Obj name)
+static void CompCheckBound(CVar obj, Obj name GAP_GC_MAYBE_UNROOTED)
 {
+    GAP_GC_PUSH1(&name);
     if ( ! HasInfoCVar( obj, W_BOUND ) ) {
         if ( CompCheckTypes ) {
             Emit( "CHECK_BOUND( %c, \"%g\" );\n", obj, name );
         }
         SetInfoCVar( obj, W_BOUND );
     }
+    GAP_GC_POP();
 }
 
 
@@ -893,7 +934,7 @@ static CVar CompBoolExpr(Expr expr)
 **
 *F  CompUnknownBool( <expr> ) . . . . . . . . . .  use 'CompExpr' and convert
 */
-static CVar CompUnknownBool(Expr expr)
+static CVar CompUnknownBool(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                res;            // result
     CVar                val;            // value of expression
@@ -928,14 +969,15 @@ static GVar G_Length;
 **
 *F  CompFunccall0to6Args( <expr> )  . . . EXPR_FUNCCALL_0ARGS...EXPR_FUNCCALL_6ARGS
 */
-static CVar CompRefGVarFopy(Expr expr);
+static CVar CompRefGVarFopy(Expr expr) GAP_GC_CANSAFEPOINT;
 
 
-static CVar CompFunccall0to6Args(Expr expr)
+static CVar CompFunccall0to6Args(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                result;         // result, result
     CVar                func;           // function
     CVar                args [8];       // arguments
+    CVar                arglist;        // argument list, for the slow path
     Int                 narg;           // number of arguments
     Int                 i;              // loop variable
 
@@ -983,14 +1025,21 @@ static CVar CompFunccall0to6Args(Expr expr)
     Emit( " );\n" );
     Emit( "}\n" );
     Emit( "else {\n" );
-    Emit( "%c = DoOperation2Args( CallFuncListOper, %c, NewPlistFromArgs(", result, func);
+    // The argument list is freshly allocated and DoOperation2Args may
+    // collect, so put it in a temporary, which is rooted, rather than
+    // passing it straight down.
+    arglist = CVAR_TEMP( NewTemp( "arglist" ) );
+    Emit( "%c = NewPlistFromArgs(", arglist );
     if (narg >= 1) {
         Emit( " %c", args[1] );
     }
     for ( i = 2; i <= narg; i++ ) {
         Emit( ", %c", args[i] );
     }
-    Emit( " ) );\n" );
+    Emit( " );\n" );
+    Emit( "%c = DoOperation2Args( CallFuncListOper, %c, %c );\n",
+          result, func, arglist );
+    FreeTemp( TEMP_CVAR( arglist ) );
     Emit( "}\n" );
 
     // emit code for the check (sets the information for the result)
@@ -1010,7 +1059,7 @@ static CVar CompFunccall0to6Args(Expr expr)
 **
 *F  CompFunccallXArgs( <expr> ) . . . . . . . . . . . . . EXPR_FUNCCALL_XARGS
 */
-static CVar CompFunccallXArgs(Expr expr)
+static CVar CompFunccallXArgs(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                result;         // result, result
     CVar                func;           // function
@@ -1066,7 +1115,7 @@ static CVar CompFunccallXArgs(Expr expr)
 **
 *F  CompFunccallXArgs( <expr> ) . . . . . . . . . . . . .  EXPR_FUNCCALL_OPTS
 */
-static CVar CompFunccallOpts(Expr expr)
+static CVar CompFunccallOpts(Expr expr) GAP_GC_CANSAFEPOINT
 {
   CVar opts = CompExpr(READ_STAT(expr, 0));
   GVar pushOptions;
@@ -1088,7 +1137,7 @@ static CVar CompFunccallOpts(Expr expr)
 **
 *F  CompFuncExpr( <expr> ) . . . . . . . . . . . . . . . . . . . .  EXPR_FUNC
 */
-static CVar CompFuncExpr(Expr expr)
+static CVar CompFuncExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                func;           // function, result
     CVar                tmp;            // dummy body
@@ -1105,20 +1154,28 @@ static CVar CompFuncExpr(Expr expr)
 
     // make the function (all the pieces are in global variables)
     Int narg = NARG_FUNC(fexp);
-    Emit( "%c = NewFunction( NameFunc[%d], %d", func, nr, narg );
     if (narg != 0) {
         Obj nams = NAMS_FUNC(fexp);
         if (narg < 0)
             narg = -narg;
-        Emit( ", NewPlistFromArgs(" );
-        Emit( "MakeImmString(\"%g\")", ELM_PLIST(nams, 1) );
-        for (Int i = 2; i <= narg; i++) {
-            Emit( ", MakeImmString(\"%g\")", ELM_PLIST(nams, i) );
+        // Build the argument names in a temporary, one element at a time:
+        // each MakeImmString allocates, and only the list keeps the earlier
+        // names alive across that. NewFunction allocates too, and the list
+        // must survive that as well.
+        CVar nams_cvar = CVAR_TEMP( NewTemp( "nams" ) );
+        Emit( "%c = NEW_PLIST( T_PLIST, %d );\n", nams_cvar, narg );
+        Emit( "SET_LEN_PLIST( %c, %d );\n", nams_cvar, narg );
+        for (Int i = 1; i <= narg; i++) {
+            Emit( "SET_ELM_PLIST( %c, %d, MakeImmString(\"%g\") );\n",
+                  nams_cvar, i, ELM_PLIST(nams, i) );
+            Emit( "CHANGED_BAG( %c );\n", nams_cvar );
         }
-        Emit( ")" );
+        Emit( "%c = NewFunction( NameFunc[%d], %d, %c",
+              func, nr, NARG_FUNC(fexp), nams_cvar );
+        FreeTemp( TEMP_CVAR( nams_cvar ) );
     }
     else {
-        Emit( ", 0" );
+        Emit( "%c = NewFunction( NameFunc[%d], %d, 0", func, nr, narg );
     }
     Emit( ", HdlrFunc%d );\n", nr );
 
@@ -1146,12 +1203,14 @@ static CVar CompFuncExpr(Expr expr)
 **
 *F  CompOr( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . .  EXPR_OR
 */
-static CVar CompOr(Expr expr)
+static CVar CompOr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // or, result
     CVar                left;           // left operand
     CVar                right;          // right operand
-    Bag                 only_left;      // info after evaluating only left
+    Bag                 only_left = 0;  // info after evaluating only left
+
+    GAP_GC_PUSH1(&only_left);
 
     // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
@@ -1176,6 +1235,7 @@ static CVar CompOr(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
+    GAP_GC_POP();
     return val;
 }
 
@@ -1184,12 +1244,14 @@ static CVar CompOr(Expr expr)
 **
 *F  CompOrBool( <expr> ) . . . . . . . . . . . . . . . . . . . . . .  EXPR_OR
 */
-static CVar CompOrBool(Expr expr)
+static CVar CompOrBool(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // or, result
     CVar                left;           // left operand
     CVar                right;          // right operand
-    Bag                 only_left;      // info after evaluating only left
+    Bag                 only_left = 0;  // info after evaluating only left
+
+    GAP_GC_PUSH1(&only_left);
 
     // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
@@ -1214,6 +1276,7 @@ static CVar CompOrBool(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
+    GAP_GC_POP();
     return val;
 }
 
@@ -1222,13 +1285,15 @@ static CVar CompOrBool(Expr expr)
 **
 *F  CompAnd( <expr> ) . . . . . . . . . . . . . . . . . . . . . . .  EXPR_AND
 */
-static CVar CompAnd(Expr expr)
+static CVar CompAnd(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
     CVar                right1;         // right operand 1
     CVar                right2;         // right operand 2
-    Bag                 only_left;      // info after evaluating only left
+    Bag                 only_left = 0;  // info after evaluating only left
+
+    GAP_GC_PUSH1(&only_left);
 
     // allocate a temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
@@ -1271,6 +1336,7 @@ static CVar CompAnd(Expr expr)
     if ( IS_TEMP_CVAR( right1 ) )  FreeTemp( TEMP_CVAR( right1 ) );
     if ( IS_TEMP_CVAR( left   ) )  FreeTemp( TEMP_CVAR( left   ) );
 
+    GAP_GC_POP();
     return val;
 }
 
@@ -1279,12 +1345,14 @@ static CVar CompAnd(Expr expr)
 **
 *F  CompAndBool( <expr> ) . . . . . . . . . . . . . . . . . . . . .  EXPR_AND
 */
-static CVar CompAndBool(Expr expr)
+static CVar CompAndBool(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // or, result
     CVar                left;           // left operand
     CVar                right;          // right operand
-    Bag                 only_left;      // info after evaluating only left
+    Bag                 only_left = 0;  // info after evaluating only left
+
+    GAP_GC_PUSH1(&only_left);
 
     // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
@@ -1309,6 +1377,7 @@ static CVar CompAndBool(Expr expr)
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
+    GAP_GC_POP();
     return val;
 }
 
@@ -1317,7 +1386,7 @@ static CVar CompAndBool(Expr expr)
 **
 *F  CompNot( <expr> ) . . . . . . . . . . . . . . . . . . . . . . .  EXPR_NOT
 */
-static CVar CompNot(Expr expr)
+static CVar CompNot(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // operand
@@ -1345,7 +1414,7 @@ static CVar CompNot(Expr expr)
 **
 *F  CompNotBoot( <expr> ) . . . . . . . . . . . . . . . . . . . . .  EXPR_NOT
 */
-static CVar CompNotBool(Expr expr)
+static CVar CompNotBool(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // operand
@@ -1373,7 +1442,7 @@ static CVar CompNotBool(Expr expr)
 **
 *F  CompEq( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . .  EXPR_EQ
 */
-static CVar CompEq(Expr expr)
+static CVar CompEq(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1409,7 +1478,7 @@ static CVar CompEq(Expr expr)
 **
 *F  CompEqBool( <expr> ) . . . . . . . . . . . . . . . . . . . . . .  EXPR_EQ
 */
-static CVar CompEqBool(Expr expr)
+static CVar CompEqBool(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1445,7 +1514,7 @@ static CVar CompEqBool(Expr expr)
 **
 *F  CompNe( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . . .  EXPR_NE
 */
-static CVar CompNe(Expr expr)
+static CVar CompNe(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1481,7 +1550,7 @@ static CVar CompNe(Expr expr)
 **
 *F  CompNeBool( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  EXPR_NE
 */
-static CVar CompNeBool(Expr expr)
+static CVar CompNeBool(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1517,7 +1586,7 @@ static CVar CompNeBool(Expr expr)
 **
 *F  CompLt( <expr> )  . . . . . . . . . . . . . . . . . . . . . . . . .  EXPR_LT
 */
-static CVar CompLt(Expr expr)
+static CVar CompLt(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1553,7 +1622,7 @@ static CVar CompLt(Expr expr)
 **
 *F  CompLtBool( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  EXPR_LT
 */
-static CVar CompLtBool(Expr expr)
+static CVar CompLtBool(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1589,7 +1658,7 @@ static CVar CompLtBool(Expr expr)
 **
 *F  CompGe( <expr> )  . . . . . . . . . . . . . . . . . . . . . . . . .  EXPR_GE
 */
-static CVar CompGe(Expr expr)
+static CVar CompGe(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1625,7 +1694,7 @@ static CVar CompGe(Expr expr)
 **
 *F  CompGeBool( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  EXPR_GE
 */
-static CVar CompGeBool(Expr expr)
+static CVar CompGeBool(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1661,7 +1730,7 @@ static CVar CompGeBool(Expr expr)
 **
 *F  CompGt( <expr> )  . . . . . . . . . . . . . . . . . . . . . . . . .  EXPR_GT
 */
-static CVar CompGt(Expr expr)
+static CVar CompGt(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1697,7 +1766,7 @@ static CVar CompGt(Expr expr)
 **
 *F  CompGtBool( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  EXPR_GT
 */
-static CVar CompGtBool(Expr expr)
+static CVar CompGtBool(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1733,7 +1802,7 @@ static CVar CompGtBool(Expr expr)
 **
 *F  CompLe( <expr> )  . . . . . . . . . . . . . . . . . . . . . . . . .  EXPR_LE
 */
-static CVar CompLe(Expr expr)
+static CVar CompLe(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1769,7 +1838,7 @@ static CVar CompLe(Expr expr)
 **
 *F  CompLeBool( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  EXPR_LE
 */
-static CVar CompLeBool(Expr expr)
+static CVar CompLeBool(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1805,7 +1874,7 @@ static CVar CompLeBool(Expr expr)
 **
 *F  CompIn( <expr> )  . . . . . . . . . . . . . . . . . . . . . . . . .  EXPR_IN
 */
-static CVar CompIn(Expr expr)
+static CVar CompIn(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1836,7 +1905,7 @@ static CVar CompIn(Expr expr)
 **
 *F  CompInBool( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  EXPR_IN
 */
-static CVar CompInBool(Expr expr)
+static CVar CompInBool(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1867,7 +1936,7 @@ static CVar CompInBool(Expr expr)
 **
 *F  CompSum( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . . . EXPR_SUM
 */
-static CVar CompSum(Expr expr)
+static CVar CompSum(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1911,7 +1980,7 @@ static CVar CompSum(Expr expr)
 **
 *F  CompAInv( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  EXPR_AINV
 */
-static CVar CompAInv(Expr expr)
+static CVar CompAInv(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1952,7 +2021,7 @@ static CVar CompAInv(Expr expr)
 **
 *F  CompDiff( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  EXPR_DIFF
 */
-static CVar CompDiff(Expr expr)
+static CVar CompDiff(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -1996,7 +2065,7 @@ static CVar CompDiff(Expr expr)
 **
 *F  CompProd( <expr> )  . . . . . . . . . . . . . . . . . . . . . . .  EXPR_PROD
 */
-static CVar CompProd(Expr expr)
+static CVar CompProd(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -2040,7 +2109,7 @@ static CVar CompProd(Expr expr)
 **
 *F  CompQuo( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . . . EXPR_QUO
 */
-static CVar CompQuo(Expr expr)
+static CVar CompQuo(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -2071,7 +2140,7 @@ static CVar CompQuo(Expr expr)
 **
 *F  CompMod( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . . . EXPR_MOD
 */
-static CVar CompMod(Expr expr)
+static CVar CompMod(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -2107,7 +2176,7 @@ static CVar CompMod(Expr expr)
 **
 *F  CompPow( <expr> ) . . . . . . . . . . . . . . . . . . . . . . . . . EXPR_POW
 */
-static CVar CompPow(Expr expr)
+static CVar CompPow(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
     CVar                left;           // left operand
@@ -2186,7 +2255,7 @@ void C_SET_LIMB8(Obj bag, UInt limbnumber, UInt8 value)
 }
 
 
-static CVar CompIntExpr(Expr expr)
+static CVar CompIntExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;
     Int                 siz;
@@ -2198,7 +2267,9 @@ static CVar CompIntExpr(Expr expr)
     }
     else {
         // get the actual integer
-        Obj obj = EVAL_EXPR(expr);
+        Obj obj = 0;
+        GAP_GC_PUSH1(&obj);
+        obj = EVAL_EXPR(expr);
 
         val = CVAR_TEMP( NewTemp( "val" ) );
         siz = SIZE_OBJ(obj);
@@ -2226,6 +2297,7 @@ static CVar CompIntExpr(Expr expr)
             Emit("%c = C_NORMALIZE_64BIT(%c);\n", val,val);
             Emit("#endif");
         }
+        GAP_GC_POP();
         return val;
     }
 }
@@ -2234,7 +2306,7 @@ static CVar CompIntExpr(Expr expr)
 **
 *F  CompTildeExpr( <expr> )  . . . . . . . . . . . . . . . . . . EXPR_TILDE
 */
-static CVar CompTildeExpr(Expr expr)
+static CVar CompTildeExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Emit( "if ( ! STATE(Tilde) ) {\n");
     Emit( "    ErrorMayQuit(\"'~' does not have a value here\", 0, 0);\n" );
@@ -2255,7 +2327,7 @@ static CVar CompTildeExpr(Expr expr)
 **
 *F  CompTrueExpr( <expr> )  . . . . . . . . . . . . . . . . . . . EXPR_TRUE
 */
-static CVar CompTrueExpr(Expr expr)
+static CVar CompTrueExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // value, result
 
@@ -2277,7 +2349,7 @@ static CVar CompTrueExpr(Expr expr)
 **
 *F  CompFalseExpr( <expr> ) . . . . . . . . . . . . . . . . . .  EXPR_FALSE
 */
-static CVar CompFalseExpr(Expr expr)
+static CVar CompFalseExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // value, result
 
@@ -2299,7 +2371,7 @@ static CVar CompFalseExpr(Expr expr)
 **
 *F  CompCharExpr( <expr> )  . . . . . . . . . . . . . . . . . . . EXPR_CHAR
 */
-static CVar CompCharExpr(Expr expr)
+static CVar CompCharExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // result
 
@@ -2321,7 +2393,7 @@ static CVar CompCharExpr(Expr expr)
 **
 *F  CompPermExpr( <expr> )  . . . . . . . . . . . . . . . . . . . EXPR_PERM
 */
-static CVar CompPermExpr(Expr expr)
+static CVar CompPermExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                perm;           // result
     CVar                lcyc;           // one cycle as list
@@ -2384,12 +2456,12 @@ static CVar CompPermExpr(Expr expr)
 **
 *F  CompListExpr( <expr> )  . . . . . . . . . . . . . . . . . . . EXPR_LIST
 */
-static CVar CompListExpr1(Expr expr);
-static void CompListExpr2(CVar list, Expr expr);
-static CVar CompRecExpr1(Expr expr);
-static void CompRecExpr2(CVar rec, Expr expr);
+static CVar CompListExpr1(Expr expr) GAP_GC_CANSAFEPOINT;
+static void CompListExpr2(CVar list, Expr expr) GAP_GC_CANSAFEPOINT;
+static CVar CompRecExpr1(Expr expr) GAP_GC_CANSAFEPOINT;
+static void CompRecExpr2(CVar rec, Expr expr) GAP_GC_CANSAFEPOINT;
 
-static CVar CompListExpr(Expr expr)
+static CVar CompListExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                list;           // list, result
 
@@ -2405,7 +2477,7 @@ static CVar CompListExpr(Expr expr)
 **
 *F  CompListTildeExpr( <expr> ) . . . . . . . . . . . . . . EXPR_LIST_TILDE
 */
-static CVar CompListTildeExpr(Expr expr)
+static CVar CompListTildeExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                list;           // list value, result
     CVar                tilde;          // old value of tilde
@@ -2517,7 +2589,7 @@ static void CompListExpr2(CVar list, Expr expr)
 **
 *F  CompRangeExpr( <expr> ) . . . . . . . . . . . . . . . . . .  EXPR_RANGE
 */
-static CVar CompRangeExpr(Expr expr)
+static CVar CompRangeExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                range;          // range, result
     CVar                first;          // first  element
@@ -2572,13 +2644,15 @@ static CVar CompRangeExpr(Expr expr)
 **
 *F  CompStringExpr( <expr> )  . . . . . . . . . . compile a string expression
 */
-static CVar CompStringExpr(Expr expr)
+static CVar CompStringExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                string;         // string value, result
-    Obj                 str;            // the actual string object
+    Obj                 str = 0;        // the actual string object
 
     // allocate a new temporary for the string
     string = CVAR_TEMP( NewTemp( "string" ) );
+
+    GAP_GC_PUSH1(&str);
 
     // get the string of this expression
     str = EVAL_EXPR(expr);
@@ -2590,6 +2664,7 @@ static CVar CompStringExpr(Expr expr)
     SetInfoCVar( string, W_LIST );
 
     // return the string
+    GAP_GC_POP();
     return string;
 }
 
@@ -2598,7 +2673,7 @@ static CVar CompStringExpr(Expr expr)
 **
 *F  CompRecExpr( <expr> ) . . . . . . . . . . . . . . . . . . . .  EXPR_REC
 */
-static CVar CompRecExpr(Expr expr)
+static CVar CompRecExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                rec;            // record value, result
 
@@ -2614,7 +2689,7 @@ static CVar CompRecExpr(Expr expr)
 **
 *F  CompRecTildeExpr( <expr> )  . . . . . . . . . . . . . .  EXPR_REC_TILDE
 */
-static CVar CompRecTildeExpr(Expr expr)
+static CVar CompRecTildeExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                rec;            // record value, result
     CVar                tilde;          // old value of tilde
@@ -2739,7 +2814,7 @@ static void CompRecExpr2(CVar rec, Expr expr)
 **
 *F  CompRefLVar( <expr> ) . . . . . . .  EXPR_REF_LVAR
 */
-static CVar CompRefLVar(Expr expr)
+static CVar CompRefLVar(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // value, result
     LVar                lvar;           // local variable
@@ -2767,7 +2842,7 @@ static CVar CompRefLVar(Expr expr)
 **
 *F  CompIsbLVar( <expr> ) . . . . . . . . . . . . . . . . . . . .  EXPR_ISB_LVAR
 */
-static CVar CompIsbLVar(Expr expr)
+static CVar CompIsbLVar(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                isb;            // isbound, result
     CVar                val;            // value
@@ -2805,7 +2880,7 @@ static CVar CompIsbLVar(Expr expr)
 **
 *F  CompRefHVar( <expr> ) . . . . . . . . . . . . . . . . . . . .  EXPR_REF_HVAR
 */
-static CVar CompRefHVar(Expr expr)
+static CVar CompRefHVar(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // value, result
     HVar                hvar;           // higher variable
@@ -2833,7 +2908,7 @@ static CVar CompRefHVar(Expr expr)
 **
 *F  CompIsbHVar( <expr> ) . . . . . . . . . . . . . . . . . . . .  EXPR_ISB_HVAR
 */
-static CVar CompIsbHVar(Expr expr)
+static CVar CompIsbHVar(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                isb;            // isbound, result
     CVar                val;            // value
@@ -2868,7 +2943,7 @@ static CVar CompIsbHVar(Expr expr)
 **
 *F  CompRefGVar( <expr> ) . . . . . . . . . . . . . . . . . . . .  EXPR_REF_GVAR
 */
-static CVar CompRefGVar(Expr expr)
+static CVar CompRefGVar(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                val;            // value, result
     GVar                gvar;           // higher variable
@@ -2922,7 +2997,7 @@ static CVar CompRefGVarFopy(Expr expr)
 **
 *F  CompIsbGVar( <expr> ) . . . . . . . . . . . . . . . . . . . .  EXPR_ISB_GVAR
 */
-static CVar CompIsbGVar(Expr expr)
+static CVar CompIsbGVar(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                isb;            // isbound, result
     CVar                val;            // value, result
@@ -2956,7 +3031,7 @@ static CVar CompIsbGVar(Expr expr)
 **
 *F  CompElmList( <expr> ) . . . . . . . . . . . . . . . . . . . .  EXPR_ELM_LIST
 */
-static CVar CompElmList(Expr expr)
+static CVar CompElmList(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                elm;            // element, result
     CVar                list;           // list
@@ -3002,7 +3077,7 @@ static CVar CompElmList(Expr expr)
 **
 *F  CompElmsList( <expr> )  . . . . . . . . . . . . . . . . . . . EXPR_ELMS_LIST
 */
-static CVar CompElmsList(Expr expr)
+static CVar CompElmsList(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                elms;           // elements, result
     CVar                list;           // list
@@ -3097,7 +3172,7 @@ static CVar CompElmsListLev(Expr expr)
 **
 *F  CompIsbList( <expr> ) . . . . . . . . . . . . . . . . . . . .  EXPR_ISB_LIST
 */
-static CVar CompIsbList(Expr expr)
+static CVar CompIsbList(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                isb;            // isbound, result
     CVar                list;           // list
@@ -3132,7 +3207,7 @@ static CVar CompIsbList(Expr expr)
 **
 *F  CompElmRecName( <expr> )  . . . . . . . . . . . . . . . .  EXPR_ELM_REC_NAME
 */
-static CVar CompElmRecName(Expr expr)
+static CVar CompElmRecName(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                elm;            // element, result
     CVar                record;         // the record, left operand
@@ -3166,7 +3241,7 @@ static CVar CompElmRecName(Expr expr)
 **
 *F  CompElmRecExpr( <expr> )  . . . . . . . . . . . . . . . .  EXPR_ELM_REC_EXPR
 */
-static CVar CompElmRecExpr(Expr expr)
+static CVar CompElmRecExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                elm;            // element, result
     CVar                record;         // the record, left operand
@@ -3200,7 +3275,7 @@ static CVar CompElmRecExpr(Expr expr)
 **
 *F  CompIsbRecName( <expr> )  . . . . . . . . . . . . . . . .  EXPR_ISB_REC_NAME
 */
-static CVar CompIsbRecName(Expr expr)
+static CVar CompIsbRecName(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                isb;            // isbound, result
     CVar                record;         // the record, left operand
@@ -3234,7 +3309,7 @@ static CVar CompIsbRecName(Expr expr)
 **
 *F  CompIsbRecExpr( <expr> )  . . . . . . . . . . . . . . . .  EXPR_ISB_REC_EXPR
 */
-static CVar CompIsbRecExpr(Expr expr)
+static CVar CompIsbRecExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                isb;            // isbound, result
     CVar                record;         // the record, left operand
@@ -3268,7 +3343,7 @@ static CVar CompIsbRecExpr(Expr expr)
 **
 *F  CompElmPosObj( <expr> ) . . . . . . . . . . . . . . . . . .  EXPR_ELM_POSOBJ
 */
-static CVar CompElmPosObj(Expr expr)
+static CVar CompElmPosObj(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                elm;            // element, result
     CVar                list;           // list
@@ -3303,7 +3378,7 @@ static CVar CompElmPosObj(Expr expr)
 **
 *F  CompIsbPosObj( <expr> ) . . . . . . . . . . . . . . . . . .  EXPR_ISB_POSOBJ
 */
-static CVar CompIsbPosObj(Expr expr)
+static CVar CompIsbPosObj(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                isb;            // isbound, result
     CVar                list;           // list
@@ -3338,7 +3413,7 @@ static CVar CompIsbPosObj(Expr expr)
 **
 *F  CompElmObjName( <expr> )  . . . . . . . . . . . . . . . EXPR_ELM_COMOBJ_NAME
 */
-static CVar CompElmComObjName(Expr expr)
+static CVar CompElmComObjName(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                elm;            // element, result
     CVar                record;         // the record, left operand
@@ -3373,7 +3448,7 @@ static CVar CompElmComObjName(Expr expr)
 **
 *F  CompElmComObjExpr( <expr> ) . . . . . . . . . . . . . . EXPR_ELM_COMOBJ_EXPR
 */
-static CVar CompElmComObjExpr(Expr expr)
+static CVar CompElmComObjExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                elm;            // element, result
     CVar                record;         // the record, left operand
@@ -3407,7 +3482,7 @@ static CVar CompElmComObjExpr(Expr expr)
 **
 *F  CompIsbComObjName( <expr> ) . . . . . . . . . . . . . . EXPR_ISB_COMOBJ_NAME
 */
-static CVar CompIsbComObjName(Expr expr)
+static CVar CompIsbComObjName(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                isb;            // isbound, result
     CVar                record;         // the record, left operand
@@ -3441,7 +3516,7 @@ static CVar CompIsbComObjName(Expr expr)
 **
 *F  CompIsbComObjExpr( <expr> ) . . . . . . . . . . . . . . EXPR_ISB_COMOBJ_EXPR
 */
-static CVar CompIsbComObjExpr(Expr expr)
+static CVar CompIsbComObjExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     CVar                isb;            // isbound, result
     CVar                record;         // the record, left operand
@@ -3512,10 +3587,11 @@ static GVar G_Add;
 **
 *F  CompProccall0to6Args( <stat> )  . . . STAT_PROCCALL_0ARGS...STAT_PROCCALL_6ARGS
 */
-static void CompProccall0to6Args(Stat stat)
+static void CompProccall0to6Args(Stat stat) GAP_GC_CANSAFEPOINT
 {
     CVar                func;           // function
     CVar                args[8];        // arguments
+    CVar                arglist;        // argument list, for the slow path
     UInt                narg;           // number of arguments
     UInt                i;              // loop variable
 
@@ -3565,14 +3641,18 @@ static void CompProccall0to6Args(Stat stat)
     Emit( " );\n" );
     Emit( "}\n" );
     Emit( "else {\n" );
-    Emit( "DoOperation2Args( CallFuncListOper, %c, NewPlistFromArgs(", func);
+    // see the comment in CompFunccallXArgs
+    arglist = CVAR_TEMP( NewTemp( "arglist" ) );
+    Emit( "%c = NewPlistFromArgs(", arglist );
     if (narg >= 1) {
         Emit( " %c", args[1] );
     }
     for ( i = 2; i <= narg; i++ ) {
         Emit( ", %c", args[i] );
     }
-    Emit( " ) );\n" );
+    Emit( " );\n" );
+    Emit( "DoOperation2Args( CallFuncListOper, %c, %c );\n", func, arglist );
+    FreeTemp( TEMP_CVAR( arglist ) );
     Emit( "}\n" );
 
     // free the temporaries
@@ -3587,7 +3667,7 @@ static void CompProccall0to6Args(Stat stat)
 **
 *F  CompProccallXArgs . . . . . . . . . . . . . . . . . . .  STAT_PROCCALL_XARGS
 */
-static void CompProccallXArgs(Stat stat)
+static void CompProccallXArgs(Stat stat) GAP_GC_CANSAFEPOINT
 {
     CVar                func;           // function
     CVar                argl;           // argument list
@@ -3639,7 +3719,7 @@ static void CompProccallXArgs(Stat stat)
 **
 *F  CompProccallXArgs( <expr> ) . . . . . . . . . . . . . .  STAT_PROCCALL_OPTS
 */
-static void CompProccallOpts(Stat stat)
+static void CompProccallOpts(Stat stat) GAP_GC_CANSAFEPOINT
 {
   CVar opts = CompExpr(READ_STAT(stat, 0));
   GVar pushOptions;
@@ -3678,13 +3758,15 @@ static void CompSeqStat(Stat stat)
 **
 *F  CompIf( <stat> )  . . . . . . . . STAT_IF/STAT_IF_ELSE/STAT_IF_ELIF/STAT_IF_ELIF_ELSE
 */
-static void CompIf(Stat stat)
+static void CompIf(Stat stat) GAP_GC_CANSAFEPOINT
 {
     CVar                cond;           // condition
     UInt                nr;             // number of branches
-    Bag                 info_in;        // information at branch begin
-    Bag                 info_out;       // information at branch end
+    Bag                 info_in = 0;    // information at branch begin
+    Bag                 info_out = 0;   // information at branch end
     UInt                i;              // loop variable
+
+    GAP_GC_PUSH2(&info_in, &info_out);
 
     // get the number of branches
     nr = SIZE_STAT( stat ) / (2*sizeof(Stat));
@@ -3805,6 +3887,7 @@ static void CompIf(Stat stat)
     // put what we know into the current info
     CopyInfoCVars( INFO_FEXP(CURR_FUNC()), info_out );
 
+    GAP_GC_POP();
 }
 
 
@@ -3812,7 +3895,7 @@ static void CompIf(Stat stat)
 **
 *F  CompFor( <stat> ) . . . . . . . STAT_FOR...STAT_FOR3/STAT_FOR_RANGE...STAT_FOR_RANGE3
 */
-static void CompFor(Stat stat)
+static void CompFor(Stat stat) GAP_GC_CANSAFEPOINT
 {
     UInt                var;            // loop variable
     Char                vart;           // variable type
@@ -3823,8 +3906,10 @@ static void CompFor(Stat stat)
     CVar                lidx;           // loop index variable
     CVar                elm;            // element of list
     Int                 pass;           // current pass
-    Bag                 prev;           // previous temp-info
+    Bag                 prev = 0;       // previous temp-info
     Int                 i;              // loop variable
+
+    GAP_GC_PUSH1(&prev);
 
     // handle 'for <lvar> in [<first>..<last>] do'
     if ( IS_REF_LVAR( READ_STAT(stat, 0) )
@@ -4044,6 +4129,7 @@ static void CompFor(Stat stat)
 
     }
 
+    GAP_GC_POP();
 }
 
 
@@ -4051,12 +4137,14 @@ static void CompFor(Stat stat)
 **
 *F  CompWhile( <stat> ) . . . . . . . . . . . . . . . . .  STAT_WHILE...STAT_WHILE3
 */
-static void CompWhile(Stat stat)
+static void CompWhile(Stat stat) GAP_GC_CANSAFEPOINT
 {
     CVar                cond;           // condition
     Int                 pass;           // current pass
-    Bag                 prev;           // previous temp-info
+    Bag                 prev = 0;       // previous temp-info
     UInt                i;              // loop variable
+
+    GAP_GC_PUSH1(&prev);
 
     // find an invariant temp-info
     // the emits are probably not needed
@@ -4101,6 +4189,7 @@ static void CompWhile(Stat stat)
     Emit( "\n}\n" );
     Emit( "/* od */\n" );
 
+    GAP_GC_POP();
 }
 
 
@@ -4108,12 +4197,14 @@ static void CompWhile(Stat stat)
 **
 *F  CompRepeat( <stat> )  . . . . . . . . . . . . . . .  STAT_REPEAT...STAT_REPEAT3
 */
-static void CompRepeat(Stat stat)
+static void CompRepeat(Stat stat) GAP_GC_CANSAFEPOINT
 {
     CVar                cond;           // condition
     Int                 pass;           // current pass
-    Bag                 prev;           // previous temp-info
+    Bag                 prev = 0;       // previous temp-info
     UInt                i;              // loop variable
+
+    GAP_GC_PUSH1(&prev);
 
     // find an invariant temp-info
     // the emits are probably not needed
@@ -4161,6 +4252,7 @@ static void CompRepeat(Stat stat)
 
     // that's it
     Emit( "} while ( 1 );\n" );
+    GAP_GC_POP();
 }
 
 
@@ -4212,6 +4304,11 @@ static void CompReturnObj(Stat stat)
     // emit code to remove stack frame
     Emit( "SWITCH_TO_OLD_FRAME(oldFrame);\n" );
 
+    // drop the frames rooting this function's C locals
+    for ( Int i = 0; i < CompGCFrames; i++ ) {
+        Emit( "GAP_GC_POP();\n" );
+    }
+
     // emit code to return from function
     Emit( "return %c;\n", obj );
 
@@ -4233,6 +4330,11 @@ static void CompReturnVoid(Stat stat)
 
     // emit code to remove stack frame
     Emit( "SWITCH_TO_OLD_FRAME(oldFrame);\n" );
+
+    // drop the frames rooting this function's C locals
+    for ( Int i = 0; i < CompGCFrames; i++ ) {
+        Emit( "GAP_GC_POP();\n" );
+    }
 
     // emit code to return from function
     Emit( "return 0;\n" );
@@ -4349,7 +4451,7 @@ static void CompUnbHVar(Stat stat)
 **
 *F  CompAssGVar( <stat> ) . . . . . . . . . . . . . . . . . . . .  STAT_ASS_GVAR
 */
-static void CompAssGVar(Stat stat)
+static void CompAssGVar(Stat stat) GAP_GC_CANSAFEPOINT
 {
     GVar                gvar;           // global variable
     CVar                rhs;            // right hand side
@@ -4376,7 +4478,7 @@ static void CompAssGVar(Stat stat)
 **
 *F  CompUnbGVar( <stat> ) . . . . . . . . . . . . . . . . . . . .  STAT_UNB_GVAR
 */
-static void CompUnbGVar(Stat stat)
+static void CompUnbGVar(Stat stat) GAP_GC_CANSAFEPOINT
 {
     GVar                gvar;           // global variable
 
@@ -4583,7 +4685,7 @@ static void CompUnbList(Stat stat)
 **
 *F  CompAssRecName( <stat> )  . . . . . . . . . . . . . . . .  STAT_ASS_REC_NAME
 */
-static void CompAssRecName(Stat stat)
+static void CompAssRecName(Stat stat) GAP_GC_CANSAFEPOINT
 {
     CVar                record;         // record, left operand
     UInt                rnam;           // name, left operand
@@ -4651,7 +4753,7 @@ static void CompAssRecExpr(Stat stat)
 **
 *F  CompUnbRecName( <stat> )  . . . . . . . . . . . . . . . .  STAT_UNB_REC_NAME
 */
-static void CompUnbRecName(Stat stat)
+static void CompUnbRecName(Stat stat) GAP_GC_CANSAFEPOINT
 {
     CVar                record;         // record, left operand
     UInt                rnam;           // name, left operand
@@ -4774,7 +4876,7 @@ static void CompUnbPosObj(Stat stat)
 **
 *F  CompAssComObjName( <stat> ) . . . . . . . . . . . . . . STAT_ASS_COMOBJ_NAME
 */
-static void CompAssComObjName(Stat stat)
+static void CompAssComObjName(Stat stat) GAP_GC_CANSAFEPOINT
 {
     CVar                record;         // record, left operand
     UInt                rnam;           // name, left operand
@@ -4842,7 +4944,7 @@ static void CompAssComObjExpr(Stat stat)
 **
 *F  CompUnbComObjName( <stat> ) . . . . . . . . . . . . . . STAT_UNB_COMOBJ_NAME
 */
-static void CompUnbComObjName(Stat stat)
+static void CompUnbComObjName(Stat stat) GAP_GC_CANSAFEPOINT
 {
     CVar                record;         // record, left operand
     UInt                rnam;           // name, left operand
@@ -4908,7 +5010,7 @@ static void CompEmpty(Stat stat)
 **
 *F  CompInfo( <stat> )  . . . . . . . . . . . . . . . . . . . . . . .  STAT_INFO
 */
-static void CompInfo(Stat stat)
+static void CompInfo(Stat stat) GAP_GC_CANSAFEPOINT
 {
     CVar                tmp;
     CVar                sel;
@@ -5016,14 +5118,85 @@ static void CompAssert3(Stat stat)
 
 /****************************************************************************
 **
+*F  NrGCRootsOfFunc(...) . . . . . number of C locals holding GAP objects
+*F  EmitGCRootPushes(...) . . . . . . . . . . . . root them in the generated code
+**
+**  A precise collector cannot see C locals, so compiled code must root the
+**  ones holding GAP objects: the arguments, the local variables not promoted
+**  to high variables, and the temporaries. The fixed-arity push macros take
+**  at most 9 slots and each declares the same frame variable, so more than 9
+**  roots means several frames in nested scopes. In practice almost all
+**  functions need one frame; the deepest in GAP's own compiled library needs
+**  four.
+*/
+#define GC_ROOTS_PER_FRAME 9
+
+static Int NrGCRootsOfFunc(Obj info, Int narg, Int nloc)
+{
+    Int n = narg + NTEMP_INFO(info);
+    for (Int i = 1; i <= nloc; i++) {
+        if (!CompGetUseHVar(i + narg))
+            n++;
+    }
+    return n;
+}
+
+// the <idx>-th such local, counting arguments, then locals, then temporaries
+static CVar GCRootOfFunc(Obj info, Int narg, Int nloc, Int idx)
+{
+    if (idx < narg)
+        return CVAR_LVAR(idx + 1);
+    idx -= narg;
+    for (Int i = 1; i <= nloc; i++) {
+        if (CompGetUseHVar(i + narg))
+            continue;
+        if (idx == 0)
+            return CVAR_LVAR(i + narg);
+        idx--;
+    }
+    return CVAR_TEMP(idx + 1);
+}
+
+static void EmitGCRootPushes(Obj info, Int narg, Int nloc)
+{
+    Int total = NrGCRootsOfFunc(info, narg, nloc);
+    Int done = 0;
+
+    CompGCFrames = 0;
+    while (done < total) {
+        Int k = total - done;
+        if (k > GC_ROOTS_PER_FRAME)
+            k = GC_ROOTS_PER_FRAME;
+
+        // each frame after the first needs its own scope, as they all
+        // declare the same frame variable
+        if (CompGCFrames > 0)
+            Emit("{\n");
+
+        Emit("GAP_GC_PUSH%d(", k);
+        for (Int j = 0; j < k; j++) {
+            if (j > 0)
+                Emit(", ");
+            Emit("&%c", GCRootOfFunc(info, narg, nloc, done + j));
+        }
+        Emit(");\n");
+
+        done += k;
+        CompGCFrames++;
+    }
+}
+
+
+/****************************************************************************
+**
 *F  CompFunc( <func> )  . . . . . . . . . . . . . . . . .  compile a function
 **
 **  'CompFunc' compiles the function <func>, i.e., it emits  the code for the
 **  handler of the function <func> and the handlers of all its subfunctions.
 */
-static Obj CompFunctions;
+static Obj CompFunctions GAP_GC_GLOBALLY_ROOTED;
 
-static void CompFunc(Obj func)
+static void CompFunc(Obj func) GAP_GC_CANSAFEPOINT
 {
     Bag                 info;           // info bag for this function
     Int                 narg;           // number of arguments
@@ -5069,11 +5242,14 @@ static void CompFunc(Obj func)
     Obj values = VALUES_BODY(BODY_FUNC(func));
     if (values) {
         UInt len = LEN_PLIST(values);
+        Obj  val = 0;
+        GAP_GC_PUSH2(&values, &val);
         for (i = 1; i <= len; i++) {
-            Obj val = ELM_PLIST(values, i);
+            val = ELM_PLIST(values, i);
             if (IS_FUNC(val))
                 CompFunc(val);
         }
+        GAP_GC_POP();
     }
 
     // emit the code for the function header and the arguments
@@ -5098,7 +5274,7 @@ static void CompFunc(Obj func)
         Emit( " Obj  args )\n" );
         Emit( "{\n" );
         for ( i = 1; i <= narg; i++ ) {
-            Emit( "Obj  %c;\n", CVAR_LVAR(i) );
+            Emit( "Obj  %c = 0;\n", CVAR_LVAR(i) );
         }
     }
 
@@ -5123,6 +5299,11 @@ static void CompFunc(Obj func)
     // emit the code for the higher variables
     Emit( "Bag oldFrame;\n" );
 
+    // root the C locals holding GAP objects, before the first allocation
+    // below; every declaration above initialises its variable
+    Int savedGCFrames = CompGCFrames;
+    EmitGCRootPushes(info, narg, nloc);
+
     // emit the code to get the arguments for xarg functions
     if ( 6 < narg ) {
         Emit( "CHECK_NR_ARGS( %d, args )\n", narg );
@@ -5136,8 +5317,11 @@ static void CompFunc(Obj func)
         for ( i = 1; i < narg; i++ ) {
             Emit( "%c = ELM_PLIST( args, %d );\n", CVAR_LVAR(i), i );
         }
-        Emit( "Obj x_temp_range = Range2Check(INTOBJ_INT(%d), INTOBJ_INT(LEN_PLIST(args)));\n", narg);
-        Emit( "%c = ELMS_LIST(args , x_temp_range);\n", CVAR_LVAR(narg));
+        CVar range = CVAR_TEMP( NewTemp( "range" ) );
+        Emit( "%c = Range2Check(INTOBJ_INT(%d), INTOBJ_INT(LEN_PLIST(args)));\n",
+              range, narg );
+        Emit( "%c = ELMS_LIST(args , %c);\n", CVAR_LVAR(narg), range );
+        FreeTemp( TEMP_CVAR( range ) );
     }
 
     // emit the code to switch to a new frame for outer functions
@@ -5162,6 +5346,13 @@ static void CompFunc(Obj func)
 
     // compile the body
     CompStat( OFFSET_FIRST_STAT );
+
+    // close the scopes opened for the second and later GC frames; every path
+    // out of the body returns, so no pop is needed here
+    for ( i = 1; i < CompGCFrames; i++ ) {
+        Emit( "}\n" );
+    }
+    CompGCFrames = savedGCFrames;
 
     Emit( "}\n" );
 
@@ -5227,10 +5418,10 @@ Int CompileFunc(Obj filename, Obj func, Obj name, Int crc, Obj magic2)
             Emit( "static GVar G_%n;\n", NameGVar(i) );
         }
         if ( CompGetUseGVar( i ) & COMP_USE_GVAR_COPY ) {
-            Emit( "static Obj  GC_%n;\n", NameGVar(i) );
+            Emit( "static Obj  GC_%n GAP_GC_GLOBALLY_ROOTED;\n", NameGVar(i) );
         }
         if ( CompGetUseGVar( i ) & COMP_USE_GVAR_FOPY ) {
-            Emit( "static Obj  GF_%n;\n", NameGVar(i) );
+            Emit( "static Obj  GF_%n GAP_GC_GLOBALLY_ROOTED;\n", NameGVar(i) );
         }
     }
 
@@ -5244,8 +5435,8 @@ Int CompileFunc(Obj filename, Obj func, Obj name, Int crc, Obj magic2)
 
     // emit code for the functions
     Emit( "\n/* information for the functions */\n" );
-    Emit( "static Obj  NameFunc[%d];\n", compFunctionsNr+1 );
-    Emit( "static Obj FileName;\n" );
+    Emit( "static Obj NameFunc[%d] GAP_GC_GLOBALLY_ROOTED;\n", compFunctionsNr+1 );
+    Emit( "static Obj FileName GAP_GC_GLOBALLY_ROOTED;\n" );
 
 
     // now compile the handlers
@@ -5316,8 +5507,10 @@ Int CompileFunc(Obj filename, Obj func, Obj name, Int crc, Obj magic2)
     Emit( "\n/* 'InitLibrary' sets up gvars, rnams, functions */\n" );
     Emit( "static Int InitLibrary ( StructInitInfo * module )\n" );
     Emit( "{\n" );
-    Emit( "Obj func1;\n" );
-    Emit( "Obj body1;\n" );
+    Emit( "Obj func1 = 0;\n" );
+    Emit( "Obj body1 = 0;\n" );
+    // func1 is held across the NewFunctionBody call below, which allocates
+    Emit( "GAP_GC_PUSH2(&func1, &body1);\n" );
     Emit( "\n/* Complete Copy/Fopy registration */\n" );
     Emit( "UpdateCopyFopyInfo();\n" );
     Emit( "FileName = MakeImmString( \"%g\" );\n", magic2 );
@@ -5329,6 +5522,7 @@ Int CompileFunc(Obj filename, Obj func, Obj name, Int crc, Obj magic2)
     Emit( "SET_BODY_FUNC( func1, body1 );\n" );
     Emit( "CHANGED_BAG( func1 );\n");
     Emit( "CALL_0ARGS( func1 );\n" );
+    Emit( "GAP_GC_POP();\n" );
     Emit( "\n" );
     Emit( "return 0;\n" );
     Emit( "\n}\n" );
@@ -5561,7 +5755,7 @@ static Int InitKernel (
 *F  PostRestore( <module> ) . . . . . . . . . . . . . after restore workspace
 */
 static Int PostRestore (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // get the identifiers of 'Length' and 'Add' (for inlining)
     G_Length = GVarName( "Length" );
@@ -5576,7 +5770,7 @@ static Int PostRestore (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     return PostRestore( module );
 }

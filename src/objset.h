@@ -22,21 +22,23 @@ enum {
     OBJSET_DIRTY = 3,
 };
 
-Obj  NewObjSet(void);
+Obj  NewObjSet(void) GAP_GC_CANSAFEPOINT;
 Int  FindObjSet(Obj set, Obj obj);
-void AddObjSet(Obj set, Obj obj);
-void RemoveObjSet(Obj set, Obj obj);
-void ClearObjSet(Obj set);
-Obj  ObjSetValues(Obj set);
+void AddObjSet(Obj set, Obj obj GAP_GC_ROOTED_BY_ARG(0)) GAP_GC_CANSAFEPOINT;
+void RemoveObjSet(Obj set, Obj obj) GAP_GC_CANSAFEPOINT;
+void ClearObjSet(Obj set) GAP_GC_CANSAFEPOINT;
+Obj  ObjSetValues(Obj set) GAP_GC_CANSAFEPOINT;
 
-Obj  NewObjMap(void);
+Obj  NewObjMap(void) GAP_GC_CANSAFEPOINT;
 Int  FindObjMap(Obj map, Obj key);
-Obj  LookupObjMap(Obj map, Obj key);
-void AddObjMap(Obj map, Obj key, Obj value);
-void RemoveObjMap(Obj map, Obj obj);
-void ClearObjMap(Obj map);
-Obj  ObjMapValues(Obj map);
-Obj  ObjMapKeys(Obj map);
+Obj  LookupObjMap(Obj map GAP_GC_PROPAGATES_ROOT, Obj key);
+void AddObjMap(Obj map,
+               Obj key GAP_GC_ROOTED_BY_ARG(0),
+               Obj value GAP_GC_ROOTED_BY_ARG(0)) GAP_GC_CANSAFEPOINT;
+void RemoveObjMap(Obj map, Obj obj) GAP_GC_CANSAFEPOINT;
+void ClearObjMap(Obj map) GAP_GC_CANSAFEPOINT;
+Obj  ObjMapValues(Obj map) GAP_GC_CANSAFEPOINT;
+Obj  ObjMapKeys(Obj map) GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **

@@ -71,8 +71,8 @@
 ** #define IS_VEC8BIT_REP(obj) \
 **  (TNUM_OBJ(obj)==T_DATOBJ && True == DoFilter(IsVec8bitRep,obj))
 */
-Obj        IsVec8bitRep;
-static Obj Is8BitMatrixRep;
+Obj        IsVec8bitRep GAP_GC_GLOBALLY_ROOTED;
+static Obj Is8BitMatrixRep GAP_GC_GLOBALLY_ROOTED;
 
 /****************************************************************************
 **
@@ -81,7 +81,7 @@ static Obj Is8BitMatrixRep;
 **  This list caches the field info used for the fast arithmetic
 */
 
-static Obj FieldInfo8Bit;
+static Obj FieldInfo8Bit GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
@@ -96,8 +96,8 @@ static Obj FieldInfo8Bit;
 **
 */
 static Obj TYPES_VEC8BIT;
-static Obj TYPE_VEC8BIT;
-static Obj TYPE_VEC8BIT_LOCKED;
+static Obj TYPE_VEC8BIT GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_VEC8BIT_LOCKED GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeVec8Bit(UInt q, UInt mut)
 {
@@ -136,7 +136,7 @@ static Obj TypeVec8BitLocked(UInt q, UInt mut)
 **
 */
 static Obj TYPES_MAT8BIT;
-static Obj TYPE_MAT8BIT;
+static Obj TYPE_MAT8BIT GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeMat8Bit(UInt q, UInt mut)
 {
@@ -268,7 +268,7 @@ static const UInt1 * Char2Lookup[9] = {
 };
 
 
-static void MakeFieldInfo8Bit(UInt q)
+static void MakeFieldInfo8Bit(UInt q) GAP_GC_CANSAFEPOINT
 {
     FF   gfq;           // the field
     UInt p;             // characteristic
@@ -515,9 +515,9 @@ Obj GetFieldInfo8Bit(UInt q)
 ** characteristic
 */
 
-static Obj IsLockedRepresentationVector;
+static Obj IsLockedRepresentationVector GAP_GC_GLOBALLY_ROOTED;
 
-static void RewriteVec8Bit(Obj vec, UInt q)
+static void RewriteVec8Bit(Obj vec, UInt q) GAP_GC_CANSAFEPOINT
 {
     UInt q1 = FIELD_VEC8BIT(vec);
     Obj  info, info1;
@@ -679,7 +679,7 @@ void RewriteGF2Vec(Obj vec, UInt q)
 *F  ConvVec8Bit( <list>, <q> )  . . .  convert a list into 8bit vector object
 */
 
-static void ConvVec8Bit(Obj list, UInt q)
+static void ConvVec8Bit(Obj list, UInt q) GAP_GC_CANSAFEPOINT
 {
     Int           len;        // logical length of the vector
     Int           i;          // loop variable
@@ -742,6 +742,7 @@ static void ConvVec8Bit(Obj list, UInt q)
     // written below: from then on the body no longer matches the list
     // tnum, and a precise collector would scan the bytes as references.
     type = TypeVec8Bit(q, IS_MUTABLE_OBJ(list));
+    GAP_GC_PUSH1(&type);
 
     firstthree[0] = ELM0_LIST(list, 1);
     firstthree[1] = ELM0_LIST(list, 2);
@@ -788,6 +789,7 @@ static void ConvVec8Bit(Obj list, UInt q)
     SET_FIELD_VEC8BIT(list, q);
     if (nsize != SIZE_OBJ(list))
         ResizeWordSizedBag(list, nsize);
+    GAP_GC_POP();
 }
 
 /****************************************************************************
@@ -818,7 +820,7 @@ static UInt LcmDegree(UInt d, UInt d1)
 **
 *F  FuncCONV_VEC8BIT( <self>, <list> ) . . . . . convert into 8bit vector rep
 */
-static Obj FuncCONV_VEC8BIT(Obj self, Obj list, Obj q)
+static Obj FuncCONV_VEC8BIT(Obj self, Obj list, Obj q) GAP_GC_CANSAFEPOINT
 {
     RequireSmallList(SELF_NAME, list);
     UInt iq = GetPositiveSmallInt(SELF_NAME, q);
@@ -833,7 +835,7 @@ static Obj FuncCONV_VEC8BIT(Obj self, Obj list, Obj q)
 **  This is a non-destructive counterpart of ConvVec8Bit
 */
 
-static Obj NewVec8Bit(Obj list, UInt q)
+static Obj NewVec8Bit(Obj list, UInt q) GAP_GC_CANSAFEPOINT
 {
     Int           len;        // logical length of the vector
     Int           i;          // loop variable
@@ -847,11 +849,11 @@ static Obj NewVec8Bit(Obj list, UInt q)
     UInt          e;          // loop variable
     UInt1         byte;       // byte under construction
     UInt1 *       ptr;        // place to put byte
-    Obj           elt;
+    Obj           elt = 0;
     UInt          val;
     UInt          nsize;
-    Obj           type;
-    Obj           res;    // resulting 8bit vector object
+    Obj           type = 0;
+    Obj           res = 0;    // resulting 8bit vector object
 
 
     if (q > 256)
@@ -859,14 +861,19 @@ static Obj NewVec8Bit(Obj list, UInt q)
     if (q == 2)
         ErrorQuit("GF2 has its own representation", 0, 0);
 
+    GAP_GC_PUSH2(&res, &type);
+
     // already in the correct representation
     if (IS_VEC8BIT_REP(list)) {
         UInt q1 = FIELD_VEC8BIT(list);
         if (q1 == q) {
             res = CopyVec8Bit(list, 1);
-            if (!IS_MUTABLE_OBJ(list))
+            if (!IS_MUTABLE_OBJ(list)) {
                 // index 0 is for immutable vectors
-                SetTypeDatObj(res, TypeVec8Bit(q, 0));
+                type = TypeVec8Bit(q, 0);
+                SetTypeDatObj(res, type);
+            }
+            GAP_GC_POP();
             return res;
         }
         else if (q1 < q && ((q - 1) % (q1 - 1)) == 0) {
@@ -874,8 +881,11 @@ static Obj NewVec8Bit(Obj list, UInt q)
             res = CopyVec8Bit(list, 1);
             RewriteVec8Bit(res, q);
             // TODO: rework RewriteVec8Bit and avoid calling CopyVec8Bit
-            if (!IS_MUTABLE_OBJ(list))
-                SetTypeDatObj(res, TypeVec8Bit(q, 0));
+            if (!IS_MUTABLE_OBJ(list)) {
+                type = TypeVec8Bit(q, 0);
+                SetTypeDatObj(res, type);
+            }
+            GAP_GC_POP();
             return res;
         }
         // remaining case is list is written over too large a field
@@ -885,8 +895,11 @@ static Obj NewVec8Bit(Obj list, UInt q)
         res = ShallowCopyVecGF2(list);
         RewriteGF2Vec(res, q);
         // TODO: rework RewriteGF2Vec and avoid calling ShallowCopyVecGF2
-        if (!IS_MUTABLE_OBJ(list))
-            SetTypeDatObj(res, TypeVec8Bit(q, 0));
+        if (!IS_MUTABLE_OBJ(list)) {
+            type = TypeVec8Bit(q, 0);
+            SetTypeDatObj(res, type);
+        }
+        GAP_GC_POP();
         return res;
     }
 
@@ -932,6 +945,7 @@ static Obj NewVec8Bit(Obj list, UInt q)
     type = TypeVec8Bit(q, IS_MUTABLE_OBJ(list));
     SetTypeDatObj(res, type);
 
+    GAP_GC_POP();
     return res;
 }
 
@@ -941,7 +955,7 @@ static Obj NewVec8Bit(Obj list, UInt q)
 **
 **  This is a non-destructive counterpart of FuncCOPY_GF2VEC
 */
-static Obj FuncCOPY_VEC8BIT(Obj self, Obj list, Obj q)
+static Obj FuncCOPY_VEC8BIT(Obj self, Obj list, Obj q) GAP_GC_CANSAFEPOINT
 {
     RequireSmallList(SELF_NAME, list);
     UInt iq = GetPositiveSmallInt(SELF_NAME, q);
@@ -1025,7 +1039,7 @@ void PlainVec8Bit(Obj list)
 **
 *F  FuncPLAIN_VEC8BIT( <self>, <list> ) . . . .  convert back into plain list
 */
-static Obj FuncPLAIN_VEC8BIT(Obj self, Obj list)
+static Obj FuncPLAIN_VEC8BIT(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     RequireVec8BitRep(SELF_NAME, list);
     if (DoFilter(IsLockedRepresentationVector, list) == True) {
@@ -1054,11 +1068,12 @@ static Obj FuncPLAIN_VEC8BIT(Obj self, Obj list)
 
 Obj CopyVec8Bit(Obj list, UInt mut)
 {
-    Obj  copy;
+    Obj  copy = 0;
     UInt size;
     UInt q;
-    Obj  type;
+    Obj  type = 0;
 
+    GAP_GC_PUSH2(&copy, &type);
     size = SIZE_BAG(list);
     copy = NewWordSizedBag(T_DATOBJ, size);
     q = FIELD_VEC8BIT(list);
@@ -1069,6 +1084,7 @@ Obj CopyVec8Bit(Obj list, UInt mut)
     SET_FIELD_VEC8BIT(copy, q);
     memcpy(BYTES_VEC8BIT(copy), CONST_BYTES_VEC8BIT(list),
            size - 3 * sizeof(UInt));
+    GAP_GC_POP();
     return copy;
 }
 
@@ -1089,6 +1105,7 @@ Obj CopyVec8Bit(Obj list, UInt mut)
 
 static void
 AddVec8BitVec8BitInner(Obj sum, Obj vl, Obj vr, UInt start, UInt stop)
+    GAP_GC_CANSAFEPOINT
 {
     Obj  info;
     UInt p;
@@ -1182,15 +1199,16 @@ AddVec8BitVec8BitInner(Obj sum, Obj vl, Obj vr, UInt start, UInt stop)
 **  (mutable if either argument is).
 */
 
-static Obj SumVec8BitVec8Bit(Obj vl, Obj vr)
+static Obj SumVec8BitVec8Bit(Obj vl, Obj vr) GAP_GC_CANSAFEPOINT
 {
-    Obj  sum;
+    Obj  sum = 0;
     Obj  info;
     UInt elts;
     UInt q;
     UInt len;
-    Obj  type;
+    Obj  type = 0;
 
+    GAP_GC_PUSH2(&sum, &type);
     q = FIELD_VEC8BIT(vl);
     len = LEN_VEC8BIT(vl);
     info = GetFieldInfo8Bit(q);
@@ -1202,6 +1220,7 @@ static Obj SumVec8BitVec8Bit(Obj vl, Obj vr)
     SET_FIELD_VEC8BIT(sum, q);
     CHANGED_BAG(sum);
     AddVec8BitVec8BitInner(sum, vl, vr, 1, len);
+    GAP_GC_POP();
     return sum;
 }
 
@@ -1215,15 +1234,16 @@ static Obj SumVec8BitVec8Bit(Obj vl, Obj vr)
 **
 */
 
-static Obj ConvertToVectorRep;    // BH: changed to static
+static Obj ConvertToVectorRep GAP_GC_GLOBALLY_ROOTED;    // BH: changed to static
 
 
 static Obj FuncSUM_VEC8BIT_VEC8BIT(Obj self, Obj vl, Obj vr)
+    GAP_GC_CANSAFEPOINT
 {
     RequireVec8BitRep(SELF_NAME, vl);
     RequireVec8BitRep(SELF_NAME, vr);
 
-    Obj sum;
+    Obj sum = 0;
     if (FIELD_VEC8BIT(vl) != FIELD_VEC8BIT(vr)) {
         UInt ql = FIELD_VEC8BIT(vl), qr = FIELD_VEC8BIT(vr);
         Obj  infol = GetFieldInfo8Bit(ql), infor = GetFieldInfo8Bit(qr);
@@ -1259,12 +1279,16 @@ static Obj FuncSUM_VEC8BIT_VEC8BIT(Obj self, Obj vl, Obj vr)
     if (LEN_VEC8BIT(vl) == LEN_VEC8BIT(vr))
         return SumVec8BitVec8Bit(vl, vr);
     else if (LEN_VEC8BIT(vl) > LEN_VEC8BIT(vr)) {
+        GAP_GC_PUSH1(&sum);
         sum = CopyVec8Bit(vl, IS_MUTABLE_OBJ(vl) || IS_MUTABLE_OBJ(vr));
         AddVec8BitVec8BitInner(sum, sum, vr, 1, LEN_VEC8BIT(vr));
+        GAP_GC_POP();
     }
     else {
+        GAP_GC_PUSH1(&sum);
         sum = CopyVec8Bit(vr, IS_MUTABLE_OBJ(vl) || IS_MUTABLE_OBJ(vr));
         AddVec8BitVec8BitInner(sum, sum, vl, 1, LEN_VEC8BIT(vl));
+        GAP_GC_POP();
     }
 
     return sum;
@@ -1288,6 +1312,7 @@ static Obj FuncSUM_VEC8BIT_VEC8BIT(Obj self, Obj vl, Obj vr)
 
 static void
 MultVec8BitFFEInner(Obj prod, Obj vec, Obj scal, UInt start, UInt stop)
+    GAP_GC_CANSAFEPOINT
 {
     Obj           info;
     UInt          elts;
@@ -1329,16 +1354,18 @@ MultVec8BitFFEInner(Obj prod, Obj vec, Obj scal, UInt start, UInt stop)
 **
 */
 
-static Obj MultVec8BitFFE(Obj vec, Obj scal)
+static Obj MultVec8BitFFE(Obj vec, Obj scal) GAP_GC_CANSAFEPOINT
 {
-    Obj  prod;
+    Obj  prod = 0;
     Obj  info;
     UInt elts;
     UInt q;
     UInt len;
     UInt v;
-    Obj  type;
+    Obj  type = 0;
+    Obj  scalRoot = scal;
 
+    GAP_GC_PUSH3(&prod, &type, &scalRoot);
     q = FIELD_VEC8BIT(vec);
     len = LEN_VEC8BIT(vec);
     info = GetFieldInfo8Bit(q);
@@ -1349,14 +1376,15 @@ static Obj MultVec8BitFFE(Obj vec, Obj scal)
     SetTypeDatObj(prod, type);
     SET_FIELD_VEC8BIT(prod, q);
     CHANGED_BAG(prod);
-    if (SIZE_FF(FLD_FFE(scal)) != q) {
-        v = VAL_FFE(scal);
+    if (SIZE_FF(FLD_FFE(scalRoot)) != q) {
+        v = VAL_FFE(scalRoot);
         if (v != 0)
-            v = 1 + (v - 1) * (q - 1) / (SIZE_FF(FLD_FFE(scal)) - 1);
-        scal = NEW_FFE(
+            v = 1 + (v - 1) * (q - 1) / (SIZE_FF(FLD_FFE(scalRoot)) - 1);
+        scalRoot = NEW_FFE(
             FiniteField(P_FIELDINFO_8BIT(info), D_FIELDINFO_8BIT(info)), v);
     }
-    MultVec8BitFFEInner(prod, vec, scal, 1, len);
+    MultVec8BitFFEInner(prod, vec, scalRoot, 1, len);
+    GAP_GC_POP();
     return prod;
 }
 
@@ -1369,10 +1397,11 @@ static Obj MultVec8BitFFE(Obj vec, Obj scal)
 
 Obj ZeroVec8Bit(UInt q, UInt len, UInt mut)
 {
-    Obj  zerov;
+    Obj  zerov = 0;
     UInt size;
     Obj  info;
-    Obj  type;
+    Obj  type = 0;
+    GAP_GC_PUSH2(&zerov, &type);
     info = GetFieldInfo8Bit(q);
     size = SIZE_VEC8BIT(len, ELS_BYTE_FIELDINFO_8BIT(info));
     zerov = NewWordSizedBag(T_DATOBJ, size);
@@ -1381,6 +1410,7 @@ Obj ZeroVec8Bit(UInt q, UInt len, UInt mut)
     CHANGED_BAG(zerov);
     SET_LEN_VEC8BIT(zerov, len);
     SET_FIELD_VEC8BIT(zerov, q);
+    GAP_GC_POP();
     return zerov;
 }
 
@@ -1395,9 +1425,9 @@ Obj ZeroVec8Bit(UInt q, UInt len, UInt mut)
 **
 */
 
-static Obj FuncPROD_VEC8BIT_FFE(Obj self, Obj vec, Obj ffe)
+static Obj FuncPROD_VEC8BIT_FFE(Obj self, Obj vec, Obj ffe) GAP_GC_CANSAFEPOINT
 {
-    Obj  prod;
+    Obj  prod = 0;
     Obj  info;
     UInt d;
 
@@ -1419,8 +1449,10 @@ static Obj FuncPROD_VEC8BIT_FFE(Obj self, Obj vec, Obj ffe)
 
     // check for field compatibility
     if (d % DegreeFFE(ffe)) {
+        GAP_GC_PUSH1(&prod);
         prod = ProdListScl(vec, ffe);
         CALL_1ARGS(ConvertToVectorRep, prod);
+        GAP_GC_POP();
         return prod;
     }
 
@@ -1434,7 +1466,7 @@ static Obj FuncPROD_VEC8BIT_FFE(Obj self, Obj vec, Obj ffe)
 **
 */
 
-static Obj FuncZERO_VEC8BIT(Obj self, Obj vec)
+static Obj FuncZERO_VEC8BIT(Obj self, Obj vec) GAP_GC_CANSAFEPOINT
 {
     RequireVec8BitRep(SELF_NAME, vec);
     return ZeroVec8Bit(FIELD_VEC8BIT(vec), LEN_VEC8BIT(vec), 1);
@@ -1446,7 +1478,7 @@ static Obj FuncZERO_VEC8BIT(Obj self, Obj vec)
 **
 */
 
-static Obj FuncZERO_VEC8BIT_2(Obj self, Obj q, Obj len)
+static Obj FuncZERO_VEC8BIT_2(Obj self, Obj q, Obj len) GAP_GC_CANSAFEPOINT
 {
     UInt iq = GetPositiveSmallInt(SELF_NAME, q);
     RequireNonnegativeSmallInt(SELF_NAME, len);
@@ -1464,7 +1496,7 @@ static Obj FuncZERO_VEC8BIT_2(Obj self, Obj q, Obj len)
 ** Here we can fall back on the method above.
 */
 
-static Obj FuncPROD_FFE_VEC8BIT(Obj self, Obj ffe, Obj vec)
+static Obj FuncPROD_FFE_VEC8BIT(Obj self, Obj ffe, Obj vec) GAP_GC_CANSAFEPOINT
 {
     RequireFFE(SELF_NAME, ffe);
     RequireVec8BitRep(SELF_NAME, vec);
@@ -1478,43 +1510,49 @@ static Obj FuncPROD_FFE_VEC8BIT(Obj self, Obj ffe, Obj vec)
 ** GAP Callable methods for unary -
 */
 
-static Obj AInvVec8Bit(Obj vec, UInt mut)
+static Obj AInvVec8Bit(Obj vec, UInt mut) GAP_GC_CANSAFEPOINT
 {
     Obj  info;
     UInt p;
     // UInt d;
     UInt minusOne;
-    Obj  neg;
+    Obj  neg = 0;
+    Obj  minusOneObj = 0;
     FF   f;
     info = GetFieldInfo8Bit(FIELD_VEC8BIT(vec));
     p = P_FIELDINFO_8BIT(info);
 
+    GAP_GC_PUSH2(&neg, &minusOneObj);
     neg = CopyVec8Bit(vec, mut);
     // characteristic 2 case
     if (2 == p) {
+        GAP_GC_POP();
         return neg;
     }
 
     // Otherwise
     f = FiniteField(p, D_FIELDINFO_8BIT(info));
     minusOne = NEG_FFV(1, SUCC_FF(f));
-    MultVec8BitFFEInner(neg, neg, NEW_FFE(f, minusOne), 1, LEN_VEC8BIT(neg));
+    minusOneObj = NEW_FFE(f, minusOne);
+    MultVec8BitFFEInner(neg, neg, minusOneObj, 1, LEN_VEC8BIT(neg));
+    GAP_GC_POP();
     return neg;
 }
 
-static Obj FuncAINV_VEC8BIT_MUTABLE(Obj self, Obj vec)
+static Obj FuncAINV_VEC8BIT_MUTABLE(Obj self, Obj vec) GAP_GC_CANSAFEPOINT
 {
     RequireVec8BitRep(SELF_NAME, vec);
     return AInvVec8Bit(vec, 1);
 }
 
 static Obj FuncAINV_VEC8BIT_SAME_MUTABILITY(Obj self, Obj vec)
+    GAP_GC_CANSAFEPOINT
 {
     RequireVec8BitRep(SELF_NAME, vec);
     return AInvVec8Bit(vec, IS_MUTABLE_OBJ(vec));
 }
 
-static Obj FuncAINV_VEC8BIT_IMMUTABLE(Obj self, Obj vec)
+static Obj FuncAINV_VEC8BIT_IMMUTABLE(Obj self, Obj vec) GAP_GC_CANSAFEPOINT
 {
     RequireVec8BitRep(SELF_NAME, vec);
     return AInvVec8Bit(vec, 0);
@@ -1540,6 +1578,7 @@ static Obj FuncAINV_VEC8BIT_IMMUTABLE(Obj self, Obj vec)
 
 static void AddVec8BitVec8BitMultInner(
     Obj sum, Obj vl, Obj vr, Obj mult, UInt start, UInt stop)
+    GAP_GC_CANSAFEPOINT
 {
     Obj           info;
     UInt          p;
@@ -1622,31 +1661,37 @@ static void AddVec8BitVec8BitMultInner(
 */
 
 static Obj FuncMULT_VECTOR_VEC8BITS(Obj self, Obj vec, Obj mul)
+    GAP_GC_CANSAFEPOINT
 {
     RequireVec8BitRep(SELF_NAME, vec);
     RequireFFE(SELF_NAME, mul);
     UInt q;
+    Obj  mulRoot = mul;
     q = FIELD_VEC8BIT(vec);
 
     if (VAL_FFE(mul) == 1)
         return (Obj)0;
 
+    GAP_GC_PUSH1(&mulRoot);
     // Now check the field of <mul>
-    if (q != SIZE_FF(FLD_FFE(mul))) {
+    if (q != SIZE_FF(FLD_FFE(mulRoot))) {
         Obj  info;
         UInt d, d1;
         FFV  val;
         info = GetFieldInfo8Bit(q);
         d = D_FIELDINFO_8BIT(info);
-        d1 = DegreeFFE(mul);
-        if (d % d1)
+        d1 = DegreeFFE(mulRoot);
+        if (d % d1) {
+            GAP_GC_POP();
             return TRY_NEXT_METHOD;
-        val = VAL_FFE(mul);
+        }
+        val = VAL_FFE(mulRoot);
         if (val != 0)
-            val = 1 + (val - 1) * (q - 1) / (SIZE_FF(FLD_FFE(mul)) - 1);
-        mul = NEW_FFE(FiniteField(P_FIELDINFO_8BIT(info), d), val);
+            val = 1 + (val - 1) * (q - 1) / (SIZE_FF(FLD_FFE(mulRoot)) - 1);
+        mulRoot = NEW_FFE(FiniteField(P_FIELDINFO_8BIT(info), d), val);
     }
-    MultVec8BitFFEInner(vec, vec, mul, 1, LEN_VEC8BIT(vec));
+    MultVec8BitFFEInner(vec, vec, mulRoot, 1, LEN_VEC8BIT(vec));
+    GAP_GC_POP();
     return (Obj)0;
 }
 
@@ -1661,7 +1706,7 @@ static Obj FuncMULT_VECTOR_VEC8BITS(Obj self, Obj vec, Obj mul)
 static Obj AddRowVector;
 
 static Obj FuncADD_ROWVECTOR_VEC8BITS_5(
-    Obj self, Obj vl, Obj vr, Obj mul, Obj from, Obj to)
+    Obj self, Obj vl, Obj vr, Obj mul, Obj from, Obj to) GAP_GC_CANSAFEPOINT
 {
     RequireVec8BitRep(SELF_NAME, vl);
     RequireVec8BitRep(SELF_NAME, vr);
@@ -1670,6 +1715,7 @@ static Obj FuncADD_ROWVECTOR_VEC8BITS_5(
     RequirePositiveSmallInt(SELF_NAME, to);
     UInt q;
     UInt len;
+    Obj  mulRoot = mul;
     len = LEN_VEC8BIT(vl);
     // There may be nothing to do
     if (LT(to, from))
@@ -1691,8 +1737,9 @@ static Obj FuncADD_ROWVECTOR_VEC8BITS_5(
     // Now we know that the characteristics must match, but not the fields
     q = FIELD_VEC8BIT(vl);
 
+    GAP_GC_PUSH1(&mulRoot);
     // fix up fields if necessary
-    if (q != FIELD_VEC8BIT(vr) || q != SIZE_FF(FLD_FFE(mul))) {
+    if (q != FIELD_VEC8BIT(vr) || q != SIZE_FF(FLD_FFE(mulRoot))) {
         Obj  info, info1;
         UInt d, d1, q1, d2, d0, q0, p, i;
         FFV  val;
@@ -1703,32 +1750,37 @@ static Obj FuncADD_ROWVECTOR_VEC8BITS_5(
         q1 = FIELD_VEC8BIT(vr);
         info1 = GetFieldInfo8Bit(q1);
         d1 = D_FIELDINFO_8BIT(info1);
-        d2 = DegreeFFE(mul);
+        d2 = DegreeFFE(mulRoot);
         d0 = LcmDegree(d, d1);
         d0 = LcmDegree(d0, d2);
         p = P_FIELDINFO_8BIT(info);
         GAP_ASSERT(p == P_FIELDINFO_8BIT(info1));
-        GAP_ASSERT(p == CHAR_FF(FLD_FFE(mul)));
+        GAP_ASSERT(p == CHAR_FF(FLD_FFE(mulRoot)));
         q0 = 1;
         for (i = 0; i < d0; i++)
             q0 *= p;
 
         // if the exponent is bigger than 31, overflow changes the value to 0
-        if (d0 > 8 || q0 > 256)
+        if (d0 > 8 || q0 > 256) {
+            GAP_GC_POP();
             return TRY_NEXT_METHOD;
+        }
         if ((q0 > q && DoFilter(IsLockedRepresentationVector, vl) == True) ||
-            (q0 > q1 && DoFilter(IsLockedRepresentationVector, vr) == True))
+            (q0 > q1 && DoFilter(IsLockedRepresentationVector, vr) == True)) {
+            GAP_GC_POP();
             return TRY_NEXT_METHOD;
+        }
         RewriteVec8Bit(vl, q0);
         RewriteVec8Bit(vr, q0);
-        val = VAL_FFE(mul);
+        val = VAL_FFE(mulRoot);
         if (val != 0)
-            val = 1 + (val - 1) * (q0 - 1) / (SIZE_FF(FLD_FFE(mul)) - 1);
-        mul = NEW_FFE(FiniteField(p, d0), val);
+            val = 1 + (val - 1) * (q0 - 1) / (SIZE_FF(FLD_FFE(mulRoot)) - 1);
+        mulRoot = NEW_FFE(FiniteField(p, d0), val);
     }
 
-    AddVec8BitVec8BitMultInner(vl, vl, vr, mul, INT_INTOBJ(from),
+    AddVec8BitVec8BitMultInner(vl, vl, vr, mulRoot, INT_INTOBJ(from),
                                INT_INTOBJ(to));
+    GAP_GC_POP();
     return (Obj)0;
 }
 
@@ -1741,11 +1793,13 @@ static Obj FuncADD_ROWVECTOR_VEC8BITS_5(
 */
 
 static Obj FuncADD_ROWVECTOR_VEC8BITS_3(Obj self, Obj vl, Obj vr, Obj mul)
+    GAP_GC_CANSAFEPOINT
 {
     RequireVec8BitRep(SELF_NAME, vl);
     RequireVec8BitRep(SELF_NAME, vr);
     RequireFFE(SELF_NAME, mul);
     UInt q;
+    Obj  mulRoot = mul;
     if (LEN_VEC8BIT(vl) != LEN_VEC8BIT(vr)) {
         ErrorMayQuit(
             "SUM: <left> and <right> must be vectors of the same length", 0,
@@ -1754,8 +1808,9 @@ static Obj FuncADD_ROWVECTOR_VEC8BITS_3(Obj self, Obj vl, Obj vr, Obj mul)
     // Now we know that the characteristics must match, but not the fields
     q = FIELD_VEC8BIT(vl);
 
+    GAP_GC_PUSH1(&mulRoot);
     // fix up fields if necessary
-    if (q != FIELD_VEC8BIT(vr) || q != SIZE_FF(FLD_FFE(mul))) {
+    if (q != FIELD_VEC8BIT(vr) || q != SIZE_FF(FLD_FFE(mulRoot))) {
         Obj  info, info1;
         UInt d, d1, q1, d2, d0, q0, p, i;
         FFV  val;
@@ -1765,31 +1820,36 @@ static Obj FuncADD_ROWVECTOR_VEC8BITS_3(Obj self, Obj vl, Obj vr, Obj mul)
         q1 = FIELD_VEC8BIT(vr);
         info1 = GetFieldInfo8Bit(q1);
         d1 = D_FIELDINFO_8BIT(info1);
-        d2 = DegreeFFE(mul);
+        d2 = DegreeFFE(mulRoot);
         d0 = LcmDegree(d, d1);
         d0 = LcmDegree(d0, d2);
         p = P_FIELDINFO_8BIT(info);
         GAP_ASSERT(p == P_FIELDINFO_8BIT(info1));
-        GAP_ASSERT(p == CHAR_FF(FLD_FFE(mul)));
+        GAP_ASSERT(p == CHAR_FF(FLD_FFE(mulRoot)));
         q0 = 1;
         for (i = 0; i < d0; i++)
             q0 *= p;
 
         // if the exponent is bigger than 31, overflow changes the value to 0
-        if (d0 > 8 || q0 > 256)
+        if (d0 > 8 || q0 > 256) {
+            GAP_GC_POP();
             return TRY_NEXT_METHOD;
+        }
         if ((q0 > q &&
              CALL_1ARGS(IsLockedRepresentationVector, vl) == True) ||
-            (q0 > q1 && CALL_1ARGS(IsLockedRepresentationVector, vr) == True))
+            (q0 > q1 && CALL_1ARGS(IsLockedRepresentationVector, vr) == True)) {
+            GAP_GC_POP();
             return TRY_NEXT_METHOD;
+        }
         RewriteVec8Bit(vl, q0);
         RewriteVec8Bit(vr, q0);
-        val = VAL_FFE(mul);
+        val = VAL_FFE(mulRoot);
         if (val != 0)
-            val = 1 + (val - 1) * (q0 - 1) / (SIZE_FF(FLD_FFE(mul)) - 1);
-        mul = NEW_FFE(FiniteField(p, d0), val);
+            val = 1 + (val - 1) * (q0 - 1) / (SIZE_FF(FLD_FFE(mulRoot)) - 1);
+        mulRoot = NEW_FFE(FiniteField(p, d0), val);
     }
-    AddVec8BitVec8BitMultInner(vl, vl, vr, mul, 1, LEN_VEC8BIT(vl));
+    AddVec8BitVec8BitMultInner(vl, vl, vr, mulRoot, 1, LEN_VEC8BIT(vl));
+    GAP_GC_POP();
     return (Obj)0;
 }
 
@@ -1802,6 +1862,7 @@ static Obj FuncADD_ROWVECTOR_VEC8BITS_3(Obj self, Obj vl, Obj vr, Obj mul)
 */
 
 static Obj FuncADD_ROWVECTOR_VEC8BITS_2(Obj self, Obj vl, Obj vr)
+    GAP_GC_CANSAFEPOINT
 {
     RequireVec8BitRep(SELF_NAME, vl);
     RequireVec8BitRep(SELF_NAME, vr);
@@ -1858,16 +1919,18 @@ static Obj FuncADD_ROWVECTOR_VEC8BITS_2(Obj self, Obj vl, Obj vr)
 **  (mutable if either argument is).
 */
 
-static Obj SumVec8BitVec8BitMult(Obj vl, Obj vr, Obj mult)
+static Obj SumVec8BitVec8BitMult(Obj vl, Obj vr, Obj mult) GAP_GC_CANSAFEPOINT
 {
-    Obj  sum;
+    Obj  sum = 0;
     Obj  info;
     UInt elts;
     UInt q;
     UInt len;
     FFV  v;
-    Obj  type;
+    Obj  type = 0;
+    Obj  multRoot = mult;
 
+    GAP_GC_PUSH3(&sum, &type, &multRoot);
     q = FIELD_VEC8BIT(vl);
     len = LEN_VEC8BIT(vl);
     info = GetFieldInfo8Bit(q);
@@ -1878,14 +1941,15 @@ static Obj SumVec8BitVec8BitMult(Obj vl, Obj vr, Obj mult)
     SetTypeDatObj(sum, type);
     SET_FIELD_VEC8BIT(sum, q);
     CHANGED_BAG(sum);
-    if (SIZE_FF(FLD_FFE(mult)) != q) {
-        v = VAL_FFE(mult);
+    if (SIZE_FF(FLD_FFE(multRoot)) != q) {
+        v = VAL_FFE(multRoot);
         if (v != 0)
-            v = 1 + (v - 1) * (q - 1) / (SIZE_FF(FLD_FFE(mult)) - 1);
-        mult = NEW_FFE(
+            v = 1 + (v - 1) * (q - 1) / (SIZE_FF(FLD_FFE(multRoot)) - 1);
+        multRoot = NEW_FFE(
             FiniteField(P_FIELDINFO_8BIT(info), D_FIELDINFO_8BIT(info)), v);
     }
-    AddVec8BitVec8BitMultInner(sum, vl, vr, mult, 1, len);
+    AddVec8BitVec8BitMultInner(sum, vl, vr, multRoot, 1, len);
+    GAP_GC_POP();
     return sum;
 }
 
@@ -1895,22 +1959,26 @@ static Obj SumVec8BitVec8BitMult(Obj vl, Obj vr, Obj mult)
 **
 */
 
-static Obj DiffVec8BitVec8Bit(Obj vl, Obj vr)
+static Obj DiffVec8BitVec8Bit(Obj vl, Obj vr) GAP_GC_CANSAFEPOINT
 {
     Obj info;
     FF  f;
     FFV minusOne;
-    Obj MinusOne;
-    Obj dif;
-    Obj type;
+    Obj MinusOne = 0;
+    Obj dif = 0;
+    Obj type = 0;
 
+    GAP_GC_PUSH3(&MinusOne, &dif, &type);
     info = GetFieldInfo8Bit(FIELD_VEC8BIT(vl));
     f = FiniteField(P_FIELDINFO_8BIT(info), D_FIELDINFO_8BIT(info));
     minusOne = NEG_FFV(1, SUCC_FF(f));
     MinusOne = NEW_FFE(f, minusOne);
 
-    if (LEN_VEC8BIT(vl) == LEN_VEC8BIT(vr))
-        return SumVec8BitVec8BitMult(vl, vr, MinusOne);
+    if (LEN_VEC8BIT(vl) == LEN_VEC8BIT(vr)) {
+        dif = SumVec8BitVec8BitMult(vl, vr, MinusOne);
+        GAP_GC_POP();
+        return dif;
+    }
     else if (LEN_VEC8BIT(vl) < LEN_VEC8BIT(vr)) {
         dif = MultVec8BitFFE(vr, MinusOne);
         AddVec8BitVec8BitInner(dif, dif, vl, 1, LEN_VEC8BIT(vl));
@@ -1918,12 +1986,14 @@ static Obj DiffVec8BitVec8Bit(Obj vl, Obj vr)
             type = TypeVec8Bit(Q_FIELDINFO_8BIT(info), 1);
             SetTypeDatObj(dif, type);
         }
+        GAP_GC_POP();
         return dif;
     }
     else {
         dif = CopyVec8Bit(vl, IS_MUTABLE_OBJ(vl) || IS_MUTABLE_OBJ(vr));
         AddVec8BitVec8BitMultInner(dif, dif, vr, MinusOne, 1,
                                    LEN_VEC8BIT(vr));
+        GAP_GC_POP();
         return dif;
     }
 }
@@ -1936,8 +2006,9 @@ static Obj DiffVec8BitVec8Bit(Obj vl, Obj vr)
 **  GAP callable method for binary -
 */
 static Obj FuncDIFF_VEC8BIT_VEC8BIT(Obj self, Obj vl, Obj vr)
+    GAP_GC_CANSAFEPOINT
 {
-    Obj diff;
+    Obj diff = 0;
     // UInt p;
 
     RequireVec8BitRep(SELF_NAME, vl);
@@ -1961,8 +2032,10 @@ static Obj FuncDIFF_VEC8BIT_VEC8BIT(Obj self, Obj vl, Obj vr)
              True == CALL_1ARGS(IsLockedRepresentationVector, vl)) ||
             (qr != newq &&
              True == CALL_1ARGS(IsLockedRepresentationVector, vr))) {
+            GAP_GC_PUSH1(&diff);
             diff = DiffListList(vl, vr);
             CALL_1ARGS(ConvertToVectorRep, diff);
+            GAP_GC_POP();
             return diff;
         }
         else {
@@ -1983,7 +2056,7 @@ static Obj FuncDIFF_VEC8BIT_VEC8BIT(Obj self, Obj vl, Obj vr)
 **  deal with length variations
 */
 
-static Int CmpVec8BitVec8Bit(Obj vl, Obj vr)
+static Int CmpVec8BitVec8Bit(Obj vl, Obj vr) GAP_GC_CANSAFEPOINT
 {
     Obj           info;
     UInt          q;
@@ -2066,7 +2139,7 @@ static Int CmpVec8BitVec8Bit(Obj vl, Obj vr)
 **
 */
 
-static Obj ScalarProductVec8Bits(Obj vl, Obj vr)
+static Obj ScalarProductVec8Bits(Obj vl, Obj vr) GAP_GC_CANSAFEPOINT
 {
     Obj           info;
     UInt1         acc;
@@ -2114,6 +2187,7 @@ static Obj ScalarProductVec8Bits(Obj vl, Obj vr)
 */
 
 static Obj FuncPROD_VEC8BIT_VEC8BIT(Obj self, Obj vl, Obj vr)
+    GAP_GC_CANSAFEPOINT
 {
     RequireVec8BitRep(SELF_NAME, vl);
     RequireVec8BitRep(SELF_NAME, vr);
@@ -2131,7 +2205,7 @@ static Obj FuncPROD_VEC8BIT_VEC8BIT(Obj self, Obj vl, Obj vr)
 **
 */
 
-static UInt DistanceVec8Bits(Obj vl, Obj vr)
+static UInt DistanceVec8Bits(Obj vl, Obj vr) GAP_GC_CANSAFEPOINT
 {
     Obj           info;
     const UInt1 * ptrL;
@@ -2176,6 +2250,7 @@ static UInt DistanceVec8Bits(Obj vl, Obj vr)
 */
 
 static Obj FuncDISTANCE_VEC8BIT_VEC8BIT(Obj self, Obj vl, Obj vr)
+    GAP_GC_CANSAFEPOINT
 {
     RequireVec8BitRep(SELF_NAME, vl);
     RequireVec8BitRep(SELF_NAME, vr);
@@ -2199,7 +2274,7 @@ static void DistDistrib8Bits(
     Obj  sum,       // position of the sum vector
     UInt pos,       // recursion depth
     UInt l          // length of basis
-)
+) GAP_GC_CANSAFEPOINT
 {
     UInt i;
     UInt di;
@@ -2241,10 +2316,10 @@ static Obj FuncDISTANCE_DISTRIB_VEC8BITS(
     Obj self,
     Obj veclis,    // pointers to matrix vectors and their multiples
     Obj vec,       // vector we compute distance to
-    Obj d)         // distances list
+    Obj d) GAP_GC_CANSAFEPOINT  // distances list
 
 {
-    Obj  sum;    // sum vector
+    Obj  sum = 0;    // sum vector
     UInt len;
     UInt q;
 
@@ -2256,10 +2331,12 @@ static Obj FuncDISTANCE_DISTRIB_VEC8BITS(
     q = FIELD_VEC8BIT(vec);
 
     // get space for sum vector and zero out
+    GAP_GC_PUSH1(&sum);
     sum = ZeroVec8Bit(q, len, 0);
     // do the recursive work
     DistDistrib8Bits(veclis, vec, d, sum, 1, LEN_PLIST(veclis));
 
+    GAP_GC_POP();
     return (Obj)0;
 }
 
@@ -2292,7 +2369,7 @@ AClosVec8Bit(Obj  veclis,    // pointers to matrix vectors and their multiples
              UInt bd,        // best distance so far
              Obj  bv,        // best vector so far
              Obj  coords,
-             Obj  bcoords)
+             Obj  bcoords) GAP_GC_CANSAFEPOINT
 {
     UInt i, j;
     UInt di;
@@ -2361,10 +2438,10 @@ static Obj FuncA_CLOSEST_VEC8BIT(
     Obj veclis,    // pointers to matrix vectors and their multiples
     Obj vec,       // vector we compute distance to
     Obj cnt,       // distances list
-    Obj stop)      // distances list
+    Obj stop) GAP_GC_CANSAFEPOINT  // distances list
 {
-    Obj  sum;     // sum vector
-    Obj  best;    // best vector
+    Obj  sum = 0;     // sum vector
+    Obj  best = 0;    // best vector
     UInt len;
     UInt q;
 
@@ -2378,6 +2455,7 @@ static Obj FuncA_CLOSEST_VEC8BIT(
 
     // get space for sum vector and zero out
 
+    GAP_GC_PUSH2(&sum, &best);
     sum = ZeroVec8Bit(q, len, 1);
     best = ZeroVec8Bit(q, len, 1);
 
@@ -2386,6 +2464,7 @@ static Obj FuncA_CLOSEST_VEC8BIT(
                  INT_INTOBJ(stop), len + 1,    // maximal value +1
                  best, (Obj)0, (Obj)0);
 
+    GAP_GC_POP();
     return best;
 }
 
@@ -2399,15 +2478,15 @@ static Obj FuncA_CLOSEST_VEC8BIT_COORDS(
     Obj veclis,    // pointers to matrix vectors and their multiples
     Obj vec,       // vector we compute distance to
     Obj cnt,       // distances list
-    Obj stop)      // distances list
+    Obj stop) GAP_GC_CANSAFEPOINT  // distances list
 {
-    Obj  sum;     // sum vector
-    Obj  best;    // best vector
+    Obj  sum = 0;     // sum vector
+    Obj  best = 0;    // best vector
     UInt len, len2, i;
     UInt q;
-    Obj  coords;
-    Obj  bcoords;
-    Obj  res;
+    Obj  coords = 0;
+    Obj  bcoords = 0;
+    Obj  res = 0;
 
 
     RequirePlainList(SELF_NAME, veclis);
@@ -2420,6 +2499,7 @@ static Obj FuncA_CLOSEST_VEC8BIT_COORDS(
 
     // get space for sum vector and zero out
 
+    GAP_GC_PUSH5(&sum, &best, &coords, &bcoords, &res);
     sum = ZeroVec8Bit(q, len, 1);
     best = ZeroVec8Bit(q, len, 1);
     len2 = LEN_PLIST(veclis);
@@ -2442,6 +2522,7 @@ static Obj FuncA_CLOSEST_VEC8BIT_COORDS(
     SET_ELM_PLIST(res, 1, best);
     SET_ELM_PLIST(res, 2, bcoords);
     CHANGED_BAG(res);
+    GAP_GC_POP();
     return res;
 }
 
@@ -2452,21 +2533,22 @@ static Obj FuncA_CLOSEST_VEC8BIT_COORDS(
 **
 */
 
-static Obj FuncNUMBER_VEC8BIT(Obj self, Obj vec)
+static Obj FuncNUMBER_VEC8BIT(Obj self, Obj vec) GAP_GC_CANSAFEPOINT
 {
     RequireVec8BitRep(SELF_NAME, vec);
     Obj           info;
     UInt          elts;
     UInt          len;
     UInt          i;
-    Obj           elt;
+    Obj           elt = 0;
     const UInt1 * gettab;
     const UInt1 * ptrS;
     const Obj *   convtab;
 
-    Obj res;
-    Obj f;
+    Obj res = 0;
+    Obj f = 0;
 
+    GAP_GC_PUSH3(&res, &f, &elt);
     info = GetFieldInfo8Bit(FIELD_VEC8BIT(vec));
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
     gettab = GETELT_FIELDINFO_8BIT(info);
@@ -2476,8 +2558,10 @@ static Obj FuncNUMBER_VEC8BIT(Obj self, Obj vec)
     res = INTOBJ_INT(0);
     f = INTOBJ_INT(FIELD_VEC8BIT(vec));    // Field size as GAP integer
 
-    if (len == 0)
+    if (len == 0) {
+        GAP_GC_POP();
         return INTOBJ_INT(1);
+    }
 
     for (i = 0; i < len; i++) {
         elt = convtab[gettab[ptrS[i / elts] + 256 * (i % elts)]];
@@ -2491,6 +2575,7 @@ static Obj FuncNUMBER_VEC8BIT(Obj self, Obj vec)
         }
     }
 
+    GAP_GC_POP();
     return res;
 }
 
@@ -2509,26 +2594,29 @@ static UInt CosetLeadersInner8Bits(Obj  veclis,
                                    UInt pos,
                                    Obj  leaders,
                                    UInt tofind,
-                                   Obj  felts)
+                                   Obj  felts) GAP_GC_CANSAFEPOINT
 {
     UInt          found = 0;
     UInt          len = LEN_VEC8BIT(v);
     UInt          lenw = LEN_VEC8BIT(w);
     UInt          sy;
-    Obj           u;
-    Obj           vc;
+    Obj           u = 0;
+    Obj           vc = 0;
     UInt          i, j;
     UInt          q;
-    Obj           info;
+    Obj           info = 0;
     const UInt1 * settab;
     UInt          elts;
     UInt1 *       ptr, *ptrw;
     const UInt1 * gettab;
     const Obj *   gapseq;
     const UInt1 * feltffe;
-    Obj           x;
-    Obj           vp;
+    Obj           x = 0;
+    Obj           vp = 0;
+    Obj           qk = 0;
+    Obj           wc = 0;
 
+    GAP_GC_PUSH7(&u, &vc, &x, &vp, &qk, &wc, &info);
     q = FIELD_VEC8BIT(v);
     info = GetFieldInfo8Bit(q);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
@@ -2544,10 +2632,15 @@ static UInt CosetLeadersInner8Bits(Obj  veclis,
             ptr = BYTES_VEC8BIT(v) + (i - 1) / elts;
             // Keep the coefficient vector in the same sorted field-element
             // order that NumberFFVector uses for list indices.
-            feltffe = FELT_FFE_FIELDINFO_8BIT(info);
             x = ELM_PLIST(felts, 2);
+            settab = SETELT_FIELDINFO_8BIT(info);
+            feltffe = FELT_FFE_FIELDINFO_8BIT(info);
+            ptr = BYTES_VEC8BIT(v) + (i - 1) / elts;
             *ptr = settab[*ptr + 256 * (elts * feltffe[VAL_FFE(x)] +
                                         ((i - 1) % elts))];
+            gettab = GETELT_FIELDINFO_8BIT(info);
+            gapseq = GAPSEQ_FELT_FIELDINFO_8BIT(info);
+            ptrw = BYTES_VEC8BIT(w);
             sy = 0;
             for (j = 0; j < lenw; j++) {
                 UInt xxxx;
@@ -2560,8 +2653,6 @@ static UInt CosetLeadersInner8Bits(Obj  veclis,
             }
             if ((Obj)0 == ELM_PLIST(leaders, sy + 1)) {
                 UInt k;
-                Obj  qk;
-                Obj  wc;
                 vc = CopyVec8Bit(v, 0);
                 SET_ELM_PLIST(leaders, sy + 1, vc);
                 CHANGED_BAG(leaders);
@@ -2597,10 +2688,12 @@ static UInt CosetLeadersInner8Bits(Obj  veclis,
                 }
                 found += (q - 1);
                 if (found == tofind)
-                    return found;
+                    goto done;
             }
             u = ELM_PLIST(vp, q + 1);
             AddVec8BitVec8BitInner(w, w, u, 1, lenw);
+            settab = SETELT_FIELDINFO_8BIT(info);
+            ptr = BYTES_VEC8BIT(v) + (i - 1) / elts;
             *ptr = settab[*ptr + 256 * ((i - 1) % elts)];
         }
     }
@@ -2609,7 +2702,7 @@ static UInt CosetLeadersInner8Bits(Obj  veclis,
             found += CosetLeadersInner8Bits(veclis, v, w, weight, pos + 1,
                                             leaders, tofind, felts);
             if (found == tofind)
-                return found;
+                goto done;
         }
 
         vp = ELM_PLIST(veclis, pos);
@@ -2620,12 +2713,13 @@ static UInt CosetLeadersInner8Bits(Obj  veclis,
             x = ELM_PLIST(felts, i + 1);
             settab = SETELT_FIELDINFO_8BIT(info);
             feltffe = FELT_FFE_FIELDINFO_8BIT(info);
+            ptr = BYTES_VEC8BIT(v) + (pos - 1) / elts;
             *ptr = settab[*ptr + 256 * (elts * feltffe[VAL_FFE(x)] +
                                         ((pos - 1) % elts))];
             found += CosetLeadersInner8Bits(veclis, v, w, weight - 1, pos + 1,
                                             leaders, tofind - found, felts);
             if (found == tofind)
-                return found;
+                goto done;
         }
         settab = SETELT_FIELDINFO_8BIT(info);
         feltffe = FELT_FFE_FIELDINFO_8BIT(info);
@@ -2636,15 +2730,19 @@ static UInt CosetLeadersInner8Bits(Obj  veclis,
         *ptr = settab[*ptr + 256 * ((pos - 1) % elts)];
     }
     TakeInterrupt();
+done:
+    GAP_GC_POP();
     return found;
 }
 
 
 static Obj FuncCOSET_LEADERS_INNER_8BITS(
     Obj self, Obj veclis, Obj weight, Obj tofind, Obj leaders, Obj felts)
+    GAP_GC_CANSAFEPOINT
 {
-    Obj  v, w;
+    Obj  v = 0, w = 0;
     UInt lenv, lenw, q;
+    UInt found;
 
     RequirePlainList(SELF_NAME, veclis);
     RequireSmallInt(SELF_NAME, weight);
@@ -2654,12 +2752,14 @@ static Obj FuncCOSET_LEADERS_INNER_8BITS(
 
     lenv = LEN_PLIST(veclis);
     q = LEN_PLIST(felts);
+    GAP_GC_PUSH2(&v, &w);
     v = ZeroVec8Bit(q, lenv, 1);
     lenw = LEN_VEC8BIT(ELM_PLIST(ELM_PLIST(veclis, 1), 1));
     w = ZeroVec8Bit(q, lenw, 1);
-    return INTOBJ_INT(CosetLeadersInner8Bits(veclis, v, w, INT_INTOBJ(weight),
-                                             1, leaders, INT_INTOBJ(tofind),
-                                             felts));
+    found = CosetLeadersInner8Bits(veclis, v, w, INT_INTOBJ(weight), 1,
+                                   leaders, INT_INTOBJ(tofind), felts);
+    GAP_GC_POP();
+    return INTOBJ_INT(found);
 }
 
 
@@ -2669,7 +2769,7 @@ static Obj FuncCOSET_LEADERS_INNER_8BITS(
 **
 */
 
-static Obj FuncEQ_VEC8BIT_VEC8BIT(Obj self, Obj vl, Obj vr)
+static Obj FuncEQ_VEC8BIT_VEC8BIT(Obj self, Obj vl, Obj vr) GAP_GC_CANSAFEPOINT
 {
     RequireVec8BitRep(SELF_NAME, vl);
     RequireVec8BitRep(SELF_NAME, vr);
@@ -2688,7 +2788,7 @@ static Obj FuncEQ_VEC8BIT_VEC8BIT(Obj self, Obj vl, Obj vr)
 **
 */
 
-static Obj FuncLT_VEC8BIT_VEC8BIT(Obj self, Obj vl, Obj vr)
+static Obj FuncLT_VEC8BIT_VEC8BIT(Obj self, Obj vl, Obj vr) GAP_GC_CANSAFEPOINT
 {
     RequireVec8BitRep(SELF_NAME, vl);
     RequireVec8BitRep(SELF_NAME, vr);
@@ -2710,7 +2810,7 @@ static Obj FuncLT_VEC8BIT_VEC8BIT(Obj self, Obj vl, Obj vr)
 */
 
 
-static Obj FuncSHALLOWCOPY_VEC8BIT(Obj self, Obj list)
+static Obj FuncSHALLOWCOPY_VEC8BIT(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     RequireVec8BitRep(SELF_NAME, list);
     return CopyVec8Bit(list, 1);
@@ -2721,7 +2821,7 @@ static Obj FuncSHALLOWCOPY_VEC8BIT(Obj self, Obj list)
 **
 *F  FuncLEN_VEC8BIT( <self>, <list> )  . . . . . . . .  length of a vector
 */
-static Obj FuncLEN_VEC8BIT(Obj self, Obj list)
+static Obj FuncLEN_VEC8BIT(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     RequireVec8BitRep(SELF_NAME, list);
     return INTOBJ_INT(LEN_VEC8BIT(list));
@@ -2731,7 +2831,7 @@ static Obj FuncLEN_VEC8BIT(Obj self, Obj list)
 **
 *F  FuncQ_VEC8BIT( <self>, <list> )  . . . . . . . .  size of the field
 */
-static Obj FuncQ_VEC8BIT(Obj self, Obj list)
+static Obj FuncQ_VEC8BIT(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     RequireVec8BitRep(SELF_NAME, list);
     return INTOBJ_INT(FIELD_VEC8BIT(list));
@@ -2748,7 +2848,7 @@ static Obj FuncQ_VEC8BIT(Obj self, Obj list)
 **  integer.
 */
 
-static Obj FuncELM0_VEC8BIT(Obj self, Obj list, Obj pos)
+static Obj FuncELM0_VEC8BIT(Obj self, Obj list, Obj pos) GAP_GC_CANSAFEPOINT
 {
     UInt p;
     Obj  info;
@@ -2778,7 +2878,7 @@ static Obj FuncELM0_VEC8BIT(Obj self, Obj list, Obj pos)
 **  vector <list>. An error is signalled if <pos> is not bound. It is the
 **  responsibility of the caller to ensure that <pos> is a positive integer.
 */
-static Obj FuncELM_VEC8BIT(Obj self, Obj list, Obj pos)
+static Obj FuncELM_VEC8BIT(Obj self, Obj list, Obj pos) GAP_GC_CANSAFEPOINT
 {
     UInt p;
     Obj  info;
@@ -2807,7 +2907,7 @@ static Obj FuncELM_VEC8BIT(Obj self, Obj list, Obj pos)
 **
 **  The results are returned in the compressed format
 */
-static Obj FuncELMS_VEC8BIT(Obj self, Obj list, Obj poss)
+static Obj FuncELMS_VEC8BIT(Obj self, Obj list, Obj poss) GAP_GC_CANSAFEPOINT
 {
     UInt          p;
     Obj           pos;
@@ -2876,6 +2976,7 @@ static Obj FuncELMS_VEC8BIT(Obj self, Obj list, Obj poss)
 **  The results are returned in the compressed format
 */
 static Obj FuncELMS_VEC8BIT_RANGE(Obj self, Obj list, Obj range)
+    GAP_GC_CANSAFEPOINT
 {
     UInt          p;
     Obj           info;
@@ -2972,23 +3073,24 @@ static Obj FuncELMS_VEC8BIT_RANGE(Obj self, Obj list, Obj range)
 **  and that <elm> is not 0.
 */
 
-static Obj AsInternalFFE;
+static Obj AsInternalFFE GAP_GC_GLOBALLY_ROOTED;
 
 void ASS_VEC8BIT(Obj list, Obj pos, Obj elm)
 {
     UInt p;
-    Obj  info;
+    Obj  info = 0;
     UInt elts;
     UInt chr;
     UInt d;
     UInt q;
     FF   f;
     UInt v;
-    Obj  newelm;
+    Obj  newelm = 0;
 
     // check that <list> is mutable
     RequireMutable("List Assignment", list, "list");
 
+    GAP_GC_PUSH3(&elm, &newelm, &info);
     // get the position
     p = GetPositiveSmallInt("ASS_VEC8BIT", pos);
     info = GetFieldInfo8Bit(FIELD_VEC8BIT(list));
@@ -3005,7 +3107,7 @@ void ASS_VEC8BIT(Obj list, Obj pos, Obj elm)
                                 "locked compressed vector",
                                 0, 0,
                                 "you can enter 'return;' to ignore the assignment");
-                return;
+                goto done;
             }
             ResizeWordSizedBag(list, SIZE_VEC8BIT(p, elts));
             SET_LEN_VEC8BIT(list, p);
@@ -3034,7 +3136,7 @@ void ASS_VEC8BIT(Obj list, Obj pos, Obj elm)
                 else {
                     PlainVec8Bit(list);
                     AssPlistFfe(list, p, elm);
-                    return;
+                    goto done;
                 }
             }
 
@@ -3055,7 +3157,7 @@ void ASS_VEC8BIT(Obj list, Obj pos, Obj elm)
                 info)[256 * (elts * FELT_FFE_FIELDINFO_8BIT(info)[v] +
                              (p - 1) % elts) +
                       BYTES_VEC8BIT(list)[(p - 1) / elts]];
-            return;
+            goto done;
         }
     }
 
@@ -3065,9 +3167,12 @@ void ASS_VEC8BIT(Obj list, Obj pos, Obj elm)
 
     PlainVec8Bit(list);
     AssPlistFfe(list, p, elm);
+done:
+    GAP_GC_POP();
 }
 
 static Obj FuncASS_VEC8BIT(Obj self, Obj list, Obj pos, Obj elm)
+    GAP_GC_CANSAFEPOINT
 {
     RequireVec8BitRep(SELF_NAME, list);
     ASS_VEC8BIT(list, pos, elm);
@@ -3084,7 +3189,7 @@ static Obj FuncASS_VEC8BIT(Obj self, Obj list, Obj pos, Obj elm)
 **
 **  It is the responsibility of the caller  to ensure that <pos> is positive.
 */
-static Obj FuncUNB_VEC8BIT(Obj self, Obj list, Obj pos)
+static Obj FuncUNB_VEC8BIT(Obj self, Obj list, Obj pos) GAP_GC_CANSAFEPOINT
 {
     UInt p;
     Obj  info;
@@ -3134,7 +3239,7 @@ static Obj FuncUNB_VEC8BIT(Obj self, Obj list, Obj pos)
 **
 */
 
-static UInt PositionNonZeroVec8Bit(Obj list, UInt from)
+static UInt PositionNonZeroVec8Bit(Obj list, UInt from) GAP_GC_CANSAFEPOINT
 {
     Obj           info;
     UInt          len;
@@ -3179,6 +3284,7 @@ static UInt PositionNonZeroVec8Bit(Obj list, UInt from)
 
 
 static Obj FuncPOSITION_NONZERO_VEC8BIT(Obj self, Obj list, Obj zero)
+    GAP_GC_CANSAFEPOINT
 {
     RequireVec8BitRep(SELF_NAME, list);
     return INTOBJ_INT(PositionNonZeroVec8Bit(list, 0));
@@ -3186,6 +3292,7 @@ static Obj FuncPOSITION_NONZERO_VEC8BIT(Obj self, Obj list, Obj zero)
 
 static Obj
 FuncPOSITION_NONZERO_VEC8BIT3(Obj self, Obj list, Obj zero, Obj from)
+    GAP_GC_CANSAFEPOINT
 {
     RequireVec8BitRep(SELF_NAME, list);
     RequireNonnegativeSmallInt(SELF_NAME, from);
@@ -3198,7 +3305,7 @@ FuncPOSITION_NONZERO_VEC8BIT3(Obj self, Obj list, Obj zero, Obj from)
 **
 **
 */
-static Obj FuncAPPEND_VEC8BIT(Obj self, Obj vecl, Obj vecr)
+static Obj FuncAPPEND_VEC8BIT(Obj self, Obj vecl, Obj vecr) GAP_GC_CANSAFEPOINT
 {
     Obj           info;
     UInt          lenl, lenr;
@@ -3276,18 +3383,19 @@ static Obj FuncAPPEND_VEC8BIT(Obj self, Obj vecl, Obj vecr)
 **
 */
 static Obj FuncPROD_VEC8BIT_MATRIX(Obj self, Obj vec, Obj mat)
+    GAP_GC_CANSAFEPOINT
 {
-    Obj           res;
-    Obj           info;
+    Obj           res = 0;
+    Obj           info = 0;
     UInt          q;
     UInt          len, l2;
     UInt          len1;
-    Obj           row1;
+    Obj           row1 = 0;
     UInt          i;
     UInt          elts;
     const UInt1 * gettab;
     const Obj *   ffefelt;
-    Obj           x;
+    Obj           x = 0;
 
     RequireVec8BitRep(SELF_NAME, vec);
     RequirePlainList(SELF_NAME, mat);
@@ -3302,6 +3410,7 @@ static Obj FuncPROD_VEC8BIT_MATRIX(Obj self, Obj vec, Obj mat)
         return TRY_NEXT_METHOD;
     len1 = LEN_VEC8BIT(row1);
 
+    GAP_GC_PUSH4(&res, &info, &row1, &x);
     // create the result space
     res = ZeroVec8Bit(q, len1, IS_MUTABLE_OBJ(vec) || IS_MUTABLE_OBJ(row1));
 
@@ -3313,17 +3422,22 @@ static Obj FuncPROD_VEC8BIT_MATRIX(Obj self, Obj vec, Obj mat)
 
     for (i = 0; i < len; i++)
         if (i < l2) {
+            gettab = GETELT_FIELDINFO_8BIT(info);
+            ffefelt = CONST_FFE_FELT_FIELDINFO_8BIT(info);
             x = ffefelt[gettab[CONST_BYTES_VEC8BIT(vec)[i / elts] +
                                256 * (i % elts)]];
             if (VAL_FFE(x) != 0) {
                 row1 = ELM_PLIST(mat, i + 1);
                 // This may be unduly draconian. Later we may want to be able
                 // to promote the rows to a bigger field
-                if ((!IS_VEC8BIT_REP(row1)) || (FIELD_VEC8BIT(row1) != q))
+                if ((!IS_VEC8BIT_REP(row1)) || (FIELD_VEC8BIT(row1) != q)) {
+                    GAP_GC_POP();
                     return TRY_NEXT_METHOD;
+                }
                 AddVec8BitVec8BitMultInner(res, res, row1, x, 1, len1);
             }
         }
+    GAP_GC_POP();
     return res;
 }
 
@@ -3351,14 +3465,16 @@ static inline void SET_LEN_MAT8BIT(Obj mat, Int l)
     ADDR_OBJ(mat)[1] = INTOBJ_INT(l);
 }
 
-static inline Obj ELM_MAT8BIT(Obj mat, Int i)
+static inline Obj ELM_MAT8BIT(Obj mat GAP_GC_PROPAGATES_ROOT, Int i)
+    GAP_GC_PROPAGATES_ROOT_INDEXED(0, 1)
 {
     GAP_ASSERT(i >= 1);
     GAP_ASSERT(i <= SIZE_OBJ(mat) / sizeof(Obj) - 1);
     return CONST_ADDR_OBJ(mat)[i + 1];
 }
 
-static inline void SET_ELM_MAT8BIT(Obj mat, Int i, Obj row)
+static inline void SET_ELM_MAT8BIT(Obj mat, Int i,
+                                   Obj row GAP_GC_ROOTED_BY_ARG_INDEXED(0, 1))
 {
     GAP_ASSERT(i >= 1);
     GAP_ASSERT(i <= SIZE_OBJ(mat) / sizeof(Obj) - 1);
@@ -3379,6 +3495,7 @@ static inline UInt NR_COLS_MAT8BIT(Obj mat)
 }
 
 static inline void RequireNonemptyMat8BitRows(const Char * funcname, Obj mat)
+    GAP_GC_CANSAFEPOINT
 {
     if (LEN_MAT8BIT(mat) == 0)
         ErrorMayQuit("%s: compressed 8bit matrices with empty rows are not "
@@ -3391,7 +3508,7 @@ static inline void RequireNonemptyMat8BitRows(const Char * funcname, Obj mat)
 *F  PlainMat8Bit( <mat> )
 **
 */
-static void PlainMat8Bit(Obj mat)
+static void PlainMat8Bit(Obj mat) GAP_GC_CANSAFEPOINT
 {
     UInt i, l;
     Obj  row;
@@ -3411,7 +3528,7 @@ static void PlainMat8Bit(Obj mat)
 **
 */
 
-static Obj FuncPLAIN_MAT8BIT(Obj self, Obj mat)
+static Obj FuncPLAIN_MAT8BIT(Obj self, Obj mat) GAP_GC_CANSAFEPOINT
 {
     RequireMat8BitRep(SELF_NAME, mat);
     PlainMat8Bit(mat);
@@ -3427,7 +3544,7 @@ static Obj FuncPLAIN_MAT8BIT(Obj self, Obj mat)
 **  8 bit vectors, written over the correct field
 */
 
-static Obj FuncCONV_MAT8BIT(Obj self, Obj list, Obj q)
+static Obj FuncCONV_MAT8BIT(Obj self, Obj list, Obj q) GAP_GC_CANSAFEPOINT
 {
     UInt len, i, mut;
     Obj  tmp;
@@ -3466,19 +3583,18 @@ static Obj FuncCONV_MAT8BIT(Obj self, Obj list, Obj q)
 ** The caller must ensure that <vec> and <mat> are compatible
 */
 
-static Obj ProdVec8BitMat8Bit(Obj vec, Obj mat)
+static Obj ProdVec8BitMat8Bit(Obj vec, Obj mat) GAP_GC_CANSAFEPOINT
 {
     UInt          q, len, len1, lenm, elts;
     UInt          i, j;
     UInt1         byte;
-    const UInt1 * bptr;
     UInt1         y;
-    Obj           row1;
-    Obj           res;
-    Obj           info;
+    Obj           row1 = 0;
+    Obj           res = 0;
+    Obj           info = 0;
     const UInt1 * gettab;
     const Obj *   ffefelt;
-    Obj           x;
+    Obj           x = 0;
 
     GAP_ASSERT(IS_VEC8BIT_REP(vec));
     GAP_ASSERT(IS_MAT8BIT_REP(mat));
@@ -3489,6 +3605,7 @@ static Obj ProdVec8BitMat8Bit(Obj vec, Obj mat)
     row1 = ELM_MAT8BIT(mat, 1);
     GAP_ASSERT(q == FIELD_MAT8BIT(mat));
     len1 = NR_COLS_MAT8BIT(mat);
+    GAP_GC_PUSH4(&res, &row1, &info, &x);
     res = ZeroVec8Bit(q, len1, IS_MUTABLE_OBJ(vec) || IS_MUTABLE_OBJ(row1));
     // TODO(0xn) IS_MUTABLE_OBJ(mat)
 
@@ -3498,9 +3615,8 @@ static Obj ProdVec8BitMat8Bit(Obj vec, Obj mat)
     gettab = GETELT_FIELDINFO_8BIT(info);
     ffefelt = CONST_FFE_FELT_FIELDINFO_8BIT(info);
 
-    bptr = CONST_BYTES_VEC8BIT(vec);
-    for (i = 0; i + elts < len; i += elts, bptr++) {
-        if ((byte = *bptr)) {
+    for (i = 0; i + elts < len; i += elts) {
+        if ((byte = CONST_BYTES_VEC8BIT(vec)[i / elts])) {
             for (j = 0; j < elts; j++) {
                 if (i + j < lenm) {
                     y = gettab[byte + 256 * j];
@@ -3509,12 +3625,14 @@ static Obj ProdVec8BitMat8Bit(Obj vec, Obj mat)
                         row1 = ELM_MAT8BIT(mat, i + j + 1);
                         AddVec8BitVec8BitMultInner(res, res, row1, x, 1,
                                                    len1);
+                        gettab = GETELT_FIELDINFO_8BIT(info);
+                        ffefelt = CONST_FFE_FELT_FIELDINFO_8BIT(info);
                     }
                 }
             }
         }
     }
-    if ((byte = *bptr)) {
+    if ((byte = CONST_BYTES_VEC8BIT(vec)[i / elts])) {
         for (j = 0; i + j < len; j++) {
             if (i + j < lenm) {
                 y = gettab[byte + 256 * j];
@@ -3522,10 +3640,13 @@ static Obj ProdVec8BitMat8Bit(Obj vec, Obj mat)
                     x = ffefelt[y];
                     row1 = ELM_MAT8BIT(mat, i + j + 1);
                     AddVec8BitVec8BitMultInner(res, res, row1, x, 1, len1);
+                    gettab = GETELT_FIELDINFO_8BIT(info);
+                    ffefelt = CONST_FFE_FELT_FIELDINFO_8BIT(info);
                 }
             }
         }
     }
+    GAP_GC_POP();
     return res;
 }
 
@@ -3539,6 +3660,7 @@ static Obj ProdVec8BitMat8Bit(Obj vec, Obj mat)
 */
 
 static Obj FuncPROD_VEC8BIT_MAT8BIT(Obj self, Obj vec, Obj mat)
+    GAP_GC_CANSAFEPOINT
 {
     UInt q, q1, q2;
 
@@ -3573,18 +3695,17 @@ static Obj FuncPROD_VEC8BIT_MAT8BIT(Obj self, Obj vec, Obj mat)
 ** The caller must ensure compatibility
 */
 
-static Obj ProdMat8BitVec8Bit(Obj mat, Obj vec)
+static Obj ProdMat8BitVec8Bit(Obj mat, Obj vec) GAP_GC_CANSAFEPOINT
 {
     UInt          len, i, q;
-    Obj           info;
+    Obj           info = 0;
     const UInt1 * settab;
-    Obj           res;
-    Obj           row1;
+    Obj           res = 0;
+    Obj           row1 = 0;
     UInt1         byte;
     UInt          elts;
     const UInt1 * feltffe;
-    UInt1 *       ptr;
-    Obj           entry;
+    Obj           entry = 0;
 
     GAP_ASSERT(IS_MAT8BIT_REP(mat));
     GAP_ASSERT(IS_VEC8BIT_REP(vec));
@@ -3594,24 +3715,27 @@ static Obj ProdMat8BitVec8Bit(Obj mat, Obj vec)
     // TODO(0xn)
     row1 = ELM_MAT8BIT(mat, 1);
     GAP_ASSERT(q == FIELD_MAT8BIT(mat));
+    GAP_GC_PUSH4(&res, &row1, &info, &entry);
     res = ZeroVec8Bit(q, len, IS_MUTABLE_OBJ(row1) || IS_MUTABLE_OBJ(vec));
     info = GetFieldInfo8Bit(q);
     settab = SETELT_FIELDINFO_8BIT(info);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
     feltffe = FELT_FFE_FIELDINFO_8BIT(info);
     byte = 0;
-    ptr = BYTES_VEC8BIT(res);
     for (i = 0; i < len; i++) {
         entry = ScalarProductVec8Bits(vec, ELM_MAT8BIT(mat, i + 1));
+        settab = SETELT_FIELDINFO_8BIT(info);
+        feltffe = FELT_FFE_FIELDINFO_8BIT(info);
         byte =
             settab[byte + 256 * (elts * feltffe[VAL_FFE(entry)] + i % elts)];
         if (i % elts == elts - 1) {
-            *ptr++ = byte;
+            BYTES_VEC8BIT(res)[i / elts] = byte;
             byte = 0;
         }
     }
     if (len % elts != 0)
-        *ptr++ = byte;
+        BYTES_VEC8BIT(res)[len / elts] = byte;
+    GAP_GC_POP();
     return res;
 }
 
@@ -3625,6 +3749,7 @@ static Obj ProdMat8BitVec8Bit(Obj mat, Obj vec)
 */
 
 static Obj FuncPROD_MAT8BIT_VEC8BIT(Obj self, Obj mat, Obj vec)
+    GAP_GC_CANSAFEPOINT
 {
     UInt q, q1, q2;
 
@@ -3659,14 +3784,14 @@ static Obj FuncPROD_MAT8BIT_VEC8BIT(Obj self, Obj mat, Obj vec)
 **  Caller must check matrix sizes and field
 */
 
-static Obj ProdMat8BitMat8Bit(Obj matl, Obj matr)
+static Obj ProdMat8BitMat8Bit(Obj matl, Obj matr) GAP_GC_CANSAFEPOINT
 {
-    Obj  prod;
+    Obj  prod = 0;
     UInt i;
     UInt len, q;
-    Obj  row;
-    Obj  locked_type;
-    Obj  type;
+    Obj  row = 0;
+    Obj  locked_type = 0;
+    Obj  type = 0;
 
     GAP_ASSERT(IS_MAT8BIT_REP(matl));
     GAP_ASSERT(IS_MAT8BIT_REP(matr));
@@ -3677,6 +3802,7 @@ static Obj ProdMat8BitMat8Bit(Obj matl, Obj matr)
     GAP_ASSERT(q == FIELD_MAT8BIT(matr));
     GAP_ASSERT(LEN_MAT8BIT(matr) == NR_COLS_MAT8BIT(matl));
 
+    GAP_GC_PUSH4(&prod, &row, &locked_type, &type);
     prod = NewWordSizedBag(T_POSOBJ, sizeof(Obj) * (len + 2));
     SET_LEN_MAT8BIT(prod, len);
     type = TypeMat8Bit(q, IS_MUTABLE_OBJ(matl) || IS_MUTABLE_OBJ(matr));
@@ -3694,6 +3820,7 @@ static Obj ProdMat8BitMat8Bit(Obj matl, Obj matr)
         CHANGED_BAG(prod);
         TakeInterrupt();
     }
+    GAP_GC_POP();
     return prod;
 }
 
@@ -3704,6 +3831,7 @@ static Obj ProdMat8BitMat8Bit(Obj matl, Obj matr)
 */
 
 static Obj FuncPROD_MAT8BIT_MAT8BIT(Obj self, Obj matl, Obj matr)
+    GAP_GC_CANSAFEPOINT
 {
 
     RequireMat8BitRep(SELF_NAME, matl);
@@ -3728,32 +3856,33 @@ static Obj FuncPROD_MAT8BIT_MAT8BIT(Obj self, Obj matl, Obj matr)
 **
 */
 
-static Obj InverseMat8Bit(Obj mat, UInt mut)
+static Obj InverseMat8Bit(Obj mat, UInt mut) GAP_GC_CANSAFEPOINT
 {
-    Obj           cmat, inv;
+    Obj           cmat = 0, inv = 0;
     UInt          len, off;
     UInt          i, j, k;
-    Obj           zero;
+    Obj           zero = 0;
     UInt          q;
-    Obj           info;
+    Obj           info = 0;
     UInt1 *       ptr;
     UInt          elts;
     const UInt1 * settab;
     const UInt1 * gettab;
     UInt1         byte;
-    Obj           row, row1, row2;
+    Obj           row = 0, row1 = 0, row2;
     const Obj *   ffefelt;
     const UInt1 * feltffe;
     UInt          pos;
     UInt1         x = 0;
     UInt          o;
-    Obj           xi;
-    Obj           xn;
-    Obj           type;
+    Obj           xi = 0;
+    Obj           xn = 0;
+    Obj           type = 0;
 
     GAP_ASSERT(IS_MAT8BIT_REP(mat));
     GAP_ASSERT(LEN_MAT8BIT(mat) > 0);
 
+    GAP_GC_PUSH9(&cmat, &inv, &zero, &row, &row1, &xi, &xn, &type, &info);
     row = ELM_MAT8BIT(mat, 1);
     q = FIELD_VEC8BIT(row);
     len = LEN_MAT8BIT(mat);
@@ -3766,8 +3895,10 @@ static Obj InverseMat8Bit(Obj mat, UInt mut)
         gettab = GETELT_FIELDINFO_8BIT(info);
         ffefelt = CONST_FFE_FELT_FIELDINFO_8BIT(info);
         x = gettab[CONST_BYTES_VEC8BIT(row)[0]];
-        if (x == 0)
+        if (x == 0) {
+            GAP_GC_POP();
             return Fail;
+        }
         xi = INV(ffefelt[x]);
         row1 = NewWordSizedBag(T_DATOBJ, SIZE_VEC8BIT(1, elts));
         type = TypeVec8BitLocked(q, mut == 2 ||
@@ -3785,6 +3916,7 @@ static Obj InverseMat8Bit(Obj mat, UInt mut)
         type = TypeMat8Bit(q, mut == 2 || (mut == 1 && IS_MUTABLE_OBJ(mat)));
         SET_TYPE_POSOBJ(inv, type);
         SET_LEN_MAT8BIT(inv, 1);
+        GAP_GC_POP();
         return inv;
     }
 
@@ -3825,8 +3957,10 @@ static Obj InverseMat8Bit(Obj mat, UInt mut)
         }
 
         // if we didn't find one
-        if (j > len)
+        if (j > len) {
+            GAP_GC_POP();
             return Fail;
+        }
 
         // swap and normalize
         row1 = ELM_PLIST(inv, j + 1);
@@ -3873,6 +4007,7 @@ static Obj InverseMat8Bit(Obj mat, UInt mut)
     type = TypeMat8Bit(q, mut == 2 || (mut == 1 && IS_MUTABLE_OBJ(mat)));
     SET_TYPE_POSOBJ(inv, type);
     CHANGED_BAG(inv);
+    GAP_GC_POP();
     return inv;
 }
 
@@ -3882,7 +4017,7 @@ static Obj InverseMat8Bit(Obj mat, UInt mut)
 **
 */
 
-static Obj FuncINV_MAT8BIT_MUTABLE(Obj self, Obj mat)
+static Obj FuncINV_MAT8BIT_MUTABLE(Obj self, Obj mat) GAP_GC_CANSAFEPOINT
 {
     RequireMat8BitRep(SELF_NAME, mat);
     RequireNonemptyMat8BitRows(SELF_NAME, mat);
@@ -3902,6 +4037,7 @@ static Obj FuncINV_MAT8BIT_MUTABLE(Obj self, Obj mat)
 */
 
 static Obj FuncINV_MAT8BIT_SAME_MUTABILITY(Obj self, Obj mat)
+    GAP_GC_CANSAFEPOINT
 {
     RequireMat8BitRep(SELF_NAME, mat);
     RequireNonemptyMat8BitRows(SELF_NAME, mat);
@@ -3920,7 +4056,7 @@ static Obj FuncINV_MAT8BIT_SAME_MUTABILITY(Obj self, Obj mat)
 **
 */
 
-static Obj FuncINV_MAT8BIT_IMMUTABLE(Obj self, Obj mat)
+static Obj FuncINV_MAT8BIT_IMMUTABLE(Obj self, Obj mat) GAP_GC_CANSAFEPOINT
 {
     RequireMat8BitRep(SELF_NAME, mat);
     RequireNonemptyMat8BitRows(SELF_NAME, mat);
@@ -3939,6 +4075,7 @@ static Obj FuncINV_MAT8BIT_IMMUTABLE(Obj self, Obj mat)
 */
 
 static Obj FuncASS_MAT8BIT(Obj self, Obj mat, Obj pos, Obj obj)
+    GAP_GC_CANSAFEPOINT
 {
     UInt len;
     UInt len1;
@@ -4041,7 +4178,7 @@ cantdo:
 *F  FuncELM_MAT8BIT( <self>, <mat>, <pos> ) .  select a row of an 8bit matrix
 **
 */
-static Obj FuncELM_MAT8BIT(Obj self, Obj mat, Obj pos)
+static Obj FuncELM_MAT8BIT(Obj self, Obj mat, Obj pos) GAP_GC_CANSAFEPOINT
 {
     RequireMat8BitRep(SELF_NAME, mat);
     UInt r = GetPositiveSmallInt(SELF_NAME, pos);
@@ -4059,6 +4196,7 @@ static Obj FuncELM_MAT8BIT(Obj self, Obj mat, Obj pos)
 **
 */
 static Obj FuncSWAP_ROWS_MAT8BIT(Obj self, Obj mat, Obj row1, Obj row2)
+    GAP_GC_CANSAFEPOINT
 {
     RequireMat8BitRep(SELF_NAME, mat);
     RequireMutable(SELF_NAME, mat, "mat");
@@ -4089,6 +4227,7 @@ static Obj FuncSWAP_ROWS_MAT8BIT(Obj self, Obj mat, Obj row1, Obj row2)
 **
 */
 static Obj FuncSWAP_COLS_MAT8BIT(Obj self, Obj mat, Obj col1, Obj col2)
+    GAP_GC_CANSAFEPOINT
 {
     RequireMat8BitRep(SELF_NAME, mat);
     UInt c1 = GetSmallInt(SELF_NAME, col1);
@@ -4114,12 +4253,16 @@ static Obj FuncSWAP_COLS_MAT8BIT(Obj self, Obj mat, Obj col1, Obj col2)
             ErrorMayQuit("row length mismatch, %d versus %d", n, LEN_VEC8BIT(vec));
         }
 
-        Obj a = FuncELM_VEC8BIT(self, vec, col1);
-        Obj b = FuncELM_VEC8BIT(self, vec, col2);
+        Obj a = 0;
+        Obj b = 0;
+        GAP_GC_PUSH2(&a, &b);
+        a = FuncELM_VEC8BIT(self, vec, col1);
+        b = FuncELM_VEC8BIT(self, vec, col2);
         if (a != b) {
             ASS_VEC8BIT(vec, col1, b);
             ASS_VEC8BIT(vec, col2, a);
         }
+        GAP_GC_POP();
     }
 
     return 0;
@@ -4133,14 +4276,14 @@ static Obj FuncSWAP_COLS_MAT8BIT(Obj self, Obj mat, Obj col1, Obj col2)
 **  Caller's job to do all checks
 */
 
-static Obj SumMat8BitMat8Bit(Obj ml, Obj mr)
+static Obj SumMat8BitMat8Bit(Obj ml, Obj mr) GAP_GC_CANSAFEPOINT
 {
-    Obj  sum;
+    Obj  sum = 0;
     UInt ll, lr, wl, wr, ls;
     UInt q;
     UInt i;
-    Obj  row;
-    Obj  type;
+    Obj  row = 0;
+    Obj  type = 0;
 
     GAP_ASSERT(IS_MAT8BIT_REP(ml));
     GAP_ASSERT(IS_MAT8BIT_REP(mr));
@@ -4165,6 +4308,7 @@ static Obj SumMat8BitMat8Bit(Obj ml, Obj mr)
     }
 
     q = FIELD_MAT8BIT(ml);
+    GAP_GC_PUSH3(&sum, &row, &type);
     sum = NewWordSizedBag(T_POSOBJ, sizeof(Obj) * (ls + 2));
     type = TypeMat8Bit(q, IS_MUTABLE_OBJ(ml) || IS_MUTABLE_OBJ(mr));
     SET_TYPE_POSOBJ(sum, type);
@@ -4185,6 +4329,7 @@ static Obj SumMat8BitMat8Bit(Obj ml, Obj mr)
         SET_ELM_MAT8BIT(sum, i, row);
         CHANGED_BAG(sum);
     }
+    GAP_GC_POP();
     return sum;
 }
 
@@ -4196,6 +4341,7 @@ static Obj SumMat8BitMat8Bit(Obj ml, Obj mr)
 */
 
 static Obj FuncSUM_MAT8BIT_MAT8BIT(Obj self, Obj ml, Obj mr)
+    GAP_GC_CANSAFEPOINT
 {
     RequireMat8BitRep(SELF_NAME, ml);
     RequireMat8BitRep(SELF_NAME, mr);
@@ -4217,17 +4363,17 @@ static Obj FuncSUM_MAT8BIT_MAT8BIT(Obj self, Obj ml, Obj mr)
 **  Caller's job to do all checks
 */
 
-static Obj DiffMat8BitMat8Bit(Obj ml, Obj mr)
+static Obj DiffMat8BitMat8Bit(Obj ml, Obj mr) GAP_GC_CANSAFEPOINT
 {
-    Obj  diff;
+    Obj  diff = 0;
     UInt q;
     UInt i;
-    Obj  row;
-    Obj  type;
-    Obj  info;
+    Obj  row = 0;
+    Obj  type = 0;
+    Obj  info = 0;
     FF   f;
     FFV  minusOne;
-    Obj  mone;
+    Obj  mone = 0;
     UInt ll, lr, wl, wr, ld;
 
     GAP_ASSERT(IS_MAT8BIT_REP(ml));
@@ -4256,6 +4402,7 @@ static Obj DiffMat8BitMat8Bit(Obj ml, Obj mr)
     if (q % 2 == 0)
         return SumMat8BitMat8Bit(ml, mr);
 
+    GAP_GC_PUSH5(&diff, &row, &type, &info, &mone);
     diff = NewWordSizedBag(T_POSOBJ, sizeof(Obj) * (ld + 2));
     type = TypeMat8Bit(q, IS_MUTABLE_OBJ(ml) || IS_MUTABLE_OBJ(mr));
     SET_TYPE_POSOBJ(diff, type);
@@ -4280,6 +4427,7 @@ static Obj DiffMat8BitMat8Bit(Obj ml, Obj mr)
         SET_ELM_MAT8BIT(diff, i, row);
         CHANGED_BAG(diff);
     }
+    GAP_GC_POP();
     return diff;
 }
 
@@ -4291,6 +4439,7 @@ static Obj DiffMat8BitMat8Bit(Obj ml, Obj mr)
 */
 
 static Obj FuncDIFF_MAT8BIT_MAT8BIT(Obj self, Obj ml, Obj mr)
+    GAP_GC_CANSAFEPOINT
 {
     RequireMat8BitRep(SELF_NAME, ml);
     RequireMat8BitRep(SELF_NAME, mr);
@@ -4311,7 +4460,7 @@ static Obj FuncDIFF_MAT8BIT_MAT8BIT(Obj self, Obj ml, Obj mr)
 ** The first batch are utilities for the others
 */
 
-static UInt RightMostNonZeroVec8Bit(Obj vec)
+static UInt RightMostNonZeroVec8Bit(Obj vec) GAP_GC_CANSAFEPOINT
 {
     UInt          q;
     UInt          len;
@@ -4357,6 +4506,7 @@ static UInt RightMostNonZeroVec8Bit(Obj vec)
 }
 
 static void ResizeVec8Bit(Obj vec, UInt newlen, UInt knownclean)
+    GAP_GC_CANSAFEPOINT
 {
     UInt          q;
     UInt          len;
@@ -4414,7 +4564,7 @@ static void ResizeVec8Bit(Obj vec, UInt newlen, UInt knownclean)
 }
 
 
-static void ShiftLeftVec8Bit(Obj vec, UInt amount)
+static void ShiftLeftVec8Bit(Obj vec, UInt amount) GAP_GC_CANSAFEPOINT
 {
     UInt          q;
     Obj           info;
@@ -4478,6 +4628,7 @@ static void ShiftLeftVec8Bit(Obj vec, UInt amount)
 }
 
 static void ShiftRightVec8Bit(Obj vec, UInt amount)    // pads with zeros
+    GAP_GC_CANSAFEPOINT
 {
     UInt          q;
     Obj           info;
@@ -4552,6 +4703,7 @@ static void ShiftRightVec8Bit(Obj vec, UInt amount)    // pads with zeros
 */
 
 static Obj FuncADD_COEFFS_VEC8BIT_3(Obj self, Obj vec1, Obj vec2, Obj mult)
+    GAP_GC_CANSAFEPOINT
 {
     RequireVec8BitRep(SELF_NAME, vec1);
     RequireVec8BitRep(SELF_NAME, vec2);
@@ -4559,6 +4711,7 @@ static Obj FuncADD_COEFFS_VEC8BIT_3(Obj self, Obj vec1, Obj vec2, Obj mult)
 
     UInt q;
     UInt len;
+    Obj  multRoot = mult;
     len = LEN_VEC8BIT(vec2);
     if (VAL_FFE(mult) == 0)
         return INTOBJ_INT(RightMostNonZeroVec8Bit(vec1));
@@ -4569,8 +4722,9 @@ static Obj FuncADD_COEFFS_VEC8BIT_3(Obj self, Obj vec1, Obj vec2, Obj mult)
     // Now we know that the characteristics must match, but not the fields
     q = FIELD_VEC8BIT(vec1);
 
+    GAP_GC_PUSH1(&multRoot);
     // fix up fields if necessary
-    if (q != FIELD_VEC8BIT(vec2) || q != SIZE_FF(FLD_FFE(mult))) {
+    if (q != FIELD_VEC8BIT(vec2) || q != SIZE_FF(FLD_FFE(multRoot))) {
         Obj  info, info1;
         UInt d, d1, q1, d2, d0, q0, p, i;
         FFV  val;
@@ -4580,33 +4734,38 @@ static Obj FuncADD_COEFFS_VEC8BIT_3(Obj self, Obj vec1, Obj vec2, Obj mult)
         q1 = FIELD_VEC8BIT(vec2);
         info1 = GetFieldInfo8Bit(q1);
         d1 = D_FIELDINFO_8BIT(info1);
-        d2 = DegreeFFE(mult);
+        d2 = DegreeFFE(multRoot);
         d0 = LcmDegree(d, d1);
         d0 = LcmDegree(d0, d2);
         p = P_FIELDINFO_8BIT(info);
         GAP_ASSERT(p == P_FIELDINFO_8BIT(info1));
-        GAP_ASSERT(p == CHAR_FF(FLD_FFE(mult)));
+        GAP_ASSERT(p == CHAR_FF(FLD_FFE(multRoot)));
         q0 = 1;
         for (i = 0; i < d0; i++)
             q0 *= p;
 
         // if the exponent is bigger than 31, overflow changes the value to 0
-        if (d0 > 8 || q0 > 256)
+        if (d0 > 8 || q0 > 256) {
+            GAP_GC_POP();
             return TRY_NEXT_METHOD;
+        }
         if ((q0 > q &&
              CALL_1ARGS(IsLockedRepresentationVector, vec1) == True) ||
             (q0 > q1 &&
-             CALL_1ARGS(IsLockedRepresentationVector, vec2) == True))
+             CALL_1ARGS(IsLockedRepresentationVector, vec2) == True)) {
+            GAP_GC_POP();
             return TRY_NEXT_METHOD;
+        }
         RewriteVec8Bit(vec1, q0);
         RewriteVec8Bit(vec2, q0);
-        val = VAL_FFE(mult);
+        val = VAL_FFE(multRoot);
         if (val != 0)
-            val = 1 + (val - 1) * (q0 - 1) / (SIZE_FF(FLD_FFE(mult)) - 1);
-        mult = NEW_FFE(FiniteField(p, d0), val);
+            val = 1 + (val - 1) * (q0 - 1) / (SIZE_FF(FLD_FFE(multRoot)) - 1);
+        multRoot = NEW_FFE(FiniteField(p, d0), val);
         q = q0;
     }
-    AddVec8BitVec8BitMultInner(vec1, vec1, vec2, mult, 1, len);
+    AddVec8BitVec8BitMultInner(vec1, vec1, vec2, multRoot, 1, len);
+    GAP_GC_POP();
     return INTOBJ_INT(RightMostNonZeroVec8Bit(vec1));
 }
 
@@ -4620,6 +4779,7 @@ static Obj FuncADD_COEFFS_VEC8BIT_3(Obj self, Obj vec1, Obj vec2, Obj mult)
 */
 
 static Obj FuncADD_COEFFS_VEC8BIT_2(Obj self, Obj vec1, Obj vec2)
+    GAP_GC_CANSAFEPOINT
 {
     RequireVec8BitRep(SELF_NAME, vec1);
     RequireVec8BitRep(SELF_NAME, vec2);
@@ -4676,6 +4836,7 @@ static Obj FuncADD_COEFFS_VEC8BIT_2(Obj self, Obj vec1, Obj vec2)
 */
 
 static Obj FuncSHIFT_VEC8BIT_LEFT(Obj self, Obj vec, Obj amount)
+    GAP_GC_CANSAFEPOINT
 {
     RequireVec8BitRep(SELF_NAME, vec);
     RequireMutable(SELF_NAME, vec, "vector");
@@ -4691,6 +4852,7 @@ static Obj FuncSHIFT_VEC8BIT_LEFT(Obj self, Obj vec, Obj amount)
 */
 
 static Obj FuncSHIFT_VEC8BIT_RIGHT(Obj self, Obj vec, Obj amount, Obj zero)
+    GAP_GC_CANSAFEPOINT
 {
     RequireVec8BitRep(SELF_NAME, vec);
     RequireMutable(SELF_NAME, vec, "vector");
@@ -4707,6 +4869,7 @@ static Obj FuncSHIFT_VEC8BIT_RIGHT(Obj self, Obj vec, Obj amount, Obj zero)
 */
 
 static Obj FuncRESIZE_VEC8BIT(Obj self, Obj vec, Obj newsize)
+    GAP_GC_CANSAFEPOINT
 {
     RequireVec8BitRep(SELF_NAME, vec);
     RequireMutable(SELF_NAME, vec, "vector");
@@ -4721,7 +4884,7 @@ static Obj FuncRESIZE_VEC8BIT(Obj self, Obj vec, Obj newsize)
 **
 */
 
-static Obj FuncRIGHTMOST_NONZERO_VEC8BIT(Obj self, Obj vec)
+static Obj FuncRIGHTMOST_NONZERO_VEC8BIT(Obj self, Obj vec) GAP_GC_CANSAFEPOINT
 {
     RequireVec8BitRep(SELF_NAME, vec);
     return INTOBJ_INT(RightMostNonZeroVec8Bit(vec));
@@ -4734,6 +4897,7 @@ static Obj FuncRIGHTMOST_NONZERO_VEC8BIT(Obj self, Obj vec)
 */
 
 static void ProdCoeffsVec8Bit(Obj res, Obj vl, UInt ll, Obj vr, UInt lr)
+    GAP_GC_CANSAFEPOINT
 {
     UInt          q;
     Obj           info;
@@ -4902,11 +5066,12 @@ static void ProdCoeffsVec8Bit(Obj res, Obj vl, UInt ll, Obj vr, UInt lr)
 */
 
 static Obj FuncPROD_COEFFS_VEC8BIT(Obj self, Obj vl, Obj ll, Obj vr, Obj lr)
+    GAP_GC_CANSAFEPOINT
 {
     Int  ll1, lr1;
     UInt q;
-    Obj  info;
-    Obj  res;
+    Obj  info = 0;
+    Obj  res = 0;
     UInt lenp;
     UInt last;
 
@@ -4916,6 +5081,7 @@ static Obj FuncPROD_COEFFS_VEC8BIT(Obj self, Obj vl, Obj ll, Obj vr, Obj lr)
     RequireNonnegativeSmallInt(SELF_NAME, lr);
 
     q = FIELD_VEC8BIT(vl);
+    GAP_GC_PUSH2(&info, &res);
     if (q != FIELD_VEC8BIT(vr)) {
         Obj  info1;
         UInt d, d1, q1, d0, q0, p, i;
@@ -4934,12 +5100,16 @@ static Obj FuncPROD_COEFFS_VEC8BIT(Obj self, Obj vl, Obj ll, Obj vr, Obj lr)
             q0 *= p;
 
         // if the exponent is bigger than 31, overflow changes the value to 0
-        if (d0 > 8 || q0 > 256)
+        if (d0 > 8 || q0 > 256) {
+            GAP_GC_POP();
             return TRY_NEXT_METHOD;
+        }
         if ((q0 > q &&
              CALL_1ARGS(IsLockedRepresentationVector, vl) == True) ||
-            (q0 > q1 && CALL_1ARGS(IsLockedRepresentationVector, vr) == True))
+            (q0 > q1 && CALL_1ARGS(IsLockedRepresentationVector, vr) == True)) {
+            GAP_GC_POP();
             return TRY_NEXT_METHOD;
+        }
         RewriteVec8Bit(vl, q0);
         RewriteVec8Bit(vr, q0);
         q = q0;
@@ -4966,6 +5136,7 @@ static Obj FuncPROD_COEFFS_VEC8BIT(Obj self, Obj vl, Obj ll, Obj vr, Obj lr)
     last = RightMostNonZeroVec8Bit(res);
     if (last != lenp)
         ResizeVec8Bit(res, last, 1);
+    GAP_GC_POP();
     return res;
 }
 
@@ -4975,14 +5146,14 @@ static Obj FuncPROD_COEFFS_VEC8BIT(Obj self, Obj vl, Obj ll, Obj vr, Obj lr)
 **
 */
 
-static Obj MakeShiftedVecs(Obj v, UInt len)
+static Obj MakeShiftedVecs(Obj v, UInt len) GAP_GC_CANSAFEPOINT
 {
     UInt          q;
-    Obj           info;
+    Obj           info = 0;
     UInt          elts;
-    Obj           shifts;
-    Obj           ashift;
-    Obj           vn, xi;
+    Obj           shifts = 0;
+    Obj           ashift = 0;
+    Obj           vn = 0, xi = 0;
     UInt          i, j;
     const Obj *   ffefelt;
     const UInt1 * gettab;
@@ -4991,8 +5162,9 @@ static Obj MakeShiftedVecs(Obj v, UInt len)
     UInt1         x;
     UInt1 *       ptr;
     UInt1 *       ptrs[5];    // 5 is the largest value of elts we ever meet
-    Obj           type;
+    Obj           type = 0;
 
+    GAP_GC_PUSH6(&info, &shifts, &ashift, &vn, &xi, &type);
     q = FIELD_VEC8BIT(v);
     GAP_ASSERT(len <= LEN_VEC8BIT(v));
     info = GetFieldInfo8Bit(q);
@@ -5003,8 +5175,9 @@ static Obj MakeShiftedVecs(Obj v, UInt len)
     vn = CopyVec8Bit(v, 1);
     ResizeVec8Bit(vn, len, 0);
     len1 = (len == 0) ? 0 : RightMostNonZeroVec8Bit(vn);
-    if (len1 == 0)
+    if (len1 == 0) {
         ErrorReturnVoid("Zero coefficient vector for reduction", 0, 0, 0);
+    }
     if (len1 != len) {
         ResizeVec8Bit(vn, len1, 1);
         len = len1;
@@ -5067,10 +5240,12 @@ static Obj MakeShiftedVecs(Obj v, UInt len)
         MakeBagReadOnly(ELM_PLIST(shifts, i));
     MakeBagReadOnly(shifts);
 #endif
+    GAP_GC_POP();
     return shifts;
 }
 
 static void ReduceCoeffsVec8Bit(Obj vl, Obj vrshifted, Obj quot)
+    GAP_GC_CANSAFEPOINT
 {
     UInt          q;
     Obj           info;
@@ -5148,6 +5323,7 @@ static void ReduceCoeffsVec8Bit(Obj vl, Obj vrshifted, Obj quot)
 */
 
 static Obj FuncMAKE_SHIFTED_COEFFS_VEC8BIT(Obj self, Obj vr, Obj lr)
+    GAP_GC_CANSAFEPOINT
 {
     RequireVec8BitRep(SELF_NAME, vr);
     RequireNonnegativeSmallInt(SELF_NAME, lr);
@@ -5161,6 +5337,7 @@ static Obj FuncMAKE_SHIFTED_COEFFS_VEC8BIT(Obj self, Obj vr, Obj lr)
 
 
 static Obj FuncREDUCE_COEFFS_VEC8BIT(Obj self, Obj vl, Obj ll, Obj vrshifted)
+    GAP_GC_CANSAFEPOINT
 {
     UInt q;
     UInt last;
@@ -5184,12 +5361,13 @@ static Obj FuncREDUCE_COEFFS_VEC8BIT(Obj self, Obj vl, Obj ll, Obj vrshifted)
 }
 
 static Obj FuncQUOTREM_COEFFS_VEC8BIT(Obj self, Obj vl, Obj ll, Obj vrshifted)
+    GAP_GC_CANSAFEPOINT
 {
     UInt q;
-    Obj  rem, quot, ret, info;
+    Obj  rem = 0, quot = 0, ret = 0, info = 0;
     UInt elts;
     Int  ill, lr;
-    Obj  type;
+    Obj  type = 0;
 
     RequireVec8BitRep(SELF_NAME, vl);
     RequirePlainList(SELF_NAME, vrshifted);
@@ -5205,6 +5383,7 @@ static Obj FuncQUOTREM_COEFFS_VEC8BIT(Obj self, Obj vl, Obj ll, Obj vrshifted)
     }
 
     ill = INT_INTOBJ(ll);
+    GAP_GC_PUSH5(&rem, &quot, &ret, &info, &type);
     rem = CopyVec8Bit(vl, 1);
     info = GetFieldInfo8Bit(q);
     ResizeVec8Bit(rem, ill, 0);
@@ -5221,6 +5400,7 @@ static Obj FuncQUOTREM_COEFFS_VEC8BIT(Obj self, Obj vl, Obj ll, Obj vrshifted)
     SET_ELM_PLIST(ret, 1, quot);
     SET_ELM_PLIST(ret, 2, rem);
     CHANGED_BAG(ret);
+    GAP_GC_POP();
     return ret;
 }
 
@@ -5241,25 +5421,26 @@ static UInt RNheads, RNvectors, RNcoeffs, RNrelns;
 
 
 static Obj SemiEchelonListVec8Bits(Obj mat, UInt TransformationsNeeded)
+    GAP_GC_CANSAFEPOINT
 {
     UInt nrows, ncols;
     UInt i, j, h;
     // UInt block;
-    Obj           heads, vectors, coeffs = 0, relns = 0;
+    Obj           heads = 0, vectors = 0, coeffs = 0, relns = 0;
     UInt          nvecs, nrels = 0;
     Obj           coeffrow = 0;
     Obj           row;
-    Obj           res;
+    Obj           res = 0;
     UInt          q, elts;
-    Obj           info;
+    Obj           info = 0;
     const UInt1 * settab, *convtab, *gettab;
     const Obj *   convtab1;
     UInt1         zero, one;
     UInt1         x = 0;
     const UInt1 * rowp;
     UInt1         byte;
-    Obj           y;
-    Obj           type;
+    Obj           y = 0;
+    Obj           type = 0;
 
     GAP_ASSERT(IS_PLIST(mat));
     GAP_ASSERT(LEN_PLIST(mat) > 0);
@@ -5270,6 +5451,8 @@ static Obj SemiEchelonListVec8Bits(Obj mat, UInt TransformationsNeeded)
 
     // Find the field info
     q = FIELD_VEC8BIT(ELM_PLIST(mat, 1));
+    GAP_GC_PUSH9(&heads, &vectors, &coeffs, &relns, &coeffrow, &res, &type,
+                 &info, &y);
     info = GetFieldInfo8Bit(q);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
 
@@ -5382,6 +5565,7 @@ static Obj SemiEchelonListVec8Bits(Obj mat, UInt TransformationsNeeded)
             RetypeBag(relns, T_PLIST_EMPTY);
     }
     SortPRecRNam(res);
+    GAP_GC_POP();
     return res;
 }
 
@@ -5394,16 +5578,17 @@ static Obj SemiEchelonListVec8Bits(Obj mat, UInt TransformationsNeeded)
 */
 
 static UInt TriangulizeListVec8Bits(Obj mat, UInt clearup, Obj * deterp)
+    GAP_GC_CANSAFEPOINT
 {
     UInt          nrows;
     UInt          ncols;
     UInt          workcol;
     UInt          workrow;
     UInt          rank;
-    Obj           row, row2;
+    Obj           row = 0, row2 = 0;
     UInt          byte;
     UInt          j;
-    Obj           info;
+    Obj           info = 0;
     UInt          elts;
     UInt1         x = 0;
     const UInt1 * gettab;
@@ -5411,13 +5596,15 @@ static UInt TriangulizeListVec8Bits(Obj mat, UInt clearup, Obj * deterp)
     Obj           deter = 0;
     UInt          sign = 0;
     const Obj *   convtab;
-    Obj           y;
+    Obj           y = 0;
+    Obj           yi = 0;
     UInt1         x2;
 
     GAP_ASSERT(IS_PLIST(mat));
     GAP_ASSERT(LEN_PLIST(mat) > 0);
     GAP_ASSERT(IS_VEC8BIT_REP(ELM_PLIST(mat, 1)));
 
+    GAP_GC_PUSH6(&row, &row2, &info, &deter, &y, &yi);
     nrows = LEN_PLIST(mat);
     row = ELM_PLIST(mat, 1);
     ncols = LEN_VEC8BIT(row);
@@ -5447,7 +5634,8 @@ static UInt TriangulizeListVec8Bits(Obj mat, UInt clearup, Obj * deterp)
         if (workrow <= nrows) {
             rank++;
             y = convtab[x];
-            MultVec8BitFFEInner(row, row, INV(y), workcol, ncols);
+            yi = INV(y);
+            MultVec8BitFFEInner(row, row, yi, workcol, ncols);
             if (deterp)
                 deter = PROD(deter, y);
 
@@ -5460,23 +5648,24 @@ static UInt TriangulizeListVec8Bits(Obj mat, UInt clearup, Obj * deterp)
             if (clearup)
                 for (j = 1; j < rank; j++) {
                     row2 = ELM_PLIST(mat, j);
-                    if ((x2 = getcol[CONST_BYTES_VEC8BIT(row2)[byte]]))
-                        AddVec8BitVec8BitMultInner(row2, row2, row,
-                                                   AINV_SAMEMUT(convtab[x2]),
+                    if ((x2 = getcol[CONST_BYTES_VEC8BIT(row2)[byte]])) {
+                        yi = AINV_SAMEMUT(convtab[x2]);
+                        AddVec8BitVec8BitMultInner(row2, row2, row, yi,
                                                    workcol, ncols);
+                    }
                 }
             for (j = workrow + 1; j <= nrows; j++) {
                 row2 = ELM_PLIST(mat, j);
-                if ((x2 = getcol[CONST_BYTES_VEC8BIT(row2)[byte]]))
-                    AddVec8BitVec8BitMultInner(row2, row2, row,
-                                               AINV_SAMEMUT(convtab[x2]),
-                                               workcol, ncols);
+                if ((x2 = getcol[CONST_BYTES_VEC8BIT(row2)[byte]])) {
+                    yi = AINV_SAMEMUT(convtab[x2]);
+                    AddVec8BitVec8BitMultInner(row2, row2, row, yi, workcol,
+                                               ncols);
+                }
             }
         }
-        if (TakeInterrupt()) {
-            gettab = GETELT_FIELDINFO_8BIT(info);
-            convtab = CONST_FFE_FELT_FIELDINFO_8BIT(info);
-        }
+        TakeInterrupt();
+        gettab = GETELT_FIELDINFO_8BIT(info);
+        convtab = CONST_FFE_FELT_FIELDINFO_8BIT(info);
     }
     if (deterp) {
         if (rank < nrows)
@@ -5485,6 +5674,7 @@ static UInt TriangulizeListVec8Bits(Obj mat, UInt clearup, Obj * deterp)
             deter = AINV_SAMEMUT(deter);
         *deterp = deter;
     }
+    GAP_GC_POP();
     return rank;
 }
 
@@ -5498,7 +5688,7 @@ static UInt TriangulizeListVec8Bits(Obj mat, UInt clearup, Obj * deterp)
 ** Method selection can guarantee us a plain list of vectors in same char
 */
 
-static Obj FuncSEMIECHELON_LIST_VEC8BITS(Obj self, Obj mat)
+static Obj FuncSEMIECHELON_LIST_VEC8BITS(Obj self, Obj mat) GAP_GC_CANSAFEPOINT
 {
     UInt i, len, width;
     Obj  row;
@@ -5537,6 +5727,7 @@ static Obj FuncSEMIECHELON_LIST_VEC8BITS(Obj self, Obj mat)
 */
 
 static Obj FuncSEMIECHELON_LIST_VEC8BITS_TRANSFORMATIONS(Obj self, Obj mat)
+    GAP_GC_CANSAFEPOINT
 {
     UInt i, len;
     Obj  row;
@@ -5576,7 +5767,7 @@ static Obj FuncSEMIECHELON_LIST_VEC8BITS_TRANSFORMATIONS(Obj self, Obj mat)
 **  characteristic
 */
 
-static Obj FuncTRIANGULIZE_LIST_VEC8BITS(Obj self, Obj mat)
+static Obj FuncTRIANGULIZE_LIST_VEC8BITS(Obj self, Obj mat) GAP_GC_CANSAFEPOINT
 {
     UInt i, len, width;
     Obj  row;
@@ -5615,7 +5806,7 @@ static Obj FuncTRIANGULIZE_LIST_VEC8BITS(Obj self, Obj mat)
 **  characteristic
 */
 
-static Obj FuncRANK_LIST_VEC8BITS(Obj self, Obj mat)
+static Obj FuncRANK_LIST_VEC8BITS(Obj self, Obj mat) GAP_GC_CANSAFEPOINT
 {
     UInt i, len, width;
     Obj  row;
@@ -5653,7 +5844,7 @@ static Obj FuncRANK_LIST_VEC8BITS(Obj self, Obj mat)
 **  characteristic
 */
 
-static Obj FuncDETERMINANT_LIST_VEC8BITS(Obj self, Obj mat)
+static Obj FuncDETERMINANT_LIST_VEC8BITS(Obj self, Obj mat) GAP_GC_CANSAFEPOINT
 {
     UInt i, len, width;
     Obj  row;
@@ -5690,7 +5881,7 @@ static Obj FuncDETERMINANT_LIST_VEC8BITS(Obj self, Obj mat)
 **
 **  Assumes the matrices are over compatible fields
 */
-static Int Cmp_MAT8BIT_MAT8BIT(Obj ml, Obj mr)
+static Int Cmp_MAT8BIT_MAT8BIT(Obj ml, Obj mr) GAP_GC_CANSAFEPOINT
 {
     UInt l1, l2, l, i;
     Int  c;
@@ -5718,7 +5909,7 @@ static Int Cmp_MAT8BIT_MAT8BIT(Obj ml, Obj mr)
 *F  FuncEQ_MAT8BIT_MAT8BIT( <ml>, <mr> )   compare matrices
 */
 
-static Obj FuncEQ_MAT8BIT_MAT8BIT(Obj self, Obj ml, Obj mr)
+static Obj FuncEQ_MAT8BIT_MAT8BIT(Obj self, Obj ml, Obj mr) GAP_GC_CANSAFEPOINT
 {
     RequireMat8BitRep(SELF_NAME, ml);
     RequireMat8BitRep(SELF_NAME, mr);
@@ -5737,7 +5928,7 @@ static Obj FuncEQ_MAT8BIT_MAT8BIT(Obj self, Obj ml, Obj mr)
 *F  FuncLT_MAT8BIT_MAT8BIT( <ml>, <mr> )   compare matrices
 */
 
-static Obj FuncLT_MAT8BIT_MAT8BIT(Obj self, Obj ml, Obj mr)
+static Obj FuncLT_MAT8BIT_MAT8BIT(Obj self, Obj ml, Obj mr) GAP_GC_CANSAFEPOINT
 {
     RequireMat8BitRep(SELF_NAME, ml);
     RequireMat8BitRep(SELF_NAME, mr);
@@ -5757,19 +5948,19 @@ static Obj FuncLT_MAT8BIT_MAT8BIT(Obj self, Obj ml, Obj mr)
 *F  FuncTRANSPOSED_MAT8BIT( <self>, <mat>) Fully mutable results
 **
 */
-static Obj FuncTRANSPOSED_MAT8BIT(Obj self, Obj mat)
+static Obj FuncTRANSPOSED_MAT8BIT(Obj self, Obj mat) GAP_GC_CANSAFEPOINT
 {
     UInt         l, w;
-    Obj          tra, row;
-    Obj          r1;
+    Obj          tra = 0, row = 0;
+    Obj          r1 = 0;
     UInt1        vals[BIPEB];
     UInt         val;
     UInt         imod, nrb, nstart;
     UInt         i, j, k, n, q, elts;
     UInt1 *      ptr;
-    Obj          info;
+    Obj          info = 0;
     const UInt1 *gettab = 0, *settab = 0;
-    Obj          type;
+    Obj          type = 0;
 
     RequireMat8BitRep(SELF_NAME, mat);
     RequireNonemptyMat8BitRows(SELF_NAME, mat);
@@ -5782,7 +5973,7 @@ static Obj FuncTRANSPOSED_MAT8BIT(Obj self, Obj mat)
     l = LEN_MAT8BIT(mat);
     w = LEN_VEC8BIT(r1);
 
-
+    GAP_GC_PUSH5(&tra, &row, &r1, &info, &type);
     tra = NewWordSizedBag(T_POSOBJ, sizeof(Obj) * (w + 2));
     q = FIELD_VEC8BIT(r1);
     type = TypeMat8Bit(q, 1);
@@ -5852,6 +6043,7 @@ static Obj FuncTRANSPOSED_MAT8BIT(Obj self, Obj mat)
             }
         }
     }
+    GAP_GC_POP();
     return tra;
 }
 
@@ -5862,10 +6054,11 @@ static Obj FuncTRANSPOSED_MAT8BIT(Obj self, Obj mat)
 **
 */
 static Obj FuncKRONECKERPRODUCT_MAT8BIT_MAT8BIT(Obj self, Obj matl, Obj matr)
+    GAP_GC_CANSAFEPOINT
 {
     UInt nrowl, nrowr, ncoll, ncolr, ncol, p, q, i, j, k, l, s, zero, mutable,
         elts;
-    Obj           mat, type, row, info, shift[5];
+    Obj           mat = 0, type = 0, row = 0, info = 0, shift[5] = { 0 };
     UInt1 *       data;
     const UInt1 * getelt, *setelt, *scalar, *add;
     const UInt1 * datar;
@@ -5885,6 +6078,8 @@ static Obj FuncKRONECKERPRODUCT_MAT8BIT_MAT8BIT(Obj self, Obj matl, Obj matr)
 
     mutable = IS_MUTABLE_OBJ(matl) || IS_MUTABLE_OBJ(matr);
 
+    GAP_GC_PUSH9(&mat, &type, &row, &info, &shift[0], &shift[1], &shift[2],
+                 &shift[3], &shift[4]);
     info = GetFieldInfo8Bit(q);
     p = P_FIELDINFO_8BIT(info);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
@@ -5893,7 +6088,8 @@ static Obj FuncKRONECKERPRODUCT_MAT8BIT_MAT8BIT(Obj self, Obj matl, Obj matr)
     // create a matrix
     mat = NewWordSizedBag(T_POSOBJ, sizeof(Obj) * (nrowl * nrowr + 2));
     SET_LEN_MAT8BIT(mat, nrowl * nrowr);
-    SET_TYPE_POSOBJ(mat, TypeMat8Bit(q, mutable));
+    type = TypeMat8Bit(q, mutable);
+    SET_TYPE_POSOBJ(mat, type);
     type = TypeVec8BitLocked(q, mutable);
 
     // allocate 0 matrix
@@ -5961,6 +6157,7 @@ static Obj FuncKRONECKERPRODUCT_MAT8BIT_MAT8BIT(Obj self, Obj matl, Obj matr)
         }
     }
 
+    GAP_GC_POP();
     return mat;
 }
 
@@ -5971,6 +6168,7 @@ static Obj FuncKRONECKERPRODUCT_MAT8BIT_MAT8BIT(Obj self, Obj matl, Obj matr)
 **
 */
 static Obj FuncMAT_ELM_MAT8BIT(Obj self, Obj mat, Obj row, Obj col)
+    GAP_GC_CANSAFEPOINT
 {
     RequireMat8BitRep(SELF_NAME, mat);
     UInt r = GetPositiveSmallInt(SELF_NAME, row);
@@ -5998,6 +6196,7 @@ static Obj FuncMAT_ELM_MAT8BIT(Obj self, Obj mat, Obj row, Obj col)
 */
 static Obj
 FuncSET_MAT_ELM_MAT8BIT(Obj self, Obj mat, Obj row, Obj col, Obj elm)
+    GAP_GC_CANSAFEPOINT
 {
     RequireMat8BitRep(SELF_NAME, mat);
     UInt r = GetPositiveSmallInt(SELF_NAME, row);
@@ -6173,7 +6372,7 @@ static Int InitKernel(StructInitInfo * module)
 **
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-static Int InitLibrary(StructInitInfo * module)
+static Int InitLibrary(StructInitInfo * module) GAP_GC_CANSAFEPOINT
 {
     FieldInfo8Bit = NEW_PLIST(T_PLIST_NDENSE, 257);
     SET_ELM_PLIST(FieldInfo8Bit, 257, INTOBJ_INT(1));

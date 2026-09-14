@@ -23,7 +23,7 @@
 
 #include <string.h>
 
-static Obj GAP_SHA256_State_Type;
+static Obj GAP_SHA256_State_Type GAP_GC_GLOBALLY_ROOTED;
 
 // Implements the SHA256 hash function as per the description in
 // https://web.archive.org/web/20130526224224/http://csrc.nist.gov/groups/STM/cavp/documents/shs/sha256-384-512.pdf
@@ -258,7 +258,7 @@ static sha256_state_t * SHA256_STATE(Obj state)
 // Returns 0 on success, -1 if the file could not be read.
 static int sha256_update_file(sha256_state_t * st,
                               Obj              filename,
-                              Obj              decompress)
+                              Obj              decompress) GAP_GC_CANSAFEPOINT
 {
     Int   fid, len;
     UChar buf[16384];
@@ -277,35 +277,39 @@ static int sha256_update_file(sha256_state_t * st,
 // The eight words of <st> as a plain list, most significant first.  <st> is
 // taken by value on purpose: NEW_PLIST below may trigger a garbage collection,
 // which can move bags, so this must not be handed a pointer into one.
-static Obj sha256_words(sha256_state_t st)
+static Obj sha256_words(sha256_state_t st) GAP_GC_CANSAFEPOINT
 {
     Obj result;
     int i;
 
     result = NEW_PLIST(T_PLIST, 8);
+    GAP_GC_PUSH1(&result);
     SET_LEN_PLIST(result, 8);
     for (i = 0; i < 8; i++) {
         SET_ELM_PLIST(result, i + 1, ObjInt_UInt(st.r[i]));
         CHANGED_BAG(result);
     }
+    GAP_GC_POP();
     return result;
 }
 
-Obj FuncGAP_SHA256_INIT(Obj self)
+Obj FuncGAP_SHA256_INIT(Obj self) GAP_GC_CANSAFEPOINT
 {
     Obj              result;
     sha256_state_t * sptr;
 
     result = NewBag(T_DATOBJ, sizeof(Obj) + sizeof(sha256_state_t));
+    GAP_GC_PUSH1(&result);
     SET_TYPE_OBJ(result, GAP_SHA256_State_Type);
 
     sptr = (sha256_state_t *)(&ADDR_OBJ(result)[1]);
     sha256_init(sptr);
 
+    GAP_GC_POP();
     return result;
 }
 
-Obj FuncGAP_SHA256_UPDATE(Obj self, Obj state, Obj bytes)
+Obj FuncGAP_SHA256_UPDATE(Obj self, Obj state, Obj bytes) GAP_GC_CANSAFEPOINT
 {
     RequireSHA256State(SELF_NAME, state);
     RequireStringRep(SELF_NAME, bytes);
@@ -320,7 +324,7 @@ Obj FuncGAP_SHA256_UPDATE(Obj self, Obj state, Obj bytes)
 // Feed a whole file into <state>.  Returns 'true' on success, or 'fail' if
 // the file could not be read, in which case <state> is left as it was.
 Obj FuncGAP_SHA256_UPDATE_FILE(Obj self, Obj state, Obj filename,
-                               Obj decompress)
+                               Obj decompress) GAP_GC_CANSAFEPOINT
 {
     sha256_state_t st;
 
@@ -342,7 +346,7 @@ Obj FuncGAP_SHA256_UPDATE_FILE(Obj self, Obj state, Obj filename,
 // The digest of <state> as it stands, leaving <state> usable.  Padding a
 // SHA256 state is destructive, so this finalizes a copy: reading the digest
 // must not be a one-shot operation the caller has to know about.
-Obj FuncGAP_SHA256_DIGEST(Obj self, Obj state)
+Obj FuncGAP_SHA256_DIGEST(Obj self, Obj state) GAP_GC_CANSAFEPOINT
 {
     sha256_state_t st;
 
@@ -353,7 +357,7 @@ Obj FuncGAP_SHA256_DIGEST(Obj self, Obj state)
     return sha256_words(st);
 }
 
-Obj FuncGAP_SHA256_HMAC(Obj self, Obj key, Obj text)
+Obj FuncGAP_SHA256_HMAC(Obj self, Obj key, Obj text) GAP_GC_CANSAFEPOINT
 {
     UInt           i, klen;
     UInt1          k_ipad[64], k_opad[64];
@@ -431,7 +435,7 @@ static Int InitKernel(StructInitInfo * module)
 **
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-static Int InitLibrary(StructInitInfo * module)
+static Int InitLibrary(StructInitInfo * module) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable(GVarFuncs);

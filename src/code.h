@@ -18,6 +18,7 @@
 
 #include "gapstate.h"
 #include "objects.h"
+#include <stddef.h>    // for offsetof
 
 /****************************************************************************
 **
@@ -75,6 +76,20 @@ struct CodeState {
 
 typedef struct CodeState CodeState;
 
+// A CodeState is allocated on the C stack, so a precise collector cannot see
+// the GAP objects inside it. List their slots here, next to the fields, and
+// root them with GAP_GC_PUSH_ROOTS wherever such a struct is created.
+#define CODE_STATE_ROOTS(p)                                                  \
+    &(p)->OffsBodyStack, &(p)->CodeResult, &(p)->CodeLVars, &(p)->currBody
+
+// Adding a field to CODE_STATE_ROOTS makes every user a compile error, since
+// the slot count no longer matches. This catches the other direction: a new
+// field appended to the struct without being added above. It cannot see a
+// field inserted in the middle.
+GAP_STATIC_ASSERT(offsetof(CodeState, currBody) + sizeof(Obj) ==
+                      sizeof(CodeState),
+                  "CodeState grew; check CODE_STATE_ROOTS");
+
 
 /****************************************************************************
 **
@@ -116,33 +131,35 @@ typedef struct {
 
 } BodyHeader;
 
-EXPORT_INLINE BodyHeader *BODY_HEADER(Obj body)
+EXPORT_INLINE BodyHeader *BODY_HEADER(Obj body) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(TNUM_OBJ(body) == T_BODY);
     return (BodyHeader *)ADDR_OBJ(body);
 }
 
-Obj  GET_FILENAME_BODY(Obj body);
-void SET_FILENAME_BODY(Obj body, Obj val);
+Obj  GET_FILENAME_BODY(Obj body GAP_GC_PROPAGATES_ROOT) GAP_GC_NOTSAFEPOINT;
+void SET_FILENAME_BODY(Obj body, Obj val GAP_GC_ROOTED_BY_ARG(0));
 
-UInt GET_GAPNAMEID_BODY(Obj body);
+UInt GET_GAPNAMEID_BODY(Obj body) GAP_GC_NOTSAFEPOINT;
 void SET_GAPNAMEID_BODY(Obj body, UInt val);
 
 // see documentation of `startline_or_location` for more information about the
 // "location" of a body
-Obj  GET_LOCATION_BODY(Obj body);
-void SET_LOCATION_BODY(Obj body, Obj val);
+Obj  GET_LOCATION_BODY(Obj body GAP_GC_PROPAGATES_ROOT) GAP_GC_NOTSAFEPOINT;
+void SET_LOCATION_BODY(Obj body, Obj val GAP_GC_ROOTED_BY_ARG(0));
 
 // see documentation of `startline_or_location` for more information about the
 // "startline" of a body
-UInt GET_STARTLINE_BODY(Obj body);
+UInt GET_STARTLINE_BODY(Obj body) GAP_GC_NOTSAFEPOINT;
 void SET_STARTLINE_BODY(Obj body, UInt val);
-UInt GET_ENDLINE_BODY(Obj body);
+
+UInt GET_ENDLINE_BODY(Obj body) GAP_GC_NOTSAFEPOINT;
 void SET_ENDLINE_BODY(Obj body, UInt val);
 
-Obj GET_VALUE_FROM_CURRENT_BODY(Int ix);
+Obj GET_VALUE_FROM_CURRENT_BODY(Int ix)
+    GAP_GC_NOTSAFEPOINT GAP_GC_GLOBALLY_ROOTED;
 
-EXPORT_INLINE Obj VALUES_BODY(Obj body)
+EXPORT_INLINE Obj VALUES_BODY(Obj body) GAP_GC_NOTSAFEPOINT
 {
     return BODY_HEADER(body)->values;
 }
@@ -160,10 +177,11 @@ EXPORT_INLINE Obj VALUES_BODY(Obj body)
 **  Callers may pass zero for <line> to denote a statement which should not
 **  be tracked by the profiling code.
 */
-Stat NewStatOrExpr(CodeState * cs, UInt type, UInt size, UInt line);
+Stat NewStatOrExpr(CodeState * cs, UInt type, UInt size, UInt line)
+    GAP_GC_CANSAFEPOINT;
 
 
-void PushStat(Stat stat);
+void PushStat(Stat stat) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -182,7 +200,7 @@ enum {
 **
 *F  NewFunctionBody() . . . . . . . . . . . . . .  create a new function body
 */
-Obj NewFunctionBody(void);
+Obj NewFunctionBody(void) GAP_GC_CANSAFEPOINT;
 
 
 void WRITE_EXPR(CodeState * cs, Expr expr, UInt idx, UInt val);
@@ -319,7 +337,7 @@ enum STAT_TNUM {
 **  'ADDR_STAT' returns   the  absolute address of the    memory block of the
 **  statement <stat>.
 */
-EXPORT_INLINE const Stat * CONST_ADDR_STAT(Stat stat)
+EXPORT_INLINE const Stat * CONST_ADDR_STAT(Stat stat) GAP_GC_NOTSAFEPOINT
 {
     return (const Stat *)STATE(PtrBody) + stat / sizeof(Stat);
 }
@@ -329,7 +347,7 @@ EXPORT_INLINE const Stat * CONST_ADDR_STAT(Stat stat)
 **
 *F  READ_STAT(<stat>,<idx>)
 */
-EXPORT_INLINE Stat READ_STAT(Stat stat, UInt idx)
+EXPORT_INLINE Stat READ_STAT(Stat stat, UInt idx) GAP_GC_NOTSAFEPOINT
 {
     return CONST_ADDR_STAT(stat)[idx];
 }
@@ -339,7 +357,7 @@ EXPORT_INLINE Stat READ_STAT(Stat stat, UInt idx)
 **
 *F  CONST_STAT_HEADER(<stat>)
 */
-EXPORT_INLINE const StatHeader * CONST_STAT_HEADER(Stat stat)
+EXPORT_INLINE const StatHeader * CONST_STAT_HEADER(Stat stat) GAP_GC_NOTSAFEPOINT
 {
     return (const StatHeader *)CONST_ADDR_STAT(stat) - 1;
 }
@@ -351,7 +369,7 @@ EXPORT_INLINE const StatHeader * CONST_STAT_HEADER(Stat stat)
 **
 **  'TNUM_STAT' returns the type of the statement <stat>.
 */
-EXPORT_INLINE Int TNUM_STAT(Stat stat)
+EXPORT_INLINE Int TNUM_STAT(Stat stat) GAP_GC_NOTSAFEPOINT
 {
     return CONST_STAT_HEADER(stat)->type;
 }
@@ -363,7 +381,7 @@ EXPORT_INLINE Int TNUM_STAT(Stat stat)
 **
 **  'SIZE_STAT' returns the size of the statement <stat>.
 */
-EXPORT_INLINE Int SIZE_STAT(Stat stat)
+EXPORT_INLINE Int SIZE_STAT(Stat stat) GAP_GC_NOTSAFEPOINT
 {
     return CONST_STAT_HEADER(stat)->size;
 }
@@ -375,7 +393,7 @@ EXPORT_INLINE Int SIZE_STAT(Stat stat)
 **
 **  'LINE_STAT' returns the line number of the statement <stat>.
 */
-EXPORT_INLINE Int LINE_STAT(Stat stat)
+EXPORT_INLINE Int LINE_STAT(Stat stat) GAP_GC_NOTSAFEPOINT
 {
     return CONST_STAT_HEADER(stat)->line;
 }
@@ -388,7 +406,7 @@ EXPORT_INLINE Int LINE_STAT(Stat stat)
 **  'VISITED_STAT' returns true if the statement has ever been executed
 **  while profiling is turned on.
 */
-EXPORT_INLINE Int VISITED_STAT(Stat stat)
+EXPORT_INLINE Int VISITED_STAT(Stat stat) GAP_GC_NOTSAFEPOINT
 {
     return CONST_STAT_HEADER(stat)->visited;
 }
@@ -419,17 +437,17 @@ void SET_VISITED_STAT(Stat stat);
 **  'LVAR_REF_LVAR' returns the local variable (by its index) to which <expr>
 **  is a (immediate) reference.
 */
-EXPORT_INLINE BOOL IS_REF_LVAR(Expr expr)
+EXPORT_INLINE BOOL IS_REF_LVAR(Expr expr) GAP_GC_NOTSAFEPOINT
 {
     return ((Int)expr & 0x03) == 0x03;
 }
 
-EXPORT_INLINE Expr REF_LVAR_LVAR(Int lvar)
+EXPORT_INLINE Expr REF_LVAR_LVAR(Int lvar) GAP_GC_NOTSAFEPOINT
 {
     return (Expr)((lvar << 2) + 0x03);
 }
 
-EXPORT_INLINE Int LVAR_REF_LVAR(Expr expr)
+EXPORT_INLINE Int LVAR_REF_LVAR(Expr expr) GAP_GC_NOTSAFEPOINT
 {
     return (Int)expr >> 2;
 }
@@ -450,17 +468,17 @@ EXPORT_INLINE Int LVAR_REF_LVAR(Expr expr)
 **  'INT_INTEXPR' converts the (immediate) integer  expression <expr> to a  C
 **  integer.
 */
-EXPORT_INLINE BOOL IS_INTEXPR(Expr expr)
+EXPORT_INLINE BOOL IS_INTEXPR(Expr expr) GAP_GC_NOTSAFEPOINT
 {
     return ((Int)expr & 0x03) == 0x01;
 }
 
-EXPORT_INLINE Expr INTEXPR_INT(Int indx)
+EXPORT_INLINE Expr INTEXPR_INT(Int indx) GAP_GC_NOTSAFEPOINT
 {
     return (Expr)(((UInt)indx << 2) + 0x01);
 }
 
-EXPORT_INLINE Int INT_INTEXPR(Expr expr)
+EXPORT_INLINE Int INT_INTEXPR(Expr expr) GAP_GC_NOTSAFEPOINT
 {
     return ((Int)expr-0x01) >> 2;
 }
@@ -565,7 +583,7 @@ enum EXPR_TNUM {
 **
 **  'TNUM_EXPR' returns the type of the expression <expr>.
 */
-EXPORT_INLINE Int TNUM_EXPR(Expr expr)
+EXPORT_INLINE Int TNUM_EXPR(Expr expr) GAP_GC_NOTSAFEPOINT
 {
     if (IS_REF_LVAR(expr))
         return EXPR_REF_LVAR;
@@ -599,7 +617,7 @@ EXPORT_INLINE Int TNUM_EXPR(Expr expr)
 */
 #define CONST_ADDR_EXPR(expr) CONST_ADDR_STAT(expr)
 
-EXPORT_INLINE Stat READ_EXPR(Expr expr, Int idx)
+EXPORT_INLINE Stat READ_EXPR(Expr expr, Int idx) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(!IS_REF_LVAR(expr));
     GAP_ASSERT(!IS_INTEXPR(expr));
@@ -700,7 +718,8 @@ Obj CodeEnd(CodeState * cs, UInt error);
 */
 void CodeFuncCallBegin(CodeState * cs);
 
-void CodeFuncCallEnd(CodeState * cs, UInt funccall, UInt options, UInt nr);
+void CodeFuncCallEnd(CodeState * cs, UInt funccall, UInt options, UInt nr)
+    GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -726,13 +745,14 @@ void CodeFuncExprBegin(CodeState * cs,
                        Int         nloc,
                        Obj         nams,
                        UInt        gapnameid,
-                       Int         startLine);
+                       Int         startLine) GAP_GC_CANSAFEPOINT;
 
 #ifdef HPCGAP
 void CodeFuncExprSetLocks(CodeState * cs, Obj locks);
 #endif
 
-Expr CodeFuncExprEnd(CodeState * cs, UInt nr, BOOL pushExpr, Int endLine);
+Expr CodeFuncExprEnd(CodeState * cs, UInt nr, BOOL pushExpr, Int endLine)
+    GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
@@ -742,7 +762,7 @@ Expr CodeFuncExprEnd(CodeState * cs, UInt nr, BOOL pushExpr, Int endLine);
 **  function currently being coded, and returns the index at which the value
 **  was inserted. This function must only be called while coding a function.
 */
-Int AddValueToBody(CodeState * cs, Obj val);
+Int AddValueToBody(CodeState * cs, Obj val) GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
@@ -761,16 +781,17 @@ Int AddValueToBody(CodeState * cs, Obj val);
 void CodeFuncCallOptionsBegin(CodeState * cs);
 
 
-void CodeFuncCallOptionsBeginElmName(CodeState * cs, UInt rnam);
+void CodeFuncCallOptionsBeginElmName(CodeState * cs, UInt rnam)
+    GAP_GC_CANSAFEPOINT;
 
 void CodeFuncCallOptionsBeginElmExpr(CodeState * cs);
 
 void CodeFuncCallOptionsEndElm(CodeState * cs);
 
 
-void CodeFuncCallOptionsEndElmEmpty(CodeState * cs);
+void CodeFuncCallOptionsEndElmEmpty(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
-void CodeFuncCallOptionsEnd(CodeState * cs, UInt nr);
+void CodeFuncCallOptionsEnd(CodeState * cs, UInt nr) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -807,13 +828,13 @@ void CodeIfBegin(CodeState * cs);
 
 void CodeIfElif(CodeState * cs);
 
-void CodeIfElse(CodeState * cs);
+void CodeIfElse(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
-Int CodeIfBeginBody(CodeState * cs);
+Int CodeIfBeginBody(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
-Int CodeIfEndBody(CodeState * cs, UInt nr);
+Int CodeIfEndBody(CodeState * cs, UInt nr) GAP_GC_CANSAFEPOINT;
 
-void CodeIfEnd(CodeState * cs, UInt nr);
+void CodeIfEnd(CodeState * cs, UInt nr) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -849,7 +870,7 @@ void CodeForIn(CodeState * cs);
 
 void CodeForBeginBody(CodeState * cs);
 
-void CodeForEndBody(CodeState * cs, UInt nr);
+void CodeForEndBody(CodeState * cs, UInt nr) GAP_GC_CANSAFEPOINT;
 
 void CodeForEnd(CodeState * cs);
 
@@ -879,9 +900,9 @@ void CodeForEnd(CodeState * cs);
 
 void CodeAtomicBegin(CodeState * cs);
 
-void CodeAtomicBeginBody(CodeState * cs, UInt nrexprs);
+void CodeAtomicBeginBody(CodeState * cs, UInt nrexprs) GAP_GC_CANSAFEPOINT;
 
-void CodeAtomicEndBody(CodeState * cs, UInt nrstats);
+void CodeAtomicEndBody(CodeState * cs, UInt nrstats) GAP_GC_CANSAFEPOINT;
 void CodeAtomicEnd(CodeState * cs);
 
 /****************************************************************************
@@ -892,7 +913,7 @@ void CodeAtomicEnd(CodeState * cs);
 **  These functions code the beginning and end of the readonly/readwrite
 **  qualified expressions of an atomic statement.
 */
-void CodeQualifiedExprBegin(CodeState * cs, UInt qual);
+void CodeQualifiedExprBegin(CodeState * cs, UInt qual) GAP_GC_CANSAFEPOINT;
 
 void CodeQualifiedExprEnd(CodeState * cs);
 
@@ -924,7 +945,7 @@ void CodeWhileBegin(CodeState * cs);
 
 void CodeWhileBeginBody(CodeState * cs);
 
-void CodeWhileEndBody(CodeState * cs, UInt nr);
+void CodeWhileEndBody(CodeState * cs, UInt nr) GAP_GC_CANSAFEPOINT;
 
 void CodeWhileEnd(CodeState * cs);
 
@@ -956,9 +977,9 @@ void CodeRepeatBegin(CodeState * cs);
 
 void CodeRepeatBeginBody(CodeState * cs);
 
-void CodeRepeatEndBody(CodeState * cs, UInt nr);
+void CodeRepeatEndBody(CodeState * cs, UInt nr) GAP_GC_CANSAFEPOINT;
 
-void CodeRepeatEnd(CodeState * cs);
+void CodeRepeatEnd(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -968,7 +989,7 @@ void CodeRepeatEnd(CodeState * cs);
 **  'CodeBreak' is the  action to code a  break-statement.  It is called when
 **  the reader encounters a 'break;'.
 */
-void CodeBreak(CodeState * cs);
+void CodeBreak(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -978,7 +999,7 @@ void CodeBreak(CodeState * cs);
 **  'CodeContinue' is the action to code a continue-statement. It is called
 **  when the reader encounters a 'continue;'.
 */
-void CodeContinue(CodeState * cs);
+void CodeContinue(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -989,7 +1010,7 @@ void CodeContinue(CodeState * cs);
 **  called when the reader encounters a 'return <expr>;', but *after* reading
 **  the expression <expr>.
 */
-void CodeReturnObj(CodeState * cs);
+void CodeReturnObj(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -1003,8 +1024,8 @@ void CodeReturnObj(CodeState * cs);
 **  be tracked by profiling. This is used for the implicit return put
 **  at the end of functions.
 */
-void CodeReturnVoid(CodeState * cs);
-void CodeReturnVoidWhichIsNotProfiled(CodeState * cs);
+void CodeReturnVoid(CodeState * cs) GAP_GC_CANSAFEPOINT;
+void CodeReturnVoidWhichIsNotProfiled(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
@@ -1033,41 +1054,41 @@ void CodeReturnVoidWhichIsNotProfiled(CodeState * cs);
 */
 void CodeOrL(CodeState * cs);
 
-void CodeOr(CodeState * cs);
+void CodeOr(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
 void CodeAndL(CodeState * cs);
 
-void CodeAnd(CodeState * cs);
+void CodeAnd(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
-void CodeNot(CodeState * cs);
+void CodeNot(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
-void CodeEq(CodeState * cs);
+void CodeEq(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
-void CodeNe(CodeState * cs);
+void CodeNe(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
-void CodeLt(CodeState * cs);
+void CodeLt(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
-void CodeGe(CodeState * cs);
+void CodeGe(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
-void CodeGt(CodeState * cs);
+void CodeGt(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
-void CodeLe(CodeState * cs);
+void CodeLe(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
-void CodeIn(CodeState * cs);
+void CodeIn(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
-void CodeSum(CodeState * cs);
+void CodeSum(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
-void CodeAInv(CodeState * cs);
+void CodeAInv(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
-void CodeDiff(CodeState * cs);
+void CodeDiff(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
-void CodeProd(CodeState * cs);
+void CodeProd(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
-void CodeQuo(CodeState * cs);
+void CodeQuo(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
-void CodeMod(CodeState * cs);
+void CodeMod(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
-void CodePow(CodeState * cs);
+void CodePow(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -1077,7 +1098,7 @@ void CodePow(CodeState * cs);
 **  'CodeIntExpr' is the action to code a literal integer expression.  <val>
 **  is the integer as a GAP object.
 */
-void CodeIntExpr(CodeState * cs, Obj val);
+void CodeIntExpr(CodeState * cs, Obj val) GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
@@ -1085,7 +1106,7 @@ void CodeIntExpr(CodeState * cs, Obj val);
 **
 **  'CodeTildeExpr' is the action to code a tilde expression.
 */
-void CodeTildeExpr(CodeState * cs);
+void CodeTildeExpr(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
@@ -1093,7 +1114,7 @@ void CodeTildeExpr(CodeState * cs);
 **
 **  'CodeTrueExpr' is the action to code a literal true expression.
 */
-void CodeTrueExpr(CodeState * cs);
+void CodeTrueExpr(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -1102,7 +1123,7 @@ void CodeTrueExpr(CodeState * cs);
 **
 **  'CodeFalseExpr' is the action to code a literal false expression.
 */
-void CodeFalseExpr(CodeState * cs);
+void CodeFalseExpr(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -1112,7 +1133,7 @@ void CodeFalseExpr(CodeState * cs);
 **  'CodeCharExpr'  is the action  to  code a  literal  character expression.
 **  <chr> is the C character.
 */
-void CodeCharExpr(CodeState * cs, Char chr);
+void CodeCharExpr(CodeState * cs, Char chr) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -1129,9 +1150,9 @@ void CodeCharExpr(CodeState * cs, Char chr);
 **  called when  the permutation is read completely.   <nrc> is the number of
 **  cycles.
 */
-void CodePermCycle(CodeState * cs, UInt nrx, UInt nrc);
+void CodePermCycle(CodeState * cs, UInt nrx, UInt nrc) GAP_GC_CANSAFEPOINT;
 
-void CodePerm(CodeState * cs, UInt nrc);
+void CodePerm(CodeState * cs, UInt nrc) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -1143,40 +1164,42 @@ void CodePerm(CodeState * cs, UInt nrc);
 */
 void CodeListExprBegin(CodeState * cs, UInt top);
 
-void CodeListExprBeginElm(CodeState * cs, UInt pos);
+void CodeListExprBeginElm(CodeState * cs, UInt pos) GAP_GC_CANSAFEPOINT;
 
 void CodeListExprEndElm(CodeState * cs);
 
 void CodeListExprEnd(
-    CodeState * cs, UInt nr, UInt range, UInt top, UInt tilde);
+    CodeState * cs, UInt nr, UInt range, UInt top, UInt tilde)
+    GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  CodeStringExpr(<str>) . . . . . . . . . .  code literal string expression
 */
-void CodeStringExpr(CodeState * cs, Obj str);
+void CodeStringExpr(CodeState * cs, Obj str) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  CodePragma(<pragma>)
 */
-void CodePragma(CodeState * cs, Obj pragma);
+void CodePragma(CodeState * cs, Obj pragma) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  CodeLazyFloatExpr(<str>,<pushExpr>) . . . . .  code lazy float expression
 */
-Expr CodeLazyFloatExpr(CodeState * cs, Obj str, UInt pushExpr);
+Expr CodeLazyFloatExpr(CodeState * cs, Obj str, UInt pushExpr)
+    GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  CodeFloatExpr(<str>) . . . . . . . . . .  code literal float expression
 */
-void CodeFloatExpr(CodeState * cs, Obj str);
+void CodeFloatExpr(CodeState * cs, Obj str) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -1189,13 +1212,14 @@ void CodeFloatExpr(CodeState * cs, Obj str);
 */
 void CodeRecExprBegin(CodeState * cs, UInt top);
 
-void CodeRecExprBeginElmName(CodeState * cs, UInt rnam);
+void CodeRecExprBeginElmName(CodeState * cs, UInt rnam) GAP_GC_CANSAFEPOINT;
 
-void CodeRecExprBeginElmExpr(CodeState * cs);
+void CodeRecExprBeginElmExpr(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
 void CodeRecExprEndElm(CodeState * cs);
 
-void CodeRecExprEnd(CodeState * cs, UInt nr, UInt top, UInt tilde);
+void CodeRecExprEnd(CodeState * cs, UInt nr, UInt top, UInt tilde)
+    GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -1210,9 +1234,9 @@ void CodeRecExprEnd(CodeState * cs, UInt nr, UInt top, UInt tilde);
 **  subexpressions.  The  *first* is the local variable,  the *second* is the
 **  right hand side expression.
 */
-void CodeAssLVar(CodeState * cs, UInt lvar);
+void CodeAssLVar(CodeState * cs, UInt lvar) GAP_GC_CANSAFEPOINT;
 
-void CodeUnbLVar(CodeState * cs, UInt lvar);
+void CodeUnbLVar(CodeState * cs, UInt lvar) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -1226,9 +1250,9 @@ void CodeUnbLVar(CodeState * cs, UInt lvar);
 **  A   reference to   a local  variable    is represented immediately   (see
 **  'REF_LVAR_LVAR').
 */
-void CodeRefLVar(CodeState * cs, UInt lvar);
+void CodeRefLVar(CodeState * cs, UInt lvar) GAP_GC_CANSAFEPOINT;
 
-void CodeIsbLVar(CodeState * cs, UInt lvar);
+void CodeIsbLVar(CodeState * cs, UInt lvar) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -1243,9 +1267,9 @@ void CodeIsbLVar(CodeState * cs, UInt lvar);
 **  two subexpressions.  The *first* is the higher  variable, the *second* is
 **  the right hand side expression.
 */
-void CodeAssHVar(CodeState * cs, UInt hvar);
+void CodeAssHVar(CodeState * cs, UInt hvar) GAP_GC_CANSAFEPOINT;
 
-void CodeUnbHVar(CodeState * cs, UInt hvar);
+void CodeUnbHVar(CodeState * cs, UInt hvar) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -1259,9 +1283,9 @@ void CodeUnbHVar(CodeState * cs, UInt hvar);
 **  A reference to a higher variable is represented by an expression bag with
 **  one subexpression.  This is the higher variable.
 */
-void CodeRefHVar(CodeState * cs, UInt hvar);
+void CodeRefHVar(CodeState * cs, UInt hvar) GAP_GC_CANSAFEPOINT;
 
-void CodeIsbHVar(CodeState * cs, UInt hvar);
+void CodeIsbHVar(CodeState * cs, UInt hvar) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -1276,9 +1300,9 @@ void CodeIsbHVar(CodeState * cs, UInt hvar);
 **  two subexpressions.  The *first* is the  global variable, the *second* is
 **  the right hand side expression.
 */
-void CodeAssGVar(CodeState * cs, UInt gvar);
+void CodeAssGVar(CodeState * cs, UInt gvar) GAP_GC_CANSAFEPOINT;
 
-void CodeUnbGVar(CodeState * cs, UInt gvar);
+void CodeUnbGVar(CodeState * cs, UInt gvar) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -1291,9 +1315,9 @@ void CodeUnbGVar(CodeState * cs, UInt gvar);
 **  A reference to a global variable is represented by an expression bag with
 **  one subexpression.  This is the global variable.
 */
-void CodeRefGVar(CodeState * cs, UInt gvar);
+void CodeRefGVar(CodeState * cs, UInt gvar) GAP_GC_CANSAFEPOINT;
 
-void CodeIsbGVar(CodeState * cs, UInt gvar);
+void CodeIsbGVar(CodeState * cs, UInt gvar) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -1303,15 +1327,16 @@ void CodeIsbGVar(CodeState * cs, UInt gvar);
 *F  CodeAssListLevel(<level>) . . . . . . .  code assignment to several lists
 *F  CodeAsssListLevel(<level>)  . . code multiple assignment to several lists
 */
-void CodeAssList(CodeState * cs, Int narg);
+void CodeAssList(CodeState * cs, Int narg) GAP_GC_CANSAFEPOINT;
 
-void CodeAsssList(CodeState * cs);
+void CodeAsssList(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
-void CodeAssListLevel(CodeState * cs, Int narg, UInt level);
+void CodeAssListLevel(CodeState * cs, Int narg, UInt level)
+    GAP_GC_CANSAFEPOINT;
 
-void CodeAsssListLevel(CodeState * cs, UInt level);
+void CodeAsssListLevel(CodeState * cs, UInt level) GAP_GC_CANSAFEPOINT;
 
-void CodeUnbList(CodeState * cs, Int narg);
+void CodeUnbList(CodeState * cs, Int narg) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -1321,15 +1346,16 @@ void CodeUnbList(CodeState * cs, Int narg);
 *F  CodeElmListLevel(<level>) . . . . . . . . code selection of several lists
 *F  CodeElmsListLevel(<level>)  . .  code multiple selection of several lists
 */
-void CodeElmList(CodeState * cs, Int narg);
+void CodeElmList(CodeState * cs, Int narg) GAP_GC_CANSAFEPOINT;
 
-void CodeElmsList(CodeState * cs);
+void CodeElmsList(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
-void CodeElmListLevel(CodeState * cs, Int narg, UInt level);
+void CodeElmListLevel(CodeState * cs, Int narg, UInt level)
+    GAP_GC_CANSAFEPOINT;
 
-void CodeElmsListLevel(CodeState * cs, UInt level);
+void CodeElmsListLevel(CodeState * cs, UInt level) GAP_GC_CANSAFEPOINT;
 
-void CodeIsbList(CodeState * cs, Int narg);
+void CodeIsbList(CodeState * cs, Int narg) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -1337,13 +1363,13 @@ void CodeIsbList(CodeState * cs, Int narg);
 *F  CodeAssRecName(<rnam>)  . . . . . . . . . . . code assignment to a record
 *F  CodeAssRecExpr()  . . . . . . . . . . . . . . code assignment to a record
 */
-void CodeAssRecName(CodeState * cs, UInt rnam);
+void CodeAssRecName(CodeState * cs, UInt rnam) GAP_GC_CANSAFEPOINT;
 
-void CodeAssRecExpr(CodeState * cs);
+void CodeAssRecExpr(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
-void CodeUnbRecName(CodeState * cs, UInt rnam);
+void CodeUnbRecName(CodeState * cs, UInt rnam) GAP_GC_CANSAFEPOINT;
 
-void CodeUnbRecExpr(CodeState * cs);
+void CodeUnbRecExpr(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -1351,31 +1377,31 @@ void CodeUnbRecExpr(CodeState * cs);
 *F  CodeElmRecName(<rnam>)  . . . . . . . . . . .  code selection of a record
 *F  CodeElmRecExpr()  . . . . . . . . . . . . . .  code selection of a record
 */
-void CodeElmRecName(CodeState * cs, UInt rnam);
+void CodeElmRecName(CodeState * cs, UInt rnam) GAP_GC_CANSAFEPOINT;
 
-void CodeElmRecExpr(CodeState * cs);
+void CodeElmRecExpr(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
-void CodeIsbRecName(CodeState * cs, UInt rnam);
+void CodeIsbRecName(CodeState * cs, UInt rnam) GAP_GC_CANSAFEPOINT;
 
-void CodeIsbRecExpr(CodeState * cs);
+void CodeIsbRecExpr(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  CodeAssPosObj() . . . . . . . . . . . . . . . code assignment to a posobj
 */
-void CodeAssPosObj(CodeState * cs);
+void CodeAssPosObj(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
-void CodeUnbPosObj(CodeState * cs);
+void CodeUnbPosObj(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  CodeElmPosObj() . . . . . . . . . . . . . . .  code selection of a posobj
 */
-void CodeElmPosObj(CodeState * cs);
+void CodeElmPosObj(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
-void CodeIsbPosObj(CodeState * cs);
+void CodeIsbPosObj(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -1383,13 +1409,13 @@ void CodeIsbPosObj(CodeState * cs);
 *F  CodeAssComObjName(<rnam>) . . . . . . . . . . code assignment to a comobj
 *F  CodeAssComObjExpr() . . . . . . . . . . . . . code assignment to a comobj
 */
-void CodeAssComObjName(CodeState * cs, UInt rnam);
+void CodeAssComObjName(CodeState * cs, UInt rnam) GAP_GC_CANSAFEPOINT;
 
-void CodeAssComObjExpr(CodeState * cs);
+void CodeAssComObjExpr(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
-void CodeUnbComObjName(CodeState * cs, UInt rnam);
+void CodeUnbComObjName(CodeState * cs, UInt rnam) GAP_GC_CANSAFEPOINT;
 
-void CodeUnbComObjExpr(CodeState * cs);
+void CodeUnbComObjExpr(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -1397,13 +1423,13 @@ void CodeUnbComObjExpr(CodeState * cs);
 *F  CodeElmComObjName(<rnam>) . . . . . . . . . .  code selection of a comobj
 *F  CodeElmComObjExpr() . . . . . . . . . . . . .  code selection of a comobj
 */
-void CodeElmComObjName(CodeState * cs, UInt rnam);
+void CodeElmComObjName(CodeState * cs, UInt rnam) GAP_GC_CANSAFEPOINT;
 
-void CodeElmComObjExpr(CodeState * cs);
+void CodeElmComObjExpr(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
-void CodeIsbComObjName(CodeState * cs, UInt rnam);
+void CodeIsbComObjName(CodeState * cs, UInt rnam) GAP_GC_CANSAFEPOINT;
 
-void CodeIsbComObjExpr(CodeState * cs);
+void CodeIsbComObjExpr(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
@@ -1411,7 +1437,7 @@ void CodeIsbComObjExpr(CodeState * cs);
 **
 */
 
-void CodeEmpty(CodeState * cs);
+void CodeEmpty(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
@@ -1426,7 +1452,7 @@ void CodeInfoBegin(CodeState * cs);
 
 void CodeInfoMiddle(CodeState * cs);
 
-void CodeInfoEnd(CodeState * cs, UInt narg);
+void CodeInfoEnd(CodeState * cs, UInt narg) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -1443,9 +1469,9 @@ void CodeAssertAfterLevel(CodeState * cs);
 
 void CodeAssertAfterCondition(CodeState * cs);
 
-void CodeAssertEnd2Args(CodeState * cs);
+void CodeAssertEnd2Args(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
-void CodeAssertEnd3Args(CodeState * cs);
+void CodeAssertEnd3Args(CodeState * cs) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

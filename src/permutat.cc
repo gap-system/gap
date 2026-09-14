@@ -79,7 +79,7 @@ extern "C" {
 **
 **  'IdentityPerm' is an identity permutation.
 */
-Obj             IdentityPerm;
+Obj             IdentityPerm GAP_GC_GLOBALLY_ROOTED;
 
 
 static const UInt MAX_DEG_PERM4 = ((Int)1 << (sizeof(UInt) == 8 ? 32 : 28)) - 1;
@@ -104,7 +104,7 @@ typedef struct {
 **  costs (particularly when starting new threads).
 **  Use the UseTmpPerm(<size>) utility function to ensure it is constructed!
 */
-DECL_MODULE_STATE Obj TmpPerm;
+DECL_MODULE_STATE Obj TmpPerm GAP_GC_GLOBALLY_ROOTED;
 
 #ifdef HPCGAP
 } PermutatModuleState;
@@ -113,7 +113,7 @@ DECL_MODULE_STATE Obj TmpPerm;
 #endif
 
 
-static void UseTmpPerm(UInt size)
+static void UseTmpPerm(UInt size) GAP_GC_CANSAFEPOINT
 {
     if (TmpPerm == (Obj)0)
         TmpPerm  = NewBag(T_PERM4, size);
@@ -137,9 +137,9 @@ static inline T * ADDR_TMP_PERM()
 **
 **  'TypePerm' is the function in 'TypeObjFuncs' for permutations.
 */
-static Obj TYPE_PERM2;
+static Obj TYPE_PERM2 GAP_GC_GLOBALLY_ROOTED;
 
-static Obj TYPE_PERM4;
+static Obj TYPE_PERM4 GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypePerm2(Obj perm)
 {
@@ -156,7 +156,7 @@ template <typename T>
 static inline UInt LargestMovedPointPerm_(Obj perm);
 
 template <typename T>
-static Obj InvPerm(Obj perm);
+static Obj InvPerm(Obj perm) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -171,7 +171,7 @@ static Obj InvPerm(Obj perm);
 **  behaviour.
 */
 template <typename T>
-static void PrintPerm(Obj perm)
+static void PrintPerm(Obj perm) GAP_GC_CANSAFEPOINT
 {
     UInt                degPerm;        // degree of the permutation
     const T *           ptPerm;         // pointer to the permutation
@@ -338,7 +338,7 @@ static Int LtPerm(Obj opL, Obj opR)
 **  This is a little bit tuned but should be sufficiently easy to understand.
 */
 template <typename TL, typename TR>
-static Obj ProdPerm(Obj opL, Obj opR)
+static Obj ProdPerm(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     typedef typename ResultType<TL,TR>::type Res;
 
@@ -401,7 +401,13 @@ static Obj ProdPerm(Obj opL, Obj opR)
 */
 static Obj QuoPerm(Obj opL, Obj opR)
 {
-    return PROD(opL, INV(opR));
+    Obj inv = 0;
+    Obj result;
+    GAP_GC_PUSH1(&inv);
+    inv = INV(opR);
+    result = PROD(opL, inv);
+    GAP_GC_POP();
+    return result;
 }
 
 
@@ -415,7 +421,7 @@ static Obj QuoPerm(Obj opL, Obj opR)
 **  This can be done as fast as a single multiplication or inversion.
 */
 template <typename TL, typename TR>
-static Obj LQuoPerm(Obj opL, Obj opR)
+static Obj LQuoPerm(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     typedef typename ResultType<TL,TR>::type Res;
 
@@ -486,6 +492,7 @@ static Obj InvPerm(Obj perm)
         return inv;
 
     deg = DEG_PERM<T>(perm);
+    GAP_GC_PUSH1(&inv);
     inv = NEW_PERM<T>(deg);
 
     // get pointer to the permutation and the inverse
@@ -498,6 +505,7 @@ static Obj InvPerm(Obj perm)
 
     // store and return the inverse
     SET_STOREDINV_PERM(perm, inv);
+    GAP_GC_POP();
     return inv;
 }
 
@@ -513,9 +521,9 @@ static Obj InvPerm(Obj perm)
 **  to be faster than binary powering, and does not need  temporary  storage.
 */
 template <typename T>
-static Obj PowPermInt(Obj opL, Obj opR)
+static Obj PowPermInt(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
-    Obj                 pow;            // handle of the power (result)
+    Obj                 pow = 0;        // handle of the power (result)
     T *                 ptP;            // pointer to the power
     const T *           ptL;            // pointer to the permutation
     UInt1 *             ptKnown;        // pointer to temporary bag
@@ -541,6 +549,7 @@ static Obj PowPermInt(Obj opL, Obj opR)
     }
 
     // allocate a result bag
+    GAP_GC_PUSH2(&pow, &opR);
     pow = NEW_PERM<T>(deg);
 
     // compute the power by repeated mapping for small positive exponents
@@ -760,6 +769,7 @@ static Obj PowPermInt(Obj opL, Obj opR)
 
     }
 
+    GAP_GC_POP();
     return pow;
 }
 
@@ -773,7 +783,7 @@ static Obj PowPermInt(Obj opL, Obj opR)
 **  fixpoint of the permutation and thus simply returned.
 */
 template <typename T>
-static Obj PowIntPerm(Obj opL, Obj opR)
+static Obj PowIntPerm(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     Int                 img;            // image (result)
 
@@ -811,10 +821,10 @@ static Obj PowIntPerm(Obj opL, Obj opR)
 **  point and so on, until we come  back to  <opL>.  The  last point  is  the
 **  preimage of <opL>.  This is faster because the cycles are  usually short.
 */
-static Obj PERM_INVERSE_THRESHOLD;
+static Obj PERM_INVERSE_THRESHOLD GAP_GC_GLOBALLY_ROOTED;
 
 template <typename T>
-static Obj QuoIntPerm(Obj opL, Obj opR)
+static Obj QuoIntPerm(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     T                   pre;            // preimage (result)
     Int                 img;            // image (left operand)
@@ -864,7 +874,7 @@ static Obj QuoIntPerm(Obj opL, Obj opR)
 **  <opR>'.
 */
 template <typename TL, typename TR>
-static Obj PowPerm(Obj opL, Obj opR)
+static Obj PowPerm(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     typedef typename ResultType<TL,TR>::type Res;
 
@@ -922,7 +932,7 @@ static Obj PowPerm(Obj opL, Obj opR)
 **  <opR>, that is defined as '<hd>\^-1 \*\ <opR>\^-1 \*\ <opL> \*\ <opR>'.
 */
 template <typename TL, typename TR>
-static Obj CommPerm(Obj opL, Obj opR)
+static Obj CommPerm(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     typedef typename ResultType<TL,TR>::type Res;
 
@@ -991,7 +1001,7 @@ static Obj OnePerm(Obj op)
 **  'IsPerm' returns 'true' if the value <val> is a permutation and  'false'
 **  otherwise.
 */
-static Obj IsPermFilt;
+static Obj IsPermFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_PERM(Obj self, Obj val)
 {
@@ -1022,7 +1032,7 @@ static Obj FiltIS_PERM(Obj self, Obj val)
 **  It also does some checks to make sure that the  list  is  a  permutation.
 */
 template <typename T>
-static inline Obj PermList(Obj list)
+static inline Obj PermList(Obj list) GAP_GC_CANSAFEPOINT
 {
     Obj                 perm;           // handle of the permutation
     T *                 ptPerm;         // pointer to the permutation
@@ -1072,37 +1082,47 @@ static inline Obj PermList(Obj list)
     return perm;
 }
 
-static Obj FuncPermList(Obj self, Obj list)
+static Obj FuncPermList(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     RequireSmallList(SELF_NAME, list);
 
+    Obj copied = 0;
+    Obj result;
     UInt len = LEN_LIST( list );
     if (len == 0)
         return IdentityPerm;
+    GAP_GC_PUSH1(&copied);
     if (!IS_PLIST(list)) {
-        if (!IS_POSS_LIST(list))
+        if (!IS_POSS_LIST(list)) {
+            GAP_GC_POP();
             return Fail;
-        if (IS_RANGE(list)) {
-            if (GET_LOW_RANGE(list) == 1 && GET_INC_RANGE(list) == 1)
-                return IdentityPerm;
         }
-        list = PLAIN_LIST_COPY(list);
+        if (IS_RANGE(list)) {
+            if (GET_LOW_RANGE(list) == 1 && GET_INC_RANGE(list) == 1) {
+                GAP_GC_POP();
+                return IdentityPerm;
+            }
+        }
+        copied = PLAIN_LIST_COPY(list);
+        list = copied;
     }
 
     if ( len <= 65536 ) {
-        return PermList<UInt2>(list);
+        result = PermList<UInt2>(list);
     }
     else if (len <= MAX_DEG_PERM4) {
-        return PermList<UInt4>(list);
+        result = PermList<UInt4>(list);
     }
     else {
         ErrorMayQuit("PermList: list length %d exceeds maximum permutation degree",
              len, 0);
     }
+    GAP_GC_POP();
+    return result;
 }
 
 template <typename T>
-static inline Obj ListPerm_(Obj perm, Int len)
+static inline Obj ListPerm_(Obj perm, Int len) GAP_GC_CANSAFEPOINT
 {
     Obj                 res;            // handle of the image, result
     Obj *               ptRes;          // pointer to the result
@@ -1138,7 +1158,7 @@ static inline Obj ListPerm_(Obj perm, Int len)
 
 static Obj ListPermOper;
 
-static Obj FuncListPerm1(Obj self, Obj perm)
+static Obj FuncListPerm1(Obj self, Obj perm) GAP_GC_CANSAFEPOINT
 {
     RequirePermutation(SELF_NAME, perm);
     Int nn = LargestMovedPointPerm(perm);
@@ -1148,7 +1168,7 @@ static Obj FuncListPerm1(Obj self, Obj perm)
         return ListPerm_<UInt4>(perm, nn);
 }
 
-static Obj FuncListPerm2(Obj self, Obj perm, Obj n)
+static Obj FuncListPerm2(Obj self, Obj perm, Obj n) GAP_GC_CANSAFEPOINT
 {
     RequirePermutation(SELF_NAME, perm);
     Int nn = GetSmallInt(SELF_NAME, n);
@@ -1201,7 +1221,7 @@ UInt LargestMovedPointPerm(Obj perm)
 */
 
 // Import 'Infinity', as a return value for the identity permutation
-static Obj Infinity;
+static Obj Infinity GAP_GC_GLOBALLY_ROOTED;
 
 template <typename T>
 static inline Obj SmallestMovedPointPerm_(Obj perm)
@@ -1233,7 +1253,7 @@ static Obj SmallestMovedPointPerm(Obj perm)
 **
 **  GAP-level wrapper for 'LargestMovedPointPerm'.
 */
-static Obj FuncLARGEST_MOVED_POINT_PERM(Obj self, Obj perm)
+static Obj FuncLARGEST_MOVED_POINT_PERM(Obj self, Obj perm) GAP_GC_CANSAFEPOINT
 {
     RequirePermutation(SELF_NAME, perm);
 
@@ -1247,6 +1267,7 @@ static Obj FuncLARGEST_MOVED_POINT_PERM(Obj self, Obj perm)
 **  GAP-level wrapper for 'SmallestMovedPointPerm'.
 */
 static Obj FuncSMALLEST_MOVED_POINT_PERM(Obj self, Obj perm)
+    GAP_GC_CANSAFEPOINT
 {
     RequirePermutation(SELF_NAME, perm);
 
@@ -1291,6 +1312,7 @@ static inline Obj CYCLE_LENGTH_PERM_INT(Obj perm, UInt pnt)
 }
 
 static Obj FuncCYCLE_LENGTH_PERM_INT(Obj self, Obj perm, Obj point)
+    GAP_GC_CANSAFEPOINT
 {
     UInt                pnt;            // value of the point
 
@@ -1318,7 +1340,7 @@ static Obj FuncCYCLE_LENGTH_PERM_INT(Obj self, Obj perm, Obj point)
 **  integer, under the permutation <perm> as a list.
 */
 template <typename T>
-static inline Obj CYCLE_PERM_INT(Obj perm, UInt pnt)
+static inline Obj CYCLE_PERM_INT(Obj perm, UInt pnt) GAP_GC_CANSAFEPOINT
 {
     Obj                 list;           // handle of the list (result)
     Obj *               ptList;         // pointer to the list
@@ -1356,6 +1378,7 @@ static inline Obj CYCLE_PERM_INT(Obj perm, UInt pnt)
 }
 
 static Obj FuncCYCLE_PERM_INT(Obj self, Obj perm, Obj point)
+    GAP_GC_CANSAFEPOINT
 {
     UInt                pnt;            // value of the point
 
@@ -1383,7 +1406,7 @@ static Obj FuncCYCLE_PERM_INT(Obj self, Obj perm, Obj point)
 **  `CycleStructure'.
 */
 template <typename T>
-static inline Obj CYCLE_STRUCT_PERM(Obj perm)
+static inline Obj CYCLE_STRUCT_PERM(Obj perm) GAP_GC_CANSAFEPOINT
 {
     Obj                 list;           // handle of the list (result)
     Obj *               ptList;         // pointer to the list
@@ -1469,7 +1492,7 @@ static inline Obj CYCLE_STRUCT_PERM(Obj perm)
     return list;
 }
 
-static Obj FuncCYCLE_STRUCT_PERM(Obj self, Obj perm)
+static Obj FuncCYCLE_STRUCT_PERM(Obj self, Obj perm) GAP_GC_CANSAFEPOINT
 {
     RequirePermutation(SELF_NAME, perm);
 
@@ -1496,10 +1519,10 @@ static Obj FuncCYCLE_STRUCT_PERM(Obj self, Obj perm)
 **  computation may easily overflow.  So we have to use  arbitrary precision.
 */
 template <typename T>
-static inline Obj ORDER_PERM(Obj perm)
+static inline Obj ORDER_PERM(Obj perm) GAP_GC_CANSAFEPOINT
 {
     const T *           ptPerm;         // pointer to the permutation
-    Obj                 ord;            // order (result), may be huge
+    Obj                 ord = INTOBJ_INT(1); // order (result), may be huge
     T *                 ptKnown;        // pointer to temporary bag
     UInt                len;            // length of one cycle
     UInt                p, q;           // loop variables
@@ -1516,7 +1539,7 @@ static inline Obj ORDER_PERM(Obj perm)
         ptKnown[p] = 0;
 
     // start with order 1
-    ord = INTOBJ_INT(1);
+    GAP_GC_PUSH1(&ord);
 
     // loop over all cycles
     for ( p = 0; p < DEG_PERM<T>(perm); p++ ) {
@@ -1541,10 +1564,11 @@ static inline Obj ORDER_PERM(Obj perm)
     }
 
     // return the order
+    GAP_GC_POP();
     return ord;
 }
 
-static Obj FuncORDER_PERM(Obj self, Obj perm)
+static Obj FuncORDER_PERM(Obj self, Obj perm) GAP_GC_CANSAFEPOINT
 {
     RequirePermutation(SELF_NAME, perm);
 
@@ -1572,7 +1596,7 @@ static Obj FuncORDER_PERM(Obj self, Obj perm)
 **  $\{ +1, -1 \}$, the kernel of which is the alternating group.
 */
 template <typename T>
-static inline Obj SIGN_PERM(Obj perm)
+static inline Obj SIGN_PERM(Obj perm) GAP_GC_CANSAFEPOINT
 {
     const T *           ptPerm;         // pointer to the permutation
     Int                 sign;           // sign (result)
@@ -1618,7 +1642,7 @@ static inline Obj SIGN_PERM(Obj perm)
     return INTOBJ_INT( sign );
 }
 
-static Obj FuncSIGN_PERM(Obj self, Obj perm)
+static Obj FuncSIGN_PERM(Obj self, Obj perm) GAP_GC_CANSAFEPOINT
 {
     RequirePermutation(SELF_NAME, perm);
 
@@ -1648,14 +1672,14 @@ static Obj FuncSIGN_PERM(Obj self, Obj perm)
 **  permutation.
 */
 template <typename T>
-static inline Obj SMALLEST_GENERATOR_PERM(Obj perm)
+static inline Obj SMALLEST_GENERATOR_PERM(Obj perm) GAP_GC_CANSAFEPOINT
 {
-    Obj                 small;          // handle of the smallest gen
+    Obj                 small = 0;      // handle of the smallest gen
     T *                 ptSmall;        // pointer to the smallest gen
     const T *           ptPerm;         // pointer to the permutation
     T *                 ptKnown;        // pointer to temporary bag
-    Obj                 ord;            // order, may be huge
-    Obj                 pow;            // power, may also be huge
+    Obj                 ord = INTOBJ_INT(1); // order, may be huge
+    Obj                 pow = INTOBJ_INT(0); // power, may also be huge
     UInt                len;            // length of one cycle
     UInt                gcd,  s,  t;    // gcd( len, ord ), temporaries
     UInt                min;            // minimal element in a cycle
@@ -1666,6 +1690,7 @@ static inline Obj SMALLEST_GENERATOR_PERM(Obj perm)
     UseTmpPerm(SIZE_OBJ(perm));
 
     // allocate the result bag
+    GAP_GC_PUSH3(&small, &ord, &pow);
     small = NEW_PERM<T>( DEG_PERM<T>(perm) );
 
     // get the pointer to the bags
@@ -1678,7 +1703,6 @@ static inline Obj SMALLEST_GENERATOR_PERM(Obj perm)
         ptKnown[p] = 0;
 
     // we only know that we must raise <perm> to a power = 0 mod 1
-    ord = INTOBJ_INT(1);  pow = INTOBJ_INT(0);
 
     // loop over all cycles
     for ( p = 0; p < DEG_PERM<T>(perm); p++ ) {
@@ -1731,10 +1755,11 @@ static inline Obj SMALLEST_GENERATOR_PERM(Obj perm)
     }
 
     // return the smallest generator
+    GAP_GC_POP();
     return small;
 }
 
-static Obj FuncSMALLEST_GENERATOR_PERM(Obj self, Obj perm)
+static Obj FuncSMALLEST_GENERATOR_PERM(Obj self, Obj perm) GAP_GC_CANSAFEPOINT
 {
     RequirePermutation(SELF_NAME, perm);
 
@@ -1761,8 +1786,9 @@ static Obj FuncSMALLEST_GENERATOR_PERM(Obj self, Obj perm)
 */
 template <typename T>
 static inline Obj RESTRICTED_PERM(Obj perm, Obj dom, Obj test)
+    GAP_GC_CANSAFEPOINT
 {
-    Obj rest;
+    Obj rest = 0;
     T *                ptRest;
     const T *          ptPerm;
     const Obj *        ptDom;
@@ -1773,6 +1799,7 @@ static inline Obj RESTRICTED_PERM(Obj perm, Obj dom, Obj test)
 
     // allocate the result bag
     deg = DEG_PERM<T>(perm);
+    GAP_GC_PUSH1(&rest);
     rest = NEW_PERM<T>(deg);
 
     // get the pointer to the bags
@@ -1786,6 +1813,7 @@ static inline Obj RESTRICTED_PERM(Obj perm, Obj dom, Obj test)
 
     if ( ! IS_RANGE(dom) ) {
       if ( ! IS_PLIST( dom ) ) {
+        GAP_GC_POP();
         return Fail;
       }
       // domain is list
@@ -1802,6 +1830,7 @@ static inline Obj RESTRICTED_PERM(Obj perm, Obj dom, Obj test)
               }
           }
           else {
+              GAP_GC_POP();
               return Fail;
           }
       }
@@ -1811,6 +1840,7 @@ static inline Obj RESTRICTED_PERM(Obj perm, Obj dom, Obj test)
       p = GET_LOW_RANGE(dom);
       inc = GET_INC_RANGE(dom);
       if (p < 1 || p + inc * (len - 1) < 1) {
+          GAP_GC_POP();
           return Fail;
       }
       for (i = p; i != p + inc * len; i += inc) {
@@ -1832,17 +1862,22 @@ static inline Obj RESTRICTED_PERM(Obj perm, Obj dom, Obj test)
       // check whether the result is a permutation
       for (p=0;p<deg;p++) {
         inc=ptRest[p];
-        if (ptTmp[inc]==1) return Fail; // point was known
+        if (ptTmp[inc]==1) {
+          GAP_GC_POP();
+          return Fail; // point was known
+        }
         else ptTmp[inc]=1; // now point is known
       }
 
     }
 
     // return the restriction
+    GAP_GC_POP();
     return rest;
 }
 
 static Obj FuncRESTRICTED_PERM(Obj self, Obj perm, Obj dom, Obj test)
+    GAP_GC_CANSAFEPOINT
 {
     RequirePermutation(SELF_NAME, perm);
 
@@ -1861,7 +1896,7 @@ static Obj FuncRESTRICTED_PERM(Obj self, Obj perm, Obj dom, Obj test)
 **  'TRIM_PERM' trims a permutation to the first <n> points. This can be
 ##  useful to save memory
 */
-static Obj FuncTRIM_PERM(Obj self, Obj perm, Obj n)
+static Obj FuncTRIM_PERM(Obj self, Obj perm, Obj n) GAP_GC_CANSAFEPOINT
 {
     RequirePermutation(SELF_NAME, perm);
     RequireNonnegativeSmallInt(SELF_NAME, n);
@@ -2058,9 +2093,9 @@ static Obj FuncSMALLEST_IMG_TUP_PERM(Obj self, Obj tup, Obj perm)
 **  verified.
 */
 template <typename T>
-static inline Obj OnTuplesPerm_(Obj tup, Obj perm)
+static inline Obj OnTuplesPerm_(Obj tup, Obj perm) GAP_GC_CANSAFEPOINT
 {
-    Obj                 res;            // handle of the image, result
+    Obj                 res = 0;        // handle of the image, result
     Obj *               ptRes;          // pointer to the result
     const T *           ptPrm;          // pointer to the permutation
     Obj                 tmp;            // temporary handle
@@ -2069,6 +2104,7 @@ static inline Obj OnTuplesPerm_(Obj tup, Obj perm)
 
     // copy the list into a mutable plist, which we will then modify in place
     res = PLAIN_LIST_COPY(tup);
+    GAP_GC_PUSH1(&res);
     RESET_FILT_LIST(res, FN_IS_SSORT);
     RESET_FILT_LIST(res, FN_IS_NSORT);
     const UInt len = LEN_PLIST(res);
@@ -2100,6 +2136,7 @@ static inline Obj OnTuplesPerm_(Obj tup, Obj perm)
         }
     }
 
+    GAP_GC_POP();
     return res;
 }
 
@@ -2127,9 +2164,9 @@ Obj             OnTuplesPerm (
 **  sorted. This is not verified.
 */
 template <typename T>
-static inline Obj OnSetsPerm_(Obj set, Obj perm)
+static inline Obj OnSetsPerm_(Obj set, Obj perm) GAP_GC_CANSAFEPOINT
 {
-    Obj                 res;            // handle of the image, result
+    Obj                 res = 0;        // handle of the image, result
     Obj *               ptRes;          // pointer to the result
     const T *           ptPrm;          // pointer to the permutation
     Obj                 tmp;            // temporary handle
@@ -2138,6 +2175,7 @@ static inline Obj OnSetsPerm_(Obj set, Obj perm)
 
     // copy the list into a mutable plist, which we will then modify in place
     res = PLAIN_LIST_COPY(set);
+    GAP_GC_PUSH1(&res);
     const UInt len = LEN_PLIST(res);
 
     // get the pointer
@@ -2176,6 +2214,7 @@ static inline Obj OnSetsPerm_(Obj set, Obj perm)
         SET_FILT_LIST(res, FN_IS_SSORT);
     }
 
+    GAP_GC_POP();
     return res;
 }
 
@@ -2269,7 +2308,7 @@ static void LoadPerm4(Obj perm)
 Obj Array2Perm (
     Obj                 array )
 {
-    Obj                 perm;           // permutation, result
+    Obj                 perm = 0;       // permutation, result
     UInt                m;              // maximal entry in permutation
     Obj                 cycle;          // one cycle of permutation
     UInt                i;              // loop variable
@@ -2281,6 +2320,7 @@ Obj Array2Perm (
 
     // allocate the new permutation
     m = 0;
+    GAP_GC_PUSH1(&perm);
     perm = NEW_PERM4( 0 );
 
     // loop over the cycles
@@ -2295,6 +2335,7 @@ Obj Array2Perm (
     TrimPerm(perm, m);
 
     // return the permutation
+    GAP_GC_POP();
     return perm;
 }
 
@@ -2389,7 +2430,7 @@ UInt ScanPermCycle(
 }
 
 
-static inline Int myquo(Obj pt, Obj perm)
+static inline Int myquo(Obj pt, Obj perm) GAP_GC_CANSAFEPOINT
 {
   if (TNUM_OBJ(perm) == T_PERM2)
     return INT_INTOBJ(QuoIntPerm<UInt2>(pt, perm));
@@ -2401,7 +2442,7 @@ static inline Int myquo(Obj pt, Obj perm)
 
 
 // Stabilizer chain helper implements AddGeneratorsExtendSchreierTree Inner loop
-static Obj FuncAGESTC(Obj self, Obj args)
+static Obj FuncAGESTC(Obj self, Obj args) GAP_GC_CANSAFEPOINT
 {
   Int i,j;
   Obj pt;
@@ -2461,7 +2502,7 @@ static Obj FuncAGEST(Obj self,
                      Obj labels,
                      Obj translabels,
                      Obj transversal,
-                     Obj genlabels)
+                     Obj genlabels) GAP_GC_CANSAFEPOINT
 {
   Int i,j;
   Int len = LEN_PLIST(orbit);
@@ -2512,13 +2553,14 @@ static Obj FuncAGEST(Obj self,
 #define DEGREELIMITONSTACK 512
 
 static Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
+    GAP_GC_CANSAFEPOINT
 {
     Int l;
     Int i;
     Int d;
     Int next;
-    Obj out;
-    Obj tabdst, tabsrc;
+    Obj out = 0;
+    Obj tabdst = 0, tabsrc = 0;
     Int x;
     Obj obj;
     Int mytabs[DEGREELIMITONSTACK+1];
@@ -2527,6 +2569,8 @@ static Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
     RequireDenseList(SELF_NAME, src);
     RequireDenseList(SELF_NAME, dst);
     RequireSameLength(SELF_NAME, src, dst);
+
+    GAP_GC_PUSH3(&out, &tabdst, &tabsrc);
 
     l = LEN_LIST(src);
     d = 0;
@@ -2555,6 +2599,7 @@ static Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
             if (mytabs[val]) {
                 // Already read where this value maps, check it is the same
                 if (ELM_LIST(dst, mytabs[val]) != ELM_LIST(dst, i)) {
+                    GAP_GC_POP();
                     return Fail;
                 }
             }
@@ -2566,6 +2611,7 @@ static Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
                 // Already read where this value is mapped from, check it is
                 // the same
                 if (ELM_LIST(src, mytabd[val]) != ELM_LIST(src, i)) {
+                    GAP_GC_POP();
                     return Fail;
                 }
             }
@@ -2603,6 +2649,7 @@ static Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
             if (ELM_PLIST(tabsrc, val)) {
                 if (ELM_LIST(dst, INT_INTOBJ(ELM_PLIST(tabsrc, val))) !=
                     ELM_LIST(dst, i)) {
+                    GAP_GC_POP();
                     return Fail;
                 }
             }
@@ -2618,6 +2665,7 @@ static Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
             if (ELM_PLIST(tabdst, val)) {
                 if (ELM_LIST(src, INT_INTOBJ(ELM_PLIST(tabdst, val))) !=
                     ELM_LIST(src, i)) {
+                    GAP_GC_POP();
                     return Fail;
                 }
             }
@@ -2652,7 +2700,9 @@ static Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
         }
         // ... to here! No CHANGED_BAG needed since this is a new object!
     }
-    return FuncPermList(self,out);
+    Obj result = FuncPermList(self,out);
+    GAP_GC_POP();
+    return result;
 }
 
 // InstallGlobalFunction( SCRSift, function ( S, g )
@@ -2682,10 +2732,12 @@ static UInt RN_orbit = 0;
 static UInt RN_transversal = 0;
 
 template <typename TG, typename Res>
-static Obj SCR_SIFT_HELPER(Obj stb, Obj g, UInt nn)
+static Obj SCR_SIFT_HELPER(Obj stb, Obj g, UInt nn) GAP_GC_CANSAFEPOINT
 {
     int  i;
-    Obj  result = NEW_PERM<Res>(nn);
+    Obj  result = 0;
+    GAP_GC_PUSH1(&result);
+    result = NEW_PERM<Res>(nn);
     UInt dg = DEG_PERM<TG>(g);
 
     if (dg > nn) /* In this case the caller has messed up or
@@ -2749,10 +2801,12 @@ static Obj SCR_SIFT_HELPER(Obj stb, Obj g, UInt nn)
         stb = ElmPRec(stb, RN_stabilizer);
     }
     // so we're done sifting, and now we just have to clean up result
+    GAP_GC_POP();
     return result;
 }
 
 static Obj FuncSCR_SIFT_HELPER(Obj self, Obj stb, Obj g, Obj n)
+    GAP_GC_CANSAFEPOINT
 {
     if (!IS_PREC(stb))
         RequireArgument(SELF_NAME, stb, "must be a plain record");
@@ -2983,7 +3037,7 @@ static Int InitKernel (
 **
 *F  PostRestore( <module> ) . . . . . . . . . . . . . after restore workspace
 */
-static Int PostRestore(StructInitInfo * module)
+static Int PostRestore(StructInitInfo * module) GAP_GC_CANSAFEPOINT
 {
     RN_stabilizer = RNamName("stabilizer");
     RN_orbit = RNamName("orbit");
@@ -2998,7 +3052,7 @@ static Int PostRestore(StructInitInfo * module)
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFiltsFromTable( GVarFilts );

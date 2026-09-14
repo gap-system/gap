@@ -72,8 +72,8 @@
 **  'TypeRangeNSort' is the  function in 'TypeObjFuncs' for ranges which are
 **  not strictly sorted.
 */
-static Obj TYPE_RANGE_NSORT_IMMUTABLE;
-static Obj TYPE_RANGE_NSORT_MUTABLE;
+static Obj TYPE_RANGE_NSORT_IMMUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_RANGE_NSORT_MUTABLE GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeRangeNSort(Obj list)
 {
@@ -89,8 +89,8 @@ static Obj TypeRangeNSort(Obj list)
 **  'TypeRangeSSort' is the function in 'TypeObjFuncs' for ranges which are
 **  strictly sorted.
 */
-static Obj TYPE_RANGE_SSORT_IMMUTABLE;
-static Obj TYPE_RANGE_SSORT_MUTABLE;
+static Obj TYPE_RANGE_SSORT_IMMUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_RANGE_SSORT_MUTABLE GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeRangeSSort(Obj list)
 {
@@ -131,7 +131,7 @@ Obj NEW_RANGE(Int len, Int low, Int inc)
 **
 **  'CopyRange' is the function in 'CopyObjFuncs' for ranges.
 */
-static Obj CopyRange(Obj list, Int mut)
+static Obj CopyRange(Obj list, Int mut) GAP_GC_CANSAFEPOINT
 {
     Obj                 copy;           // copy, result
 
@@ -140,6 +140,7 @@ static Obj CopyRange(Obj list, Int mut)
 
     // make a copy
     copy = NewBag(TNUM_OBJ(list), SIZE_OBJ(list));
+    GAP_GC_PUSH1(&copy);
     if (!mut)
         MakeImmutableNoRecurse(copy);
     ADDR_OBJ(copy)[0] = CONST_ADDR_OBJ(list)[0];
@@ -152,6 +153,7 @@ static Obj CopyRange(Obj list, Int mut)
     ADDR_OBJ(copy)[2] = CONST_ADDR_OBJ(list)[2];
 
     // return the copy
+    GAP_GC_POP();
     return copy;
 }
 
@@ -301,7 +303,7 @@ static Obj Elm0vRange(Obj list, Int pos)
 **  'ElmRange' is the function in  'ElmListFuncs' for ranges.  'ElmvRange' is
 **  the function in 'ElmvListFuncs' for ranges.
 */
-static Obj ElmRange(Obj list, Int pos)
+static Obj ElmRange(Obj list, Int pos) GAP_GC_CANSAFEPOINT
 {
     // check the position
     if ( GET_LEN_RANGE( list ) < pos ) {
@@ -331,7 +333,7 @@ static Obj ElmvRange(Obj list, Int pos)
 **
 **  'ElmsRange' is the function in 'ElmsListFuncs' for ranges.
 */
-static Obj ElmsRange(Obj list, Obj poss)
+static Obj ElmsRange(Obj list, Obj poss) GAP_GC_CANSAFEPOINT
 {
     Obj                 elms;           // selected sublist, result
     Int                 lenList;        // length of <list>
@@ -357,6 +359,7 @@ static Obj ElmsRange(Obj list, Obj poss)
 
         // make the result list
         elms = NEW_PLIST( T_PLIST, lenPoss );
+        GAP_GC_PUSH1(&elms);
         SET_LEN_PLIST( elms, lenPoss );
 
         // loop over the entries of <positions> and select
@@ -385,6 +388,8 @@ static Obj ElmsRange(Obj list, Obj poss)
             SET_ELM_PLIST( elms, i, elm );
 
         }
+
+        GAP_GC_POP();
 
     }
 
@@ -427,7 +432,7 @@ static Obj ElmsRange(Obj list, Obj poss)
 **  This is to avoid unpacking of the range to a plain list when <pos> is
 **  larger or equal to the length of <list>.
 */
-static void UnbRange(Obj list, Int pos)
+static void UnbRange(Obj list, Int pos) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(IS_MUTABLE_OBJ(list));
     const Int len = GET_LEN_RANGE(list);
@@ -455,7 +460,7 @@ static void UnbRange(Obj list, Int pos)
 **  same stuff as 'AssPlist'.  This is because a  range is not very likely to
 **  stay a range after the assignment.
 */
-static void AssRange(Obj list, Int pos, Obj val)
+static void AssRange(Obj list, Int pos, Obj val) GAP_GC_CANSAFEPOINT
 {
     // convert the range into a plain list
     PLAIN_LIST( list );
@@ -489,7 +494,7 @@ static void AssRange(Obj list, Int pos, Obj val)
 **  same stuff as 'AsssPlist'.  This is because a range is not very likely to
 **  stay a range after the assignment.
 */
-static void AsssRange(Obj list, Obj poss, Obj vals)
+static void AsssRange(Obj list, Obj poss, Obj vals) GAP_GC_CANSAFEPOINT
 {
     // convert <list> to a plain list
     PLAIN_LIST( list );
@@ -593,7 +598,7 @@ Obj             PosRange (
 **
 **  'PlainRange' is the function in 'PlainListFuncs' for ranges.
 */
-static void PlainRange(Obj list)
+static void PlainRange(Obj list) GAP_GC_CANSAFEPOINT
 {
     Int                 lenList;        // length of <list>
     Int                 low;            // first element of <list>
@@ -632,9 +637,9 @@ static void PlainRange(Obj list)
 **  otherwise.  As a  side effect 'IsRange' converts proper ranges represented
 **  the ordinary way to the compact representation.
 */
-static Obj IsRangeFilt;
+static Obj IsRangeFilt GAP_GC_GLOBALLY_ROOTED;
 
-static BOOL IsRange(Obj list)
+static BOOL IsRange(Obj list) GAP_GC_CANSAFEPOINT
 {
     BOOL                isRange;        // result of the test
     Int                 len;            // logical length of list
@@ -721,7 +726,7 @@ static BOOL IsRange(Obj list)
 **  a range and 'false' otherwise.  A range is a list without holes such that
 **  the elements are  consecutive integers.
 */
-static Obj FiltIS_RANGE(Obj self, Obj obj)
+static Obj FiltIS_RANGE(Obj self, Obj obj) GAP_GC_CANSAFEPOINT
 {
     // let 'IsRange' do the work for lists
     return IsRange(obj) ? True : False;
@@ -830,32 +835,35 @@ Obj Range3Check (
 **  by the integer <offset> keeps both endpoints in the small integer range.
 **  Otherwise it falls back to the generic scalar/list implementation.
 */
-static Obj ShiftRange(Obj offset, Obj range)
+static Obj ShiftRange(Obj offset, Obj range) GAP_GC_CANSAFEPOINT
 {
-    Obj low;
-    Obj high;
-    Obj shifted;
+    Obj low = 0;
+    Obj high = 0;
+    Obj shifted = 0;
 
+    GAP_GC_PUSH3(&low, &high, &shifted);
     low = SUM(offset, INTOBJ_INT(GET_LOW_RANGE(range)));
     high = SUM(offset, GET_ELM_RANGE(range, GET_LEN_RANGE(range)));
     if (!IS_INTOBJ(low) || !IS_INTOBJ(high)) {
-        return SumSclList(offset, range);
+        shifted = SumSclList(offset, range);
     }
-
-    shifted = NEW_RANGE(GET_LEN_RANGE(range), INT_INTOBJ(low),
-                        GET_INC_RANGE(range));
-    if (!IS_MUTABLE_OBJ(range)) {
-        MakeImmutableNoRecurse(shifted);
+    else {
+        shifted = NEW_RANGE(GET_LEN_RANGE(range), INT_INTOBJ(low),
+                            GET_INC_RANGE(range));
+        if (!IS_MUTABLE_OBJ(range)) {
+            MakeImmutableNoRecurse(shifted);
+        }
     }
+    GAP_GC_POP();
     return shifted;
 }
 
-static Obj SumIntRange(Obj opL, Obj opR)
+static Obj SumIntRange(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     return ShiftRange(opL, opR);
 }
 
-static Obj SumRangeInt(Obj opL, Obj opR)
+static Obj SumRangeInt(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     return ShiftRange(opR, opL);
 }
@@ -870,7 +878,7 @@ static Obj SumRangeInt(Obj opL, Obj opR)
 **
 *F  FiltIS_RANGE_REP( <self>, <obj> ) . . . . . test if value is in range rep
 */
-static Obj IsRangeRepFilt;
+static Obj IsRangeRepFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_RANGE_REP(Obj self, Obj obj)
 {
@@ -908,7 +916,7 @@ static Int egcd (Int a, Int b, Int *lastx, Int *lasty)
   return a;
 } // returns g=gcd(a,b), with lastx*a+lasty*b = g
 
-static Obj FuncINTER_RANGE(Obj self, Obj r1, Obj r2)
+static Obj FuncINTER_RANGE(Obj self, Obj r1, Obj r2) GAP_GC_CANSAFEPOINT
 {
   Int low1, low2, inc1, inc2, lowi, inci, g, x, y;
   UInt len1, len2, leni;
@@ -1308,7 +1316,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFiltsFromTable( GVarFilts );

@@ -63,7 +63,7 @@ Char * SyFindGapRootFile(const Char * filename, Char * buf, size_t size);
 **  Returns a plain list containing absolute paths of the root directories as
 **  string objects.
 */
-Obj SyGetGapRootPaths(void);
+Obj SyGetGapRootPaths(void) GAP_GC_CANSAFEPOINT;
 
 
 #endif    // GAP_SYSROOTS_H

@@ -44,19 +44,19 @@
         "must be a macfloat")
 
 
-Double VAL_MACFLOAT(Obj obj)
+Double VAL_MACFLOAT(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     Double val;
     memcpy(&val, CONST_ADDR_OBJ(obj), sizeof(Double));
     return val;
 }
 
-void SET_VAL_MACFLOAT(Obj obj, Double val)
+void SET_VAL_MACFLOAT(Obj obj, Double val) GAP_GC_NOTSAFEPOINT
 {
     memcpy(ADDR_OBJ(obj), &val, sizeof(Double));
 }
 
-BOOL IS_MACFLOAT(Obj obj)
+BOOL IS_MACFLOAT(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     return TNUM_OBJ(obj) == T_MACFLOAT;
 }
@@ -70,9 +70,9 @@ BOOL IS_MACFLOAT(Obj obj)
 **
 **  'TypeMacfloat' is the function in 'TypeObjFuncs' for macfloatean values.
 */
-static Obj TYPE_MACFLOAT;
+static Obj TYPE_MACFLOAT GAP_GC_GLOBALLY_ROOTED;
 
-static Obj TypeMacfloat(Obj val)
+static Obj TypeMacfloat(Obj val) GAP_GC_NOTSAFEPOINT
 {
     return TYPE_MACFLOAT;
 }
@@ -140,7 +140,7 @@ static void PrintMacfloat(Obj x)
 **  'EqMacfloat' returns 'True' if the two macfloatean values <macfloatL> and <macfloatR> are
 **  equal, and 'False' otherwise.
 */
-static Int EqMacfloat(Obj macfloatL, Obj macfloatR)
+static Int EqMacfloat(Obj macfloatL, Obj macfloatR) GAP_GC_NOTSAFEPOINT
 {
   return VAL_MACFLOAT(macfloatL) == VAL_MACFLOAT(macfloatR);
 }
@@ -156,7 +156,7 @@ static Obj FuncEQ_MACFLOAT(Obj self, Obj macfloatL, Obj macfloatR)
 *F  LtMacfloat( <macfloatL>, <macfloatR> )  . . . . . . . . .  test if <macfloatL> <  <macfloatR>
 **
 */
-static Int LtMacfloat(Obj macfloatL, Obj macfloatR)
+static Int LtMacfloat(Obj macfloatL, Obj macfloatR) GAP_GC_NOTSAFEPOINT
 {
   return VAL_MACFLOAT(macfloatL) < VAL_MACFLOAT(macfloatR);
 }
@@ -206,7 +206,7 @@ Obj NEW_MACFLOAT( Double val )
 */
 
 
-static Obj ZeroMacfloat(Obj f)
+static Obj ZeroMacfloat(Obj f) GAP_GC_CANSAFEPOINT
 {
   return NEW_MACFLOAT((Double)0.0);
 }
@@ -218,7 +218,7 @@ static Obj ZeroMacfloat(Obj f)
 */
 
 
-static Obj AInvMacfloat(Obj f)
+static Obj AInvMacfloat(Obj f) GAP_GC_CANSAFEPOINT
 {
   return NEW_MACFLOAT(-VAL_MACFLOAT(f));
 }
@@ -230,7 +230,7 @@ static Obj AInvMacfloat(Obj f)
 */
 
 
-static Obj OneMacfloat(Obj f)
+static Obj OneMacfloat(Obj f) GAP_GC_CANSAFEPOINT
 {
   return NEW_MACFLOAT((Double)1.0);
 }
@@ -242,7 +242,7 @@ static Obj OneMacfloat(Obj f)
 */
 
 
-static Obj InvMacfloat(Obj f)
+static Obj InvMacfloat(Obj f) GAP_GC_CANSAFEPOINT
 {
   return NEW_MACFLOAT((Double)1.0/VAL_MACFLOAT(f));
 }
@@ -254,7 +254,7 @@ static Obj InvMacfloat(Obj f)
 */
 
 
-static Obj ProdMacfloat(Obj fl, Obj fr)
+static Obj ProdMacfloat(Obj fl, Obj fr) GAP_GC_CANSAFEPOINT
 {
   return NEW_MACFLOAT(VAL_MACFLOAT(fl)*VAL_MACFLOAT(fr));
 }
@@ -266,7 +266,7 @@ static Obj ProdMacfloat(Obj fl, Obj fr)
 */
 
 
-static Obj PowMacfloat(Obj fl, Obj fr)
+static Obj PowMacfloat(Obj fl, Obj fr) GAP_GC_CANSAFEPOINT
 {
   return NEW_MACFLOAT(MATH(pow)(VAL_MACFLOAT(fl),VAL_MACFLOAT(fr)));
 }
@@ -278,7 +278,7 @@ static Obj PowMacfloat(Obj fl, Obj fr)
 */
 
 
-static Obj SumMacfloat(Obj fl, Obj fr)
+static Obj SumMacfloat(Obj fl, Obj fr) GAP_GC_CANSAFEPOINT
 {
   return NEW_MACFLOAT(VAL_MACFLOAT(fl)+VAL_MACFLOAT(fr));
 }
@@ -290,7 +290,7 @@ static Obj SumMacfloat(Obj fl, Obj fr)
 */
 
 
-static Obj DiffMacfloat(Obj fl, Obj fr)
+static Obj DiffMacfloat(Obj fl, Obj fr) GAP_GC_CANSAFEPOINT
 {
   return NEW_MACFLOAT(VAL_MACFLOAT(fl)-VAL_MACFLOAT(fr));
 }
@@ -302,7 +302,7 @@ static Obj DiffMacfloat(Obj fl, Obj fr)
 */
 
 
-static Obj QuoMacfloat(Obj fl, Obj fr)
+static Obj QuoMacfloat(Obj fl, Obj fr) GAP_GC_CANSAFEPOINT
 {
   return NEW_MACFLOAT(VAL_MACFLOAT(fl)/VAL_MACFLOAT(fr));
 }
@@ -314,7 +314,7 @@ static Obj QuoMacfloat(Obj fl, Obj fr)
 */
 
 
-static Obj LQuoMacfloat(Obj fl, Obj fr)
+static Obj LQuoMacfloat(Obj fl, Obj fr) GAP_GC_CANSAFEPOINT
 {
   return NEW_MACFLOAT(VAL_MACFLOAT(fr)/VAL_MACFLOAT(fl));
 }
@@ -326,7 +326,7 @@ static Obj LQuoMacfloat(Obj fl, Obj fr)
 */
 
 
-static Obj ModMacfloat(Obj fl, Obj fr)
+static Obj ModMacfloat(Obj fl, Obj fr) GAP_GC_CANSAFEPOINT
 {
   return NEW_MACFLOAT(MATH(fmod)(VAL_MACFLOAT(fl),VAL_MACFLOAT(fr)));
 }
@@ -338,7 +338,7 @@ static Obj ModMacfloat(Obj fl, Obj fr)
 **
 */
 
-static Obj FuncMACFLOAT_INT(Obj self, Obj i)
+static Obj FuncMACFLOAT_INT(Obj self, Obj i) GAP_GC_CANSAFEPOINT
 {
   if (!IS_INTOBJ(i))
     return Fail;
@@ -352,7 +352,7 @@ static Obj FuncMACFLOAT_INT(Obj self, Obj i)
 **
 */
 
-static Obj FuncMACFLOAT_STRING(Obj self, Obj s)
+static Obj FuncMACFLOAT_STRING(Obj self, Obj s) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, s);
 
@@ -370,7 +370,7 @@ static Obj FuncMACFLOAT_STRING(Obj self, Obj s)
 **
 */
 
-static Obj SumIntMacfloat(Obj i, Obj f)
+static Obj SumIntMacfloat(Obj i, Obj f) GAP_GC_CANSAFEPOINT
 {
   return NEW_MACFLOAT( (Double)(INT_INTOBJ(i)) + VAL_MACFLOAT(f));
 }
@@ -384,12 +384,14 @@ static Obj SumIntMacfloat(Obj i, Obj f)
 
 #define MAKEMATHPRIMITIVE(NAME, name)                                        \
     static Obj Func##NAME##_MACFLOAT(Obj self, Obj f)                        \
+        GAP_GC_CANSAFEPOINT                                                  \
     {                                                                        \
         return NEW_MACFLOAT(MATH(name)(VAL_MACFLOAT(f)));                    \
     }
 
 #define MAKEMATHPRIMITIVE2(NAME, name)                                       \
     static Obj Func##NAME##_MACFLOAT(Obj self, Obj f, Obj g)                 \
+        GAP_GC_CANSAFEPOINT                                                  \
     {                                                                        \
         return NEW_MACFLOAT(MATH(name)(VAL_MACFLOAT(f), VAL_MACFLOAT(g)));   \
     }
@@ -446,7 +448,7 @@ static Obj FuncSIGNBIT_MACFLOAT(Obj self, Obj f)
 }
 
 
-static Obj FuncINTFLOOR_MACFLOAT(Obj self, Obj macfloat)
+static Obj FuncINTFLOOR_MACFLOAT(Obj self, Obj macfloat) GAP_GC_CANSAFEPOINT
 {
     RequireMacFloat(SELF_NAME, macfloat);
 
@@ -472,6 +474,7 @@ static Obj FuncINTFLOOR_MACFLOAT(Obj self, Obj macfloat)
   int str_len = (int) (log(fabs(f)) / log(16.0)) + 3;
 
   Obj str = NEW_STRING(str_len);
+  GAP_GC_PUSH1(&str);
   char *s = CSTR_STRING(str), *p = s+str_len-1;
   if (f < 0.0) {
     f = -f;
@@ -482,10 +485,13 @@ static Obj FuncINTFLOOR_MACFLOAT(Obj self, Obj macfloat)
     *p-- = d < 10 ? '0'+d : 'a'+d-10;
     f /= 16.0;
   }
-  return IntHexString(str);
+  str = IntHexString(str);
+  GAP_GC_POP();
+  return str;
 }
 
 static Obj FuncSTRING_DIGITS_MACFLOAT(Obj self, Obj gapprec, Obj f)
+    GAP_GC_CANSAFEPOINT
 {
   Char buf[1024];
   Obj str;
@@ -497,19 +503,21 @@ static Obj FuncSTRING_DIGITS_MACFLOAT(Obj self, Obj gapprec, Obj f)
   return str;
 }
 
-static Obj FuncLDEXP_MACFLOAT(Obj self, Obj f, Obj i)
+static Obj FuncLDEXP_MACFLOAT(Obj self, Obj f, Obj i) GAP_GC_CANSAFEPOINT
 {
   return NEW_MACFLOAT(ldexp(VAL_MACFLOAT(f),INT_INTOBJ(i)));
 }
 
-static Obj FuncFREXP_MACFLOAT(Obj self, Obj f)
+static Obj FuncFREXP_MACFLOAT(Obj self, Obj f) GAP_GC_CANSAFEPOINT
 {
   int i;
   Obj d = NEW_MACFLOAT(frexp (VAL_MACFLOAT(f), &i));
+  GAP_GC_PUSH1(&d);
   Obj l = NEW_PLIST(T_PLIST,2);
   SET_ELM_PLIST(l,1,d);
   SET_ELM_PLIST(l,2,INTOBJ_INT(i));
   SET_LEN_PLIST(l,2);
+  GAP_GC_POP();
   return l;
 }
 
@@ -664,7 +672,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init functions
     InitGVarFuncsFromTable( GVarFuncs );

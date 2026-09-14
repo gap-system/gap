@@ -282,6 +282,26 @@ AS_CASE([$with_gc],
 AC_MSG_RESULT([$with_gc])
 
 dnl
+dnl User setting: precise GC (off by default), Julia GC only
+dnl
+AC_ARG_ENABLE([precise-gc],
+    [AS_HELP_STRING([--enable-precise-gc],
+        [root C locals explicitly instead of scanning the C stack (Julia GC only)])],
+    [],
+    [enable_precise_gc=no]
+    )
+AC_MSG_CHECKING([whether to enable precise GC])
+AC_MSG_RESULT([$enable_precise_gc])
+
+dnl The define must reach kernel extensions, which take their flags from
+dnl sysinfo.gap; a -D in CFLAGS would not.
+AS_IF([test "x$enable_precise_gc" != "xno"],
+    [AS_IF([test "x$with_gc" != "xjulia"],
+        [AC_MSG_ERROR([--enable-precise-gc requires --with-gc=julia])])
+     GAP_DEFINE([DISABLE_STACK_SCAN=1])],
+)
+
+dnl
 dnl User setting: native thread-local storage (off by default)
 dnl See src/hpc/tls.h for more details on thread-local storage options.
 dnl
@@ -477,8 +497,16 @@ if test "x$enable_valgrind" != "xno" -a "x$enable_memory_checking" != "xno"; the
 fi
 
 if test "x$with_gc" != "xgasman"; then
-    if test "x$enable_valgrind" != "xno" -o "x$enable_memory_checking" != "xno"; then
-        AC_MSG_ERROR([--enable-valgrind and --enable-memory-checking are only compatible with GASMAN])
+    if test "x$enable_valgrind" != "xno"; then
+        AC_MSG_ERROR([--enable-valgrind is only compatible with GASMAN])
+    fi
+fi
+
+dnl memory checking means something different for each collector: GASMAN
+dnl moves every bag on each allocation, the Julia GC collects on each one
+if test "x$with_gc" != "xgasman" -a "x$with_gc" != "xjulia"; then
+    if test "x$enable_memory_checking" != "xno"; then
+        AC_MSG_ERROR([--enable-memory-checking is only compatible with GASMAN and Julia])
     fi
 fi
 
@@ -816,6 +844,20 @@ AS_IF([test "x$with_julia" != xno ],[
   ])
   AC_MSG_RESULT([${JULIA_VERSION}])
 
+  # where julia.h lives; the GC analysis scripts in dev/ read this from the
+  # build directory's GNUmakefile instead of guessing it from compiler flags
+  AS_IF([test "x$JULIA" != x],[
+    JULIA_INCLUDEDIR=$(${JULIA} --startup-file=no -e 'print(normpath(joinpath(Sys.BINDIR, Base.INCLUDEDIR, "julia")))')
+    # If that Julia is a source checkout (built in place, so its usr/ sits in
+    # the checkout), point dev/julia in the build directory at the checkout:
+    # the GC analysis scripts take Julia's clang and their plugins from there.
+    JULIA_SRCDIR=$(${JULIA} --startup-file=no -e 'print(normpath(joinpath(Sys.BINDIR, "..", "..")))')
+    AS_IF([test -d "${JULIA_SRCDIR}/src/clangsa"],[
+      mkdir -p dev && ln -sfn "${JULIA_SRCDIR}" dev/julia
+      AC_MSG_NOTICE([dev/julia -> ${JULIA_SRCDIR}])
+    ])
+  ])
+
   AC_MSG_CHECKING([for JULIA_CFLAGS])
   AS_IF([test "x$JULIA_CFLAGS" = x],[
     AS_IF([test -f "${JL_SHARE}/julia-config.jl"], [], [AC_MSG_ERROR([no julia-config.jl found])])
@@ -856,6 +898,7 @@ AS_IF([test "x$with_julia" != xno ],[
 ])
 AC_SUBST([JULIA_VERSION])
 AC_SUBST([JULIA_CFLAGS])
+AC_SUBST([JULIA_INCLUDEDIR])
 AC_SUBST([JULIA_LDFLAGS])
 AC_SUBST([JULIA_LIBS])
 

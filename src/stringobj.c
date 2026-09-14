@@ -83,7 +83,7 @@
 **  'ObjsChar' contains all the character values.  That way we do not need to
 **  allocate new bags for new characters.
 */
-Obj ObjsChar [256];
+Obj ObjsChar [256] GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
@@ -94,7 +94,7 @@ Obj ObjsChar [256];
 **
 **  'TypeChar' is the function in 'TypeObjFuncs' for character values.
 */
-static Obj TYPE_CHAR;
+static Obj TYPE_CHAR GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeChar(Obj chr)
 {
@@ -201,7 +201,7 @@ static void LoadChar(Obj c)
 **  Returns an empty string, with space for <len> characters preallocated.
 **
 */
-static Obj FuncEmptyString(Obj self, Obj len)
+static Obj FuncEmptyString(Obj self, Obj len) GAP_GC_CANSAFEPOINT
 {
     Obj                 new;
     RequireNonnegativeSmallInt(SELF_NAME, len);
@@ -218,7 +218,7 @@ static Obj FuncEmptyString(Obj self, Obj len)
 **  compact representation).
 **
 */
-static Obj FuncShrinkAllocationString(Obj self, Obj str)
+static Obj FuncShrinkAllocationString(Obj self, Obj str) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, str);
     SHRINK_STRING(str);
@@ -229,7 +229,7 @@ static Obj FuncShrinkAllocationString(Obj self, Obj str)
 **
 *F  FuncCHAR_INT( <self>, <int> ) . . . . . . . . . . . . . . char by integer
 */
-static Obj FuncCHAR_INT(Obj self, Obj val)
+static Obj FuncCHAR_INT(Obj self, Obj val) GAP_GC_CANSAFEPOINT
 {
     Int             chr;
 
@@ -245,7 +245,7 @@ static Obj FuncCHAR_INT(Obj self, Obj val)
 **
 *F  FuncINT_CHAR( <self>, <char> )  . . . . . . . . . . . . . integer by char
 */
-static Obj FuncINT_CHAR(Obj self, Obj val)
+static Obj FuncINT_CHAR(Obj self, Obj val) GAP_GC_CANSAFEPOINT
 {
     // get and check the character
     if (TNUM_OBJ(val) != T_CHAR) {
@@ -260,7 +260,7 @@ static Obj FuncINT_CHAR(Obj self, Obj val)
 **
 *F  FuncCHAR_SINT( <self>, <int> ) . . . . . . . . . . char by signed integer
 */
-static Obj FuncCHAR_SINT(Obj self, Obj val)
+static Obj FuncCHAR_SINT(Obj self, Obj val) GAP_GC_CANSAFEPOINT
 {
     Int chr;
 
@@ -276,7 +276,7 @@ static Obj FuncCHAR_SINT(Obj self, Obj val)
 **
 *F  FuncSINT_CHAR( <self>, <char> ) . . . . . . . . .  signed integer by char
 */
-static Obj FuncSINT_CHAR(Obj self, Obj val)
+static Obj FuncSINT_CHAR(Obj self, Obj val) GAP_GC_CANSAFEPOINT
 {
     // get and check the character
     if (TNUM_OBJ(val) != T_CHAR) {
@@ -291,7 +291,7 @@ static Obj FuncSINT_CHAR(Obj self, Obj val)
 **
 *F  FuncSINTLIST_STRING( <self>, <string> ) signed integer list by string
 */
-static Obj FuncINTLIST_STRING(Obj self, Obj val, Obj sign)
+static Obj FuncINTLIST_STRING(Obj self, Obj val, Obj sign) GAP_GC_CANSAFEPOINT
 {
   UInt l,i;
   Obj n, *addr;
@@ -321,7 +321,7 @@ static Obj FuncINTLIST_STRING(Obj self, Obj val, Obj sign)
   return n;
 }
 
-static Obj FuncSINTLIST_STRING(Obj self, Obj val)
+static Obj FuncSINTLIST_STRING(Obj self, Obj val) GAP_GC_CANSAFEPOINT
 {
     return FuncINTLIST_STRING(self, val, INTOBJ_INT(-1));
 }
@@ -330,7 +330,7 @@ static Obj FuncSINTLIST_STRING(Obj self, Obj val)
 **
 *F  FuncSTRING_SINTLIST( <self>, <string> ) string by signed integer list
 */
-static Obj FuncSTRING_SINTLIST(Obj self, Obj val)
+static Obj FuncSTRING_SINTLIST(Obj self, Obj val) GAP_GC_CANSAFEPOINT
 {
   UInt l,i;
   Int low, inc;
@@ -377,7 +377,7 @@ static Obj FuncSTRING_SINTLIST(Obj self, Obj val)
 **
 *F  FuncREVNEG_STRING( <self>, <string> ) string by signed integer list
 */
-static Obj FuncREVNEG_STRING(Obj self, Obj val)
+static Obj FuncREVNEG_STRING(Obj self, Obj val) GAP_GC_CANSAFEPOINT
 {
   UInt l,i,j;
   Obj n;
@@ -462,12 +462,12 @@ Int             GrowString (
 **
 **  'TypeString' is the function in 'TypeObjFuncs' for strings.
 */
-static Obj TYPE_STRING_MUTABLE;
-static Obj TYPE_STRING_IMMUTABLE;
-static Obj TYPE_STRING_NSORT_MUTABLE;
-static Obj TYPE_STRING_NSORT_IMMUTABLE;
-static Obj TYPE_STRING_SSORT_MUTABLE;
-static Obj TYPE_STRING_SSORT_IMMUTABLE;
+static Obj TYPE_STRING_MUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_STRING_IMMUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_STRING_NSORT_MUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_STRING_NSORT_IMMUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_STRING_SSORT_MUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_STRING_SSORT_IMMUTABLE GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeString(Obj list)
 {
@@ -509,14 +509,15 @@ static Obj TypeStringSSort(Obj list)
 **
 **  'CopyString' is the function in 'CopyObjFuncs' for strings.
 */
-static Obj CopyString(Obj list, Int mut)
+static Obj CopyString(Obj list, Int mut) GAP_GC_CANSAFEPOINT
 {
-    Obj                 copy;           // handle of the copy, result
+    Obj                 copy = 0;       // handle of the copy, result
 
     // immutable input is handled by COPY_OBJ
     GAP_ASSERT(IS_MUTABLE_OBJ(list));
 
     // make object for  copy
+    GAP_GC_PUSH1(&copy);
     copy = NewBag(TNUM_OBJ(list), SIZE_OBJ(list));
     if (!mut)
         MakeImmutableNoRecurse(copy);
@@ -530,6 +531,7 @@ static Obj CopyString(Obj list, Int mut)
            SIZE_OBJ(list)-sizeof(Obj) );
 
     // return the copy
+    GAP_GC_POP();
     return copy;
 }
 
@@ -573,6 +575,7 @@ void ToPrOutputter(void * data, char * strbuf, UInt len)
 
 // Output to a string
 void ToStringOutputter(void * data, char * buf, UInt lenbuf)
+    GAP_GC_CANSAFEPOINT
 {
     AppendCStr((Obj)data, buf, lenbuf);
 }
@@ -654,18 +657,22 @@ void PrintString(Obj list)
     OutputStringGeneric(list, ToPrOutputter, (void *)0);
 }
 
-Obj FuncVIEW_STRING_FOR_STRING(Obj self, Obj string)
+Obj FuncVIEW_STRING_FOR_STRING(Obj self, Obj string) GAP_GC_CANSAFEPOINT
 {
+    Obj output = 0;
+
     if (!IS_STRING(string)) {
         RequireArgument(SELF_NAME, string, "must be a string");
     }
 
+    GAP_GC_PUSH2(&string, &output);
     if (!IS_STRING_REP(string)) {
         string = CopyToStringRep(string);
     }
 
-    Obj output = NEW_STRING(0);
+    output = NEW_STRING(0);
     OutputStringGeneric(string, ToStringOutputter, output);
+    GAP_GC_POP();
     return output;
 }
 
@@ -773,7 +780,7 @@ static BOOL IsbString(Obj list, Int pos)
 **  <pos> must be  a positive integer  less than  or  equal to  the length of
 **  <list>.
 */
-static inline Obj GET_ELM_STRING(Obj list, Int pos)
+static inline Obj GET_ELM_STRING(Obj list, Int pos) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_STRING_REP(list));
     GAP_ASSERT(pos > 0);
@@ -790,7 +797,7 @@ static inline Obj GET_ELM_STRING(Obj list, Int pos)
 **  'SET_ELM_STRING'  sets the  <pos>-th  character  of  the string  <list>.
 **  <val> must be a character and <list> stay a string after the assignment.
 */
-static inline void SET_ELM_STRING(Obj list, Int pos, Obj val)
+static inline void SET_ELM_STRING(Obj list, Int pos, Obj val) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_STRING_REP(list));
     GAP_ASSERT(pos > 0);
@@ -851,7 +858,7 @@ static Obj Elm0vString(Obj list, Int pos)
 **  'ElmfString' is the function in 'ElmfListFuncs' for strings.
 **  'ElmwString' is the function in 'ElmwListFuncs' for strings.
 */
-static Obj ElmString(Obj list, Int pos)
+static Obj ElmString(Obj list, Int pos) GAP_GC_CANSAFEPOINT
 {
     // check the position
     if ( GET_LEN_STRING( list ) < pos ) {
@@ -880,15 +887,17 @@ static Obj ElmString(Obj list, Int pos)
 **
 **  'ElmsString' is the function in 'ElmsListFuncs' for strings.
 */
-static Obj ElmsString(Obj list, Obj poss)
+static Obj ElmsString(Obj list, Obj poss) GAP_GC_CANSAFEPOINT
 {
-    Obj                 elms;         // selected sublist, result
+    Obj                 elms = 0;       // selected sublist, result
     Int                 lenList;        // length of <list>
     Char                elm;            // one element from <list>
     Int                 lenPoss;        // length of <positions>
     Int                 pos;            // <position> as integer
     Int                 inc;            // increment in a range
     Int                 i;              // loop variable
+
+    GAP_GC_PUSH1(&elms);
 
     // general code
     if ( ! IS_RANGE(poss) ) {
@@ -966,6 +975,7 @@ static Obj ElmsString(Obj list, Obj poss)
 
     }
 
+    GAP_GC_POP();
     return elms;
 }
 
@@ -983,7 +993,7 @@ static Obj ElmsString(Obj list, Obj poss)
 **  'AssString' keeps <list> in string representation if possible.
 **
 */
-static void AssString(Obj list, Int pos, Obj val)
+static void AssString(Obj list, Int pos, Obj val) GAP_GC_CANSAFEPOINT
 {
   UInt len = GET_LEN_STRING(list);
 
@@ -1034,7 +1044,7 @@ static void AssString(Obj list, Int pos, Obj val)
 **  <poss> can be important if <list> should stay in string representation.
 **
 */
-static void AsssString(Obj list, Obj poss, Obj vals)
+static void AsssString(Obj list, Obj poss, Obj vals) GAP_GC_CANSAFEPOINT
 {
   Int i, len = LEN_LIST(poss);
   for (i = 1; i <= len; i++) {
@@ -1135,14 +1145,15 @@ static Obj PosString(Obj list, Obj val, Obj start)
 **
 **  'PlainString' is the function in 'PlainListFuncs' for strings.
 */
-static void PlainString(Obj list)
+static void PlainString(Obj list) GAP_GC_CANSAFEPOINT
 {
     Int                 lenList;        // logical length of the string
-    Obj                 tmp;            // handle of the list
+    Obj                 tmp = 0;        // handle of the list
     Int                 i;              // loop variable
 
     // find the length and allocate a temporary copy
     lenList = GET_LEN_STRING( list );
+    GAP_GC_PUSH1(&tmp);
     tmp = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(list), T_PLIST, lenList);
     SET_LEN_PLIST( tmp, lenList );
 
@@ -1157,6 +1168,7 @@ static void PlainString(Obj list)
 
     memcpy(ADDR_OBJ(list), CONST_ADDR_OBJ(tmp), SIZE_OBJ(tmp));
     CHANGED_BAG(list);
+    GAP_GC_POP();
 }
 
 
@@ -1169,7 +1181,7 @@ static void PlainString(Obj list)
 */
 BOOL (*IsStringFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
-static Obj IsStringFilt;
+static Obj IsStringFilt GAP_GC_GLOBALLY_ROOTED;
 
 static BOOL IsStringList(Obj list)
 {
@@ -1216,10 +1228,11 @@ Obj CopyToStringRep(
 {
     Int                 lenString;      // length of the string
     Obj                 elm;            // one element of the string
-    Obj                 copy;           // temporary string
+    Obj                 copy = 0;       // temporary string
     Int                 i;              // loop variable
 
     lenString = LEN_LIST(string);
+    GAP_GC_PUSH1(&copy);
     copy = NEW_STRING(lenString);
 
     if ( IS_STRING_REP(string) ) {
@@ -1234,6 +1247,7 @@ Obj CopyToStringRep(
         }
         CHARS_STRING(copy)[lenString] = '\0';
     }
+    GAP_GC_POP();
     return copy;
 }
 
@@ -1267,7 +1281,7 @@ void ConvString (
 {
     Int                 lenString;      // length of the string
     Obj                 elm;            // one element of the string
-    Obj                 tmp;            // temporary string
+    Obj                 tmp = 0;        // temporary string
     Int                 i;              // loop variable
 
     // do nothing if the string is already in the string representation
@@ -1278,6 +1292,7 @@ void ConvString (
 
 
     lenString = LEN_LIST(string);
+    GAP_GC_PUSH1(&tmp);
     tmp = NEW_STRING(lenString);
 
     // copy the string to the string representation
@@ -1292,6 +1307,7 @@ void ConvString (
     ResizeBag( string, SIZEBAG_STRINGLEN(lenString) );
     // copy data area from tmp
     memcpy(ADDR_OBJ(string), CONST_ADDR_OBJ(tmp), SIZE_OBJ(tmp));
+    GAP_GC_POP();
 }
 
 
@@ -1385,7 +1401,7 @@ static Obj FiltIS_STRING(Obj self, Obj obj)
 **
 *F  FuncIS_STRING_CONV( <self>, <obj> ) . . . . . . . . . . check and convert
 */
-static Obj FuncIS_STRING_CONV(Obj self, Obj obj)
+static Obj FuncIS_STRING_CONV(Obj self, Obj obj) GAP_GC_CANSAFEPOINT
 {
     // return 'true' if <obj> is a string and 'false' otherwise
     return (IsStringConv(obj) ? True : False);
@@ -1396,7 +1412,7 @@ static Obj FuncIS_STRING_CONV(Obj self, Obj obj)
 **
 *F  FuncCONV_STRING( <self>, <string> ) . . . . . . . . convert to string rep
 */
-static Obj FuncCONV_STRING(Obj self, Obj string)
+static Obj FuncCONV_STRING(Obj self, Obj string) GAP_GC_CANSAFEPOINT
 {
     if (!IS_STRING(string)) {
         RequireArgument(SELF_NAME, string, "must be a string");
@@ -1413,7 +1429,7 @@ static Obj FuncCONV_STRING(Obj self, Obj string)
 **
 *F  FiltIS_STRING_REP( <self>, <obj> )  . . . . test if value is a string rep
 */
-static Obj IsStringRepFilt;
+static Obj IsStringRepFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_STRING_REP(Obj self, Obj obj)
 {
@@ -1424,7 +1440,7 @@ static Obj FiltIS_STRING_REP(Obj self, Obj obj)
 **
 *F  FuncCOPY_TO_STRING_REP( <self>, <obj> ) . copy a string into string rep
 */
-static Obj FuncCOPY_TO_STRING_REP(Obj self, Obj string)
+static Obj FuncCOPY_TO_STRING_REP(Obj self, Obj string) GAP_GC_CANSAFEPOINT
 {
     if (!IS_STRING(string)) {
         RequireArgument(SELF_NAME, string, "must be a string");
@@ -1443,6 +1459,7 @@ static Obj FuncCOPY_TO_STRING_REP(Obj self, Obj string)
 **  returned.
 */
 static Obj FuncPOSITION_SUBSTRING(Obj self, Obj string, Obj substr, Obj off)
+    GAP_GC_CANSAFEPOINT
 {
   Int    ipos, i, j, lens, lenss, max;
   const UInt1  *s, *ss;
@@ -1488,7 +1505,7 @@ static Obj FuncPOSITION_SUBSTRING(Obj self, Obj string, Obj substr, Obj off)
 **  substituted by a single space.
 **
 */
-static Obj FuncNormalizeWhitespace(Obj self, Obj string)
+static Obj FuncNormalizeWhitespace(Obj self, Obj string) GAP_GC_CANSAFEPOINT
 {
   UInt1  *s, c;
   Int i, j, len, white;
@@ -1534,6 +1551,7 @@ static Obj FuncNormalizeWhitespace(Obj self, Obj string)
 */
 
 static Obj FuncREMOVE_CHARACTERS(Obj self, Obj string, Obj rem)
+    GAP_GC_CANSAFEPOINT
 {
   UInt1  *s;
   Int i, j, len;
@@ -1573,6 +1591,7 @@ static Obj FuncREMOVE_CHARACTERS(Obj self, Obj string, Obj rem)
 **
 */
 static Obj FuncTranslateString(Obj self, Obj string, Obj trans)
+    GAP_GC_CANSAFEPOINT
 {
   Int j, len;
 
@@ -1604,10 +1623,11 @@ static Obj FuncTranslateString(Obj self, Obj string, Obj trans)
 **  separate empty strings.
 */
 static Obj FuncSplitStringInternal(Obj self, Obj string, Obj seps, Obj wspace)
+    GAP_GC_CANSAFEPOINT
 {
   const UInt1  *s;
   Int i, a, z, l, pos, len;
-  Obj res, part;
+  Obj res = 0, part = 0;
   UInt1 SPLITSTRINGSEPS[256] = { 0 };
   UInt1 SPLITSTRINGWSPACE[256] = { 0 };
 
@@ -1626,6 +1646,7 @@ static Obj FuncSplitStringInternal(Obj self, Obj string, Obj seps, Obj wspace)
   for(i=0; i<len; i++) SPLITSTRINGWSPACE[s[i]] = 1;
 
   // create the result (list of strings)
+  GAP_GC_PUSH2(&res, &part);
   res = NEW_PLIST(T_PLIST, 2);
   pos = 0;
 
@@ -1683,6 +1704,7 @@ static Obj FuncSplitStringInternal(Obj self, Obj string, Obj seps, Obj wspace)
     AssPlist(res, pos, part);
   }
 
+  GAP_GC_POP();
   return res;
 }
 
@@ -1799,7 +1821,7 @@ static Obj FuncSMALLINT_STR(Obj self, Obj str)
 **  This is to avoid unpacking of the string to a plain list when <pos> is
 **  larger or equal to the length of <string>.
 */
-static void UnbString(Obj string, Int pos)
+static void UnbString(Obj string, Int pos) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(IS_MUTABLE_OBJ(string));
     const Int len = GET_LEN_STRING(string);
@@ -2214,7 +2236,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     Int                 i;
 

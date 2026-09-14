@@ -53,15 +53,17 @@ static int             evlist, evlistvec;
 */
 
 // See below:
-static Obj Evaluation(Obj vec, Obj xk, Obj power);
+static Obj Evaluation(Obj vec, Obj xk, Obj power) GAP_GC_CANSAFEPOINT;
 
 static void MultGen(Obj xk, UInt gen, Obj power, Obj dtpols)
+    GAP_GC_CANSAFEPOINT
 {
     UInt  i, j, len, len2;
-    Obj   copy, sum, sum1, sum2, prod, ord, help;
+    Obj   copy = 0, sum = 0, sum1 = 0, sum2 = 0, prod = 0, ord = 0, help = 0;
 
     if ( power == INTOBJ_INT(0) )
         return;
+    GAP_GC_PUSH7(&copy, &sum, &sum1, &sum2, &prod, &ord, &help);
     sum = SumInt(ELM_PLIST(xk, gen),  power);
     if ( IS_INTOBJ( ELM_PLIST(dtpols, gen) ) )
     {
@@ -69,6 +71,7 @@ static void MultGen(Obj xk, UInt gen, Obj power, Obj dtpols)
         ** <power> to <xk>[ <gen> ].                                     */
         SET_ELM_PLIST(xk, gen, sum);
         CHANGED_BAG(xk);
+        GAP_GC_POP();
         return;
     }
     copy = ShallowCopyPlist(xk);
@@ -103,6 +106,7 @@ static void MultGen(Obj xk, UInt gen, Obj power, Obj dtpols)
             }
         }
     }
+    GAP_GC_POP();
 }
 
 
@@ -118,11 +122,12 @@ static void MultGen(Obj xk, UInt gen, Obj power, Obj dtpols)
 static Obj Evaluation(Obj vec, Obj xk, Obj power)
 {
     UInt i, len;
-    Obj  prod, help;
+    Obj  prod = 0, help = 0, binom = 0;
 
     if ( IS_POS_INTOBJ(power) &&
          power < ELM_PLIST(vec, 6)     )
         return INTOBJ_INT(0);
+    GAP_GC_PUSH3(&prod, &help, &binom);
     prod = BinomialInt(power, ELM_PLIST(vec, 6) );
     len = LEN_PLIST(vec);
     for (i=7; i < len; i+=2)
@@ -131,9 +136,14 @@ static Obj Evaluation(Obj vec, Obj xk, Obj power)
         if ( IS_INTOBJ( help )                       &&
              ( INT_INTOBJ(help) == 0                 ||
                ( INT_INTOBJ(help) > 0  &&  help < ELM_PLIST(vec, i+1) )  ) )
+        {
+            GAP_GC_POP();
             return INTOBJ_INT(0);
-        prod = ProdInt( prod, BinomialInt(help, ELM_PLIST(vec, i+1) ) );
+        }
+        binom = BinomialInt(help, ELM_PLIST(vec, i+1) );
+        prod = ProdInt( prod, binom );
     }
+    GAP_GC_POP();
     return prod;
 }
 
@@ -149,6 +159,7 @@ static Obj Evaluation(Obj vec, Obj xk, Obj power)
 */
 
 static void Multbound(Obj xk, Obj y, Int anf, Int end, Obj dtpols)
+    GAP_GC_CANSAFEPOINT
 {
     int     i;
 
@@ -168,14 +179,16 @@ static void Multbound(Obj xk, Obj y, Int anf, Int end, Obj dtpols)
 */
 
 static Obj Multiplybound(Obj x, Obj y, Int anf, Int end, Obj dtpols)
+    GAP_GC_CANSAFEPOINT
 {
     UInt   i, j, k, len, help;
-    Obj    xk, res, sum;
+    Obj    xk = 0, res = 0, sum = 0;
 
     if ( LEN_PLIST( x ) == 0 )
         return y;
     if ( anf > end )
         return x;
+    GAP_GC_PUSH3(&xk, &res, &sum);
     /* first deal with the case that <y>{ [<anf>..<end>] } lies in the center
     ** of the group defined by <dtpols>                                    */
     if ( IS_INTOBJ( ELM_PLIST(dtpols, CELM(y, anf) ) )   &&
@@ -231,6 +244,7 @@ static Obj Multiplybound(Obj x, Obj y, Int anf, Int end, Obj dtpols)
             }
         SET_LEN_PLIST(res, i-1);
         SHRINK_PLIST(res, i-1);
+        GAP_GC_POP();
         return res;
     }
     len = LEN_PLIST(dtpols);
@@ -265,6 +279,7 @@ static Obj Multiplybound(Obj x, Obj y, Int anf, Int end, Obj dtpols)
     }
     SET_LEN_PLIST(res, j);
     SHRINK_PLIST(res, j);
+    GAP_GC_POP();
     return res;
 }
 
@@ -279,15 +294,16 @@ static Obj Multiplybound(Obj x, Obj y, Int anf, Int end, Obj dtpols)
 */
 
 // See below:
-static Obj Solution(Obj x, Obj y, Obj dtpols);
+static Obj Solution(Obj x, Obj y, Obj dtpols) GAP_GC_CANSAFEPOINT;
 
-static Obj Power(Obj x, Obj n, Obj dtpols)
+static Obj Power(Obj x, Obj n, Obj dtpols) GAP_GC_CANSAFEPOINT
 {
-    Obj     res, m, y;
+    Obj     res = 0, m = 0, y = 0;
     UInt    i,len;
 
     if ( LEN_PLIST(x) == 0 )
         return x;
+    GAP_GC_PUSH6(&x, &n, &dtpols, &res, &m, &y);
     /* first deal with the case that <x> lies in the centre of the group
     ** defined by <dtpols>                                              */
     if ( IS_INTOBJ( ELM_PLIST( dtpols, CELM(x, 1) ) )   &&
@@ -303,17 +319,25 @@ static Obj Power(Obj x, Obj n, Obj dtpols)
             SET_ELM_PLIST(res, i-1, ELM_PLIST(x, i-1) );
             CHANGED_BAG( res );
         }
+        GAP_GC_POP();
         return res;
     }
     // if <n> is a negative integer compute ( <x>^-1 )^(-<n>)
     if ( IS_NEG_INT(n) )
     {
         y = NEW_PLIST( T_PLIST, 0);
-        return  Power( Solution(x, y, dtpols), AInvInt(n), dtpols );
+        res = Solution(x, y, dtpols);
+        m = AInvInt(n);
+        res = Power(res, m, dtpols);
+        GAP_GC_POP();
+        return res;
     }
     res = NEW_PLIST(T_PLIST, 2);
     if ( n == INTOBJ_INT(0) )
+    {
+        GAP_GC_POP();
         return res;
+    }
     // now use the russian peasant rule to get the result
     while( LtInt(INTOBJ_INT(0), n) )
     {
@@ -324,6 +348,7 @@ static Obj Power(Obj x, Obj n, Obj dtpols)
             x = Multiplybound(x, x, 1, len, dtpols);
         n = QuoInt(n, INTOBJ_INT(2) );
     }
+    GAP_GC_POP();
     return res;
 }
 
@@ -340,11 +365,12 @@ static Obj Power(Obj x, Obj n, Obj dtpols)
 static Obj Solution(Obj x, Obj y, Obj dtpols)
 
 {
-    Obj    xk, res, m;
+    Obj    xk = 0, res = 0, m = 0;
     UInt   i,j,k, len1, len2;
 
     if ( LEN_PLIST(x) == 0)
         return y;
+    GAP_GC_PUSH3(&xk, &res, &m);
     /* first deal with the case that <x> and <y> lie in the centre of the
     ** group defined by <dtpols>.                                       */
     if ( IS_INTOBJ( ELM_PLIST( dtpols, CELM(x, 1) )  )  &&
@@ -404,6 +430,7 @@ static Obj Solution(Obj x, Obj y, Obj dtpols)
             }
         SET_LEN_PLIST( res, i-1 );
         SHRINK_PLIST( res, i-1);
+        GAP_GC_POP();
         return res;
     }
     // convert <x> into an exponent vector
@@ -452,6 +479,7 @@ static Obj Solution(Obj x, Obj y, Obj dtpols)
     }
     SET_LEN_PLIST(res, j-1);
     SHRINK_PLIST(res, j-1);
+    GAP_GC_POP();
     return res;
 }
 
@@ -465,13 +493,15 @@ static Obj Solution(Obj x, Obj y, Obj dtpols)
 **  the deep thought polynomials <dtpols>.
 */
 
-static Obj Commutator(Obj x, Obj y, Obj dtpols)
+static Obj Commutator(Obj x, Obj y, Obj dtpols) GAP_GC_CANSAFEPOINT
 {
-    Obj    res, help;
+    Obj    res = 0, help = 0;
 
+    GAP_GC_PUSH2(&res, &help);
     res = Multiplybound(x, y, 1, LEN_PLIST(y), dtpols);
     help = Multiplybound(y, x, 1, LEN_PLIST(x), dtpols);
     res = Solution(help, res, dtpols);
+    GAP_GC_POP();
     return res;
 }
 
@@ -485,12 +515,14 @@ static Obj Commutator(Obj x, Obj y, Obj dtpols)
 **  deep thought polynomials <dtpols>. The result is an ordered word.
 */
 
-static Obj Conjugate(Obj x, Obj y, Obj dtpols)
+static Obj Conjugate(Obj x, Obj y, Obj dtpols) GAP_GC_CANSAFEPOINT
 {
-    Obj    res;
+    Obj    res = 0;
 
+    GAP_GC_PUSH1(&res);
     res = Multiplybound(x, y, 1, LEN_PLIST(y), dtpols);
     res = Solution(y, res, dtpols);
+    GAP_GC_POP();
     return res;
 }
 
@@ -507,10 +539,12 @@ static Obj Conjugate(Obj x, Obj y, Obj dtpols)
 */
 
 static Obj Multiplyboundred(Obj x, Obj y, UInt anf, UInt end, Obj pcp)
+    GAP_GC_CANSAFEPOINT
 {
-    Obj   orders, res, mod, c;
+    Obj   orders = 0, res = 0, mod = 0, c = 0;
     UInt  i, len, len2, help;
 
+    GAP_GC_PUSH4(&orders, &res, &mod, &c);
     orders = ELM_PLIST(pcp, PC_ORDERS);
     res = Multiplybound(x,y,anf, end, ELM_PLIST( pcp, PC_DEEP_THOUGHT_POLS) );
     len = LEN_PLIST(res);
@@ -523,6 +557,7 @@ static Obj Multiplyboundred(Obj x, Obj y, UInt anf, UInt end, Obj pcp)
             SET_ELM_PLIST( res, i, mod);
             CHANGED_BAG(res);
         }
+    GAP_GC_POP();
     return res;
 }
 
@@ -538,11 +573,12 @@ static Obj Multiplyboundred(Obj x, Obj y, UInt anf, UInt end, Obj pcp)
 **  system <pcp>.
 */
 
-static Obj Powerred(Obj x, Obj n, Obj pcp)
+static Obj Powerred(Obj x, Obj n, Obj pcp) GAP_GC_CANSAFEPOINT
 {
-    Obj   orders, res, mod, c;
+    Obj   orders = 0, res = 0, mod = 0, c = 0;
     UInt  i, len, len2,help;
 
+    GAP_GC_PUSH4(&orders, &res, &mod, &c);
     orders = ELM_PLIST(pcp, PC_ORDERS);
     res = Power(x, n, ELM_PLIST( pcp, PC_DEEP_THOUGHT_POLS) );
     len = LEN_PLIST(res);
@@ -555,6 +591,7 @@ static Obj Powerred(Obj x, Obj n, Obj pcp)
             SET_ELM_PLIST( res, i, mod);
             CHANGED_BAG(res);
         }
+    GAP_GC_POP();
     return res;
 }
 
@@ -570,11 +607,12 @@ static Obj Powerred(Obj x, Obj n, Obj pcp)
 **  rewriting system <pcp>.
 */
 
-static Obj Solutionred(Obj x, Obj y, Obj pcp)
+static Obj Solutionred(Obj x, Obj y, Obj pcp) GAP_GC_CANSAFEPOINT
 {
-    Obj   orders, res, mod, c;
+    Obj   orders = 0, res = 0, mod = 0, c = 0;
     UInt  i, len, len2, help;
 
+    GAP_GC_PUSH4(&orders, &res, &mod, &c);
     orders = ELM_PLIST(pcp, PC_ORDERS);
     res = Solution(x, y, ELM_PLIST( pcp, PC_DEEP_THOUGHT_POLS) );
     len = LEN_PLIST(res);
@@ -587,6 +625,7 @@ static Obj Solutionred(Obj x, Obj y, Obj pcp)
             SET_ELM_PLIST( res, i, mod);
             CHANGED_BAG(res);
         }
+    GAP_GC_POP();
     return res;
 }
 
@@ -602,11 +641,12 @@ static Obj Solutionred(Obj x, Obj y, Obj pcp)
 **  thought rewriting system <pcp>.
 */
 
-static Obj Commutatorred(Obj x, Obj y, Obj pcp)
+static Obj Commutatorred(Obj x, Obj y, Obj pcp) GAP_GC_CANSAFEPOINT
 {
-    Obj    orders, mod, c, res;
+    Obj    orders = 0, mod = 0, c = 0, res = 0;
     UInt   i, len, len2, help;
 
+    GAP_GC_PUSH4(&orders, &mod, &c, &res);
     orders = ELM_PLIST(pcp, PC_ORDERS);
     res = Commutator(x, y, ELM_PLIST( pcp, PC_DEEP_THOUGHT_POLS) );
     len = LEN_PLIST(res);
@@ -619,6 +659,7 @@ static Obj Commutatorred(Obj x, Obj y, Obj pcp)
             SET_ELM_PLIST( res, i, mod);
             CHANGED_BAG(res);
         }
+    GAP_GC_POP();
     return res;
 }
 
@@ -634,11 +675,12 @@ static Obj Commutatorred(Obj x, Obj y, Obj pcp)
 **  thought rewriting system <pcp>.
 */
 
-static Obj Conjugatered(Obj x, Obj y, Obj pcp)
+static Obj Conjugatered(Obj x, Obj y, Obj pcp) GAP_GC_CANSAFEPOINT
 {
-    Obj    orders, mod, c, res;
+    Obj    orders = 0, mod = 0, c = 0, res = 0;
     UInt   i, len, len2, help;
 
+    GAP_GC_PUSH4(&orders, &mod, &c, &res);
     orders = ELM_PLIST(pcp, PC_ORDERS);
     res = Conjugate(x, y, ELM_PLIST( pcp, PC_DEEP_THOUGHT_POLS) );
     len = LEN_PLIST(res);
@@ -651,6 +693,7 @@ static Obj Conjugatered(Obj x, Obj y, Obj pcp)
             SET_ELM_PLIST( res, i, mod);
             CHANGED_BAG(res);
         }
+    GAP_GC_POP();
     return res;
 }
 
@@ -663,7 +706,7 @@ static Obj Conjugatered(Obj x, Obj y, Obj pcp)
 **  compress removes pairs (n,0) from the list of GAP integers <list>.
 */
 
-static void compress(Obj list)
+static void compress(Obj list) GAP_GC_CANSAFEPOINT
 {
     UInt    i, skip, len;
 
@@ -698,7 +741,7 @@ static void compress(Obj list)
 **  FuncDTCompress implements the internal function DTCompress.
 */
 
-static Obj FuncDTCompress(Obj self, Obj list)
+static Obj FuncDTCompress(Obj self, Obj list) GAP_GC_CANSAFEPOINT
 {
     compress(list);
     return  (Obj)0;
@@ -716,12 +759,15 @@ static Obj FuncDTCompress(Obj self, Obj list)
 **  by <pcp>.
 */
 
-static void ReduceWord(Obj x, Obj pcp)
+static void ReduceWord(Obj x, Obj pcp) GAP_GC_CANSAFEPOINT
 {
     Obj       powers, exponent;
-    Obj       deepthoughtpols, help, potenz, quo, mod, prel;
+    Obj       deepthoughtpols = 0, help = 0, potenz = 0;
+    Obj       quo = 0, mod = 0, prel = 0;
     UInt      i,j,flag, len, gen, lenexp, lenpow;
 
+    GAP_GC_PUSH8(&x, &pcp, &deepthoughtpols, &help, &potenz, &quo, &mod,
+                 &prel);
     powers = ELM_PLIST(pcp, PC_POWERS);
     exponent = ELM_PLIST(pcp, PC_EXPONENTS);
     deepthoughtpols = ELM_PLIST(pcp, PC_DEEP_THOUGHT_POLS);
@@ -773,6 +819,7 @@ static void ReduceWord(Obj x, Obj pcp)
     SHRINK_PLIST(x, flag);
     // remove all syllables with exponent 0 from <x>.
     compress(x);
+    GAP_GC_POP();
 }
 
 
@@ -789,16 +836,18 @@ static void ReduceWord(Obj x, Obj pcp)
 **  with respect to the deep thought rewriting system <pcp>.
 */
 
-static Obj FuncDTMultiply(Obj self, Obj x, Obj y, Obj pcp)
+static Obj FuncDTMultiply(Obj self, Obj x, Obj y, Obj pcp) GAP_GC_CANSAFEPOINT
 {
-    Obj res;
+    Obj res = 0;
 
     if  ( LEN_PLIST(x) == 0 )
         return y;
     if  ( LEN_PLIST(y) == 0 )
         return x;
+    GAP_GC_PUSH1(&res);
     res = Multiplyboundred(x, y, 1, LEN_PLIST(y), pcp);
     ReduceWord(res, pcp);
+    GAP_GC_POP();
     return res;
 }
 
@@ -816,12 +865,14 @@ static Obj FuncDTMultiply(Obj self, Obj x, Obj y, Obj pcp)
 **  with respect to the deep thought rewriting system <pcp>.
 */
 
-static Obj FuncDTPower(Obj self, Obj x, Obj n, Obj pcp)
+static Obj FuncDTPower(Obj self, Obj x, Obj n, Obj pcp) GAP_GC_CANSAFEPOINT
 {
-    Obj    res;
+    Obj    res = 0;
 
+    GAP_GC_PUSH1(&res);
     res = Powerred(x, n, pcp);
     ReduceWord(res, pcp);
+    GAP_GC_POP();
     return res;
 }
 
@@ -839,14 +890,16 @@ static Obj FuncDTPower(Obj self, Obj x, Obj n, Obj pcp)
 **  is reduced with respect to the deep thought rewriting system <pcp>.
 */
 
-static Obj FuncDTSolution(Obj self, Obj x, Obj y, Obj pcp)
+static Obj FuncDTSolution(Obj self, Obj x, Obj y, Obj pcp) GAP_GC_CANSAFEPOINT
 {
-    Obj     res;
+    Obj     res = 0;
 
     if  ( LEN_PLIST(x) == 0 )
         return y;
+    GAP_GC_PUSH1(&res);
     res = Solutionred(x, y, pcp);
     ReduceWord(res, pcp);
+    GAP_GC_POP();
     return res;
 }
 
@@ -865,11 +918,14 @@ static Obj FuncDTSolution(Obj self, Obj x, Obj y, Obj pcp)
 */
 
 static Obj FuncDTCommutator(Obj self, Obj x, Obj y, Obj pcp)
+    GAP_GC_CANSAFEPOINT
 {
-    Obj   res;
+    Obj   res = 0;
 
+    GAP_GC_PUSH1(&res);
     res = Commutatorred(x, y, pcp);
     ReduceWord(res, pcp);
+    GAP_GC_POP();
     return res;
 }
 
@@ -887,14 +943,16 @@ static Obj FuncDTCommutator(Obj self, Obj x, Obj y, Obj pcp)
 **  reduced with respect to the deep thought rewriting system <pcp>.
 */
 
-static Obj FuncDTConjugate(Obj self, Obj x, Obj y, Obj pcp)
+static Obj FuncDTConjugate(Obj self, Obj x, Obj y, Obj pcp) GAP_GC_CANSAFEPOINT
 {
-    Obj   res;
+    Obj   res = 0;
 
     if  ( LEN_PLIST(y) == 0 )
         return x;
+    GAP_GC_PUSH1(&res);
     res = Conjugatered(x, y, pcp);
     ReduceWord(res, pcp);
+    GAP_GC_POP();
     return res;
 }
 
@@ -912,16 +970,18 @@ static Obj FuncDTConjugate(Obj self, Obj x, Obj y, Obj pcp)
 **  reduced with respect to the deep thought rewriting system <pcp>.
 */
 
-static Obj FuncDTQuotient(Obj self, Obj x, Obj y, Obj pcp)
+static Obj FuncDTQuotient(Obj self, Obj x, Obj y, Obj pcp) GAP_GC_CANSAFEPOINT
 {
-    Obj     help, res;
+    Obj     help = 0, res = 0;
 
     if  ( LEN_PLIST(y) == 0 )
         return x;
+    GAP_GC_PUSH2(&help, &res);
     help = NEW_PLIST( T_PLIST, 0 );
     res = Solutionred(y, help, pcp);
     res = Multiplyboundred(x, res, 1, LEN_PLIST(res), pcp);
     ReduceWord(res, pcp);
+    GAP_GC_POP();
     return(res);
 }
 
@@ -970,7 +1030,7 @@ static Int InitKernel (
 *F  PostRestore( <module> ) . . . . . . . . . . . . . after restore workspace
 */
 static Int PostRestore (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     evlist    = RNamName("evlist");
     evlistvec = RNamName("evlistvec");
@@ -984,7 +1044,7 @@ static Int PostRestore (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
