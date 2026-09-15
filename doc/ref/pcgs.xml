@@ -373,6 +373,8 @@ series. See also Section <Ref Sect="Special Pcgs"/> for a more explicit possibil
 <#Include Label="ChiefNormalSeriesByPcgs">
 <#Include Label="IndicesNormalSteps">
 <#Include Label="NormalSeriesByPcgs">
+<#Include Label="PcgsSeriesInfo">
+<#Include Label="IndicesNormalStepsBounded">
 
 </Section>
 
