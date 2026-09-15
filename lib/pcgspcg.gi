@@ -857,6 +857,34 @@ end );
 
 #############################################################################
 ##
+#M  IndexOfElementaryAbelianTail( <pcgs> )
+##
+InstallMethod( IndexOfElementaryAbelianTail, "family pcgs: use collector",
+    [ IsPcgs and IsFamilyPcgs ],
+function( pcgs )
+  local rws, avc, pow, ro, t;
+  rws := ElementsFamily(FamilyObj(pcgs))!.rewritingSystem;
+  if not IsSingleCollectorRep(rws) or not IsBound(rws![SCP_AVECTOR]) then
+    TryNextMethod();
+  fi;
+
+  # avc[i] = i means that generator i commutes with all later ones
+  avc := rws![SCP_AVECTOR];
+  pow := rws![SCP_POWERS];
+  ro := RelativeOrders(pcgs);
+  t := Length(pcgs)+1;
+  while t > 1 and avc[t-1] = t-1 and not IsBound(pow[t-1])
+        and ro[t-1] = Last(ro) do
+    t := t-1;
+  od;
+  if t <= Length(pcgs) and not IsPrimeInt(Last(ro)) then
+    return Length(pcgs)+1;
+  fi;
+  return t;
+end );
+
+#############################################################################
+##
 #M  CleanedTailPcElement( <family pcgs>, <elm>,<dep> )
 ##
 InstallMethod( CleanedTailPcElement, "family pcgs", IsCollsElmsX,

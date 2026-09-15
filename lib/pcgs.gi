@@ -484,6 +484,23 @@ function( pcgs, i, j )
   return ExponentsOfPcElement(pcgs,Comm(pcgs[i],pcgs[j]));
 end );
 
+#############################################################################
+##
+#M  IndexOfElementaryAbelianTail( <pcgs> )
+##
+InstallMethod( IndexOfElementaryAbelianTail, "generic: last EA step if known",
+    [ IsModuloPcgs ],
+function( pcgs )
+  local ind;
+  if HasIndicesEANormalSteps(pcgs) then
+    ind := IndicesEANormalSteps(pcgs);
+    if Length(ind) > 1 then
+      return ind[Length(ind)-1];
+    fi;
+  fi;
+  return Length(pcgs)+1;
+end );
+
 
 #############################################################################
 ##
@@ -1153,7 +1170,7 @@ end );
 #M  PcGroupWithPcgs( <pcgs> )
 ##
 BindGlobal( "GROUP_BY_PCGS_FINITE_ORDERS", function( pcgs )
-    local   f,  e,  m,  i,  type,  s,  id,  tmp,  j;
+    local   f,  e,  m,  i,  type,  s,  id,  tmp,  j,  t;
 
     # construct a new free group
     f := FreeGroup(IsSyllableWordsFamily, Length(pcgs) );
@@ -1174,9 +1191,12 @@ BindGlobal( "GROUP_BY_PCGS_FINITE_ORDERS", function( pcgs )
     # and use a single collector
     s := SingleCollector( f, RelativeOrders(pcgs) );
 
+    # generators from <t> on commute and have trivial powers
+    t := IndexOfElementaryAbelianTail(pcgs);
+
     # compute the power relations
     id := pcgs!.zeroVector;
-    for i  in [ 1 .. Length(pcgs) ]  do
+    for i  in [ 1 .. t-1 ]  do
         #tmp := pcgs[i]^RelativeOrderOfPcElement(pcgs,pcgs[i]);
         tmp := ExponentsOfRelativePower(pcgs,i);
         if tmp <> id  then
@@ -1187,7 +1207,7 @@ BindGlobal( "GROUP_BY_PCGS_FINITE_ORDERS", function( pcgs )
     od;
 
     # compute the conjugates
-    for i  in [ 1 .. Length(pcgs) ]  do
+    for i  in [ 1 .. t-1 ]  do
         for j  in [ i+1 .. Length(pcgs) ]  do
             #tmp := pcgs[j] ^ pcgs[i];
             tmp := ExponentsOfConjugate(pcgs,j,i);

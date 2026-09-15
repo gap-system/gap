@@ -1333,6 +1333,27 @@ end );
 
 #############################################################################
 ##
+#M  IndexOfElementaryAbelianTail( <igs> )
+##
+InstallMethod( IndexOfElementaryAbelianTail, "induced pcgs: use parent",
+    [ IsInducedPcgs and IsInducedPcgsRep ],
+function( pcgs )
+  local t;
+  if not IsBound(pcgs!.depthsInParent) then
+    TryNextMethod();
+  fi;
+  # the elements lying in the elementary abelian tail of the parent
+  t := IndexOfElementaryAbelianTail(ParentPcgs(pcgs));
+  t := PositionSorted(pcgs!.depthsInParent, t);
+  if t > Length(pcgs) then
+    TryNextMethod();
+  fi;
+  return t;
+end );
+
+
+#############################################################################
+##
 #M  ExponentsOfPcElement( <igs>, <elm> )
 ##
 InstallMethod( ExponentsOfPcElement,
