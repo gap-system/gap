@@ -2900,8 +2900,8 @@ static Obj NewGlobalFunction(Obj name, Obj nams)
     SET_NAME_FUNC(func, namobj);
     CHANGED_BAG(func);
 
-    // We set the location to a description, to make clear the function
-    // hasn't been defined yet
+    // Use a descriptive pseudo-filename to make clear the function
+    // hasn't been defined yet.
     Obj  filename = MakeString("the global function \"");
     AppendString(filename, namobj);
     const char * end = "\" is not yet defined";
@@ -2909,7 +2909,6 @@ static Obj NewGlobalFunction(Obj name, Obj nams)
 
     Obj body_bag = NewFunctionBody();
     SET_FILENAME_BODY(body_bag, filename);
-    SET_LOCATION_BODY(body_bag, MakeImmString(""));
     SET_BODY_FUNC(func, body_bag);
     CHANGED_BAG(body_bag);
     CHANGED_BAG(func);
