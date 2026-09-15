@@ -72,6 +72,19 @@ DeclareRepresentation( "IsNumeratorParentLayersForExponentsRep",
 
 #############################################################################
 ##
+#R  IsDenominatorInElementaryAbelianTailRep(<obj>)
+##
+##  modulo pcgs in this representation have their denominator inside an
+##  elementary abelian tail of the numerator, so exponents in that tail are
+##  obtained by linear algebra.
+DeclareRepresentation( "IsDenominatorInElementaryAbelianTailRep",
+    IsModuloPcgsRep,
+    [ "moduloDepths", "moduloMap", "numerator", "denominator",
+      "depthMap", "numeratorDepths", "eaTailStart", "tailPivotDepths",
+      "tailZero", "tailReduction", "tailPrime" ] );
+
+#############################################################################
+##
 #M  IsBound[ <pos> ]
 ##
 InstallMethod( IsBound\[\],
@@ -221,7 +234,7 @@ InstallMethod( ModuloPcgsByPcSequenceNC, "generic method for pcgs mod pcgs",
 function( home, list, modulo )
     local   pcgs,  wm,  wp,  wd,  pcs,  filter,  new,
     i,depthsInParent,dd,par,sel,
-    pcsexp,denexp,bascha,idx,sep,sed,mat;
+    pcsexp,denexp,bascha,idx,sep,sed,mat,eatail,p;
 
     # <list> is a pcgs for the sum of <list> and <modulo>
     if IsPcgs(list) and (ParentPcgs(modulo) = list or IsSubset(list,modulo))
@@ -254,6 +267,7 @@ function( home, list, modulo )
 
     depthsInParent:=fail; # do not set by default
     dd:=fail; # do not set by default
+    eatail:=fail; # do not set by default
     if IsEmpty(wd) or Last(wd) = Length(wd)  then
         filter := filter and IsModuloTailPcgsRep;
         # are we even: tail mod further tail?
@@ -284,7 +298,13 @@ function( home, list, modulo )
         fi;
         depthsInParent:=pcgs!.depthsInParent{wd};
       else
-        if HasParentPcgs(pcgs) and
+        i:=IndexOfElementaryAbelianTail(pcgs);
+        if Minimum(wm)>=i then
+          # the denominator lies in an elementary abelian tail of the
+          # numerator
+          eatail:=i;
+          filter:=filter and IsDenominatorInElementaryAbelianTailRep;
+        elif HasParentPcgs(pcgs) and
           IsPcgsElementaryAbelianSeries(ParentPcgs(pcgs)) then
           par:=ParentPcgs(pcgs);
           depthsInParent:=List(pcs,x->DepthOfPcElement(par,x));
@@ -340,6 +360,22 @@ function( home, list, modulo )
       new!.numeratorParent:=ParentPcgs(pcgs);
       new!.depthsInParent:=depthsInParent;
       new!.parentZeroVector:=ParentPcgs(pcgs)!.zeroVector;
+    fi;
+
+    if eatail<>fail then
+      # row reduced basis of the denominator within the tail, as integer
+      # vectors at the positions of <new>
+      p:=RelativeOrders(pcgs)[eatail];
+      mat:=List(modulo,x->ExponentsOfPcElement(pcgs,x,[eatail..Length(pcgs)]));
+      mat:=TriangulizedMat(ImmutableMatrix(GF(p),mat*One(GF(p))));
+      sel:=wd{[eatail..Length(wd)]}-eatail+1;
+      new!.tailReduction:=List(mat,r->Concatenation(
+        ListWithIdenticalEntries(eatail-1,0),List(r{sel},Int)));
+      new!.numeratorDepths:=wd;
+      new!.eaTailStart:=eatail;
+      new!.tailPivotDepths:=Set(wm);
+      new!.tailZero:=ListWithIdenticalEntries(Length(wm),0);
+      new!.tailPrime:=p;
     fi;
 
     if dd<>fail then
@@ -1189,3 +1225,98 @@ function( pcgs, ind )
     pcgs!.depthsInParent[ind]) # depth of the element in the parent
                                 {pcgs!.depthsInParent};
 end );
+
+#############################################################################
+##
+#F  EXPONENTS_MODULO_EA_TAIL( <modulo-pcgs>, <exp> )
+##
+##  maps exponents <exp> with respect to the numerator of a modulo pcgs in
+##  `IsDenominatorInElementaryAbelianTailRep' to exponents with respect to
+##  the modulo pcgs.
+##
+BindGlobal( "EXPONENTS_MODULO_EA_TAIL", function( pcgs, exp )
+  local res, c, p, rows, k;
+
+  # dividing off denominator elements does not change the head exponents
+  res := exp{pcgs!.numeratorDepths};
+  c := exp{pcgs!.tailPivotDepths};
+  if c = pcgs!.tailZero then
+    return res;
+  fi;
+
+  # clear the pivot entries with the row reduced denominator basis
+  p := pcgs!.tailPrime;
+  rows := pcgs!.tailReduction;
+  k := PositionNonZero(c);
+  while k <= Length(c) do
+    AddRowVector(res, rows[k], p - c[k]);
+    k := PositionNonZero(c, k);
+  od;
+  return res mod p;
+end );
+
+#############################################################################
+##
+#M  ExponentsOfPcElement( <denominator-in-ea-tail-pcgs>, <elm> )
+##
+InstallOtherMethod( ExponentsOfPcElement, "denominator in EA tail",
+    IsCollsElms,
+    [ IsModuloPcgs and IsDenominatorInElementaryAbelianTailRep, IsObject ], 0,
+function( pcgs, elm )
+  return EXPONENTS_MODULO_EA_TAIL(pcgs,
+           ExponentsOfPcElement(NumeratorOfModuloPcgs(pcgs), elm));
+end );
+
+#############################################################################
+##
+#M  ExponentsOfPcElement( <denominator-in-ea-tail-pcgs>, <elm>, <subrange> )
+##
+InstallOtherMethod( ExponentsOfPcElement, "denominator in EA tail, subrange",
+    IsCollsElmsX,
+    [ IsModuloPcgs and IsDenominatorInElementaryAbelianTailRep, IsObject,
+      IsList ], 0,
+function( pcgs, elm, range )
+  return ExponentsOfPcElement(pcgs, elm){range};
+end );
+
+#############################################################################
+##
+#M  ExponentsOfConjugate( <denominator-in-ea-tail-pcgs>, <i>, <j> )
+##
+InstallOtherMethod( ExponentsOfConjugate, "denominator in EA tail", true,
+    [ IsModuloPcgs and IsDenominatorInElementaryAbelianTailRep, IsPosInt,
+      IsPosInt ], 0,
+function( pcgs, i, j )
+  local exp;
+  if i >= pcgs!.eaTailStart and j >= pcgs!.eaTailStart then
+    exp := ShallowCopy(pcgs!.zeroVector);
+    exp[i] := 1;
+    return exp;
+  fi;
+  return EXPONENTS_MODULO_EA_TAIL(pcgs,
+           ExponentsOfConjugate(NumeratorOfModuloPcgs(pcgs),
+             pcgs!.numeratorDepths[i], pcgs!.numeratorDepths[j]));
+end );
+
+#############################################################################
+##
+#M  ExponentsOfRelativePower( <denominator-in-ea-tail-pcgs>, <i> )
+##
+InstallOtherMethod( ExponentsOfRelativePower, "denominator in EA tail", true,
+    [ IsModuloPcgs and IsDenominatorInElementaryAbelianTailRep, IsPosInt ], 0,
+function( pcgs, i )
+  if i >= pcgs!.eaTailStart then
+    return ShallowCopy(pcgs!.zeroVector);
+  fi;
+  # the head of <pcgs> coincides with the head of the numerator
+  return EXPONENTS_MODULO_EA_TAIL(pcgs,
+           ExponentsOfRelativePower(NumeratorOfModuloPcgs(pcgs), i));
+end );
+
+#############################################################################
+##
+#M  IndexOfElementaryAbelianTail( <denominator-in-ea-tail-pcgs> )
+##
+InstallMethod( IndexOfElementaryAbelianTail, "denominator in EA tail",
+    [ IsModuloPcgs and IsDenominatorInElementaryAbelianTailRep ],
+    pcgs -> pcgs!.eaTailStart );
