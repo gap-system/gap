@@ -234,6 +234,20 @@ typedef struct {
     // error occurred.
     UInt NrError;
 
+    // If non-zero, this is a plist: syntax errors and warnings are appended
+    // to it as records instead of being printed to ERROR_OUTPUT.
+    Obj errors;
+
+    // One-shot flag set by token getters immediately before raising a
+    // SyntaxError caused by hitting end of input inside a token (e.g. an
+    // unterminated string). Consumed and reset by 'SyntaxErrorOrWarning'.
+    BOOL pendingEOFError;
+
+    // Set when the first syntax error is raised: TRUE iff that error was
+    // caused by end of input, i.e., the input is a truncated prefix of
+    // potentially valid input. Never reset afterwards.
+    BOOL firstErrorAtEOF;
+
 } ScannerState;
 
 
