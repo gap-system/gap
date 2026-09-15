@@ -598,11 +598,13 @@ see <Cite Key="BJR87"/>.
 <Section Label="2-Cohomology">
 <Heading>2-Cohomology</Heading>
 
+The functions in this section describe generic operations and methods.
+See Section <Ref Sect="2-Cohomology and Extensions"/> for operations and
+methods specific for Pc groups.
+
 <#Include Label="TwoCohomologyGeneric">
 <#Include Label="FpGroupCocycle">
-
-Also see Section <Ref Sect="2-Cohomology and Extensions"/> for operations and
-methods specific for Pc groups.
+<#Include Label="Extensions_from_map">
 
 </Section>
 

@@ -307,6 +307,50 @@ DeclareOperation( "TwoCohomologyGeneric", [ IsGroup, IsObject ] );
 ##
 DeclareGlobalFunction("FpGroupCocycle");
 
+
+#############################################################################
+##
+#O  Extensions( <G>, <map> )
+##
+##  <#GAPDoc Label="Extensions_from_map">
+##  <ManSection>
+##  <Oper Name="Extensions" Arg='G, map' Label="for group and map"/>
+##
+##  <Description>
+##  For a finite group <A>G</A> and a group homomorphism <A>map</A>
+##  whose <Ref Attr="Source"/> is a group containing <A>G</A> and
+##  whose <Ref Attr="Range" Label="of a general mapping"/>
+##  is a matrix group over a finite prime field,
+##  <Ref Oper="Extensions" Label="for group and map"/> returns
+##  all extensions of <A>G</A> by the <A>G</A>-module defined by <A>map</A>,
+##  up to equivalence.
+##  <P/>
+##  The result is a list of pc groups if <A>G</A> is a pc group,
+##  it is a list of finitely presented groups if <A>G</A> is nonsolvable,
+##  and it is one of these two possibilities otherwise.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> G:= ElementaryAbelianGroup( 4 );;
+##  gap> gens:= GeneratorsOfGroup( G );;
+##  gap> gl:= GL(1, 2);;
+##  gap> map:= GroupHomomorphismByImages( G, gl,
+##  >              gens, List( gens, x -> One( gl ) ) );;
+##  gap> Length( Extensions( G, map ) );
+##  8
+##  gap> G:= AlternatingGroup( 5 );;
+##  gap> gens:= GeneratorsOfGroup( G );;
+##  gap> map:= GroupHomomorphismByImages( G, gl,
+##  >              gens, List( gens, x -> One( gl ) ) );;
+##  gap> Length( Extensions( G, map ) );
+##  2
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "Extensions", [ IsGroup, IsMapping ] );
+
+
 #############################################################################
 ##
 #O  CompatiblePairOrbitRepsGeneric( <compair>,<coh> )

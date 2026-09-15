@@ -322,12 +322,7 @@ end);
 ##
 #M  Extensions( G, M )
 ##
-InstallMethod( Extensions,
-    "generic method for pc groups",
-    true,
-    [ CanEasilyComputePcgs, IsObject],
-    0,
-function( G, M )
+BindGlobal( "ExtensionsWRTPcgs", function( G, M )
     local C, ext, co, cc, c, i;
 
     C := CollectorSQ( G, M, false );
@@ -345,6 +340,44 @@ function( G, M )
         Add( ext, ExtensionSQ( C, G, M, c ) );
     od;
     return ext;
+end );
+
+InstallMethod( Extensions,
+    "generic method for pc groups",
+    [ CanEasilyComputePcgs, IsObject],
+    ExtensionsWRTPcgs );
+
+#############################################################################
+##
+#M  Extensions( G, map )
+##
+InstallMethod( Extensions,
+  "for a finite group and a mapping",
+  [ IsGroup and IsFinite, IsMapping ],
+function( G, map )
+  local matgrp, F, M;
+
+  matgrp:= Range( map );
+  if not IsMatrixGroup( matgrp ) then
+    Error( "range of <map> must be a matrix group over a finite prime field" );
+  fi;
+  F:= FieldOfMatrixGroup( matgrp );
+  if not ( IsFinite( F ) and IsPrimeField( F ) ) then
+    Error( "range of <map> must be a matrix group over a finite prime field" );
+  fi;
+  if CanEasilyComputePcgs( G ) then
+    # We will call the method from 'grppcext.gi',
+    # the generators of the module correspond to 'Pcgs( G )'.
+    M:= GModuleByMats( List( Pcgs( G ),
+                             x -> ImagesRepresentative( map, x ) ), F );
+    return ExtensionsWRTPcgs( G, M );
+  else
+    # We will call the method from 'twocohom.gi',
+    # the generators of the module correspond to 'GeneratorsOfGroup( G )'.
+    M:= GModuleByMats( List( GeneratorsOfGroup( G ),
+                             x -> ImagesRepresentative( map, x ) ), F );
+    return ExtensionsWRTGenerators( G, M );
+  fi;
 end );
 
 InstallGlobalFunction(EXPermutationActionPairs,function(D)
