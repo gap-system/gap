@@ -1236,6 +1236,11 @@ function( G, U )
     K := SubgroupByPcgs( GroupOfPcgs(home), tmp );
 #    SetHomePcgs( K, home );
 #    SetInducedPcgsWrtHomePcgs( K, tmp );
+
+    # spares `FactorGroup' its test of all conjugates of generators
+    if IsIdenticalObj( Parent(K), G ) then
+        SetIsNormalInParent( K, true );
+    fi;
     return K;
 
 end );
