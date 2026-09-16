@@ -941,6 +941,17 @@ DeclareOperation( "ExponentsOfRelativePower",
 DeclareOperation( "ExponentsOfCommutator",
     [ IsModuloPcgs, IsPosInt,IsPosInt ] );
 
+#############################################################################
+##
+#O  IndexOfElementaryAbelianTail( <pcgs> )
+##
+##  returns a position <t> such that the elements of <pcgs> from <t> on
+##  generate an elementary abelian group (modulo the denominator), or
+##  `Length(<pcgs>)+1'. Methods only use cheap information, so <t> need not
+##  be minimal.
+##
+DeclareOperation( "IndexOfElementaryAbelianTail", [ IsModuloPcgs ] );
+
 
 #############################################################################
 ##
