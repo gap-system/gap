@@ -1,4 +1,4 @@
-#@local S4, A4, S5, F, H, N
+#@local S4, A4, S5, F, H, N, G, U
 gap> START_TEST("NormalClosure.tst");
 
 #
@@ -43,6 +43,22 @@ gap> Index(F, N);
 4
 gap> IsTrivial(NormalClosure(F, [ ])); # corner case
 true
+
+# in-parent relations
+gap> G := DihedralGroup(IsPcGroup, 16);;
+gap> U := NormalClosure(G, [ G.1 ]);;  # parent is G
+gap> [ Size(U), HasIsNormalInParent(U) and IsNormalInParent(U),
+>      HasNormalClosureInParent(U) and
+>      IsIdenticalObj(NormalClosureInParent(U), U) ];
+[ 8, true, true ]
+gap> N := NormalClosure(U, [ G.1 ]);;  # parent is G
+gap> [ HasIsNormalInParent(N), HasNormalClosureInParent(N) ];
+[ false, false ]
+gap> IsNormal(G, N);
+false
+gap> U := Subgroup(G, GeneratorsOfGroup(U));;
+gap> [ IsNormalInParent(U), IsIdenticalObj(U, NormalClosure(G, U)) ];
+[ true, true ]
 
 #
 gap> STOP_TEST("NormalClosure.tst");

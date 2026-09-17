@@ -3261,7 +3261,39 @@ end);
 #############################################################################
 ##
 #M  NormalClosure( <G>, <U> ) . . . . normal closure of a subgroup in a group
+#M  NormalClosureInParent( <U> )
+#M  NormalClosureOp( <G>, <U> )
+#M  NormalClosure( <G>, <list> )
 ##
+InstallMethod( NormalClosure,
+  "try to exploit the in-parent attribute NormalClosureInParent",
+  [ IsGroup, IsGroup ],
+  function( super, sub )
+  local value;
+
+  if HasParent( sub ) and IsIdenticalObj( super, Parent( sub ) ) then
+    value:= NormalClosureInParent( sub );
+  else
+    value:= NormalClosureOp( super, sub );
+    # Because of the following, this method is not created by 'InParentFOA'.
+    if HasParent( value ) and IsIdenticalObj( super, Parent( value ) ) then
+      SetIsNormalInParent( value, true );
+      SetNormalClosureInParent( value, value );
+    fi;
+  fi;
+  return value;
+  end );
+
+InstallMethod( NormalClosureInParent,
+  "method that calls the two-argument operation NormalClosureOp",
+  [ IsGroup and HasParent ],
+  D -> NormalClosureOp( Parent( D ), D ) );
+
+InstallMethod( NormalClosureInParent,
+  "method that uses the known IsNormalInParent",
+  [ IsGroup and HasParent and IsNormalInParent ], SUM_FLAGS,
+  IdFunc );
+
 InstallMethod( NormalClosureOp,
     "generic method for two groups",
     IsIdenticalObj, [ IsGroup, IsGroup ],
