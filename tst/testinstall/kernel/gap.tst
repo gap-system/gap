@@ -7,7 +7,7 @@ gap> START_TEST("kernel/gap.tst");
 # in ViewObj; afterwards everything should still work as before
 gap> l := [ ~ ];; r := rec(a:=~);;
 gap> cat := NewCategory("IsMockObject", IsObject);;
-gap> type := NewType(NewFamily("MockFamily"), cat);;
+gap> type := NewType(NewFamily("MockFamily"), cat and IsPositionalObjectRep);;
 gap> InstallMethod(ViewObj, [cat], function(s) Error("oops"); end);
 gap> InstallMethod(PrintObj, [cat], function(s) Error("uups"); end);
 gap> x:=Objectify(type,[]); r; Print(l, "\n");
