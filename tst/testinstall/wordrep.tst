@@ -22,7 +22,8 @@ f1^1048576*f2^-10*f1^4
 true
 gap> ExtRepOfObj(w32);
 [ 1, 1048576, 2, -10, 1, 4 ]
-gap> winf:=ObjByExtRep(fam,[1,2^40,2,-10,1,4]);; IsInfBitsAssocWord(winf);
+gap> winf:=ObjByExtRep(fam,[1,2^40,2,-10,1,4]); IsInfBitsAssocWord(winf);
+f1^1099511627776*f2^-10*f1^4
 true
 gap> ExtRepOfObj(winf);
 [ 1, 1099511627776, 2, -10, 1, 4 ]
@@ -309,6 +310,15 @@ gap> IsMutable(ExtRepOfObj(f.1));
 true
 gap> IsMutable(ExtRepOfObj(f.1));
 true
+
+# printing with huge exponents, see #6579
+gap> f:= FreeGroup(IsSyllableWordsFamily, 2);;
+gap> f.1^(2^100);
+f1^1267650600228229401496703205376
+gap> String(f.1^(2^100) * f.2^-(2^70));
+"f1^1267650600228229401496703205376*f2^-1180591620717411303424"
+gap> (f.1^20*f.2)^3;
+(f1^20*f2)^3
 
 # printing powers in words over infinitely many generators
 gap> f:= FreeGroup(IsSyllableWordsFamily, infinity, "x");;
