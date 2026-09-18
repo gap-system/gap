@@ -106,7 +106,7 @@ InstallGlobalFunction( IndependentGeneratorsAbelianPPermGroup,
             h := g ^ (p^(i-1));
 
             # reduce <g> and <h>
-            while h <> h^0
+            while not IsOne(h)
               and IsBound(trns[SmallestMovedPoint(h)^h])
             do
                 g := g / pows[ trns[SmallestMovedPoint(h)^h] ];
@@ -114,7 +114,7 @@ InstallGlobalFunction( IndependentGeneratorsAbelianPPermGroup,
             od;
 
             # if this is linear independent, add it to the generators
-            if h <> h^0  then
+            if not IsOne(h) then
                 Add( inds, g );
                 Add( pows, g );
                 Add( base, h );
@@ -141,7 +141,7 @@ InstallGlobalFunction( IndependentGeneratorsAbelianPPermGroup,
 
         # prepare for the next round
         gens := gens2;
-        pows := List( pows,i->i^ p );
+        pows := List( pows, i->i^p );
 
     od;
 
@@ -175,7 +175,8 @@ InstallMethod( IndependentGeneratorsOfAbelianGroup, "for perm group",
         for g  in GeneratorsOfGroup( G )  do
             o := Order(g);
             while o mod p = 0  do o := o / p; od;
-            if g^o <> g^0  then Add( gens, g^o );  fi;
+            g := g^o;
+            if not IsOne(g)  then Add( gens, g );  fi;
         od;
 
         # append the independent generators for the Sylow <p> subgroup
@@ -1287,11 +1288,12 @@ end );
 # if this goes on too long the group may not be solvable. This can be much faster
 # for large degree groups than to use the full pcgs machinery (which uses the same
 # idea but builds a pcgs on the way).
+# The function returns `true` if the group has been proved to be *non*solvable.
 BindGlobal("QuickUnsolvabilityTestPerm",function(G)
 local som,elvth,fct,gens,new,l,i,j,a,b,bound;
   # a few moved points
   som:=MovedPoints(G);
-  if Length(som) = 0 then SetIsTrivial(G,true); return true; fi;
+  if Length(som) = 0 then SetIsTrivial(G,true); return fail; fi;
   bound:=Int(LogInt(Length(som)^5,3)/2); #Dixon Bound
   if Length(som)>100 then
     som:=som{List([1..100],x->Random(1, Length(som)))};
@@ -1446,6 +1448,10 @@ InstallMethod( LowerCentralSeriesOfGroup,"for permgrp", true, [ IsPermGroup ], 0
     function( G )
     local  pcgs,  series;
 
+    if IsTrivial(G) then
+        return [G];
+    fi;
+
     if    not DefaultStabChainOptions.tryPcgs
        or HasIsNilpotentGroup( G )  and  not IsNilpotentGroup( G )
        and not (HasIsNilpotentGroup(G) and IsNilpotentGroup(G)) then
@@ -1586,7 +1592,7 @@ InstallGlobalFunction( SylowSubgroupPermGroup, function( G, p )
             O := Orbit( S, D[1] );
             f := ActionHomomorphism( S, O,"surjective" );
             T := SylowSubgroupPermGroup( Range( f ), p );
-            S := PreImagesSet( f, T );
+            S := PreImagesSetNC( f, T );
             SubtractSet( D, O );
         od;
         return S;
@@ -1599,7 +1605,7 @@ InstallGlobalFunction( SylowSubgroupPermGroup, function( G, p )
         f := ActionHomomorphism( G, B, OnSets,"surjective" );
         T := SylowSubgroupPermGroup( Range( f ), p );
         if Size( T ) < Size( Range( f ) )  then
-            T := PreImagesSet( f, T );
+            T := PreImagesSetNC( f, T );
             S := SylowSubgroupPermGroup( T , p) ;
             return S;
         fi;
@@ -1624,7 +1630,7 @@ InstallGlobalFunction( SylowSubgroupPermGroup, function( G, p )
     Info(InfoGroup,1,"PermSylow: cycleaction");
     f := ActionHomomorphism( C, B, OnSets,"surjective" );
     T := SylowSubgroupPermGroup( Range( f ), p );
-    S := PreImagesSet( f, T );
+    S := PreImagesSetNC( f, T );
     return S;
 
 end );
@@ -1672,13 +1678,13 @@ InstallMethod( Socle,"test primitive", true, [ IsPermGroup ], 0,
     #    fi;
     #    if shortcut  then
     #        ds := DerivedSeriesOfGroup( G );
-    #        return ds[ Length( ds ) ];
+    #        return Last(ds);
     #    fi;
     fi;
 
     coll := Collected( Factors(Integers, Size( G ) ) );
     if deg < 78125  then
-        p := coll[ Length( coll ) ][ 1 ];
+        p := Last(coll)[ 1 ];
     else
         i := Length( coll );
         while coll[ i ][ 2 ] = 1  do
@@ -1699,7 +1705,7 @@ InstallMethod( Socle,"test primitive", true, [ IsPermGroup ], 0,
     L := NormalClosure( G, SubgroupNC( G, [ z,z^Random(G) ] ) );
     if deg >= 78125  then
         ds := DerivedSeriesOfGroup( L );
-        L := ds[ Length( ds ) ];
+        L := Last(ds);
     fi;
     if IsSemiRegular( L, Omega )  then
         L := ClosureSubgroup( L, Centralizer( G, L ) );

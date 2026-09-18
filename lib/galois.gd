@@ -47,7 +47,7 @@ DeclareInfoClass("InfoGalois");
 ##  cases the required calculations become unfeasibly large.
 ##  <P/>
 ##  For a few polynomials of degree 14, a complete discrimination is not yet
-##  possible, as it would require computations, that are not feasible with
+##  possible, as it would require computations that are not feasible with
 ##  current factoring methods.
 ##  <P/>
 ##  This function requires the transitive groups library to be installed (see

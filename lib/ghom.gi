@@ -33,7 +33,7 @@ function( arg )
     then Error("for usage, see ?GroupHomomorphismByImages"); fi;
 
     if not IsGroup(arrgh[2]) then
-      arrgh:=Concatenation([arrgh[1],Group(arrgh[Length(arrgh)])],
+      arrgh:=Concatenation([arrgh[1],Group(Last(arrgh))],
                            arrgh{[2..Length(arrgh)]});
     fi;
 
@@ -95,22 +95,14 @@ end);
 InstallMethod(RestrictedMapping,"create new GHBI",
   CollFamSourceEqFamElms,[IsGroupHomomorphism,IsGroup],0,
 function(hom,U)
-local rest,gens,imgs,imgp;
+local rest,gens,imgs;
 
   gens:=GeneratorsOfGroup(U);
   imgs:=List(gens,i->ImageElm(hom,i));
 
-  if HasImagesSource(hom) then
-    imgp:=ImagesSource(hom);
-  else
-    imgp:=Subgroup(Range(hom),imgs);
-  fi;
-  rest:=GroupHomomorphismByImagesNC(U,imgp,gens,imgs);
+  rest:=GroupHomomorphismByImagesNC(U,Range(hom),gens,imgs);
   if HasIsInjective(hom) and IsInjective(hom) then
     SetIsInjective(rest,true);
-  fi;
-  if HasIsTotal(hom) and IsTotal(hom) then
-    SetIsTotal(rest,true);
   fi;
 
   return rest;
@@ -261,9 +253,10 @@ end );
 
 #############################################################################
 ##
+#M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . . . . . . .  via images
 #M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . . .  via images
-##
-InstallMethod( PreImagesRepresentative, "for PBG-Hom", FamRangeEqFamElm,
+
+InstallMethod( PreImagesRepresentativeNC, "for PBG-Hom", FamRangeEqFamElm,
   [ IsPreimagesByAsGroupGeneralMappingByImages,
     IsMultiplicativeElementWithInverse ], 0,
 function( hom, elm )
@@ -272,8 +265,20 @@ function( hom, elm )
     # group
     return ImagesRepresentative( RestrictedInverseGeneralMapping( hom ), elm );
   else
-    return PreImagesRepresentative( AsGroupGeneralMappingByImages( hom ), elm );
+    return PreImagesRepresentativeNC( AsGroupGeneralMappingByImages( hom ), elm );
   fi;
+end );
+
+InstallMethod( PreImagesRepresentative, "for PBG-Hom", FamRangeEqFamElm,
+  [ IsPreimagesByAsGroupGeneralMappingByImages,
+    IsMultiplicativeElementWithInverse ], 0,
+function( hom, elm )
+  if not ( elm in Range( hom ) ) then
+    Error( "<elm> is not in the range of mapping <hom>" );
+  elif not ( elm in Image( hom ) ) then
+    return fail;
+  fi;
+  return PreImagesRepresentativeNC( hom, elm );
 end );
 
 InstallAttributeMethodByGroupGeneralMappingByImages( CoKernelOfMultiplicativeGeneralMapping );
@@ -883,9 +888,10 @@ InstallMethod( ImagesRepresentative,
 
 #############################################################################
 ##
+#M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . . . . . . . .  for GHBI
 #M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . . . .  for GHBI
 ##
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
     "for GHBI and mult.-elm.-with-inverse",
     FamRangeEqFamElm,
     [ IsGroupGeneralMappingByImages,
@@ -898,6 +904,19 @@ InstallMethod( PreImagesRepresentative,
     fi;
 end );
 
+InstallMethod( PreImagesRepresentative,
+    "for GHBI and mult.-elm.-with-inverse",
+    FamRangeEqFamElm,
+    [ IsGroupGeneralMappingByImages,
+          IsMultiplicativeElementWithInverse ], 0,
+function( hom, elm )
+  if not ( elm in Range( hom ) ) then
+    Error( "<elm> is not in the range of mapping <hom>" );
+  elif not ( elm in Image( hom ) ) then
+    return fail;
+  fi;
+  return PreImagesRepresentativeNC( hom, elm );
+end );
 
 #############################################################################
 ##
@@ -980,6 +999,32 @@ end);
 
 #############################################################################
 ##
+#M  MakeConjugatorIsomorphismNC( <G>, <H>, <g> )
+##
+##  Assumes H = G^g
+BindGlobal( "MakeConjugatorIsomorphismNC",
+function( G, H, g )
+    local fam, filter, hom;
+
+    if IsIdenticalObj( G, H ) then
+      filter:= IsConjugatorAutomorphism;
+    else
+      filter:= IsConjugatorIsomorphism;
+    fi;
+    fam:= ElementsFamily( FamilyObj( G ) );
+    hom:= ObjectifyWithAttributes( rec(),
+                     NewType( GeneralMappingsFamily( fam, fam ),
+                                  filter
+                              and IsSPGeneralMapping
+                              and IsAttributeStoringRep ),
+                     ConjugatorOfConjugatorIsomorphism, g,
+                     Source, G,
+                     Range, H );
+    return hom;
+end );
+
+#############################################################################
+##
 #M  ConjugatorIsomorphism( <G>, <g> )
 ##
 InstallMethod( ConjugatorIsomorphism,
@@ -987,18 +1032,9 @@ InstallMethod( ConjugatorIsomorphism,
     IsCollsElms,
     [ IsGroup, IsMultiplicativeElementWithInverse ], 0,
     function( G, g )
-    local fam, hom;
-
-    fam:= ElementsFamily( FamilyObj( G ) );
-    hom:= Objectify( NewType( GeneralMappingsFamily( fam, fam ),
-                                  IsConjugatorIsomorphism
-                              and IsSPGeneralMapping
-                              and IsAttributeStoringRep ),
-                     rec() );
-    SetConjugatorOfConjugatorIsomorphism( hom, g );
-    SetSource( hom, G );
-    SetRange(  hom, ConjugateGroup( G, g ) );
-    return hom;
+    local H;
+    H := ConjugateGroup( G, g );
+    return MakeConjugatorIsomorphismNC( G, H, g );
     end );
 
 
@@ -1011,18 +1047,7 @@ InstallMethod( ConjugatorAutomorphismNC,
     IsCollsElms,
     [ IsGroup, IsMultiplicativeElementWithInverse ], 0,
     function( G, g )
-    local fam, hom;
-
-    fam:= ElementsFamily( FamilyObj( G ) );
-    hom:= Objectify( NewType( GeneralMappingsFamily( fam, fam ),
-                                  IsConjugatorAutomorphism
-                              and IsSPGeneralMapping
-                              and IsAttributeStoringRep ),
-                     rec() );
-    SetConjugatorOfConjugatorIsomorphism( hom, g );
-    SetSource( hom, G );
-    SetRange(  hom, G );
-    return hom;
+    return MakeConjugatorIsomorphismNC( G, G, g );
     end );
 
 
@@ -1227,9 +1252,10 @@ InstallMethod( ImagesSet,
 
 #############################################################################
 ##
+#M  PreImagesRepresentativeNC( <hom>, <g> ) . . .  for conjugator isomorphism
 #M  PreImagesRepresentative( <hom>, <g> ) . . . .  for conjugator isomorphism
 ##
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
     "for conjugator isomorphism",
     FamRangeEqFamElm,
     [ IsConjugatorIsomorphism, IsMultiplicativeElementWithInverse ], 0,
@@ -1237,18 +1263,43 @@ InstallMethod( PreImagesRepresentative,
     return g ^ ( ConjugatorOfConjugatorIsomorphism( hom ) ^ -1 );
     end );
 
+InstallMethod( PreImagesRepresentative,
+    "for conjugator isomorphism",
+    FamRangeEqFamElm,
+    [ IsConjugatorIsomorphism, IsMultiplicativeElementWithInverse ], 0,
+function( hom, g )
+  if not ( g in Range( hom ) ) then
+    Error( "<g> is not in the range of mapping <hom>" );
+  elif not ( g in Image( hom ) ) then
+    return fail;
+  fi;
+  return PreImagesRepresentativeNC( hom, g );
+end );
+
 
 #############################################################################
 ##
+#M  PreImagesSetNC( <hom>, <U> )  . . . . . . . .  for conjugator isomorphism
 #M  PreImagesSet( <hom>, <U> )  . . . . . . . . .  for conjugator isomorphism
 ##
-InstallMethod( PreImagesSet,
+InstallMethod( PreImagesSetNC,
     "for conjugator isomorphism, and group",
     CollFamRangeEqFamElms,
     [ IsConjugatorIsomorphism, IsGroup ], 0,
     function( hom, U )
     return U ^ ( ConjugatorOfConjugatorIsomorphism( hom ) ^ -1 );
     end );
+
+InstallMethod( PreImagesSet,
+    "for conjugator isomorphism, and group",
+    CollFamRangeEqFamElms,
+    [ IsConjugatorIsomorphism, IsGroup ], 0,
+function( hom, U )
+  if not IsSubset( Range( hom ), U ) then
+    Error( "<U> is not a subset of the range of mapping <hom>" );
+  fi;
+  return PreImagesSetNC( hom, Intersection( U, Image( hom ) ) );
+end );
 
 
 #############################################################################
@@ -1407,7 +1458,7 @@ function ( G )
     # re-enable it for e.g. pc groups, but I am not sure whether it is
     # worth the hassle.
 #   elif not HasIsNilpotentGroup(G) and IsNilpotentGroup(G) then
-#     # Redispatch to give the special methods for nilpotents groups a chance.
+#     # Redispatch to give the special methods for nilpotent groups a chance.
 #     return IsomorphismPermGroup( G );
   fi;
   return RegularActionHomomorphism( G );

@@ -1,93 +1,208 @@
 #!/usr/bin/env bash
+#
+# Build GAP as a WebAssembly module using emscripten.
+# Run from the GAP source root: etc/emscripten/build.sh
+#
+# Most people will want etc/emscripten/build-in-docker.sh instead, which
+# wraps this in a pinned emsdk container.
 
-set -eux
+set -euxo pipefail
 
 BASEDIR="$(pwd)"
+JOBS=$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)
 
-if ! command -v emmake &> /dev/null; then
-    echo Please install, and source, emscripten
-    echo This script was tested with version 3.1.23
-    echo See https://emscripten.org/docs/getting_started/downloads.html for install instructions
+if ! command -v emmake >/dev/null 2>&1; then
+    echo "Please install and source emscripten." >&2
+    echo "This script is tested with emsdk 3.1.23." >&2
+    echo "See https://emscripten.org/docs/getting_started/downloads.html" >&2
     exit 1
-fi;
+fi
 
 # Build the configure script if this is a fresh git checkout
 if [[ ! -f ./configure ]]; then
     ./autogen.sh
 fi
 
-# First build a standard GAP install, for some files
-# we will need during building
+# First build a standard GAP install: we need ffgen and gap-nocomp on the
+# host to generate sources that the wasm build cannot run itself.
+#
+# We copy those generated sources (build/c_*.c, build/ffdata.*) into src/
+# further down, so the wasm build picks them up as overrides. GAP's
+# Makefile.rules, however, also treats src/c_oper1.c, src/ffdata.c etc. as
+# overrides during THIS native build -- so leftovers from a previous run
+# would stop the native build regenerating them in native-build/build/, and
+# the copy below would then fail. Remove any leftovers so the native build
+# regenerates them cleanly (keeps the script idempotent across re-runs).
+rm -f src/c_oper1.c src/c_type1.c src/ffdata.c src/ffdata.h
 (
     mkdir -p native-build
     cd native-build
     if [[ ! -f config.status ]]; then
         ../configure
     fi
-    make -j8
+    make -j"$JOBS"
 )
 
 AUX_BUILD=$PWD/extern/emscripten/build
 AUX_PREFIX=$PWD/extern/emscripten/install
 
-mkdir -p "$AUX_BUILD"
-mkdir -p "$AUX_PREFIX"
+mkdir -p "$AUX_BUILD" "$AUX_PREFIX"
 
+# A 32-bit build is required by GAP's small-integer representation, so we
+# pin --build to i686-pc-linux-gnu. This may need revisiting if GAP ever
+# moves to a 64-bit-friendly small-integer encoding.
 (
     mkdir -p "$AUX_BUILD/gmp"
-    cd "$AUX_BUILD/gmp" &&
+    cd "$AUX_BUILD/gmp"
     if [[ ! -f config.status ]]; then
         CC_FOR_BUILD=/usr/bin/gcc ABI=standard \
-        emconfigure $BASEDIR/extern/gmp/configure \
-        --build i686-pc-linux-gnu --host none \
-        --disable-assembly --enable-cxx \
-        --prefix=$AUX_PREFIX
-    fi &&
-    emmake make -j8 &&
+        emconfigure "$BASEDIR/extern/gmp/configure" \
+            --build i686-pc-linux-gnu --host none \
+            --disable-assembly --enable-cxx \
+            --prefix="$AUX_PREFIX"
+    fi
+    emmake make -j"$JOBS"
     emmake make install
 )
 
 (
     mkdir -p "$AUX_BUILD/zlib"
-    cd "$AUX_BUILD/zlib" &&
+    cd "$AUX_BUILD/zlib"
     if [[ ! -f Makefile ]]; then
-        emconfigure $BASEDIR/extern/zlib/configure --prefix=$AUX_PREFIX
-    fi;
-    emmake make -j8 &&
+        # --static: skip the shared library. Newer emscripten's wasm-ld
+        # rejects linking zlib's .so test programs (examplesh) with
+        # "unknown file type: libz.so"; GAP only needs the static libz.a.
+        emconfigure "$BASEDIR/extern/zlib/configure" --static --prefix="$AUX_PREFIX"
+    fi
+    emmake make -j"$JOBS"
     emmake make install
 )
 
-# There are two problems with building GAP
-# 1) GAP builds some executables (ffgen and gap-nocomp), which it wants to
-#    execute while building. We get these files from 'native-build'.
-# 2) 'configure' gets confused by some of the LDFLAGS we need, so we have to pass
-#     them in to 'make'
+# Two quirks of building GAP under emscripten:
+# 1) GAP runs ffgen and gap-nocomp during the build. We copy the host-built
+#    versions in from native-build/ further down.
+# 2) configure rejects some LDFLAGS we need at link time, so we pass them
+#    only at make-time.
 #
-# These options are:
-# -sASYNCIFY -- we don't care about ASYNC, but this forces the compiler to output
-# all variables onto the stack, which is required for GASMAN
-# Note we could use 'ALLOW_MEMORY_GROWTH', both we don't currently, we instead set
-# a big memory window.
-# -O2 : Some optimisation
-# EXEEXT=.html -- this is actually a GAP makefile option, it lets us make the
-# output 'gap.html', which makes emscripten output a html page we can load
-# --preload-file : The directories containing files GAP needs to run
+# Link-time flags worth noting:
+#   -sASYNCIFY       forces variables onto the stack (required by GASMAN).
+#   -O2              enables some optimisation.
+#   EXEEXT=.html     a GAP makefile knob that produces gap.html, the html
+#                    shim emscripten generates for loading the wasm module.
 
-# Run configure if we don't have a makefile, or someone configured this
-# GAP for standard building (emscripten builds will use 'emcc')
-if [[ ! -f GNUmakefile ]] || ! grep '/emcc' GNUmakefile > /dev/null; then
+if [[ ! -f GNUmakefile ]] || ! grep -q '/emcc' GNUmakefile; then
+    # Wipe any in-tree state from a prior native (or mismatched) build.
+    # Stale build/deps/*.d files reference build/ffdata.h, which under
+    # emcc would be regenerated by a non-executable JS shim; stale .o
+    # files have the wrong architecture. Configure regenerates build/.
+    rm -rf build ffgen
+    # PTHREAD_CFLAGS/PTHREAD_LIBS: configure unconditionally adopts
+    # -pthread (for the sake of native kernel extensions, see configure.ac),
+    # but under emcc that flag enables full USE_PTHREADS mode — shared
+    # wasm memory, a helper worker, and a slow path when combined with
+    # ALLOW_MEMORY_GROWTH. GAP itself is single-threaded here, and
+    # emscripten's libc provides single-threaded pthread API stubs, so
+    # pre-seeding the variables makes AX_PTHREAD settle on "no flags".
     emconfigure ./configure ABI=32 \
-    --with-gmp=$AUX_PREFIX \
-    --with-zlib=$AUX_PREFIX \
-    LDFLAGS="-s ASYNCIFY=1 -O2"
-fi;
+        --with-gmp="$AUX_PREFIX" \
+        --with-zlib="$AUX_PREFIX" \
+        PTHREAD_CFLAGS=" " PTHREAD_LIBS=" " \
+        LDFLAGS="-s ASYNCIFY=1 -O2"
+fi
 
-# Get basic required packages
-emmake make bootstrap-pkg-minimal
+# Provide the GAP package distribution without re-downloading it on every
+# build. Preference order:
+#   1. An existing pkg/ directory.
+#   2. packages.tar.gz already on the host (carried in the source mount).
+#   3. The tarball baked into the docker image at /opt/gap-packages.tar.gz.
+#   4. As a last resort, GAP's own bootstrap-pkg-full target downloads it.
+# Skipping straight to tar avoids `bootstrap-pkg-full`, which calls
+# curl -L -O unconditionally and overwrites packages.tar.gz on every run.
+if [[ ! -d pkg ]]; then
+    if [[ ! -f packages.tar.gz && -f /opt/gap-packages.tar.gz ]]; then
+        cp /opt/gap-packages.tar.gz packages.tar.gz
+    fi
+    if [[ -f packages.tar.gz ]]; then
+        mkdir pkg
+        (cd pkg && tar xzf ../packages.tar.gz)
+    else
+        emmake make bootstrap-pkg-full
+    fi
+fi
 
-# Copy in files from native_build
+# Copy host-built generated sources into place
 cp native-build/build/c_*.c native-build/build/ffdata.* src/
 
-# The EXEEXT is usually for windows, but here it lets us set GAP's extension,
-# which lets us produce a html page to run GAP in
-emmake make -j8 LDFLAGS="--preload-file pkg --preload-file lib --preload-file grp --preload-file tst -s ASYNCIFY=1 -sTOTAL_STACK=32mb -sASYNCIFY_STACK_SIZE=32000000 -sINITIAL_MEMORY=2048mb -O2" EXEEXT=".html"
+# Statically link the 'io' package's kernel module into the GAP kernel.
+#
+# The wasm build has no dlopen, so a package kernel extension cannot be
+# loaded the usual way. But GAP's loader already supports STATIC modules:
+# LoadKernelExtension("io") (in io's init.g) checks SHOW_STAT() -- the
+# list of names in CompInitFuncs[] (src/compstat.c) -- and loads a match
+# without dlopen (see lib/files.gd). So we compile io's single C file into
+# the kernel and add it to that table; no change to GAP's loader or io's
+# GAP code is needed. This is the safe approach for GASMAN: io ends up in
+# the one wasm module, so ASYNCIFY's link-time pass instruments it
+# uniformly with the rest of the kernel and emscripten_scan_registers
+# sees its frames (unlike a dlopen'd side module).
+#
+# io is the kernel dependency of several otherwise pure-GAP packages
+# (simpcomp, fr, rcwa, unitlib, ...). Its socket/fork/select-based
+# functions compile (emscripten declares the symbols) but fail at runtime
+# under wasm; its file/directory/time functions work.
+IO_OBJ=""
+if [[ -d pkg/io ]]; then
+    IO_PKG="$PWD/pkg/io"
+    # io's configure (autoconf feature probe) writes gen/pkgconfig.h, which
+    # io.c needs. FIND_GAP may fail without a fully built GAP in $BASEDIR
+    # and exit non-zero, but pkgconfig.h is still generated by then, so we
+    # tolerate the exit code and assert on the file instead.
+    (
+        cd "$IO_PKG"
+        [[ -f configure ]] || ./autogen.sh
+        emconfigure ./configure --with-gaproot="$BASEDIR" || true
+    )
+    if [[ ! -f "$IO_PKG/gen/pkgconfig.h" ]]; then
+        echo "Error: io's pkgconfig.h was not generated; cannot link io." >&2
+        exit 1
+    fi
+    # io.c (via gap_all.h) includes generated kernel headers. The normal
+    # build generates these before compiling any object; since we compile
+    # io.o ahead of that, generate them first.
+    emmake make build/version.h build/config.h
+    # Compile io.c, renaming its generic Init__Dynamic to the unique
+    # Init__io that the static-module table references. ASYNCIFY is a
+    # link-time pass, so it is not (and must not be) given here.
+    emcc -m32 -c "$IO_PKG/src/io.c" -o "$AUX_BUILD/io.o" \
+        -DInit__Dynamic=Init__io \
+        -Isrc -Ibuild -Isrc/extra \
+        -I"$IO_PKG/gen" -I"$IO_PKG/src" \
+        -I"$AUX_PREFIX/include" \
+        -fPIC -fno-strict-aliasing -O2
+    python3 etc/emscripten/register_static_module.py io src/compstat.c
+    IO_OBJ="$AUX_BUILD/io.o"
+fi
+
+# Build the file list that will be served. -L follows symlinks so that
+# users' local development setups (e.g. replacing pkg/foo with a symlink
+# to a git checkout under git/foo) are picked up; -type f then drops any
+# symlinks themselves.
+find -L pkg lib grp tst doc hpcgap dev benchmark -type f ! -path 'pkg/log/*' \
+        ! -path '*/.git/*' \
+    | python3 etc/emscripten/generate_gap_fs_json.py
+
+# Emscripten only emits gap.worker.js for pthread builds; remove any
+# leftover from a previous configuration so assemble-website.sh can't
+# ship a stale one.
+rm -f gap.worker.js
+
+# Memory: start small and grow on demand (sbrk stays contiguous, which
+# GASMAN's workspace extension requires, since wasm memory grows in
+# place). A 2GB up-front allocation was refused outright on iOS.
+# $IO_OBJ (if set) is the statically-linked io module object; it goes on
+# the link line, where the Init__io reference from src/compstat.c pulls it
+# in. LDFLAGS flows into GAP_LDFLAGS (see Makefile.rules), which is part of
+# the final link command.
+emmake make -j"$JOBS" \
+    LDFLAGS="-lidbfs.js -s ASYNCIFY=1 -sTOTAL_STACK=32mb -sASYNCIFY_STACK_SIZE=32000000 -sINITIAL_MEMORY=256mb -sALLOW_MEMORY_GROWTH=1 -sMAXIMUM_MEMORY=2048mb $IO_OBJ -O2" \
+    EXEEXT=".html"

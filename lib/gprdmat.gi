@@ -143,9 +143,10 @@ end);
 
 #############################################################################
 ##
-#M  PreImagesRepresentative(<emb>,<g>) . . . . . . . . . . .  of embedding
+#M  PreImagesRepresentativeNC(<emb>,<g>) . . . . . . . . . . .  of embedding
+#M  PreImagesRepresentative(<emb>,<g>) . . . . . . . . . . . .  of embedding
 ##
-InstallMethod(PreImagesRepresentative,"matrix direct product embedding",
+InstallMethod(PreImagesRepresentativeNC,"matrix direct product embedding",
   FamRangeEqFamElm,
         [ IsEmbeddingDirectProductMatrixGroup,
           IsMultiplicativeElementWithInverse ],
@@ -160,6 +161,19 @@ local info,a,b;
   else
     return fail;
   fi;
+end);
+
+InstallMethod(PreImagesRepresentative,"matrix direct product embedding",
+  FamRangeEqFamElm,
+        [ IsEmbeddingDirectProductMatrixGroup,
+          IsMultiplicativeElementWithInverse ],
+function(emb,g)
+  if not (g in Range(emb)) then
+    Error( "<g> is not in the range of mapping <emb>" );
+  elif not ( g in Image(emb) ) then
+    return fail;
+  fi;
+  return PreImagesRepresentativeNC(emb,g);
 end);
 
 #############################################################################
@@ -206,9 +220,10 @@ end);
 
 #############################################################################
 ##
-#M  PreImagesRepresentative(<prj>,<g>) . . . . . . . . . . . of projection
+#M  PreImagesRepresentativeNC(<prj>,<g>) . . . . . . . . . . . of projection
+#M  PreImagesRepresentative(<prj>,<g>) . . . . . . . . . . . . of projection
 ##
-InstallMethod(PreImagesRepresentative,"matrix direct product projection",
+InstallMethod(PreImagesRepresentativeNC,"matrix direct product projection",
   FamRangeEqFamElm,
         [ IsProjectionDirectProductMatrixGroup,
           IsMultiplicativeElementWithInverse ],0,
@@ -218,6 +233,19 @@ local info,a;
   a:=IdentityMat(info.dimension,info.field);
   a{prj!.range}{prj!.range}:=m;
   return ImmutableMatrix(info.field,a);
+end);
+
+InstallMethod(PreImagesRepresentative,"matrix direct product projection",
+  FamRangeEqFamElm,
+        [ IsProjectionDirectProductMatrixGroup,
+          IsMultiplicativeElementWithInverse ],0,
+function(prj,m)
+  if not ( m in Range(prj) ) then
+    Error( "<m> not in the range of mapping <prj>" );
+  elif not ( m in Image(prj) ) then
+    return fail;
+  fi;
+  return PreImagesRepresentativeNC(prj,m);
 end);
 
 #############################################################################
@@ -256,7 +284,8 @@ InstallGlobalFunction(MatWreathProduct,function(A,B)
 local f,n,m,Agens,Bgens,emb,i,j,a,g,dim,rans,range,orbs;
   f:=DefaultFieldOfMatrixGroup(A);
   n:=DimensionOfMatrixGroup(A);
-  m:=LargestMovedPoint(B);
+  # force trivial top group to act on one point
+  m:=Maximum(1, LargestMovedPoint(B));
   dim:=n*m;
   emb:=[];
   rans:=[];
@@ -272,11 +301,25 @@ local f,n,m,Agens,Bgens,emb,i,j,a,g,dim,rans,range,orbs;
     emb[j]:=Agens;
   od;
   orbs := OrbitsDomain(B);
-  Agens := Concatenation(List(orbs, orb -> emb[orb[1]]));
-
-  Bgens:=List(GeneratorsOfGroup(B),
-          x->KroneckerProduct(PermutationMat(x,m,f),One(A)));
-  g:=Group(Concatenation(Agens,Bgens));
+  # force trivial top group to act on one point
+  if IsEmpty(orbs) then
+    orbs := [[1]];
+  fi;
+  # generators for the cases where one component is trivial
+  if IsTrivial(A) and IsTrivial(B) then
+    g := A;
+  elif IsTrivial(A) then
+    Bgens:=List(GeneratorsOfGroup(B), x -> PermutationMat(x,m,f));
+    g := Group(Bgens);
+  elif IsTrivial(B) then
+    Agens := Concatenation(List(orbs, orb -> emb[orb[1]]));
+    g := Group(Agens);
+  else
+    Agens := Concatenation(List(orbs, orb -> emb[orb[1]]));
+    Bgens:=List(GeneratorsOfGroup(B),
+            x->KroneckerProduct(PermutationMat(x,m,f),One(A)));
+    g:=Group(Concatenation(Agens,Bgens));
+  fi;
   if HasSize(A) then
     SetSize(g,Size(A)^m*Size(B));
   fi;
@@ -367,9 +410,10 @@ end);
 
 #############################################################################
 ##
-#M  PreImagesRepresentative( <emb>, <g> ) . . . . . . . . . . .  of embedding
+#M  PreImagesRepresentativeNC( <emb>, <g> ) . . . . . . . . . . of embedding
+#M  PreImagesRepresentative( <emb>, <g> ) . . . . . . . . . . . of embedding
 ##
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
   "imprim matrix wreath product embedding", FamRangeEqFamElm,
         [ IsEmbeddingImprimitiveWreathProductMatrixGroup,
           IsMultiplicativeElementWithInverse ], 0,
@@ -386,6 +430,18 @@ local info,a,b;
   fi;
 end);
 
+InstallMethod( PreImagesRepresentative,
+  "imprim matrix wreath product embedding", FamRangeEqFamElm,
+        [ IsEmbeddingImprimitiveWreathProductMatrixGroup,
+          IsMultiplicativeElementWithInverse ], 0,
+function( emb, g )
+  if not (g in Range(emb)) then
+    Error( "<g> is not in the range of mapping <emb>" );
+  elif not (g in Image(emb)) then
+    return fail;
+  fi;
+  return PreImagesRepresentativeNC(emb,g);
+end);
 
 #############################################################################
 ##

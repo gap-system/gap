@@ -165,14 +165,31 @@ function( r, n )
         type := type and IsUnivariatePolynomialRing;
     fi;
 
-    # Polynomial rings over commutative rings are themselves commutative.
-    if HasIsCommutative( r ) and IsCommutative( r ) then
-      type:= type and IsCommutative;
+    # Polynomial rings are commutative if and only if their coefficient ring is.
+    if HasIsCommutative( r ) then
+      if IsCommutative( r ) then
+        type := type and IsCommutative;
+      else
+        type := type and HasIsCommutative;
+      fi;
     fi;
 
-    # Polynomial rings over commutative rings are themselves commutative.
-    if HasIsAssociative( r ) and IsAssociative( r ) then
-      type:= type and IsAssociative;
+    # Polynomial rings are associative if and only if their coefficient ring is.
+    if HasIsAssociative( r ) then
+      if IsAssociative( r ) then
+        type := type and IsAssociative;
+      else
+        type := type and HasIsAssociative;
+      fi;
+    fi;
+
+    # Polynomial rings are integral if and only if their coefficient ring is.
+    if HasIsIntegralRing( r ) then
+      if IsIntegralRing( r ) then
+        type := type and IsIntegralRing;
+      else
+        type := type and HasIsIntegralRing;
+      fi;
     fi;
 
     # set categories to allow method selection according to base ring
@@ -791,12 +808,22 @@ end);
 InstallMethod(\in,"ratfun in fctfield",IsElmsColls,
     [IsRationalFunction,IsFunctionField],0,
 function(f,R)
-  local crng,inds,ext,exp,i;
+  local crng,inds,crnginds,ext,exp,i;
 
   # and the indeterminates and coefficients ring of <R>
   crng := CoefficientsRing(R);
   inds := Set(IndeterminatesOfFunctionField(R),
                       x -> ExtRepPolynomialRatFun(x)[1][1]);
+
+  # For an integral domain S, the function fields over S and over its fraction
+  # field coincide. Hence we check whether the coefficients lie in the fraction
+  # field of cring if the fraction field is implemented in GAP.
+  if IsIntegers(crng) then
+    crng := Rationals;
+  elif IsPolynomialRing(crng) then
+    crnginds := IndeterminatesOfPolynomialRing(crng);
+    crng := FunctionField(CoefficientsRing(crng), crnginds);
+  fi;
 
   for ext in [ExtRepNumeratorRatFun(f),ExtRepDenominatorRatFun(f)] do
     # first check the indeterminates

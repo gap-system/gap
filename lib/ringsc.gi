@@ -309,7 +309,7 @@ local fam,r,w,l,o;
       w:=w*x;
       if w=o then
         # last entry was inverse
-        return l[Length(l)];
+        return Last(l);
       fi;
       if w in l then
         # loop without inverse -- not invertible
@@ -403,8 +403,6 @@ InstallGlobalFunction( RingByStructureConstants, function( arg )
         NewType( Fam, IsSCRingObj and IsDenseCoeffVectorRep );
 
     SetCoefficientsFamily( Fam, ElementsFamily( FamilyObj( Integers ) ) );
-    # temporary
-    SetIsUFDFamily(Fam,false);
 
     # Make the generators and the ring.
     SetZero( Fam, ObjByExtRep( Fam, List( [ 1 .. n ], x -> 0 ) ) );

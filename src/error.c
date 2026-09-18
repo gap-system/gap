@@ -135,6 +135,20 @@ static Obj FuncUpEnv(Obj self, Obj args)
     return (Obj)0;
 }
 
+static Obj FuncCurrentEnv(Obj self)
+{
+    if (!STATE(ErrorLVars) || IsBottomLVars(STATE(ErrorLVars)))
+        return Fail;
+    MakeHighVars(STATE(ErrorLVars));
+    return STATE(ErrorLVars);
+}
+
+static Obj FuncSET_ERROR_LVARS(Obj self, Obj lvars)
+{
+    STATE(ErrorLVars) = lvars;
+    return (Obj)0;
+}
+
 static Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
 {
     if (IsBottomLVars(context))
@@ -170,10 +184,17 @@ static Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
     return retlist;
 }
 
-static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
+static Obj FuncPRINT_CURRENT_STATEMENT(Obj self,
+                                       Obj stream,
+                                       Obj context,
+                                       Obj activeContext,
+                                       Obj level,
+                                       Obj prefixWidth)
 {
+    volatile Obj location = Fail;
+
     if (IsBottomLVars(context))
-        return 0;
+        return Fail;
 
     // HACK: we want to redirect output
     // Try to print the output to stream. Use *errout* as a fallback.
@@ -193,13 +214,39 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
     GAP_TRY
     {
         Obj func = FUNC_LVARS(context);
-        GAP_ASSERT(func);
+        Obj funcname = NAME_FUNC(func);
+        Int line = -1;
+
         Stat call = STAT_LVARS(context);
         Obj  body = BODY_FUNC(func);
         Obj  filename = GET_FILENAME_BODY(body);
-        if (IsKernelFunction(func)) {
+
+        if (activeContext != Fail) {
+            char prefix[32];
+            UInt levelInt = INT_INTOBJ(level);
+            UInt levelWidth = 0;
+            UInt i = levelInt;
+            while (i > 0) {
+                levelWidth++;
+                i /= 10;
+            }
+            snprintf(prefix, sizeof(prefix), "%c%*s[%lu] ",
+                     context == activeContext ? '*' : ' ',
+                     (int)(INT_INTOBJ(prefixWidth) - levelWidth), "",
+                     (unsigned long)levelInt);
+            Pr("%s", (Int)prefix, 0);
+        }
+        if (IsKernelFunction(func) && filename && GET_STARTLINE_BODY(body)) {
+            if (funcname) {
+                Pr("<<compiled GAP function \"%g\">>", (Int)funcname, 0);
+            }
+            else {
+                Pr("<<compiled GAP function>>", 0, 0);
+            }
+            line = GET_STARTLINE_BODY(body);
+        }
+        else if (IsKernelFunction(func)) {
             PrintKernelFunction(func);
-            Obj funcname = NAME_FUNC(func);
             if (funcname) {
                 Pr(" in function %g", (Int)funcname, 0);
             }
@@ -214,13 +261,16 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
             Int type = TNUM_STAT(call);
             if (FIRST_STAT_TNUM <= type && type <= LAST_STAT_TNUM) {
                 PrintStat(call);
-                Pr(" at %g:%d", (Int)filename, LINE_STAT(call));
+                line = LINE_STAT(call);
             }
             else if (FIRST_EXPR_TNUM <= type && type <= LAST_EXPR_TNUM) {
                 PrintExpr(call);
-                Pr(" at %g:%d", (Int)filename, LINE_STAT(call));
+                line = LINE_STAT(call);
             }
             SWITCH_TO_OLD_LVARS(currLVars);
+        }
+        if (line > 0) {
+            location = NewPlistFromArgs(filename, INTOBJ_INT(line));
         }
     }
     GAP_CATCH
@@ -234,7 +284,7 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
     if (rethrow)
         GAP_THROW();
 
-    return 0;
+    return location;
 }
 
 /****************************************************************************
@@ -364,9 +414,7 @@ static Obj CallErrorInner(const Char * msg,
                           Int          arg2,
                           UInt         justQuit,
                           UInt         mayReturnVoid,
-                          UInt         mayReturnObj,
-                          Obj          lateMessage,
-                          UInt         printThisStatement)
+                          Obj          lateMessage)
 {
     // Must do this before creating any other GAP objects,
     // as one of the args could be a pointer into a Bag.
@@ -390,10 +438,7 @@ static Obj CallErrorInner(const Char * msg,
 #endif
     AssPRec(r, RNamName("context"), STATE(CurrLVars));
     AssPRec(r, RNamName("justQuit"), justQuit ? True : False);
-    AssPRec(r, RNamName("mayReturnObj"), mayReturnObj ? True : False);
     AssPRec(r, RNamName("mayReturnVoid"), mayReturnVoid ? True : False);
-    AssPRec(r, RNamName("printThisStatement"),
-            printThisStatement ? True : False);
     AssPRec(r, RNamName("lateMessage"), lateMessage);
     l = NewPlistFromArgs(EarlyMsg);
     MakeImmutableNoRecurse(l);
@@ -414,7 +459,7 @@ static Obj CallErrorInner(const Char * msg,
 
 void ErrorQuit(const Char * msg, Int arg1, Int arg2)
 {
-    CallErrorInner(msg, arg1, arg2, 1, 0, 0, False, 1);
+    CallErrorInner(msg, arg1, arg2, 1, 0, False);
     Panic("ErrorQuit must not return");
 }
 
@@ -443,26 +488,17 @@ void ErrorMayQuitNrAtLeastArgs(Int narg, Int actual)
 
 /****************************************************************************
 **
-*F  ErrorReturnObj( <msg>, <arg1>, <arg2>, <msg2> ) . .  print and return obj
-*/
-Obj ErrorReturnObj(const Char * msg, Int arg1, Int arg2, const Char * msg2)
-{
-    Obj LateMsg;
-    LateMsg = MakeString(msg2);
-    return CallErrorInner(msg, arg1, arg2, 0, 0, 1, LateMsg, 1);
-}
-
-
-/****************************************************************************
-**
 *F  ErrorReturnVoid( <msg>, <arg1>, <arg2>, <msg2> )  . . .  print and return
 */
 void ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2)
 {
-    Obj LateMsg;
-    LateMsg = MakeString(msg2);
-    CallErrorInner(msg, arg1, arg2, 0, 1, 0, LateMsg, 1);
-    // ErrorMode( msg, arg1, arg2, (Obj)0, msg2, 'x' );
+    if (msg2 == 0) {
+        msg2 = "you can enter 'return;' to continue";
+    }
+
+    Obj lateMsg = MakeString("you can enter 'quit;' to quit to outer loop, or\n");
+    AppendString(lateMsg, MakeString(msg2));
+    CallErrorInner(msg, arg1, arg2, 0, 1, lateMsg);
 }
 
 /****************************************************************************
@@ -471,8 +507,8 @@ void ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2)
 */
 void ErrorMayQuit(const Char * msg, Int arg1, Int arg2)
 {
-    Obj LateMsg = MakeString("type 'quit;' to quit to outer loop");
-    CallErrorInner(msg, arg1, arg2, 0, 0, 0, LateMsg, 1);
+    Obj LateMsg = MakeString("you can enter 'quit;' to quit to outer loop");
+    CallErrorInner(msg, arg1, arg2, 0, 0, LateMsg);
     Panic("ErrorMayQuit must not return");
 }
 
@@ -593,7 +629,7 @@ void ErrorBoundedInt(
 
 void AssertionFailure(void)
 {
-    ErrorReturnVoid("Assertion failure", 0, 0, "you may 'return;'");
+    ErrorReturnVoid("Assertion failure", 0, 0, 0);
 }
 
 void AssertionFailureWithMessage(Obj message)
@@ -604,7 +640,7 @@ void AssertionFailureWithMessage(Obj message)
         AssertionFailure();
     }
     else if (IS_STRING_REP(message)) {
-        ErrorReturnVoid("Assertion failure: %g", (Int)message, 0, "you may 'return;'");
+        ErrorReturnVoid("Assertion failure: %g", (Int)message, 0, 0);
     }
     else {
         PrintObj(message);
@@ -622,11 +658,14 @@ static StructGVarFunc GVarFuncs[] = {
 
     GVAR_FUNC_XARGS(DownEnv, -1, "args"),
     GVAR_FUNC_XARGS(UpEnv, -1, "args"),
+    GVAR_FUNC_0ARGS(CurrentEnv),
+    GVAR_FUNC_1ARGS(SET_ERROR_LVARS, lvars),
 
     GVAR_FUNC_2ARGS(CALL_WITH_CATCH, func, args),
     GVAR_FUNC_1ARGS(JUMP_TO_CATCH, payload),
 
-    GVAR_FUNC_2ARGS(PRINT_CURRENT_STATEMENT, stream, context),
+    GVAR_FUNC_5ARGS(PRINT_CURRENT_STATEMENT, stream, context, activeContext,
+                    level, totalDepth),
     GVAR_FUNC_1ARGS(CURRENT_STATEMENT_LOCATION, context),
 
     GVAR_FUNC_1ARGS(SetUserHasQuit, value),

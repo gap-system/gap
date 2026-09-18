@@ -66,9 +66,9 @@ InstallMethod( AlgebraGeneralMappingByImages,
           filter,
           i,basic;
 
-    # Handle the case that `gens' is a basis or empty.
+    # Handle the case that `gens' is empty.
     # We can form a left module general mapping directly.
-    if IsBasis( gens ) or IsEmpty( gens ) then
+    if IsEmpty( gens ) then
 
       map:= LeftModuleGeneralMappingByImages( S, R, gens, imgs );
       SetIsAlgebraGeneralMapping( map, true );
@@ -327,6 +327,7 @@ InstallMethod( AsLeftModuleGeneralMappingByImages,
     A:=MappingGeneratorsImages(alg_gen_map);
     origgenerators := A[1];
     origgenimages  := A[2];
+    A:= Source( alg_gen_map );
 
     if IsBasis( origgenerators ) then
 
@@ -337,8 +338,6 @@ InstallMethod( AsLeftModuleGeneralMappingByImages,
 
       generators := ShallowCopy( origgenerators );
       genimages  := ShallowCopy( origgenimages );
-
-      A:= Source( alg_gen_map );
 
       left:= not (    ( HasIsAssociative( A ) and IsAssociative( A ) )
                    or ( HasIsLieAlgebra( A ) and IsLieAlgebra( A ) ) );
@@ -365,10 +364,9 @@ InstallMethod( AsLeftModuleGeneralMappingByImages,
           gen:= origgenerators[i];
           for j in [ 1 .. Length( generators ) ] do
             prod:= generators[j] * gen;
-            if not IsContainedInSpan( MB, prod ) then
+            if CloseMutableBasis( MB, prod ) then
               Add( generators, prod );
               Add( genimages, genimages[j] * origgenimages[i] );
-              CloseMutableBasis( MB, prod );
             fi;
           od;
         od;
@@ -380,10 +378,9 @@ InstallMethod( AsLeftModuleGeneralMappingByImages,
             gen:= origgenerators[i];
             for j in [ 1 .. Length( generators ) ] do
               prod:= gen * generators[j];
-              if not IsContainedInSpan( MB, prod ) then
+              if CloseMutableBasis( MB, prod ) then
                 Add( generators, prod );
                 Add( genimages, origgenimages[i] * genimages[j] );
-                CloseMutableBasis( MB, prod );
               fi;
             od;
           od;
@@ -402,6 +399,8 @@ InstallMethod( AsLeftModuleGeneralMappingByImages,
       # pairs we obtain below, but rather only those that are not linearly
       # dependent on the already known pairs.
       len := Length( generators );
+      generators:= ShallowCopy( generators );
+      genimages:= ShallowCopy( genimages );
       for i in [ 1 .. len ] do
         for j in [ 1 .. len ] do
           Add( generators, generators[i] * generators[j] );
@@ -577,26 +576,31 @@ InstallMethod( ImagesRepresentative,
 
 #############################################################################
 ##
+#M  PreImagesRepresentativeNC( <map>, <elm> ) . . . . .  for algebra g.m.b.i.
 #M  PreImagesRepresentative( <map>, <elm> ) . . . . . .  for algebra g.m.b.i.
 ##
+InstallMethod( PreImagesRepresentativeNC,
+    "for algebra g.m.b.i., and element",
+    FamRangeEqFamElm,
+    [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep,
+      IsObject ],
+    function( map, elm )
+    return PreImagesRepresentativeNC(
+               AsLeftModuleGeneralMappingByImages(map), elm );
+    end );
+
 InstallMethod( PreImagesRepresentative,
     "for algebra g.m.b.i., and element",
     FamRangeEqFamElm,
     [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep,
       IsObject ],
     function( map, elm )
-    return PreImagesRepresentative( AsLeftModuleGeneralMappingByImages(map),
-                                    elm );
-    end );
-
-InstallMethod( PreImagesRepresentative,
-    "for algebra g.m.b.i. knowing inverse, and element",
-    FamRangeEqFamElm,
-    [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep
-      and HasInverseGeneralMapping,
-      IsObject ],
-    function( map, elm )
-    return ImagesRepresentative( InverseGeneralMapping(map), elm );
+      if not ( elm in Range( map ) ) then
+        Error( "<elm> is not in the range of <map>" );
+      elif not ( elm in Image( map ) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentativeNC( map, elm );
     end );
 
 
@@ -651,7 +655,7 @@ InstallMethod( CompositionMapping2,
 #M  CompositionMapping2( <map2>, map1> )  for algebra hom. & algebra g.m.b.i.
 ##
 InstallMethod( CompositionMapping2,
-    "for left module hom. and algebra g.m.b.i.",
+    "for algebra hom. and algebra g.m.b.i.",
     FamSource1EqFamRange2,
     [ IsAlgebraHomomorphism,
           IsAlgebraGeneralMapping
@@ -663,20 +667,19 @@ InstallMethod( CompositionMapping2,
           mapi1,mapi2;
 
     mapi1:=MappingGeneratorsImages(map1);
-    mapi2:=MappingGeneratorsImages(map2);
     # Compute images for the generators of `map1'.
-    if     IsAlgebraGeneralMappingByImagesDefaultRep( map2 )
-       and mapi1[2]=mapi2[1] then
-
-      gens      := mapi1[1];
-      genimages := mapi2[2];
-
+    gens:= mapi1[1];
+    if IsAlgebraGeneralMappingByImagesDefaultRep( map2 ) then
+      mapi2:= MappingGeneratorsImages( map2 );
+      if mapi1[2] = mapi2[1] then
+        genimages:= mapi2[2];
+      else
+        genimages:= List( mapi1[2],
+                          v -> ImagesRepresentative( map2, v ) );
+      fi;
     else
-
-      gens:= mapi1[1];
       genimages:= List( mapi1[2],
                         v -> ImagesRepresentative( map2, v ) );
-
     fi;
 
     # Construct the linear general mapping.
@@ -884,10 +887,9 @@ InstallMethod( MakePreImagesInfoOperationAlgebraHomomorphism,
         gen:= origgenimages[i];
         for j in [ 1 .. Length( genimages ) ] do
           prod:= genimages[j] * gen;
-          if not IsContainedInSpan( MB, prod ) then
+          if CloseMutableBasis( MB, prod ) then
             Add( genimages, prod );
             Add( preimages, preimages[j] * origgenerators[i] );
-            CloseMutableBasis( MB, prod );
           fi;
         od;
       od;
@@ -915,6 +917,7 @@ InstallMethod( ImagesRepresentative,
 
 #############################################################################
 ##
+#M  PreImagesRepresentativeNC( <ophom>, <mat> )
 #M  PreImagesRepresentative( <ophom>, <mat> )
 ##
 BindGlobal( "PreImagesRepresentativeOperationAlgebraHomomorphism", function( ophom, mat )
@@ -928,12 +931,24 @@ BindGlobal( "PreImagesRepresentativeOperationAlgebraHomomorphism", function( oph
     return mat;
 end );
 
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
     "for an operation algebra homomorphism, and an element",
     FamRangeEqFamElm,
     [ IsOperationAlgebraHomomorphismDefaultRep, IsMatrix ],
     PreImagesRepresentativeOperationAlgebraHomomorphism );
 
+InstallMethod( PreImagesRepresentative,
+    "for an operation algebra homomorphism, and an element",
+    FamRangeEqFamElm,
+    [ IsOperationAlgebraHomomorphismDefaultRep, IsMatrix ],
+    function( ophom, mat )
+    if not ( mat in Range( ophom ) ) then
+        Error( "<mat> not in the range of mapping <ophom>" );
+    elif not ( mat in Image( ophom ) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentativeOperationAlgebraHomomorphism( ophom, mat );
+end );
 
 #############################################################################
 ##
@@ -1059,10 +1074,9 @@ InstallMethod( MakePreImagesInfoOperationAlgebraHomomorphism,
         gen:= origgenimages[i];
         for j in [ 1 .. Length( genimages ) ] do
           prod:= genimages[j] * gen;
-          if not IsContainedInSpan( MB, prod ) then
+          if CloseMutableBasis( MB, prod ) then
             Add( genimages, prod );
             Add( preimages, preimages[j] * origgenerators[i] );
-            CloseMutableBasis( MB, prod );
           fi;
         od;
       od;
@@ -1090,14 +1104,27 @@ InstallMethod( ImagesRepresentative,
 
 #############################################################################
 ##
+#M  PreImagesRepresentativeNC( <ophom>, <mat> )
 #M  PreImagesRepresentative( <ophom>, <mat> )
 ##
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
     "for an alg. hom. from f. p. algebra, and an element",
     FamRangeEqFamElm,
     [ IsAlgebraHomomorphismFromFpRep, IsMatrix ],
     PreImagesRepresentativeOperationAlgebraHomomorphism );
 
+InstallMethod( PreImagesRepresentative,
+    "for an alg. hom. from f. p. algebra, and an element",
+    FamRangeEqFamElm,
+    [ IsAlgebraHomomorphismFromFpRep, IsMatrix ],
+    function( ophom, mat )
+    if not ( mat in Range( ophom ) ) then
+        Error( "<mat> is not in the range of mapping <ophom>" );
+    elif not ( mat in Image( ophom ) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentativeOperationAlgebraHomomorphism( ophom, mat );
+    end );
 
 #############################################################################
 ##
@@ -1435,9 +1462,8 @@ InstallMethod( NaturalHomomorphismByIdeal,
     mb:= MutableBasis( F, Ivectors );
     compl:= [];
     for gen in BasisVectors( Basis( A ) ) do
-      if not IsContainedInSpan( mb, gen ) then
+      if CloseMutableBasis( mb, gen ) then
         Add( compl, gen );
-        CloseMutableBasis( mb, gen );
       fi;
     od;
     B:= BasisNC( A, Concatenation( Ivectors, compl ) );
@@ -1671,10 +1697,9 @@ InstallMethod( IsomorphismFpFLMLOR,
         gen:= Agens[i];
         for j in [ 1 .. Length( generators ) ] do
           prod:= generators[j] * gen;
-          if not IsContainedInSpan( MB, prod ) then
+          if CloseMutableBasis( MB, prod ) then
             Add( generators, prod );
             Add( genimages, genimages[j] * Fgens[i] );
-            CloseMutableBasis( MB, prod );
           fi;
         od;
       od;
@@ -1686,10 +1711,9 @@ InstallMethod( IsomorphismFpFLMLOR,
           gen:= Agens[i];
           for j in [ 1 .. Length( generators ) ] do
             prod:= gen * generators[j];
-            if not IsContainedInSpan( MB, prod ) then
+            if CloseMutableBasis( MB, prod ) then
               Add( generators, prod );
               Add( genimages, Fgens[i] * genimages[j] );
-              CloseMutableBasis( MB, prod );
             fi;
           od;
         od;

@@ -14,12 +14,12 @@
 BindGlobal("HomomorphismsSeries",function(G,h)
 local r,img,i,gens,img2;
   r:=ShallowCopy(h);
-  img:=Image(h[Length(h)],G);
+  img:=Image(Last(h),G);
   for i in [Length(h)-1,Length(h)-2..1] do
     gens:=GeneratorsOfGroup(img);
     img2:=Image(h[i],G);
     r[i]:=GroupHomomorphismByImagesNC(img,img2,gens,List(gens,j->
-           Image(h[i],PreImagesRepresentative(h[i+1],j))));
+           Image(h[i],PreImagesRepresentativeNC(h[i+1],j))));
     SetKernelOfMultiplicativeGeneralMapping(r[i],
        Image(h[i+1],KernelOfMultiplicativeGeneralMapping(h[i])));
     img:=img2;
@@ -139,7 +139,7 @@ local tau, phi, mats;
 
   # Get  the  matrices describing the affine operations. The linear  part
   # of the  operation  is just conjugation of the entries of cocycle. The
-  # translation are  commuators  with the  generators.  So check if <ocr>
+  # translations are  commutators  with the  generators.  So check if <ocr>
   # has a small generating set. Use only these to form the commutators.
 
   # Translation: (.. h ..) -> (.. [h,c] ..)
@@ -890,7 +890,7 @@ local   H, E,  cor,  a,  i,  fun2,pcgs,home;
     #a  :=NaturalHomomorphism( G, G / N );
     #cor:=PPrimeSetsOC( Image( a ) );
     #cor.generators:=List( cor.generators, x ->
-    #                    PreImagesRepresentative( a, x ) );
+    #                    PreImagesRepresentativeNC( a, x ) );
     cor:=rec(home:=home,generators:=pcgs mod InducedPcgs(pcgs,N));
     cor.useCentralSK:=true;
   fi;
@@ -1066,7 +1066,7 @@ local G,N,M,keep,H,K,f,primes,p,A,S,L,hom,c,cn,nc,ncn,lnc,lncn,q,qs,qn,ser,
           genpos:=PositionProperty(acterlist,x->a=x[1]);
           if genpos=fail then
             if IsOne(a) then
-              # the action test always does the identity, so its worth
+              # the action test always does the identity, so it's worth
               # catching this as we have many short orbits
               return cy;
             else

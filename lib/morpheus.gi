@@ -21,11 +21,14 @@ MORPHEUSELMS := 50000;
 # orders of group elements in factors of this series under action of `hom`.
 # Every time an orbit length is found, `hom` is replaced by the appropriate
 # power. Initially small chief factors are preferred. In the end all
-# generators are used while stepping through the series descendingly, thus
+# generators are used while stepping through the series in descending order, thus
 # ensuring the proper order is found.
 InstallMethod(Order,"for automorphisms",true,[IsGroupHomomorphism],0,
 function(hom)
 local map,phi,o,lo,i,j,start,img,d,nat,ser,jord,first;
+  if not IsEndoGeneralMapping( hom ) then
+    Error( "Source and Range of <hom> must be equal" );
+  fi;
   d:=Source(hom);
   if not (HasIsFinite(d) and IsFinite(d)) then
     TryNextMethod();
@@ -120,7 +123,7 @@ local map,phi,o,lo,i,j,start,img,d,nat,ser,jord,first;
       od;
     od;
 
-    # if iterating make `jord` standard to we don't skip generators
+    # if iterating make `jord` standard so we don't skip generators
     jord:=[2..Length(ser)];
     first:=false;
   od;
@@ -420,7 +423,7 @@ local hom, gens, c, ran, r, cen, img, u, orbs,
     finish(hom); return;
   fi;
 
-  # if no centre and all automorphism conjugator, try to extend exiting permrep
+  # if no centre and all automorphism conjugator, try to extend existing permrep
   if Size(Centre(g))=1 and IsPermGroup(g) and
      ForAll(GeneratorsOfGroup(au),IsConjugatorAutomorphism) then
     ran:= Group( List( GeneratorsOfGroup( au ),
@@ -446,7 +449,7 @@ local hom, gens, c, ran, r, cen, img, u, orbs,
           if not img in ran then
             # There is still something centralizing left.
             if not img in r then
-              # get the cenralizing bit
+              # get the centralizing bit
               r:=ClosureGroup(r,img);
               cen:=Centralizer(r,g);
             fi;
@@ -472,6 +475,11 @@ local hom, gens, c, ran, r, cen, img, u, orbs,
       Error("illegal actbase given!");
     fi;
     baddegree:=RootInt(Sum(actbase,Size)^2,3);
+    if IsPcGroup(g) then
+      # for pc groups action and storage is cheaper, and there are more
+      # classes
+      baddegree:=Maximum(List(actbase,Size));
+    fi;
   else
     baddegree:=RootInt(Size(g)^3,4);
   fi;
@@ -745,10 +753,10 @@ local hom, gens, c, ran, r, cen, img, u, orbs,
         function(perm)
           if perm in store[1] then
             return ConjugatorAutomorphismNC(g,
-                      PreImagesRepresentative(img[2],perm));
+                      PreImagesRepresentativeNC(img[2],perm));
           fi;
           return GroupHomomorphismByImagesNC(g,g,GeneratorsOfGroup(g),
-                    List(store[2],i->PreImagesRepresentative(img[2],i^perm)));
+                    List(store[2],i->PreImagesRepresentativeNC(img[2],i^perm)));
         end);
       if bestdeg<baddegree then
         finish(hom); return;
@@ -783,10 +791,10 @@ local hom, gens, c, ran, r, cen, img, u, orbs,
       function(perm)
         if perm in store[5] then
           return ConjugatorAutomorphismNC(g,
-                    PreImagesRepresentative(store[2],perm));
+                    PreImagesRepresentativeNC(store[2],perm));
         fi;
         return GroupHomomorphismByImagesNC(g,g,GeneratorsOfGroup(g),
-                  List(store[4],i->PreImagesRepresentative(store[3],i^perm)));
+                  List(store[4],i->PreImagesRepresentativeNC(store[3],i^perm)));
       end);
     if bestdeg<baddegree then
       finish(hom); return;
@@ -1067,9 +1075,10 @@ end);
 
 #############################################################################
 ##
-#M  PreImagesRepresentative   for OpHomAutomGrp
+#M  PreImagesRepresentativeNC   for OpHomAutomGrp
+#M  PreImagesRepresentative.    for OpHomAutomGrp
 ##
-InstallMethod(PreImagesRepresentative,"AutomGroup Niceomorphism",
+InstallMethod(PreImagesRepresentativeNC,"AutomGroup Niceomorphism",
   FamRangeEqFamElm,[IsActionHomomorphismAutomGroup,IsPerm],0,
 function(hom,elm)
 local xset,g,imgs;
@@ -1081,6 +1090,17 @@ local xset,g,imgs;
   elm:=GroupHomomorphismByImagesNC(g,g,BaseOfGroup(xset),imgs);
   SetIsBijective(elm,true);
   return elm;
+end);
+
+InstallMethod(PreImagesRepresentative,"AutomGroup Niceomorphism",
+  FamRangeEqFamElm,[IsActionHomomorphismAutomGroup,IsPerm],0,
+function(hom,elm)
+  if not (elm in Range(hom)) then
+    Error( "<elm> not in the range of mapping <hom>" );
+  elif not (elm in Image(hom)) then
+    return fail;
+  fi;
+  return PreImagesRepresentativeNC(hom,elm);
 end);
 
 
@@ -1697,7 +1717,7 @@ end);
 #############################################################################
 ##
 #F  MorFindGeneratingSystem(<G>,<cl>) . .  find generating system with as few
-##                      as possible generators from the first classes in <cl>
+##                      generators as possible from the first classes in <cl>
 ##
 InstallGlobalFunction(MorFindGeneratingSystem,function(arg)
 local G,cl,lcl,len,comb,combc,com,a,alltwo;
@@ -1739,14 +1759,14 @@ end);
 ##
 #F  Morphium(<G>,<H>,<DoAuto>) . . . . . . . .Find isomorphisms between G and H
 ##       modulo inner automorphisms. DoAuto indicates whether all
-##       automorphism are to be found
+##       automorphisms are to be found
 ##       This function thus does the main combinatoric work for creating
 ##       Iso- and Automorphisms.
-##       It needs, that both groups are not cyclic.
+##       It requires that both groups are not cyclic.
 ##
 InstallGlobalFunction(Morphium,function(G,H,DoAuto)
 local combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
-      gens,i,c,hom,elms,price,result,inns,bcl,vsu;
+      gens,i,c,hom,elms,price,result,inns,bcl,vsu,costlimit;
 
   if IsSolvableGroup(G) and CanEasilyComputePcgs(G) then
     gens:=MinimalGeneratingSet(G);
@@ -1758,6 +1778,8 @@ local combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
 
   Ggc:=List(gens,i->First(Gcl,j->ForAny(j,j->ForAny(j.classes,k->i in k))));
   combi:=List(Ggc,i->Concatenation(List(i,i->i.classes)));
+
+  costlimit:=ValueOption("costlimit");
   price:=Product(combi,i->Sum(i,Size));
   Info(InfoMorph,1,"generating system ",Sum(Flat(combi),Size),
        " of price:",price,"");
@@ -1768,7 +1790,7 @@ local combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
     if IsSolvableGroup(G) then
       gens:=IsomorphismPcGroup(G);
       gens:=List(MinimalGeneratingSet(Image(gens)),
-                 i->PreImagesRepresentative(gens,i));
+                 i->PreImagesRepresentativeNC(gens,i));
       Ggc:=List(gens,i->First(Gcl,j->ForAny(j,j->ForAny(j.classes,k->i in k))));
       combi:=List(Ggc,i->Concatenation(List(i,i->i.classes)));
       bcl:=ShallowCopy(combi);
@@ -1802,6 +1824,9 @@ local combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
       gens:=bg;
 
     else
+      if costlimit<>fail and price>costlimit*20 and Sum(Gcl,Length)>30 then
+        return -1;
+      fi;
       gens:=MorFindGeneratingSystem(G,Gcl);
     fi;
 
@@ -1822,7 +1847,7 @@ local combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
     return [];
   fi;
 
-  # now test, whether it is worth, to compute a finer congruence
+  # now test whether it is worth computing a finer congruence
   # then ALSO COMPUTE NEW GEN SYST!
   # [...]
 
@@ -1923,12 +1948,66 @@ local combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
     fi;
     result.inner:=inns;
   else
+    if IsInt(costlimit) and Product(List(combi,x->Sum(x,Size)))>costlimit then
+      Info(InfoMorph,2,"Morpheus seems to be to costly: ",
+        Product(List(combi,x->Sum(x,Size)))," vs ",costlimit);
+      return -1; # not fail, as this is valid
+    fi;
     result:=MorClassLoop(H,combi,result,7);
   fi;
 
   return result;
 
 end);
+
+
+#############################################################################
+##
+#F  AutOrderAbelian( <L> ) . . order of Aut(A), A the abelian group with
+##                             cyclic factors given by the prime powers <L>
+##
+##  function written by claude, based on formula in HillarRhea07,
+##  DOI 10.1080/00029890.2007.11920485
+##
+AutOrderAbelian := function( L )
+local total, primes, p, q, exps, e, f, power, num, den, c, t;
+
+  for q in L do
+    if not IsInt( q ) or q <= 1 or not IsPrimePowerInt( q ) then
+      Error( "<L> must be a list of prime powers" );
+    fi;
+  od;
+
+  total  := 1;
+  primes := Set( List( L, q -> FactorsInt( q )[1] ) );
+
+  for p in primes do
+
+    # exponents of the p-primary part
+    exps := List( Filtered( L, q -> q mod p = 0 ), q -> LogInt( q, p ) );
+
+    # |End(A_p)| = p^( sum_{i,j} min(e_i,e_j) )
+    power := 0;
+    for e in exps do
+      for f in exps do
+        power := power + Minimum( e, f );
+      od;
+    od;
+
+    # times prod_k |GL_{m_k}(F_p)| / p^{m_k^2}, kept integral throughout
+    num := p^power;
+    den := 1;
+    for c in Collected( exps ) do        # c = [ exponent, multiplicity ]
+      for t in [ 1 .. c[2] ] do
+        num := num * ( p^t - 1 );
+        den := den * p^t;
+      od;
+    od;
+    total := total * ( num / den );
+  od;
+
+  return total;
+end;
 
 #############################################################################
 ##
@@ -2047,6 +2126,7 @@ local i,j,k,l,m,o,nl,nj,max,r,e,au,p,gens,offs;
     SetIsGroupOfAutomorphismsFiniteGroup(au,true);
   fi;
 
+  SetSize(au,AutOrderAbelian(List(gens,Order)));
   return au;
 end);
 
@@ -2103,7 +2183,7 @@ local d,id,H,iso,aut,auts,i,all,hom,field,dim,P,diag,mats,gens,gal;
       fi;
       aut:=GroupGeneralMappingByImages(G,G,gens,
             List(gens,
-              x->PreImagesRepresentative(iso,Image(iso,x)^(1,2))));
+              x->PreImagesRepresentativeNC(iso,Image(iso,x)^(1,2))));
       auts:=[aut];
       all:=true;
     fi;
@@ -2164,7 +2244,7 @@ local d,id,H,iso,aut,auts,i,all,hom,field,dim,P,diag,mats,gens,gal;
       fi;
       auts:=Concatenation(auts,
         List(mats,s->GroupGeneralMappingByImages(G,G,gens,List(gens,x->
-                  Image(hom,PreImagesRepresentative(hom,x)^s)))));
+                  Image(hom,PreImagesRepresentativeNC(hom,x)^s)))));
 
     else
       gal:=Group(()); # to force trivial
@@ -2176,13 +2256,13 @@ local d,id,H,iso,aut,auts,i,all,hom,field,dim,P,diag,mats,gens,gal;
         List(MinimalGeneratingSet(gal),
                 s->GroupGeneralMappingByImages(G,G,gens,List(gens,x->
                   Image(hom,
-                    List(PreImagesRepresentative(hom,x),r->List(r,y->Image(s,y))))))));
+                    List(PreImagesRepresentativeNC(hom,x),r->List(r,y->Image(s,y))))))));
     fi;
 
     # graph
     if id.series="L" and id.parameter[1]>2 then
       Add(auts, GroupGeneralMappingByImages(G,G,gens,List(gens,x->
-                  Image(hom,Inverse(TransposedMat(PreImagesRepresentative(hom,x)))))));
+                  Image(hom,Inverse(TransposedMat(PreImagesRepresentativeNC(hom,x)))))));
       all:=true;
     elif id.series="L" and id.parameter[1]=2 then
       # note no graph
@@ -2302,7 +2382,7 @@ InstallGlobalFunction(AutomorphismGroupFittingFree,function(g)
         Add(ttypes,[Length(acts)]);
         Add(ttypnam,tty);
         Info(InfoMorph,1,"New isomorphism type: ",
-          ttypnam[Length(ttypnam)].name);
+          Last(ttypnam).name);
       fi;
     fi;
   od;
@@ -2347,7 +2427,7 @@ InstallGlobalFunction(AutomorphismGroupFittingFree,function(g)
         thom:=i[j][2];
         thom:=GroupHomomorphismByImagesNC(t,t,GeneratorsOfGroup(t),
           List(GeneratorsOfGroup(t),
-          j->Image(thom,PreImagesRepresentative(thom,j)^gen)));
+          j->Image(thom,PreImagesRepresentativeNC(thom,j)^gen)));
         thom:=Image(auph,thom);
         Add(genimgs,thom);
       od;
@@ -2405,7 +2485,7 @@ InstallGlobalFunction(AutomorphismGroupFittingFree,function(g)
   for i in gens do
     au:=GroupHomomorphismByImages(g,g,GeneratorsOfGroup(g),
          List(GeneratorsOfGroup(g),
-           j->PreImagesRepresentative(emb,Image(emb,j)^i)));
+           j->PreImagesRepresentativeNC(emb,Image(emb,j)^i)));
     Add(a,au);
   od;
   au:=Group(a);
@@ -2427,7 +2507,7 @@ InstallGlobalFunction(AutomorphismGroupFittingFree,function(g)
     # get a set of elements that uniquely describes the point p
     s:=SmallGeneratingSet(Stabilizer(ge,p));
     if ForAny(Difference(i,[p]),j->ForAll(s,x->j^x=j)) then
-      # try once more -- there is some randomeness involved
+      # try once more -- there is some randomness involved
       if count<10 then
         return AutomorphismGroupFittingFree(g:count:=count+1);
       fi;
@@ -2446,7 +2526,7 @@ InstallGlobalFunction(AutomorphismGroupFittingFree,function(g)
     bi:=[];
     for i in newbas do
       s:=List(stbs[i],
-              x->Image(emb,Image(autom,PreImagesRepresentative(emb,x))));
+              x->Image(emb,Image(autom,PreImagesRepresentativeNC(emb,x))));
       s:=First(orb[orpo[i]],x->ForAll(s,j->x^j=x));
       Add(bi,s);
     od;
@@ -2475,7 +2555,7 @@ end);
 InstallMethod(AutomorphismGroup,"finite groups",true,[IsGroup and IsFinite],0,
 function(G)
 local A;
-  # since the computation is expensive, it is worth to test some properties first,
+  # since the computation is expensive, it is worth testing some properties first,
   # instead of relying on the method selection
   if IsAbelian(G) then
     A:=AutomorphismGroupAbelianGroup(G);
@@ -2488,7 +2568,9 @@ local A;
     #LoadPackage("autpgrp"); # try to load the package if it exists
     A:=AutomorphismGroupNilpotentGroup(G);
   elif IsSolvableGroup(G) then
-    if HasIsFrattiniFree(G) and IsFrattiniFree(G) then
+    # AutomorphismGroupFrattFreeGroup needs a pcgs for subgroups of G, which
+    # is not available for example for finitely presented groups
+    if CanEasilyComputePcgs(G) and IsFrattiniFree(G) then
       A:=AutomorphismGroupFrattFreeGroup(G);
     else
       # currently autactbase does not work well, as the representation might
@@ -2503,25 +2585,6 @@ local A;
   else
     A:=AutomorphismGroupMorpheus(G);
   fi;
-  SetIsAutomorphismGroup(A,true);
-  SetIsGroupOfAutomorphismsFiniteGroup(A,true);
-  SetIsFinite(A,true);
-  SetAutomorphismDomain(A,G);
-  return A;
-end);
-
-#############################################################################
-##
-#M  AutomorphismGroup(<G>) . . abelian case
-##
-InstallMethod(AutomorphismGroup,"test abelian",true,[IsGroup and IsFinite],
-  {} -> RankFilter(IsSolvableGroup and IsFinite),
-function(G)
-local A;
-  if not IsAbelian(G) then
-    TryNextMethod();
-  fi;
-  A:=AutomorphismGroupAbelianGroup(G);
   SetIsAutomorphismGroup(A,true);
   SetIsGroupOfAutomorphismsFiniteGroup(A,true);
   SetIsFinite(A,true);
@@ -2643,7 +2706,13 @@ local d,iso,a,b,c,o,s,two,rt,r,z,e,y,re,m,gens,cnt,lim,p,
         a:=PseudoRandom(gp);
       fi;
       e:=Order(a);
-      if e in r then
+      # `r` is either a list or a record,
+      # the latter describing the range
+      # `[ r.first, r.first + r.offset .. r.last ]`,
+      # also if this range cannot be created in GAP.
+      if ( IsList( r ) and e in r ) or
+         ( IsRecord( r ) and r.first <= e and e <= r.last
+                         and ( e - r.first ) mod r.offset = 0 ) then
         a:=a^QuoInt(e,o);
         if z=fail or Size(Centralizer(gp,a))=z then
           return a;
@@ -2747,7 +2816,7 @@ local d,iso,a,b,c,o,s,two,rt,r,z,e,y,re,m,gens,cnt,lim,p,
   if gens=fail then
     Info(InfoMorph,1,"Isomorphism simple: ad-hoc");
     # not found by table or other -- try a 2/something ad-hoc
-    rt:=[2,4..Size(g)];
+    rt:= rec( first:= 2, offset:= 2, last:= Size(g) );
     gens:=[findElm(g,2,fail,rt)];
     z:=Size(Centralizer(g,gens[1]));
 
@@ -2756,7 +2825,7 @@ local d,iso,a,b,c,o,s,two,rt,r,z,e,y,re,m,gens,cnt,lim,p,
     m:=Maximum(Filtered(Factors(Size(g)),x->x<100));
     cnt:=0;
     repeat
-      gens[2]:=findElm(g,m,fail,[m,2*m..Size(g)]);
+      gens[2]:=findElm(g,m,fail, rec( first:= m, offset:= m, last:= Size(g) ));
       if isFull(SubgroupNC(g,gens)) then
         b:=gens;
         y:=Size(Centralizer(g,gens[2]));
@@ -2781,7 +2850,7 @@ local d,iso,a,b,c,o,s,two,rt,r,z,e,y,re,m,gens,cnt,lim,p,
     od;
     gens:=b;
     e:=Order(gens[2]);
-    re:=[e,2*e..Size(g)];
+    re:= rec( first:= e, offset:= e, last:= Size(g) );
     y:=Size(Centralizer(g,gens[2]));
   fi;
   Info(InfoMorph,1,"generators ",List(gens,Order));
@@ -2942,6 +3011,19 @@ local m;
       or Size(SolvableRadical(G))^2>Size(G)
       or ValueOption("forcetest")=true) and
       ValueOption("forcetest")<>"old" then
+
+    # catch 2-generator groups with few images
+    if Length(SmallGeneratingSet(G))=2 then
+      # 2^28 is an experimental limit from some examples
+      m:=Morphium(G,H,false:costlimit:=Minimum(Size(G)^2,2^28));
+      if IsList(m) and Length(m)=0 then
+        return fail;
+      elif m<>-1 then
+        # otherwise it just failed
+        return m;
+      fi;
+    fi;
+
     # In place until a proper implementation of Cannon/Holt isomorphism is
     # done
     return PatheticIsomorphism(G,H);
@@ -2999,7 +3081,7 @@ local Fgens,    # generators of F
       fak,      # multiplication factor
       cnt;      # countdown for finish
 
-  # if we have a pontentially infinite fp group we cannot be clever
+  # if we have a potentially infinite fp group we cannot be clever
   if IsSubgroupFpGroup(F) and
     (not HasSize(F) or Size(F)=infinity) then
     TryNextMethod();

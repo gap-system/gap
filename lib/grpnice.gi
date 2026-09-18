@@ -37,10 +37,16 @@ end);
 
 #############################################################################
 ##
-#O  RestrictedNiceMonomorphism(<hom>,<G>)
+#O  RestrictedNiceMonomorphism(<G>)
 ##
-InstallGlobalFunction(RestrictedNiceMonomorphism,
-function(hom,G)
+InstallMethod(RestrictedNiceMonomorphism,
+  [IsObject],
+function(G)
+  local hom;
+  hom:=NiceMonomorphism(G);
+  if IsIdenticalObj(Source(hom),G) and IsSurjective(hom) then
+    return hom;
+  fi;
   hom:=RestrictedMapping(hom,G:surjective);
 
   # CompositionMapping methods need this to avoid forming an AsGHBI of an
@@ -56,47 +62,22 @@ end);
 ##
 #M  GeneratorsOfMagmaWithInverses( <group> )  .  get generators from nice obj
 ##
-InstallMethod( GeneratorsOfMagmaWithInverses,
-    true,
-    [ IsGroup and IsHandledByNiceMonomorphism ],
-    0,
-
-function( grp )
-    local   nice;
-    nice := NiceMonomorphism(grp);
-    return List( GeneratorsOfGroup(NiceObject(grp)),
-                 x -> PreImagesRepresentative(nice,x) );
-end );
+AttributeMethodByNiceMonomorphismList( GeneratorsOfMagmaWithInverses,
+  [ IsGroup ] );
 
 
 #############################################################################
 ##
 #M  SmallGeneratingSet( <group> )  .  get generators from nice obj
 ##
-InstallMethod( SmallGeneratingSet, true,
-    [ IsGroup and IsHandledByNiceMonomorphism ], 0,
-
-function( grp )
-    local   nice;
-    nice := NiceMonomorphism(grp);
-    return List( SmallGeneratingSet(NiceObject(grp)),
-                 x -> PreImagesRepresentative(nice,x) );
-end );
+AttributeMethodByNiceMonomorphismList( SmallGeneratingSet, [ IsGroup ] );
 
 
 #############################################################################
 ##
 #M  MinimalGeneratingSet( <group> )  .  get generators from nice obj
 ##
-InstallMethod( MinimalGeneratingSet, true,
-    [ IsGroup and IsHandledByNiceMonomorphism ], 0,
-
-function( grp )
-    local   nice;
-    nice := NiceMonomorphism(grp);
-    return List( MinimalGeneratingSet(NiceObject(grp)),
-                 x -> PreImagesRepresentative(nice,x) );
-end );
+AttributeMethodByNiceMonomorphismList( MinimalGeneratingSet, [ IsGroup ] );
 
 
 #############################################################################
@@ -130,12 +111,7 @@ end );
 ##
 #M  NiceObject( <group> ) . . . . . . . . . . . . .  get nice object of group
 ##
-InstallMethod( NiceObject,
-    true,
-    [ IsGroup and IsHandledByNiceMonomorphism ],
-    0,
-
-function( G )
+_NiceObject_method:= function( G )
     local   nice,  img,  D;
 
     nice := NiceMonomorphism( G );
@@ -157,7 +133,17 @@ function( G )
         SetBaseOfGroup( img, UnderlyingExternalSet( nice )!.basePermImage );
     fi;
     return img;
-end );
+end;
+
+InstallMethod( NiceObject,
+    [ IsGroup and IsHandledByNiceMonomorphism ],
+    _NiceObject_method );
+
+InstallMethod( NiceObject,
+    [ IsGroup and HasNiceMonomorphism ],
+    _NiceObject_method );
+
+Unbind( _NiceObject_method );
 
 
 #############################################################################
@@ -213,23 +199,10 @@ end );
 
 #############################################################################
 ##
-#M  \=( <G>, <H> )  . . . . . . . . . . . . . .  test if two groups are equal
-##
-PropertyMethodByNiceMonomorphismCollColl( \=,
-    [ IsGroup, IsGroup ] );
-
-
-#############################################################################
-##
 #M  \in( <elm>, <G> ) . . . . . . . . . . . . . . . . .  test if <elm> in <G>
 ##
-InstallMethod( \in,
-    "by nice monomorphism",
-    IsElmsColls,
-    [ IsMultiplicativeElementWithInverse,
-      IsGroup and IsHandledByNiceMonomorphism ],
-    0,
-
+AttributeMethodByNiceMonomorphismElmColl( \in,
+    [ IsMultiplicativeElementWithInverse, IsGroup ],
 function( elm, G )
     local   nice,  img;
 
@@ -239,7 +212,7 @@ function( elm, G )
     nice := NiceMonomorphism( G );
     img  := ImagesRepresentative( nice, elm:actioncanfail:=true );
     return img<>fail and img in NiceObject( G )
-       and PreImagesRepresentative( nice, img ) = elm;
+       and PreImagesRepresentativeNC( nice, img ) = elm;
 end );
 
 
@@ -301,20 +274,17 @@ GroupMethodByNiceMonomorphismCollColl( ClosureGroup,
 ##
 #M  ClosureGroup( <G>, <elm> )  . . . . . . . . closure of group with element
 ##
-# don't use `GroupMethodByNiceMonomorphismCollElm' to treat case of element
-# contained in.
-#GroupMethodByNiceMonomorphismCollElm( ClosureGroup,
-#    [ IsGroup, IsMultiplicativeElementWithInverse ] );
-InstallMethod(ClosureGroup,"by niceo",
-  IsCollsElms,[IsGroup and IsHandledByNiceMonomorphism,
-               IsMultiplicativeElementWithInverse],0,
+##  Don't use the generic code of `GroupMethodByNiceMonomorphismCollElm'
+##  to treat case of element membership.
+GroupMethodByNiceMonomorphismCollElm( ClosureGroup,
+  [ IsGroup, IsMultiplicativeElementWithInverse ],
 function( obj1, obj2 )
     local   nice,no,  img,  img1;
     nice := NiceMonomorphism(obj1);
     img  := ImagesRepresentative( nice, obj2:actioncanfail:=true );
     if img = fail or
       not (img in ImagesSource(nice) and
-        PreImagesRepresentative(nice,img)=obj2) then
+        PreImagesRepresentativeNC(nice,img)=obj2) then
         TryNextMethod();
     fi;
     no:=NiceObject(obj1);
@@ -360,10 +330,10 @@ GroupSeriesMethodByNiceMonomorphism( CompositionSeries,
 
 #############################################################################
 ##
-#M  ConjugacyClasses
+#M  ConjugacyClasses( <G> )  . . . . . . . . . . conjugacy classes of a group
 ##
-InstallMethod(ConjugacyClasses,"via niceomorphism",true,
-  [IsGroup and IsHandledByNiceMonomorphism],0,
+AttributeMethodByNiceMonomorphism( ConjugacyClasses,
+    [ IsGroup ],
 function(g)
 local mon,cl,clg,c,i;
   cl:=ConjugacyClassesForSmallGroup(g);
@@ -374,7 +344,7 @@ local mon,cl,clg,c,i;
   cl:=ConjugacyClasses(NiceObject(g));
   clg:=[];
   for i in cl do
-    c:=ConjugacyClass(g,PreImagesRepresentative(mon,Representative(i)));
+    c:=ConjugacyClass(g,PreImagesRepresentativeNC(mon,Representative(i)));
     c!.niceClass:=i;
     if HasStabilizerOfExternalSet(i) then
       SetStabilizerOfExternalSet(c,PreImages(mon,StabilizerOfExternalSet(i)));
@@ -387,18 +357,26 @@ end);
 
 #############################################################################
 ##
-#M  ConjugateGroup( <G>, <g> )  . . . . . . . . . . . . . .  conjugate of <G>
-##
-GroupMethodByNiceMonomorphismCollElm( ConjugateGroup,
-    [ IsGroup and HasParent, IsMultiplicativeElementWithInverse ] );
-
-
-#############################################################################
-##
 #M  Core( <G>, <U> )  . . . . . . . . . . . . . . . .  core of a <U> in a <G>
 ##
 GroupMethodByNiceMonomorphismCollColl( CoreOp,
     [ IsGroup, IsGroup ] );
+
+
+##############################################################################
+##
+#M  ChiefLength( <G> ) . . . . . . . . . . length of a chief series of a group
+##
+AttributeMethodByNiceMonomorphism( ChiefLength,
+    [ IsGroup ] );
+
+
+##############################################################################
+##
+#M  CommutatorLength( <G> )  . . . . . . . . . .  commutator length of a group
+##
+AttributeMethodByNiceMonomorphism( CommutatorLength,
+    [ IsGroup ] );
 
 
 ##############################################################################
@@ -462,8 +440,8 @@ SubgroupMethodByNiceMonomorphism( FrattiniSubgroup,
 ##
 #M  HallSubgroup
 ##
-InstallMethod(HallSubgroupOp,"via niceomorphism",true,
-  [IsGroup and IsHandledByNiceMonomorphism,IsList],0,
+GroupMethodByNiceMonomorphismCollOther( HallSubgroupOp,
+    [ IsGroup, IsList ],
 function(g,l)
 local mon,h;
    mon:=NiceMonomorphism(g);
@@ -565,14 +543,6 @@ PropertyMethodByNiceMonomorphism( IsSolvableGroup,
 
 #############################################################################
 ##
-#M  IsSubset( <G>, <H> ) . . . . . . . . . . . . .  test for subset of groups
-##
-PropertyMethodByNiceMonomorphismCollColl( IsSubset,
-    [ IsGroup, IsGroup ] );
-
-
-#############################################################################
-##
 #M  IsSupersolvableGroup( <G> ) . . . . . .  test if a group is supersolvable
 ##
 PropertyMethodByNiceMonomorphism( IsSupersolvableGroup,
@@ -586,15 +556,17 @@ PropertyMethodByNiceMonomorphism( IsSupersolvableGroup,
 InstallMethod(IsomorphismPermGroup,"via niceomorphisms",true,
   [IsGroup and IsFinite and IsHandledByNiceMonomorphism],
   # This is intended to be better than the generic ``action on element''
-  # method. However for example for matrix groups there are better methods.
-  # The downranking is compatible with that for the method for finite
+  # method (with requirement 'IsGroup and IsFinite').
+  # However for example for matrix groups there are better methods.
+  # Thus we do not want the upranking via 'IsHandledByNiceMonomorphism'.
+  # The same happens for the method for finite
   # matrix groups in 'lib/grpmat.gi'.
-  -NICE_FLAGS+5,
+  [ [ IsGroup and IsFinite ], 1 ],
 function(g)
 local mon,iso;
-  mon:=NiceMonomorphism(g);
-  if not IsIdenticalObj(Source(mon),g) then
-    mon:=RestrictedNiceMonomorphism(mon,g);
+  mon:=RestrictedNiceMonomorphism(g);
+  if IsPermGroup(Range(mon)) then
+    return mon;
   fi;
   iso:=IsomorphismPermGroup(NiceObject(g));
   if iso=fail then
@@ -615,9 +587,9 @@ InstallMethod(IsomorphismPcGroup,"via niceomorphisms",true,
   [IsGroup and IsFinite and IsHandledByNiceMonomorphism],0,
 function(g)
 local mon,iso;
-  mon:=NiceMonomorphism(g);
-  if not IsIdenticalObj(Source(mon),g) then
-    mon:=RestrictedNiceMonomorphism(mon,g);
+  mon:=RestrictedNiceMonomorphism(g);
+  if IsPcGroup(Range(mon)) then
+    return mon;
   fi;
   iso:=IsomorphismPcGroup(NiceObject(g));
   if iso=fail then
@@ -638,9 +610,9 @@ InstallOtherMethod(IsomorphismFpGroup,"via niceomorphism",true,
   [IsGroup and IsHandledByNiceMonomorphism,IsString],0,
 function(g,nam)
 local mon,iso;
-  mon:=NiceMonomorphism(g);
-  if not IsIdenticalObj(Source(mon),g) then
-    mon:=RestrictedNiceMonomorphism(mon,g);
+  mon:=RestrictedNiceMonomorphism(g);
+  if IsFpGroup(Range(mon)) then
+    return mon;
   fi;
   iso:=IsomorphismFpGroup(NiceObject(g),nam);
   if iso=fail then
@@ -658,11 +630,8 @@ InstallMethod(IsomorphismFpGroupByGeneratorsNC,"via niceomorphism/w. gens",
   IsFamFamX,[IsGroup and IsHandledByNiceMonomorphism, IsList,IsString],0,
 function(g,c,nam)
 local mon,iso;
-  mon:=NiceMonomorphism(g);
+  mon:=RestrictedNiceMonomorphism(g);
   c:=List(c,i->Image(mon,i));
-  if not IsIdenticalObj(Source(mon),g) then
-    mon:=RestrictedNiceMonomorphism(mon,g);
-  fi;
   iso:=IsomorphismFpGroupByGeneratorsNC(NiceObject(g),c,nam);
   if iso=fail then
     return fail;
@@ -698,9 +667,8 @@ GroupSeriesMethodByNiceMonomorphism( LowerCentralSeriesOfGroup,
 ##
 #M  MaximalSubgroupClassReps( <G> )
 ##
-InstallOtherMethod( CalcMaximalSubgroupClassReps,
-  "handled by nice monomorphism, transfer tainter",
-  [IsGroup and IsHandledByNiceMonomorphism],
+AttributeMethodByNiceMonomorphism( CalcMaximalSubgroupClassReps,
+  [ IsGroup ],
 function( G )
 local   nice,  img,  sub,i;
   nice := NiceMonomorphism(G);
@@ -815,7 +783,7 @@ SubgroupMethodByNiceMonomorphism( SolvableRadical,
 InstallMethodWithRandomSource( Random,
     "for a random source and a group handled by nice monomorphism",
     [ IsRandomSource, IsGroup and IsHandledByNiceMonomorphism ], 0,
-    {rs, G} -> PreImagesRepresentative( NiceMonomorphism( G ),
+    {rs, G} -> PreImagesRepresentativeNC( NiceMonomorphism( G ),
                                   Random( rs, NiceObject( G ) ) ) );
 
 
@@ -823,15 +791,15 @@ InstallMethodWithRandomSource( Random,
 ##
 #M  RationalClasses
 ##
-InstallMethod(RationalClasses,"via niceomorphism",true,
-  [IsGroup and IsHandledByNiceMonomorphism],0,
+AttributeMethodByNiceMonomorphism( RationalClasses,
+    [ IsGroup ],
 function(g)
 local mon,cl,clg,c,i;
    mon:=NiceMonomorphism(g);
    cl:=RationalClasses(NiceObject(g));
    clg:=[];
    for i in cl do
-     c:=RationalClass(g,PreImagesRepresentative(mon,Representative(i)));
+     c:=RationalClass(g,PreImagesRepresentativeNC(mon,Representative(i)));
      if HasStabilizerOfExternalSet(i) then
        SetStabilizerOfExternalSet(c,PreImages(mon,StabilizerOfExternalSet(i)));
      fi;
@@ -848,13 +816,13 @@ end);
 ##
 #M  RightCosets
 ##
-InstallMethod(RightCosetsNC,"via niceomorphism",true,
-  [IsGroup and IsHandledByNiceMonomorphism,IsGroup],0,
+GroupMethodByNiceMonomorphismCollOther( RightCosetsNC,
+    [ IsGroup, IsGroup ],
 function(g,u)
 local mon,rt;
    mon:=NiceMonomorphism(g);
    rt:=RightTransversal(ImagesSet(mon,g),ImagesSet(mon,u));
-   rt:=List(rt,i->RightCoset(u,PreImagesRepresentative(mon,i)));
+   rt:=List(rt,i->RightCoset(u,PreImagesRepresentativeNC(mon,i)));
    return rt;
 end);
 
@@ -908,7 +876,7 @@ GroupSeriesMethodByNiceMonomorphism( UpperCentralSeriesOfGroup,
 
 #############################################################################
 ##
-#M  RepresentativeAction( <G> )
+#M  RepresentativeAction( <G>, <g>, <h>, OnPoints )
 ##
 InstallOtherMethod(RepresentativeActionOp,"nice group on elements",
   IsCollsElmsElmsX,[IsHandledByNiceMonomorphism and IsGroup,
@@ -926,10 +894,30 @@ local hom,rep;
   rep:= RepresentativeAction( NiceObject( G ),
             ImageElm( hom, a ), ImageElm( hom, b ), OnPoints );
   if rep<>fail then
-    rep:=PreImagesRepresentative(hom,rep);
+    rep:=PreImagesRepresentativeNC(hom,rep);
   fi;
   return rep;
 end);
+
+
+#############################################################################
+##
+#M  IsConjugate( <G>, <U>, <V> )
+##
+InstallOtherMethod( IsConjugate,
+  "nice group on subgroups",
+  IsFamFamFam,
+  [ IsGroup and IsHandledByNiceMonomorphism, IsGroup, IsGroup ],
+  function( G, U, V )
+  local hom;
+
+  hom:= NiceMonomorphism( G );
+  if not ( IsSubset( Source( hom ), U ) and IsSubset( Source( hom ), V ) ) then
+    TryNextMethod();
+  fi;
+  return IsConjugate( NiceObject( G ), ImagesSet( hom, U ), ImagesSet( hom, V ) );
+end);
+
 
 #############################################################################
 ##
@@ -940,9 +928,9 @@ InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdenticalObj,
     function( G, N )
     local   nice;
 
-    nice := RestrictedNiceMonomorphism(NiceMonomorphism( G ),G);
-    G := ImagesSet( nice,G );
-    N := ImagesSet   ( nice, N );
+    nice := RestrictedNiceMonomorphism(G);
+    G := ImagesSet( nice, G );
+    N := ImagesSet( nice, N );
     return CompositionMapping( NaturalHomomorphismByNormalSubgroup( G, N ),
                    nice );
 end );
@@ -955,19 +943,22 @@ InstallMethod( GroupGeneralMappingByImagesNC,
    "from a group handled by a niceomorphism",true,
     [ IsGroup and IsHandledByNiceMonomorphism, IsGroup, IsList, IsList ], 0,
 function( G, H, gens, imgs )
-local nice,geni,map2,tmp;
-  if RUN_IN_GGMBI=true then
+local nice,geni,map2;
+  if ValueOption( "Run_In_GGMBI" ) = true then
+    TryNextMethod();
+  elif RUN_IN_GGMBI = true then
+    # Code was called that does not know about the global option.
+    # Make it work but print a warning.
+    Info( InfoWarning, 1,
+          "use the global option 'Run_In_GGMBI' not the global variable ",
+          "'RUN_IN_GGMBI', see '?Run_In_GGMBI'" );
     TryNextMethod();
   fi;
-  tmp := RUN_IN_GGMBI;
-  RUN_IN_GGMBI:=true;
-  nice:=NiceMonomorphism(G);
-  if not IsIdenticalObj(Source(nice),G) then
-    nice:=RestrictedNiceMonomorphism(nice,G);
-  fi;
+  PushOptions( rec( Run_In_GGMBI:= true ) );
+  nice:=RestrictedNiceMonomorphism(G);
   geni:=List(gens,i->ImageElm(nice,i));
   map2:=GroupGeneralMappingByImagesNC(NiceObject(G),H,geni,imgs);
-  RUN_IN_GGMBI:=tmp;
+  PopOptions();
   return CompositionMapping(map2,nice);
 end );
 
@@ -984,38 +975,54 @@ end);
 ##
 InstallMethod( AsGroupGeneralMappingByImages,
   "for Niceomorphisms: avoid recursion",true,
-  [IsGroupGeneralMapping and IsNiceMonomorphism],NICE_FLAGS,
+  [IsGroupGeneralMapping and IsNiceMonomorphism],
+  {} -> RankFilter( IsHandledByNiceMonomorphism ),
 function(hom)
-local h, tmp;
-  # we actually want to use the next method with `RUN_IN_GGMBI' set to
+  # we actually want to use the next method with `Run_In_GGMBI' set to
   # `true'. Therefore we redispatch, but will skip this method the second
   # time.
-  if RUN_IN_GGMBI=true then
+  if ValueOption( "Run_In_GGMBI" ) = true then
+    TryNextMethod();
+  elif RUN_IN_GGMBI = true then
+    # Code was called that does not know about the global option.
+    # Make it work but print a warning.
+    Info( InfoWarning, 1,
+          "use the global option 'Run_In_GGMBI' not the global variable ",
+          "'RUN_IN_GGMBI', see '?Run_In_GGMBI'" );
     TryNextMethod();
   fi;
-  tmp := RUN_IN_GGMBI;
-  RUN_IN_GGMBI:=true;
-  h:=AsGroupGeneralMappingByImages(hom);
-  RUN_IN_GGMBI:=tmp;
-  return h;
+  return AsGroupGeneralMappingByImages( hom : Run_In_GGMBI:= true );
 end);
 
 #############################################################################
 ##
+#M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . . . . . . .  via images
 #M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . . .  via images
 ##
+InstallMethod( PreImagesRepresentativeNC, "for PBG-Niceo",
+    FamRangeEqFamElm,
+    [ IsPreimagesByAsGroupGeneralMappingByImages and IsNiceMonomorphism,
+      IsMultiplicativeElementWithInverse ], 0,
+function( hom, elm )
+local p;
+  # avoid the double dispatch for `AsGroupGeneralMappingByImages'
+  PushOptions( rec( Run_In_GGMBI:= true ) );
+  p:=PreImagesRepresentativeNC( AsGroupGeneralMappingByImages( hom ), elm );
+  PopOptions();
+  return p;
+end );
+
 InstallMethod( PreImagesRepresentative, "for PBG-Niceo",
     FamRangeEqFamElm,
     [ IsPreimagesByAsGroupGeneralMappingByImages and IsNiceMonomorphism,
       IsMultiplicativeElementWithInverse ], 0,
 function( hom, elm )
-local p, tmp;
-  # avoid the double dispatch for `AsGroupGeneralMappingByImages'
-  tmp := RUN_IN_GGMBI;
-   RUN_IN_GGMBI:=true;
-  p:=PreImagesRepresentative( AsGroupGeneralMappingByImages( hom ), elm );
-  RUN_IN_GGMBI:=tmp;
-  return p;
+  if not ( elm in Range(hom) ) then
+    Error( "<elm> is not in the range of mapping <hom>" );
+  elif not ( elm in Image(hom) ) then
+    return fail;
+  fi;
+  return PreImagesRepresentativeNC( hom, elm );
 end );
 
 #############################################################################
@@ -1080,9 +1087,9 @@ DeclareRepresentation( "IsEnumeratorByNiceomorphismRep",
 ##
 #M  Enumerator( <G> ) . . . . . . . . . . . . . . . . .  enumerator by niceo
 ##
-InstallMethod( Enumerator,"use nice monomorphism",true,
-        [ IsGroup and IsHandledByNiceMonomorphism and IsFinite ], 0,
-function( G )
+AttributeMethodByNiceMonomorphism( Enumerator,
+  [ IsGroup and IsAttributeStoringRep ],
+  function( G )
     return Objectify(
         NewType( FamilyObj(G), IsList and IsEnumeratorByNiceomorphismRep ),
         rec( group:=G,
@@ -1108,7 +1115,7 @@ InstallMethod( \[\],"enum-by-niceo", true,
 function( enum, pos )
 local img;
   img:=enum!.niceEnumerator[pos];
-  return PreImagesRepresentative(enum!.morphism,img);
+  return PreImagesRepresentativeNC(enum!.morphism,img);
 end);
 
 

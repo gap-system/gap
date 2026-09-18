@@ -116,7 +116,7 @@ local fam,  filter,  cl;
       fi;
       filter:=filter and HasActingDomain and HasRepresentative and
               HasFunctionAction;
-      fam!.defaultClassType:=NewType( FamilyObj( G ), filter );
+      fam!.defaultClassType:=NewType( fam, filter );
     fi;
 
     cl:=rec( start := [ g ] );
@@ -141,7 +141,7 @@ local fam,  filter,  cl;
       fi;
       filter:=filter and HasActingDomain and HasRepresentative and
               HasFunctionAction and HasStabilizerOfExternalSet;
-      fam!.defaultClassCentType:=NewType( FamilyObj( G ), filter );
+      fam!.defaultClassCentType:=NewType( fam, filter );
     fi;
 
     cl:=rec( start := [ g ]);
@@ -395,7 +395,7 @@ local H,cl,a,c;
   H:=Image(hom,G);
   cl:=[];
   for c in ConjugacyClasses(H) do
-    a:=ConjugacyClass(G,PreImagesRepresentative(hom,Representative(c)));
+    a:=ConjugacyClass(G,PreImagesRepresentativeNC(hom,Representative(c)));
     if HasStabilizerOfExternalSet(c) then
       SetStabilizerOfExternalSet(a,PreImage(hom,StabilizerOfExternalSet(c)));
     fi;

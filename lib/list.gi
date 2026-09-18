@@ -401,7 +401,7 @@ InstallMethod( ViewString,
       fi;
       if Length(list) > 2 then
         Append( str, " .. " );
-        Append( str, String( list[ Length( list ) ] ) );
+        Append( str, String( Last(list) ) );
       fi;
     fi;
     Append( str, " ]" );
@@ -422,7 +422,7 @@ InstallMethod( String,
             Append( str, String( list[ 2 ] ) );
         fi;
         Append( str, " .. " );
-        Append( str, String( list[ Length( list ) ] ) );
+        Append( str, String( Last(list) ) );
     fi;
     Append( str, " ]" );
     ConvertToStringRep( str );
@@ -632,28 +632,6 @@ InstallOtherMethod( AsList,
 
 #############################################################################
 ##
-#M  AsPlist( <list> )
-##
-InstallOtherMethod( AsPlist,
-    "for a plist",
-    [IsList and IsPlistRep],
-    x -> x );
-
-InstallOtherMethod( AsPlist,
-    "for a list",
-    [ IsList ],
-    function(l)
-    l:=AsList(l);
-    if not IsPlistRep(l) then
-      l:=PlainListCopy(l); # explicit copy for objects that claim to
-                                       # be constant time access but not plists.
-    fi;
-    return l;
-    end );
-
-
-#############################################################################
-##
 #M  AsSSortedList( <list> )
 ##
 ##  If <list> is a (not necessarily dense) list whose elements lie in the
@@ -672,7 +650,7 @@ InstallOtherMethod(AsSSortedList,
 InstallOtherMethod(AsSSortedList,
      "for a list",
      [ IsList ],
-     l -> AsSSortedListList( AsPlist( l ) ) );
+     l -> AsSSortedListList( PlainListCopy( l ) ) );
 
 InstallMethod( AsSSortedList,
     "for a strictly sorted list",
@@ -710,7 +688,7 @@ function(l)
     if IsSSortedList(l) then
       return l;
     fi;
-    return AsSSortedListList(AsPlist(l));
+    return AsSSortedListList(PlainListCopy(l));
 end);
 
 
@@ -724,7 +702,7 @@ InstallMethod( SSortedList, "for a plist",
 
 InstallMethod( SSortedList, "for a list",
     [ IsList ],
-    l->SSortedListList(AsPlist(l)) );
+    l->SSortedListList(PlainListCopy(l)) );
 
 
 #############################################################################
@@ -757,7 +735,7 @@ InstallMethod( SSortedList,
 ##  which stores the underlying list in the component `list'
 ##  and the current position in the component `pos'.
 ##
-##  It may happen that the underlying list is a enumerator of a domain
+##  It may happen that the underlying list is an enumerator of a domain
 ##  whose size cannot be computed easily.
 ##  In such cases, the methods for `IsDoneIterator' and `NextIterator'
 ##  shall avoid calling `Length' for the enumerator.
@@ -1925,7 +1903,9 @@ InstallOtherMethod( IsMatchingSublist,
 InstallMethod( Add,
     "for mutable list and list",
     [ IsList and IsMutable, IsObject ],
-    ADD_LIST_DEFAULT );
+    function ( list, obj )
+    list[ LEN_LIST(list)+1 ] := obj;
+end );
 
 InstallMethod( Add, "three arguments fast version",
         [ IsPlistRep and IsList and IsMutable, IsObject, IsPosInt],
@@ -2618,7 +2598,7 @@ InstallMethod( MaximumList,
     if Length( list ) = 0 then
         Error( "MaximumList: <list> must contain at least one element" );
     fi;
-    max := list[ Length( list ) ];
+    max := Last(list);
     for elm in list do
         if max < elm  then
             max := elm;
@@ -2648,7 +2628,7 @@ InstallMethod( MaximumList,
     if Length( range ) = 0 then
         Error( "MaximumList: <range> must contain at least one element" );
     fi;
-    max := range[ Length( range ) ];
+    max := Last(range);
     if max < range[1] then
         return range[1];
     fi;
@@ -2728,7 +2708,7 @@ InstallMethod( MinimumList,
     if Length( list ) = 0 then
         Error( "MinimumList: <list> must contain at least one element" );
     fi;
-    min := list[ Length( list ) ];
+    min := Last(list);
     for elm  in list  do
         if elm < min then
             min := elm;
@@ -3919,9 +3899,9 @@ InstallMethod( ViewObj,
       Print( list[1], ", ", list[2] );
     elif 2 < Length( list ) then
       if list[2] - list[1] <> 1  then
-        Print( list[1], ", ", list[2], " .. ", list[ Length( list ) ] );
+        Print( list[1], ", ", list[2], " .. ", Last(list) );
       else
-        Print( list[1], " .. ", list[ Length( list ) ] );
+        Print( list[1], " .. ", Last(list) );
       fi;
     fi;
     Print( " ]" );

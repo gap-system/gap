@@ -73,6 +73,11 @@ gap> mo:=GModuleByMats([[[0,1],[1,1]]]*Z(2),GF(2));;
 gap> TwoCohomologyGeneric(g,mo).cohomology;
 [  ]
 
+# a trivial case
+gap> G:= CyclicGroup( 2 );;
+gap> M:= GModuleByMats( [ [ [ Z(2) ] ] ], GF(2) );;
+gap> CompatiblePairs( G, M );;
+
 # routines used for rewriting
 gap> WeylGroupFp("A",3);
 <fp group on the generators [ s1, s2, s3 ]>

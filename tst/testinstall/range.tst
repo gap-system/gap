@@ -273,7 +273,7 @@ gap> SetX(ranges, ranges,
 >     local c;
 >     c:=ShallowCopy(a);
 >     IntersectSet(c,b);
->     return c = Intersection(AsPlist(a),AsPlist(b));
+>     return c = Intersection(PlainListCopy(a),PlainListCopy(b));
 >   end);
 [ true ]
 

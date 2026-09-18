@@ -11,9 +11,9 @@
 #ifndef GAP_THREADAPI_H
 #define GAP_THREADAPI_H
 
-#include "objects.h"
+#include "../objects.h"
 
-#include "gvars.h"
+#include "../gvars.h"
 
 #include <pthread.h>
 

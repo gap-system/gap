@@ -699,11 +699,12 @@ end );
 
 #############################################################################
 ##
-#F  OrbitishFO( <name>, <reqs>, <famrel>, <usetype>, <realenum> )
+#F  OrbitishFO( <name>, <reqs>, <famrel>, <usetype>, <realenum>[, <usage>] )
 ##
 ##  <#GAPDoc Label="OrbitishFO">
 ##  <ManSection>
-##  <Func Name="OrbitishFO" Arg='name, reqs, famrel, usetype, realenum'/>
+##  <Func Name="OrbitishFO"
+##   Arg='name, reqs, famrel, usetype, realenum[, usage]'/>
 ##
 ##  <Description>
 ##  is used to create operations like <Ref Oper="Orbit"/>.
@@ -743,12 +744,29 @@ end );
 ##  should use the enumerator, otherwise it uses the
 ##  <Ref Attr="HomeEnumerator"/> value. This will
 ##  make a difference for external orbits as part of a larger domain.
+##  <P/>
+##  The optional 6th argument <A>usage</A> is the error message that is shown
+##  if the wrapper function is called with arguments it cannot make sense of.
+##  It defaults to a message describing the calling conventions of
+##  <Ref Oper="Orbit"/>, and must be given for operations that deviate from
+##  them, such as <Ref Oper="Blocks"
+##  Label="for a group, an action domain, etc."/>,
+##  whose third argument is an optional list.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-BindGlobal( "OrbitishFO", function( name, reqs, famrel, usetype,realenum )
-local str, orbish, func,isnotest;
+BindGlobal( "OrbitishFO",
+    function( name, reqs, famrel, usetype, realenum, usage... )
+local str, orbish, func, isnotest, usagestr;
+
+    # <pnt> is a single mandatory point unless the caller says otherwise
+    if Length( usage ) = 1 then
+      usagestr:= usage[1];
+    else
+      usagestr:= Concatenation( "usage: ", name, "(<xset>,<pnt>)\n",
+              "or ", name, "(<G>[,<Omega>],<pnt>[,<gens>,<acts>][,<act>])" );
+    fi;
 
     # Create the operation.
     str:= SHALLOW_COPY_OBJ( name );
@@ -760,10 +778,14 @@ local str, orbish, func,isnotest;
 
     # Create the wrapper function.
     func := function( arg )
-    local   G,  D,  pnt,  gens,  acts,  act,  xset,  p,  attrG,  result,le;
+    local le, xset, pnt, G, D, gens, acts, act, attrG, result;
+
+      le:= Length( arg );
 
       # Get the arguments.
-      if Length( arg ) <= 2 and IsExternalSet( arg[ 1 ] )  then
+      if le = 0 then
+        Error( usagestr );
+      elif le <= 2 and IsExternalSet( arg[ 1 ] )  then
           xset := arg[ 1 ];
           if Length(arg)>1 then
             # force immutability
@@ -788,36 +810,49 @@ local str, orbish, func,isnotest;
           else
               act := FunctionAction( xset );
           fi;
-      elif 2 <= Length( arg ) then
-          le:=Length(arg);
-          G := arg[ 1 ];
-          if IsFunction( arg[ le ] )  then
-              act := arg[ le ];
-              le:=le-1;
-          else
-              act := OnPoints;
+      elif 2 <= le and le <= 6 then
+        G:= arg[ 1 ];
+        if IsFunction( arg[ le ] )  then
+          act:= arg[ le ];
+          le:= le-1;
+        else
+          act:= OnPoints;
+        fi;
+        # now we have one of the following:
+        # le = 2:  G, pnt[, act]
+        # le = 3:  G, Omega, pnt[, act]
+        # le = 4:  G, pnt, gens, acts[, act]
+        # le = 5:  G, Omega, pnt, gens, acts[, act]
+        if IsEvenInt( le ) then
+          pnt:= Immutable( arg[2] );
+        else
+          pnt:= Immutable( arg[3] );
+          # deal with Omega
+          D:= arg[2];
+          if not ( famrel( FamilyObj( D ), FamilyObj( pnt ) ) or
+                   ( IsList( pnt ) and IsEmpty( pnt ) ) ) then
+            Error( "wrong relation between <D> and <pnt>" );
+          elif IsDomain( D ) then
+            if IsFinite( D ) then
+              D:= AsSSortedList( D );
+            else
+              D:= Enumerator( D );
+            fi;
           fi;
-          if     Length( arg ) > 2
-            and famrel( FamilyObj( arg[ 2 ] ), FamilyObj( arg[ 3 ] ) )
-            # for blocks on the groups elements
-            and not (IsOperation(usetype) and le=4)
-            then
-              D := arg[ 2 ];
-              if IsDomain( D )  then
-           if IsFinite( D ) then D:= AsSSortedList( D ); else D:= Enumerator( D ); fi;
-              fi;
-              p := 3;
-          else
-              p := 2;
-          fi;
-          pnt := Immutable(arg[ p ]);
-          if Length( arg ) > p + 1  then
-              gens := arg[ p + 1 ];
-              acts := arg[ p + 2 ];
-          fi;
+        fi;
+        if le > 3 then
+          # deal with acts, gens
+          gens:= arg[ le - 1 ];
+          acts:= arg[ le ];
+        fi;
       else
-        Error( "usage: ", name, "(<xset>,<pnt>)\n",
-              "or ", name, "(<G>[,<Omega>],<pnt>[,<gens>,<acts>][,<act>])" );
+        Error( usagestr );
+      fi;
+
+      # <pnt> must be acceptable for the operation, otherwise the call would
+      # end in a `no method found' error further down.
+      if not ( reqs[2]( pnt ) or reqs[3]( pnt ) ) then
+        Error( usagestr );
       fi;
 
       if not IsBound( gens )  then
@@ -893,9 +928,16 @@ end );
 ##  <Description>
 ##  computes a homomorphism from <A>G</A> into the symmetric group on
 ##  <M>|<A>Omega</A>|</M> points that gives the permutation action of
-##  <A>G</A> on <A>Omega</A>. (In particular, this homomorphism is a
-##  permutation equivalence, that is the permutation image of a group element
-##  is given by the positions of points in <A>Omega</A>.)
+##  <A>G</A> on <A>Omega</A>.
+##  The permutations in the image act on <M>[ 1 .. |<A>Omega</A>| ]</M>,
+##  where the number <M>i</M> stands for the <M>i</M>-th point of
+##  <A>Omega</A>; in other words, the images are taken with respect to the
+##  permutation equivalence between the action of <A>G</A> on <A>Omega</A>
+##  and its image, which is given by numbering the points of <A>Omega</A>
+##  (see the remark on <Ref Oper="PositionCanonical"/> below).
+##  Note that the homomorphism itself need not be injective,
+##  it is injective if and only if <A>G</A> acts faithfully on
+##  <A>Omega</A>.
 ##  <P/>
 ##  The result is undefined if <A>G</A> does not act on <A>Omega</A>.
 ##  <P/>
@@ -1275,7 +1317,9 @@ OrbitishFO( "ExternalSubset",
     [ IsGroup, IsList, IsList,
       IsList,
       IsList,
-      IsFunction ], IsIdenticalObj, true, false );
+      IsFunction ], IsIdenticalObj, true, false,
+    Concatenation( "usage: ExternalSubset(<xset>,<start>)\n",
+      "or ExternalSubset(<G>,<Omega>,<start>[,<gens>,<acts>][,<act>])" ) );
 
 
 #############################################################################
@@ -1537,8 +1581,22 @@ OrbitsishOperation( "OrbitLengthsDomain", OrbitsishReq, false, NewAttribute );
 ##  <Description>
 ##  computes the orbit and the stabilizer of <A>pnt</A> simultaneously in a
 ##  single orbit-stabilizer algorithm.
+##  Returns an immutable record with components <C>orbit</C> (the orbit as
+##  a list) and <C>stabilizer</C> (the point stabilizer, a subgroup of
+##  <A>G</A>).
 ##  <P/>
 ##  The stabilizer will have <A>G</A> as its parent.
+##  <Example><![CDATA[
+##  gap> g:=Group((1,3,2),(2,4,3));;
+##  gap> orbstab:=OrbitStabilizer(g,[1,2],OnSets);
+##  rec(
+##    orbit := [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 3, 4 ],
+##        [ 2, 4 ] ], stabilizer := Group([ (1,2)(3,4) ]) )
+##  gap> orbstab.orbit;
+##  [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 3, 4 ], [ 2, 4 ] ]
+##  gap> orbstab.stabilizer;
+##  Group([ (1,2)(3,4) ])
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1675,11 +1733,22 @@ OrbitsishOperation( "Transitivity", OrbitsishReq, false, NewAttribute );
 ##  <Ref Oper="IsTransitive" Label="for a group, an action domain, etc."/>)
 ##  action of <A>G</A> on <A>Omega</A>.
 ##  If <A>seed</A> is not given and the action is imprimitive,
-##  a minimal nontrivial block system will be found.
+##  a minimal nontrivial block system will be found,
+##  that is, the blocks are minimal among the blocks with more than one
+##  element.
+##  If the action is primitive, the block system <C>[ <A>Omega</A> ]</C>
+##  consisting of the single block <A>Omega</A> is returned.
 ##  If <A>seed</A> is given, a block system in which <A>seed</A>
 ##  is the subset of one block is computed.
 ##  <P/>
-##  The result is undefined if the action is not transitive.
+##  If the action is not transitive, an error is signalled for a
+##  permutation group acting on points, and the result is undefined
+##  otherwise.
+##  For a permutation group and a given <A>seed</A>, verifying transitivity
+##  costs one extra orbit computation;
+##  call <Ref Oper="Blocks" Label="for a group, an action domain, etc."/>
+##  with the option <C>check := false</C> to suppress it if the action is
+##  known to be transitive.
 ##  <Example><![CDATA[
 ##  gap> g:=TransitiveGroup(8,3);
 ##  E(8)=2[x]2[x]2
@@ -1687,6 +1756,8 @@ OrbitsishOperation( "Transitivity", OrbitsishReq, false, NewAttribute );
 ##  [ [ 1, 8 ], [ 2, 3 ], [ 4, 5 ], [ 6, 7 ] ]
 ##  gap> Blocks(g,[1..8],[1,4]);
 ##  [ [ 1, 4 ], [ 2, 7 ], [ 3, 6 ], [ 5, 8 ] ]
+##  gap> Blocks(MathieuGroup(11),[1..11]);   # this action is primitive
+##  [ [ 1 .. 11 ] ]
 ##  ]]></Example>
 ##  <P/>
 ##  (See Section&nbsp;<Ref Sect="Basic Actions"/>
@@ -1701,7 +1772,9 @@ OrbitishFO( "Blocks",
     [ IsGroup, IsList, IsList,
       IsList,
       IsList,
-      IsFunction ], IsIdenticalObj, BlocksAttr, true );
+      IsFunction ], IsIdenticalObj, BlocksAttr, true,
+    Concatenation( "usage: Blocks(<xset>[,<seed>])\n",
+      "or Blocks(<G>,<Omega>[,<seed>][,<gens>,<acts>][,<act>])" ) );
 
 
 #############################################################################
@@ -1718,17 +1791,29 @@ OrbitishFO( "Blocks",
 ##   Label="for an external set"/>
 ##
 ##  <Description>
-##  returns a block system that is maximal (i.e., blocks are maximal with
-##  respect to inclusion) for the transitive (see
+##  returns a maximal block system for the transitive (see
 ##  <Ref Oper="IsTransitive" Label="for a group, an action domain, etc."/>)
-##  action of <A>G</A> on <A>Omega</A>.
+##  action of <A>G</A> on <A>Omega</A>,
+##  that is, the blocks are maximal among the blocks that are proper subsets
+##  of <A>Omega</A>.
+##  Equivalently, the action induced by <A>G</A> on the returned block system
+##  is primitive.
+##  If the action of <A>G</A> on <A>Omega</A> is already primitive, then the
+##  block system <C>[ <A>Omega</A> ]</C> consisting of the single block
+##  <A>Omega</A> is returned.
 ##  If <A>seed</A> is given, a block system is computed in which <A>seed</A>
 ##  is a subset of one block.
 ##  <P/>
-##  The result is undefined if the action is not transitive.
+##  If the action is not transitive, an error is signalled for a
+##  permutation group acting on points, and the result is undefined
+##  otherwise.
 ##  <Example><![CDATA[
 ##  gap> MaximalBlocks(g,[1..8]);
 ##  [ [ 1, 2, 3, 8 ], [ 4 .. 7 ] ]
+##  gap> Blocks(g,[1..8]);   # the minimal block system is finer
+##  [ [ 1, 8 ], [ 2, 3 ], [ 4, 5 ], [ 6, 7 ] ]
+##  gap> MaximalBlocks(MathieuGroup(11),[1..11]);   # primitive action
+##  [ [ 1 .. 11 ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1740,7 +1825,9 @@ OrbitishFO( "MaximalBlocks",
     [ IsGroup, IsList, IsList,
       IsList,
       IsList,
-      IsFunction ], IsIdenticalObj, MaximalBlocksAttr,true );
+      IsFunction ], IsIdenticalObj, MaximalBlocksAttr, true,
+    Concatenation( "usage: MaximalBlocks(<xset>[,<seed>])\n",
+      "or MaximalBlocks(<G>,<Omega>[,<seed>][,<gens>,<acts>][,<act>])" ) );
 
 #T  the following syntax would be nice for consistency as well:
 ##  RepresentativesMinimalBlocks(<G>,<Omega>[,<seed>][,<gens>,<acts>][,<act>])
@@ -1767,7 +1854,9 @@ OrbitishFO( "MaximalBlocks",
 ##  <Ref Oper="IsTransitive" Label="for a group, an action domain, etc."/>)
 ##  action of <A>G</A> on <A>Omega</A>.
 ##  <P/>
-##  The result is undefined if the action is not transitive.
+##  If the action is not transitive, an error is signalled for a
+##  permutation group acting on points, and the result is undefined
+##  otherwise.
 ##  <Example><![CDATA[
 ##  gap> RepresentativesMinimalBlocks(g,[1..8]);
 ##  [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 1, 5 ], [ 1, 6 ], [ 1, 7 ],
@@ -1783,7 +1872,9 @@ OrbitishFO( "RepresentativesMinimalBlocks",
     [ IsGroup, IsList, IsList,
       IsList,
       IsList,
-      IsFunction ], IsIdenticalObj, RepresentativesMinimalBlocksAttr,true );
+      IsFunction ], IsIdenticalObj, RepresentativesMinimalBlocksAttr, true,
+    Concatenation( "usage: RepresentativesMinimalBlocks(<xset>)\n",
+      "or RepresentativesMinimalBlocks(<G>,<Omega>[,<gens>,<acts>][,<act>])" ) );
 
 
 #############################################################################
@@ -2090,15 +2181,20 @@ DeclareOperation( "PermutationOp", [ IsObject, IsList, IsFunction ] );
 
 #############################################################################
 ##
-#O  PermutationCycle( <g>, <Omega>, <pnt>[, <act>] )
+#O  PermutationCycle( <g>, <Omega>, <pnt>[, <gens>, <acts>][, <act>] )
 ##
 ##  <#GAPDoc Label="PermutationCycle">
 ##  <ManSection>
-##  <Func Name="PermutationCycle" Arg='g, Omega, pnt[, act]'/>
+##  <Func Name="PermutationCycle" Arg='g, Omega, pnt[, gens, acts][, act]'/>
 ##
 ##  <Description>
 ##  computes the permutation that represents the cycle of <A>pnt</A> under
 ##  the action of the element <A>g</A>.
+##  <P/>
+##  Instead of the domain <A>Omega</A>, an external set <A>xset</A>
+##  may be given; then the action domain is the
+##  <Ref Attr="HomeEnumerator"/> value of <A>xset</A>
+##  (see Section&nbsp;<Ref Sect="External Sets"/>).
 ##  <Example><![CDATA[
 ##  gap> Permutation([[Z(3),-Z(3)],[Z(3),0*Z(3)]],AsList(GF(3)^2));
 ##  (2,7,6)(3,4,8)
@@ -2119,15 +2215,20 @@ DeclareOperation( "PermutationCycleOp",
 
 #############################################################################
 ##
-#O  Cycle( <g>, <Omega>, <pnt> [,<act>] )
+#O  Cycle( <g>, <Omega>, <pnt>[, <gens>, <acts>][, <act>] )
 ##
 ##  <#GAPDoc Label="Cycle">
 ##  <ManSection>
-##  <Func Name="Cycle" Arg='g, Omega, pnt[, act]'/>
+##  <Func Name="Cycle" Arg='g, Omega, pnt[, gens, acts][, act]'/>
 ##
 ##  <Description>
 ##  returns a list of the points in the cycle of <A>pnt</A> under the action
 ##  of the element <A>g</A>.
+##  <P/>
+##  Instead of the domain <A>Omega</A>, an external set <A>xset</A>
+##  may be given; then the action domain is the
+##  <Ref Attr="HomeEnumerator"/> value of <A>xset</A>
+##  (see Section&nbsp;<Ref Sect="External Sets"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2139,15 +2240,20 @@ DeclareOperation( "CycleOp", [ IsObject, IsList, IsObject, IsFunction ] );
 
 #############################################################################
 ##
-#O  Cycles( <g>, <Omega> [,<act>] )
+#O  Cycles( <g>, <Omega>[, <gens>, <acts>][, <act>] )
 ##
 ##  <#GAPDoc Label="Cycles">
 ##  <ManSection>
-##  <Func Name="Cycles" Arg='g, Omega[, act]'/>
+##  <Func Name="Cycles" Arg='g, Omega[, gens, acts][, act]'/>
 ##
 ##  <Description>
 ##  returns a list of the cycles (as lists of points) of the action of the
-##  element <A>g</A>.
+##  element <A>g</A> on <A>Omega</A>.
+##  <P/>
+##  Instead of the domain <A>Omega</A>, an external set <A>xset</A>
+##  may be given; then the action domain is the
+##  <Ref Attr="HomeEnumerator"/> value of <A>xset</A>
+##  (see Section&nbsp;<Ref Sect="External Sets"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2159,15 +2265,20 @@ DeclareOperation( "CyclesOp", [ IsObject, IsList, IsFunction ] );
 
 #############################################################################
 ##
-#O  CycleLength( <g>, <Omega>, <pnt> [,<act>] )
+#O  CycleLength( <g>, <Omega>, <pnt>[, <gens>, <acts>][, <act>] )
 ##
 ##  <#GAPDoc Label="CycleLength">
 ##  <ManSection>
-##  <Func Name="CycleLength" Arg='g, Omega, pnt[, act]'/>
+##  <Func Name="CycleLength" Arg='g, Omega, pnt[, gens, acts][, act]'/>
 ##
 ##  <Description>
-##  returns the length of the cycle of <A>pnt</A> under the action of the element
-##  <A>g</A>.
+##  returns the length of the cycle of <A>pnt</A> under the action of the
+##  element <A>g</A>.
+##  <P/>
+##  Instead of the domain <A>Omega</A>, an external set <A>xset</A>
+##  may be given; then the action domain is the
+##  <Ref Attr="HomeEnumerator"/> value of <A>xset</A>
+##  (see Section&nbsp;<Ref Sect="External Sets"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2180,15 +2291,20 @@ DeclareOperation( "CycleLengthOp",
 
 #############################################################################
 ##
-#O  CycleLengths( <g>, <Omega>[, <act>] )
+#O  CycleLengths( <g>, <Omega>[, <gens>, <acts>][, <act>] )
 ##
 ##  <#GAPDoc Label="CycleLengths">
 ##  <ManSection>
-##  <Oper Name="CycleLengths" Arg='g, Omega[, act]'/>
+##  <Func Name="CycleLengths" Arg='g, Omega[, gens, acts][, act]'/>
 ##
 ##  <Description>
 ##  returns the lengths of all the cycles under the action of the element
 ##  <A>g</A> on <A>Omega</A>.
+##  <P/>
+##  Instead of the domain <A>Omega</A>, an external set <A>xset</A>
+##  may be given; then the action domain is the
+##  <Ref Attr="HomeEnumerator"/> value of <A>xset</A>
+##  (see Section&nbsp;<Ref Sect="External Sets"/>).
 ##  <Example><![CDATA[
 ##  gap> Cycle((1,2,3)(4,5)(6,7),[4..7],4);
 ##  [ 4, 5 ]
@@ -2211,15 +2327,15 @@ DeclareOperation( "CycleLengthsOp",
 
 #############################################################################
 ##
-#F  CycleIndex( <g>, <Omega>[, <act>] )
-#F  CycleIndex( <G>, <Omega>[, <act>] )
+#F  CycleIndex( <g>[, <Omega>][, <act>] )
+#F  CycleIndex( <G>[, <Omega>][, <act>] )
 ##
 ##  <#GAPDoc Label="CycleIndex">
 ##  <ManSection>
 ##  <Heading>CycleIndex</Heading>
-##  <Func Name="CycleIndex" Arg='g, Omega[, act]'
+##  <Func Name="CycleIndex" Arg='g[, Omega][, act]'
 ##   Label="for a permutation and an action domain"/>
-##  <Func Name="CycleIndex" Arg='G, Omega[, act]'
+##  <Func Name="CycleIndex" Arg='G[, Omega][, act]'
 ##   Label="for a permutation group and an action domain"/>
 ##
 ##  <Description>
@@ -2240,6 +2356,10 @@ DeclareOperation( "CycleLengthsOp",
 ##  <Ref Func="CycleIndex" Label="for a permutation and an action domain"/>
 ##  are the indeterminates <M>1</M> to <M>n</M> over the rationals
 ##  (see&nbsp;<Ref Oper="Indeterminate" Label="for a ring (and a number)"/>).
+##  <P/>
+##  If <A>Omega</A> is omitted then <A>g</A> must be a permutation or a
+##  permutation group, and its <Ref Attr="MovedPoints"
+##  Label="for a permutation"/> value is used as action domain.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> g:=TransitiveGroup(6,8);
@@ -2730,11 +2850,16 @@ DeclareGlobalFunction("OnLines");
 ##
 ##  <Description>
 ##  implements the action on sets of sets.
-##  For the special case that the sets are pairwise disjoint,
+##  <A>set</A> must be a proper set whose entries are again proper sets
+##  (see&nbsp;<Ref Sect="Sorted Lists and Sets"/>).
+##  <P/>
+##  <Ref Func="OnSetsSets"/> returns the proper set whose elements are
+##  the images obtained by applying the action function
+##  <Ref Func="OnSets"/> to <M>x</M> and <A>g</A>,
+##  for each element <M>x</M> of <A>set</A>.
+##  <P/>
+##  For the special case that the elements of <A>set</A> are pairwise disjoint,
 ##  it is possible to use <Ref Func="OnSetsDisjointSets"/>.
-##  <A>set</A> must be a sorted list whose entries are again sorted lists,
-##  otherwise an error is triggered
-##  (see&nbsp;<Ref Sect="Action on canonical representatives"/>).
 ##  <Example><![CDATA[
 ##  gap> OnSetsSets( [ [ 1, 2 ], [ 3, 4 ] ], (1,2,3) );
 ##  [ [ 1, 4 ], [ 2, 3 ] ]
@@ -2761,9 +2886,16 @@ DeclareGlobalFunction( "OnSetsSets" );
 ##  <Description>
 ##  implements the action on sets of pairwise disjoint sets
 ##  (see also&nbsp;<Ref Func="OnSetsSets"/>).
-##  <A>set</A> must be a sorted list whose entries are again sorted lists,
-##  otherwise an error is triggered
-##  (see&nbsp;<Ref Sect="Action on canonical representatives"/>).
+##  <A>set</A> must be a proper set whose entries are pairwise
+##  disjoint proper sets.
+##  However, it is <E>not</E> checked that the entries of
+##  <A>set</A> are indeed pairwise disjoint.
+##  <P/>
+##  <Ref Func="OnSetsDisjointSets"/> returns the proper
+##  set whose elements are
+##  the images obtained by applying the action function
+##  <Ref Func="OnSets"/> to <M>x</M> and <A>g</A>,
+##  for each element <M>x</M> of <A>set</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2781,9 +2913,13 @@ DeclareGlobalFunction( "OnSetsDisjointSets" );
 ##
 ##  <Description>
 ##  implements the action on sets of tuples.
-##  <A>set</A> must be a sorted list,
-##  otherwise an error is triggered
-##  (see&nbsp;<Ref Sect="Action on canonical representatives"/>).
+##  <A>set</A> must be a proper set of lists without holes
+##  (see&nbsp;<Ref Sect="Sorted Lists and Sets"/>).
+##  <P/>
+##  <Ref Func="OnSetsTuples"/> returns the proper set whose elements are
+##  the images obtained by applying the action function
+##  <Ref Func="OnTuples"/> to <M>x</M> and <A>g</A>,
+##  for each element <M>x</M> of <A>set</A>.
 ##  <Example><![CDATA[
 ##  gap> OnSetsTuples( [ [ 1, 2 ], [ 3, 4 ] ], (1,2,3) );
 ##  [ [ 1, 4 ], [ 2, 3 ] ]
@@ -2802,17 +2938,21 @@ DeclareGlobalFunction("OnSetsTuples");
 
 #############################################################################
 ##
-#F  OnTuplesSets( <set>, <g> )
+#F  OnTuplesSets( <tup>, <g> )
 ##
 ##  <#GAPDoc Label="OnTuplesSets">
 ##  <ManSection>
-##  <Func Name="OnTuplesSets" Arg='set, g'/>
+##  <Func Name="OnTuplesSets" Arg='tup, g'/>
 ##
 ##  <Description>
 ##  implements the action on tuples of sets.
-##  <A>set</A> must be a list whose entries are again sorted lists,
-##  otherwise an error is triggered
-##  (see&nbsp;<Ref Sect="Action on canonical representatives"/>).
+##  <A>tup</A> must be a list without holes whose entries are proper sets
+##  (see&nbsp;<Ref Sect="Sorted Lists and Sets"/>).
+##  <P/>
+##  <Ref Func="OnTuplesSets"/> returns the list of
+##  the corresponding images obtained by applying the action function
+##  <Ref Func="OnSets"/> to <M>x</M> and <A>g</A>,
+##  for each entry <M>x</M> of <A>tup</A>.
 ##  <Example><![CDATA[
 ##  gap> OnTuplesSets( [ [ 2, 3 ], [ 3, 4 ] ], (1,2,3) );
 ##  [ [ 1, 3 ], [ 1, 4 ] ]
@@ -2831,14 +2971,21 @@ DeclareGlobalFunction("OnTuplesSets");
 
 #############################################################################
 ##
-#F  OnTuplesTuples( <set>, <g> )
+#F  OnTuplesTuples( <tup>, <g> )
 ##
 ##  <#GAPDoc Label="OnTuplesTuples">
 ##  <ManSection>
-##  <Func Name="OnTuplesTuples" Arg='set, g'/>
+##  <Func Name="OnTuplesTuples" Arg='tup, g'/>
 ##
 ##  <Description>
 ##  implements the action on tuples of tuples.
+##  <A>tup</A> must be a list without holes whose entries are again
+##  lists without holes.
+##  <P/>
+##  <Ref Func="OnTuplesTuples"/> returns the list of
+##  the corresponding images obtained by applying the action function
+##  <Ref Func="OnTuples"/> to <M>x</M> and <A>g</A>,
+##  for each entry <M>x</M> of the list <A>tup</A>.
 ##  <Example><![CDATA[
 ##  gap> OnTuplesTuples( [ [ 2, 3 ], [ 3, 4 ] ], (1,2,3) );
 ##  [ [ 3, 1 ], [ 1, 4 ] ]
@@ -2856,6 +3003,51 @@ DeclareGlobalFunction("OnTuplesSets");
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("OnTuplesTuples");
+
+#############################################################################
+##
+#F  OnGroupsAsAutomorphism( <sub>, <autom> )
+##
+##  <#GAPDoc Label="OnGroupsAsAutomorphism">
+##  <ManSection>
+##  <Func Name="OnGroupsAsAutomorphism" Arg='sub, autom'/>
+##
+##  <Description>
+##  returns the image of the structure <A>sub</A> under the automorphism
+##  <A>autom</A>, that is <C>Image(<A>autom</A>,<A>sub</A>)</C>.
+##  <P/>
+##  This function is an <E>action function</E> in the sense of
+##  <Ref Sect="Basic Actions" BookName="ref"/> and thus is intended to be
+##  passed as last argument to functions such as
+##  <Ref Oper="Orbit" BookName="ref"/>, <Ref Oper="Stabilizer" BookName="ref"/>
+##  or <Ref Oper="Action" BookName="ref"/>. It describes the action of a group
+##  of automorphisms (or, more generally, of any group whose elements are
+##  endomorphisms of a common structure) on the subgroups, subalgebras or
+##  other substructures of this structure. The acting group must consist of
+##  mappings whose source contains <A>sub</A>; no test for this is performed.
+##  <P/>
+##  Note that this action is <E>not</E> the same as
+##  <Ref Func="OnPoints" BookName="ref"/> applied to the elements of
+##  <A>sub</A>: it is the whole structure that is mapped, and the result is
+##  again a structure of the same kind.
+##  <Example><![CDATA[
+##  gap> g:=Group((1,2),(3,4));;
+##  gap> a:=AutomorphismGroup(g);;
+##  gap> u:=Subgroup(g,[(1,2)]);
+##  Group([ (1,2) ])
+##  gap> orb:=Orbit(a,u,OnGroupsAsAutomorphism);;
+##  gap> Length(orb);
+##  3
+##  gap> Size(Stabilizer(a,u,OnGroupsAsAutomorphism));
+##  2
+##  gap> Size(Action(a,orb,OnGroupsAsAutomorphism));
+##  6
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "OnGroupsAsAutomorphism" );
 
 #############################################################################
 ##

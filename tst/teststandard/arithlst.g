@@ -123,7 +123,7 @@ ErrorMessage := function( opname, operands, info, is, should )
     Append( str, operands[i] );
     Append( str, ", " );
   od;
-  error( str, operands[ Length( operands ) ], " ):  ", info, ",\n",
+  error( str, Last( operands ), " ):  ", info, ",\n",
          "should be ", should, " but is ", is, "\n" );
 end;;
 CheckMutabilityStatus := function( opname, list )
@@ -203,9 +203,9 @@ CompareTest := function( opname, operands, result, desired )
   if     Length( operands ) = 2
      and IsList( result ) and IsCopyable( result )
      and ImmutabilityLevel( result )
-         <> Minimum( List( operands, ImmutabilityLevel ) ) 
+         <> Minimum( List( operands, ImmutabilityLevel ) )
      and not (ImmutabilityLevel(result)=infinity and
-               NestingDepthM(result) = 
+               NestingDepthM(result) =
                       Minimum( List( operands, ImmutabilityLevel ) )) then
     error( opname, ": mutability problem for ", operands[1], " (",
            ImmutabilityLevel( operands[1] ), ") and ", operands[2], " (",
@@ -362,10 +362,10 @@ end;;
 ##      the right scalar multiple, i.e., a list whose entry at position $i$
 ##      is $x[i] * y$ if $x$ is bound at position $i$, and is unbound if not.
 ##  \endlist
-##  
+##
 ##  Our aim is to generalize the basic arithmetic of simple row vectors and
 ##  matrices, so we first summarize the situations that shall be covered.
-##  
+##
 ##  \beginexample
 ##      | scl   vec   mat
 ##  ---------------------
@@ -373,33 +373,33 @@ end;;
 ##  vec | (R)   (I)   (I)
 ##  mat | (R)   (R)   (R)
 ##  \endexample
-##  
+##
 ##  This means for example that the product of a scalar (scl)
 ##  with a vector (vec) or a matrix (mat) is computed according to (L).
 ##  Note that this is asymmetric.
-##  
+##
 ##  Now we can state the general multiplication rules.
-##  
+##
 ##  If exactly one argument is in `IsMultiplicativeGeneralizedRowVector'
 ##  then we regard the other argument (which is then not a list) as a scalar,
 ##  and specify result (L) or (R), depending on ordering.
-##  
+##
 ##  In the remaining cases, both $x$ and $y$ are in
 ##  `IsMultiplicativeGeneralizedRowVector', and we distinguish the
 ##  possibilities by their multiplicative nesting depths.
 ##  An argument with *odd* multiplicative nesting depth is regarded as a
 ##  vector, and an argument with *even* multiplicative nesting depth is
 ##  regarded as a scalar or a matrix.
-##  
+##
 ##  So if both arguments have odd multiplicative nesting depth,
 ##  we specify result (I).
-##  
+##
 ##  If exactly one argument has odd nesting depth,
 ##  the other is treated as a scalar if it has lower multiplicative nesting
 ##  depth, and as a matrix otherwise.
 ##  In the former case, we specify result (L) or (R), depending on ordering;
 ##  in the latter case, we specify result (L) or (I), depending on ordering.
-##  
+##
 ##  We are left with the case that each argument has even multiplicative
 ##  nesting depth.
 ##  % By definition, this depth is nonzero.
@@ -407,7 +407,7 @@ end;;
 ##  and specify result (R).
 ##  Otherwise, we treat the less deeply nested argument as a scalar and the
 ##  other as a matrix, and specify result (L) or (R), depending on ordering.
-##  
+##
 ##  For two {\GAP} objects $x$ and $y$ of which one is in
 ##  `IsMultiplicativeGeneralizedRowVector' and the other is either not a list
 ##  or is also in `IsMultiplicativeGeneralizedRowVector',

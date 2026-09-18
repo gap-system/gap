@@ -107,6 +107,23 @@ A consequence of our convention is that elements of finitely presented
 groups are not printed in a unique way.
 See also <Ref Func="SetReducedMultiplication"/>.
 
+For many <Q>higher level</Q> computations for a finite group,
+such as conjugacy classes or character table,
+it is advisable not to use an FpGroup but an isomorphic group in a better
+internal representation,
+such as a pc group (see <Ref Attr="IsomorphismPcGroup"/>)
+or a permutation group (see <Ref Attr="IsomorphismPermGroup"/>).
+
+In fact,
+calling a function such as <Ref Attr="ConjugacyClasses" Label="attribute"/>
+with an FpGroup for which <C>HasIsFinite</C> returns <K>false</K>
+may result in an error message,
+because the developers of the FpGroup code do not want an <E>automatic</E>
+<Ref Prop="IsFinite"/> test (which may not terminate) in the function.
+(Once the <Ref Prop="IsFinite"/> value is known, the computation in question
+can be done with the FpGroup, but still it is advisable to use a better
+internal representation.)
+
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="sect:IsSubgroupFpGroup">
@@ -269,6 +286,9 @@ true
 Finitely presented groups are groups and so all operations for groups should
 be applicable to them (though not necessarily efficient methods are
 available).
+However, one may run into errors if the FpGroup does not store that it is
+finite; see the introduction to this chapter.
+
 Most methods for finitely presented groups rely on coset enumeration.
 See&nbsp;<Ref Sect="Coset Tables and Coset Enumeration"/> for details.
 <P/>

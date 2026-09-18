@@ -116,7 +116,18 @@ Called with a group <A>G</A> and a field <A>F</A> (<A>F</A> may be infinite),
 <Ref Func="TensorProductGModule"/> calculates the tensor product
 of the modules <A>m1</A> and <A>m2</A>.
 They are assumed to be modules over the same algebra so, in particular,
-they  should have the same number of generators.
+they should have the same number of generators.
+</Description>
+</ManSection>
+
+<ManSection>
+<Func Name="DirectSumGModule" Arg='m1, m2'/>
+
+<Description>
+<Ref Func="DirectSumGModule"/> calculates the direct sum
+of the modules <A>m1</A> and <A>m2</A>.
+They are assumed to be modules over the same algebra so, in particular,
+they should have the same number of generators.
 </Description>
 </ManSection>
 
@@ -846,5 +857,3 @@ minimal polynomial of <Ref Func="SMTX.CentMat"/>.
 
 </Section>
 </Chapter>
-
-

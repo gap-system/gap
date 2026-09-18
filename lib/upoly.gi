@@ -62,7 +62,7 @@ end);
 InstallGlobalFunction( RootsOfUPol, function(arg)
 local roots,factor,f,fact,fie,m,inum;
   roots:=[];
-  f:=arg[Length(arg)];
+  f:=Last(arg);
   inum:=IndeterminateNumberOfUnivariateLaurentPolynomial(f);
   if Length(arg)=1 then
     fact:=Factors(f);
@@ -87,7 +87,7 @@ local roots,factor,f,fact,fie,m,inum;
   return roots;
 end );
 
-#M  for factorization redisplatch if found out the polynomial is univariate
+#M  for factorization redispatch if found out the polynomial is univariate
 RedispatchOnCondition(Factors,true,[IsPolynomial],[IsUnivariatePolynomial],0);
 RedispatchOnCondition(Factors,true,[IsRing,IsPolynomial],
   [,IsUnivariatePolynomial],0);
@@ -251,7 +251,7 @@ InstallMethod( IsPrimitivePolynomial,
 
     coeffs:= CoefficientsOfUnivariatePolynomial( pol );
     one:= One( F );
-    if IsZero( coeffs[1] ) or coeffs[ Length( coeffs ) ] <> one then
+    if IsZero( coeffs[1] ) or Last(coeffs) <> one then
       return false;
     fi;
 

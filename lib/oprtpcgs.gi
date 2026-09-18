@@ -174,7 +174,10 @@ end );
 
 InstallMethod( OrbitStabilizerAlgorithm,"for pcgs",true,
   [IsGroup,IsObject,IsObject,IsPcgs,
-     IsList,IsRecord],0,
+     IsList,IsRecord],
+  # rank above the method based on 'DoOrbitStabilizerAlgorithmStabsize'
+  {} -> RankFilter(IsGroup and IsFinite) - RankFilter(IsGroup),
+
 function(G,D,blist,pcgs,acts,pntact)
 local S,stab,i,pnt,act;
   pnt:=pntact.pnt;

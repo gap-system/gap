@@ -48,6 +48,33 @@
 #include <time.h>
 #include <unistd.h>
 
+#ifdef SYS_IS_MINGW
+#include <io.h>                         // for _mktemp
+#endif
+
+#ifndef HAVE_MKDTEMP
+// substitute for mkdtemp: _mktemp proposes an unused name and mkdir creates
+// it atomically, so if another process got there first, we try again
+static char * syMkdtemp(char * tmpl)
+{
+    enum { ATTEMPTS = 100 };
+    char candidate[GAP_PATH_MAX];
+
+    for (int i = 0; i < ATTEMPTS; i++) {
+        gap_strlcpy(candidate, tmpl, sizeof(candidate));
+        if (_mktemp(candidate) == NULL)
+            return NULL;
+        if (SyMkdir(candidate) == 0) {
+            gap_strlcpy(tmpl, candidate, strlen(tmpl) + 1);
+            return tmpl;
+        }
+        if (errno != EEXIST)
+            return NULL;
+    }
+    return NULL;
+}
+#endif
+
 #ifdef HAVE_SELECT
 // For FuncUNIXSelect
 #include <sys/time.h>
@@ -246,7 +273,17 @@ static Obj FuncREAD_COMMAND_REAL(Obj self, Obj stream, Obj echo)
     if (!OpenInputStream(&input, stream, echo == True)) {
         return result;
     }
-    ExecStatus status = ReadEvalCommand(0, &input, &evalResult, 0);
+    ExecStatus status;
+
+    GAP_TRY
+    {
+        status = ReadEvalCommand(0, &input, &evalResult, 0);
+    }
+    GAP_CATCH
+    {
+        CloseInput(&input);
+        GAP_THROW();
+    }
     CloseInput(&input);
 
     if (status == STATUS_EOF || status == STATUS_QQUIT)
@@ -405,7 +442,11 @@ Int READ_GAP_ROOT ( const Char * filename )
     }
 
     TypInputFile input;
-    if (OpenInput(&input, path)) {
+    if (!OpenInput(&input, path))
+        return 0;
+
+    GAP_TRY
+    {
         while (1) {
             ExecStatus status = ReadEvalCommand(0, &input, 0, 0);
             if (STATE(UserHasQuit) || STATE(UserHasQUIT))
@@ -417,11 +458,14 @@ Int READ_GAP_ROOT ( const Char * filename )
                 break;
             }
         }
-        CloseInput(&input);
-        return 1;
     }
-
-    return 0;
+    GAP_CATCH
+    {
+        CloseInput(&input);
+        GAP_THROW();
+    }
+    CloseInput(&input);
+    return 1;
 }
 
 
@@ -500,8 +544,7 @@ static Obj FuncLOG_TO(Obj self, Obj filename)
 {
     RequireStringRep(SELF_NAME, filename);
     if ( ! OpenLog( CONST_CSTR_STRING(filename) ) ) {
-        ErrorReturnVoid("LogTo: cannot log to %g", (Int)filename, 0,
-                        "you can 'return;'");
+        ErrorReturnVoid("LogTo: cannot log to %g", (Int)filename, 0, 0);
         return False;
     }
     return True;
@@ -516,8 +559,7 @@ static Obj FuncLOG_TO_STREAM(Obj self, Obj stream)
 {
     RequireOutputStream(SELF_NAME, stream);
     if ( ! OpenLogStream(stream) ) {
-        ErrorReturnVoid("LogTo: cannot log to stream", 0, 0,
-                        "you can 'return;'");
+        ErrorReturnVoid("LogTo: cannot log to stream", 0, 0, 0);
         return False;
     }
     return True;
@@ -561,8 +603,7 @@ static Obj FuncINPUT_LOG_TO(Obj self, Obj filename)
 {
     RequireStringRep(SELF_NAME, filename);
     if ( ! OpenInputLog( CONST_CSTR_STRING(filename) ) ) {
-        ErrorReturnVoid("InputLogTo: cannot log to %g", (Int)filename, 0,
-                        "you can 'return;'");
+        ErrorReturnVoid("InputLogTo: cannot log to %g", (Int)filename, 0, 0);
         return False;
     }
     return True;
@@ -577,8 +618,7 @@ static Obj FuncINPUT_LOG_TO_STREAM(Obj self, Obj stream)
 {
     RequireOutputStream(SELF_NAME, stream);
     if ( ! OpenInputLogStream(stream) ) {
-        ErrorReturnVoid("InputLogTo: cannot log to stream", 0, 0,
-                        "you can 'return;'");
+        ErrorReturnVoid("InputLogTo: cannot log to stream", 0, 0, 0);
         return False;
     }
     return True;
@@ -622,8 +662,7 @@ static Obj FuncOUTPUT_LOG_TO(Obj self, Obj filename)
 {
     RequireStringRep(SELF_NAME, filename);
     if ( ! OpenOutputLog( CONST_CSTR_STRING(filename) ) ) {
-        ErrorReturnVoid("OutputLogTo: cannot log to %g", (Int)filename, 0,
-                        "you can 'return;'");
+        ErrorReturnVoid("OutputLogTo: cannot log to %g", (Int)filename, 0, 0);
         return False;
     }
     return True;
@@ -638,8 +677,7 @@ static Obj FuncOUTPUT_LOG_TO_STREAM(Obj self, Obj stream)
 {
     RequireOutputStream(SELF_NAME, stream);
     if ( ! OpenOutputLogStream(stream) ) {
-        ErrorReturnVoid("OutputLogTo: cannot log to stream", 0, 0,
-                        "you can 'return;'");
+        ErrorReturnVoid("OutputLogTo: cannot log to stream", 0, 0, 0);
         return False;
     }
     return True;
@@ -807,8 +845,17 @@ static Obj FuncREAD(Obj self, Obj inputObj)
     if (!OpenInputFileOrStream(SELF_NAME, &input, inputObj))
         return False;
 
-    // read the file
-    READ_INNER(&input);
+    GAP_TRY
+    {
+        // read the file
+        READ_INNER(&input);
+    }
+    GAP_CATCH
+    {
+        CloseInput(&input);
+        GAP_THROW();
+    }
+
     if (!CloseInput(&input)) {
         ErrorQuit("Panic: READ cannot close input", 0, 0);
     }
@@ -820,16 +867,17 @@ static Obj FuncREAD(Obj self, Obj inputObj)
 **
 *F  FuncREAD_STREAM_LOOP( <self>, <instream>, <outstream> ) . . read a stream
 **
-**  Read data from <instream> in a read-eval-view loop and write all output
+**  Read data from <instream> in a read-eval-print loop and write all output
 **  to <outstream>. This is used by the GAP function `RunTests` and hence
 **  indirectly for implementing `Test` and `TestDirectory`,
 */
 static Obj FuncREAD_STREAM_LOOP(Obj self,
                                 Obj instream,
                                 Obj outstream,
-                                Obj context)
+                                Obj ctx)
 {
     Int res;
+    volatile Obj context = ctx;
 
     RequireInputStream(SELF_NAME, instream);
     RequireOutputStream(SELF_NAME, outstream);
@@ -854,41 +902,50 @@ static Obj FuncREAD_STREAM_LOOP(Obj self,
 
     LockCurrentOutput(TRUE);
 
-    // get the starting time
-    UInt oldPrintObjState = SetPrintObjState(0);
+    // save the old print state
+    volatile UInt oldPrintObjState = SetPrintObjState(0);
 
-    // now do the reading
-    while (1) {
-        Obj  evalResult;
-        BOOL dualSemicolon;
-        UInt oldtime = SyTime();
+    BOOL rethrow = FALSE;
 
-        // read and evaluate the command
-        SetPrintObjState(0);
-        ExecStatus status =
-            ReadEvalCommand(context, &input, &evalResult, &dualSemicolon);
+    GAP_TRY
+    {
+        // now do the reading
+        while (1) {
+            Obj  evalResult;
+            BOOL dualSemicolon;
+            UInt oldtime = SyTime();
 
-        // stop the stopwatch
-        UpdateTime(oldtime);
+            // read and evaluate the command
+            SetPrintObjState(0);
+            ExecStatus status =
+                ReadEvalCommand(context, &input, &evalResult, &dualSemicolon);
 
-        // handle ordinary command
-        if (status == STATUS_END && evalResult != 0) {
-            UpdateLast(evalResult);
-            if (!dualSemicolon) {
-                ViewObjHandler(evalResult);
+            // stop the stopwatch
+            UpdateTime(oldtime);
+
+            // handle ordinary command
+            if (status == STATUS_END && evalResult != 0) {
+                UpdateLast(evalResult);
+                if (!dualSemicolon) {
+                    ViewObjHandler(evalResult);
+                }
+            }
+
+            // handle return-value or return-void command
+            else if (status == STATUS_RETURN) {
+                Pr("'return' must not be used in file read-eval loop\n", 0, 0);
+            }
+
+            // handle quit command or <end-of-file>
+            else if (status == STATUS_EOF || status == STATUS_QUIT ||
+                     status == STATUS_QQUIT) {
+                break;
             }
         }
-
-        // handle return-value or return-void command
-        else if (status == STATUS_RETURN) {
-            Pr("'return' must not be used in file read-eval loop\n", 0, 0);
-        }
-
-        // handle quit command or <end-of-file>
-        else if (status == STATUS_EOF || status == STATUS_QUIT ||
-                 status == STATUS_QQUIT) {
-            break;
-        }
+    }
+    GAP_CATCH
+    {
+        rethrow = TRUE;
     }
 
     SetPrintObjState(oldPrintObjState);
@@ -896,10 +953,10 @@ static Obj FuncREAD_STREAM_LOOP(Obj self,
     LockCurrentOutput(FALSE);
 
     res = CloseInput(&input);
-    GAP_ASSERT(res);
-
     res &= CloseOutput(&output);
-    GAP_ASSERT(res);
+
+    if (rethrow)
+        GAP_THROW();
 
     return res ? True : False;
 }
@@ -915,7 +972,18 @@ static Obj FuncREAD_AS_FUNC(Obj self, Obj inputObj)
     if (!OpenInputFileOrStream(SELF_NAME, &input, inputObj))
         return False;
 
-    Obj func = READ_AS_FUNC(&input);
+    Obj func;
+
+    GAP_TRY
+    {
+        func = READ_AS_FUNC(&input);
+    }
+    GAP_CATCH
+    {
+        CloseInput(&input);
+        GAP_THROW();
+    }
+
     if (!CloseInput(&input)) {
         ErrorQuit("Panic: READ_AS_FUNC cannot close input", 0, 0);
     }
@@ -947,7 +1015,7 @@ static Obj FuncREAD_GAP_ROOT(Obj self, Obj filename)
 static Obj FuncTmpName(Obj self)
 {
     char name[100] = "/tmp/gaptempfile.XXXXXX";
-#ifdef SYS_IS_CYGWIN32
+#ifdef SYS_IS_WINDOWS
     // If /tmp is missing, write into Window's temp directory
     DIR* dir = opendir("/tmp");
     if(dir) {
@@ -977,7 +1045,7 @@ static Obj FuncTmpDirectory(Obj self)
         name = MakeString(env_tmpdir);
     }
     else {
-#ifdef SYS_IS_CYGWIN32
+#ifdef SYS_IS_WINDOWS
         // If /tmp is missing, write into Window's temp directory
         DIR* dir = opendir("/tmp");
         if(dir) {
@@ -994,8 +1062,13 @@ static Obj FuncTmpDirectory(Obj self)
     const char * extra = "/gaptempdirXXXXXX";
     AppendCStr(name, extra, strlen(extra));
 
+#ifdef HAVE_MKDTEMP
     if (mkdtemp(CSTR_STRING(name)) == 0)
         return Fail;
+#else
+    if (syMkdtemp(CSTR_STRING(name)) == NULL)
+        return Fail;
+#endif
     return name;
 }
 
@@ -1088,9 +1161,13 @@ static Obj FuncGAP_chdir(Obj self, Obj path)
 static Obj FuncGAP_realpath(Obj self, Obj path)
 {
     RequireStringRep(SELF_NAME, path);
-    char resolved_path[PATH_MAX];
+    char resolved_path[GAP_PATH_MAX];
 
+#ifdef SYS_IS_MINGW
+    if (NULL == _fullpath(resolved_path, CONST_CSTR_STRING(path), sizeof(resolved_path))) {
+#else
     if (NULL == realpath(CONST_CSTR_STRING(path), resolved_path)) {
+#endif
         SySetErrorNo();
         return Fail;
     }
@@ -1437,7 +1514,7 @@ static Obj FuncREAD_ALL_FILE(Obj self, Obj fid, Obj limit)
     len = 0;
     lstr = 0;
 
-#ifdef SYS_IS_CYGWIN32
+#ifdef SYS_IS_WINDOWS
  getmore:
 #endif
     while (ilim == -1 || len < ilim ) {
@@ -1478,7 +1555,7 @@ static Obj FuncREAD_ALL_FILE(Obj self, Obj fid, Obj limit)
 
     // fix the length of <str>
     len = GET_LEN_STRING(str);
-#ifdef SYS_IS_CYGWIN32
+#ifdef SYS_IS_WINDOWS
     // line end hackery
     UInt i = 0, j = 0;
     while (i < len) {

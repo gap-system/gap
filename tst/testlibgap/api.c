@@ -11,7 +11,6 @@
  */
 
 #include "common.h"
-#include "intobj.h"
 
 #include <string.h>
 
@@ -100,7 +99,7 @@ void matrices(void)
     Obj mat, val, row, ret;
 
     mat = GAP_NewPlist(1);
-    val = INTOBJ_INT(42);
+    val = GAP_NewObjIntFromInt(42);
 
     assert(!GAP_IsMatrixOrMatrixObj(mat));   // empty list, not yet a matrix
     assert(!GAP_IsMatrixObj(mat));
@@ -113,8 +112,8 @@ void matrices(void)
     assert(!GAP_IsMatrix(val));
 
     row = GAP_NewPlist(2);
-    GAP_AssList(row, 1, INTOBJ_INT(1));
-    GAP_AssList(row, 2, INTOBJ_INT(2));
+    GAP_AssList(row, 1, GAP_NewObjIntFromInt(1));
+    GAP_AssList(row, 2, GAP_NewObjIntFromInt(2));
     GAP_AssList(mat, 1, row);
     assert(!GAP_IsMatrixOrMatrixObj(row));
     assert(!GAP_IsMatrixObj(row));

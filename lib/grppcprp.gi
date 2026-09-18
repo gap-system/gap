@@ -19,7 +19,7 @@ InstallMethod( IsNilpotentGroup,
 function( G )
     local w;
     w := LGWeights( SpecialPcgs(G) );
-    return w[Length(w)][1] = 1;
+    return Last(w)[1] = 1;
 end);
 
 InstallMethod( IsSupersolvableGroup,

@@ -2,7 +2,7 @@
 ##
 ##  This file tests output methods (mainly for strings)
 ##
-#@local x, str, len
+#@local hadHome, len, savedHome, str, x, secs
 gap> START_TEST("strings.tst");
 
 # FFE
@@ -224,6 +224,79 @@ gap> Length(x);
 7
 gap> Print(x, "\n");
 abcdef
+
+# UserHomeShorten
+gap> hadHome := IsBound(GAPInfo.UserHome);;
+gap> if hadHome then savedHome := GAPInfo.UserHome; fi;;
+gap> GAPInfo.UserHome := "/tmp/gap-home";;
+gap> UserHomeShorten("/tmp/gap-home");
+"~"
+gap> UserHomeShorten("/tmp/gap-home/.gap");
+"~/.gap"
+gap> UserHomeShorten("/tmp/gap-homedir");
+"/tmp/gap-homedir"
+gap> UserHomeShorten("/tmp/gap-home-extra");
+"/tmp/gap-home-extra"
+gap> UserHomeShorten("~/already");
+"~/already"
+gap> UserHomeExpand(UserHomeShorten("/tmp/gap-home/.gap"));
+"/tmp/gap-home/.gap"
+gap> UserHomeShorten(1234);
+1234
+gap> if hadHome then GAPInfo.UserHome := savedHome; else Unbind(GAPInfo.UserHome); fi;;
+
+# _FormatParagraph
+gap> Print(_FormatParagraph(
+>         "the quick brown fox jumps over the lazy dog", 20, "", ""));
+the quick brown fox
+jumps over the lazy
+dog
+
+# whitespace is normalized
+gap> Print(_FormatParagraph(
+>         "  the quick   brown\nfox\tjumps over the lazy dog  ", 20, "", ""));
+the quick brown fox
+jumps over the lazy
+dog
+gap> _FormatParagraph("", 20, "", "");
+""
+gap> _FormatParagraph("  \n\t ", 20, "", "");
+""
+
+# a word which does not fit into a line is not broken
+gap> Print(_FormatParagraph(
+>         "supercalifragilisticexpialidocious and more", 20, "", ""));
+supercalifragilisticexpialidocious
+and more
+
+# <prefix> and <suffix> are put around each line and count towards the
+# line length
+gap> Print(_FormatParagraph(
+>         "the quick brown fox jumps over the lazy dog", 20, "##  ", ""));
+##  the quick brown
+##  fox jumps over
+##  the lazy dog
+gap> Print(_FormatParagraph("a b", 20, "<", ">"));
+<a b>
+
+# CurrentSecondsSinceEpoch
+gap> secs := CurrentSecondsSinceEpoch();;
+gap> IsInt(secs);
+true
+
+# Any roughly correct clock lands in this window, while a monotonic timer
+# counting from boot -- which is what NanosecondsSinceEpoch returns -- does
+# not.  1600000000 is Sep 2020, 4000000000 is Oct 2096.
+gap> 1600000000 < secs and secs < 4000000000;
+true
+
+# It uses the same time scale as the other calendar functions.
+gap> SecondsDMYhms(DMYhmsSeconds(secs)) = secs;
+true
+gap> DMYhmsSeconds(secs)[3] >= 2020;
+true
+gap> CurrentSecondsSinceEpoch() >= secs;
+true
 
 #
 gap> STOP_TEST("strings.tst");

@@ -2,7 +2,7 @@
 set -ex
 
 # invoke this like so:
-#  ./download_release.sh  4.14.0
+#  ./download_release.sh 4.14.0
 
 VER=$1
 [ x"$VER" != x ] || exit 1

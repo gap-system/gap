@@ -1,7 +1,7 @@
 /*
  * Small program to test libgap linkability and basic working
  */
-#include "trycatch.h"
+#include "gap_all.h"
 #include "common.h"
 
 static int level = 0;

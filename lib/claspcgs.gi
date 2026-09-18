@@ -705,7 +705,7 @@ local  G,  home,  # the group and the home pcgs
     if step>2 then
       # we created a factor, so we have to lift at the end
       mustlift[step]:=true;
-      liftkerns[step]:=eas[Length(eas)];
+      liftkerns[step]:=Last(eas);
     fi;
   fi;
 
@@ -1056,7 +1056,7 @@ local  G,home,  # the group and the home pcgs
     # make steps larger if possible
     L:=[Length(eas)];
     for step in [Length(eas)-1,Length(eas)-2..1] do
-      if (Size(eas[step])/Size(eas[L[Length(L)]])>2^15 and not step+1 in L) or not HasElementaryAbelianFactorGroup(eas[step],eas[L[Length(L)]]) then
+      if (Size(eas[step])/Size(eas[Last(L)])>2^15 and not step+1 in L) or not HasElementaryAbelianFactorGroup(eas[step],eas[Last(L)]) then
         Add(L,step+1);
       fi;
     od;
@@ -2017,8 +2017,8 @@ InstallGlobalFunction( CentralStepRatClPGroup,
                 oprs:=preimage!.operators;
                 type:=preimage!.type;
             else
-                if Q[ 1 ] = Zero( Q[ 1 ] )  then  i:=1;
-                                            else  i:=2;  fi;
+                if IsZero( Q[ 1 ] )  then  i:=1;
+                                     else  i:=2;  fi;
                 if Length( GeneratorsOfGroup( preimage ) ) = 1  then
                     gens:=[ GeneratorsOfGroup( preimage )[ 1 ] ^ i ];
                     oprs:=[ preimage!.operators          [ 1 ] ^ i ];
@@ -2026,8 +2026,8 @@ InstallGlobalFunction( CentralStepRatClPGroup,
                     elif preimage!.type = 2  then  type:=i + 1;
                                              else  type:=3;          fi;
                 else
-                    if Q[ 2 ] = Zero( Q[ 2 ] )  then  j:=1;
-                                                else  j:=2;  fi;
+                    if IsZero( Q[ 2 ] )  then  j:=1;
+                                         else  j:=2;  fi;
                     if i = 1  then
                         gens:=[ GeneratorsOfGroup( preimage )[ 1 ],
                                   GeneratorsOfGroup( preimage )[ 2 ] ^ j ];
@@ -2074,7 +2074,7 @@ InstallGlobalFunction( CentralStepRatClPGroup,
                          h ^ operator ) ) * N!.subspace.projection );
             opr:=function( k, l )
                 return
-                #AH, jun3 2001: without the pcgs filtereing we might get
+                #AH, jun3 2001: without the pcgs filtering we might get
                 # extra kernel elements. I have no idea how this was
                 # originally avoided. This is rather a workaround than a fix
                 # -- the whole code should be rewritten cleanly.

@@ -109,7 +109,7 @@ DeclareSynonym("TriangulizedIntegerMatTransforms",
 ##
 ##  <Description>
 ##  This operation computes the Hermite normal form of a matrix <A>mat</A>
-##  with integer entries. It returns a immutable matrix in HNF.
+##  with integer entries. It returns an immutable matrix in HNF.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

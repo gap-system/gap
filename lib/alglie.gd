@@ -514,6 +514,11 @@ DeclareAttribute( "LieSolvableRadical", IsAlgebra and IsLieAlgebra );
 ##  Lie algebras.
 ##  Then <Ref Attr="SemiSimpleType"/> returns the type of <A>L</A>, i.e.,
 ##  a string containing the types of the simple summands of <A>L</A>.
+##  The field of <A>L</A> must not have characteristic 2 or 3, and the
+##  Killing form of <A>L</A> must be nondegenerate.
+##  If <A>L</A> has characteristic 0, the structure constants of <A>L</A>
+##  must be rational numbers; Lie algebras over arbitrary characteristic
+##  0 fields are not supported.
 ##  <Example><![CDATA[
 ##  gap> L:= SimpleLieAlgebra( "E", 8, Rationals );;
 ##  gap> b:= BasisVectors( Basis( L ) );;

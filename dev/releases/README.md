@@ -4,7 +4,8 @@
 - It has been agreed to make a release called `X.Y.Z` from the `stable-X.Y` branch.
     - Note that most likely `X=4` for the foreseeable future.
 - All changes to be included in the release are now present in the `stable-X.Y` branch.
-    - This includes the release notes for version `X.Y.Z` being included in `CHANGES.md`.
+    - This includes the release notes for version `X.Y.Z` being included in `CHANGES.md`;
+      see [`README.release_notes.md`](README.release_notes.md) for how to produce them.
 
 If there is no `stable-X.Y` branch yet (i.e. you are trying to release version `X.Y.0`)
 you first have to create that using the `dev/releases/create_stable_branch.py` script.
@@ -13,33 +14,31 @@ you first have to create that using the `dev/releases/create_stable_branch.py` s
 
 This is the way the process should happen in practice, with the help of GitHub Actions. Instructions for achieving the same without GitHub Actions are given later (in case GitHub Actions breaks or disappears).
 
-1. In the `gap-system/PackageDistro` GitHub repository, create an annotated tag `vX.Y.Z` based on its latest `main` branch (this determines which packages get into the release) and push the tag. For example:
-```
-VER=X.Y.Z      # to avoid typing
-git checkout main
-git pull
-git tag -m "Version ${VER}" v${VER} main
-git push origin v${VER}
-```
-2. Wait. Pushing the tag triggers the “[Assemble the package distribution](https://github.com/gap-system/PackageDistro/actions/workflows/assemble-distro.yml)” GitHub Actions workflow; on `gap-system/PackageDistro`. This takes a few minutes.
-2. In the `gap-system/gap` GitHub repository, create an annotated tag `vX.Y.Z` at the appropriate commit in the `stable-X.Y` branch, and push the tag. For example:
-```
-VER=${VER}      # to avoid typing
-git checkout stable-${VER%.*}
-git pull
-git tag -m "Version ${VER}" v${VER} stable-${VER%.*}
-git push origin v${VER}
-```
+1. In the `gap-system/PackageDistro` GitHub repository, create an annotated and signed tag `vX.Y.Z` based on its latest `main` branch (this determines which packages get into the release) and push the tag. For example:
+    ```
+    VER=X.Y.Z      # to avoid typing
+    git checkout main
+    git pull
+    git tag -s -m "Version ${VER}" v${VER} main
+    git push origin v${VER}
+    ```
+2. Wait. Pushing the tag triggers the “[Assemble the package distribution](https://github.com/gap-system/PackageDistro/actions/workflows/assemble-distro.yml)” GitHub Actions workflow on `gap-system/PackageDistro`. This takes a few minutes.
+3. In the `gap-system/gap` GitHub repository, create an annotated and signed tag `vX.Y.Z` at the appropriate commit in the `stable-X.Y` branch, and push the tag. For example:
+    ```
+    VER=X.Y.Z      # again, in case this is a fresh shell
+    git checkout stable-${VER%.*}
+    git pull
+    git tag -s -m "Version ${VER}" v${VER} stable-${VER%.*}
+    git push origin v${VER}
+    ```
 4. Wait. Pushing the tag triggers the “[Wrap releases](https://github.com/gap-system/gap/actions/workflows/release.yml)” GitHub Actions workflow on `gap-system/gap`, which wraps the release archives and Windows installers, and creates a release on GitHub with the archives and installers attached. This takes around 90 minutes.
-5. Once the “Wrap releases” workflow has finished, check its log for obvious errors. Also visit the page of the release under <https://github.com/gap-system/gap/releases/> and check that everything looks right, and all files are present (including the Windows .exe installer), e.g. by comparing the asset list to the previous release. At this time this is written, a regular GAP release will have 24 assets (12 archives, and 12 matching sha256 files).
+5. Once the “Wrap releases” workflow has finished, check its log for obvious errors. Also visit the page of the release under <https://github.com/gap-system/gap/releases/> and check that everything looks right, and all files are present (including the Windows .exe installer), e.g. by comparing the asset list to the previous release. At the time of writing, a regular GAP release has 22 assets: 11 files, each with a matching `.sha256` file.
 6. Edit the new release under <https://github.com/gap-system/gap/releases/> and
   change the release from "pre-release" to "latest release" (i.e., on <https://github.com/gap-system/gap/releases/edit/vX.Y.Z> disable "Set as a pre-release" and enable "Set as the latest release").
 7. Next either manually dispatch the “[Sync](https://github.com/gap-system/GapWWW/actions/workflows/sync.yml)” GitHub Actions workflow on `gap-system/GapWWW`, or wait overnight for it to happen on schedule.
     - This workflow creates a pull request to `gap-system/GapWWW`, which updates the GAP website according to the release data hosted on `gap-system/gap`.  Check that the result is sensible.
-    - This workflow uses the `update_website.py` script which can also be run manually, see below for more information.
 8. When it is time to publicise the new GAP release, merge the pull request to GapWWW.
-9. There are currently additional steps required for the new manual to appear on <https://docs.gap-system.org>, and to add a copy of the new release files to <https://files.gap-system.org>.
-These could and should be automated in the future but are currently not. Details are described in steps 10 and following below.
+9. Nothing further is needed for the new manual to appear on <https://docs.gap-system.org>, or for the release files to appear on <https://files.gap-system.org>: both hosts mirror new releases by themselves, usually within an hour of step 6 above. See step 10 of the detailed guide below for how to check on them, or to trigger them early.
 
 
 ## The release process for GAP -- the more detailed guide
@@ -49,23 +48,23 @@ In practice, you should use the process described above. The following informati
 A GitHub access token is required for the scripts to interact with GitHub; see the [GitHub access token](#github-access-token) section below.
 
 ### Dependencies
-Before starting the release process, the scripts have the following dependencies. Make sure you have the following available:
+Before starting the release process, make sure the following are available:
 - All tools required to build GAP (as outlined in the GAP root `README.md`)
 - The `git` command line tool
+- The `gh` command line tool (only needed by `release_notes.py`)
 - The `curl` command line tool
-- Python (version >= 3.6)
-- Several python modules, including (e.g. installed using `pip3` (`pip3 install <MODULENAME>`):
-  - `PyGithub`
-  - `requests`
+- Python (version >= 3.11, which is what our CI uses)
+- The Python modules listed in `requirements.txt`, installed e.g. via
+  `pip3 install -r dev/releases/requirements.txt`
 
 
 ### Steps
 
 1. Access your local clone of the GAP repository.
 2. Make sure that your clone is up to date with `gap-system/gap`.
-3. Create an annotated tag `vX.Y.Z` in your clone at the appropriate commit in the `stable-X.Y` branch, and push the tag to `gap-system/gap`. For example:
+3. Create an annotated and signed tag `vX.Y.Z` in your clone at the appropriate commit in the `stable-X.Y` branch, and push the tag to `gap-system/gap`. For example:
     ```
-    git tag -m "Version X.Y.Z" vX.Y.Z stable-X.Y
+    git tag -s -m "Version X.Y.Z" vX.Y.Z stable-X.Y
     git push origin vX.Y.Z
     ```
 4. Pushing the tag will trigger the “[Wrap releases](https://github.com/gap-system/gap/actions/workflows/release.yml)” GitHub Actions workflow on `gap-system/gap`. This does the following steps:
@@ -85,41 +84,44 @@ Before starting the release process, the scripts have the following dependencies
    3. Run `make_github_release.py vX.Y.Z tmp/` from the GAP root directory; `tmp/` is the path to the temporary directory created by `make_archives.py`.
       - Creates the release on GitHub which matches the tag.
       - Uploads the archives listed in the `MANIFEST` file as assets, along with a corresponding `.sha256` file.
-   4. Create some Windows installers and uploads them to the GitHub release, too. A Windows computer is required for this step.
+   4. Create some Windows installers and upload them to the GitHub release, too. A Windows computer is required for this step.
 5. Access your local clone of the `GapWWW` repository.
 6. Make sure that your clone is up to date with `gap-system/GapWWW`.
 7. Check out the master branch.
-8. Start website update: either as described above via a workflow in the `GapWWW` repository; or by running `update_website.py` in root directory of `GapWWW` (see `update_website.py --help`). This:
+8. Start website update: either as described above via a workflow in the `GapWWW` repository; or switch to the root directory of `GapWWW` and run `etc/update_website.py` there (see also `etc/update_website.py --help`). This:
    - Fetches the GitHub releases data from `gap-system/gap`.
    - Deletes, modifies, and adds various JSON and HTML files according to this data.
 9. Inspect the changes, and commit and push them to the master branch to `gap-system/GapWWW`.
-10. Log into `docs.gap-system.org` via SSH, then download and extract the new release tarball into the home directory. Then run the `extract_manuals.py` script, and move the result to the appropriate location.
-```
-ssh gap-docs                        # assumes gap-docs is set up in ~/.ssh/config
+10. Nothing needs to be done for <https://docs.gap-system.org> and
+    <https://files.gap-system.org>. Both hosts check GitHub hourly and pick up
+    any release they do not have yet: the manuals are built and installed by
+    `etc/mirror-manuals.py` from `gap-system/GapWWW`, and the release archives
+    are mirrored by the scripts in <https://github.com/gap-system/gap-files>.
 
-VER=X.Y.Z                           # to avoid typing
-cd ~/data                           # follow symlink to target directory
-rm -rf package-infos.json* gap-*    # delete leftovers from previous release
-wget https://github.com/gap-system/gap/releases/download/v${VER}/package-infos.json.gz
-gunzip package-infos.json.gz
-wget https://github.com/gap-system/gap/releases/download/v${VER}/gap-${VER}.tar.gz
-tar xf gap-${VER}.tar.gz
-cd GapWWW
-git pull
-cd ..
-GapWWW/etc/extract_manuals.py gap-${VER} package-infos.json
-mv Manuals http/v${VER}
-rm http/latest
-ln -s v${VER} http/latest
-```
-11. Check that <https://docs.gap-system.org> is functioning as expected.
-12. Log into `files.gap-system.org` via SSH, then download the files in appropriate places:
-```
-# assumes gap-files is set up in ~/.ssh/config
-scp dev/releases/download_release.sh gap-files:
-ssh gap-files
-./download_release.sh X.Y.Z   # e.g. 4.14.0
-```
+    Both only consider proper releases, so nothing happens until the release has
+    been switched from "pre-release" to "latest release" in step 6 above. Once it
+    has, allow an hour; building the manuals then takes about another ten
+    minutes.
+
+    To publish immediately rather than waiting for the next hourly run:
+    ```
+    # both assume the host aliases are set up in ~/.ssh/config
+
+    ssh gap-docs
+    systemctl --user start gap-docs-manuals.service
+    journalctl --user -u gap-docs-manuals.service -n 20
+
+    ssh gap-files
+    systemctl --user start gap-files-releases.service
+    journalctl --user -u gap-files-releases.service -n 20
+    ```
+
+    Should the automation be broken, the scripts that used to do this by hand,
+    `./download_manuals.sh X.Y.Z` and `./download_release.sh X.Y.Z`, are still
+    present in the home directory on the respective host.
+
+11. Check that <https://docs.gap-system.org> shows the new manuals, and that
+    <https://files.gap-system.org> has the new archives.
 
 
 ## Post-release instructions
@@ -130,19 +132,23 @@ Once all the above has been completed, do the following:
 - Update <https://www.wikidata.org/wiki/Q677161>
 - Update <https://en.wikipedia.org/wiki/GAP_(computer_algebra_system)>
   (and possibly also translations)
+- Close the GitHub milestone for the release, if there is one, and move any
+  issues still open in it to the next milestone
+- Look for merged pull requests still labelled `backport-to-X.Y` which did not
+  make it into the release, and decide for each whether it waits for the next
+  patch release or loses the label
 
 
 ## GitHub access token
-<a name="github-access-token"></a>
 
-Various scripts in the same folder as this README need limited read/write access to the GAP repository in order to interact with the GitHub API, including to create a release and upload release archives. In order to do this, the scripts need to authenticate with GitHub, for which is reuired a so-called "personal access token".
+Various scripts in the same folder as this README need limited read/write access to the GAP repository in order to interact with the GitHub API, including to create a release and upload release archives. To do so, the scripts must authenticate with GitHub, which requires a so-called "personal access token".
 You can generate such a token as follows (see also [the GitHub documentation](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token)):
 
 1. Go to <https://github.com/settings/tokens>.
-2. Click **Generate new token**.
+2. Click **Generate new token**, and choose the classic variant.
 3. Select the scope "public_repo", and give your token a descriptive name.
 4. Click **Generate token** at the bottom of the page.
-5. Copy the token to your clipboard. For security reasons, after you navigate off the page, you will not be able to see the token again. You therefore should store the token somewhere, such as in the file mentioned in option 4 of the forthcoming list.
+5. Copy the token to your clipboard. For security reasons, after you navigate off the page, you will not be able to see the token again. You therefore should store the token somewhere, such as in the file mentioned in item 4 of the list below.
 
 The scripts that require an access token look for one in the following places, with the following precedence:
 1. The argument `--token`, if supported and given.

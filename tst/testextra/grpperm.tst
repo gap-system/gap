@@ -160,7 +160,9 @@ gap> orbs := Orbits( a8, pairs, OnPairs );; Length( orbs );
 2
 gap> u56 := Stabilizer( a8, orbs[2][1], OnPairs );; Index( a8, u56 );
 56
-gap> g:=TransitiveGroup(12,250);;
+gap> g := Group([(3,6,9,12), (3,9), (1,5,9)(2,6,10)(3,7,11)(4,8,12),
+>                (1,5)(2,10)(4,8)(7,11)]);;
+gap> # g = TransitiveGroup(12,250)
 gap> hom:=IsomorphismPcGroup(g);;
 gap> Length(ConjugacyClassesByHomomorphicImage(g,hom));
 65

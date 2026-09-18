@@ -96,7 +96,7 @@ InstallMethod( CompositionMapping2, "method for two pc group automorphisms",
 function( hom1, hom2 )
 local fam,hom, pcgs, pcgsimgs, G;
 
-  # is it automorphism?
+  # is it an automorphism?
   if Range(hom1)<>Source(hom2) then
     TryNextMethod();
   fi;
@@ -193,21 +193,21 @@ local pcgs,pcgsimg,r,i,j,k,o,elm,img,exp,sp,mapi;
     od;
   od;
 
-  # we still need to test any additional generators. (This could happen
-  # easily, if the mapping is a general inverse.)
+  # The images of the pcgs need not agree with the images prescribed for the
+  # generators, so test these as well. (Testing only generators with a new
+  # image is not enough: an inconsistent image may coincide with the image of
+  # some other generator.)
   mapi:=MappingGeneratorsImages(map);
   for i in [1..Length(mapi[1])] do
-    if not mapi[2][i] in pcgsimg then
-      exp:=ExponentsOfPcElement(pcgs,mapi[1][i]);
-      img  := o;
-      for k in [1..Length(pcgsimg)] do
-        if exp[k]>0 then
-          img := img * sp[k][exp[k]];
-        fi;
-      od;
-      if img<>mapi[2][i] then
-        return false; # the extra generator would be mapped inconsistently.
+    exp:=ExponentsOfPcElement(pcgs,mapi[1][i]);
+    img  := o;
+    for k in [1..Length(pcgsimg)] do
+      if exp[k]>0 then
+        img := img * sp[k][exp[k]];
       fi;
+    od;
+    if img<>mapi[2][i] then
+      return false; # the generator would be mapped inconsistently.
     fi;
   od;
 
@@ -255,21 +255,21 @@ local pcgs,pcgsimg,r,i,j,k,o,elm,img,exp,sp,C,mapi;
     od;
   od;
 
-  # we still need to test any additional generators. (This could happen
-  # easily, if the mapping is a general inverse.)
+  # The images of the pcgs need not agree with the images prescribed for the
+  # generators, so take these into account as well. (Restricting to
+  # generators with a new image is not enough: a deviating image may coincide
+  # with the image of some other generator.)
   mapi:=MappingGeneratorsImages(map);
   for i in [1..Length(mapi[1])] do
-    if not mapi[2][i] in pcgsimg then
-      exp:=ExponentsOfPcElement(pcgs,mapi[1][i]);
-      img  := o;
-      for k in [1..Length(pcgsimg)] do
-        if exp[k]>0 then
-          img := img * sp[k][exp[k]];
-        fi;
-      od;
-      #NC is safe (init with Triv(range))
-      C:=ClosureSubgroupNC(C,img/mapi[2][i]);
-    fi;
+    exp:=ExponentsOfPcElement(pcgs,mapi[1][i]);
+    img  := o;
+    for k in [1..Length(pcgsimg)] do
+      if exp[k]>0 then
+        img := img * sp[k][exp[k]];
+      fi;
+    od;
+    #NC is safe (init with Triv(range))
+    C:=ClosureSubgroupNC(C,img/mapi[2][i]);
   od;
 
   C:=NormalClosure(ImagesSource(map),C);
@@ -288,7 +288,7 @@ BindGlobal( "InversePcgs", function( hom )
     # if it is known then return
     if IsBound( hom!.rangePcgs ) then return; fi;
 
-    # if it is from an pc group
+    # if it is from a pc group
     if IsBound( hom!.sourcePcgs ) then
 
         idR := Identity( Range( hom ) );
@@ -503,9 +503,10 @@ end);
 
 #############################################################################
 ##
+#M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . . . . . . .  via images
 #M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . . .  via images
 ##
-InstallMethod( PreImagesRepresentative, "method for pcgs hom",
+InstallMethod( PreImagesRepresentativeNC, "method for pcgs hom",
   FamRangeEqFamElm,
   [ IsToPcGroupHomomorphismByImages,IsMultiplicativeElementWithInverse ], 0,
 function( hom, elm )
@@ -529,6 +530,18 @@ function( hom, elm )
     od;
     return pre;
 end);
+
+InstallMethod( PreImagesRepresentative, "method for pcgs hom",
+  FamRangeEqFamElm,
+  [ IsToPcGroupHomomorphismByImages,IsMultiplicativeElementWithInverse ], 0,
+function( hom, elm )
+    if not ( elm in Range( hom ) ) then
+      Error( "<elm> is not in the range of mapping <hom>" );
+    elif not ( elm in Image( hom ) ) then
+      return fail;
+    fi;
+    return PreImagesRepresentativeNC( hom, elm );
+end );
 
 #############################################################################
 ##
@@ -627,14 +640,26 @@ end );
 
 #############################################################################
 ##
+#M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . . . . . . via depth map
 #M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . . via depth map
 ##
-InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
+InstallMethod( PreImagesRepresentativeNC, FamRangeEqFamElm,
   [ IsPcgsToPcgsHomomorphism,IsMultiplicativeElementWithInverse ], 0,
 function( hom, elm )
 local   exp;
     exp := ExponentsOfPcElement( hom!.rangePcgs, elm );
     return PcElementByExponentsNC( hom!.rangePcgsPreImages, exp );
+end );
+
+InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
+  [ IsPcgsToPcgsHomomorphism,IsMultiplicativeElementWithInverse ], 0,
+function( hom, elm )
+    if not ( elm in Range( hom ) ) then
+      Error( "<elm> is not in the range of mapping <hom>" );
+    elif not ( elm in Image( hom ) ) then
+      return fail;
+    fi;
+    return PreImagesRepresentativeNC( hom, elm );
 end );
 
 #############################################################################
@@ -700,3 +725,182 @@ end );
 InstallMethod( IsomorphismPcGroup,
     [ IsPcGroup ], SUM_FLAGS,
     IdentityMapping );
+
+
+#############################################################################
+##
+#A  SpeedupDataPcHom( <hom> )
+##
+BindGlobal("SPHPatternEnumerateFunction",function(pat)
+local c;   # vector of suffix products linearizing a multiadic index
+  c:=List([1..Length(pat)],x->Product(pat{[x+1..Length(pat)]}));
+  return a->a*c;
+end);
+
+InstallMethod(SpeedupDataPcHom,"pcgs",true,
+  [IsGroupGeneralMappingByPcgs and IsTotal],0,
+function(hom)
+local g,       # Source(hom)
+      r,       # the speedup-data record (cached or freshly computed)
+      pcgs,    # the source pcgs hom!.sourcePcgs
+      ro,      # relative orders of pcgs
+      n,       # length of pcgs
+      s,       # characteristic series, then its bottom elem.-abelian layer
+      field,   # field of that bottom layer (or fail if none)
+      depths,  # the chosen chunk-boundary depths within pcgs
+      pats,    # the per-chunk PatternEnumerateFunction list
+      mat,     # the bottom-level action matrix (or fail)
+      a,       # chunk-size target / exponent-vector temporary
+      i;       # working depth / loop index
+
+  g:=Source(hom);
+  if g<>Range(hom) or not IsBijective(hom) then
+    TryNextMethod();
+  fi;
+  r:=fail;
+  if IsBound(g!.automSpeedupData) then
+    r:=g!.automSpeedupData;
+    if r.pcgs<>hom!.sourcePcgs then
+      r:=fail;
+      g:=Group(hom!.sourcePcgs);
+    fi;
+  fi;
+  if r=fail then
+    pcgs:=hom!.sourcePcgs;
+    ro:=RelativeOrders(pcgs);
+    n:=Length(pcgs);
+    # Find the largest characteristic elementary abelian subgroup
+    # that is a tail of this pcgs. The automorphism acts on this tail
+    # as a matrix over the corresponding prime field.
+    s:=AGSRCharacteristicSeries(g,g);
+    s:=Filtered(s,x->Size(x)=1 or x=SubgroupNC(g,pcgs{[Minimum(
+      List(GeneratorsOfGroup(x),y->DepthOfPcElement(pcgs,y)))..n]}));
+    s:=Filtered(s,x->IsElementaryAbelian(x) and Size(x)>1);
+    if Length(s)>0 then
+      s:=s[1];
+      i:=Minimum(List(GeneratorsOfGroup(s),x->DepthOfPcElement(pcgs,x)));
+      field:=GF(ro[i]);
+      depths:=[i,n+1];
+    else
+      field:=fail;
+      depths:=[n+1];
+      i:=n+1;
+    fi;
+
+    if i>1 then
+      # how to split further?
+      a:=Product(ro{[1..n]});
+      if a<1000 then
+        a:=1000;
+      else
+        # we want to store about 1000 images, so rounded down log base 1000/10
+        a:=RootInt(a,LogInt(a,100))*ro[1];
+      fi;
+
+      # now chunks
+      while i>1 do
+        i:=i-1;
+        s:=i;
+        while s>1 and Product(ro{[s..i]})<a do
+          s:=s-1;
+        od;
+        AddSet(depths,s);
+        i:=s;
+      od;
+    fi;
+
+    Assert(0, 1 in depths);
+
+    pats:=[];
+    for i in [1..Length(depths)-1] do
+      Add(pats,SPHPatternEnumerateFunction(ro{[depths[i]..depths[i+1]-1]}));
+    od;
+
+    r:=rec(pcgs:=pcgs,
+            field:=field,
+            pats:=pats,
+            depths:=depths);
+
+    g!.automSpeedupData:=r;
+
+  fi;
+
+  if r.field<>fail then
+    # Compute the matrix describing the action of hom on the bottom
+    # elementary abelian layer.
+    n:=Length(r.pcgs);
+    i:=r.depths[Length(r.depths)-1];
+    mat:=List(hom!.sourcePcgsImages{[i..n]},
+      x->ExponentsOfPcElement(r.pcgs,x){[i..n]});
+    mat:=ImmutableMatrix(r.field,mat*One(r.field));
+  else
+    mat:=fail;
+  fi;
+
+  r:=rec(groupData:=r,mat:=mat,vals:=List(r.pats,x->[]));
+  return r;
+end);
+
+InstallMethod( ImagesRepresentative,
+    "for sped-up pc hom",FamSourceEqFamElm,
+        [ IsGroupGeneralMappingByPcgs and IsTotal
+          and HasSpeedupDataPcHom,
+          IsMultiplicativeElementWithInverse and IsNBitsPcWordRep],100,
+function(hom,elm)
+local r,       # SpeedupDataPcHom(hom): the per-hom speedup data
+      rg,      # r.groupData: shared pcgs/depths/field/pattern data
+      depths,  # rg.depths: the chunk boundaries
+      pcgs,    # rg.pcgs
+      n,       # length of pcgs
+      ld,      # length of depths
+      top,     # highest chunk index handled via cached linear combinations
+      v,       # the accumulating image element
+      e,       # exponent vector of elm w.r.t. pcgs
+      a,       # current chunk's exponents, then its matrix image
+      b,       # pattern index into the value cache / a depth bound
+      i;       # loop index
+
+  r:=SpeedupDataPcHom(hom);
+  if r=fail then TryNextMethod();fi;
+  rg:=r.groupData;
+  depths:=rg.depths;
+  # in next line subtract 1 to use the lowest level matrix
+  ld:=Length(depths);
+  pcgs:=rg.pcgs;
+  n:=Length(pcgs);
+
+  v:=OneOfPcgs(pcgs);
+  e:=ExponentsOfPcElement(pcgs,elm);
+
+  if rg.field=fail then
+    top:=ld;
+  else
+    top:=ld-1;
+  fi;
+
+  for i in [1..top-1] do
+    a:=e{[depths[i]..depths[i+1]-1]};
+    b:=rg.pats[i](a)+1; # patterns start at 0
+    if not IsBound(r.vals[i][b]) then
+      r.vals[i][b]:=LinearCombinationPcgs(
+        hom!.sourcePcgsImages{[depths[i]..depths[i+1]-1]},a);
+    fi;
+    v:=v*r.vals[i][b];
+  od;
+  if rg.field=fail then return v;fi;
+  b:=depths[ld-1];
+  a:=e{[b..n]};
+  a:=a*One(rg.field);
+  ConvertToVectorRep(a,Size(rg.field));
+  a:=a*r.mat;
+
+  b:=b-1;
+  e:=0*e;
+  for i in [1..Length(a)] do
+    e[b+i]:=Int(a[i]);
+  od;
+  return v*PcElementByExponentsNC(pcgs,e);
+
+end);
+
+

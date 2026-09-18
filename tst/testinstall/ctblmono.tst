@@ -19,13 +19,14 @@ gap> IsBergerCondition( S4 );
 true
 gap> IsBergerCondition( Sl23 );
 false
-gap> List( Irr( Sl23 ), IsBergerCondition );
+gap> irr:= SortedList( Irr( Sl23 ) );;
+gap> List( irr, IsBergerCondition );
 [ true, true, true, false, false, false, true ]
-gap> List( Irr( Sl23 ), Degree );
+gap> List( irr, Degree );
 [ 1, 1, 1, 2, 2, 2, 3 ]
 
 ##
-gap> chi:= Irr( Sl23 )[7];
+gap> chi:= irr[7];
 Character( CharacterTable( SL(2,3) ), [ 3, 0, 0, 3, 0, 0, -1 ] )
 gap> n:= DerivedSubgroup( Sl23 );;
 gap> test:= TestHomogeneous( chi, n );;
@@ -33,7 +34,7 @@ gap> test.isHomogeneous;  test.comment;  test.multiplicity;
 false
 "restriction checked"
 1
-gap> chi:= Irr( Sl23 )[4];
+gap> chi:= irr[4];
 Character( CharacterTable( SL(2,3) ), [ 2, 1, 1, -2, -1, -1, 0 ] )
 gap> cln:= ClassPositionsOfNormalSubgroup( CharacterTable( Sl23 ), n );
 [ 1, 4, 7 ]
@@ -41,27 +42,27 @@ gap> TestHomogeneous( chi, cln );
 rec( comment := "restricts irreducibly", isHomogeneous := true )
 
 ##
-gap> chi:= Irr( Sl23 )[4];;
+gap> chi:= irr[4];;
 gap> TestQuasiPrimitive( chi );
 rec( comment := "all restrictions checked", isQuasiPrimitive := true )
-gap> chi:= Irr( Sl23 )[7];;
+gap> chi:= irr[7];;
 gap> test:= TestQuasiPrimitive( chi );;
 gap> test.isQuasiPrimitive;  test.comment;
 false
 "restriction checked"
-gap> IsPrimitive( Irr( Sl23 )[4] );
+gap> IsPrimitive( irr[4] );
 true
-gap> IsPrimitive( Irr( Sl23 )[7] );
+gap> IsPrimitive( irr[7] );
 false
 
 ##
-gap> List( Irr( Sl23 ), IsInducedFromNormalSubgroup );
+gap> List( irr, IsInducedFromNormalSubgroup );
 [ false, false, false, false, false, false, true ]
 gap> List( Irr( S4 ){ [ 1, 3, 4 ] },
 >          TestInducedFromNormalSubgroup );
 [ rec( comment := "linear character", isInduced := false ), 
   rec( character := Character( CharacterTable( Alt( [ 1 .. 4 ] ) ),
-      [ 1, 1, E(3)^2, E(3) ] ), 
+      [ 1, 1, E(3), E(3)^2 ] ), 
       comment := "induced from component '.character'", isInduced := true ), 
   rec( comment := "all maximal normal subgroups checked", isInduced := false 
      ) ]
@@ -95,6 +96,8 @@ gap> TestMonomial( irr[2] );
 rec( comment := "whole group is monomial", isMonomial := true )
 gap> IsMonomial( irr[2] );
 true
+
+#
 gap> irr:= Irr( SL(2,3) );;
 gap> chi:= First( irr, x -> x[1] = 3 );;
 gap> TestMonomialQuick( chi );
@@ -103,6 +106,8 @@ gap> TestMonomial( chi );
 rec( comment := "codegree is prime power", isMonomial := true )
 gap> IsMonomial( chi );
 true
+
+#@if IsPackageMarkedForLoading( "smallgrp", "" )
 gap> irr:= Irr( SmallGroup( 120, 15 ) );;
 gap> chi:= First( irr, x -> x[1] = 3 and
 >                           Length( ClassPositionsOfKernel( x ) ) = 2 );;
@@ -120,6 +125,9 @@ gap> TestMonomial( chi );
 rec( comment := "induced from monomial Hall subgroup", isMonomial := true )
 gap> IsMonomial( chi );
 true
+#@fi
+
+#
 gap> g:= DirectProduct( AlternatingGroup(5), SymmetricGroup(3),
 >                       SymmetricGroup(3) );;
 gap> chi:= First( Irr( g ), x -> x[1] = 2 and
@@ -130,6 +138,8 @@ gap> TestMonomial( chi );
 rec( comment := "kernel factor group is supersolvable", isMonomial := true )
 gap> IsMonomial( chi );
 true
+
+#@if IsPackageMarkedForLoading( "smallgrp", "" )
 gap> irr:= Irr( SmallGroup( 144, 31 ) );;
 gap> chi:= First( irr, x -> x[1] = 6 );;
 gap> TestMonomialQuick( chi );
@@ -138,6 +148,9 @@ gap> TestMonomial( chi );
 rec( comment := "kernel factor group is monomial", isMonomial := true )
 gap> IsMonomial( chi );
 true
+#@fi
+
+#
 gap> irr:= Irr( SL(2,3) );;
 gap> chi:= First( irr, x -> x[1] = 2 );;
 gap> TestMonomialQuick( chi );
@@ -146,6 +159,8 @@ gap> TestMonomial( chi );
 rec( comment := "quasiprimitive character", isMonomial := false )
 gap> IsMonomial( chi );
 false
+
+#@if IsPackageMarkedForLoading( "perfgrp", "" )
 gap> irr:= Irr( AlternatingGroup( 5 ) );;
 gap> chi:= First( irr, x -> x[1] = 5 );;
 gap> TestMonomialQuick( chi );
@@ -154,8 +169,11 @@ gap> TestMonomial( chi ).comment;
 "induced from 'character'"
 gap> IsMonomial( chi );
 true
+#@fi
 gap> TestMonomialUseLattice_Orig:= TestMonomialUseLattice;;
 gap> TestMonomialUseLattice:= 20;;
+#@if IsPackageMarkedForLoading( "perfgrp", "" )
+gap> irr:= Irr( AlternatingGroup( 5 ) );;
 gap> chi:= First( irr, x -> x[1] = 4 );;
 gap> TestMonomialQuick( chi );
 rec( comment := "no decision by cheap tests", isMonomial := "?" )
@@ -165,6 +183,9 @@ gap> TestMonomial( chi, true ).comment;
 "lattice checked"
 gap> IsMonomial( chi );
 false
+#@fi
+
+#@if IsPackageMarkedForLoading( "smallgrp", "" )
 gap> irr:= Irr( SmallGroup( 96, 204 ) );;
 gap> chi:= First( irr, x -> x[1] = 4 );;
 gap> TestMonomialQuick( chi );
@@ -173,6 +194,9 @@ gap> TestMonomial( chi ).comment;
 "induced from 'character'"
 gap> IsMonomial( chi );
 true
+#@fi
+
+#@if IsPackageMarkedForLoading( "smallgrp", "" )
 gap> chi:= First( Irr( SmallGroup( 144, 31 ) ), x -> x[1] = 4 );;
 gap> TestMonomialQuick( chi );
 rec( comment := "no decision by cheap tests", isMonomial := "?" )
@@ -182,6 +206,9 @@ gap> TestMonomial( chi, true ).comment;
 "induced from 'character'"
 gap> IsMonomial( chi );
 true
+#@fi
+
+#
 gap> chi:= 0 * [ 1 .. NrConjugacyClasses( S4 ) ];;
 gap> chi[1]:= Size( S4 );;
 gap> chi:= ClassFunction( S4, chi );;
@@ -192,6 +219,8 @@ gap> TestMonomial( chi, true ).comment;
 gap> IsMonomial( chi );
 true
 gap> TestMonomialUseLattice:= TestMonomialUseLattice_Orig;;
+
+#@if IsPackageMarkedForLoading( "smallgrp", "" )
 gap> chi:= First( Irr( SmallGroup( 48, 28 ) ), x -> x[1] = 4 );;
 gap> TestMonomialQuick( chi );
 rec( comment := "no decision by cheap tests", isMonomial := "?" )
@@ -199,6 +228,7 @@ gap> TestMonomial( chi ).comment;
 "induced from 'character'"
 gap> IsMonomial( chi );
 true
+#@fi
 
 ##
 gap> TestMonomialQuick( S4 );
@@ -213,6 +243,8 @@ gap> TestMonomial( Sl23 );
 rec( comment := "list Delta( G ) contains entry > 1", isMonomial := false )
 gap> IsMonomial( Sl23 );
 false
+
+#@if IsPackageMarkedForLoading( "smallgrp", "" )
 gap> g:= SmallGroup( 96, 204 );;
 gap> TestMonomialQuick( g );
 rec( comment := "no decision by cheap tests", isMonomial := "?" )
@@ -238,6 +270,9 @@ gap> TestMonomial( g );
 rec( comment := "was already stored", isMonomial := true )
 gap> IsMonomial( g );
 true
+#@fi
+
+#
 gap> g:= AlternatingGroup( 5 );;
 gap> TestMonomialQuick( g );
 rec( comment := "non-solvable group", isMonomial := false )
@@ -245,6 +280,8 @@ gap> TestMonomial( g );
 rec( comment := "non-solvable group", isMonomial := false )
 gap> IsMonomial( g );
 false
+
+#@if IsPackageMarkedForLoading( "smallgrp", "" )
 gap> g:= SmallGroup( 56, 10 );;
 gap> TestMonomialQuick( g );
 rec( comment := "group order is monomial", isMonomial := true )
@@ -273,6 +310,7 @@ gap> TestMonomial( g );
 rec( comment := "Sylow abelian by supersolvable group", isMonomial := true )
 gap> IsMonomial( g );
 true
+#@fi
 
 ##
 gap> TestSubnormallyMonomial( S4 );

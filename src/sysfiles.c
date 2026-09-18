@@ -44,9 +44,12 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <termios.h>
 #include <time.h>
 #include <unistd.h>
+
+#ifdef HAVE_TERMIOS_H
+#include <termios.h>
+#endif
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -80,13 +83,35 @@
 
 #include <zlib.h>
 
+#ifdef HAVE_SYS_UTSNAME_H
 #include <sys/utsname.h>
+#endif
+
+#ifdef SYS_IS_MINGW
+#include <direct.h>                     // for _mkdir
+// omit rarely used parts of windows.h, whose names clash with GAP's
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
 
 
 // 'EndLineHook' is a GAP-level variable which can be set to a function to be
 // called at end of each command line (i.e. after the user presses enter).
 // If not bound, nothing is done.
 static Obj EndLineHook = 0;
+
+// 'PreInputHook' is a GAP-level variable which can be set to a function to be
+// called once the line editor is ready to accept input. If not bound, nothing
+// is done. 'ColorPrompt' uses it to switch to the color for user input, which
+// must not happen earlier: readline may redraw parts of the prompt when it
+// starts up, and those redraws have to use the prompt color.
+static Obj PreInputHook = 0;
+
+static void CallPreInputHook(void)
+{
+    if (PreInputHook)
+        Call0ArgsInNewReader(PreInputHook);
+}
 
 /****************************************************************************
 **
@@ -191,10 +216,7 @@ static ssize_t echoandcheck(int fid, const char *buf, size_t count)
 **
 *F  SyGAPCRC( <name> )  . . . . . . . . . . . . . . . . . . crc of a GAP file
 **
-**  This function should  be clever and handle  white spaces and comments but
-**  one has to make certain that such characters are not ignored in strings.
-**
-**  This function *never* returns a 0 unless an error occurred.
+**  This function returns 0 for missing or unreadable files.
 */
 static const UInt4 syCcitt32[ 256 ] =
 {
@@ -248,9 +270,9 @@ Int4 SyGAPCRC( const Char * name )
     UInt4       crc;
     UInt4       old;
     UInt4       new;
-    Int4        ch;
+    Int         ch;
     Int         fid;
-    Int         seen_nl;
+    BOOL        seen_nl;
 
     // the CRC of a non existing file is 0
     fid = SyFopen(name, "r", TRUE);
@@ -260,7 +282,7 @@ Int4 SyGAPCRC( const Char * name )
 
     // read in the file byte by byte and compute the CRC
     crc = 0x12345678L;
-    seen_nl = 0;
+    seen_nl = FALSE;
 
     while ( (ch = SyGetch(fid) )!= EOF ) {
         if ( ch == '\377' || ch == '\n' || ch == '\r' )
@@ -269,25 +291,22 @@ Int4 SyGAPCRC( const Char * name )
             if ( seen_nl )
                 continue;
             else
-                seen_nl = 1;
+                seen_nl = TRUE;
         }
         else
-            seen_nl = 0;
-        old = (crc >> 8) & 0x00FFFFFFL;
-        new = syCcitt32[ ( (UInt4)( crc ^ ch ) ) & 0xff ];
+            seen_nl = FALSE;
+        old = crc >> 8;
+        new = syCcitt32[(crc ^ ch) & 0xff];
         crc = old ^ new;
-    }
-    if ( crc == 0 ) {
-        crc = 1;
     }
 
     // and close it again
     SyFclose( fid );
-    // Emulate a signed shift:
-    if (crc & 0x80000000L)
-        return (Int4) ((crc >> 4) | 0xF0000000L);
-    else
-        return (Int4) (crc >> 4);
+
+    // Emulate a signed shift (the C compiler does not specify whether right
+    // shifts preserve signs or not; it seems more or less all compilers in
+    // active use these days do, but better safe than sorry)
+    return ((Int)((crc >> 4) ^ 0x08000000U)) - 0x08000000;
 }
 
 
@@ -320,35 +339,36 @@ static Obj FuncCrcString(Obj self, Obj str)
     UInt4       new;
     UInt4       i, len;
     const Char  *ptr;
-    Int4        ch;
-    Int         seen_nl;
+    Int         ch;
+    BOOL        seen_nl;
 
     RequireStringRep(SELF_NAME, str);
 
     ptr = CONST_CSTR_STRING(str);
     len = GET_LEN_STRING(str);
     crc = 0x12345678L;
-    seen_nl = 0;
+    seen_nl = FALSE;
     for (i = 0; i < len; i++) {
-        ch = (Int4)(ptr[i]);
+        ch = (Int)(ptr[i]);
         if ( ch == '\377' || ch == '\n' || ch == '\r' )
             ch = '\n';
         if ( ch == '\n' ) {
             if ( seen_nl )
                 continue;
             else
-                seen_nl = 1;
+                seen_nl = TRUE;
         }
         else
-            seen_nl = 0;
-        old = (crc >> 8) & 0x00FFFFFFL;
-        new = syCcitt32[ ( (UInt4)( crc ^ ch ) ) & 0xff ];
+            seen_nl = FALSE;
+        old = crc >> 8;
+        new = syCcitt32[(crc ^ ch) & 0xff];
         crc = old ^ new;
     }
-    if ( crc == 0 ) {
-        crc = 1;
-    }
-    return INTOBJ_INT(((Int4) crc) >> 4);
+
+    // Emulate a signed shift (the C compiler does not specify whether right
+    // shifts preserve signs or not; it seems more or less all compilers in
+    // active use these days do, but better safe than sorry)
+    return INTOBJ_INT(((Int)((crc >> 4) ^ 0x08000000U)) - 0x08000000);
 }
 
 // Get OS Kernel version. Used to discover if GAP is running inside
@@ -356,6 +376,7 @@ static Obj FuncCrcString(Obj self, Obj str)
 Obj SyGetOsRelease(void)
 {
     Obj            r = NEW_PREC(0);
+#ifdef HAVE_SYS_UTSNAME_H
     struct utsname buf;
     if (!uname(&buf)) {
         AssPRec(r, RNamName("sysname"), MakeImmString(buf.sysname));
@@ -364,6 +385,47 @@ Obj SyGetOsRelease(void)
         AssPRec(r, RNamName("version"), MakeImmString(buf.version));
         AssPRec(r, RNamName("machine"), MakeImmString(buf.machine));
     }
+#endif
+#ifdef SYS_IS_MINGW
+    // RtlGetVersion tells the truth; GetVersionEx lies to executables
+    // without a manifest
+    typedef LONG(WINAPI * RtlGetVersionFn)(RTL_OSVERSIONINFOW *);
+    RtlGetVersionFn getVersion = (RtlGetVersionFn)GetProcAddress(
+        GetModuleHandleA("ntdll.dll"), "RtlGetVersion");
+    RTL_OSVERSIONINFOW info = { .dwOSVersionInfoSize = sizeof(info) };
+    if (getVersion != NULL && getVersion(&info) == 0) {
+        char release[32], version[32];
+        snprintf(release, sizeof(release), "%lu.%lu", info.dwMajorVersion,
+                 info.dwMinorVersion);
+        snprintf(version, sizeof(version), "%lu", info.dwBuildNumber);
+        AssPRec(r, RNamName("sysname"), MakeImmString("Windows"));
+        AssPRec(r, RNamName("release"), MakeImmString(release));
+        AssPRec(r, RNamName("version"), MakeImmString(version));
+    }
+
+    char  node[MAX_COMPUTERNAME_LENGTH + 1];
+    DWORD len = sizeof(node);
+    if (GetComputerNameA(node, &len))
+        AssPRec(r, RNamName("nodename"), MakeImmString(node));
+
+    SYSTEM_INFO  si;
+    const char * machine;
+    GetNativeSystemInfo(&si);
+    switch (si.wProcessorArchitecture) {
+    case PROCESSOR_ARCHITECTURE_AMD64:
+        machine = "x86_64";
+        break;
+    case PROCESSOR_ARCHITECTURE_ARM64:
+        machine = "aarch64";
+        break;
+    case PROCESSOR_ARCHITECTURE_INTEL:
+        machine = "i686";
+        break;
+    default:
+        machine = "unknown";
+    }
+    AssPRec(r, RNamName("machine"), MakeImmString(machine));
+#endif
 
     return r;
 }
@@ -632,7 +694,7 @@ void SyBufSetEOF(Int fid)
 **
 **  The following standard files names and file identifiers  are  guaranteed:
 **  'SyFopen( "*stdin*", "r", ..)' returns 0, the standard input file.
-**  'SyFopen( "*stdout*","w", ..)' returns 1, the standard outpt file.
+**  'SyFopen( "*stdout*","w", ..)' returns 1, the standard output file.
 **  'SyFopen( "*errin*", "r", ..)' returns 2, the brk loop input file.
 **  'SyFopen( "*errout*","w", ..)' returns 3, the error messages file.
 **
@@ -652,8 +714,8 @@ Int SyFopen(const Char * name, const Char * mode, BOOL transparent_compress)
     Char                namegz [1024];
     int                 flags = 0;
 
-    Char * terminator = strrchr(name, '.');
-    BOOL   endsgz = terminator && (streq(terminator, ".gz"));
+    const Char * terminator = strrchr(name, '.');
+    BOOL         endsgz = terminator && (streq(terminator, ".gz"));
 
     // handle standard files
     if (streq(name, "*stdin*")) {
@@ -696,7 +758,7 @@ Int SyFopen(const Char * name, const Char * mode, BOOL transparent_compress)
         Panic("Unknown mode %s", mode);
     }
 
-#ifdef SYS_IS_CYGWIN32
+#ifdef SYS_IS_WINDOWS
     if (strlen(mode) >= 2 && mode[1] == 'b')
         flags |= O_BINARY;
 #endif
@@ -867,6 +929,8 @@ Int SyIsEndOfFile (
 **  continue signals if this particular version  of UNIX supports them, so we
 **  can turn the terminal line back to cooked mode before stopping GAP.
 */
+#ifdef HAVE_TERMIOS_H
+
 static struct termios   syOld, syNew;           // old and new terminal state
 
 #ifdef SIGTSTP
@@ -955,6 +1019,21 @@ void syStopraw (
         fputs("gap: 'tcsetattr' could not turn off raw mode!\n",stderr);
 }
 
+#else
+
+// no termios, no raw mode: the line editor falls back to syFgetsNoEdit
+// TODO(windows-port): implement raw mode via the Windows console API
+UInt syStartraw(Int fid)
+{
+    return 0;
+}
+
+void syStopraw(Int fid)
+{
+}
+
+#endif
+
 
 /****************************************************************************
 **
@@ -981,7 +1060,7 @@ static UInt syLastIntr; // time of the last interrupt
 
 
 #ifdef HAVE_LIBREADLINE
-static Int doingReadline;
+static BOOL doingReadline;
 #endif
 
 static void syAnswerIntr(int signr)
@@ -1014,12 +1093,16 @@ static void syAnswerIntr(int signr)
 
 void SyInstallAnswerIntr ( void )
 {
+#ifdef HAVE_SIGACTION
     struct sigaction sa;
 
     sa.sa_handler = syAnswerIntr;
     sigemptyset(&(sa.sa_mask));
     sa.sa_flags = SA_RESTART;
     sigaction( SIGINT, &sa, NULL );
+#else
+    signal( SIGINT, syAnswerIntr );
+#endif
 }
 
 
@@ -1207,7 +1290,7 @@ void SyFputs (
     const Char *        line,
     Int                 fid )
 {
-    UInt                i;
+    size_t i;
 
     // if outputting to the terminal compute the cursor position and length
     if ( fid == 1 || fid == 3 ) {
@@ -1288,6 +1371,11 @@ Int SyFseek (
         return -1;
     }
 
+    // reject negative positions uniformly; Windows' lseek does not
+    if ( pos < 0 ) {
+        return -1;
+    }
+
     if (syBuf[fid].bufno >= 0) {
         UInt bufno = syBuf[fid].bufno;
         syBuffers[bufno].buflen = 0;
@@ -1336,7 +1424,7 @@ Int SyFseek (
  * a similar problem.
  */
 
-#ifdef SYS_IS_CYGWIN32
+#ifdef SYS_IS_WINDOWS
 #  define LINE_END_HACK 1
 #endif
 
@@ -2037,12 +2125,18 @@ static Obj FuncREADLINEINITLINE(Obj self, Obj line)
 static Int ISINITREADLINE = 0;
 // a hook function called regularly while waiting on input
 static Int current_rl_fid;
+#ifdef HAVE_SELECT
 static int charreadhook_rl(void)
 {
-#ifdef HAVE_SELECT
     if (OnCharReadHookActiveCheck())
         HandleCharReadHook(syBuf[current_rl_fid].fp);
+    return 0;
+}
 #endif
+
+static int preInputHook_rl(void)
+{
+  CallPreInputHook();
   return 0;
 }
 
@@ -2065,6 +2159,8 @@ static void initreadline(void)
   rl_add_defun( "handled-by-GAP", GAP_rl_func, -1 );
 
   rl_bind_keyseq("\\C-x\\C-g", GAP_set_macro);
+
+  rl_pre_input_hook = preInputHook_rl;
 
   // disable bracketed paste mode by default: it interferes with our handling
   // of pastes of data involving REPL prompts "gap>"
@@ -2089,9 +2185,9 @@ static Char * readlineFgets(Char * line, UInt length, Int fid, UInt block)
   rl_event_hook = (OnCharReadHookActiveCheck()) ? charreadhook_rl : 0;
 #endif
   // now do the real work
-  doingReadline = 1;
+  doingReadline = TRUE;
   rlres = readline(STATE(Prompt));
-  doingReadline = 0;
+  doingReadline = FALSE;
   // we get a NULL pointer on EOF, say by pressing Ctr-d
   if (!rlres) {
     if (!SyCTRD) {
@@ -2181,6 +2277,7 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
     /* no line editing if the user disabled it
        or we can't make it into raw mode */
     if ( SyLineEdit == 0 || ! syBeginEdit(fid) ) {
+        CallPreInputHook();
         p = syFgetsNoEdit(line, length, fid, block );
         return p;
     }
@@ -2200,6 +2297,9 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
         return line;
     }
 #endif
+
+    // with readline this is done by 'preInputHook_rl'
+    CallPreInputHook();
 
     /* In line editing mode 'length' is not allowed bigger than the
       yank buffer (= length of line buffer for input files).*/
@@ -2925,7 +3025,11 @@ Int SyMkdir ( const Char * name )
 {
     Int res;
     SyClearErrorNo();
+#ifdef SYS_IS_MINGW
+    res = _mkdir(name);
+#else
     res = mkdir(name, 0777);
+#endif
     if (res == -1)
        SySetErrorNo();
     return res;
@@ -2964,7 +3068,11 @@ char SyFileType(const Char * path)
     int         res;
     struct stat ourlstatbuf;
 
+#ifdef HAVE_LSTAT
     res = lstat(path, &ourlstatbuf);
+#else
+    res = stat(path, &ourlstatbuf);
+#endif
     if (res < 0) {
         SySetErrorNo();
         return 0;
@@ -2973,8 +3081,10 @@ char SyFileType(const Char * path)
         return 'F';
     if (S_ISDIR(ourlstatbuf.st_mode))
         return 'D';
+#ifdef S_ISLNK
     if (S_ISLNK(ourlstatbuf.st_mode))
         return 'L';
+#endif
 #ifdef S_ISCHR
     if (S_ISCHR(ourlstatbuf.st_mode))
         return 'C';
@@ -3197,12 +3307,14 @@ void InitSysFiles(void)
     syBuf[0].echo = fileno(stdout);
     syBuf[0].bufno = -1;
     syBuf[0].isTTY = isatty(fileno(stdin));
+#ifdef HAVE_TTYNAME
     if (syBuf[0].isTTY) {
         // if stdin is on a terminal, make sure stdout in on the same terminal
         if (stat_in.st_dev != stat_out.st_dev ||
             stat_in.st_ino != stat_out.st_ino)
             syBuf[0].echo = open(ttyname(fileno(stdin)), O_WRONLY);
     }
+#endif
 
     // set up stdout
     syBuf[1].type = raw_socket;
@@ -3216,12 +3328,14 @@ void InitSysFiles(void)
     syBuf[2].echo = fileno(stderr);
     syBuf[2].bufno = -1;
     syBuf[2].isTTY = isatty(fileno(stderr));
+#ifdef HAVE_TTYNAME
     if (syBuf[2].isTTY) {
         // if stderr is on a terminal, make sure errin in on the same terminal
         if (stat_in.st_dev != stat_err.st_dev ||
             stat_in.st_ino != stat_err.st_ino)
             syBuf[2].fp = open(ttyname(fileno(stderr)), O_RDONLY);
     }
+#endif
 
     // set up errout
     syBuf[3].type = raw_socket;
@@ -3290,6 +3404,7 @@ static Int InitKernel(
 #endif
 
     InitCopyGVar("EndLineHook", &EndLineHook);
+    InitCopyGVar("PreInputHook", &PreInputHook);
 
     return 0;
 }

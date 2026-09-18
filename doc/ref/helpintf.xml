@@ -164,7 +164,7 @@ gap> stream := InputTextFile( file );;
   This must return a text string or list of text lines  which  contains  the
   chapter headers of the book <A>info</A><C>.bookname</C>.
 </Item>
-<Mark><C>ShowSection( <A>info</A> )</C> </Mark>
+<Mark><C>ShowSections( <A>info</A> )</C> </Mark>
 <Item>
   This must return  a text string or  list of text lines  which contains the
   section (and chapter) headers of the book <A>info</A><C>.bookname</C>.

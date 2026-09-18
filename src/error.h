@@ -71,13 +71,6 @@ void ErrorMayQuitNrAtLeastArgs(Int narg, Int actual) NORETURN;
 
 /****************************************************************************
 **
-*F  ErrorReturnObj( <msg>, <arg1>, <arg2>, <msg2> ) . .  print and return obj
-*/
-Obj ErrorReturnObj(const Char * msg, Int arg1, Int arg2, const Char * msg2);
-
-
-/****************************************************************************
-**
 *F  ErrorReturnVoid( <msg>, <arg1>, <arg2>, <msg2> )  . . .  print and return
 */
 void ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2);
@@ -192,13 +185,13 @@ void ErrorBoundedInt(const char * funcname,
                      int          min,
                      int          max) NORETURN;
 
-#define RequireBoundedIntEx(funcname, op, argname, min, max)                 \
-    do {                                                                     \
-        if (!(IS_INTOBJ(op) && min <= INT_INTOBJ(op) &&                      \
-              INT_INTOBJ(op) <= max)) {                                      \
-            ErrorBoundedInt(funcname, op, argname, min, max);                \
-        }                                                                    \
-    } while (0)
+EXPORT_INLINE void RequireBoundedIntEx(
+    const char * funcname, Obj op, const char * argname, int min, int max)
+{
+    if (!(IS_INTOBJ(op) && min <= INT_INTOBJ(op) && INT_INTOBJ(op) <= max)) {
+        ErrorBoundedInt(funcname, op, argname, min, max);
+    }
+}
 
 #define RequireBoundedInt(funcname, op, min, max)                            \
     RequireBoundedIntEx(funcname, op, NICE_ARGNAME(op), min, max)

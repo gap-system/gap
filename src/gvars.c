@@ -675,7 +675,7 @@ void MakeThreadLocalVar (
     if (IS_INTOBJ(ExprGVar(gvar)))
        value = (Obj) 0;
     SET_ELM_GVAR_LIST( ExprGVars, gvar, INTOBJ_INT(rnam) );
-    SetHasExprCopiesFopies(gvar, 1);
+    SetHasExprCopiesFopies(gvar, TRUE);
     CHANGED_GVAR_LIST( ExprGVars, gvar );
     if (value && TLVars)
         SetTLDefault(TLVars, rnam, value);
@@ -690,7 +690,7 @@ void MakeThreadLocalVar (
 Obj FuncDeclareGlobalName(Obj self, Obj name)
 {
     RequireStringRep("DeclareGlobalName", name);
-    SetIsDeclaredName(GVarName(CONST_CSTR_STRING(name)), 1);
+    SetIsDeclaredName(GVarName(CONST_CSTR_STRING(name)), TRUE);
     return 0;
 }
 
@@ -832,24 +832,29 @@ static Obj FuncAUTO(Obj self, Obj args)
     UInt                gvar;           // one global variable
     UInt                i;              // loop variable
 
+    RequirePlainList(SELF_NAME, args);
+    RequireDenseList(SELF_NAME, args);
+    RequireArgumentCondition(SELF_NAME, args, LEN_PLIST(args) >= 2,
+                             "must be a list of length at least 2");
+
     // get and check the function
-    func = ELM_LIST( args, 1 );
+    func = ELM_PLIST( args, 1 );
     RequireFunction(SELF_NAME, func);
 
     // get the argument
-    arg = ELM_LIST( args, 2 );
+    arg = ELM_PLIST( args, 2 );
 
     // make the list of function and argument
     list = NewPlistFromArgs(func, arg);
 
     // make the global variables automatic
     for ( i = 3; i <= LEN_LIST(args); i++ ) {
-        name = ELM_LIST( args, i );
+        name = ELM_PLIST( args, i );
         RequireStringRep(SELF_NAME, name);
         gvar = GVarName( CONST_CSTR_STRING(name) );
         SET_ELM_GVAR_LIST( ValGVars, gvar, 0 );
         SET_ELM_GVAR_LIST( ExprGVars, gvar, list );
-        SetHasExprCopiesFopies(gvar, 1);
+        SetHasExprCopiesFopies(gvar, TRUE);
         CHANGED_GVAR_LIST( ExprGVars, gvar );
     }
 
@@ -1058,7 +1063,7 @@ static Obj FuncUNB_GVAR(Obj self, Obj gvar)
 */
 typedef struct  {
     Obj *               copy;
-    UInt                isFopy;
+    BOOL                isFopy;
     const Char *        name;
 } StructCopyGVar;
 
@@ -1100,7 +1105,7 @@ void InitCopyGVar (
         Panic("no room to record CopyGVar");
     }
     CopyAndFopyGVars[NCopyAndFopyGVars].copy = copy;
-    CopyAndFopyGVars[NCopyAndFopyGVars].isFopy = 0;
+    CopyAndFopyGVars[NCopyAndFopyGVars].isFopy = FALSE;
     CopyAndFopyGVars[NCopyAndFopyGVars].name = name;
     NCopyAndFopyGVars++;
 #ifdef HPCGAP
@@ -1137,7 +1142,7 @@ void InitFopyGVar (
         Panic("no room to record FopyGVar");
     }
     CopyAndFopyGVars[NCopyAndFopyGVars].copy = copy;
-    CopyAndFopyGVars[NCopyAndFopyGVars].isFopy = 1;
+    CopyAndFopyGVars[NCopyAndFopyGVars].isFopy = TRUE;
     CopyAndFopyGVars[NCopyAndFopyGVars].name = name;
     NCopyAndFopyGVars++;
 #ifdef HPCGAP
@@ -1181,7 +1186,7 @@ void UpdateCopyFopyInfo ( void )
                 MakeBagPublic(cops);
 #endif
                 SET_ELM_GVAR_LIST( FopiesGVars, gvar, cops );
-                SetHasExprCopiesFopies(gvar, 1);
+                SetHasExprCopiesFopies(gvar, TRUE);
                 CHANGED_GVAR_LIST( FopiesGVars, gvar );
             }
         }
@@ -1193,7 +1198,7 @@ void UpdateCopyFopyInfo ( void )
                 MakeBagPublic(cops);
 #endif
                 SET_ELM_GVAR_LIST( CopiesGVars, gvar, cops );
-                SetHasExprCopiesFopies(gvar, 1);
+                SetHasExprCopiesFopies(gvar, TRUE);
                 CHANGED_GVAR_LIST( CopiesGVars, gvar );
             }
         }

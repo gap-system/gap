@@ -34,8 +34,8 @@ OnBreak := function() Print("An error has occurred before the traceback ",
 ##  break loop.
 ##
 OnBreakMessage := function()
-  Print("you can 'quit;' to quit to outer loop, or\n",
-        "you can 'return;' to continue\n");
+  Print("you can enter 'quit;' to quit to outer loop, or\n",
+        "you can enter 'return;' to continue\n");
 end;
 
 #############################################################################
@@ -321,6 +321,14 @@ end;
 IdGroup:=NONAVAILABLE_FUNC("Small Groups identification");
 SmallGroup:=NONAVAILABLE_FUNC("Small Groups library");
 PrimitiveGroup:=NONAVAILABLE_FUNC("Primitive Groups library");
+PerfectGroup:=NONAVAILABLE_FUNC("Perfect Groups library");
+PerfectIdentification:=NONAVAILABLE_FUNC("Perfect Groups library");
+PerfGrpLoad:=NONAVAILABLE_FUNC("Perfect Groups library");
+NumberPerfectGroups:=NONAVAILABLE_FUNC("Perfect Groups library");
+NrPerfectGroups:=NumberPerfectGroups;
+
+# indicator that the perfect groups library data is not loaded
+PERFRec := fail;
 
 #############################################################################
 ##
@@ -434,7 +442,7 @@ function( prefix, values, suffix )
 end);
 
 BindGlobal( "ShowKernelInformation", function()
-  local sysdate, btop, vert, bbot, config, str, gap;
+  local sysdate, btop, bmid, bbot, config, str, gap;
 
   if GAPInfo.Date <> "today" then
     sysdate := " of ";
@@ -447,19 +455,23 @@ BindGlobal( "ShowKernelInformation", function()
   fi;
 
   if GAPInfo.TermEncoding = "UTF-8" then
-    btop := "┌───────┐\c"; vert := "│"; bbot := "└───────┘\c";
+    btop := "   ● G";
+    bmid := "● ●  A";
+    bbot := "   ● P";
   else
-    btop := "*********"; vert := "*"; bbot := btop;
+    btop := "   o G";
+    bmid := "o o  A";
+    bbot := "   o P";
   fi;
   if IsHPCGAP then
     gap := "HPC-GAP";
   else
     gap := "GAP";
   fi;
-  Print( " ",btop,"   ",gap," ", GAPInfo.BuildVersion,
+  Print( "  ",btop,"  ",gap," ", GAPInfo.BuildVersion,
          sysdate, "\n",
-         " ",vert,"  GAP  ",vert,"   https://www.gap-system.org\n",
-         " ",bbot,"   Architecture: ", GAPInfo.Architecture, "\n" );
+         "  ",bmid,"  https://www.gap-system.org\n",
+         "  ",bbot,"  Architecture: ", GAPInfo.Architecture, "\n" );
   if IsHPCGAP then
     Print( "             Maximum concurrent threads: ",
        GAPInfo.KernelInfo.NUM_CPUS, "\n");
@@ -583,6 +595,16 @@ DeclareUserPreference( rec(
   check:= val -> IsInt( val ) and 0 <= val,
   ) );
 DeclareUserPreference( rec(
+  name:= "WhereDepth",
+  description:= [
+    "The number of stack frames shown by <C>Where</C> and <C>WhereWithVars</C> \
+when called without an explicit depth argument, e.g. in the default <C>OnBreak</C> \
+handler."
+    ],
+  default:= 5,
+  check:= val -> IsInt( val ) and 0 <= val,
+  ) );
+DeclareUserPreference( rec(
   name:= "ReproducibleBehaviour",
   description:= [
     "This preference disables code in &GAP; which changes behaviour based on time \
@@ -639,7 +661,7 @@ end );
 ##
 #X  files installing compatibility with deprecated, obsolescent or
 ##  obsolete GAP4 behaviour;
-##  *not* to be read if `GAPInfo.UserPreferences.ReadObsolete' has the value
+##  *not* to be read if `UserPreference( "ReadObsolete" )' has the value
 ##  `false'
 ##  (this value can be set in the `gap.ini' file)
 ##
@@ -654,8 +676,6 @@ which may vanish in a future version of &GAP;"
   values:= [ true, false ],
   multi:= false,
   ) );
-# HACKUSERPREF temporary hack for AtlasRep and CTblLib:
-GAPInfo.UserPreferences.ReadObsolete := UserPreference("ReadObsolete");
 
 ReadLib("obsolete.g"); # the helpers in there are always read
 CallAndInstallPostRestore( function()
@@ -817,11 +837,13 @@ BindGlobal( "ShowPackageInformation", function()
                                  GAPInfo.PackagesLoaded.( name )[2] ) ),
                "\n" );
   fi;
+end );
 
+BindGlobal( "ShowHelpInformation", function()
   Print( " Try '??help' for help. See also '?copyright', '?cite' and '?authors'",
          "\n" );
 end );
-#T show also root paths?
+
 
 CallAndInstallPostRestore( function()
      if not ( GAPInfo.CommandLineOptions.q or
@@ -830,12 +852,14 @@ CallAndInstallPostRestore( function()
          ShowKernelInformation();
        fi;
        ShowPackageInformation();
+       ShowHelpInformation();
      fi;
      end );
 
 BindGlobal ("ShowSystemInformation", function ()
     ShowKernelInformation();
     ShowPackageInformation();
+    ShowHelpInformation();
 end );
 
 

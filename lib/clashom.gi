@@ -208,7 +208,7 @@ local clT,        # classes T
     # we have taken a permutation representation that  prolongates to autT!
     oci:=CycleStructurePerm(clT[i][1]);
 
-    # we have tested already the smaller-# classes
+    # we have already tested the smaller-# classes
     pfus:=Filtered([i+1..lcl],j->CycleStructurePerm(clT[j][1])=oci and
       Size(clT[j][2])=sci);
     pfus:=Difference(pfus,fus[i]);
@@ -499,7 +499,7 @@ local clT,        # classes T
   for k in clop do
     Info(InfoHomClass,1,"lifting class ",Representative(k));
 
-    r:=PreImagesRepresentative(ophom,Representative(k));
+    r:=PreImagesRepresentativeNC(ophom,Representative(k));
     # try to make r of small order
     rp:=r^Order(Representative(k));
     rp:=RepresentativeAction(M,Concatenation(components),
@@ -564,7 +564,7 @@ local clT,        # classes T
         orb:=[];
         for p in [1..Length(clTR)] do
 
-          repres:=PreImagesRepresentative(projections[i],clTR[p]);
+          repres:=PreImagesRepresentativeNC(projections[i],clTR[p]);
           if i=1 or isdirprod
              or reps[j]*RestrictedPermNC(repres,components[i])
                     in Mproj[i] then
@@ -586,8 +586,8 @@ local clT,        # classes T
 
         #was:
         #clTR:=List(clTR,i->ConjugacyClass(localcent_r,i));
-        #clTR:=List(clTR,j->[PreImagesRepresentative(projections[i],
-        #                                            Representative(j)),
+        #clTR:=List(clTR,j->[PreImagesRepresentativeNC(projections[i],
+        #                                              Representative(j)),
         #                 PreImage(centrhom,Centralizer(j)),
         #                 j]);
 
@@ -706,7 +706,7 @@ local clT,        # classes T
                     #change the transversal element to map to the representative
                     con:=trans[orpo]*gen;
                     limg:=opfun(repres,con);
-                    con:=con*PreImagesRepresentative(centrhom,
+                    con:=con*PreImagesRepresentativeNC(centrhom,
                             RepresentativeAction(localcent_r,
                                                   Image(projections[i],limg),
                                                   Representative(clTR[p][3])));
@@ -793,12 +793,12 @@ local clT,        # classes T
                 elif not stabtrue then
                   # we have an element that stabilizes the conjugacy class.
                   # correct this to an element that fixes the representative.
-                  # (As we have taken already the centralizer in
+                  # (As we have already taken the centralizer in
                   # centralizers_r, it is sufficient to correct by
                   # centralizers_r-conjugation.)
                   con:=trans[orpo]*gen;
                   limg:=opfun(repres,con);
-                  con:=con*PreImagesRepresentative(centrhom,
+                  con:=con*PreImagesRepresentativeNC(centrhom,
                            RepresentativeAction(localcent_r,
                                                  Image(projections[i],limg),
                                                  Representative(orb[p][3])));
@@ -870,7 +870,7 @@ local clT,        # classes T
 
                                 # remember the element to try
                                 trymap:=[p,(cengen[genpos2]*
-                                  PreImagesRepresentative(
+                                  PreImagesRepresentativeNC(
                                     RestrictedMapping(projections[i],
                                       centralizers[j]),
                                     RepresentativeAction(
@@ -1077,7 +1077,7 @@ local cs,       # chief series of G
       hom,      # G->G/cs[i]
       M,        # cs[i-1]
       N,        # cs[i]
-      subN,     # maximan normal in M over N
+      subN,     # maximal normal in M over N
       csM,      # orbit of nt in M under G
       n,        # Length(csM)
       T,        # List of T_i
@@ -1102,7 +1102,7 @@ local cs,       # chief series of G
       genimages,# G.generators Fhom
       img,      # gQhom
       gimg,     # gFhom
-      act,      # component permcation to 1
+      act,      # component permutation to 1
       j,k,      # loop
       clF,      # classes of F
       ncl,      # new classes
@@ -1126,7 +1126,7 @@ local cs,       # chief series of G
   # classes by lifts via nonabelian factors and can disregard all abelian
   # factors.
 
-  # we will give classes always by their representatives in G and
+  # we will always give classes by their representatives in G and
   # centralizers by their full preimages in G.
 
   cs:= ChiefSeriesThrough( G,[Socle(G)] );
@@ -1140,7 +1140,7 @@ local cs,       # chief series of G
     # compute the classes of the simple nonabelian factor by random search
     hom:=NaturalHomomorphismByNormalSubgroupNC(G,lastM);
     cl:=ConjugacyClasses(Image(hom));
-    cl:=List(cl,i->[PreImagesRepresentative(hom,Representative(i)),
+    cl:=List(cl,i->[PreImagesRepresentativeNC(hom,Representative(i)),
                     PreImage(hom,StabilizerOfExternalSet(i))]);
     cs:=Concatenation([G],Filtered(cs,x->IsSubset(lastM,x)));
   fi;
@@ -1152,8 +1152,8 @@ local cs,       # chief series of G
     N:=cs[i];
 
     Info(InfoHomClass,1,i,":",Index(M,N),";  ",Size(N));
-    if HasAbelianFactorGroup(M,N) then
-      Info(InfoHomClass,2,"abelian factor ignored");
+    if HasSolvableFactorGroup(M,N) or IsSubset(N,Socle(G)) then
+      Info(InfoHomClass,2,"solvable/top factor ignored");
     else
       # nonabelian factor. Now it means real work.
 
@@ -1207,7 +1207,7 @@ local cs,       # chief series of G
           autos:=List(GeneratorsOfGroup(G),
                     i->GroupHomomorphismByImagesNC(T1,T1,GeneratorsOfGroup(T1),
                       List(GeneratorsOfGroup(T1),
-                            j->Image(Thom,PreImagesRepresentative(Thom,j)^i))));
+                         j->Image(Thom,PreImagesRepresentativeNC(Thom,j)^i))));
 
           # find (probably another) permutation rep for T1 for which all
           # automorphisms can be represented by permutations
@@ -1268,7 +1268,7 @@ local cs,       # chief series of G
         autos:=List(GeneratorsOfGroup(S),
                   i->GroupHomomorphismByImagesNC(T1,T1,GeneratorsOfGroup(T1),
                     List(GeneratorsOfGroup(T1),
-                          j->Image(Thom,PreImagesRepresentative(Thom,j)^i))));
+                        j->Image(Thom,PreImagesRepresentativeNC(Thom,j)^i))));
 
         # find (probably another) permutation rep for T1 for which all
         # automorphisms can be represented by permutations
@@ -1288,7 +1288,7 @@ local cs,       # chief series of G
 
         # define isomorphisms between the components
         reps:=List([1..n],i->
-                PreImagesRepresentative(Qhom,RepresentativeAction(Q,1,i)));
+                PreImagesRepresentativeNC(Qhom,RepresentativeAction(Q,1,i)));
 
         genimages:=[];
         for j in GeneratorsOfGroup(G) do
@@ -1345,7 +1345,7 @@ local cs,       # chief series of G
               SetSize(F,Size(G));
               FM:=GroupHomomorphismByImagesNC(G,F,GeneratorsOfGroup(G),FM);
               clF:=ConjugacyClassesFittingFreeGroup(F);
-              clF:=List(clF,x->[PreImagesRepresentative(FM,x[1]),PreImage(FM,x[2])]);
+              clF:=List(clF,x->[PreImagesRepresentativeNC(FM,x[1]),PreImage(FM,x[2])]);
               return clF;
             fi;
           #fi;
@@ -1374,9 +1374,9 @@ local cs,       # chief series of G
         Info(InfoHomClass,1,
             "homomorphism is faithful for relevant factor, take preimages");
         if Size(N)=1 and onlysizes=true then
-          cl:=List(clF,i->[PreImagesRepresentative(Fhom,i[1]),Size(i[2])]);
+          cl:=List(clF,i->[PreImagesRepresentativeNC(Fhom,i[1]),Size(i[2])]);
         else
-          cl:=List(clF,i->[PreImagesRepresentative(Fhom,i[1]),
+          cl:=List(clF,i->[PreImagesRepresentativeNC(Fhom,i[1]),
                             PreImage(Fhom,i[2])]);
         fi;
       else
@@ -1391,7 +1391,7 @@ local cs,       # chief series of G
             for k in clF do
               # modify the representative with a kernel elm. to project
               # correctly on the second component
-              elm:=j[1]*PreImagesRepresentative(FMhom,
+              elm:=j[1]*PreImagesRepresentativeNC(FMhom,
                           LeftQuotient(Image(Fhom,j[1]),k[1]));
               zentr:=Intersection(j[2],PreImage(Fhom,k[2]));
               Assert(3,ForAll(GeneratorsOfGroup(zentr),
@@ -1449,7 +1449,7 @@ local cs,       # chief series of G
                     if Image(Qhom,elm)=jim then
                       # modify the representative with a kernel elm. to project
                       # correctly on the second component
-                      elm:=l[1]*PreImagesRepresentative(FMhom,
+                      elm:=l[1]*PreImagesRepresentativeNC(FMhom,
                                   LeftQuotient(Image(Fhom,l[1]),elm));
                       zentr:=PreImage(Fhom,k[2]^l1);
                       zentr:=Intersection(zentr,l[2]);
@@ -1835,7 +1835,7 @@ local  classes,            # classes to be constructed, the result
   List(comms,x->ConvertToVectorRep(x,field));
   space:=List(comms,ShallowCopy);
   TriangulizeMat(space);
-  space:=Filtered(space,i->i<>Zero(i)); # remove spurious columns
+  space:=Filtered(space,i->not IsZero(i)); # remove spurious columns
 
   com:=BaseSteinitzVectors(IdentityMat(n,field),space);
 
@@ -1896,7 +1896,7 @@ local  classes,            # classes to be constructed, the result
 
     Assert(1,solvsz=stabrsubsz*Length(orb));
 
-    #nosolvable part
+    #nonsolvable part
     orblock:=Length(orb);
     vp:=1;
     stabfacgens:=[];
@@ -1957,7 +1957,7 @@ local  classes,            # classes to be constructed, the result
       c := [h * PcElementByExponentsNC( Npcgs,w*com.factorspace),
             stabrad,stabfacgens,stabfacimg,subsz,stabrsubsz];
       #if reduce<>fail then
-  #        Add(classes,[PreImagesRepresentative(reduce,c[1]),
+  #        Add(classes,[PreImagesRepresentativeNC(reduce,c[1]),
   #          PreImage(reduce,c[2])]);
   #      else
 
@@ -2022,7 +2022,7 @@ BindGlobal("LiftClassesEATrivRep",
     nsfgens:=NormalIntersection(fants[usent],Group(cl[4]));
     fasize:=Size(nsfgens);
     nsfgens:=SmallGeneratingSet(nsfgens);
-    nsgens:=List(nsfgens,x->PreImagesRepresentative(hom,x));
+    nsgens:=List(nsfgens,x->PreImagesRepresentativeNC(hom,x));
     nsimgs:=List(Concatenation(pcgs,nsgens),npcgsact);
     mo:=GModuleByMats(nsimgs,field);
     if not MTX.IsIrreducible(mo) then
@@ -2183,7 +2183,7 @@ BindGlobal("LiftClassesEATrivRep",
 
   end;
 
-  orpo:=NewDictionary(orb[Length(orb)].rep,true,field^Length(orb[1].rep));
+  orpo:=NewDictionary(Last(orb).rep,true,field^Length(orb[1].rep));
   for p in [1..Length(orb)] do
     AddDictionary(orpo,orb[p].rep,p);
   od;
@@ -2338,7 +2338,7 @@ local r,        #radical
     if IsPermGroup(Range(hom)) and not IsPermGroup(Source(hom)) then
       f:=Image(hom,G);
       cl:=ConjugacyClassesFittingFreeGroup(f:onlysizes:=false);
-      cl:=List(cl,x->[PreImagesRepresentative(hom,x[1]),
+      cl:=List(cl,x->[PreImagesRepresentativeNC(hom,x[1]),
         PreImage(hom,x[2])]);
     else
       cl:=ConjugacyClassesFittingFreeGroup(G:onlysizes:=false);
@@ -2398,12 +2398,12 @@ local r,        #radical
     if ntrihom then
       ncl:=[];
       for i in cl do
-        new:=[PreImagesRepresentative(hom,i[1])];
+        new:=[PreImagesRepresentativeNC(hom,i[1])];
         if not IsInt(i[2]) then
           Add(new,[]); # no generators in radical yet
           gens:=SmallGeneratingSet(i[2]);
           Add(new,
-            List(gens,x->PreImagesRepresentative(hom,x)));
+            List(gens,x->PreImagesRepresentativeNC(hom,x)));
           Add(new,gens);
           #TODO: PreImage groups?
           #Add(new,PreImage(hom,i[2]));
@@ -2837,7 +2837,7 @@ local r,        #radical
     r:=ValueOption("candidatenums");
     if r<>fail and HasConjugacyClasses(G) then
       # candidatenums gives the numbers of some classes in G that should be
-      # tried first (as they likely contain the element). Us this to reduce
+      # tried first (as they likely contain the element). Use this to reduce
       # conjugacy test in factor.
       if not IsBound(G!.radicalfactorclassmap) then
         G!.radicalfactorclassmap:=[];
@@ -2886,10 +2886,10 @@ local r,        #radical
       fi;
       prereps:=f!.classpreimgs;
       if not IsBound(prereps[j]) then
-        prereps[j]:=PreImagesRepresentative(hom,Representative(cl[j]));
+        prereps[j]:=PreImagesRepresentativeNC(hom,Representative(cl[j]));
       fi;
 
-      r:=PreImagesRepresentative(hom,conj);
+      r:=PreImagesRepresentativeNC(hom,conj);
 
       d:=GeneratorsOfGroup(Centralizer(cl[j]));
       # Format for cl is:
@@ -2897,7 +2897,7 @@ local r,        #radical
       # in factor, 4:conjugator, 5:cenpcgs,
       # 6:cenfac, 7:cenfacimgs, 8:censize, 9:cenfacsize
       Add(nreps,[i,i^r,prereps[j],r,[],
-        List(d,x->PreImagesRepresentative(hom,x)),d,
+        List(d,x->PreImagesRepresentativeNC(hom,x)),d,
         radsize*Size(Centralizer(cl[j])), Size(Centralizer(cl[j]))]);
     od;
     reps:=nreps;
@@ -2963,7 +2963,7 @@ end);
 ##
 InstallMethod( CentralizerOp, "TF method:elm",IsCollsElms,
   [ IsGroup and IsFinite and HasFittingFreeLiftSetup,
-  IsMultiplicativeElementWithInverse ], OVERRIDENICE,
+  IsMultiplicativeElementWithInverse ], OverrideNice,
 function( G, e )
 local ffs,c,ind;
   if IsPcGroup(G)
@@ -2991,7 +2991,7 @@ end );
 InstallMethod( CentralizerOp, "TF method:subgroup",IsIdenticalObj,
   [ IsGroup and IsFinite and HasFittingFreeLiftSetup,
   IsGroup and IsFinite and HasGeneratorsOfGroup],
-  2*OVERRIDENICE,
+  {} -> 2*OverrideNice(),
 function( G, S )
 local c,e;
   if IsPermGroup(G) or IsPcGroup(G) then TryNextMethod();fi;
@@ -3011,7 +3011,7 @@ InstallOtherMethod( RepresentativeActionOp, "TF Method on elements",
   [ IsGroup and IsFinite and HasFittingFreeLiftSetup,
         IsMultiplicativeElementWithInverse,
         IsMultiplicativeElementWithInverse, IsFunction ],
-  OVERRIDENICE,
+  OverrideNice,
 function ( G, d, e, act )
 local c;
   if IsPcGroup(G)
@@ -3044,7 +3044,7 @@ end);
 #M  ConjugacyClasses( <G> ) . . . . . . . . . . . . . . . . . . of perm group
 ##
 InstallMethod( ConjugacyClasses, "perm group", true,
-  [ IsPermGroup and IsFinite],OVERRIDENICE,
+  [ IsPermGroup and IsFinite], OverrideNice,
 function( G )
 local cl;
   if IsNaturalSymmetricGroup(G) or IsNaturalAlternatingGroup(G) then
@@ -3073,7 +3073,7 @@ end );
 #M  ConjugacyClasses( <G> ) . . . . . . . . . . . . . . . . . . of perm group
 ##
 InstallMethod( ConjugacyClasses, "TF Method", true,
-  [ IsGroup and IsFinite and CanComputeFittingFree],OVERRIDENICE,
+  [ IsGroup and IsFinite and CanComputeFittingFree ], OverrideNice,
 function(G)
   if IsPermGroup(G) or IsPcGroup(G) then TryNextMethod();fi;
   return ConjugacyClassesViaRadical(G);

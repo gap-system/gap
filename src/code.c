@@ -44,22 +44,29 @@
 
 GAP_STATIC_ASSERT(sizeof(StatHeader) == 8, "StatHeader has wrong size");
 
+#ifdef HPCGAP
 struct CodeModuleState {
-    Bag StackStat;
-    Int CountStat;
+#endif
+DECL_MODULE_STATE Bag StackStat;
+DECL_MODULE_STATE Int CountStat;
 
-    Bag StackExpr;
-    Int CountExpr;
+DECL_MODULE_STATE Bag StackExpr;
+DECL_MODULE_STATE Int CountExpr;
+#ifdef HPCGAP
 };
 
 static ModuleStateOffset CodeStateOffset = -1;
 
+// for debugging from GDB / lldb, we mark this as extern inline
 extern inline struct CodeModuleState * CShelper(void)
 {
     return (struct CodeModuleState *)StateSlotsAtOffset(CodeStateOffset);
 }
 
 #define CS(x) (CShelper()->x)
+#else
+#define CS(x) (x)
+#endif
 
 
 /****************************************************************************
@@ -1653,7 +1660,7 @@ void CodeCharExpr(CodeState * cs, Char chr)
 
     // allocate the character expression
     litr = NewExpr(cs, EXPR_CHAR, sizeof(UInt));
-    WRITE_EXPR(cs, litr, 0, chr);
+    WRITE_EXPR(cs, litr, 0, (UChar)chr);
 
     // push the literal expression
     PushExpr( litr );
@@ -1755,14 +1762,14 @@ void CodeListExprEnd(
     }
 
     // allocate the list expression
-    if ( ! range && ! (top && tilde) ) {
-        list = NewExpr(cs, EXPR_LIST, INT_INTEXPR(pos) * sizeof(Expr));
+    if (range) {
+        list = NewExpr(cs, EXPR_RANGE, INT_INTEXPR(pos) * sizeof(Expr));
     }
-    else if ( ! range && (top && tilde) ) {
+    else if (top && tilde) {
         list = NewExpr(cs, EXPR_LIST_TILDE, INT_INTEXPR(pos) * sizeof(Expr));
     }
-    else /* if ( range && ! (top && tilde) ) */ {
-        list = NewExpr(cs, EXPR_RANGE, INT_INTEXPR(pos) * sizeof(Expr));
+    else {
+        list = NewExpr(cs, EXPR_LIST, INT_INTEXPR(pos) * sizeof(Expr));
     }
 
     // enter the entries
@@ -3250,8 +3257,10 @@ static StructInitInfo module = {
     .preSave = PreSave,
     .postRestore = PostRestore,
 
+#ifdef HPCGAP
     .moduleStateSize = sizeof(struct CodeModuleState),
     .moduleStateOffsetPtr = &CodeStateOffset,
+#endif
     .initModuleState = InitModuleState,
 };
 

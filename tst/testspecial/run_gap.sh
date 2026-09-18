@@ -18,6 +18,7 @@ GAPROOT=$("$gap" --print-gaproot)
 ( echo "LogTo(\"${outfile}.tmp\");" ; cat "$gfile" ; echo "QUIT;" ) |
     "$gap" -r -A -b -m 256m -o 512m -x 800 \
            -c 'SetUserPreference("UseColorsInTerminal",false);' \
+           -c 'SetUserPreference("WhereDepth", 5);' \
            2>/dev/null >/dev/null
 sed -E -e "s:${GAPROOT//:/\\:}:GAPROOT/:g" -e "s;(GAPROOT(/[^/]+)+):[0-9]+;\1:LINE;g" < "${outfile}.tmp" > "${outfile}"
 rm "${outfile}.tmp"

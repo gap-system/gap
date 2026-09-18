@@ -238,7 +238,7 @@ gap> SpinorNorm(form,GF(3),gens[1]);
 Z(3)^0
 gap> SpinorNorm(form,GF(3),gens[2]);
 Z(3)^0
-gap> w := PrimitiveElement(GF(3));;
+gap> w := PrimitiveRoot(GF(3));;
 gap> g := IdentityMat(4,GF(3));;
 gap> SpinorNorm(form,GF(3),g);
 Z(3)^0

@@ -73,7 +73,7 @@ InstallGlobalFunction( FamiliesOfRows, function( mat, maps )
     for row in maps do
       j:= j+1;
       Add( famreps, ShallowCopy( row ) );
-      Add( permutations, [ Sortex( famreps[ Length( famreps ) ] ) ] );
+      Add( permutations, [ Sortex( Last(famreps) ) ] );
       Add( families, [ j ] );
     od;
 
@@ -840,8 +840,8 @@ InstallMethod( TransformingPermutations,
                                        x -> row1[x] = values[k] ) );
             Add( bij_col[2], Filtered( image,
                                        x -> row2[x] = values[k] ) );
-            if Length( bij_col[1][ Length( bij_col[1] ) ] )
-               <> Length( bij_col[2][ Length( bij_col[2] ) ] ) then
+            if Length( Last(bij_col[1]) )
+               <> Length( Last(bij_col[2]) ) then
               Info( InfoMatrix, 2,
                     "TransformingPermutations: ",
                     "no bijection of column families" );
@@ -891,8 +891,8 @@ InstallMethod( TransformingPermutations,
                                        x -> row1[x] = values[k] ) );
             Add( bij_col[2], Filtered( image,
                                        x -> row2[x] = values[k] ) );
-            if Length( bij_col[1][ Length( bij_col[1] ) ] )
-               <> Length( bij_col[2][ Length( bij_col[2] ) ] ) then
+            if Length( Last(bij_col[1]) )
+               <> Length( Last(bij_col[2]) ) then
               Info( InfoMatrix, 2,
                     "TransformingPermutations: ",
                     "no bijection of column families" );
@@ -915,7 +915,7 @@ InstallMethod( TransformingPermutations,
     nonfixedpoints:= Filtered( bij_col[2], x -> 1 < Length(x) );
 
     # Step 4:
-    # Compute a direct prouct of symmetric groups that covers the
+    # Compute a direct product of symmetric groups that covers the
     # group of table automorphisms of mat2, using column families
     # given by `bij_col[2]'.
 

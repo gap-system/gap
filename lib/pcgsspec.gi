@@ -599,8 +599,15 @@ function( pcgs )
         # change to complement base
         Info(InfoSpecPcgs, 1, "exhibit complement system");
         pcgssys := PcgsSystemWithComplementSystem( pcgssys );
-        if IsBound(pcgssys.pcgs!.LGWeights) then
-          # pcgs is reused -- force new one
+        if IsBound(pcgssys.pcgs!.LGWeights)
+           or HasIndicesEANormalSteps(pcgssys.pcgs)
+           or HasIndicesChiefNormalSteps(pcgssys.pcgs)
+           or HasIndicesCentralNormalSteps(pcgssys.pcgs)
+           or HasIndicesPCentralNormalStepsPGroup(pcgssys.pcgs) then
+          # pcgs is reused and already carries series indices which might be
+          # incompatible with the LG series -- force new one. (Setting an
+          # attribute that is already set is silently ignored, so reusing such
+          # a pcgs would leave it in an inconsistent state.)
           pcgssys.pcgs:=PcgsByPcSequence(FamilyObj(OneOfPcgs(pcgs)),
             pcgssys.pcgs!.pcSequence);
         fi;
@@ -610,7 +617,7 @@ function( pcgs )
         SetIsSpecialPcgs( newpcgs, true );
 
         w:=pcgssys.weights;
-        if w[Length(w)][1]=1 then
+        if Last(w)[1]=1 then
           SetIndicesCentralNormalSteps( newpcgs, pcgssys.first );
           if Length(Set(RelativeOrders(newpcgs)))=1 then
             SetIndicesPCentralNormalStepsPGroup( newpcgs, pcgssys.first );
@@ -686,12 +693,7 @@ InstallOtherMethod( SpecialPcgs,
 function( group )
     local   spec;
 
-    if HasPcgs(group)  then
-        spec := SpecialPcgs( Pcgs( group ) );
-    else
-        spec := SpecialPcgs( AttributeValueNotSet( Pcgs, group ) );
-        SetPcgs( group, spec );
-    fi;
+    spec := SpecialPcgs( Pcgs( group ) );
     SetGroupOfPcgs (spec, group);
     return spec;
 end );
@@ -727,13 +729,13 @@ local s,H,iso,pc,w;
   SetLGLayers(pc,LGLayers(s));
   SetLGFirst(pc,LGFirst(s));
   SetIsSpecialPcgs(pc,true);
-  if Length(LGWeights(pc)) = 0 or LGWeights(pc)[Length(LGWeights(pc))][1]=1 then
+  if Length(LGWeights(pc)) = 0 or Last(LGWeights(pc))[1]=1 then
         SetIsPcgsCentralSeries(pc,true);
   fi;
   SetIndicesEANormalSteps( pc, LGFirst(pc) );
   SetIndicesChiefNormalSteps( pc, LGFirst(pc) );
   w:=LGWeights(pc);
-  if Length(w) > 0 and w[Length(w)][1]=1 then
+  if Length(w) > 0 and Last(w)[1]=1 then
     SetIndicesCentralNormalSteps( pc, LGFirst(pc));
     if Length(Set(RelativeOrders(pc)))=1 then
       SetIndicesPCentralNormalStepsPGroup( pc, LGFirst(pc) );
@@ -757,6 +759,9 @@ InstallMethod( IsomorphismSpecialPcGroup, "generic method for groups",
 function(G)
 local iso;
   iso:=IsomorphismPcGroup(G);
+  if iso = fail then
+    return fail;
+  fi;
   return iso*IsomorphismSpecialPcGroup(Range(iso));
 end);
 
@@ -961,7 +966,7 @@ InstallMethod( IndicesEANormalSteps, "special pcgs: LGFirst", true,
 BindGlobal( "DoCentralSeriesPcgsIfNilpot", function(G)
 local w;
   w:=LGWeights(SpecialPcgs(G));
-  if w[Length(w)][1]<>1 then
+  if Last(w)[1]<>1 then
     Error("The group is not nilpotent");
   fi;
   return SpecialPcgs(G);

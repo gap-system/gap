@@ -23,11 +23,11 @@
 
 #ifdef GAP_MEM_CHECK
 #include <fcntl.h>
-#include <stdlib.h>     // for qsort
-#include <unistd.h>     // for ftruncate, getpid, unlink
 #endif
 
+#include <stdlib.h>     // for calloc, qsort
 #include <stdio.h>      // for fputs
+#include <unistd.h>     // for ftruncate, getpid, unlink, sbrk, sysconf
 
 #ifdef HAVE_MADVISE
 #include <sys/mman.h>
@@ -37,7 +37,6 @@
 #include <mach/mach.h>
 #elif defined(HAVE_SBRK)
 #include <string.h>     // for memset
-#include <unistd.h>     // for sbrk
 #endif
 
 
@@ -420,9 +419,7 @@ static int SyTryToIncreasePool(void)
 static void SyInitialAllocPool(void)
 {
 #ifdef HAVE_SYSCONF
-#ifdef _SC_PAGESIZE
    pagesize = sysconf(_SC_PAGESIZE);
-#endif
 #endif
    // Otherwise we take the default of 4k as pagesize.
 

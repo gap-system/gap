@@ -74,6 +74,24 @@ gap> TestIdentityMatrix(IsPlistMatrixRep, Integers mod 4, -1);
 Error, IdentityMatrix: the dimension must be non-negative
 
 #
+# IsGenericMatrixRep
+#
+gap> TestIdentityMatrix(IsGenericMatrixRep, GF(2), 2);
+<2x2-matrix over GF(2)>
+gap> TestIdentityMatrix(IsGenericMatrixRep, GF(2), 0);
+<0x0-matrix over GF(2)>
+gap> TestIdentityMatrix(IsGenericMatrixRep, GF(2), -1);
+Error, IdentityMatrix: the dimension must be non-negative
+
+#
+gap> TestIdentityMatrix(IsGenericMatrixRep, Integers, 2);
+<2x2-matrix over Integers>
+gap> TestIdentityMatrix(IsGenericMatrixRep, Integers, 0);
+<0x0-matrix over Integers>
+gap> TestIdentityMatrix(IsGenericMatrixRep, Integers, -1);
+Error, IdentityMatrix: the dimension must be non-negative
+
+#
 # Test IdentityMatrix variant which "guesses" a suitable representation, i.e.:
 #    IdentityMatrix( <R>, <m>, <n> )
 #
@@ -117,6 +135,13 @@ gap> IdentityMatrix(GF(4), 0);
 Error, Is8BitMatrixRep with zero rows not yet supported
 gap> IdentityMatrix(GF(4), -1);
 Error, IdentityMatrix: the dimension must be non-negative
+
+#
+gap> m := [ [ 1, 0, 0 ], [ 0, 1, 0 ] ];;
+gap> IsOne(m);
+false
+gap> IsOne(Matrix(IsPlistMatrixRep, Integers, m));
+false
 
 #
 gap> STOP_TEST("IdentityMatrix.tst");

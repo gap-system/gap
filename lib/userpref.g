@@ -14,6 +14,7 @@
 ##  or in package files.
 ##
 
+
 #############################################################################
 ##
 #F  DeclareUserPreference( <record> )
@@ -57,7 +58,7 @@
 ##  packages are shown.
 ##  The <Package>Browse</Package> package provides the function
 ##  <Ref Func="BrowseUserPreferences" BookName="browse"/> which gives an
-##  overview of the known user preferenes and also admits editing the
+##  overview of the known user preferences and also admits editing the
 ##  values of the preferences. <P/>
 ##
 ##  The easiest way to  make use of user preferences is  probably to use the
@@ -449,20 +450,16 @@ BindGlobal( "DataOfUserPreference", function( pkgname, name )
 #F  StringUserPreference( <data>, <ignorecurrent> )
 ##
 BindGlobal( "StringUserPreference", function( data, ignorecurrent )
-    local string, width, format, paragraph, line;
+    local string, paragraph, line;
 
     if data = fail then
       return "";
     fi;
 
     string:= [];
-    width:= SizeScreen()[1] - 6;
-    format:= ValueGlobal( "FormatParagraph" );
     for paragraph in data.description do
-      Append( string, format( paragraph, width, "left", [ "##  ", "" ] ) );
-    # Append( string, "##  " );
-    # Append( string, line );
-    # Append( string, "\n" );
+      # the file is written with a fixed width of 78 characters
+      Append( string, _FormatParagraph( paragraph, 78, "##  ", "" ) );
     od;
     for line in data.values do
       if ignorecurrent then
@@ -527,15 +524,16 @@ BindGlobal( "StripMarkupFromUserPreferenceDescription", function( str )
 #F  ShowStringUserPreference( <data> )
 ##
 BindGlobal( "ShowStringUserPreference", function( data )
-    local string, width, format, line, paragraph, suff;
+    local string, width, line, paragraph, suff;
 
     if data = fail then
       return "";
     fi;
 
+    width:= SizeScreen()[1] - 2;
+
     # Show the name(s), with indent 2.
     string:= [];
-    width:= SizeScreen()[1] - 6;
     Append( string, "  " );
     for line in data.values do
       Append( string, line[2] );
@@ -545,10 +543,9 @@ BindGlobal( "ShowStringUserPreference", function( data )
     string[ Length( string ) ]:= '\n';
 
     # Show the formatted description, with indent 4.
-    format:= ValueGlobal( "FormatParagraph" );
     for paragraph in List( data.description,
                            StripMarkupFromUserPreferenceDescription ) do
-      Append( string, format( paragraph, width, "left", [ "    ", "" ] ) );
+      Append( string, _FormatParagraph( paragraph, width, "    ", "" ) );
     od;
 
     # Show the default value(s), with indent 6.
@@ -620,8 +617,6 @@ BindGlobal( "StringUserPreferences", function( arg )
     # Run over the preferences, first the ones that belong to GAP,
     # then the ones that belong to packages
     pkglist := Concatenation(["gap"], Difference(RecNames( pref ), ["gap"] ));
-## HACKUSERPREF  temporary until all packages are adjusted
-    pkglist := Filtered(pkglist, a-> not a in ["Pager","ReadObsolete"]);
     for pkgname in pkglist do
       Append( str, ListWithIdenticalEntries( 77, '#' ) );
       Append( str, "\n\n" );
@@ -662,9 +657,6 @@ BindGlobal( "ShowUserPreferences", function(arg)
       pkglist := Concatenation(  [ "gap" ],
                        Difference( RecNames( pref ), [ "gap" ] ) );
     fi;
-
-## HACKUSERPREF  temporary until all packages are adjusted
-    pkglist := Filtered(pkglist, a-> not a in ["Pager","ReadObsolete"]);
 
     str:= "";
     for pkgname in pkglist do
@@ -725,7 +717,7 @@ BindGlobal( "ShowUserPreferences", function(arg)
 ##  GAP Reference Manual.
 ##
 BindGlobal( "XMLForUserPreferences", function( pkgname )
-    local stringOfValue, pref, str, done, format, width, name, data, names,
+    local stringOfValue, pref, str, done, name, data, names,
           default;
 
     stringOfValue:= function( val )
@@ -743,8 +735,6 @@ BindGlobal( "XMLForUserPreferences", function( pkgname )
     str:= "";
     done:= [];
     if IsRecord( pref.( pkgname ) ) then
-      format:= ValueGlobal( "FormatParagraph" );
-      width:= ValueGlobal( "WidthUTF8String" );
       for name in Set( RecNames( pref.( pkgname ) ) ) do
         if not name in done then
           data:= First( GAPInfo.DeclarationsOfUserPreferences,
@@ -777,7 +767,7 @@ BindGlobal( "XMLForUserPreferences", function( pkgname )
             # Show the description, which may contain GAPDoc markup.
             Append( str, JoinStringsWithSeparator(
                            List( data.description,
-                                 para -> format( para, "left", width ) ),
+                                 para -> _FormatParagraph( para, 78, "", "" ) ),
                            "<P/>\n" ) );
 
             # Show admissible values if applicable.

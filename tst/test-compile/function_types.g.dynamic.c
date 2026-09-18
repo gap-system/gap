@@ -386,6 +386,7 @@ static Obj  HdlrFunc7 (
  SET_ENDLINE_BODY(t_3, 35);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
+ CHANGED_BAG(t_2);
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -406,6 +407,7 @@ static Obj  HdlrFunc7 (
  SET_ENDLINE_BODY(t_3, 36);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
+ CHANGED_BAG(t_2);
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -426,6 +428,7 @@ static Obj  HdlrFunc7 (
  SET_ENDLINE_BODY(t_3, 37);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
+ CHANGED_BAG(t_2);
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -446,6 +449,7 @@ static Obj  HdlrFunc7 (
  SET_ENDLINE_BODY(t_3, 38);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
+ CHANGED_BAG(t_2);
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -482,6 +486,7 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 3);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
+ CHANGED_BAG(t_1);
  AssGVar( G_f1, t_1 );
  
  /* f2 := function ( a, b )
@@ -495,6 +500,7 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 7);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
+ CHANGED_BAG(t_1);
  AssGVar( G_f2, t_1 );
  
  /* f3 := function ( a... )
@@ -508,6 +514,7 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 11);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
+ CHANGED_BAG(t_1);
  AssGVar( G_f3, t_1 );
  
  /* f4 := function ( a, b... )
@@ -521,6 +528,7 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 15);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
+ CHANGED_BAG(t_1);
  AssGVar( G_f4, t_1 );
  
  /* f5 := function ( a\,b )
@@ -534,6 +542,7 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 20);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
+ CHANGED_BAG(t_1);
  AssGVar( G_f5, t_1 );
  
  /* runtest := function (  )
@@ -568,6 +577,7 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 40);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
+ CHANGED_BAG(t_1);
  AssGVar( G_runtest, t_1 );
  
  /* return; */

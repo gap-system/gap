@@ -137,7 +137,7 @@ end;
 ##  times and afterwards the rest is done in a single interval.
 ##  The nice point is here that the total running time is almost the same for 
 ##  a large range of values for num and rounds. This means we have split the
-##  whole work into many small tasks with neglectible overhead.
+##  whole work into many small tasks with negligible overhead.
 ##  
 ##  I have played with various possibilities to vary the lengths of the
 ##  intervals of rows given to TrigonalizeSubset during the algorithm.

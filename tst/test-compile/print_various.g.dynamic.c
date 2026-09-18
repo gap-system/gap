@@ -160,6 +160,7 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 7);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
+ CHANGED_BAG(t_1);
  AssGVar( G_runtest, t_1 );
  
  /* return; */

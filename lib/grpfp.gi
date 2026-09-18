@@ -319,7 +319,7 @@ local fam,hom;
   if hom=fail then
      TryNextMethod();
   fi;
-  return PreImagesRepresentative(hom,Random(rs, Image(hom,gp)));
+  return PreImagesRepresentativeNC(hom,Random(rs, Image(hom,gp)));
 end );
 
 #############################################################################
@@ -810,7 +810,7 @@ BindGlobal("HasFullColumnRankIntMatDestructive",function( mat )
     fi;
   od;
   if rb<n-1 then
-    # the modulo calculation gesses rank `rb'. If this is the rank, then rb+1
+    # the modulo calculation guesses rank `rb'. If this is the rank, then rb+1
     # columns should be dependent!
     r:=[1..rb+1];
     mp:=List(mat,x->x{r});
@@ -1030,7 +1030,7 @@ end );
 #M                                                     do a coset enumeration
 ##
 ##  'CosetTableFromGensAndRels'  is the workhorse  for computing  a coset
-##  table of H in G where G is a finitley presented group, H is a subgroup of
+##  table of H in G where G is a finitely presented group, H is a subgroup of
 ##  G,  and  G  is the whole group of  H.  It applies a Felsch strategy Todd-
 ##  Coxeter coset enumeration. The expected parameters are
 ##
@@ -1049,7 +1049,7 @@ end );
 ##    enumeration does not finish with this number of cosets, an error is
 ##    raised and the user is asked whether she wants to continue
 ##
-##    `silent'  & if set to `true' the algorithm will not rais the error
+##    `silent'  & if set to `true' the algorithm will not raise the error
 ##    mentioned under option `max' but silently return `fail'. This can be
 ##    useful if an enumeration is only wanted unless it becomes too big.
 ##  \enditems
@@ -1113,10 +1113,10 @@ BindGlobal("GTC_CosetTableFromGensAndRels",function(arg)
     # to give tidy instructions if one enters a break-loop
     SavedOnBreakMessage := OnBreakMessage;
     TCEOnBreakMessage := function(n)
-      Print( "type 'return;' if you want to continue with a new limit of ",
+      Print( "you can enter 'return;' to continue with a new limit of ",
              n, " cosets,\n",
-             "type 'quit;' if you want to quit the coset enumeration,\n",
-             "type 'maxlimit := 0; return;' in order to continue without a ",
+             "you can enter 'quit;' to abort the coset enumeration,\n",
+             "you can enter 'maxlimit := 0; return;' in order to continue without a ",
              "limit\n" );
       OnBreakMessage := SavedOnBreakMessage;
     end;
@@ -1901,7 +1901,7 @@ function ( G, H )
         return G;
     fi;
 
-    # its worth to check inclusion first
+    # it's worth checking inclusion first
     if IndexInWholeGroup(G)<=IndexInWholeGroup(H) and IsSubset(G,H) then
       return H;
     elif IndexInWholeGroup(H)<=IndexInWholeGroup(G) and IsSubset(H,G) then
@@ -1976,7 +1976,7 @@ InstallMethod(Intersection2,"subgroups of fp group by quotient",IsIdenticalObj,
 function ( G, H )
 local d,A,B,e1,e2,Ag,Bg,s,sg,u,v,map,sz;
 
-  # it is not worth to check inclusion first since we're reducing afterwards
+  # it is not worth checking inclusion first since we're reducing afterwards
   #if IndexInWholeGroup(G)<=IndexInWholeGroup(H) and IsSubset(G,H) then
   #  return H;
   #elif IndexInWholeGroup(H)<=IndexInWholeGroup(G) and IsSubset(H,G) then
@@ -2031,11 +2031,11 @@ local d,A,B,e1,e2,Ag,Bg,s,sg,u,v,map,sz;
   # instead of intersecting both preimages with s we only intersect the
   # intersection
 
-  u:=PreImagesSet(Projection(d,1),G!.sub);
+  u:=PreImagesSetNC(Projection(d,1),G!.sub);
   if HasSize(B) then
     SetSize(u,Size(G!.sub)*Size(B));
   fi;
-  v:=PreImagesSet(Projection(d,2),H!.sub);
+  v:=PreImagesSetNC(Projection(d,2),H!.sub);
   if HasSize(A) then
     SetSize(v,Size(H!.sub)*Size(A));
   fi;
@@ -2050,7 +2050,7 @@ local d,A,B,e1,e2,Ag,Bg,s,sg,u,v,map,sz;
     e2:=Length(Orbits(s,MovedPoints(s)));
     d:=ValueOption("reduce");
     if (d<>false and HasSize(s) and
-      # test proportiopnal to how much orbits added
+      # test proportional to how much orbits added
       (Random([1..e2+1])>e1) ) or d=true then
       d:=SmallerDegreePermutationRepresentation(s:cheap);
       A:=SubgroupNC(Range(d),List(GeneratorsOfGroup(s),x->ImagesRepresentative(d,x)));
@@ -2081,7 +2081,7 @@ local ind,q,is;
   else
     # force a final reduction
     is:=Intersection(l{[1..Length(l)-1]});
-    is:=Intersection(is,l[Length(l)]:reduce:=true);
+    is:=Intersection(is,Last(l):reduce:=true);
   fi;
   q:=DefiningQuotientHomomorphism(is);
   return q;
@@ -3063,7 +3063,7 @@ local m, rels, rel,w, wo, ok, a, k, t, ts, data, i, j;
   for i in RelatorsOfFpGroup(G) do
     w:=LetterRepAssocWord(i);
     # cyclic reduction
-    while Length(w)>0 and w[1]=-w[Length(w)] do
+    while Length(w)>0 and w[1]=-Last(w) do
       w:=w{[2..Length(w)-1]};
     od;
 
@@ -3167,7 +3167,7 @@ InstallMethod( LowIndexSubgroupsFpGroupIterator,
             local u, v;
 
             u:= NextIterator( iter!.fullIterator );
-            v:= PreImagesSet( fpi, u );
+            v:= PreImagesSetNC( fpi, u );
             SetIndexInWholeGroup( v,
                 IndexInWholeGroup( G ) * IndexInWholeGroup( u ) );
             return v;
@@ -3236,7 +3236,7 @@ local fpi,u,l,i,a;
 
   l:=[];
   for i in u do
-    a:=PreImagesSet(fpi,i);
+    a:=PreImagesSetNC(fpi,i);
     SetIndexInWholeGroup(a,IndexInWholeGroup(G)*IndexInWholeGroup(i));
     Add(l,a);
   od;
@@ -3379,8 +3379,8 @@ local d,A,B,e1,e2,Ag,Bg,s,sg,u,v;
   # get both subgroups in the direct product via the projections
   # instead of intersecting both preimages with s we only intersect the
   # intersection
-  u:=PreImagesSet(Projection(d,1),G!.sub);
-  v:=PreImagesSet(Projection(d,2),H!.sub);
+  u:=PreImagesSetNC(Projection(d,1),G!.sub);
+  v:=PreImagesSetNC(Projection(d,2),H!.sub);
   u:=Intersection(u,s);
   v:=Intersection(v,s);
 
@@ -3796,7 +3796,7 @@ end );
 ##  enumerations with cumulatively bigger coset tables up to table size
 ##  <maxtable>. It returns `fail' if no table could be found.
 BindGlobal("FinIndexCyclicSubgroupGenerator",function(G,maxtable)
-  local fgens, grels, powers, max, gens, t, Attempt, perms, short;
+  local fgens, grels, max, gens, t, Attempt, perms, short;
 
   fgens:=FreeGeneratorsOfFpGroup(G);
   grels:=RelatorsOfFpGroup(G);
@@ -3806,15 +3806,6 @@ BindGlobal("FinIndexCyclicSubgroupGenerator",function(G,maxtable)
     max:=CosetTableDefaultMaxLimit;
   fi;
   max:=Minimum(max,maxtable);
-
-  powers := List(grels, ExtRepOfObj);
-  powers := Filtered(powers, x -> Length(x) = 2);
-  if not IsEmpty(powers) then
-    SortBy(powers, x -> x[2]);
-    if Last(powers)[2] > 10 then
-      max := Last(powers)[2];
-    fi;
-  fi;
 
   # take the generators, most frequent first
   gens:=GeneratorsOfGroup(G);
@@ -3877,8 +3868,8 @@ BindGlobal("FinIndexCyclicSubgroupGenerator",function(G,maxtable)
         x->[Order(MappedWord(x,FreeGeneratorsOfFpGroup(G),perms)),x]);
       # prefer large order and short word length
       SortBy(short,x->[x[1],-Length(x[2])]);
-      Info(InfoFpGroup,1,"FIS: better ",short[Length(short)][1]);
-      return [ElementOfFpGroup(FamilyObj(One(G)),short[Length(short)][2]),
+      Info(InfoFpGroup,1,"FIS: better ",Last(short)[1]);
+      return [ElementOfFpGroup(FamilyObj(One(G)),Last(short)[2]),
               max];
     fi;
     if max*3/2<maxtable and max*2>maxtable then
@@ -3962,7 +3953,7 @@ InstallMethod(Size, "for finitely presented groups", true,
 
 #############################################################################
 ##
-#M  Size( <H> )  . . . . . . size of s subgroup of a finitely presented group
+#M  Size( <H> )  . . . . . . size of a subgroup of a finitely presented group
 ##
 InstallMethod(Size,"subgroups of finitely presented groups",true,
     [ IsSubgroupFpGroup ], 0,
@@ -4026,7 +4017,7 @@ local mappow, G, max, p, gens, rels, comb, i, l, m, H, HH, t, sz,
     max:=CosetTableDefaultMaxLimit;
   fi;
 
-  # handle free and trivial group
+  # handle trivial free group
   if 0 = Length( FreeGeneratorsOfFpGroup( G )) then
     p:=GroupHomomorphismByImagesNC(G,GroupByGenerators([],()),[],[]);
     SetIsomorphismPermGroup(G,p);
@@ -4065,11 +4056,15 @@ local mappow, G, max, p, gens, rels, comb, i, l, m, H, HH, t, sz,
     fi;
     SetSize(G,sz);
   fi;
-  if Size(G)=infinity then
+  sz:= Size(G);
+  if sz = infinity then
     return fail;
+  elif sz = 1 then
+    # handle trivial group
+    p:= GroupHomomorphismByImagesNC( G, GroupByGenerators( [], () ), [], [] );
+    SetIsomorphismPermGroup( G, p );
+    return p;
   fi;
-
-  sz:=Size(G);
 
   if sz*10>max then
     max:=sz*10;
@@ -4224,7 +4219,7 @@ local mappow, G, max, p, gens, rels, comb, i, l, m, H, HH, t, sz,
           rp:=r^(o/i);
           eo:=[1]; # {1} is a base
           for z in [2..i] do
-            Add(eo,eo[Length(eo)]^rp);
+            Add(eo,Last(eo)^rp);
           od;
           rpo:=[0..i-1];
           SortParallel(eo,rpo);
@@ -4337,7 +4332,7 @@ local s, a, hom;
   fi;
   hom:=EpimorphismSolvableQuotient(G,s);
   if Size(Image(hom))<>s then
-    Error("group is not solvable");
+    return fail;
   else
     SetIsInjective(hom, true);
   fi;
@@ -5502,7 +5497,7 @@ local G,T,gens,g,reps,ng,index,i,j,ndef,n,iso;
         subgroup := U,
         iso:=iso,
         table:=T,
-        reps:=List(reps,i->PreImagesRepresentative(iso,i))));
+        reps:=List(reps,i->PreImagesRepresentativeNC(iso,i))));
   fi;
 
   ndef := 1;
@@ -5522,7 +5517,7 @@ local G,T,gens,g,reps,ng,index,i,j,ndef,n,iso;
               subgroup := U,
               iso:=iso,
               table:=T,
-              reps:=List(reps,i->PreImagesRepresentative(iso,i))));
+              reps:=List(reps,i->PreImagesRepresentativeNC(iso,i))));
         fi;
       fi;
     od;
@@ -5866,3 +5861,45 @@ InstallMethod( IndependentGeneratorsOfAbelianGroup,
   IndependentGeneratorsOfMaximalAbelianQuotientOfFpGroup );
 
 BindGlobal( "TRIVIAL_FP_GROUP", FreeGroup(0) / [] );
+
+
+#############################################################################
+##
+#M  ConjugacyClasses( <G> ) . . . . . . . .  for f.p. groups (error messages)
+##
+##  For an FpGroup that does not have the 'IsFinite' flag,
+##  we do not want that calling 'ConjugacyClasses' triggers a call of
+##  'IsFinite',
+##  see the introduction of the Chapter "Finitely Presented Groups"
+##  in the Reference Manual.
+##
+InstallMethod( ConjugacyClasses,
+  "throw an error for f.p. groups without HasIsFinite",
+  [ IsSubgroupFpGroup ],
+  function( G )
+  if HasIsFinite( G ) then
+    # If 'G' knows to be finite then we should not get here.
+    Assert( 0, not IsFinite( G ), "there should be a higher ranked method" );
+    # We can at least give a better message than "no method found".
+    ErrorNoReturn( "the f.p. group <G> is not finite" );
+  fi;
+
+  while not ( HasIsFinite( G ) and IsFinite( G ) ) do
+    if HasIsFinite( G ) then
+      ErrorNoReturn( "the f.p. group <G> is not finite" );
+    fi;
+    Error( "the f.p. group <G> does not know whether it is finite,\n",
+           "no 'ConjugacyClasses' method is available for such groups,\n",
+           "see the introduction to Chapter \"Finitely Presented Groups\"\n",
+           "in the Reference Manual for the background.\n",
+           "Perhaps you want to replace <G> by a group of another type.\n",
+           "If you want to continue with the given <G> then\n",
+           "you can call 'IsFinite( G );' and then enter 'return;'.\n",
+           "(This call may not terminate.)" );
+  od;
+  if HasIsFinite( G ) and IsFinite( G ) then
+    # The type of 'G' has changed since we entered the method,
+    # it is safe to call the operation again.
+    return ConjugacyClasses( G );
+  fi;
+end );

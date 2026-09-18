@@ -658,38 +658,120 @@ InstallOtherMethod( \/,
 #M  CharacterDegrees( <G> ) . . . . . . . . . . . . . . . . . . . for a group
 #M  CharacterDegrees( <G>, <zero> ) . . . . . . . . . .  for a group and zero
 ##
-##  The attribute delegates to the two-argument version.
-##  The two-argument version delegates to `Irr'.
+##  - The two-argument version with second argument zero
+##    delegates to the one-argument version.
+##
+##  - The two-argument version with second argument a positive integer <p>
+##    has one method that
+##    - calls the one-argument version if <p> does not divide the group order,
+##    - calls 'CharacterDegreesAbelian' if the group is abelian,
+##    - uses stored irreducibles of the Brauer character table in question,
+##    - calls 'CharacterDegreesConlon' if the group is solvable,
+##    - and delegates to the Brauer character table in question otherwise
+##      (which may result in an error if the degrees  cannot be computed).
+##
+##  - The one-argument version has at least the following methods,
+##    listed according to decreasing rank:
+##    - system getter,
+##    - applicable to 'IsGroup and IsAbelian',
+##    - applicable to 'IsGroup and HasIrr',
+##    - applicable to 'IsGroup and HasOrdinaryCharacterTable'
+##      (call 'TryNextMethod()' if the table does not store irreducibles),
+##    - applicable to 'IsGroup and IsHandledByNiceMonomorphism'
+##      (gets installed via 'AttributeMethodByNiceMonomorphism'),
+##    - applicable to 'IsGroup and MayBeHandledByNiceMonomorphism'
+##      (gets installed via 'AttributeMethodByNiceMonomorphism'),
+##    - applicable to 'IsGroup'
+##      (this method decides about the algorithm to be used).
 ##
 InstallMethod( CharacterDegrees,
-    "for a group (call the two-argument version)",
-    [ IsGroup ],
-    G -> CharacterDegrees( G, 0 ) );
+    "for a group, and zero (call the one-argument version)",
+    [ IsGroup, IsZeroCyc ],
+    { G, zero } -> List( CharacterDegrees( G ), ShallowCopy ) );
+
+BindGlobal( "CharacterDegreesAbelian", function( G, p )
+    G:= Size( G );
+    if p <> 0 then
+      while G mod p = 0 do
+        G:= G / p;
+      od;
+    fi;
+    return [ [ 1, G ] ];
+    end );
 
 InstallMethod( CharacterDegrees,
-    "for a group, and zero",
-    [ IsGroup, IsZeroCyc ],
-    function( G, zero )
+    "for an abelian group",
+    [ IsGroup and IsAbelian ],
+    {} -> RankFilter( IsHandledByNiceMonomorphism ), # override nice mon. method
+    G -> CharacterDegreesAbelian( G, 0 ) );
 
-    # Force a check whether the group is solvable.
-    if not HasIsSolvableGroup( G ) and IsSolvableGroup( G ) then
+InstallMethod( CharacterDegrees,
+    "for a group with known Irr value",
+    [ IsGroup and HasIrr ],
+    {} -> RankFilter( IsHandledByNiceMonomorphism ) + 1, # override nice mon. method
+    G -> Collected( List( Irr( G ), DegreeOfCharacter ) ) );
 
-      # There is a better method which is now applicable.
-      return CharacterDegrees( G, 0 );
+InstallMethod( CharacterDegrees,
+    "for a group with known OrdinaryCharacterTable value",
+    [ IsGroup and HasOrdinaryCharacterTable ],
+    {} -> RankFilter( IsHandledByNiceMonomorphism ), # override nice mon. method
+    function( G )
+    G:= OrdinaryCharacterTable( G );
+    if not HasIrr( G ) then
+      TryNextMethod();
     fi;
-
-    # For nonsolvable groups, there is just the brute force method.
     return Collected( List( Irr( G ), DegreeOfCharacter ) );
     end );
 
 InstallMethod( CharacterDegrees,
+    "for a group",
+    [ IsGroup ],
+    function( G )
+    # We assume that the 'Irr' value is not known,
+    # otherwise a method with higher rank would have been successful.
+    if IsAbelian( G ) then
+      return CharacterDegreesAbelian( G, 0 );
+    elif IsSupersolvableGroup( G ) then
+      return CharacterDegreesBaumClausen( G );
+    elif IsSolvableGroup( G ) then
+      return CharacterDegreesConlon( G, 0 );
+    else
+      # We have no better methods.
+      return Collected( List( Irr( G ), DegreeOfCharacter ) );
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  CharacterDegrees( <G>, <p> )  . . . . . . . . . . . . . . . for prime <p>
+##
+InstallMethod( CharacterDegrees,
     "for a group, and positive integer",
     [ IsGroup, IsPosInt ],
     function( G, p )
-    if Size( G ) mod p = 0 then
-      return CharacterDegrees( CharacterTable( G, p ) );
+    local tbl, modtbl;
+
+    Assert( 1, IsPrimeInt( p ) );
+    if Size( G ) mod p <> 0 then
+      return List( CharacterDegrees( G ), ShallowCopy );
+    elif IsAbelian( G ) then
+      return CharacterDegreesAbelian( G, p );
+    elif HasOrdinaryCharacterTable( G ) then
+      # Perhaps the 'p'-modular irreducibles are stored.
+      tbl:= CharacterTable( G );
+      if IsBound( ComputedBrauerTables( tbl )[p] ) then
+        modtbl:= ComputedBrauerTables( tbl )[p];
+        if HasIrr( modtbl ) then
+          return List( CharacterDegrees( modtbl ), ShallowCopy );
+        fi;
+      fi;
+    fi;
+    if IsSolvableGroup( G ) then
+      return CharacterDegreesConlon( G, p );
     else
-      return CharacterDegrees( G, 0 );
+      # Perhaps we cannot compute the result.
+      return List( CharacterDegrees( CharacterTable( G, p ) ), ShallowCopy );
     fi;
     end );
 
@@ -708,7 +790,8 @@ InstallMethod( CharacterDegrees,
     [ IsCharacterTable ],
     function( tbl )
     if HasUnderlyingGroup( tbl ) and not HasIrr( tbl ) then
-      return CharacterDegrees( UnderlyingGroup( tbl ) );
+      return CharacterDegrees( UnderlyingGroup( tbl ),
+                               UnderlyingCharacteristic( tbl ) );
     else
       return Collected( List( Irr( tbl ), DegreeOfCharacter ) );
     fi;
@@ -720,6 +803,36 @@ InstallMethod( CharacterDegrees,
 #M  CharacterDegrees( <G> ) . . . . . for group handled via nice monomorphism
 ##
 AttributeMethodByNiceMonomorphism( CharacterDegrees, [ IsGroup ] );
+
+
+#############################################################################
+##
+#F  ChiefLength( <tbl> )  . . . . . . . . . . . . . . . for a character table
+##
+InstallMethod( ChiefLength,
+    "for a character table",
+    [ IsCharacterTable ],
+    function( tbl )
+    local n, prev, N;
+
+    if Size( tbl ) = 1 then
+      return 0;
+    elif IsPrimePowerInt( Size( tbl ) ) or IsAbelian( tbl ) then
+      # Avoid computing all normal subgroups in obvious cases.
+      return Length( Factors( Size( tbl ) ) );
+    fi;
+
+    n:= -1;
+    prev:= [];
+    for N in ClassPositionsOfNormalSubgroups( tbl ) do
+      # The list is sorted according to increasing number of classes.
+      if IsSubset( N, prev ) then
+        prev:= N;
+        n:= n + 1;
+      fi;
+    od;
+    return n;
+    end );
 
 
 #############################################################################
@@ -954,6 +1067,41 @@ InstallMethod( IBr,
 
 #############################################################################
 ##
+#M  SetIrr( <tbl>, <list> ) . . . . . . . . . . . . . . for a character table
+#M  SetIrr( <G>, <list> ) . . . . . . . . . . . . . . . . . . . . for a group
+##
+##  Provide a special setter method that sets the irreducibility flag in the
+##  characters.
+##
+InstallMethod( SetIrr,
+    "set the irreducibility flag",
+    [ IsCharacterTable, IsList ],
+    function( tbl, irr )
+    local chi;
+
+    for chi in irr do
+      SetIsIrreducibleCharacter( chi, true );
+    od;
+
+    TryNextMethod();
+    end );
+
+InstallMethod( SetIrr,
+    "set the irreducibility flag",
+    [ IsGroup, IsList ],
+    function( G, irr )
+    local chi;
+
+    for chi in irr do
+      SetIsIrreducibleCharacter( chi, true );
+    od;
+
+    TryNextMethod();
+    end );
+
+
+#############################################################################
+##
 #M  LinearCharacters( <G> )
 ##
 ##  Delegate to the two-argument version, as for `Irr'.
@@ -972,7 +1120,7 @@ InstallMethod( LinearCharacters,
     "for a group, and zero",
     [ IsGroup, IsZeroCyc ],
     function( G, zero )
-    local tbl, pi, img, fus;
+    local tbl, pi, img, fus, res, chi;
 
     if HasOrdinaryCharacterTable( G ) then
       tbl:= OrdinaryCharacterTable( G );
@@ -992,8 +1140,11 @@ InstallMethod( LinearCharacters,
 # We cannot use this because the source of `pi' may be not identical with `G'!
     fus:= FusionConjugacyClasses( pi );
     tbl:= CharacterTable( G );
-    return List( Irr( img, 0 ), x -> Character( tbl, x{ fus } ) );
-#T related to `DxLinearCharacters'?
+    res:= List( Irr( img, 0 ), x -> Character( tbl, x{ fus } ) );
+    for chi in res do
+      SetIsIrreducibleCharacter( chi, true );
+    od;
+    return res;
     end );
 
 
@@ -1005,11 +1156,21 @@ InstallMethod( LinearCharacters,
     "for a group, and positive integer",
     [ IsGroup, IsPosInt ],
     function( G, p )
+    local ordt, modt, res, chi;
+
     if not IsPrimeInt( p ) then
       Error( "<p> must be a prime" );
     fi;
-    return Filtered( LinearCharacters( G, 0 ),
-                     chi -> Conductor( chi ) mod p <> 0 );
+
+    ordt:= OrdinaryCharacterTable( G );
+    modt:= BrauerTable( ordt, p );
+    res:= DuplicateFreeList(
+              RestrictedClassFunctions( LinearCharacters( ordt ), modt ) );
+
+    for chi in res do
+      SetIsIrreducibleCharacter( chi, true );
+    od;
+    return res;
     end );
 
 
@@ -1021,7 +1182,7 @@ InstallMethod( LinearCharacters,
     "for an ordinary table",
     [ IsOrdinaryTable ],
     function( ordtbl )
-    local lin, pi;
+    local lin, pi, chi;
     if HasIrr( ordtbl ) then
       return Filtered( Irr( ordtbl ), chi -> chi[1] = 1 );
     elif HasUnderlyingGroup( ordtbl ) then
@@ -1031,6 +1192,9 @@ InstallMethod( LinearCharacters,
         lin:= List( lin, lambda -> Character( ordtbl,
                   Permuted( ValuesOfClassFunction( lambda ), pi ) ) );
       fi;
+      for chi in lin do
+        SetIsIrreducibleCharacter( chi, true );
+      od;
       return lin;
     else
       TryNextMethod();
@@ -1045,9 +1209,17 @@ InstallMethod( LinearCharacters,
 InstallMethod( LinearCharacters,
     "for a Brauer table",
     [ IsBrauerTable ],
-    modtbl -> DuplicateFreeList( RestrictedClassFunctions(
+    function( modtbl )
+    local res, chi;
+
+    res:= DuplicateFreeList( RestrictedClassFunctions(
                   LinearCharacters( OrdinaryCharacterTable( modtbl ) ),
-                  modtbl ) ) );
+                  modtbl ) );
+    for chi in res do
+      SetIsIrreducibleCharacter( chi, true );
+    od;
+    return res;
+    end );
 
 
 #############################################################################
@@ -4254,7 +4426,7 @@ InstallMethod( BrauerTableOp,
     "for ordinary character table, and positive integer",
     [ IsOrdinaryTable, IsPosInt ],
     function( tbl, p )
-    local result, modtbls, id, fusions, pos, source, ppart, n, bl, inv,
+    local result, modtbls, id, fusions, pos, source, N, ppart, n, bl, inv,
           choice, fusion, rest, b, brest, brestset, l;
 
     result:= fail;
@@ -4295,6 +4467,17 @@ InstallMethod( BrauerTableOp,
         result:= CharacterTableIsoclinic( modtbls, tbl );
       fi;
     else
+      N:= ClassPositionsOfPCore( tbl, p );
+      if Length( N ) <> 1 then
+        modtbls:= BrauerTable( tbl / N, p );
+        if modtbls <> fail then
+          result:= CharacterTableRegular( tbl, p );
+          SetIrr( result,
+            RestrictedClassFunctions( Irr( modtbls ), result ) );
+        fi;
+      fi;
+    fi;
+    if result = fail then
       ppart:= 1;
       n:= Size( tbl );
       while n mod p = 0 do
@@ -6912,7 +7095,7 @@ InstallMethod( CharacterTableWithSortedClasses,
     new:= ConvertToLibraryCharacterTableNC(
                  rec( UnderlyingCharacteristic := 0 ) );
 
-    # Set supported attributes that do not need adjustion.
+    # Set supported attributes that do not need adjustment.
     for i in [ 3, 6 .. Length( SupportedCharacterTableInfo ) ] do
       if Tester( SupportedCharacterTableInfo[ i-2 ] )( tbl )
          and not ( "class" in SupportedCharacterTableInfo[i] ) then
@@ -7324,7 +7507,7 @@ end );
 #T           sizes,      # sizes of normal subgroups
 #T           max,        # one maximal subgroup
 #T           maxes,      # list of maximal contained normal subgroups
-#T           actsize,    # actuel size of normal subgroups
+#T           actsize,    # actual size of normal subgroups
 #T           actmaxes,
 #T           latt;       # the lattice record
 #T

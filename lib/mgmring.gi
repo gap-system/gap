@@ -796,6 +796,8 @@ InstallGlobalFunction( FreeMagmaRing, function( R, M )
                 [ ElementOfMagmaRing( F, zero, [ one ], [ One( M ) ] ) ] );
       fi;
 
+      SetOne(F, One(RM));
+
     else
 
       SetGeneratorsOfLeftOperatorRing( RM,
@@ -803,6 +805,7 @@ InstallGlobalFunction( FreeMagmaRing, function( R, M )
                 x -> ElementOfMagmaRing( F, zero, [ one ], [ x ] ) ) );
 
     fi;
+    SetZero(F, Zero(RM));
 
     # Return the ring.
     return RM;
@@ -1217,7 +1220,7 @@ InstallMethod( ImagesRepresentative,
     end );
 
 
-InstallMethod( PreImagesElm,
+InstallMethod( PreImagesElmNC,
     "for embedding of ring into magma ring, and free magma ring element",
     FamRangeEqFamElm,
     [ IsEmbeddingRingMagmaRing, IsElementOfFreeMagmaRing ],
@@ -1233,7 +1236,20 @@ InstallMethod( PreImagesElm,
     fi;
     end );
 
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesElm,
+    "for embedding of ring into magma ring, and free magma ring element",
+    FamRangeEqFamElm,
+    [ IsEmbeddingRingMagmaRing, IsElementOfFreeMagmaRing ],
+    function ( emb, elm )
+    if not ( elm in Range( emb ) ) then
+      Error( "<elm> is not in the range of mapping <emb>" );
+    elif not ( elm in Image( emb ) ) then
+      return [];
+    fi;
+    return PreImagesElmNC( emb, elm );
+    end );
+
+InstallMethod( PreImagesRepresentativeNC,
     "for embedding of ring into magma ring, and free magma ring element",
     FamRangeEqFamElm,
     [ IsEmbeddingRingMagmaRing, IsElementOfFreeMagmaRing ],
@@ -1247,6 +1263,19 @@ InstallMethod( PreImagesRepresentative,
     else
       return fail;
     fi;
+    end );
+
+InstallMethod( PreImagesRepresentative,
+    "for embedding of ring into magma ring, and free magma ring element",
+    FamRangeEqFamElm,
+    [ IsEmbeddingRingMagmaRing, IsElementOfFreeMagmaRing ],
+    function ( emb, elm )
+    if not ( elm in Range( emb ) ) then
+      Error( "<elm> is not in the range of the mapping <emb>" );
+    elif not ( elm in Image( emb ) ) then
+      return fail;
+    fi;
+    return PreImagesRepresentativeNC( emb, elm );
     end );
 
 
@@ -1321,7 +1350,7 @@ InstallMethod( ImagesRepresentative,
     end );
 
 
-InstallMethod( PreImagesElm,
+InstallMethod( PreImagesElmNC,
     "for embedding of magma into magma ring, and free magma ring element",
     FamRangeEqFamElm,
     [ IsEmbeddingMagmaMagmaRing, IsElementOfFreeMagmaRing ],
@@ -1337,7 +1366,20 @@ InstallMethod( PreImagesElm,
     fi;
     end );
 
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesElm,
+    "for embedding of magma into magma ring, and free magma ring element",
+    FamRangeEqFamElm,
+    [ IsEmbeddingMagmaMagmaRing, IsElementOfFreeMagmaRing ],
+    function ( emb, elm )
+    if not ( elm in Range( emb ) ) then
+      Error( "<elm> is not in the range of mapping <emb>" );
+    elif not ( elm in Image( emb ) ) then
+      return [];
+    fi;
+    return PreImagesElmNC( emb, elm );
+    end );
+
+InstallMethod( PreImagesRepresentativeNC,
     "for embedding of magma into magma ring, and free magma ring element",
     FamRangeEqFamElm,
     [ IsEmbeddingMagmaMagmaRing, IsElementOfFreeMagmaRing ],
@@ -1353,6 +1395,18 @@ InstallMethod( PreImagesRepresentative,
     fi;
     end );
 
+InstallMethod( PreImagesRepresentative,
+    "for embedding of magma into magma ring, and free magma ring element",
+    FamRangeEqFamElm,
+    [ IsEmbeddingMagmaMagmaRing, IsElementOfFreeMagmaRing ],
+    function ( emb, elm )
+    if not ( elm in Range( emb ) ) then
+      Error( "<elm> is not in the range of mapping <emb>" );
+    elif not ( elm in Image( emb ) ) then
+      return fail;
+    fi;
+    return PreImagesRepresentativeNC( emb, elm );
+    end );
 
 #############################################################################
 ##

@@ -1,4 +1,4 @@
-#@local cl,g,gd,gens,hom,i,img,iso,pcgs,u,G,F,o,a
+#@local cl,g,gd,gens,hom,i,img,iso,pcgs,u,G,F,o,a,m,nice,H,G2,nice2
 gap> START_TEST("grpmat.tst");
 gap> i := E(4);; G := Group([[i,0],[0,-i]],[[0,1],[-1,0]]);;
 gap> gens := GeneratorsOfGroup( G );; IsSSortedList( gens );
@@ -67,9 +67,45 @@ gap> NiceMonomorphism( G );;
 gap> G:= Group( [ [ 0, 1 ], [ 1, 0 ] ] );;
 gap> IsomorphismFpGroup( G );;
 
+# 'NiceMonomorphism' and 'NiceObject' are consistent.
+gap> m:= [ [ E(4) ] ];;
+gap> G:= Group( m );;                # not rational matrix group
+gap> nice:= NiceMonomorphism( G );;
+gap> H:= SubgroupNC( G, [ m^2 ] );;  # rational matrix group
+gap> HasNiceMonomorphism( H );
+true
+gap> IsIdenticalObj( NiceMonomorphism( H ), nice );
+true
+gap> IsFinite( H );
+true
+gap> NiceObject( H ) = Image( nice, H );
+true
+
 #
 gap> TrivialSubgroup( GL(2, 2) );
 <matrix group of size 1>
+
+# The following should take less than a second.
+#@if IsPackageMarkedForLoading( "primgrp", "" )
+gap> Length( LowIndexSubgroups( GL(2,5), 50 ) ) = 31;
+true
+#@fi
+
+# 'NiceMonomorphism' behaves well w.r.t. 'ConstructingFilter'
+gap> G:= SP( 4, 2 );;
+gap> nice:= NiceMonomorphism( G );;
+gap> G2:= SP( 4, 2 : ConstructingFilter:= IsPlistMatrixRep );;
+gap> nice2:= NiceMonomorphism( G2 );;
+gap> IsPlistMatrixRep( One( G ) );
+false
+gap> IsPlistMatrixRep( One( G2 ) );
+true
+gap> IsIdenticalObj( nice, nice2 );
+false
+gap> IsSubset( Source( nice ), G );
+true
+gap> IsSubset( Source( nice2 ), G2 );
+true
 
 #
 gap> STOP_TEST( "grpmat.tst" );

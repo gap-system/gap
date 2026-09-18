@@ -573,7 +573,7 @@ local u,a,b,c,k,n,s,add_rule,fam,ptc,kbdag,abi,rem,
           elif kk[j][1]='A' and not kk[j][2] in weg then
             #a:=Difference(neu{kk[j][3]},[fail]);
             a:=kk[j][3];
-            x:=neu[a[1]];y:=neu[a[Length(a)]];
+            x:=neu[a[1]];y:=neu[Last(a)];
             if IsRange(a) and x<>fail and y<>fail then
               a:=[x..y];
             else
@@ -587,7 +587,7 @@ local u,a,b,c,k,n,s,add_rule,fam,ptc,kbdag,abi,rem,
           elif kk[j][1]='B' and not kk[j][3] in weg then
             #a:=Difference(neu{kk[j][2]},[fail]);
             a:=kk[j][2];
-            x:=neu[a[1]];y:=neu[a[Length(a)]];
+            x:=neu[a[1]];y:=neu[Last(a)];
             if IsRange(a) and x<>fail and y<>fail then
               a:=[x..y];
             else

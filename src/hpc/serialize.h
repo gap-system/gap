@@ -11,7 +11,7 @@
 #ifndef GAP_SERIALIZE_H
 #define GAP_SERIALIZE_H
 
-#include "common.h"
+#include "../common.h"
 
 typedef struct SerializerState SerializerState;
 typedef struct DeserializerState DeserializerState;

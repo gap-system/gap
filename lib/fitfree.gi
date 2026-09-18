@@ -54,10 +54,10 @@ local ffs,pcisom,rest,kpc,k,x,ker,r,pool,i,xx,pregens,iso;
     rest:=GroupHomomorphismByImages(U,Range(ffs.factorhom),GeneratorsOfGroup(U),
       List(GeneratorsOfGroup(U),x->ImagesRepresentative(ffs.factorhom,x)));
   else
-    RUN_IN_GGMBI:=true; # hack to skip Nice treatment
+    PushOptions( rec( Run_In_GGMBI:= true ) ); # hack to skip Nice treatment
     rest:=GroupHomomorphismByImagesNC(U,Range(ffs.factorhom),GeneratorsOfGroup(U),
       List(GeneratorsOfGroup(U),x->ImagesRepresentative(ffs.factorhom,x)));
-    RUN_IN_GGMBI:=false;
+    PopOptions();
   fi;
   Assert(1,rest<>fail);
 
@@ -81,7 +81,7 @@ local ffs,pcisom,rest,kpc,k,x,ker,r,pool,i,xx,pregens,iso;
   else
     iso:=IsomorphismFpGroup(Image(rest,U));
     pregens:=List(GeneratorsOfGroup(Range(iso)),x->
-      PreImagesRepresentative(rest,PreImagesRepresentative(iso,x)));
+      PreImagesRepresentativeNC(rest,PreImagesRepresentativeNC(iso,x)));
     # evaluate relators
     pool:=List(RelatorsOfFpGroup(Range(iso)),
       x->MappedWord(x,FreeGeneratorsOfFpGroup(Range(iso)),pregens));
@@ -91,7 +91,7 @@ local ffs,pcisom,rest,kpc,k,x,ker,r,pool,i,xx,pregens,iso;
 
     iso:=IsomorphismFpGroup(Image(rest,U));
     pregens:=List(GeneratorsOfGroup(Range(iso)),x->
-      PreImagesRepresentative(rest,PreImagesRepresentative(iso,x)));
+      PreImagesRepresentativeNC(rest,PreImagesRepresentativeNC(iso,x)));
     # evaluate relators
     pool:=List(RelatorsOfFpGroup(Range(iso)),
       x->MappedWord(x,FreeGeneratorsOfFpGroup(Range(iso)),pregens));
@@ -135,7 +135,7 @@ local ffs,pcisom,rest,kpc,k,x,ker,r,pool,i,xx,pregens,iso;
 #    od;
     SetSize(U,Size(Image(rest))*Size(kpc));
     k:=InducedPcgs(FamilyPcgs(Image(pcisom)),kpc);
-    k:=List(k,x->PreImagesRepresentative(pcisom,x));
+    k:=List(k,x->PreImagesRepresentativeNC(pcisom,x));
     k:=InducedPcgsByPcSequenceNC(ffs.pcgs,k);
     ker:=SubgroupNC(G,k);
     SetSize(ker,Size(kpc));
@@ -153,6 +153,7 @@ local ffs,pcisom,rest,kpc,k,x,ker,r,pool,i,xx,pregens,iso;
   r:=rec(parentffs:=ffs,
             rest:=rest,
             radical:=ker,
+            ker:=ker,
             pcgs:=k,
             serdepths:=List(ffs.depths,y->First([1..Length(r)],x->r[x]>=y))
             );
@@ -185,6 +186,7 @@ local ffs,cache,rest,ker,k,r;
     r:=rec(parentffs:=ffs,
               rest:=rest,
               radical:=ker,
+              ker:=ker,
               pcgs:=k,
               serdepths:=List(ffs.depths,y->First([1..Length(r)],x->r[x]>=y))
               );
@@ -255,7 +257,7 @@ local ffs,hom,U,rest,ker,r,p,l,i,depths,pcisom,subsz,pcimgs;
   pcimgs:=List(ipcgs,x->ImagesRepresentative(ffs.pcisom,x));
 
   ker:=SubgroupNC(G,List(MinimalGeneratingSet(Group(pcimgs,One(Range(ffs.pcisom)))),
-    x->PreImagesRepresentative(ffs.pcisom,x)));
+    x->PreImagesRepresentativeNC(ffs.pcisom,x)));
   SetPcgs(ker,ipcgs);
   if Length(ipcgs)=0 then
     SetSize(ker,1);
@@ -274,9 +276,9 @@ local ffs,hom,U,rest,ker,r,p,l,i,depths,pcisom,subsz,pcimgs;
   if IsPermGroup(U) and AssertionLevel()>1 then
     rest:=GroupHomomorphismByImages(U,Range(hom),gens,imgs);
   else
-    RUN_IN_GGMBI:=true; # hack to skip Nice treatment
+    PushOptions( rec( Run_In_GGMBI:= true ) ); # hack to skip Nice treatment
     rest:=GroupHomomorphismByImagesNC(U,Range(hom),gens,imgs);
-    RUN_IN_GGMBI:=false;
+    PopOptions();
   fi;
   Assert(1,rest<>fail);
 
@@ -298,6 +300,7 @@ local ffs,hom,U,rest,ker,r,p,l,i,depths,pcisom,subsz,pcimgs;
   r:=rec(parentffs:=ffs,
             rest:=rest,
             radical:=ker,
+            ker:=ker,
             pcgs:=ipcgs,
             serdepths:=List(ffs.depths,y->First([1..Length(r)],x->r[x]>=y))
             );
@@ -316,11 +319,11 @@ local ffs,hom,U,rest,ker,r,p,l,i,depths,pcisom,subsz,pcimgs;
       else
         r:=SubgroupNC(G,ipcgs);
       fi;
-      RUN_IN_GGMBI:=true;
+      PushOptions( rec( Run_In_GGMBI:= true ) );
       pcisom:=GroupHomomorphismByImagesNC(r,
         SubgroupNC(Range(ffs.pcisom),pcisom),
         ipcgs,pcisom);
-      RUN_IN_GGMBI:=false;
+      PopOptions();
     fi;
     r:=rec(inducedfrom:=ffs,
           pcgs:=ipcgs,
@@ -376,7 +379,7 @@ local G,A,wholesocle,ff,r,ser,fser,hom,q,s,d,act,o,i,j,a,perm,k;
           function(u,a) return Image(a,u);end);
       fser:=[TrivialSubgroup(q)];
       for i in o do
-        a:=fser[Length(fser)];
+        a:=Last(fser);
         for j in i do
           a:=ClosureGroup(a,j);
         od;
@@ -393,7 +396,7 @@ local G,A,wholesocle,ff,r,ser,fser,hom,q,s,d,act,o,i,j,a,perm,k;
     perm:=ActionHomomorphism(q,d,"surjective");
     k:=PreImage(hom,KernelOfMultiplicativeGeneralMapping(perm));
     if Size(s)<Size(KernelOfMultiplicativeGeneralMapping(perm)) then
-      s:=ser[Length(ser)];
+      s:=Last(ser);
       hom:=NaturalHomomorphismByNormalSubgroupNC(k,s);
       q:=Image(hom);
       act:=List(GeneratorsOfGroup(A),x->InducedAutomorphism(hom,x));
@@ -428,7 +431,7 @@ end);
 ##
 InstallMethod( \in, "TF method, use tree",IsElmsColls,
   [ IsMultiplicativeElementWithInverse,
-    IsGroup and IsFinite and HasFittingFreeLiftSetup], OVERRIDENICE,
+    IsGroup and IsFinite and HasFittingFreeLiftSetup], OverrideNice,
 function(e, G)
 local f;
   f:=FittingFreeLiftSetup(G);
@@ -442,7 +445,7 @@ end );
 #M  SolvableRadical( <G> ) . . . . . . . . . . . . . . using TF method
 ##
 InstallMethod( SolvableRadical, "TF method, use tree",
-  [ IsGroup and IsFinite and HasFittingFreeLiftSetup], OVERRIDENICE,
+  [ IsGroup and IsFinite and HasFittingFreeLiftSetup], OverrideNice,
 function(G)
 local f;
   f:=FittingFreeLiftSetup(G);
@@ -727,7 +730,7 @@ local stabilizergen,st,stabrsub,stabrsubsz,ratio,subsz,sz,vp,stabrad,
             #if IsBound(reps[vp+j]) then
             #  Add(reps,reps[vp+j]*gens[genum]);
             #fi;
-            # repwordslso needs to change!
+            # repwords also needs to change!
             Add(repwords,Concatenation(repwords[vp+j],[genum]));
             b[p]:=true;
           od;
@@ -913,13 +916,14 @@ local ser,hom,s,fphom,sf,sg,sp,fp,d,head,mran,nran,mpcgs,ocr,len,pcgs,gens;
   s:=SylowSubgroup(Image(hom),prime);
   fphom:=IsomorphismFpGroup(s);
   fp:=Image(fphom);
-  sf:=List(GeneratorsOfGroup(Image(fphom)),x->PreImagesRepresentative(fphom,x));
-  sg:=List(sf,x->PreImagesRepresentative(hom,x));
+  sf:=List(GeneratorsOfGroup(Image(fphom)),
+              x->PreImagesRepresentativeNC(fphom,x));
+  sg:=List(sf,x->PreImagesRepresentativeNC(hom,x));
   sp:=[];
-  RUN_IN_GGMBI:=true; # hack to skip Nice treatment
+  PushOptions( rec( Run_In_GGMBI:= true ) ); # hack to skip Nice treatment
   fphom:=GroupGeneralMappingByImagesNC(Group(sg,One(G)),fp,sg,
     GeneratorsOfGroup(fp));
-  RUN_IN_GGMBI:=false;
+  PopOptions();
 
 
 
@@ -936,9 +940,9 @@ local ser,hom,s,fphom,sf,sg,sp,fp,d,head,mran,nran,mpcgs,ocr,len,pcgs,gens;
         Append(sp,mpcgs);
       else
         # extend presentation
-        RUN_IN_GGMBI:=true; # hack to skip Nice treatment
+        PushOptions( rec( Run_In_GGMBI:= true ) ); # hack to skip Nice treatment
         fphom:=LiftFactorFpHom(fphom,Source(fphom),false,mpcgs);
-        RUN_IN_GGMBI:=false;
+        PopOptions();
         fp:=Image(fphom);
         sp:=Concatenation(sp,mpcgs);
       fi;
@@ -950,10 +954,10 @@ local ser,hom,s,fphom,sf,sg,sp,fp,d,head,mran,nran,mpcgs,ocr,len,pcgs,gens;
       gens:=GeneratorsOfGroup(ocr.complement);
       sg:=gens{[1..Length(sg)]};
       sp:=gens{[Length(sg)+1..Length(gens)]};
-      RUN_IN_GGMBI:=true; # hack to skip Nice treatment
+      PushOptions( rec( Run_In_GGMBI:= true ) ); # hack to skip Nice treatment
       fphom:=GroupGeneralMappingByImagesNC(ocr.complement,fp,gens,
         GeneratorsOfGroup(fp));
-      RUN_IN_GGMBI:=false;
+      PopOptions();
 
     fi;
   od;
@@ -1191,7 +1195,7 @@ local s,d,c,act,o,i,j,h,p,hf,img,n,k,ns,all,hl,hcomp,
       norm:=n);
     for j in [2..Length(i)] do
       c[i[j]]:=rec(orbit:=i,orbitpos:=j,
-        rep:=PreImagesRepresentative(act,
+        rep:=PreImagesRepresentativeNC(act,
           RepresentativeAction(Image(act),i[1],i[j])),
         component:=d[i[j]],hall:=h, norm:=n);
     od;
@@ -1229,7 +1233,7 @@ local s,d,c,act,o,i,j,h,p,hf,img,n,k,ns,all,hl,hcomp,
       fp:=Range(fphom);
       gens:=MappingGeneratorsImages(fphom);
       imgs:=gens[2];gens:=gens[1];
-      gens:=List(gens,x->PreImagesRepresentative(act,x));
+      gens:=List(gens,x->PreImagesRepresentativeNC(act,x));
 
       # adapt to normalize B
       gens:=List(gens,x->x/RepresentativeAction(t,b^x,b));
@@ -1237,11 +1241,11 @@ local s,d,c,act,o,i,j,h,p,hf,img,n,k,ns,all,hl,hcomp,
       # now do complements one by one
       for j in [1..Length(pcgs)] do
         h:=ClosureGroup(dser[j],gens);
-        RUN_IN_GGMBI:=true; # hack to skip Nice treatment
+        PushOptions( rec( Run_In_GGMBI:= true ) ); # hack to skip Nice treatment
         fphom:=GroupGeneralMappingByImagesNC(h,fp,
                 Concatenation(GeneratorsOfGroup(dser[j]),gens),
                 Concatenation(List(GeneratorsOfGroup(dser[j]),x->One(fp)),imgs));
-        RUN_IN_GGMBI:=false;
+        PopOptions();
 
         ocr:=rec(group:=h,modulePcgs:=pcgs[j],
                 factorfphom:=fphom);
@@ -1253,18 +1257,18 @@ local s,d,c,act,o,i,j,h,p,hf,img,n,k,ns,all,hl,hcomp,
       if Size(b)>Size(s) then
 
         h:=ClosureGroup(b,gens);
-        RUN_IN_GGMBI:=true; # hack to skip Nice treatment
+        PushOptions( rec( Run_In_GGMBI:= true ) ); # hack to skip Nice treatment
         fphom:=GroupGeneralMappingByImagesNC(h,fp,
                 Concatenation(GeneratorsOfGroup(b),gens),
                 Concatenation(List(GeneratorsOfGroup(b),x->One(fp)),imgs));
-        RUN_IN_GGMBI:=false;
+        PopOptions();
         # get elementary abelian series from b to s
         dser:=elabser(b,s);
         pcgs:=List([2..Length(dser)],x->ModuloPcgs(dser[x-1],dser[x]));
         for j in pcgs do
-          RUN_IN_GGMBI:=true; # hack to skip Nice treatment
+          PushOptions( rec( Run_In_GGMBI:= true ) ); # hack to skip Nice treatment
           fphom:=LiftFactorFpHom(fphom,Source(fphom),false,j);
-          RUN_IN_GGMBI:=false;
+          PopOptions();
         od;
         gens:=MappingGeneratorsImages(fphom);
         imgs:=gens[2];gens:=gens[1];
@@ -1277,7 +1281,7 @@ local s,d,c,act,o,i,j,h,p,hf,img,n,k,ns,all,hl,hcomp,
       fp:=Image(fphom);
       gens:=MappingGeneratorsImages(fphom);
       imgs:=gens[2];gens:=gens[1];
-      gens:=List(gens,x->PreImagesRepresentative(hom,x));
+      gens:=List(gens,x->PreImagesRepresentativeNC(hom,x));
     fi;
 
     # now run through the candidates for Hall in S
@@ -1322,12 +1326,12 @@ local s,d,c,act,o,i,j,h,p,hf,img,n,k,ns,all,hl,hcomp,
         # now do complement to NS(k)/k
         for z in [1..Length(pcgs)] do
           h:=ClosureGroup(dser[z],cgens);
-          RUN_IN_GGMBI:=true; # hack to skip Nice treatment
+          PushOptions( rec( Run_In_GGMBI:= true ) ); # hack to skip Nice treatment
           fphom:=GroupGeneralMappingByImagesNC(h,fp,
                   Concatenation(GeneratorsOfGroup(dser[z]),cgens),
                   Concatenation(List(GeneratorsOfGroup(dser[z]),x->One(fp)),
                     imgs));
-          RUN_IN_GGMBI:=false;
+          PopOptions();
 
           ocr:=rec(group:=h,modulePcgs:=pcgs[z],
                   factorfphom:=fphom);
@@ -1335,7 +1339,7 @@ local s,d,c,act,o,i,j,h,p,hf,img,n,k,ns,all,hl,hcomp,
           cgens:=GeneratorsOfGroup(ocr.complement);
         od;
 
-        if Size(dser[Length(dser)])>Size(j.hall) then
+        if Size(Last(dser))>Size(j.hall) then
           gens:=[];
           for z in cgens do
             b:=Order(z);
@@ -1405,13 +1409,14 @@ local ser,hom,s,fphom,sf,sg,sp,fp,d,head,mran,nran,mpcgs,ocr,len,pcgs,
   for s in HallsFittingFree(Image(hom),pi) do
     fphom:=IsomorphismFpGroup(s);
     fp:=Image(fphom);
-    sf:=List(GeneratorsOfGroup(Image(fphom)),x->PreImagesRepresentative(fphom,x));
-    sg:=List(sf,x->PreImagesRepresentative(hom,x));
+    sf:=List(GeneratorsOfGroup(Image(fphom)),
+                x->PreImagesRepresentativeNC(fphom,x));
+    sg:=List(sf,x->PreImagesRepresentativeNC(hom,x));
     sp:=[];
-    RUN_IN_GGMBI:=true; # hack to skip Nice treatment
+    PushOptions( rec( Run_In_GGMBI:= true ) ); # hack to skip Nice treatment
     fphom:=GroupGeneralMappingByImagesNC(Group(sg,One(G)),fp,sg,
       GeneratorsOfGroup(fp));
-    RUN_IN_GGMBI:=false;
+    PopOptions();
 
     for d in [2..Length(ser.depths)] do
       mran:=[ser.depths[d-1]..len];
@@ -1426,9 +1431,9 @@ local ser,hom,s,fphom,sf,sg,sp,fp,d,head,mran,nran,mpcgs,ocr,len,pcgs,
           Append(sp,mpcgs);
         else
           # extend presentation
-          RUN_IN_GGMBI:=true; # hack to skip Nice treatment
+          PushOptions( rec( Run_In_GGMBI:= true ) ); # hack to skip Nice treatment
           fphom:=LiftFactorFpHom(fphom,Source(fphom),false,mpcgs);
-          RUN_IN_GGMBI:=false;
+          PopOptions();
           fp:=Image(fphom);
           sp:=Concatenation(sp,mpcgs);
         fi;
@@ -1440,10 +1445,10 @@ local ser,hom,s,fphom,sf,sg,sp,fp,d,head,mran,nran,mpcgs,ocr,len,pcgs,
         gens:=GeneratorsOfGroup(ocr.complement);
         sg:=gens{[1..Length(sg)]};
         sp:=gens{[Length(sg)+1..Length(gens)]};
-        RUN_IN_GGMBI:=true; # hack to skip Nice treatment
+        PushOptions( rec( Run_In_GGMBI:= true ) ); # hack to skip Nice treatment
         fphom:=GroupGeneralMappingByImagesNC(ocr.complement,fp,gens,
           GeneratorsOfGroup(fp));
-        RUN_IN_GGMBI:=false;
+        PopOptions();
 
       fi;
     od;
@@ -1467,7 +1472,7 @@ end);
 ##
 InstallMethod( HallSubgroupOp, "fitting free",true,
     [ IsGroup and IsFinite and CanComputeFittingFree,IsList ],
-    OVERRIDENICE,
+    OverrideNice,
 function(G,pi)
 local l;
   if CanEasilyComputePcgs(G) then
@@ -1492,7 +1497,7 @@ end);
 ##
 InstallMethod( SylowSubgroupOp, "fitting free",true,
   [ IsGroup and IsFinite and CanComputeFittingFree,IsPosInt ],
-  OVERRIDENICE,
+  OverrideNice,
 function(G,pi)
 local l;
   if IsPermGroup(G) or IsPcGroup(G) then TryNextMethod();fi;
@@ -1537,7 +1542,7 @@ local ff,i,j,c,q,a,b,prev,sub,m,k;
     a:=LinearActionLayer(G,m);
     a:=GModuleByMats(a,GF(RelativeOrders(m)[1]));
     b:=MTX.BasesSubmodules(a);
-    b:=b{[2..Length(b)-1]}; # only intermnediate ones
+    b:=b{[2..Length(b)-1]}; # only intermediate ones
     if Length(b)>0 then
       for j in Reversed(b) do
         Add(c,ClosureSubgroupNC(k,List(j,x->PcElementByExponents(m,x))));

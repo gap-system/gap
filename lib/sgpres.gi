@@ -258,7 +258,7 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
             numgens,                # number of generators
             F,                      # a new free group
             span,                   # spanning tree
-            ggens,                  # parent group gens prallel to columns
+            ggens,                  # parent group gens parallel to columns
             gens,                   # new generators
             ngens,                  # number of new generators
             defs,                   # definitions of primary subgroup gens
@@ -1093,7 +1093,7 @@ InstallGlobalFunction( PresentationAugmentedCosetTable,
     # group generators.
     SetPrimaryGeneratorWords(T,aug.primaryGeneratorWords);
 
-    # Since T is mutable, we must set this attribite "manually"
+    # Since T is mutable, we must set this attribute "manually"
     SetTzOptions(T, TzOptions(T));
 
     # handle relators of length 1 or 2, but do not eliminate any primary
@@ -2285,7 +2285,7 @@ end );
 # the tables produced internally are indexed at rec.offset+k for generator
 # number k, that is in the form ...,-2,-1,empty,1,2,...
 # This avoids lots of even/od decisions and the cost of the empty list is
-# neglegible.
+# negligible.
 
 BindGlobal( "NEWTC_Compress", function(DATA,purge)
 local ct,c,a,b,offset,x,to,p,dw,doa,aug;
@@ -2312,7 +2312,7 @@ local ct,c,a,b,offset,x,to,p,dw,doa,aug;
             ct[x+offset][c]:=b;
             ct[-x+offset][b]:=c;
             if doa then
-              # transfer augemented entry
+              # transfer augmented entry
               aug[x+offset][c]:=aug[x+offset][a];
             fi;
           else
@@ -3374,7 +3374,7 @@ local p,new,start,half;
     start:=p+Length(r);
     p:=PositionSublist(s,r,start);
     while p<>fail do
-      if start>Length(s) or Length(new)=0 or new[Length(new)]<>-s[start] then
+      if start>Length(s) or Length(new)=0 or Last(new)<>-s[start] then
         Append(new,s{[start..p-1]});
       else
         new:=WordProductLetterRep(new,s{[start..p-1]});
@@ -3382,7 +3382,7 @@ local p,new,start,half;
       start:=p+Length(r);
       p:=PositionSublist(s,r,start);
     od;
-    if start>Length(s) or Length(new)=0 or new[Length(new)]<>-s[start] then
+    if start>Length(s) or Length(new)=0 or Last(new)<>-s[start] then
       Append(new,s{[start..Length(s)]});
     else
       new:=WordProductLetterRep(new,s{[start..Length(s)]});
@@ -3513,7 +3513,7 @@ end );
 # 1: Do a quick reduction without trying to eliminate all secondary gens.
 # -1: No relators
 InstallGlobalFunction(NEWTC_PresentationMTC,function(arg)
-local DATA,rels,i,j,w,f,r,s,fam,ri,a,offset,rset,re,stack,pres,
+local DATA,rels,i,j,k,w,f,r,s,fam,ri,a,offset,rset,re,stack,pres,
   subnum,parameter,str,wordefs;
 
   DATA:=arg[1];
@@ -3626,6 +3626,7 @@ local DATA,rels,i,j,w,f,r,s,fam,ri,a,offset,rset,re,stack,pres,
   fam:=FamilyObj(One(f));
   rels:=List(rels,x->AssocWordByLetterRep(fam,x));
   pres:=PresentationFpGroup(f/rels);
+  TzInitGeneratorImages(pres);
   TzOptions(pres).protected:=subnum;
   TzOptions(pres).printLevel:=InfoLevel(InfoFpGroup);
   if parameter=1 then
@@ -3633,6 +3634,28 @@ local DATA,rels,i,j,w,f,r,s,fam,ri,a,offset,rset,re,stack,pres,
     TzOptions(pres).lengthLimit:=pres!.tietze[TZ_TOTAL]+1;
   fi;
   TzOptions(pres).eliminationsLimit:=5;
+
+  # did any generators end up eliminated?
+  for i in Flat(Difference(List(GeneratorsOfGroup(f),LetterRepAssocWord),
+    List(pres!.generators,LetterRepAssocWord))) do
+
+    for j in [1..Length(wordefs)] do
+      k:=1;
+      while IsBound(wordefs[j]) and k<=Length(wordefs[j]) do
+        if wordefs[j][k]=i then
+          wordefs[j]:=Concatenation(wordefs[j]{[1..k-1]},
+          pres!.imagesOldGens[i],
+          wordefs[j]{[k+1..Length(wordefs[j])]});
+        elif wordefs[j][k]=-i then
+          wordefs[j]:=Concatenation(wordefs[j]{[1..k-1]},
+          -Reversed(pres!.imagesOldGens[i]),
+          wordefs[j]{[k+1..Length(wordefs[j])]});
+        fi;
+        k:=k+1;
+      od;
+    od;
+  od;
+
   TzGoElim(pres,subnum,wordefs);
   if IsEvenInt(parameter) and Length(GeneratorsOfPresentation(pres))>subnum then
     Error("did not eliminate properly");

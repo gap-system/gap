@@ -514,7 +514,7 @@ GAPInfo.CommandLineEditFunctions.Functions.AddHistory := function(l)
   fi;
   # no trailing white space
   i := 0;
-  while Length(l[3]) > 0 and l[3][Length(l[3])] in "\n\r\t " do
+  while Length(l[3]) > 0 and Last(l[3]) in "\n\r\t " do
     Remove(l[3]);
     i := i + 1;
   od;
@@ -960,7 +960,7 @@ GAPInfo.CommandLineEditFunctions.Functions.Completion := function(l)
   wordplace := [pos+1, l[4]-1];
   word := l[3]{[wordplace[1]..wordplace[2]]};
   # see if we are in the case of a component name
-  while pos > 0 and l[3][pos] in " \n\t\r" do
+  while pos > 0 and l[3][pos] in CHARS_WHITESPACE do
     pos := pos-1;
   od;
   idbnd := IDENTS_BOUND_GVARS();
@@ -1081,7 +1081,7 @@ InstallReadlineMacro := function(name, fun)
   cfm.(pos) := fun;
   cfm.Names[pos] := name;
 end;
-# A sequence to invoce macro name ('ESC num C-x C-g'  sets GAPMacroNumber in
+# A sequence to invoke macro name ('ESC num C-x C-g'  sets GAPMacroNumber in
 # kernel and then any key that calls handled-by-GAP will do it)
 # We assume that 'C-xC-g' and <TAB> are not overwritten.
 InvocationReadlineMacro := function(name)

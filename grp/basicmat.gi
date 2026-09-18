@@ -139,23 +139,29 @@ InstallMethod( GeneralLinearGroupCons,
       IsInt and IsPosRat,
       IsField and IsFinite ],
 function( filter, n, f )
-    local   q,  z,  o,  mat1,  mat2,  i,  g;
+    local   q,  filt,  z,  o,  mat1,  mat2,  i,  g;
 
     q:= Size( f );
+
+    # Decide about the internal representation of group generators.
+    filt:= ValueOption( "ConstructingFilter" );
+    if filt = fail then
+      filt:= IsPlistRep;
+    fi;
 
     # small cases
     if q = 2 and 1 < n  then
 #T why 1 < n?
-        return SL( n, 2 );
+        return SL( n, f );
     fi;
 
     # construct the generators
     z := PrimitiveRoot( f );
     o := One( f );
 
-    mat1 := IdentityMat( n, f );
+    mat1 := IdentityMatrix( filt, f, n );
     mat1[1,1] := z;
-    mat2 := List( Zero(o) * mat1, ShallowCopy );
+    mat2 := ZeroMatrix( filt, f, n, n );
     mat2[1,1] := -o;
     mat2[1,n] := o;
     for i  in [ 2 .. n ]  do mat2[i,i-1]:= -o;  od;
@@ -189,13 +195,19 @@ InstallMethod( SpecialLinearGroupCons,
       IsField and IsFinite ],
 
 function( filter, n, f )
-    local   q,  g,  o,  z,  mat1,  mat2,  i,  size,  qi;
+    local   q,  filt,  g,  o,  z,  mat1,  mat2,  i,  size,  qi;
 
     q:= Size( f );
 
+    # Decide about the internal representation of group generators.
+    filt:= ValueOption( "ConstructingFilter" );
+    if filt = fail then
+      filt:= IsPlistRep;
+    fi;
+
     # handle the trivial case first
     if n = 1 then
-        g := GroupByGenerators( [ ImmutableMatrix( f, [[One(f)]],true ) ] );
+        g := GroupByGenerators( [ ImmutableMatrix( f, IdentityMatrix( filt, f, 1 ), true ) ] );
 
     # now the general case
     else
@@ -203,8 +215,8 @@ function( filter, n, f )
         # construct the generators
         o := One(f);
         z := PrimitiveRoot(f);
-        mat1 := IdentityMat( n, f );
-        mat2 := List( Zero(o) * mat1, ShallowCopy );
+        mat1 := IdentityMatrix( filt, f, n );
+        mat2 := ZeroMatrix( filt, f, n, n );
         mat2[1,n] := o;
         for i  in [ 2 .. n ]  do mat2[i,i-1]:= -o;  od;
 

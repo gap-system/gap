@@ -177,15 +177,9 @@ UInt4 nextrandMT_int32(UInt4* mt)
 // compile and run any of them on any platform, but your performance with the
 // non-native version will be less than optimal.
 
-//-----------------------------------------------------------------------------
-// MurmurHash3 was written by Austin Appleby, and is placed in the public
-// domain. The author hereby disclaims copyright to this source code.
-
 /* Minor modifications to get it to compile in C rather than C++ and
 integrate with GAP  SL*/
 
-
-#define FORCE_INLINE static inline
 
 #ifndef SYS_IS_64_BIT
 
@@ -202,7 +196,7 @@ static inline uint32_t rotl32 ( uint32_t x, int8_t r )
 // Block read - if your platform needs to do endian-swapping or can only
 // handle aligned reads, do the conversion here
 
-FORCE_INLINE uint32_t getblock4 ( const uint32_t * p, int i )
+static inline uint32_t getblock4 ( const uint32_t * p, int i )
 {
   return p[i];
 }
@@ -210,7 +204,7 @@ FORCE_INLINE uint32_t getblock4 ( const uint32_t * p, int i )
 //-----------------------------------------------------------------------------
 // Finalization mix - force all bits of a hash block to avalanche
 
-FORCE_INLINE uint32_t fmix4 ( uint32_t h )
+static inline uint32_t fmix4 ( uint32_t h )
 {
   h ^= h >> 16;
   h *= 0x85ebca6b;
@@ -304,7 +298,7 @@ static inline uint64_t rotl64 ( uint64_t x, int8_t r )
 // hope that on archs which don't need this, the compiler will optimize it back
 // into a direct copy (verified to happen with GCC and clang on x86_64)
 
-FORCE_INLINE uint64_t getblock8 ( const uint64_t * p, int i )
+static inline uint64_t getblock8 ( const uint64_t * p, int i )
 {
   uint64_t val;
   memcpy(&val, p + i, sizeof(uint64_t));
@@ -314,7 +308,7 @@ FORCE_INLINE uint64_t getblock8 ( const uint64_t * p, int i )
 //-----------------------------------------------------------------------------
 // Finalization mix - force all bits of a hash block to avalanche
 
-FORCE_INLINE uint64_t fmix8 ( uint64_t k )
+static inline uint64_t fmix8 ( uint64_t k )
 {
   k ^= k >> 33;
   k *= BIG_CONSTANT(0xff51afd7ed558ccd);

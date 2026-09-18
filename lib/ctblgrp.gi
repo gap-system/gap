@@ -44,7 +44,7 @@ InstallGlobalFunction( IsDxLargeGroup, G -> Size(G) > DXLARGEGROUPORDER );
 ##  classes are in earlier positions,making the active columns those to
 ##  smaller classes,reducing the work for calculating class matrices!
 ##  Additionally galois conjugated classes are together,thus increasing the
-##  chance,that with one columns of them active to be several acitive,
+##  chance,that with one columns of them active to be several active,
 ##  reducing computation time !
 ##
 InstallGlobalFunction( ClassComparison, function(c,d)
@@ -139,9 +139,10 @@ local p,primes,i,cl,spr,j,allpowermaps,pm,ex;
   od;
 
   for p in primes do
-    allpowermaps[p]:=List(D.classrange,i->ShallowCopy(D.classrange));
-    allpowermaps[p][1]:=1;
-    #allpowermaps[p]:=InitPowerMap(D.characterTable,p);
+    if not IsBound( allpowermaps[p] ) then
+      allpowermaps[p]:=List(D.classrange,i->ShallowCopy(D.classrange));
+      allpowermaps[p][1]:=1;
+    fi;
   od;
 
   for p in primes do
@@ -199,6 +200,27 @@ fi;
     MakeImmutable( pm );
   od;
 end );
+
+
+#############################################################################
+##
+#F  ComputeAllPowerMaps( <tbl> )
+##
+##  Computing all power maps is cheaper than successively computing some
+##  values of individual power maps.
+##  The current code is a hack.
+##  (Apparently 'DxCalcAllPowerMaps' is much faster than other available
+##  functions.)
+##  It should be improved as soon as we have a general tool for the
+##  identification of conjugacy classes.
+##
+BindGlobal( "ComputeAllPowerMaps", function( tbl )
+  tbl:= UnderlyingGroup( tbl );
+  if not HasDixonRecord( tbl ) then
+    DxCalcAllPowerMaps( DixonRecord( tbl ) );
+  fi;
+end );
+
 
 #############################################################################
 ##
@@ -268,7 +290,7 @@ local b;
     b:=List(b,i->i{d.invpermlist}); # permuted back
     r.niceBasis:=Immutable(b);
   fi;
-  Assert(1,Length(r.niceBasis)=Length(r.base));
+  Assert(1,Length(r.niceBasis)=Length(r.base), "in DxNiceBasis");
   return r.niceBasis;
 end );
 
@@ -422,7 +444,7 @@ end );
 #F  DxLinearCharacters(<D>) . . . .   calculate characters of G of degree 1
 ##
 ##  These characters are computed as characters of G/G'. This can be done
-##  easily by using the fact,that an abelian group is direct product of
+##  easily by using the fact,that an abelian group is a direct product of
 ##  cyclic groups. Thus we get the characters as "direct products" of the
 ##  characters of cyclic groups,which can be easily computed. They are
 ##  lifted afterwards back to G.
@@ -635,7 +657,7 @@ BindGlobal( "DxEigenbase", function(M)
 
   minpol:=MinimalPolynomial(BaseDomain(M),M);
 
-  Assert(2,IsDuplicateFree(RootsOfUPol(minpol)));
+  Assert(2,IsDuplicateFree(RootsOfUPol(minpol)), "in DxEigenbase, 1");
   eigenvalues:=Set(RootsOfUPol(minpol));
   dim:=0;
   bases:=[];
@@ -652,7 +674,8 @@ BindGlobal( "DxEigenbase", function(M)
     Error("Failed to calculate eigenspaces.");
   fi;
 
-  Assert(3, ForAll([1..Length(bases)],j->bases[j]*M = bases[j]*eigenvalues[j]));
+  Assert(3, ForAll([1..Length(bases)],j->bases[j]*M = bases[j]*eigenvalues[j]),
+         "in DxEigenbase, 2");
   return rec(base:=bases,
              values:=eigenvalues);
 end );
@@ -769,7 +792,7 @@ InstallGlobalFunction(SplitStep,function(D,bestMat)
       base:=Matrix(BaseDomain(base[1]),base);
       eigenbase:=List(eigen.base,i->List(i,j->j*base));
 
-      Assert(1,Length(eigenbase)>1);
+      Assert(1,Length(eigenbase)>1, "in SplitStep");
 
       ra:=List(eigenbase,i->rec(base:=i,dim:=Length(i)));
 
@@ -786,8 +809,8 @@ InstallGlobalFunction(SplitStep,function(D,bestMat)
                 # extra dimension of the larger space might somehow get
                 # lost. Therefore we can't be that tricky as the following
                 # argument supposes.
-                  # In characteristic p the split may be
-                  # not as well,as in characteristic 0. In this
+                  # In characteristic p the split may not be as good
+                  # as in characteristic 0. In this
                   # case,we may find a smaller image in another space.
                   # As character morphisms are a group we will also
                   # have the inverse image of the complement, we can
@@ -1385,7 +1408,7 @@ local n,i,val,b,requiredCols,splitBases,wert,nu,r,rs,rc,bn,bw,split,
 
       # only take classes small enough
       if D.classiz[n]<=lim and
-      # dont start with central classes in small groups!
+      # don't start with central classes in small groups!
       (D.classiz[n]>ksl or IsBound(D.maycent)) then
         for i in [1..Length(D.raeume)] do
           r:=D.raeume[i];
@@ -1448,7 +1471,7 @@ local n,i,val,b,requiredCols,splitBases,wert,nu,r,rs,rc,bn,bw,split,
           od;
 
           wert[n]:=wert[n]*D.centralizers[n] # *G/|K|
-                  /(Length(rc)); # We count -mistakening - also the first
+                  /(Length(rc)); # We count -mistakenly - also the first
             # column,that is available for free. Its "costs" are meant to
             # compensate for the splitting process.
         fi;
@@ -1491,10 +1514,12 @@ local n,i,val,b,requiredCols,splitBases,wert,nu,r,rs,rc,bn,bw,split,
     bw:=0;
     # run through them in pl sequence
     for n in Filtered(D.permlist,i->i in D.matrices) do
-      Info(InfoCharacterTable,3,n,":",Int(wert[n]));
-      if IsBound(wert[n]) and wert[n]>bw then
-        bn:=n;
-        bw:=wert[n];
+      if IsBound(wert[n]) then
+        Info(InfoCharacterTable,3,n,":",Int(wert[n]));
+        if wert[n]>bw then
+          bn:=n;
+          bw:=wert[n];
+        fi;
       fi;
     od;
 
@@ -1581,7 +1606,7 @@ local tm,tme,piso,gpcgs,gals,ord,l,l2,f,fgens,rws,pow,pos,i,j,k,gen,
   # not easily transfer to mod p.
   k:=Image(piso,TrivialSubgroup(D.galMorphisms));
   gpcgs:=Pcgs(k);
-  gals:=List(gpcgs,i->PreImagesRepresentative(piso,i));
+  gals:=List(gpcgs,i->PreImagesRepresentativeNC(piso,i));
   ord:=List(gpcgs,i->RelativeOrderOfPcElement(gpcgs,i));
   l:=Length(gpcgs);
 
@@ -1802,7 +1827,7 @@ local often,trans,e,neu,i,inv,cent,l,s,s1,x,dom;
       if dom=fail then
         x:=D.classreps[inv];
 
-        l:=List(s,i->[x^PreImagesRepresentative(e,
+        l:=List(s,i->[x^PreImagesRepresentativeNC(e,
           RepresentativeAction(Image(e),1,i[1])),Size(cent)*Length(i)]);
       else
         l:=List(s,i->[dom[i[1]],Size(cent)*Length(i)]);
@@ -2028,12 +2053,9 @@ end );
 #F  DixonInit(<G>) . . . . . . . . . . initialize Dixon-Schneider algorithm
 ##
 ##
-InstallGlobalFunction( DixonInit, function(arg)
-local G,     # group
-      D,     # Dixon record,result
-      k,z,exp,prime,M,m,f,r,ga,i,fk;
-
-  G:=arg[1];
+InstallGlobalFunction( DixonInit, function(G, opt...)
+local D,     # Dixon record,result
+      k,z,exp,prime,M,m,f,r,ga,i,fk, knownirr;
 
   # Force computation of the size of the group.
   Size(G);
@@ -2104,26 +2126,18 @@ local G,     # group
   od;
   D.projectionMat:=M;
 
-  #if (USECTPGROUP or Size(G)<2000 or k*10>=Size(G))
-  #   and IsBound(G.isAgGroup) and G.isAgGroup
-  #    then # Anfangscharaktere ausrechnen
-#
-#    m:=CharTablePGroup(G,"meckere nicht").irreducibles;
-#    if Length(m)<k then
-#
-#      C.irreducibles:=[];
-#      IncludeIrreducibles(D,m);
-#
-#    else
-#
-#      # The irreducibles are complete.
-#      C.irreducibles:=m;
-#      D.raeume:=[];
-#
-#    fi;
-#  else
-    DxIncludeIrreducibles(D,DxLinearCharacters(D));
-#  fi;
+  DxIncludeIrreducibles(D,DxLinearCharacters(D));
+  if Length( opt ) = 1 and IsRecord( opt[1] ) and IsBound( opt[1].knownirreducibles ) then
+    # The ordering of classes for these characters refers to
+    # the 'ConjugacyClasses' value of their character table.
+    # We check whether these classes coincide with 'D.classes'.
+    knownirr:= opt[1].knownirreducibles;
+    if 0 < Length( knownirr ) and
+       IsIdenticalObj( D.classes,
+           ConjugacyClasses( UnderlyingCharacterTable( knownirr[1] ) ) ) then
+      DxIncludeIrreducibles( D, knownirr );
+    fi;
+  fi;
 
   if Length(D.raeume)>0 then
     # indicate Stabilizer of the whole orbit,simultaneously compute
@@ -2222,9 +2236,7 @@ local C,u,irr;
   # Sort the characters by degrees.
   irr:=SortedCharacters(C,irr);
 
-  SetInfoText(C,"origin: Dixon's Algorithm");
-
-  # Throw away not any longer used components of the Dixon record.
+  # Throw away components of the Dixon record that are no longer used.
   for u in Difference(RecNames(D),
     ["ClassElement","centmulCandidates","centmulMults","characterTable",
     "classMap","facs","fingerprintCandidates",
@@ -2275,7 +2287,7 @@ local k,C,D,dsp;
   od;
 
   C:=DixontinI(D);
-  Assert(1,Length(C)=D.klanz);
+  Assert(1,Length(C)=D.klanz, "in IrrDixonSchneider");
   # SetIrr(OrdinaryCharacterTable(G),C);
   # (if `IrrDixonSchneider' is called explicitly,
   # we want to ignore the attribute)
@@ -2292,9 +2304,39 @@ InstallMethod( Irr,
     "Dixon/Schneider",
     [ IsGroup, IsZeroCyc ],
     function( G, zero )
-    local irr;
+    local opt, irr, C;
+
+    # Perhaps a cheaper method for 'G' exists but is not applicable.
+    opt:= rec();
+    if IsSolvableGroup( G ) then
+      irr:= IrrBaumClausen( G );
+      if Length( irr ) = NrConjugacyClasses( G ) then
+        # The list is complete.
+        C:= OrdinaryCharacterTable( G );
+        SetIrr( C, irr );
+        ComputeAllPowerMaps( C );
+        return irr;
+      fi;
+      # We feed the partial list into the Dixon-Schneider-algorithm.
+      opt.knownirreducibles:= irr;
+    fi;
+    irr:= IrrDixonSchneider( G, opt );
+    C:= OrdinaryCharacterTable( G );
+    SetIrr( C, irr );
+    SetInfoText( C, "origin: Dixon's Algorithm" );
+    return irr;
+    end );
+
+InstallMethod( Irr,
+    "for a group with known `IrrDixonSchneider'",
+    [ IsGroup and HasIrrDixonSchneider, IsZeroCyc ],
+    function( G, zero )
+    local irr, tbl;
     irr:= IrrDixonSchneider( G );
-    SetIrr( OrdinaryCharacterTable( G ), irr );
+    tbl:= OrdinaryCharacterTable( G );
+    SetIrr( tbl, irr );
+    ComputeAllPowerMaps( tbl );
+    SetInfoText( tbl, "origin: Dixon's Algorithm" );
     return irr;
     end );
 
@@ -2332,7 +2374,8 @@ InstallMethod( Irr,
         fi;
       od;
     od;
-    Assert( 1, IsCollection( bijection ) and IsEmpty( cclnice ) );
+    Assert( 1, IsCollection( bijection ) and IsEmpty( cclnice ),
+            "in Irr via niceomorphism" );
 
     # Compute the values of the irreducibles of the nice object.
     irr:= List( Irr( nice ), ValuesOfClassFunction );
@@ -2346,6 +2389,7 @@ InstallMethod( Irr,
     od;
     irr:= List( irr, x -> Character( tbl, x ) );
     SetIrr( tbl, irr );
+    SetInfoText( tbl, "origin: via the nice monomorphism of the group" );
     return irr;
 end );
 

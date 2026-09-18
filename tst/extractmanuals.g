@@ -31,7 +31,7 @@ WriteExamplesTst := function(directory, meta)
                      "gap> START_TEST(\"", chname, "\");\n");
             for a in ch do
                 AppendTo(output, "\n#LOC# ", a[2], a[1]);
-                if a[1][Length(a[1])] <> '\n' then
+                if Last(a[1]) <> '\n' then
                    AppendTo(output, "\n");
                 fi;
             od;

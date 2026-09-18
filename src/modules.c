@@ -97,6 +97,8 @@ static Int                 NrImportedGVars;
 static StructImportedGVars ImportedFuncs[MAX_IMPORTED_GVARS];
 static Int                 NrImportedFuncs;
 
+#ifdef HPCGAP
+
 static Int StateNextFreeOffset = 0; // Start of next free memory area (as offset into GAPState.StateSlots)
 
 static void RegisterModuleState(StructInitInfo * info)
@@ -123,6 +125,7 @@ static void RegisterModuleState(StructInitInfo * info)
     StateNextFreeOffset = (StateNextFreeOffset + sizeof(Obj)-1) & ~(sizeof(Obj)-1);
 }
 
+#endif
 
 /*************************************************************************
 **
@@ -149,7 +152,9 @@ Int ActivateModule(StructInitInfo * info)
 {
     Int res = 0;
 
+#ifdef HPCGAP
     RegisterModuleState(info);
+#endif
 
     if (info->initKernel) {
         res = info->initKernel(info);
@@ -420,6 +425,7 @@ static Obj FuncLoadedModules(Obj self)
             CHANGED_BAG(list);
             str = MakeImmString(Modules[i].filename);
             SET_ELM_PLIST(list, 3 * i + 3, str);
+            CHANGED_BAG(list);
         }
         else if (IS_MODULE_STATIC(m->type)) {
             SET_ELM_PLIST(list, 3 * i + 1, ObjsChar[(Int)'s']);
@@ -429,6 +435,7 @@ static Obj FuncLoadedModules(Obj self)
             CHANGED_BAG(list);
             str = MakeImmString(Modules[i].filename);
             SET_ELM_PLIST(list, 3 * i + 3, str);
+            CHANGED_BAG(list);
         }
     }
     return list;
@@ -520,11 +527,19 @@ static Obj ValidatedArgList(const char * name, int nargs, const char * argStr)
 {
     Obj args = ArgStringToList(argStr);
     int len = LEN_PLIST(args);
-    if (nargs >= 0 && len != nargs)
-        fprintf(stderr,
-                "#W %s takes %d arguments, but argument string is '%s'"
-                " which implies %d arguments\n",
-                name, nargs, argStr, len);
+    if (nargs >= 0 && len != nargs) {
+        if (nargs == 1) {
+            fprintf(stderr,
+                    "#W %s takes 1 argument, but argument string is '%s' "
+                    "which implies %d arguments\n",
+                    name, argStr, len);
+        } else if (len == 1) {
+            fprintf(stderr,
+                    "#W %s takes %d arguments, but argument string is '%s' "
+                    "which implies 1 argument\n",
+                    name, nargs, argStr);
+        }
+    }
     return args;
 }
 
@@ -890,9 +905,9 @@ void LoadModules(void)
             }
             else {
                 // and dynamic case
+#ifdef HAVE_DLOPEN
                 InitInfoFunc init;
 
-#ifdef HAVE_DLOPEN
                 const char * res = SyLoadModule(buf, &init);
                 if (init == 0) {
                     Panic("failed to load dynamic module %s, %s\n", buf, res);
@@ -933,7 +948,9 @@ void ModulesSetup(void)
             fputs(")\n", stderr);
         }
 
+#ifdef HPCGAP
         RegisterModuleState(info);
+#endif
     }
     NrBuiltinModules = NrModules;
 }

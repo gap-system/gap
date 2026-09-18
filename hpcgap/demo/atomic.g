@@ -164,7 +164,7 @@ od;
 
 # atomic readwrite l do
 #  for i in [1..nr] do
-#    atomic readwrite l[i] do # otherwise an error (no recurisve)
+#    atomic readwrite l[i] do # otherwise an error (no recursive)
 #      Print( l[i], "\n" ); # Print(l) gives an error
 #    od;  
 #  od;

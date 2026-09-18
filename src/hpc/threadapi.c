@@ -10,34 +10,34 @@
 **  This file contains the GAP interface for thread primitives.
 */
 
-#include "hpc/threadapi.h"
+#include "threadapi.h"
 
-#include "bool.h"
-#include "calls.h"
-#include "code.h"
-#include "error.h"
-#include "funcs.h"
-#include "gvars.h"
-#include "io.h"
-#include "lists.h"
-#include "modules.h"
-#include "objects.h"
-#include "plist.h"
-#include "precord.h"
-#include "read.h"
-#include "records.h"
-#include "set.h"
-#include "stats.h"
-#include "stringobj.h"
-#include "trycatch.h"
-#include "vars.h"
+#include "../bool.h"
+#include "../calls.h"
+#include "../code.h"
+#include "../error.h"
+#include "../funcs.h"
+#include "../gvars.h"
+#include "../io.h"
+#include "../lists.h"
+#include "../modules.h"
+#include "../objects.h"
+#include "../plist.h"
+#include "../precord.h"
+#include "../read.h"
+#include "../records.h"
+#include "../set.h"
+#include "../stats.h"
+#include "../stringobj.h"
+#include "../trycatch.h"
+#include "../vars.h"
 
-#include "hpc/guards.h"
-#include "hpc/misc.h"
-#include "hpc/region.h"
-#include "hpc/thread.h"
-#include "hpc/tls.h"
-#include "hpc/traverse.h"
+#include "guards.h"
+#include "misc.h"
+#include "region.h"
+#include "thread.h"
+#include "tls.h"
+#include "traverse.h"
 
 #include <signal.h>
 #include <stdio.h>
@@ -484,8 +484,13 @@ static Obj FuncCreateThread(Obj self, Obj funcargs)
         return ArgumentError(
             "CreateThread: Needs at least one function argument");
     Obj func = ELM_PLIST(funcargs, 1);
-    if (NARG_FUNC(func) != n - 1)
-        ErrorMayQuit("CreateThread: <func> expects %d arguments, but got %d", NARG_FUNC(func), n-1);
+    if (NARG_FUNC(func) != n - 1) {
+        if (NARG_FUNC(func) == 1) {
+            ErrorMayQuit("CreateThread: <func> expects 1 argument, but got %d", n - 1, 0);
+        } else {
+            ErrorMayQuit("CreateThread: <func> expects %d arguments, but got %d", NARG_FUNC(func), n - 1);
+        }
+    }
     templist = NEW_PLIST(T_PLIST, n);
     SET_LEN_PLIST(templist, n);
     SET_REGION(templist, NULL); // make it public

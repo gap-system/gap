@@ -64,11 +64,11 @@ gap> randomTest(AlternatingGroup(5), Random);
 
 #
 gap> randomTest(Group((1,2),(3,4)), Random);
-gap> randomTest(PrimitiveGroup(5,2), Random);
-gap> randomTest(PrimitiveGroup(5,3), Random);
+gap> randomTest(Group((2,4)(3,5), (1,2,3,5,4)), Random);
+gap> randomTest(Group((2,3,4,5), (1,2,3,5,4)), Random);
 gap> randomTest(Group((1,2),(3,4))*(1,2,3), Random);
-gap> randomTest(PrimitiveGroup(5,2)*(1,2,6), Random);
-gap> randomTest(PrimitiveGroup(5,3)*(1,4,6), Random);
+gap> randomTest(Group((2,4)(3,5), (1,2,3,5,4))*(1,2,6), Random);
+gap> randomTest(Group((2,3,4,5), (1,2,3,5,4))*(1,4,6), Random);
 
 #
 # pc groups

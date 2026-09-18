@@ -14,7 +14,7 @@
 ##    a polycyclic generating system, also behaves like a pc sequence
 ##
 ##  IsPcGroup
-##    a poylcyclic group whose elements family is defined by a collector
+##    a polycyclic group whose elements family is defined by a collector
 ##
 ##  CanEasilyComputePcgs
 ##    a group that knows how to compute a pcgs relatively fast

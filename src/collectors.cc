@@ -46,23 +46,39 @@ extern "C" {
 *F * * * * * * * * * * * * * module specific state  * * * * * * * * * * * * *
 */
 
+#ifdef HPCGAP
 struct CollectorsState_ {
-    Obj  SC_NW_STACK;
-    Obj  SC_LW_STACK;
-    Obj  SC_PW_STACK;
-    Obj  SC_EW_STACK;
-    Obj  SC_GE_STACK;
-    Obj  SC_CW_VECTOR;
-    Obj  SC_CW2_VECTOR;
-    UInt SC_MAX_STACK_SIZE;
+#endif
+
+DECL_MODULE_STATE Obj  SC_NW_STACK;
+DECL_MODULE_STATE Obj  SC_LW_STACK;
+DECL_MODULE_STATE Obj  SC_PW_STACK;
+DECL_MODULE_STATE Obj  SC_EW_STACK;
+DECL_MODULE_STATE Obj  SC_GE_STACK;
+DECL_MODULE_STATE Obj  SC_CW_VECTOR;
+DECL_MODULE_STATE Obj  SC_CW2_VECTOR;
+DECL_MODULE_STATE UInt SC_MAX_STACK_SIZE;
+#ifdef HPCGAP
 };
 
 static ModuleStateOffset CollectorsStateOffset = -1;
 
+// for debugging from GDB / lldb, we mark this as extern inline
 extern inline struct CollectorsState_ * CollectorsState(void)
 {
     return (struct CollectorsState_ *)StateSlotsAtOffset(CollectorsStateOffset);
 }
+
+#define SC_NW_STACK (CollectorsState()->SC_NW_STACK)
+#define SC_LW_STACK (CollectorsState()->SC_LW_STACK)
+#define SC_PW_STACK (CollectorsState()->SC_PW_STACK)
+#define SC_EW_STACK (CollectorsState()->SC_EW_STACK)
+#define SC_GE_STACK (CollectorsState()->SC_GE_STACK)
+#define SC_CW_VECTOR (CollectorsState()->SC_CW_VECTOR)
+#define SC_CW2_VECTOR (CollectorsState()->SC_CW2_VECTOR)
+#define SC_MAX_STACK_SIZE (CollectorsState()->SC_MAX_STACK_SIZE)
+
+#endif
 
 
 /****************************************************************************
@@ -84,7 +100,7 @@ extern inline struct CollectorsState_ * CollectorsState(void)
 */
 #define SC_PUSH_WORD( word, exp ) \
     if ( ++sp == max ) { \
-        CollectorsState()->SC_MAX_STACK_SIZE *= 2; \
+        SC_MAX_STACK_SIZE *= 2; \
         return -1; \
     } \
     *++nw = DATA_WORD(word); \
@@ -95,7 +111,7 @@ extern inline struct CollectorsState_ * CollectorsState(void)
 
 #define SC_PUSH_GEN( gen, exp ) \
     if ( ++sp == max ) { \
-        CollectorsState()->SC_MAX_STACK_SIZE *= 2; \
+        SC_MAX_STACK_SIZE *= 2; \
         return -1; \
     } \
     *++nw = DATA_WORD(gen); \
@@ -365,7 +381,7 @@ static Int SingleCollectWord(Obj sc, Obj vv, Obj w)
 
     Obj         tmp;        // temporary obj for power
 
-    Int         resized = 0;// indicates whether a Resize() happened
+    BOOL        resized = FALSE;// indicates whether a Resize() happened
 
     // <start> is the first non-trivial entry in <v>
     start = SC_NUMBER_RWS_GENERATORS(sc);
@@ -385,44 +401,44 @@ static Int SingleCollectWord(Obj sc, Obj vv, Obj w)
     exps = (UInt)1 << (ebits-1);
 
     // <nw> contains the stack of words to insert
-    vnw = CollectorsState()->SC_NW_STACK;
+    vnw = SC_NW_STACK;
 
     // <lw> contains the word end of the word in <nw>
-    vlw = CollectorsState()->SC_LW_STACK;
+    vlw = SC_LW_STACK;
 
     // <pw> contains the position of the word in <nw> to look at
-    vpw = CollectorsState()->SC_PW_STACK;
+    vpw = SC_PW_STACK;
 
     // <ew> contains the unprocessed exponents at position <pw>
-    vew = CollectorsState()->SC_EW_STACK;
+    vew = SC_EW_STACK;
 
     // <ge> contains the global exponent of the word
-    vge = CollectorsState()->SC_GE_STACK;
+    vge = SC_GE_STACK;
 
     // get the maximal stack size
-    max = CollectorsState()->SC_MAX_STACK_SIZE;
+    max = SC_MAX_STACK_SIZE;
 
     // ensure that the stacks are large enough
     const UInt desiredStackSize = sizeof(Obj) * (max + 2);
     if ( SIZE_OBJ(vnw) < desiredStackSize ) {
         ResizeBag( vnw, desiredStackSize );
-        resized = 1;
+        resized = TRUE;
     }
     if ( SIZE_OBJ(vlw) < desiredStackSize ) {
         ResizeBag( vlw, desiredStackSize );
-        resized = 1;
+        resized = TRUE;
     }
     if ( SIZE_OBJ(vpw) < desiredStackSize ) {
         ResizeBag( vpw, desiredStackSize );
-        resized = 1;
+        resized = TRUE;
     }
     if ( SIZE_OBJ(vew) < desiredStackSize ) {
         ResizeBag( vew, desiredStackSize );
-        resized = 1;
+        resized = TRUE;
     }
     if ( SIZE_OBJ(vge) < desiredStackSize ) {
         ResizeBag( vge, desiredStackSize );
-        resized = 1;
+        resized = TRUE;
     }
     if( resized ) return -1;
 
@@ -876,7 +892,7 @@ static Int CombiCollectWord(Obj sc, Obj vv, Obj w)
 
     Obj         tmp;        // temporary obj for power
 
-    Int         resized = 0;// indicates whether a Resize() happened
+    BOOL        resized = FALSE;// indicates whether a Resize() happened
 
     // if <w> is the identity return now
     if ( NPAIRS_WORD(w) == 0 ) {
@@ -893,44 +909,44 @@ static Int CombiCollectWord(Obj sc, Obj vv, Obj w)
     exps = (UInt)1 << (ebits-1);
 
     // <nw> contains the stack of words to insert
-    vnw = CollectorsState()->SC_NW_STACK;
+    vnw = SC_NW_STACK;
 
     // <lw> contains the word end of the word in <nw>
-    vlw = CollectorsState()->SC_LW_STACK;
+    vlw = SC_LW_STACK;
 
     // <pw> contains the position of the word in <nw> to look at
-    vpw = CollectorsState()->SC_PW_STACK;
+    vpw = SC_PW_STACK;
 
     // <ew> contains the unprocessed exponents at position <pw>
-    vew = CollectorsState()->SC_EW_STACK;
+    vew = SC_EW_STACK;
 
     // <ge> contains the global exponent of the word
-    vge = CollectorsState()->SC_GE_STACK;
+    vge = SC_GE_STACK;
 
     // get the maximal stack size
-    max = CollectorsState()->SC_MAX_STACK_SIZE;
+    max = SC_MAX_STACK_SIZE;
 
     // ensure that the stacks are large enough
     const UInt desiredStackSize = sizeof(Obj) * (max + 2);
     if ( SIZE_OBJ(vnw) < desiredStackSize ) {
         ResizeBag( vnw, desiredStackSize );
-        resized = 1;
+        resized = TRUE;
     }
     if ( SIZE_OBJ(vlw) < desiredStackSize ) {
         ResizeBag( vlw, desiredStackSize );
-        resized = 1;
+        resized = TRUE;
     }
     if ( SIZE_OBJ(vpw) < desiredStackSize ) {
         ResizeBag( vpw, desiredStackSize );
-        resized = 1;
+        resized = TRUE;
     }
     if ( SIZE_OBJ(vew) < desiredStackSize ) {
         ResizeBag( vew, desiredStackSize );
-        resized = 1;
+        resized = TRUE;
     }
     if ( SIZE_OBJ(vge) < desiredStackSize ) {
         ResizeBag( vge, desiredStackSize );
-        resized = 1;
+        resized = TRUE;
     }
     if( resized ) return -1;
 
@@ -1267,7 +1283,7 @@ static Obj ReducedComm(FinPowConjCol * fc, Obj sc, Obj w, Obj u)
     Obj                 vc2;        // collect vector
 
     // use 'cwVector' to collect word <u>*<w> to
-    vcw = CollectorsState()->SC_CW_VECTOR;
+    vcw = SC_CW_VECTOR;
     num = SC_NUMBER_RWS_GENERATORS(sc);
 
     // check that it has the correct length, unpack <u> into it
@@ -1283,7 +1299,7 @@ static Obj ReducedComm(FinPowConjCol * fc, Obj sc, Obj w, Obj u)
     }
 
     // use 'cw2Vector' to collect word <w>*<u> to
-    vc2 = CollectorsState()->SC_CW2_VECTOR;
+    vc2 = SC_CW2_VECTOR;
 
     // check that it has the correct length, unpack <w> into it
     if ( fc->vectorWord( vc2, w, num ) == -1 ) {
@@ -1325,7 +1341,7 @@ static Obj ReducedForm(FinPowConjCol * fc, Obj sc, Obj w)
     Obj                 type;   // type of the return objue
 
     // use 'cwVector' to collect word <w> to
-    vcw = CollectorsState()->SC_CW_VECTOR;
+    vcw = SC_CW_VECTOR;
     num = SC_NUMBER_RWS_GENERATORS(sc);
 
     // check that it has the correct length
@@ -1358,7 +1374,7 @@ static Obj ReducedLeftQuotient(FinPowConjCol * fc, Obj sc, Obj w, Obj u)
     Obj                 vc2;        // collect vector
 
     // use 'cwVector' to collect word <w> to
-    vcw = CollectorsState()->SC_CW_VECTOR;
+    vcw = SC_CW_VECTOR;
     num = SC_NUMBER_RWS_GENERATORS(sc);
 
     // check that it has the correct length, unpack <w> into it
@@ -1368,7 +1384,7 @@ static Obj ReducedLeftQuotient(FinPowConjCol * fc, Obj sc, Obj w, Obj u)
     }
 
     // use 'cw2Vector' to collect word <u> to
-    vc2 = CollectorsState()->SC_CW2_VECTOR;
+    vc2 = SC_CW2_VECTOR;
 
     // check that it has the correct length, unpack <u> into it
     if ( fc->vectorWord( vc2, u, num ) == -1 ) {
@@ -1402,7 +1418,7 @@ static Obj ReducedProduct(FinPowConjCol * fc, Obj sc, Obj w, Obj u)
     Obj                 vcw;        // collect vector
 
     // use 'cwVector' to collect word <w> to
-    vcw = CollectorsState()->SC_CW_VECTOR;
+    vcw = SC_CW_VECTOR;
     num = SC_NUMBER_RWS_GENERATORS(sc);
 
     // check that it has the correct length, unpack <w> into it
@@ -1441,8 +1457,8 @@ static Obj ReducedPowerSmallInt(FinPowConjCol * fc, Obj sc, Obj w, Obj vpow)
     pow = INT_INTOBJ(vpow);
 
     // use 'cwVector' and 'cw2Vector to collect words to
-    vcw  = CollectorsState()->SC_CW_VECTOR;
-    vc2  = CollectorsState()->SC_CW2_VECTOR;
+    vcw  = SC_CW_VECTOR;
+    vc2  = SC_CW2_VECTOR;
     num  = SC_NUMBER_RWS_GENERATORS(sc);
     type = SC_DEFAULT_TYPE(sc);
 
@@ -1528,8 +1544,8 @@ static Obj ReducedQuotient(FinPowConjCol * fc, Obj sc, Obj w, Obj u)
     Obj                 vc2;        // collect vector
 
     // use 'cwVector' to collect word <w> to
-    vcw  = CollectorsState()->SC_CW_VECTOR;
-    vc2  = CollectorsState()->SC_CW2_VECTOR;
+    vcw  = SC_CW_VECTOR;
+    vc2  = SC_CW2_VECTOR;
     num  = SC_NUMBER_RWS_GENERATORS(sc);
     type = SC_DEFAULT_TYPE(sc);
 
@@ -1647,8 +1663,7 @@ static Obj FuncFinPowConjCol_ReducedQuotient ( Obj self, Obj sc, Obj w, Obj u )
 */
 static Obj FuncSET_SCOBJ_MAX_STACK_SIZE(Obj self, Obj size)
 {
-    CollectorsState()->SC_MAX_STACK_SIZE =
-        GetPositiveSmallInt(SELF_NAME, size);
+    SC_MAX_STACK_SIZE = GetPositiveSmallInt(SELF_NAME, size);
     return 0;
 }
 
@@ -1739,25 +1754,25 @@ static Int InitLibrary (
 static Int InitModuleState(void)
 {
     // register global bags with the garbage collector
-    InitGlobalBag( &CollectorsState()->SC_NW_STACK, "SC_NW_STACK" );
-    InitGlobalBag( &CollectorsState()->SC_LW_STACK, "SC_LW_STACK" );
-    InitGlobalBag( &CollectorsState()->SC_PW_STACK, "SC_PW_STACK" );
-    InitGlobalBag( &CollectorsState()->SC_EW_STACK, "SC_EW_STACK" );
-    InitGlobalBag( &CollectorsState()->SC_GE_STACK, "SC_GE_STACK" );
-    InitGlobalBag( &CollectorsState()->SC_CW_VECTOR, "SC_CW_VECTOR" );
-    InitGlobalBag( &CollectorsState()->SC_CW2_VECTOR, "SC_CW2_VECTOR" );
+    InitGlobalBag(&SC_NW_STACK, "SC_NW_STACK");
+    InitGlobalBag(&SC_LW_STACK, "SC_LW_STACK");
+    InitGlobalBag(&SC_PW_STACK, "SC_PW_STACK");
+    InitGlobalBag(&SC_EW_STACK, "SC_EW_STACK");
+    InitGlobalBag(&SC_GE_STACK, "SC_GE_STACK");
+    InitGlobalBag(&SC_CW_VECTOR, "SC_CW_VECTOR");
+    InitGlobalBag(&SC_CW2_VECTOR, "SC_CW2_VECTOR");
 
     const UInt maxStackSize = 256;
     const UInt desiredStackSize = sizeof(Obj) * (maxStackSize + 2);
-    CollectorsState()->SC_NW_STACK = NewKernelBuffer(desiredStackSize);
-    CollectorsState()->SC_LW_STACK = NewKernelBuffer(desiredStackSize);
-    CollectorsState()->SC_PW_STACK = NewKernelBuffer(desiredStackSize);
-    CollectorsState()->SC_EW_STACK = NewKernelBuffer(desiredStackSize);
-    CollectorsState()->SC_GE_STACK = NewKernelBuffer(desiredStackSize);
+    SC_NW_STACK = NewKernelBuffer(desiredStackSize);
+    SC_LW_STACK = NewKernelBuffer(desiredStackSize);
+    SC_PW_STACK = NewKernelBuffer(desiredStackSize);
+    SC_EW_STACK = NewKernelBuffer(desiredStackSize);
+    SC_GE_STACK = NewKernelBuffer(desiredStackSize);
 
-    CollectorsState()->SC_CW_VECTOR = NEW_STRING(0);
-    CollectorsState()->SC_CW2_VECTOR = NEW_STRING(0);
-    CollectorsState()->SC_MAX_STACK_SIZE = maxStackSize;
+    SC_CW_VECTOR = NEW_STRING(0);
+    SC_CW2_VECTOR = NEW_STRING(0);
+    SC_MAX_STACK_SIZE = maxStackSize;
 
     return 0;
 }
@@ -1779,8 +1794,10 @@ static StructInitInfo module = {
  /* preSave     = */ 0,
  /* postSave    = */ 0,
  /* postRestore = */ 0,
+#ifdef HPCGAP
  /* moduleStateSize      = */ sizeof(CollectorsState_),
  /* moduleStateOffsetPtr = */ &CollectorsStateOffset,
+#endif
  /* initModuleState      = */ InitModuleState,
  /* destroyModuleState   = */ 0,
 };

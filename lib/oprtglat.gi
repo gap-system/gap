@@ -130,7 +130,7 @@ end);
 # if groups are fully conjugated)
 # gps (groups already conjugates so the action is reduced to acts for each
 # cluster)
-# conjugators (for subgroups in list, elements conjugationg to gps)
+# conjugators (for subgroups in list, elements conjugating to gps)
 # normalizers: if not `false` normalizers of cluster rep in gps
 #
 
@@ -161,7 +161,7 @@ end);
 
 InstallGlobalFunction(ClusterConjugacyPermgroups,function(G,l)
 local acts,gps,clusters,conj,ncl,nacts,i,j,new,q,hom,lhom,c,n,r,len,
-      pat,oa,ob,orbs,k,gens,nnors,m,kk,perm,fur,ooa,oob,lan,subset;
+      pat,oa,ob,orbs,k,gens,nnors,m,kk,perm,fur,ooa,oob,lan,subset,localn;
 
   acts:=[G];
   gps:=ShallowCopy(l);
@@ -224,7 +224,7 @@ local acts,gps,clusters,conj,ncl,nacts,i,j,new,q,hom,lhom,c,n,r,len,
         Info(InfoLattice,5,"reduced (factor) by ",Size(q)/Size(n));
         Add(nacts,PreImage(lhom,n));
         for k in new.clusters[j] do
-          r:=PreImagesRepresentative(lhom,new.conjugators[k]);
+          r:=PreImagesRepresentativeNC(lhom,new.conjugators[k]);
           conj[c[k]]:=conj[c[k]]*r;
           gps[c[k]]:=gps[c[k]]^r;
         od;
@@ -256,27 +256,31 @@ local acts,gps,clusters,conj,ncl,nacts,i,j,new,q,hom,lhom,c,n,r,len,
       len:=Permuted(len,perm);
       n:=[acts[i]];
       for j in oa do
-        q:=n[Length(n)];
+        q:=Last(n);
         if ForAny(GeneratorsOfGroup(q),x->OnSets(j,x)<>j) then
           q:=Stabilizer(q,j,OnSets);
         fi;
         Add(n,q);
       od;
-      lan:=n[Length(n)];
+      lan:=Last(n);
       fur:=Length(Orbits(lan,MovedPoints(acts[i])))
           <>Length(orbs[c[1]]);
+      localn:=[Last(n)];
       if Size(lan)=Size(acts[i]) and not fur then
         # already all the same
         Add(ncl,c);
         Add(nacts,acts[i]);
         c:=[];
       else
-        Info(InfoLattice,5,"reduced (orb) by ",Size(acts[i])/Size(n[Length(n)]));
+        Info(InfoLattice,5,"reduced (orb) by ",Size(acts[i])/Size(Last(n)));
         for j in [2..Length(c)] do
+          localn:=[Last(n)];
           if Collected(List(orbs[c[j]],Length))=pat then
             r:=One(acts[i]);
             # already for changed len!
             ob:=List(len,x->Union(Filtered(orbs[c[j]],y->Length(y)=x)));
+
+            # first gets sets unions OK.
             for k in [1..Length(oa)] do
               if r<>fail then
                 q:=RepresentativeAction(n[k],ob[k],oa[k],OnSets);
@@ -286,37 +290,64 @@ local acts,gps,clusters,conj,ncl,nacts,i,j,new,q,hom,lhom,c,n,r,len,
                   for kk in [k+1..Length(oa)] do
                     ob[kk]:=OnSets(ob[kk],q);
                   od;
-                  if fur then
-                    ooa:=Set(Filtered(orbs[c[1]],y->Length(y)=len[k]));
-                    oob:=Set(List(Filtered(orbs[c[j]],y->Length(y)=len[k])),
-                      x->OnSets(x,r));
-                    if ooa<>oob then
-                      q:=CCPOSA(n[k],ooa,oob,OnSetsSets);
-                      if q=fail then r:=fail;
-                      else
-                        Add(n,q[1]); # partition stabilizer
-                        q:=q[2]^-1; # mapping oob to ooa
-                        r:=r*q;
-                        for kk in [k+1..Length(oa)] do
-                          ob[kk]:=OnSets(ob[kk],q);
-                        od;
-                      fi;
-                    fi;
 
-                  fi;
                 fi;
               fi;
             od;
+
+            # record we already changed the groups to have same orbits
+            if r<>fail then
+              q:=c[j];
+              conj[q]:=conj[q]*r;
+              gps[q]:=gps[q]^r;
+              orbs[q]:=OnTuplesSets(orbs[q],r);
+            fi;
+
+            # and now sets therein
+
+            if fur then
+              r:=();
+              for k in [1..Length(oa)] do
+                if r<>fail then
+
+                  ooa:=Set(Filtered(orbs[c[1]],y->Length(y)=len[k]));
+                  oob:=Set(List(Filtered(orbs[c[j]],y->Length(y)=len[k])),
+                    x->OnSets(x,r));
+
+                  if ooa<>oob then
+                    q:=CCPOSA(localn[k],ooa,oob,OnSetsSets);
+                    if q=fail then r:=fail;
+                    else
+                      Add(localn,q[1]); # partition stabilizer
+                      q:=q[2]^-1; # mapping oob to ooa
+                      r:=r*q;
+                    fi;
+                  else
+                    Add(localn,Stabilizer(Last(localn),ooa,OnSetsSets));
+                  fi;
+
+                fi;
+              od;
+
+              # record further orbit move
+              if r<>fail then
+                q:=c[j];
+                conj[q]:=conj[q]*r;
+                gps[q]:=gps[q]^r;
+                orbs[q]:=OnTuplesSets(orbs[q],r);
+              fi;
+
+            fi;
+
             if r<>fail then
               q:=c[j];
               Add(new,q);
-              conj[q]:=conj[q]*r;
-              gps[q]:=gps[q]^r;
             fi;
+
           fi;
         od;
         Add(ncl,new);
-        Add(nacts,n[Length(n)]);
+        Add(nacts,Last(localn));
         c:=Difference(c,new);
       fi;
     od;
@@ -330,6 +361,7 @@ local acts,gps,clusters,conj,ncl,nacts,i,j,new,q,hom,lhom,c,n,r,len,
   nnors:=[];
   for i in [1..Length(clusters)] do
     c:=clusters[i];
+
     if Length(c)=1 or Size(acts[i])/Size(gps[c[1]])>1000 then
       Add(ncl,c);
       Add(nacts,acts[i]);
@@ -380,6 +412,43 @@ local acts,gps,clusters,conj,ncl,nacts,i,j,new,q,hom,lhom,c,n,r,len,
   od;
   clusters:=ncl;
   acts:=nacts;
+
+  for i in [1..Length(clusters)] do
+    c:=clusters[i][1];
+    # was leading group conjugated away before -- conjugate back?
+    r:=conj[c];
+    if not IsOne(r) then
+      r:=r^-1;
+      for j in clusters[i] do
+        gps[j]:=gps[j]^r;
+        conj[j]:=conj[j]*r;
+      od;
+      if nnors[i]<>false then
+        nnors[i]:=nnors[i]^r;
+      fi;
+      if acts[i]<>fail then
+        acts[i]:=acts[i]^r;
+      fi;
+    fi;
+  od;
+
+  # check
+  Assert(1,ForAll([1..Length(clusters)],x->IsOne(conj[clusters[x][1]])));
+  Assert(1,ForAll([1..Length(clusters)],i->acts[i]<>fail or
+    ForAll([2..Length(clusters[i])],j->gps[clusters[i][1]]=gps[clusters[i][j]])));
+
+  Assert(2,ForAll([1..Length(l)],x->l[x]^conj[x]=gps[x]));
+  Assert(2, subset=false or ForAll([1..Length(nnors)],i->acts[i]=fail
+      or IsSubset(acts[i],Normalizer(G,l[clusters[i][1]]))));
+  Assert(2, subset=false or ForAll([1..Length(nnors)],i->nnors[i]=false
+      or nnors[i]=Normalizer(G,l[clusters[i][1]])));
+
+  for i in [1..Length(clusters)] do
+    for j in [i+1..Length(clusters)] do
+      Assert(3,RepresentativeAction(G,l[clusters[i][1]],
+        l[clusters[j][1]])=fail);
+    od;
+  od;
 
   return rec(
     clusters:=clusters,
@@ -596,8 +665,8 @@ local  n,o,dom,cl,i,s,j,t,ti,tl,gens;
       while j<=Length(dom) do
         if Size(dom[j])=s and ForAll(gens,k->k^ti in dom[j]) then
           # hit
-          dom[j]:=dom[Length(dom)];
-          Unbind(dom[Length(dom)]);
+          dom[j]:=Last(dom);
+          Remove(dom);
         else
           j:=j+1;
         fi;

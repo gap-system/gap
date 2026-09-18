@@ -361,28 +361,32 @@ local ag, p1iso, agp, p2iso, DP, p1, p2, gens, genimgs, triso,s,i,u,opt,
       SetSize(ag,s);
     fi;
     IsGroupOfAutomorphismsFiniteGroup(ag);
-    p1iso:=IsomorphismPermGroup(ag);
-    agp:=Image(p1iso);
+    # go nice route to avoid an abelian method getting in the way
+    p1iso:=NiceMonomorphism(ag);
+    if not IsPermGroup(Image(p1iso)) then
+      p1iso:=IsomorphismPermGroup(ag);
+    fi;
+    agp:=Image(p1iso,ag);
 
     # are both groups solvable?
     p2iso:=IsomorphismPermGroup(DirectProductInfo(D).groups[2]);
-    gp2:=ImagesSource(p2iso);
+    gp2:=Image(p2iso,DirectProductInfo(D).groups[2]);
     if IsSolvableGroup(gp2) and IsSolvableGroup(agp) then
       # both groups are solvable -- go solvable
       pc1:=IsomorphismPcGroup(agp);
       pc2:=IsomorphismPcGroup(gp2);
-      DP:=DirectProduct(ImagesSource(pc1),ImagesSource(pc2));
+      DP:=DirectProduct(Image(pc1,agp),Image(pc2,gp2));
       p1:=Projection(DP,1);
       p2:=Projection(DP,2);
       gens:=Pcgs(DP);
 
       genimgs:=List(gens,
           i->ImagesRepresentative(Embedding(D,1),
-          PreImagesRepresentative(p1iso,
-            PreImagesRepresentative(pc1,ImagesRepresentative(p1,i))))
+          PreImagesRepresentativeNC(p1iso,
+            PreImagesRepresentativeNC(pc1,ImagesRepresentative(p1,i))))
             *ImagesRepresentative(Embedding(D,2),
-                PreImagesRepresentative(p2iso,
-                PreImagesRepresentative(pc2,ImagesRepresentative(p2,i)))) );
+                PreImagesRepresentativeNC(p2iso,
+                PreImagesRepresentativeNC(pc2,ImagesRepresentative(p2,i)))) );
 
     else
       opt:=rec(limit:=s,random:=1);
@@ -406,6 +410,11 @@ local ag, p1iso, agp, p2iso, DP, p1, p2, gens, genimgs, triso,s,i,u,opt,
           fi;
           #Print("rep ",Size(u)," ",s,"\n");
         until Size(u)=s;
+        # the stabilizer chain of <u> reached the known order <s>, hence it is
+        # correct despite being computed randomly. Record that: otherwise the
+        # `random' value is inherited by every stabilizer chain computed later
+        # on inside <u>, where no such limit is known to validate the result.
+        StabChainOptions(u).random:=DefaultStabChainOptions.random;
         agp:=u;
       else
         gens:=GeneratorsOfGroup(agp);
@@ -426,9 +435,9 @@ local ag, p1iso, agp, p2iso, DP, p1, p2, gens, genimgs, triso,s,i,u,opt,
 
       genimgs:=List(gens,
           i->ImagesRepresentative(Embedding(D,1),
-                PreImagesRepresentative(p1iso,ImagesRepresentative(p1,i)))
+                PreImagesRepresentativeNC(p1iso,ImagesRepresentative(p1,i)))
             *ImagesRepresentative(Embedding(D,2),
-                PreImagesRepresentative(p2iso,ImagesRepresentative(p2,i))) );
+                PreImagesRepresentativeNC(p2iso,ImagesRepresentative(p2,i))) );
 
     fi;
     triso:=GroupHomomorphismByImagesNC(DP,D,gens,genimgs);
@@ -436,7 +445,9 @@ local ag, p1iso, agp, p2iso, DP, p1, p2, gens, genimgs, triso,s,i,u,opt,
     return rec(pairgens:=genimgs,
                permgens:=gens,
                isomorphism:=triso,
-               permgroup:=DP);
+               permgroup:=DP,
+               p1iso:=p1iso,
+               p2iso:=p2iso);
   else
     return false;
   fi;
@@ -498,40 +509,65 @@ InstallGlobalFunction( CompatiblePairs, function( arg )
 local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
   K2, f, tmp, Ggens, pcgs, l, idx, u, tup,Dos,elmlist,preimlist,pows,
   baspt,newimgs,i,j,basicact,neu,K1nontriv,epi,hf,pool,modulehom,test,
-  larg;
+  direct;
 
     # catch arguments
-    A:=fail;
-    larg:=ShallowCopy(arg);
-    if Length(larg)>2 and IsGroupOfAutomorphismsFiniteGroup(arg[1]) and
+    if Length(arg)>2 and IsGroupOfAutomorphismsFiniteGroup(arg[1]) and
       Source(One(arg[1]))=arg[2] then
       #automorphism group given
-      A:=larg[1];
-      larg:=larg{[2..Length(larg)]};
+      A:=Remove(arg, 1);
     else
       A:=fail;
     fi;
-    G := larg[1];
-    M := larg[2];
+    G := arg[1];
+    M := arg[2];
     Mgrp := GroupByGenerators( M.generators );
     Ggens:=Pcgs(G);
     oper:=fail;
-    if IsPcgs(Ggens) and Length(Ggens)=Length(M.generators) then
-      oper := GroupHomomorphismByImagesNC( G, Mgrp, Ggens, M.generators );
-    elif Length(larg)=2 then
+
+    direct:=false;
+
+    if A=fail and Length(arg)=2 then
       # search through automorphism group for projection image and reps,
       # then add module automorphisms
-      gens:=GeneratorsOfGroup(G);
       if A=fail then
+        Info( InfoCompPairs, 1, "    CompP: compute aut group");
         A:=AutomorphismGroup(G);
       fi;
-      triso:=IsomorphismPermGroup(A);
+      u:=fail;
+      if Size(A)>1 then
+        direct:=true;
+      fi;
+
+    elif A=fail and Length(arg)=3 and HasDirectProductInfo(arg[3]) then
+
+      A:=DirectProductInfo(arg[3]).groups[1];
+      B:=DirectProductInfo(arg[3]).groups[2];
+
+      if IsGroupOfAutomorphismsFiniteGroup(A) and Size(A)>1 and Size(B)>1 and Size(A)*Size(B)>1000 then
+        direct:=true;
+        u:=B;
+      else
+        A:=fail;
+      fi;
+
+    fi;
+
+    if direct then
+      gens:=GeneratorsOfGroup(G);
+      triso:=NiceMonomorphism(A:autactbase:=fail);
+      if not IsPermGroup(Image(triso)) then
+        triso:=IsomorphismPermGroup(A:autactbase:=fail);
+      fi;
+
       pool:=[];
       modulehom:=GroupHomomorphismByImages(G,Group(M.generators),
         gens,M.generators);
+      M.isMTXModule:=true;
+      M.IsOverFiniteField:=true;
       test:=function(perm)
       local aut,imgs,mat;
-        aut:=PreImagesRepresentative(triso,perm);
+        aut:=PreImagesRepresentativeNC(triso,perm);
         imgs:=List(gens,x->ImagesRepresentative(aut,x));
         imgs:=List(imgs,x->ImagesRepresentative(modulehom,x));
         mat:=MTX.IsomorphismModules(M,GModuleByMats(imgs,M.field));
@@ -551,7 +587,7 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
           B:=Difference(B,[i]);
         fi;
       od;
-      K:=Group(GeneratorsOfGroup(K){B});
+      K:=Group(GeneratorsOfGroup(K){B}, One(K));
       pool:=pool{B};
 
       B:=MTX.ModuleAutomorphisms(M);
@@ -567,7 +603,22 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
         A:=GroupWithGenerators(pool);
         SetSize(A,Size(K)*Size(B));
       fi;
-      return A;
+
+      # make sure the B-part is OK
+      if u<>fail then
+        B:=List(GeneratorsOfGroup(A),x->x[2]);
+        B:=Group(B);
+        if not IsSubset(u,B) then
+          Info(InfoCompPairs,1," projection wrong, go normal");
+        else
+          return A;
+        fi;
+      else
+        return A;
+      fi;
+
+    elif IsPcgs(Ggens) and Length(Ggens)=Length(M.generators) then
+      oper := GroupHomomorphismByImagesNC( G, Mgrp, Ggens, M.generators );
     fi;
 
     if oper=fail then
@@ -575,14 +626,17 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
       oper := GroupHomomorphismByImagesNC( G, Mgrp, Ggens, M.generators );
     fi;
 
+
     # automorphism groups of G and M
-    if Length( larg ) = 2 then
-        Info( InfoCompPairs, 1, "    CompP: compute aut group");
-        A := AutomorphismGroup( G );
+    if Length( arg ) = 2 then
+        if A=fail then
+          Info( InfoCompPairs, 1, "    CompP: compute aut group");
+          A:=AutomorphismGroup(G);
+        fi;
         B := GL( M.dimension, Characteristic( M.field ) );
         D := DirectProduct( A, B );
     else
-        D := larg[3];
+        D := arg[3];
         A := DirectProductInfo(D).groups[1];
     fi;
 
@@ -608,7 +662,7 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
     Dos:=Size(D);
 
     # compute stabilizer of K in A
-    if Length( larg ) <= 3 or not larg[4] then
+    if Length( arg ) <= 3 or not arg[4] then
 
       # get kernel of oper
       K := KernelOfMultiplicativeGeneralMapping( oper );
@@ -697,9 +751,9 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
 
     basicact:=function( tup, elm )
     local gens;
-      #gens := List( tup[1], x -> PreImagesRepresentative( elm[1], x ) );
+      #gens := List( tup[1], x -> PreImagesRepresentativeNC( elm[1], x ) );
       #gens := List( gens, x -> MappedPcElement( x, tup[1], tup[2] ) );
-      gens := List( Ggens, x -> PreImagesRepresentative( elm[1], x ) );
+      gens := List( Ggens, x -> PreImagesRepresentativeNC( elm[1], x ) );
       gens := List( gens, x -> MappedPcElement( x, Ggens, tup ) );
       gens := List( gens, x -> x ^ elm[2] );
       return gens;
@@ -712,32 +766,32 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
       Assert(1,MappingGeneratorsImages(epi)[2]=Ggens);
       f:=function( tup, elm )
           local gens;
-            #gens := List( tup[1], x -> PreImagesRepresentative( elm[1], x ) );
+            #gens := List( tup[1], x -> PreImagesRepresentativeNC( elm[1], x ) );
             #gens := List( gens, x -> MappedPcElement( x, tup[1], tup[2] ) );
-            gens := List( Ggens, x -> PreImagesRepresentative( elm[1], x ) );
-            gens := List( gens, x -> MappedWord( PreImagesRepresentative(epi,x),
+            gens := List( Ggens, x -> PreImagesRepresentativeNC( elm[1], x ) );
+            gens := List( gens, x -> MappedWord( PreImagesRepresentativeNC(epi,x),
               GeneratorsOfGroup(Source(epi)), tup ) );
             gens := List( gens, x -> x ^ elm[2] );
             return gens;
             #return DirectProductElement( [tup[1], gens] );
           end;
 
-      elif Size(G)>20000 then
-        # if G is too large we cannot write out elements
-        elmlist:=fail;
-        f:=basicact;
-      else
+    elif Size(G)>20000 then
+      # if G is too large we cannot write out elements
+      elmlist:=fail;
+      f:=basicact;
+    else
 
       elmlist:=[];
 
       tmp:=List(genimgs,x->x[1]);
-      preimlist:=List(tmp,x->[x,List(Ggens,y->PreImagesRepresentative(x,y))]);
+      preimlist:=List(tmp,x->[x,List(Ggens,y->PreImagesRepresentativeNC(x,y))]);
 
       f:=function( tup, elm )
       local gens,p;
         p:=PositionProperty(preimlist,x->IsIdenticalObj(x[1],elm[1]));
         if p=fail then
-          gens := List( Ggens, x -> PreImagesRepresentative( elm[1], x ) );
+          gens := List( Ggens, x -> PreImagesRepresentativeNC( elm[1], x ) );
         else
           gens:=preimlist[p][2];
         fi;
@@ -782,7 +836,7 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
 
         if elmlist<>fail then
           tmp:=List(genimgs,x->x[1]);
-          preimlist:=List(tmp,x->[x,List(Ggens,y->PreImagesRepresentative(x,y))]);
+          preimlist:=List(tmp,x->[x,List(Ggens,y->PreImagesRepresentativeNC(x,y))]);
 
           # ensure we also account for action
           u:=Group(tup);
@@ -835,7 +889,8 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
             tmp := StabilizerOp( D, rec(hashfun:= lst->lst*pows),tup,
               gens,newimgs, f );
           else
-            tmp := Stabilizer( D, tup,gens,genimgs, f );
+            #tmp := Stabilizer( D, tup,gens,genimgs, f );
+            tmp := SubnormalOrbitExtension( D, false, tup,gens,genimgs, f );
           fi;
         else
           tmp := Stabilizer( D, tup,gens,genimgs, f );
@@ -912,7 +967,7 @@ BindGlobal( "MatrixOperationOfCPGroup", function( cc, gens  )
 
     mats := List( gens, x -> [] );
     base := Basis( Image( cc.cohom ) );
-    prei := List( base, x -> PreImagesRepresentative( cc.cohom, x ) );
+    prei := List( base, x -> PreImagesRepresentativeNC( cc.cohom, x ) );
 
     pcgs := Pcgs( cc.group );
     ords := RelativeOrders( pcgs );
@@ -1009,7 +1064,7 @@ function( G, M, C )
         return [ExtensionSQ( cc.collector, G, M, 0 )];
     elif Dimension( Image(cc.cohom)) = 1 then
         c := Basis(Image(cc.cohom))[1];
-        c := PreImagesRepresentative(cc.cohom, c);
+        c := PreImagesRepresentativeNC(cc.cohom, c);
         return [ExtensionSQ( cc.collector, G, M, 0 ),
                 ExtensionSQ( cc.collector, G, M, c )];
     fi;
@@ -1019,7 +1074,7 @@ function( G, M, C )
     # compute orbit of mats on H^2( G, M )
     Mgrp := GroupByGenerators( mats );
     orbs := OrbitsDomain( Mgrp, Image(cc.cohom), OnRight );
-    orbs := List( orbs, x -> PreImagesRepresentative( cc.cohom, x[1] ) );
+    orbs := List( orbs, x -> PreImagesRepresentativeNC( cc.cohom, x[1] ) );
     ext  := List( orbs, x -> ExtensionSQ( cc.collector, G, M, x ) );
     return ext;
 end);
@@ -1114,7 +1169,7 @@ BindGlobal( "NonSplitExtensions", function( arg )
         red := true;
 
     elif Dimension( Image(cc.cohom ) ) = 1 then
-        c := PreImagesRepresentative(cc.cohom, Basis(Image(cc.cohom))[1]);
+        c := PreImagesRepresentativeNC(cc.cohom, Basis(Image(cc.cohom))[1]);
         all := [ExtensionSQ( C, G, M, c)];
         red := true;
 
@@ -1122,7 +1177,7 @@ BindGlobal( "NonSplitExtensions", function( arg )
     elif IsBound( arg[3] ) and not arg[3] then
         all := NormedRowVectors( Image(cc.cohom) );
         all := List( all, x -> ExtensionSQ(cohom.collector, G, M,
-                               PreImagesRepresentative(cc.cohom,x )));
+                               PreImagesRepresentativeNC(cc.cohom,x )));
         red := false;
 
     # sometimes we do not want to reduce
@@ -1133,7 +1188,7 @@ BindGlobal( "NonSplitExtensions", function( arg )
     then
         all := NormedRowVectors( Image(cc.cohom) );
         all := List( all, x -> ExtensionSQ(cc.collector, G, M,
-                               PreImagesRepresentative(cc.cohom, x )));
+                               PreImagesRepresentativeNC(cc.cohom, x )));
         red := false;
 
     # then we want to reduce
@@ -1152,7 +1207,7 @@ BindGlobal( "NonSplitExtensions", function( arg )
 
         # create extensions and add info
         all := List( all, x -> ExtensionSQ(cc.collector, G, M,
-                               PreImagesRepresentative(cc.cohom, x )));
+                               PreImagesRepresentativeNC(cc.cohom, x )));
     fi;
 
     if red then

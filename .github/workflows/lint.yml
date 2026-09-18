@@ -4,20 +4,20 @@ on:
   pull_request:
   push:
     branches:
-      - "master"
-      - "stable-*.*"
+      - 'master'
+      - 'stable-*'
   schedule:
     # Every day at 3:10 AM UTC
     - cron: '10 3 * * *'
 
 jobs:
   gaplint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - name: "Check out the repository"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: "Set up Python"
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.11"
       - name: "Install gaplint with pip"

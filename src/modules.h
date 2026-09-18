@@ -90,12 +90,18 @@ struct init_info {
     // function to call after restoring workspace
     Int (*postRestore)(StructInitInfo *);
 
+#ifdef HPCGAP
     // number of bytes this module needs for its per-thread module state
+    // Only used in HPC-GAP, but not behind an #ifdef guard to avoid API
+    // breakage for C++ kernel extensions
     UInt moduleStateSize;
 
     // if this is not zero, then the module state offset is stored into
     // the address this points at
+    // Only used in HPC-GAP, but not behind an #ifdef guard to avoid API
+    // breakage for C++ kernel extensions
     Int * moduleStateOffsetPtr;
+#endif
 
     // initialize thread local module state
     Int (*initModuleState)(void);

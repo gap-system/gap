@@ -13,7 +13,7 @@ gap> func1 := function()
 >      SetPrintFormattingStatus(s,false);
 >      AppendTo(s,"The cat sat on the mat\n");
 >      line := ReadLine(s);
->      while line[Length(line)] <> '\n' do
+>      while Last(line) <> '\n' do
 >        line := Concatenation(line, ReadLine(s));
 >      od;
 >      if line <> "The cat sat on the mat\n" then

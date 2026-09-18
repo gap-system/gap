@@ -322,7 +322,7 @@ local pol, fam, inum, r;
       r:=List([1..Minimum(DegreeOfUnivariateLaurentPolynomial(pol),
                           Random([2,2,2,2,3,3,3,4,5,6]))],
               i->One(fam)*Random(Integers));
-    until not IsZero(r[Length(r)]);
+    until not IsZero(Last(r));
   fi;
   r:=UnivariatePolynomialByCoefficients(fam,r,inum+1);
   Info(InfoPoly,2,"Tschirnhausen transformation with ",r);
@@ -393,12 +393,12 @@ local i,p,r,x,d;
     IndeterminateNumberOfUnivariateRationalFunction(f));
   # remember, which resolvent types already failed (most likely for
   # smaller sums), so we won't have to use them twice!
-  # e.g.: if 2-Sum is double, then 3-Sum will vbe double most likely!
+  # e.g.: if 2-Sum is double, then 3-Sum will be double most likely!
   if not IsBound(f!.failedResolvents) then
     f!.failedResolvents:=[];
   fi;
   if Value(f,-x)=f then
-    # then for every root there is a negative one, causing trobles with sums
+    # then for every root there is a negative one, causing troubles with sums
     f!.failedResolvents:=Union(f!.failedResolvents,[0,1,2]);
   fi;
   i:=0;
@@ -656,7 +656,7 @@ local n,i,sh,fu,ps,pps,ind,keineu,avoid,cf;
   # Nenner mit in den Z"ahler bringen
   cf:=CoefficientsOfUnivariatePolynomial(f);
   avoid:=Lcm(Concatenation([NumeratorRat(d),DenominatorRat(d)],
-                List(cf,DenominatorRat),[NumeratorRat(cf[Length(cf)])]));
+                List(cf,DenominatorRat),[NumeratorRat(Last(cf))]));
   Info(InfoGalois,1,"Partitions Test");
   n:=DegreeOfUnivariateLaurentPolynomial(f);
 

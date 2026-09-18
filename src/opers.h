@@ -642,7 +642,7 @@ void ChangeDoOperations(Obj oper, Int verb);
 
 /****************************************************************************
 **
-*F  SaveOperationExtras( <oper> ) . . .  additional savng for functions which
+*F  SaveOperationExtras( <oper> ) . . . additional saving for functions which
 **                                       are operations
 **
 **  This is called by SaveFunction when the function bag is too large to be

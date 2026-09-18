@@ -146,9 +146,9 @@ gap> stream;
 InputTextString(8,56)
 gap> ReadAllLine(stream, true);
 "some line\n"
-gap> ReadAllLine(stream, line -> 0 < Length(line) and line[Length(line)] = '\n');
+gap> ReadAllLine(stream, line -> 0 < Length(line) and Last(line) = '\n');
 "another line\n"
-gap> ReadAllLine(stream, false, line -> 0 < Length(line) and line[Length(line)] = '\n');
+gap> ReadAllLine(stream, false, line -> 0 < Length(line) and Last(line) = '\n');
 "last line without newline"
 gap> ReadAllLine(stream);
 fail
@@ -212,6 +212,7 @@ Error, Print formatting status must be true or false
 
 # too many open files
 gap> streams := [ ];;
+gap> fname := Filename(tmpdir, "testdata");;
 gap> for i in [ 1 .. 300 ] do
 >    stream := OutputTextFile( fname, false );
 >    Assert(0, stream <> fail);

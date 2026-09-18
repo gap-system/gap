@@ -1,5 +1,9 @@
-#@local g,t
+#@local g,t,lin,G,attr
 gap> START_TEST("ctbl.tst");
+
+# Reset the counter of automatically assigned identifiers,
+# in order to admit reading this file several times in a GAP session.
+gap> LARGEST_IDENTIFIER_NUMBER[1]:= 0;;
 
 # `ClassPositionsOf...' for the trivial group (which usually causes trouble)
 gap> g:= TrivialGroup( IsPermGroup );;
@@ -313,6 +317,7 @@ C2
         2  1  1
 
           1a 2a
+       2P 1a 1a
        2
 X.1    ?   1  1
 X.2    ?   1 -1
@@ -340,6 +345,13 @@ true
 gap> IsCharacterTable( t mod 5 );
 true
 
+# ... where all Brauer characters lift to characteristic zero,
+#     and the p-core is nontrivial
+gap> g:= DirectProduct( SymmetricGroup(5), SymmetricGroup( 3 ) );;
+gap> t:= CharacterTable( g );;
+gap> IsCharacterTable( t mod 3 );
+true
+
 # ... where the Brauer tables of the factors of a product can be computed
 gap> g:= AlternatingGroup( 5 );;
 gap> t:= CharacterTable( g );;
@@ -348,15 +360,20 @@ gap> IsCharacterTable( t mod 5 );
 true
 
 # test a bugfix
-gap> g:= SmallGroup( 96, 3 );;
+#gap> g:= SmallGroup( 96, 3 );;
+gap> g:= PcGroupCode( 55306968584587147680, 96 );;
 gap> t:= CharacterTable( g );;
 gap> ClassPositionsOfLowerCentralSeries( t );
 [ [ 1 .. 12 ], [ 1, 3, 4, 5, 6, 9, 10, 11 ] ]
-gap> g:= SmallGroup( 3^5, 22 );;
+
+#gap> g:= SmallGroup( 3^5, 22 );;
+gap> g:= PcGroupCode( 27823197465625143, 3^5 );;
 gap> t:= CharacterTable( g );;
 gap> ClassPositionsOfLowerCentralSeries( t );
 [ [ 1 .. 35 ], [ 1, 4, 6, 12, 15 ], [ 1, 6, 15 ], [ 1 ] ]
-gap> g:= SmallGroup( 96, 66 );;
+
+#gap> g:= SmallGroup( 96, 66 );;
+gap> g:= PcGroupCode( 509649248191328977712712, 96 );;
 gap> t:= CharacterTable( g );;
 gap> ClassPositionsOfSupersolvableResiduum( t );
 [ 1, 5, 6 ]
@@ -368,6 +385,15 @@ true
 gap> IsPerfectCharacterTable( t );
 false
 
+# test another bugfix
+gap> G:= SymmetricGroup( 2 );;
+gap> SetConjugacyClasses( G,
+>        List( [ (1,2), () ], x -> ConjugacyClass( G, x ) ) );
+gap> t:= CharacterTable( G );;
+gap> lin:= Irr( t );;
+gap> lin[1][1];
+1
+
 # compute indicators
 gap> t:= CharacterTable( SymmetricGroup( 4 ) );;
 gap> Indicator( t, 2 );
@@ -376,6 +402,101 @@ gap> Indicator( t mod 3, 2 );
 [ 1, 1, 1, 1 ]
 gap> Indicator( t mod 2, 2 );
 [ 1, 1 ]
+
+# linear characters
+#gap> g := SmallGroup( 24, 12 );;
+gap> g := PcGroupCode( 5790338948, 24 );;
+gap> lin:= LinearCharacters( g );;
+gap> Length( lin );
+2
+gap> ForAll( lin, HasIsIrreducibleCharacter );
+true
+gap> lin:= LinearCharacters( SymmetricGroup( 4 ) );;
+gap> Length( lin );
+2
+gap> ForAll( lin, HasIsIrreducibleCharacter );
+true
+gap> lin:= LinearCharacters( SymmetricGroup( 4 ), 2 );;
+gap> Length( lin );
+1
+gap> ForAll( lin, HasIsIrreducibleCharacter );
+true
+gap> lin:= LinearCharacters( CharacterTable( SymmetricGroup( 4 ) ) );;
+gap> Length( lin );
+2
+gap> ForAll( lin, HasIsIrreducibleCharacter );
+true
+gap> lin:= LinearCharacters( CharacterTable( SymmetricGroup( 4 ), 2 ) );;
+gap> Length( lin );
+1
+gap> ForAll( lin, HasIsIrreducibleCharacter );
+true
+
+# irreducibility flag
+gap> ForAll( Irr( SymmetricGroup( 4 ) ), HasIsIrreducibleCharacter );
+true
+gap> ForAll( Irr( SymmetricGroup( 4 ), 2 ), HasIsIrreducibleCharacter );
+true
+gap> ForAll( Irr( CharacterTable( SymmetricGroup( 4 ) ) ),
+>            HasIsIrreducibleCharacter );
+true
+gap> ForAll( Irr( CharacterTable( SymmetricGroup( 4 ), 2 ) ),
+>            HasIsIrreducibleCharacter );
+true
+gap> HasIsIrreducibleCharacter( TrivialCharacter( SymmetricGroup( 4 ) ) );
+true
+
+# concurring 'Irr' methods
+gap> G:= PcGroupCode( 221729, 24 );;  # = SmallGroup( 24, 5 )
+gap> IsSupersolvable( G );
+true
+gap> Irr( G );;
+gap> InfoText( OrdinaryCharacterTable( G ) );
+"origin: Baum-Clausen Algorithm"
+gap> G:= PcGroupCode( 221729, 24 );;  # = SmallGroup( 24, 5 )
+gap> IsSupersolvable( G );
+true
+gap> IrrConlon( G );;  Irr( G );;
+gap> InfoText( OrdinaryCharacterTable( G ) );
+"origin: Conlon's Algorithm"
+gap> G:= PcGroupCode( 221729, 24 );;  # = SmallGroup( 24, 5 )
+gap> IrrDixonSchneider( G );;  Irr( G );;
+gap> InfoText( OrdinaryCharacterTable( G ) );
+"origin: Dixon's Algorithm"
+
+# group attributes for character tables
+gap> for G in [ TrivialGroup(), CyclicGroup( 5 ), DihedralGroup( 12 ),
+>               SymmetricGroup( 4 ), AlternatingGroup( 6 ), SL( 2, 5 ) ] do
+>      t:= CharacterTable( G );
+>      for attr in [
+>                    AbelianInvariants,
+>                    ChiefLength,
+>                    CommutatorLength,
+>                    Exponent,
+>                    IsAbelian,
+>                    IsAlmostSimple,
+>                    IsCyclic,
+>                    IsElementaryAbelian,
+>                    IsFinite,
+>                    IsMonomial,
+>                    IsNilpotent,
+>                    IsPerfect,
+>                    IsQuasisimple,
+>                    IsSimple,
+>                    IsSporadicSimple,
+>                    IsSupersolvable,
+>                    NrConjugacyClasses,
+>                    Size,
+>                  ] do
+>        if attr( G ) <> attr( t ) then
+>          Error( "difference for '", attr, "'" );
+>        fi;
+>      od;
+>      if IsSimple( G ) and IsomorphismTypeInfoFiniteSimpleGroup( G ) <>
+>                           IsomorphismTypeInfoFiniteSimpleGroup( t ) then
+>        Error( "difference for '", IsomorphismTypeInfoFiniteSimpleGroup, "'" );
+>      fi;
+>    od;
 
 ##
 gap> STOP_TEST( "ctbl.tst" );

@@ -262,7 +262,7 @@ InstallGlobalFunction(CopyStabChain,function( C1 )
 
     # Second pass: Find the new positions of the labels.
     for xlab  in Xlabels  do
-        need := xlab[ Length( xlab ) ];
+        need := Last( xlab );
 
         # If all labels are needed, change nothing.
         if Length( need ) = Length( xlab ) - 1  then
@@ -1018,7 +1018,7 @@ InstallGlobalFunction( ConjugateStabChain, function( arg )
     # labels that  did  not appear     as edges  and   remove the   auxiliary
     # components.
     for L  in newlevs  do
-        l := L[ Length( L ) ];
+        l := Last( L );
         i := Position( l.labpos, 0 );
         while i <> fail  do
             if i in l.genlabels  then
@@ -1200,7 +1200,7 @@ local   S;
         fi;
     fi;
     if Length( arg ) mod 2 = 1  then
-        InitializeSchreierTree( S, arg[ Length( arg ) ] );
+        InitializeSchreierTree( S, Last( arg ) );
     fi;
     return S;
 end);
@@ -1778,7 +1778,7 @@ function(iter)
         else
             iter!.state := 1;
         fi;
-        return ();
+        return iter!.one;
     elif iter!.state = 1 then
         l := Length(iter!.stack);
         # Identity is special cased since we only want to
@@ -1815,22 +1815,25 @@ end);
 
 InstallGlobalFunction(IteratorStabChain,
 function(S)
-    local r,lstack;
+    local r, lstack, one;
 
     lstack := ListStabChain(S);
+    one:= lstack[1].identity;
     Remove(lstack);
     while Length(lstack) > 0 and Length(Last(lstack).orbit) = 1 do
         Remove(lstack);
     od;
     r := rec (
-          stack := lstack
+          one:= one
+        , stack := lstack
         , pos := List(lstack, x -> 1)
         , epos := List(lstack, x -> Length(x.orbit))
-        , rep := List(lstack, x -> ())
+        , rep := List(lstack, x -> one)
         , state := 0
         , NextIterator := NextIterator_StabChain
         , IsDoneIterator := iter -> (iter!.state = 2)
-        , ShallowCopy := iter -> rec( stack := iter!.stack
+        , ShallowCopy := iter -> rec( one := iter!.one
+                                    , stack := iter!.stack
                                     , pos := ShallowCopy(iter!.pos)
                                     , epos := iter!.epos
                                     , rep := ShallowCopy(iter!.rep)

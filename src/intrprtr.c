@@ -1866,7 +1866,7 @@ void IntrFloatExpr(IntrState * intr, Obj string, Char * str)
 **
 *F   IntrIntObjExpr()  . . . . . . .  'interpret' a GAP small integer
 **
-**  'IntrIntObjExpr' is the action to 'interpret' a existing GAP small
+**  'IntrIntObjExpr' is the action to 'interpret' an existing GAP small
 **  integer. This is used for implementing constants.
 */
 void IntrIntObjExpr(IntrState * intr, Obj val)

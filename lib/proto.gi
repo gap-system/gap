@@ -29,7 +29,7 @@ function(spec)
     eFam, eType;    # the element family and element type
 
   # first check to see this hasn't already been done
-  if IsBoundGlobal(Concatenation("Is",spec.ElementName)) then
+  if not REREADING and IsBoundGlobal(Concatenation("Is",spec.ElementName)) then
     Error(Concatenation(spec.ElementName," already defined"));
   fi;
 
@@ -76,7 +76,7 @@ function(spec)
     repfilters := repfilters and spec.RepInfo;
   fi;
 
-  # declare the representastion with the single "data" component
+  # declare the representation with the single "data" component
   rep := NewRepresentation(Concatenation(spec.ElementName,"Rep"),
     repfilters, ["data"]);
   BindGlobal(Concatenation(spec.ElementName,"Rep"), rep);

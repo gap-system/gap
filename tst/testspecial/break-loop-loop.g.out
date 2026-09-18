@@ -3,11 +3,14 @@ gap> f:=function(x) local y; y:=42; Error("bar"); end;;
 gap> i:=0;
 0
 gap> f(1);
-Error, bar at *stdin*:3 called from
+Error, bar
+Stack trace:
+*[1] Error( "bar" );
+   @ *stdin*:3
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:5
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> x;
 1
 brk> y;

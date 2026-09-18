@@ -73,6 +73,8 @@ false
 # zero vector over GF(9) but not in internal format
 gap> F := F9;; v := ListWithIdenticalEntries( 3, Zero(F) );
 [ !0*Z(3), !0*Z(3), !0*Z(3) ]
+gap> IsIdenticalObj( BaseDomain( v ), F );
+true
 gap> w := ImmutableVector( 9, v );
 [ !0*Z(3), !0*Z(3), !0*Z(3) ]
 gap> v = w;
@@ -199,6 +201,8 @@ false
 gap> F := F9;; m := IdentityMat( 3, F );
 [ [ !Z(3)^0, !0*Z(3), !0*Z(3) ], [ !0*Z(3), !Z(3)^0, !0*Z(3) ], 
   [ !0*Z(3), !0*Z(3), !Z(3)^0 ] ]
+gap> IsIdenticalObj( BaseDomain( m ), F );
+true
 gap> w := ImmutableMatrix( 9, m );
 [ [ !Z(3)^0, !0*Z(3), !0*Z(3) ], [ !0*Z(3), !Z(3)^0, !0*Z(3) ], 
   [ !0*Z(3), !0*Z(3), !Z(3)^0 ] ]
@@ -220,6 +224,10 @@ gap> m = w;
 true
 gap> IsMutable(w);
 false
+gap> DefaultFieldOfMatrix( m ) = F;
+true
+gap> CharacteristicPolynomial( m );
+x_1^3-!Z(3)^0
 
 # identity matrix over a ring with zero divisors
 gap> F := Integers mod 6;; m := IdentityMat( 3, F );
@@ -240,6 +248,22 @@ gap> w := ImmutableMatrix( F, m, true );;
 #true
 gap> IsMutable(w);
 false
+
+# matrix object
+gap> m:= Matrix( IsPlistMatrixRep, GF(2), [ [ Z(2) ] ] );
+<1x1-matrix over GF(2)>
+gap> w:= ImmutableMatrix( GF(4), m );
+<immutable 1x1-matrix over GF(2^2)>
+gap> IsMutable( w );
+false
+gap> IsMatrixObj( w );
+true
+gap> w:= ImmutableMatrix( GF(2), m, true );
+<immutable 1x1-matrix over GF(2)>
+gap> IsMutable( w );
+false
+gap> IsIdenticalObj( m, w );
+true
 
 # empty matrix
 gap> m := ImmutableMatrix( Rationals, [] );

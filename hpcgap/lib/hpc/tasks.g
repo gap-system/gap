@@ -366,7 +366,7 @@ end;
 WaitTasks := WaitTask;
 
 WaitAnyTask := function(arg)
-  local len, task;
+  local i, len, task;
 
   atomic arg[1] do
     if Length(arg) = 1 and IsList(arg[1]) then

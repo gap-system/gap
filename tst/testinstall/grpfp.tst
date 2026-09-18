@@ -1,4 +1,4 @@
-#@local a,b,c2,e,f,g,iter,l,s,F,rels,sub,iso,G
+#@local a,b,c2,e,f,g,iter,l,s,F,rels,sub,iso,G,hom,m,H
 gap> START_TEST("grpfp.tst");
 gap> f:= FreeGroup( "a", "b" );;  a := f.1;;  b := f.2;;
 gap> c2:= f / [ a*b*a^-2*b*a/b, (b^-1*a^3*b^-1*a^-3)^2*a ];;
@@ -138,6 +138,57 @@ gap> IsomorphismFpGroupByGenerators( Group( (1,2) ), [] );
 Error, <gens> must be a generating set for G
 gap> IsomorphismFpGroupByGeneratorsNC( Group( (1,2) ), [], "F" );
 Error, <emptygens> does not generate <G>
+
+# intended error messages
+gap> F:= FreeGroup( "a", "b" );;  a := F.1;;  b := F.2;;
+gap> G:= F / [ a^2, b^2, Comm( a, b ) ];;
+gap> ConjugacyClasses( G );
+Error, the f.p. group <G> does not know whether it is finite,
+no 'ConjugacyClasses' method is available for such groups,
+see the introduction to Chapter "Finitely Presented Groups"
+in the Reference Manual for the background.
+Perhaps you want to replace <G> by a group of another type.
+If you want to continue with the given <G> then
+you can call 'IsFinite( G );' and then enter 'return;'.
+(This call may not terminate.)
+gap> IsFinite( G );  Length( ConjugacyClasses( G ) );
+true
+4
+gap> G:= F / [ a*b ];;
+gap> ConjugacyClasses( G );
+Error, the f.p. group <G> is not finite
+gap> IsFinite( G );  ConjugacyClasses( G );
+false
+Error, the f.p. group <G> is not finite
+
+# RWS for G2(3) and S_6(2)
+#@if IsPackageMarkedForLoading( "primgrp", "" )
+gap> g:=SimpleGroup("G2(3)");;
+gap> hom:=IsomorphismFpGroupForRewriting(g);;
+gap> m:=Image(IsomorphismFpMonoid(Image(hom)));;
+gap> F:=m!.rewritingSystem;;;
+gap> ReducedForm(F,UnderlyingElement(
+> Product(GeneratorsOfMonoid(m){[1,3..19]})));
+w1*B5*b6*b7*B8*w2*b1*B3*B4*b5*b6*b7
+#@fi
+
+#
+gap> g:=SimpleGroup("S6(2)");;
+gap> hom:=IsomorphismFpGroupForRewriting(g);;
+gap> m:=Image(IsomorphismFpMonoid(Image(hom)));;
+gap> F:=m!.rewritingSystem;;;
+gap> ReducedForm(F,UnderlyingElement(
+> Product(GeneratorsOfMonoid(m){[1,3..19]})));
+b2*b4*w1*b1*b6*b8*b9
+
+#
+gap> F:= FreeGroup( 1 );;
+gap> G:= F / [ F.1 ];;
+gap> H:= Subgroup( G, [ G.1 ] );;
+gap> IsomorphismPermGroup( G ) <> fail;
+true
+gap> IsomorphismPermGroup( H ) <> fail;
+true
 
 #
 gap> STOP_TEST( "grpfp.tst" );

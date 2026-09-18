@@ -72,7 +72,7 @@ InstallGlobalFunction( DLog, function(base, x, m...)
   if Length(m) = 1 then
     return DLogShanks(base, x, m[1]);
   fi;
-  r := m[Length(m)];
+  r := Last(m);
   mm := m{[1..Length(m)-1]};
   mp := Product(mm);
   a := DLogShanks(base^mp, x^mp, r);

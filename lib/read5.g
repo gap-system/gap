@@ -109,11 +109,12 @@ ReadLib( "fldabnum.gi" );
 ReadLib( "padics.gi"   );
 
 ReadLib( "matobj.gi"   );
-ReadLib( "matrobjrowlist.gi"   );
+ReadLib( "matobjrowlist.gi"   );
 ReadLib( "vecmat.gi"   );
 ReadLib( "vec8bit.gi"  );
 ReadLib( "mat8bit.gi"  );
 ReadLib( "matobjplist.gi" );
+ReadLib( "matobjgeneric.gi" );
 ReadLib( "matobjnz.gi" );
 ReadLib( "meataxe.gi"  );
 ReadLib( "meatauto.gi" );

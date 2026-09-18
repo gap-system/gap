@@ -34,7 +34,7 @@ DeclareGlobalFunction("RootsRepresentativeFFPol");
 ##
 ##  Computes  an  integer  n  such  that  OnSets( <l>, n ) contains  only one
 ##  element e.  <pp> must be a list of prime powers of an integer d such that
-##  n divides d. The functions returns the integer n and the element e.
+##  n divides d. The function returns the integer n and the element e.
 ##
 DeclareGlobalFunction("OrderKnownDividendList");
 
@@ -43,8 +43,8 @@ DeclareGlobalFunction("OrderKnownDividendList");
 #F  FFPOrderKnownDividend( <R>, <g>, <f>, <pp> )  . . . . . . . . . . . local
 ##
 ##  Computes an integer n such that <g>^n = const  mod <f> where <g>  and <f>
-##  are polynomials in <R> and <pp> is list  of prime powers of  an integer d
-##  such that n divides  d.   The  functions  returns  the integer n  and the
+##  are polynomials in <R> and <pp> is a list  of prime powers of  an integer d
+##  such that n divides  d.   The  function  returns  the integer n  and the
 ##  element const.
 DeclareGlobalFunction("FFPOrderKnownDividend");
 

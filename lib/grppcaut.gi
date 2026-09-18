@@ -437,7 +437,7 @@ local spec,s,n,M,
     if d = 1 then
         hom := IsomorphismPermGroup( B );
         pcgs := Pcgs( Image( hom ) );
-        pcs := List( pcgs, x -> PreImagesRepresentative( hom, x ) );
+        pcs := List( pcgs, x -> PreImagesRepresentativeNC( hom, x ) );
         TransferPcgsInfo( B, pcs, RelativeOrders( pcgs ) );
         return B;
     fi;
@@ -509,12 +509,12 @@ local spec,s,n,M,
     Info( InfoOverGr, 1, "computed normalizer of size ", Size(L));
 
     # go back to mat group
-    B := List( GeneratorsOfGroup(L), x -> PreImagesRepresentative(hom,x) );
+    B := List( GeneratorsOfGroup(L), x -> PreImagesRepresentativeNC(hom,x) );
     w := PrimitiveRoot(field)* Immutable( IdentityMat( d, field ) );
     B := SubgroupNC( S, Concatenation( B, [w] ) );
 
     if IsSolvableGroup( L ) then
-        pcgs := List( Pcgs(L), x -> PreImagesRepresentative( hom, x ) );
+        pcgs := List( Pcgs(L), x -> PreImagesRepresentativeNC( hom, x ) );
         Add( pcgs, w );
         rels := ShallowCopy( RelativeOrders( Pcgs(L) ) );
         Add( rels, p-1 );
@@ -536,7 +536,7 @@ BindGlobal( "CocycleSQ", function( epi, field )
     H     := Source( epi );
     F     := Image( epi );
     N     := KernelOfMultiplicativeGeneralMapping( epi );
-    pcsH  := List( Pcgs( F ), x -> PreImagesRepresentative( epi, x ) );
+    pcsH  := List( Pcgs( F ), x -> PreImagesRepresentativeNC( epi, x ) );
     pcsN  := Pcgs( N );
     pcgsH := PcgsByPcSequence( ElementsFamily( FamilyObj( H ) ),
                                Concatenation( pcsH, pcsN ) );
@@ -646,7 +646,7 @@ BindGlobal( "LiftInduciblePair", function( epi, ind, M, weight )
 
 
     pcgsF := Pcgs( F );
-    pcsH  := List( pcgsF, x -> PreImagesRepresentative( epi, x ) );
+    pcsH  := List( pcgsF, x -> PreImagesRepresentativeNC( epi, x ) );
     pcsN  := Pcgs( N );
     pcgsH := PcgsByPcSequence( ElementsFamily( FamilyObj( H ) ),
                                Concatenation( pcsH, pcsN ) );
@@ -656,7 +656,7 @@ BindGlobal( "LiftInduciblePair", function( epi, ind, M, weight )
     # use automorphism of F
     imgsF := List( pcgsF, x -> Image( ind[1], x ) );
     opmats := List( imgsF, x -> MappedPcElement( x, pcgsF, M.generators ) );
-    imgsF := List( imgsF, x -> PreImagesRepresentative( epi, x ) );
+    imgsF := List( imgsF, x -> PreImagesRepresentativeNC( epi, x ) );
 
     # use automorphism of N
     imgsN := List( pcsN, x -> ExponentsOfPcElement( pcsN, x ) );
@@ -1060,7 +1060,7 @@ if Length(rans[i])=0 then Error("EGAD");fi;
   fi;
 
   # test for correctness. This is not an assertion for two reasons:
-  # - Assertions also turn on heavy checks for homomophisms that can slow
+  # - Assertions also turn on heavy checks for homomorphisms that can slow
   # the whole calculation down beyond reasonable
   # - This is a hard test which would slow testing down, implying that the
   # tests would be thrown out of the standard test suite.
@@ -1128,9 +1128,9 @@ end );
 InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
     local spec, weights, first, m, pcgsU, F, pcgsF, A, i, s, n, p, H,
           pcgsH, pcgsN, N, epi, mats, M, autos, ocr, elms, e, list, imgs,
-          auto, tmp, hom, gens, P, C, B, D, pcsA, rels, iso, xset,
+          auto, tmp, hom, gens, P, C, B, D,DP, pcsA, rels, iso, xset,
           gensA, new,as,somechar,scharorb,asAutom,actbase,
-          quotimg,eN,field,spaces,sporb,npcgs,nM;
+          quotimg,eN,field,spaces,sporb,npcgs,nM,eDP,reducegens;
 
     asAutom:=function(sub,hom) return Image(hom,sub);end;
 
@@ -1306,7 +1306,37 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
         B := NormalizingReducedGL( spec, s, n, M,B );
         # A and B will not be used later, so it is no problem to
         # replace them by other groups with fewer generators
-        B:=SubgroupNC(B,SmallGeneratingSet(B));
+        if Length(GeneratorsOfGroup(B))>4 then
+          B:=SubgroupNC(B,SmallGeneratingSet(B));
+        fi;
+
+        reducegens:=function(gp,cnt)
+        local imgs,sel,i,new;
+          if Length(GeneratorsOfGroup(gp))<=cnt then return gp;fi;
+          if eDP=fail then
+            eDP:=EXPermutationActionPairs(DP);
+            eDP.dir:=DirectProduct(Image(eDP.p1iso),Image(eDP.p2iso));
+            eDP.mapper:=function(elm)
+              return ImagesRepresentative(Embedding(eDP.dir,1),
+                ImagesRepresentative(eDP.p1iso,elm[1]))*
+              ImagesRepresentative(Embedding(eDP.dir,2),
+              ImagesRepresentative(eDP.p2iso,elm[2]));
+            end;
+          fi;
+          imgs:=List(GeneratorsOfGroup(gp),eDP.mapper);
+          new:=Group(imgs[1]);
+          sel:=[1];
+          for i in [2..Length(imgs)] do
+            if not imgs[i] in new then
+              new:=ClosureGroup(new,imgs[i]);
+              Add(sel,i);
+            fi;
+          od;
+          gp:=Group(GeneratorsOfGroup(gp){sel});
+          SetSize(gp,Size(new));
+          return gp;
+        end;
+        eDP:=fail;
 
         if weights[s][2] = 1 then
             #Info( InfoAutGrp, 2,"compute reduced gl ");
@@ -1320,13 +1350,13 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
               SetIsGroupOfAutomorphismsFiniteGroup(A,true);
             fi;
 
-            D := DirectProduct( A, B );
+            DP := DirectProduct( A, B );
 
             Info( InfoAutGrp, 2,"compute compatible pairs in group of size ",
                                   Size(A), " x ",Size(B),", ",
-                                  Length(GeneratorsOfGroup(D))," generators");
+                                  Length(GeneratorsOfGroup(DP))," generators");
 
-            if Size(D)>10^10 and Size(A)>4 then
+            if Size(DP)>10^10 and Size(A)>4 then
               # translate to different pcgs to make tails A-invariant
               npcgs:=PcgsCharacteristicTails(F,A);
               C:=GroupWithGenerators(npcgs);
@@ -1336,9 +1366,9 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
                     Pcgs(F),M.generators);
               nM:=rec(field:=M.field,dimension:=M.dimension,
                       generators:=List(npcgs,x->ImagesRepresentative(as,x)));
-              C:=CompatiblePairs(C,nM,D);
+              C:=CompatiblePairs(C,nM,DP);
             else
-              C := CompatiblePairs( F, M, D );
+              C := CompatiblePairs( F, M, DP );
             fi;
         else
             #Info( InfoAutGrp, 2,"compute reduced gl ");
@@ -1352,17 +1382,21 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
               SetSize(A,as);
             fi;
 
-            D := DirectProduct( A, B );
+            DP := DirectProduct( A, B );
             if weights[s][1] > 1 then
                 Info( InfoAutGrp, 2,
                       "compute compatible pairs in group of size ",
                        Size(A), " x ",Size(B),", ",
                        Length(GeneratorsOfGroup(D))," generators");
-                D := CompatiblePairs( F, M, D );
+                D := CompatiblePairs( F, M, DP );
+              D:=reducegens(D,2);
+            else
+              D:=DP;
             fi;
             Info( InfoAutGrp,2, "compute inducible pairs in a group of size ",
                   Size( D ));
             C := InduciblePairs( D, epi, M );
+            C:=reducegens(C,20);
         fi;
         Unbind(A);Unbind(B);Unbind(D);
 
@@ -1418,11 +1452,11 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
             hom  := ActionHomomorphism( xset, "surjective");
             P    := Image( hom );
             if IsSolvableGroup( P ) then
-                pcsA := List( Pcgs(P), x -> PreImagesRepresentative( hom, x ));
+                pcsA := List( Pcgs(P), x -> PreImagesRepresentativeNC( hom, x ));
                 TransferPcgsInfo( A, pcsA, RelativeOrders( Pcgs(P) ) );
             else
                 imgs := SmallGeneratingSet( P );
-                gens := List( imgs, x -> PreImagesRepresentative( hom, x ) );
+                gens := List( imgs, x -> PreImagesRepresentativeNC( hom, x ) );
                 tmp  := Size( A );
                 A := GroupByGenerators( gens, One( A ) );
                 SetSize( A, tmp );
@@ -1509,14 +1543,20 @@ InstallGlobalFunction(AutomorphismGroupFrattFreeGroup,function( G )
     gensK := Pcgs( K );
     gensG := Concatenation( gensK, gensF );
 
-    # create automorhisms
+    # create automorphisms
     Info( InfoAutGrp, 2, "get aut grp of socle ");
     A := AutomorphismGroupAbelianGroup( F );
 
     # go over to perm rep
     Info( InfoAutGrp, 2, "compute perm rep ");
-    iso := IsomorphismPermGroup( A );
+    if Length(AbelianInvariants(F))>4 then
+      # likely the element action is best anyhow
+      iso := ActionHomomorphism(A,Elements(Group(gensF)),"surjective");;
+    else
+      iso := IsomorphismPermGroup( A );
+    fi;
     P   := Image( iso );
+    if HasSize(A) then SetSize(P,Size(A));fi;
 
     # compute subgroup
     Info( InfoAutGrp, 2, "compute subgroup ");
@@ -1525,7 +1565,7 @@ InstallGlobalFunction(AutomorphismGroupFrattFreeGroup,function( G )
         imgs := List( gensF, y -> y ^ k );
         aut := GroupHomomorphismByImagesNC( F, F, gensF, imgs );
         # CheckAuto( aut );
-        Add( gensU, Image( iso, aut ) );
+        Add( gensU, ImagesRepresentative( iso, aut ) );
     od;
     U := SubgroupNC( P, gensU );
     hom := GroupHomomorphismByImagesNC( K, U, gensK, gensU );
@@ -1543,10 +1583,10 @@ InstallGlobalFunction(AutomorphismGroupFrattFreeGroup,function( G )
         imgs := [];
         for i in [1..Length(gensK)] do
             m := gensU[i]^n;
-            a := PreImagesRepresentative( hom, m );
+            a := PreImagesRepresentativeNC( hom, m );
             Add( imgs, a );
         od;
-        l := PreImagesRepresentative( iso, n );
+        l := PreImagesRepresentativeNC( iso, n );
         Append( imgs, List( gensF, x -> Image( l, x ) ) );
         new := GroupHomomorphismByImagesNC( G, G, gensG, imgs );
         SetIsBijective( new, true );

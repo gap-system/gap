@@ -116,7 +116,7 @@ BindGlobal("CommandLineHistoryHandler", function(l)
   hist := CommandLineHistory;
   if key = 0 then  # save line data
     # no trailing white space
-    while Length(l[1]) > 0 and l[1][Length(l[1])] in "\n\r\t " do
+    while Length(l[1]) > 0 and Last(l[1]) in "\n\r\t " do
       Remove(l[1]);
     od;
     MaxCommandLineHistory := UserPreference("HistoryMaxLines");
@@ -188,9 +188,9 @@ BindGlobal("CommandLineHistoryHandler", function(l)
   elif key = 12 then  # CTR('L')
     if Length(hist) = 1 then return [l[1],l[3],l[5]]; fi;
     res := l[1]{[1..l[3]-1]};
-    Append(res, hist[Length(hist)]);
+    Append(res, Last(hist));
     Append(res, l[1]{[l[3]..Length(l[1])]});
-    return [res, l[3] + Length(hist[Length(hist)]), l[5]];
+    return [res, l[3] + Length(Last(hist)), l[5]];
   elif key = 316 then  # ESC('<')
     if hist[1] > 1 then
       hist[1] := 2;

@@ -20,7 +20,7 @@ local f,typ,lc;
 
 # trap code for unreduced coeffs.
 # if Length(coeffs[1])>0
-#    and (IsZero(coeffs[1][1]) or IsZero(coeffs[1][Length(coeffs[1])])) then
+#    and (IsZero(coeffs[1][1]) or IsZero(Last(coeffs[1]))) then
 #   Error("zero coeff!");
 # fi;
 
@@ -176,7 +176,7 @@ local fam,notuniv,cannot,num,den,hasden,indn,col,dcol,val,i,j,nud,pos;
   fi;
 
   col:=[];
-  nud:=1; # last position isto which we can assign without holes
+  nud:=1; # last position up to which we can assign without holes
   # now process the numerator
   for i in [2,4..Length(num)] do
 
@@ -224,7 +224,7 @@ local fam,notuniv,cannot,num,den,hasden,indn,col,dcol,val,i,j,nud,pos;
 
   if hasden then
     dcol:=[];
-    nud:=1; # last position isto which we can assign without holes
+    nud:=1; # last position up to which we can assign without holes
     # because we have a special hook above for laurent polynomials, we know
     # it cannot be a laurent polynomial any longer.
 
@@ -321,7 +321,7 @@ local f;
     fi;
   fi;
 
-  # slightly better to do this after the Length id determined
+  # slightly better to do this after the Length is determined
   if IsFFECollection(ncof) and IS_PLIST_REP(ncof) then
     ConvertToVectorRep(ncof);
   fi;
@@ -690,7 +690,7 @@ local   quot, lcq,  lmq,  mon,  i, coeff;
       od;
 
       ##  now add the quotient of the coefficients
-      coeff := p[Length(p)] / lcq;
+      coeff := Last(p) / lcq;
 
       ##  Add coeff, mon to quot, the result is sorted in reversed order.
       Add( quot,  coeff );
@@ -879,7 +879,7 @@ local w;
     u:=w;
   od;
   if Length(u)>0 then
-    return u*u[Length(u)]^-1;
+    return u*Last(u)^-1;
   else
     return u;
   fi;
@@ -1236,7 +1236,7 @@ local q,p,e,i,j,cnt,sel,si;
   q:=QuotientPolynomialsExtRep(fam,den,num);
   if q<>fail then
     # true quotient
-    return [[[],fam!.oneCoefficient],q,num];
+    return [[[],fam!.oneCoefficient],q];
   fi;
 
   q:=HeuristicCancelPolynomialsExtRep(fam,num,den);

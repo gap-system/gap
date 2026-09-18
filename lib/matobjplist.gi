@@ -34,60 +34,50 @@
 ##
 BindGlobal( "MakeIsPlistVectorRep",
   function( basedomain, list, check )
-    local fam, types, typ;
-    fam := FamilyObj(basedomain);
-    #types := _PlistVectorRepTypeCache(basedomain);
+    local efam, fam, filter, types, typ;
 
-    # special case: integers
-    if IsIntegers(basedomain) then
-        if not IsBound(basedomain!.PlistVectorRepTypes) then
-            # initialize type cache
-            # TODO: make this thread safe for HPC-GAP
-            basedomain!.PlistVectorRepTypes := [
-                NewType(fam, IsPlistVectorRep and IsIntVector and CanEasilyCompareElements),
-                NewType(fam, IsPlistVectorRep and IsIntVector and CanEasilyCompareElements and IsMutable),
-            ];
-        fi;
-        types := basedomain!.PlistVectorRepTypes;
-    elif IsFFECollection(basedomain) then
-        if not IsBound(basedomain!.PlistVectorRepTypes) then
-            # initialize type cache
-            # TODO: make this thread safe for HPC-GAP
-            basedomain!.PlistVectorRepTypes := [
-                NewType(fam, IsPlistVectorRep and IsFFEVector and CanEasilyCompareElements),
-                NewType(fam, IsPlistVectorRep and IsFFEVector and CanEasilyCompareElements and IsMutable),
-            ];
-        fi;
-        types := basedomain!.PlistVectorRepTypes;
+    efam := ElementsFamily( FamilyObj( basedomain ) );
+    fam := FamilyObj( basedomain );
+
+    # we store the types in the base domain if the filter carries
+    # information specific to it
+    if IsBound( basedomain!.PlistVectorRepTypes ) then
+      types := basedomain!.PlistVectorRepTypes;
+    elif IsBound( fam!.PlistVectorRepTypes ) and not IsIntegers(basedomain) then
+      types := fam!.PlistVectorRepTypes;
     else
-        if not IsBound(fam!.PlistVectorRepTypes) then
-            # initialize type cache
-            # TODO: make this thread safe for HPC-GAP
-            fam!.PlistVectorRepTypes := [
-                NewType(fam, IsPlistVectorRep),
-                NewType(fam, IsPlistVectorRep and IsMutable),
-            ];
-            fam!.PlistVectorRepTypesEasyCompare := [
-                NewType(fam, IsPlistVectorRep and CanEasilyCompareElements),
-                NewType(fam, IsPlistVectorRep and CanEasilyCompareElements and IsMutable),
-            ];
-        fi;
-        if HasCanEasilyCompareElements(Representative(basedomain)) and
-           CanEasilyCompareElements(Representative(basedomain)) then
-            types := fam!.PlistVectorRepTypesEasyCompare;
-        else
-            types := fam!.PlistVectorRepTypes;
-        fi;
+      # initialize type cache
+      # TODO: make this thread safe for HPC-GAP
+      filter := IsPlistVectorRep;
+      if CanEasilyCompareElementsFamily( efam ) then
+        filter := filter and CanEasilyCompareElements;
+      fi;
+      if IsIntegers(basedomain) then
+        filter := filter and IsIntVector;
+      elif IsFFECollection(basedomain) then
+        filter := filter and IsFFEVector;
+      fi;
+      types := [
+          NewType( fam, filter ),
+          NewType( fam, filter and IsMutable ),
+      ];
+      if IsIntegers(basedomain) then
+        basedomain!.PlistVectorRepTypes := types;
+      else
+        fam!.PlistVectorRepTypes := types;
+      fi;
     fi;
-    if IsMutable(list) then
-        typ := types[2];
+    if IsMutable( list ) then
+      typ := types[2];
     else
-        typ := types[1];
+      typ := types[1];
     fi;
 
     if check and ValueOption( "check" ) <> false then
       if not IsSubset( basedomain, list ) then
         Error( "the elements in <list> must lie in <basedomain>" );
+      elif not IsPlistRep( list ) then
+        Error( "<list> must be in 'IsPlistRep'" );
       fi;
     fi;
 
@@ -120,33 +110,29 @@ BindGlobal( "MakeIsPlistVectorRep",
 ##
 BindGlobal( "MakeIsPlistMatrixRep",
   function( basedomain, emptyvector, ncols, list, check )
-    local fam, types, typ, row;
-    fam:= CollectionsFamily( FamilyObj( basedomain ) );
+    local efam, fam, filter, typ, row;
+
+    efam := ElementsFamily( FamilyObj( basedomain ) );
+    fam := CollectionsFamily( FamilyObj( basedomain ) );
 
     # Currently there is no special handling depending on 'basedomain',
     # the types are always cached in 'fam'.
     if not IsBound( fam!.PlistMatrixRepTypes ) then
       # initialize type cache
       # TODO: make this thread safe for HPC-GAP
-      fam!.PlistMatrixRepTypes:= [
-          NewType( fam, IsPlistMatrixRep ),
-          NewType( fam, IsPlistMatrixRep and IsMutable ),
+      filter := IsPlistMatrixRep;
+      if CanEasilyCompareElementsFamily( efam ) then
+        filter := filter and CanEasilyCompareElements;
+      fi;
+      fam!.PlistMatrixRepTypes := [
+          NewType( fam, filter ),
+          NewType( fam, filter and IsMutable ),
       ];
-      fam!.PlistMatrixRepTypesEasyCompare:= [
-          NewType( fam, IsPlistMatrixRep and CanEasilyCompareElements ),
-          NewType( fam, IsPlistMatrixRep and CanEasilyCompareElements and IsMutable ),
-      ];
-    fi;
-    if HasCanEasilyCompareElements( Representative( basedomain ) ) and
-       CanEasilyCompareElements( Representative( basedomain ) ) then
-      types:= fam!.PlistMatrixRepTypesEasyCompare;
-    else
-      types:= fam!.PlistMatrixRepTypes;
     fi;
     if IsMutable( list ) then
-      typ:= types[2];
+      typ := fam!.PlistMatrixRepTypes[2];
     else
-      typ:= types[1];
+      typ := fam!.PlistMatrixRepTypes[1];
     fi;
 
     if check and ValueOption( "check" ) <> false then
@@ -158,10 +144,10 @@ BindGlobal( "MakeIsPlistMatrixRep",
       for row in list do
         if not IsPlistVectorRep( row ) then
           Error( "the entries of <list> must be in 'IsPlistVectorRep'" );
-        elif not IsIdenticalObj( basedomain, row![BDPOS] ) then
-          Error( "the entries of <list> must have the given base domain" );
         elif Length( row![ELSPOS] ) <> ncols then
           Error( "the entries of <list> must have length <ncols>" );
+        elif not IsIdenticalObj( basedomain, row![BDPOS] ) then
+          Error( "the entries of <list> must have the given base domain" );
         fi;
       od;
     fi;
@@ -177,7 +163,7 @@ BindGlobal( "MakeIsPlistMatrixRep",
 InstallTagBasedMethod( NewVector,
   IsPlistVectorRep,
   function( filter, basedomain, list )
-    return MakeIsPlistVectorRep(basedomain, ShallowCopy(list), true);
+    return MakeIsPlistVectorRep(basedomain, PlainListCopy( list ), true);
   end );
 
 InstallTagBasedMethod( NewZeroVector,
@@ -343,6 +329,9 @@ InstallMethod( \[\],
 InstallMethod( \[\]\:\=,
   [ "IsPlistVectorRep", "IsPosInt", "IsObject" ],
   function( v, p, ob )
+    if ValueOption( "check" ) <> false and Length( v![ELSPOS] ) < p then
+      Error( "<p> is out of bounds" );
+    fi;
     v![ELSPOS][p] := ob;
   end );
 
@@ -635,10 +624,6 @@ InstallMethod( NumberColumns,
   [ "IsPlistMatrixRep" ],
   M -> M![RLPOS] );
 
-InstallMethod( DimensionsMat,
-  [ "IsPlistMatrixRep" ],
-  M -> [ Length( M![ROWSPOS]), M![RLPOS] ] );
-
 
 ############################################################################
 # Representation preserving constructors:
@@ -703,7 +688,7 @@ InstallMethod( Matrix,
     else
         l := [];
     fi;
-    # The result shall be mutable iff 'rows' is mutable.
+    # The result shall be mutable iff 'list' is mutable.
     if not IsMutable( list ) then
       MakeImmutable( l );
     fi;
@@ -1222,7 +1207,13 @@ InstallMethod( InverseSameMutability,
 
 InstallMethod( RankMat,
   [ "IsPlistMatrixRep" ],
-  M -> RankMat( List( M![ROWSPOS], x -> x![ELSPOS] ) ) );
+  function( M )
+    M:= M![ROWSPOS];
+    if Length( M ) = 0 then
+      return 0;
+    fi;
+    return RankMat( List( M, x -> x![ELSPOS] ) );
+  end );
 
 InstallMethodWithRandomSource( Randomize,
   "for a random source and a mutable plist matrix",

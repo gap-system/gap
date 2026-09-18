@@ -118,13 +118,18 @@
 ##  ]]></Example>
 ##  <Log><![CDATA[
 ##  gap> Z(11,40);
-##  Error, Conway Polynomial 11^40 will need to computed and might be slow
-##  return to continue called from
-##  FFECONWAY.ZNC( p, d ) called from
-##  <function>( <arguments> ) called from read-eval-loop
-##  Entering break read-eval-print loop ...
-##  you can 'quit;' to quit to outer loop, or
-##  you can 'return;' to continue
+##  Error, Conway Polynomial 11^40 will need to be computed and might be slow
+##  Stack trace:
+##  *[1] Error( "Conway Polynomial ", p, "^", d, " will need to be computed and might be slow" );
+##     @ GAPROOT/lib/ffeconway.gi:81
+##   [2] FFECONWAY.SetUpConwayStuff( p, d );
+##     @ GAPROOT/lib/ffeconway.gi:140
+##   [3] FFECONWAY.ZNC( p, d )
+##     @ GAPROOT/lib/ffeconway.gi:167
+##  <function "ZOp method">( <arguments> )
+##   called from read-eval loop at *stdin*:2
+##  you can enter 'quit;' to quit to outer loop, or
+##  you can enter 'return;' to continue
 ##  brk>
 ##  ]]></Log>
 ##  </Description>
@@ -258,7 +263,7 @@ DeclareCategoryCollections( "IsFFECollColl" );
 ##  by their coefficients with respect to the canonical basis of the field.
 ##  <P/>
 ##  Elements in <Ref Filt="IsLogOrderedFFE"/> are ordered according to their
-##  discrete logarithms with respect to the <Ref Attr="PrimitiveElement"/>
+##  discrete logarithms with respect to the <Ref Attr="PrimitiveRoot"/>
 ##  attribute of the field.
 ##  For the comparison of finite field elements with other &GAP; objects,
 ##  see&nbsp;<Ref Sect="Comparisons"/>.

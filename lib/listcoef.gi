@@ -271,36 +271,76 @@ InstallMethod( MultVectorLeft,
     [ IsDenseList and IsMutable,
       IsObject ],
 function( l, m )
-    local   i;
-    for i  in [ 1 .. Length(l) ]  do
+    local i;
+    for i in [ 1 .. Length(l) ] do
         l[i] := m * l[i];
     od;
 end );
+
 InstallOtherMethod( MultVectorLeft, "error if immutable",
     [ IsList, IsObject ],
-    L1_IMMUTABLE_ERROR);
+    L1_IMMUTABLE_ERROR );
 
 InstallMethod( MultVectorLeft,
     "kernel method for a mutable dense small list, and an object",
     IsCollsElms,
     [ IsSmallList and IsDenseList and IsMutable,
       IsObject ],
-    MULT_VECTOR_LEFT_2
-);
+    MULT_VECTOR_LEFT_2 );
+
 InstallMethod( MultVectorLeft,
-    "kernel method for a mutable dense plain list of \
-cyclotomics, and a cyclotomic",
+    "kernel method for a mutable dense plain list of cyclotomics, and a cyclotomic",
     IsCollsElms,
     [ IsDenseList and IsMutable and IsPlistRep and IsCyclotomicCollection,
       IsCyclotomic ],
-    MULT_VECTOR_2_FAST
-);
+    MULT_VECTOR_2_FAST );
+
 InstallMethod( MultVectorLeft,
-    "kernel method for a mutable row vector of ffes in \
-plain list rep, and an ffe",
+    "kernel method for a mutable row vector of ffes in plain list rep, and an ffe",
     IsCollsElms,
     [ IsRowVector and IsMutable and IsPlistRep and IsFFECollection,
-      IsFFE],0,
+      IsFFE],
+    MULT_VECTOR_VECFFES );
+
+
+#############################################################################
+##
+#M  MultVectorRight( <list>, <mul> )
+##
+InstallMethod( MultVectorRight,
+    "for a mutable dense list, and an object",
+    [ IsDenseList and IsMutable,
+      IsObject ],
+function( l, m )
+    local i;
+    for i in [ 1 .. Length(l) ] do
+        l[i] := l[i] * m;
+    od;
+end );
+
+InstallOtherMethod( MultVectorRight, "error if immutable",
+    [ IsList, IsObject ],
+    L1_IMMUTABLE_ERROR);
+
+InstallMethod( MultVectorRight,
+    "kernel method for a mutable dense small list, and an object",
+    IsCollsElms,
+    [ IsSmallList and IsDenseList and IsMutable,
+      IsObject ],
+    MULT_VECTOR_RIGHT_2 );
+
+InstallMethod( MultVectorRight,
+    "kernel method for a mutable dense plain list of cyclotomics, and a cyclotomic",
+    IsCollsElms,
+    [ IsDenseList and IsMutable and IsPlistRep and IsCyclotomicCollection,
+      IsCyclotomic ],
+    MULT_VECTOR_2_FAST );
+
+InstallMethod( MultVectorRight,
+    "kernel method for a mutable row vector of ffes in plain list rep, and an ffe",
+    IsCollsElms,
+    [ IsRowVector and IsMutable and IsPlistRep and IsFFECollection,
+      IsFFE],
     MULT_VECTOR_VECFFES );
 
 
@@ -365,7 +405,7 @@ function( l1 )
         return;
     else
         z := l1[1] * 0;
-        while 0 < Length(l1) and l1[Length(l1)] = z  do
+        while 0 < Length(l1) and Last(l1) = z  do
             Remove(l1);
         od;
     fi;
@@ -1102,7 +1142,7 @@ InstallMethod(DistancesDistributionMatFFEVecFFE,"generic",IsCollsElmsElms,
     ConvertToVectorRepNC(vec,f);
     # build the data structures
     f:=AsSSortedList(f);
-    Assert(1,f[1]=Zero(f[1]));
+    Assert(1,IsZero(f[1]));
 
     # get differences between field entries (so we can get the next vector
     # with one addition)
@@ -1110,7 +1150,7 @@ InstallMethod(DistancesDistributionMatFFEVecFFE,"generic",IsCollsElmsElms,
     for j in [2..Length(f)] do
         fdi[j-1]:=f[j]-f[j-1];
     od;
-    Add(fdi,-f[Length(f)]); # the subtraction multiple we need at the end.
+    Add(fdi,-Last(f)); # the subtraction multiple we need at the end.
 
     fdip := List(fdi, x-> Position(fdi,x));
 
@@ -1265,7 +1305,7 @@ BindGlobal( "AClosestVectorDriver", function(mat,f,vec,cnt,stop,coords)
     # build the data structures
     f:=AsSSortedList(f);
     q := Length(f);
-    Assert(1,f[1]=Zero(f[1]));
+    Assert(1,IsZero(f[1]));
 
     # get differences between field entries (so we can get the next vector
     # with one addition)
@@ -1273,7 +1313,7 @@ BindGlobal( "AClosestVectorDriver", function(mat,f,vec,cnt,stop,coords)
     for j in [2..q] do
         fdi[j-1]:=f[j]-f[j-1];
     od;
-    Add(fdi,-f[Length(f)]); # the subtraction multiple we need at the end.
+    Add(fdi,-Last(f)); # the subtraction multiple we need at the end.
 
     fdip := List(fdi, x-> Position(fdi,x));
 
@@ -1476,10 +1516,14 @@ InstallMethod(CosetLeadersMatFFE,"generic",IsCollsElms,
     q := Size(f);
     n := Length(mat[1]);
     m := Length(mat);
+    # The search below assumes the rows form a basis for an m-dimensional
+    # syndrome space, so reject dependent input before building the column data.
+    if RankMat(mat) <> m then
+        Error("CosetLeadersMatFFE: <mat> must have linearly independent rows");
+    fi;
     tofind := q^m;
     t := TransposedMat(mat);
-    vl := [];
-    vl[m+1] := false;
+    vl := EmptyPlist(m);
     felts := AsSSortedList(f);
     Assert(2, felts[1] = Zero(f));
     nzfelts := felts{[2..q]};
@@ -1497,7 +1541,6 @@ InstallMethod(CosetLeadersMatFFE,"generic",IsCollsElms,
                 Add(vl[i], v*fds[j]);
             fi;
         od;
-        Add(vl[i],false);
     od;
     v := ListWithIdenticalEntries(n, felts[1]);
     w := ZeroOp(t[1]);

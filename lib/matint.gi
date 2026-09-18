@@ -902,7 +902,7 @@ local sig, n, m, A, r, c2, c1, j, k, c, i, g, q;
 
   #Embed mat in 2 larger "id" matrix
   n := Length(mat)+2;
-  # Crossover point roughly 20x20 matrices, so farm the work if smaller..
+  # Crossover point roughly 20x20 matrices, so farm the work out if smaller..
   if n<22 then return DeterminantMat(mat);fi;
   m := NrCols(mat)+2;
 
@@ -1049,7 +1049,7 @@ local n,zero,nv,new,pip,piv,i,v,p,w,g,pin,now,rat,extra,clean,assign,try;
   mat:=[];
   extra:=[];
 
-  # we once reduce and then go over the remainders again in case they were
+  # we reduce once and then go over the remainders again in case they were
   # nice and short
   for try in [1..3] do
     SortBy(new, x -> - x*x); # reversed norm sort

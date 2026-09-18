@@ -430,7 +430,7 @@ void InformProfilingThatThisIsAForkedGAP(void)
         char filenamecpy[GAP_PATH_MAX];
         // Allow 20 characters to allow space for .%d.gz
         const int SUPPORTED_PATH_LEN = GAP_PATH_MAX - 20;
-        if(strlen(profileState.filename) > SUPPORTED_PATH_LEN) {
+        if (strlen(profileState.filename) > SUPPORTED_PATH_LEN) {
            Panic("Filename can be at most %d character when forking", SUPPORTED_PATH_LEN);
         }
         if (endsWithgz(profileState.filename)) {

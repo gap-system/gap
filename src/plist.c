@@ -255,19 +255,19 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
     // look at the first element
     elm = ELM_PLIST( list, 1 );
     if ( elm == 0 ) {
-        isDense = 0;
+        isDense = FALSE;
     }
 #ifdef HPCGAP
     else if ( !CheckReadAccess(elm) ) {
-      isHom = 0;
-      areMut = 1;
-      isTable = 0;
+      isHom = FALSE;
+      areMut = TRUE;
+      isTable = FALSE;
     }
 #endif
     else if (TEST_OBJ_FLAG(elm, OBJ_FLAG_TESTING)) {
-        isHom   = 0;
+        isHom   = FALSE;
         areMut  = IS_PLIST_MUTABLE(elm);
-        isTable = 0;
+        isTable = FALSE;
     }
     else {
 #ifdef HPCGAP
@@ -285,20 +285,20 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
             family  = FAMILY_TYPE( typeObj );
             ktnumFirst = 0;
         }
-        isHom   = 1;
+        isHom   = TRUE;
         areMut = IS_MUTABLE_OBJ(elm);
 
         // if entry is a homogeneous list this might be a table or list
         if (ktnumFirst >= T_PLIST_HOM) {
-            isTable = 1;
-            isRect = 1;
+            isTable = TRUE;
+            isRect = TRUE;
             len = LEN_PLIST(elm);
         }
         else if (ktnumFirst == 0 && IS_HOMOG_LIST(elm)) {
-            isTable = 1;
+            isTable = TRUE;
             // only handle small lists as rectangular
             if (IS_SMALL_LIST(elm)) {
-                isRect = 1;
+                isRect = TRUE;
                 len = LEN_LIST(elm);
             }
         }
@@ -319,45 +319,45 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
     for ( ; isDense && (isHom || ! areMut) && i <= lenList; i++ ) {
         elm = ELM_PLIST( list, i );
         if ( elm == 0 ) {
-            isDense = 0;
+            isDense = FALSE;
         }
 #ifdef HPCGAP
         else if ( !CheckReadAccess(elm) ) {
-            isHom = 0;
-            areMut = 1;
-            isTable = 0;
-            isRect = 0;
+            isHom = FALSE;
+            areMut = TRUE;
+            isTable = FALSE;
+            isRect = FALSE;
         }
 #endif
         else if (TEST_OBJ_FLAG(elm, OBJ_FLAG_TESTING)) {
-            isHom   = 0;
+            isHom   = FALSE;
             areMut  = (areMut || IS_PLIST_MUTABLE(elm));
-            isTable = 0;
-            isRect = 0;
+            isTable = FALSE;
+            isRect = FALSE;
         }
         else {
             if (isHom) {
                 loopTypeObj = TYPE_OBJ(elm);
                 if ( loopTypeObj != typeObj && FAMILY_TYPE(loopTypeObj) != family ) {
-                    isHom = 0;
-                    isTable = 0;
-                    isRect = 0;
+                    isHom = FALSE;
+                    isTable = FALSE;
+                    isRect = FALSE;
                 }
                 if ( isTable ) {
                     // check IS_PLIST first, as it is much cheaper
                     if (IS_PLIST(elm)) {
                         if (isRect && LEN_PLIST(elm) != len) {
-                            isRect = 0;
+                            isRect = FALSE;
                         }
                     }
                     else if (IS_SMALL_LIST(elm)) {
                         if (isRect && LEN_LIST(elm) != len) {
-                            isRect = 0;
+                            isRect = FALSE;
                         }
                     }
                     else {
-                        isTable = 0;
-                        isRect = 0;
+                        isTable = FALSE;
+                        isRect = FALSE;
                     }
                 }
             }
@@ -367,30 +367,30 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
 
     // if we know it is not dense
     if (knownNDense)
-      isDense = 0;
+      isDense = FALSE;
     // otherwise if we don't know that it IS dense
     else if (!knownDense)
       for ( ;  isDense && i <= lenList;  i++ ) {
         elm = ELM_PLIST( list, i );
         if ( elm == 0 ) {
-          isDense = 0;
+          isDense = FALSE;
         }
       }
+
+    if (famfirst != 0) {
+        *famfirst = (isDense && isHom) ? family : 0;
+    }
 
     // set the appropriate flags (not the hom. flag if elms are mutable)
     if      ( ! isDense ) {
         SET_FILT_LIST( list, FN_IS_NDENSE );
         res = T_PLIST_NDENSE;
-        if (famfirst != (Obj *) 0)
-          *famfirst = (Obj) 0;
     }
     else if ( isDense && ! isHom ) {
         SET_FILT_LIST( list, FN_IS_DENSE );
         if ( ! areMut )
             SET_FILT_LIST( list, FN_IS_NHOMOG );
         res = T_PLIST_DENSE_NHOM;
-        if (famfirst != (Obj *) 0)
-          *famfirst = (Obj) 0;
     }
     else if ( isDense &&   isHom && ! isTable ) {
         SET_FILT_LIST( list, areMut ? FN_IS_DENSE : FN_IS_HOMOG );
@@ -403,13 +403,13 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
         else if (IS_FFE(ELM_PLIST(list,1)))
           {
             FF fld = FLD_FFE(ELM_PLIST(list,1));
-            UInt isFFE = 1;
+            BOOL isFFE = TRUE;
             for (i = 2; i <= lenList; i++)
               {
                 x = ELM_PLIST(list,i);
                 if (!IS_FFE(x) || FLD_FFE(x) != fld)
                   {
-                    isFFE = 0;
+                    isFFE = FALSE;
                     break;
                   }
               }
@@ -423,23 +423,15 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
           }
         else
           res = T_PLIST_HOM;
-        if (famfirst != (Obj *) 0)
-          *famfirst = (Obj) family;
-
     }
     else  if ( isDense &&   isHom &&   isTable && !isRect )  {
         SET_FILT_LIST( list, areMut ? FN_IS_DENSE : FN_IS_TABLE );
         res = T_PLIST_TAB;
-        if (famfirst != (Obj *) 0)
-          *famfirst = (Obj) family;
     }
-    else
-      {
+    else {
         SET_FILT_LIST( list, areMut ? FN_IS_DENSE : FN_IS_RECT );
         res = T_PLIST_TAB_RECT;
-        if (famfirst != (Obj *) 0)
-          *famfirst = (Obj) family;
-      }
+    }
     res = res + ( IS_MUTABLE_OBJ(list) ? 0 : IMMUTABLE );
     return res;
 }
@@ -454,8 +446,8 @@ static Int KTNumHomPlist(Obj list)
     Obj  elm, x;            // one element of <list>
     Int  i;                 // loop variable
     Int  res;               // result
-    Int  isSSort;           // list is (known to be) SSorted
-    Int  isNSort;           // list is (known to be) non-sorted
+    BOOL isSSort;           // list is (known to be) SSorted
+    BOOL isNSort;           // list is (known to be) non-sorted
 
 #ifdef HPCGAP
     if (!CheckWriteAccess(list)) {
@@ -494,13 +486,13 @@ static Int KTNumHomPlist(Obj list)
     if (IS_FFE(elm))
       {
         FF fld = FLD_FFE(ELM_PLIST(list,1));
-        UInt isFFE = 1;
+        BOOL isFFE = TRUE;
         for (i = 2; i <= lenList; i++)
           {
             x = ELM_PLIST(list,i);
             if (!IS_FFE(x) || FLD_FFE(x) != fld)
               {
-                isFFE = 0;
+                isFFE = FALSE;
                 break;
               }
           }
@@ -517,10 +509,10 @@ static Int KTNumHomPlist(Obj list)
     if (!HAS_FILT_LIST(list, FN_IS_TABLE ))
       {
         if ( IS_HOMOG_LIST(elm) ) {
-          isTable = 1;
+          isTable = TRUE;
           if (IS_PLIST(elm))
               {
-                isRect = 1;
+                isRect = TRUE;
                 len     = LEN_PLIST(elm);
               }
         }
@@ -536,7 +528,7 @@ static Int KTNumHomPlist(Obj list)
       }
     else
       {
-        isTable = 1;
+        isTable = TRUE;
         isRect = HAS_FILT_LIST(list, FN_IS_RECT);
       }
     if (isTable && !isRect)
@@ -575,6 +567,48 @@ static Int KTNumHomPlist(Obj list)
 static Obj TypePlist(Obj list)
 {
   return TypePlistWithKTNum( list, (UInt *) 0);
+}
+
+static Obj TypePlistNDense(Obj list)
+{
+    if (IS_MUTABLE_OBJ(list))
+        return TYPE_LIST_NDENSE_MUTABLE;
+    else
+        return TYPE_LIST_NDENSE_IMMUTABLE;
+}
+
+#define TypePlistDense TypePlist
+
+static Obj TypePlistDenseNHom(Obj list)
+{
+    if (IS_MUTABLE_OBJ(list))
+        return TYPE_LIST_DENSE_NHOM_MUTABLE;
+    else
+        return TYPE_LIST_DENSE_NHOM_IMMUTABLE;
+}
+
+static Obj TypePlistDenseNHomSSort(Obj list)
+{
+    if (IS_MUTABLE_OBJ(list))
+        return TYPE_LIST_DENSE_NHOM_SSORT_MUTABLE;
+    else
+        return TYPE_LIST_DENSE_NHOM_SSORT_IMMUTABLE;
+}
+
+static Obj TypePlistDenseNHomNSort(Obj list)
+{
+    if (IS_MUTABLE_OBJ(list))
+        return TYPE_LIST_DENSE_NHOM_NSORT_MUTABLE;
+    else
+        return TYPE_LIST_DENSE_NHOM_NSORT_IMMUTABLE;
+}
+
+static Obj TypePlistEmpty(Obj list)
+{
+    if (IS_MUTABLE_OBJ(list))
+        return TYPE_LIST_EMPTY_MUTABLE;
+    else
+        return TYPE_LIST_EMPTY_IMMUTABLE;
 }
 
 static Obj TypePlistHomHelper(Obj family, UInt tnum, UInt knr, Obj list)
@@ -638,25 +672,20 @@ static Obj TypePlistWithKTNum (
     switch (tnum)
       {
       case T_PLIST_NDENSE:
-        return TYPE_LIST_NDENSE_MUTABLE;
       case T_PLIST_NDENSE+IMMUTABLE:
-        return TYPE_LIST_NDENSE_IMMUTABLE;
+        return TypePlistNDense(list);
       case T_PLIST_DENSE_NHOM:
-        return TYPE_LIST_DENSE_NHOM_MUTABLE;
       case T_PLIST_DENSE_NHOM+IMMUTABLE:
-        return TYPE_LIST_DENSE_NHOM_IMMUTABLE;
+        return TypePlistDenseNHom(list);
       case T_PLIST_DENSE_NHOM_SSORT:
-        return TYPE_LIST_DENSE_NHOM_SSORT_MUTABLE;
       case T_PLIST_DENSE_NHOM_SSORT+IMMUTABLE:
-        return TYPE_LIST_DENSE_NHOM_SSORT_IMMUTABLE;
+        return TypePlistDenseNHomSSort(list);
       case T_PLIST_DENSE_NHOM_NSORT:
-        return TYPE_LIST_DENSE_NHOM_NSORT_MUTABLE;
       case T_PLIST_DENSE_NHOM_NSORT+IMMUTABLE:
-        return TYPE_LIST_DENSE_NHOM_NSORT_IMMUTABLE;
+        return TypePlistDenseNHomNSort(list);
       case T_PLIST_EMPTY:
-        return TYPE_LIST_EMPTY_MUTABLE;
       case T_PLIST_EMPTY+IMMUTABLE:
-        return TYPE_LIST_EMPTY_IMMUTABLE;
+        return TypePlistEmpty(list);
       default: ; // fall through into the rest of the function
     }
 
@@ -670,65 +699,17 @@ static Obj TypePlistWithKTNum (
     UInt i;
     for (i = 1; i <= len; i++) {
       if (ELM_LIST(list, i) == (Obj) 0) {
-        if (IS_MUTABLE_OBJ(list))
-          return TYPE_LIST_NDENSE_MUTABLE;
-        else
-          return TYPE_LIST_NDENSE_IMMUTABLE;
+        return TypePlistNDense(list);
       }
     }
 
-    if (IS_MUTABLE_OBJ(list))
-      return TYPE_LIST_DENSE_NHOM_MUTABLE;
-    else
-      return TYPE_LIST_DENSE_NHOM_IMMUTABLE;
+    return TypePlistDenseNHom(list);
 #else
     // what's going on here?
     ErrorQuit( "Panic: strange type tnum '%s' ('%d')",
                (Int)TNAM_OBJ(list), (Int)(TNUM_OBJ(list)) );
     return 0;
 #endif
-}
-
-static Obj TypePlistNDense(Obj list)
-{
-    if (IS_MUTABLE_OBJ(list))
-        return TYPE_LIST_NDENSE_MUTABLE;
-    else
-        return TYPE_LIST_NDENSE_IMMUTABLE;
-}
-
-#define         TypePlistDense       TypePlist
-
-static Obj TypePlistDenseNHom(Obj list)
-{
-    if (IS_MUTABLE_OBJ(list))
-        return TYPE_LIST_DENSE_NHOM_MUTABLE;
-    else
-        return TYPE_LIST_DENSE_NHOM_IMMUTABLE;
-}
-
-static Obj TypePlistDenseNHomSSort(Obj list)
-{
-    if (IS_MUTABLE_OBJ(list))
-        return TYPE_LIST_DENSE_NHOM_SSORT_MUTABLE;
-    else
-        return TYPE_LIST_DENSE_NHOM_SSORT_IMMUTABLE;
-}
-
-static Obj TypePlistDenseNHomNSort(Obj list)
-{
-    if (IS_MUTABLE_OBJ(list))
-        return TYPE_LIST_DENSE_NHOM_NSORT_MUTABLE;
-    else
-        return TYPE_LIST_DENSE_NHOM_NSORT_IMMUTABLE;
-}
-
-static Obj TypePlistEmpty(Obj list)
-{
-    if (IS_MUTABLE_OBJ(list))
-        return TYPE_LIST_EMPTY_MUTABLE;
-    else
-        return TYPE_LIST_EMPTY_IMMUTABLE;
 }
 
 static Obj TypePlistHom(Obj list)
@@ -1518,43 +1499,26 @@ void            AssPlist (
 
 static void AssPlistXXX(Obj list, Int pos, Obj val)
 {
-  Int len;
+    Int len = LEN_PLIST(list);
 
     // the list will probably loose its flags/properties
     CLEAR_FILTS_LIST(list);
 
-    // resize the list if necessary
-    len = LEN_PLIST( list );
-    if ( len < pos ) {
-        GROW_PLIST( list, pos );
-        SET_LEN_PLIST( list, pos );
-    }
-
     // now perform the assignment
-    SET_ELM_PLIST( list, pos, val );
-    if ( IS_BAG_REF( val ) )
-        CHANGED_BAG( list );
+    AssPlist(list, pos, val);
 
     // We may be able cheaply to tell that the list is non-dense
-    if (len +1 < pos)
-      SET_FILT_LIST(list, FN_IS_NDENSE);
+    if (pos > len + 1) {
+        SET_FILT_LIST(list, FN_IS_NDENSE);
+    }
 }
 
 static void AssPlistCyc(Obj list, Int pos, Obj val)
 {
-  Int len;
-
-  // resize the list if necessary
-  len = LEN_PLIST( list );
-  if ( len < pos ) {
-    GROW_PLIST( list, pos );
-    SET_LEN_PLIST( list, pos );
-  }
+    Int len = LEN_PLIST(list);
 
     // now perform the assignment
-    SET_ELM_PLIST( list, pos, val );
-    if ( IS_BAG_REF( val ) )
-        CHANGED_BAG( list );
+    AssPlist(list, pos, val);
 
     // try and maintain maximum information about the list
     if (pos > len + 1) {
@@ -1582,22 +1546,13 @@ void AssPlistFfe   (
     Int                 pos,
     Obj                 val )
 {
-    Int len;
-
-    // resize the list if necessary
-    len = LEN_PLIST( list );
-    if ( len < pos ) {
-        GROW_PLIST( list, pos );
-        SET_LEN_PLIST( list, pos );
-    }
+    Int len = LEN_PLIST(list);
 
     // now perform the assignment
-    SET_ELM_PLIST( list, pos, val );
-    if ( IS_BAG_REF( val ) )
-        CHANGED_BAG( list );
+    AssPlist(list, pos, val);
 
     // try and maintain maximum information about the list
-    if( pos > len + 1 ) {
+    if (pos > len + 1) {
         CLEAR_FILTS_LIST(list);
         SET_FILT_LIST( list, FN_IS_NDENSE );
     }
@@ -1642,47 +1597,30 @@ void AssPlistFfe   (
 
 static void AssPlistDense(Obj list, Int pos, Obj val)
 {
-  Int len;
+    Int len = LEN_PLIST(list);
 
-  // the list will probably loose its flags/properties
-  CLEAR_FILTS_LIST(list);
-
-  // resize the list if necessary
-  len = LEN_PLIST( list );
-  if ( len < pos ) {
-    GROW_PLIST( list, pos );
-    SET_LEN_PLIST( list, pos );
-  }
+    // the list will probably loose its flags/properties
+    CLEAR_FILTS_LIST(list);
 
     // now perform the assignment
-    SET_ELM_PLIST( list, pos, val );
-    CHANGED_BAG( list );
+    AssPlist(list, pos, val);
 
     // restore denseness if we can
     if (pos <= len+1)
-      SET_FILT_LIST( list, FN_IS_DENSE );
+        SET_FILT_LIST( list, FN_IS_DENSE );
     else
         SET_FILT_LIST( list, FN_IS_NDENSE );
 }
 
 static void AssPlistHomog(Obj list, Int pos, Obj val)
 {
-  Int len;
-  Obj fam;
+    Int len = LEN_PLIST(list);
 
-  // the list may loose its flags/properties
-  CLEAR_FILTS_LIST(list);
-
-  // resize the list if necessary
-  len = LEN_PLIST( list );
-  if ( len < pos ) {
-    GROW_PLIST( list, pos );
-    SET_LEN_PLIST( list, pos );
-  }
+    // the list may loose its flags/properties
+    CLEAR_FILTS_LIST(list);
 
     // now perform the assignment
-    SET_ELM_PLIST( list, pos, val );
-    CHANGED_BAG( list );
+    AssPlist(list, pos, val);
 
     // restore denseness if we can
     if (pos <= len+1)
@@ -1712,10 +1650,7 @@ static void AssPlistHomog(Obj list, Int pos, Obj val)
         else if (!SyInitializing && !IS_MUTABLE_OBJ(val))
           {
             // find the family of an original list element
-            if (pos != 1)
-              fam = FAMILY_OBJ(ELM_PLIST(list, 1));
-            else
-              fam = FAMILY_OBJ(ELM_PLIST(list, 2));
+            Obj fam = FAMILY_OBJ(ELM_PLIST(list, (pos != 1) ? 1 : 2));
 
             // restore homogeneity if we can
             if (fam == FAMILY_OBJ( val ))
@@ -1980,10 +1915,10 @@ static BOOL IsSSortPlist(Obj list)
     Int                 lenList;
     Obj elm1;
     Obj elm2;
-    Int                 areMut;
+    BOOL                areMut;
     Int                 i;
     Obj                 fam=0;    // initialize to help compiler
-    Int                 isHom;
+    BOOL                isHom;
 
     // get the length
     lenList = LEN_PLIST( list );
@@ -2006,10 +1941,10 @@ static BOOL IsSSortPlist(Obj list)
     if (!SyInitializing)
       {
         fam = FAMILY_OBJ(elm1);
-        isHom = 1;
+        isHom = TRUE;
       }
     else
-      isHom = 0;
+      isHom = FALSE;
 
     // loop over the other elements
     for ( i = 2; i <= lenList; i++ ) {
@@ -2066,10 +2001,10 @@ static BOOL IsSSortPlistDense(Obj list)
     Int                 lenList;
     Obj elm1;
     Obj elm2;
-    Int                 areMut;
+    BOOL                areMut;
     Int                 i;
     Obj                 fam=0;     // initialize to help compiler
-    Int                 isHom;
+    BOOL                isHom;
 
     // get the length
     lenList = LEN_PLIST( list );
@@ -2090,10 +2025,10 @@ static BOOL IsSSortPlistDense(Obj list)
     if (!SyInitializing)
       {
         fam = FAMILY_OBJ(elm1);
-        isHom = 1;
+        isHom = TRUE;
       }
     else
-      isHom = 0;
+      isHom = FALSE;
 
     // loop over the other elements
     for ( i = 2; i <= lenList; i++ ) {
@@ -2472,7 +2407,7 @@ static Obj FuncIsRectangularTablePlist(Obj self, Obj plist)
   Obj len;
   UInt lenlist;
   UInt i;
-  UInt hasMut = 0;
+  BOOL hasMut = FALSE;
   Obj elm;
 
   assert(!HAS_FILT_LIST(plist, FN_IS_RECT));

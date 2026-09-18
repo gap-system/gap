@@ -131,7 +131,7 @@ function(f,p,check)
   od;
   fam!.mulrange:=MakeImmutable(red);
 
-  SetIsUFDFamily(fam,true);
+  SetFilterObj(fam,IsUFDFamily);
   SetCoefficientsFamily(fam,FamilyObj(One(f)));
 
   # and set one and zero
@@ -599,7 +599,7 @@ local i,fam,f,g,t,h,rf,rg,rh;
     #  t:=t-1;
     #od;
   od;
-  rf:=1/f[Length(f)]*rf;
+  rf:=1/Last(f)*rf;
   rf:=ImmutableVector(fam!.baseField, rf, true);
   return AlgExtElm(fam,rf);
 end);
@@ -829,7 +829,7 @@ local fam,c,m;
   until RankMat(m)<Length(m);
   m:=NullspaceMat(m)[1];
   # make monic
-  m:=m/m[Length(m)];
+  m:=m/Last(m);
   return UnivariatePolynomialByCoefficients(FamilyObj(fam!.zeroCoefficient),m,inum);
 end);
 
@@ -1037,6 +1037,14 @@ local fam;
   fi;
   TryNextMethod();
 end);
+
+#############################################################################
+##
+#M  DefaultRingByGenerators( <elms> )
+##
+InstallMethod( DefaultRingByGenerators,
+  [ "IsList and IsAlgebraicElementCollection" ],
+  DefaultFieldByGenerators );
 
 #############################################################################
 ##
@@ -1253,7 +1261,7 @@ local opt,irrfacs, coeffring, i, factors, ind, coeffs, val,
 
   # We really have to compute the factorization.
   # First split the polynomial into leading coefficient and monic part.
-  lc:= coeffs[ Length( coeffs ) ];
+  lc:= Last(coeffs);
   if not IsOne( lc ) then
     coeffs:= coeffs / lc;
   fi;
@@ -1404,7 +1412,7 @@ local n,e,ff,p,ffp,ffd,roots,allroots,nowroots,fm,fft,comb,combi,k,h,i,j,
     Info(InfoPoly,2,"testing combination ",combi,": ");
     fft:=ff{combi};
     ffp:=List(fft,i->AlgebraicPolynomialModP(kfam,i,fm[1],p));
-    roots:=Filtered(fm,i->ForAny(ffp,j->Value(j,i)=Zero(k)));
+    roots:=Filtered(fm,i->ForAny(ffp,j->IsZero(Value(j,i))));
     if Length(roots)<>Sum(ffd{combi}) then
       Error("serious error");
     fi;
@@ -1413,7 +1421,7 @@ local n,e,ff,p,ffp,ffd,roots,allroots,nowroots,fm,fft,comb,combi,k,h,i,j,
     j:=1;
     while j<=Length(roots) and gut do
       ffp:=List(fft,i->AlgebraicPolynomialModP(kfam,i,roots[j],p));
-      nowroots:=Filtered(allroots,i->ForAny(ffp,j->Value(j,i)=Zero(k)));
+      nowroots:=Filtered(allroots,i->ForAny(ffp,j->IsZero(Value(j,i))));
       gut := Length(nowroots)=Sum(ffd{combi});
       j:=j+1;
     od;

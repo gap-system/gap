@@ -248,12 +248,15 @@ DeclareGlobalFunction( "BestQuoInt" );
 ##  ]]></Example>
 ##  <Log><![CDATA[
 ##  gap> ChineseRem( [ 6, 10, 14 ], [ 1, 2, 3 ] );
-##  Error, the residues must be equal modulo 2 called from
-##  <function>( <arguments> ) called from read-eval-loop
-##  Entering break read-eval-print loop ...
-##  you can 'quit;' to quit to outer loop, or
-##  you can 'return;' to continue
-##  brk> gap>
+##  Error, the residues must be equal modulo 2
+##  Stack trace:
+##  *[1] Error( "the residues must be equal modulo ", g.gcd );
+##     @ GAPROOT/lib/integer.gi:391
+##  <function "ChineseRem">( <arguments> )
+##   called from read-eval loop at *stdin*:2
+##  you can enter 'quit;' to quit to outer loop, or
+##  you can enter 'return;' to continue
+##  brk>
 ##  ]]></Log>
 ##  </Description>
 ##  </ManSection>

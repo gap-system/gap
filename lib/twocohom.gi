@@ -14,7 +14,7 @@
 #F  CollectedWordSQ( C, u, v )
 ##
 ##  The tail of  a conjugate  i^j  (i>j) or a   power i^p (i=j) is  stored at
-##  posiition (i^2-i)/2+j
+##  position (i^2-i)/2+j
 ##
 InstallGlobalFunction( CollectedWordSQ, function( C, u, v )
     local   w, p, c, m, g, n, i, j, x, mx, l1, l2, l;
@@ -330,7 +330,7 @@ InstallGlobalFunction( AddEquationsSQ, function( eq, t1, t2 )
         v := Length(x);
         if 0 < v  then w := (v-1)*n + Length(x[v]);  fi;
         while 0 < v and IsBound(eq.system[w])  do
-            c := -x[v][Length(x[v])];
+            c := -Last(x[v]);
             for i  in eq.spos[w]  do
                 if IsBound(x[i])  then
                     x[i] := ShallowCopy( x[i] );
@@ -347,7 +347,7 @@ InstallGlobalFunction( AddEquationsSQ, function( eq, t1, t2 )
             if 0 < v  then w := (v-1)*n + Length(x[v]);  fi;
         od;
         if 0 < v  then
-            eq.system[w] := x * (1/x[v][Length(x[v])]);
+            eq.system[w] := x * (1/Last(x[v]));
             eq.spos[w]   := Filtered( [1..eq.nrels], t -> IsBound(x[t]) );
         fi;
     od;
@@ -807,17 +807,28 @@ local field,fp,fpg,gens,hom,mats,fm,mon,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
 
   dag:=EmptyKBDAG(Union(List(GeneratorsOfMonoid(FreeMonoidOfFpMonoid(mon)),
     LetterRepAssocWord)));
-  mal:=Maximum(List(tzrules,x->Length(x[1])));
+  mal:=MaximumList(List(tzrules,x->Length(x[1])),0); # 0 if there are no rules
   for i in [1..Length(tzrules)] do
     AddRuleKBDAG(dag,tzrules[i][1],i);
   od;
 
   gens:=List(GeneratorsOfGroup(FamilyObj(fpg)!.wholeGroup),
-    x->PreImagesRepresentative(fp,x));
+    x->PreImagesRepresentativeNC(fp,x));
 
-  hom:=GroupHomomorphismByImagesNC(G,Group(mo.generators),
-    GeneratorsOfGroup(G),mo.generators);
-  mo:=GModuleByMats(List(gens,x->ImagesRepresentative(hom,x)),mo.field); # new gens
+  # A module built without generators carries a single dummy identity
+  # generator, so for the trivial group it cannot match the generators of G.
+  # Everywhere else the generators have to correspond one to one.
+  if MTX.IsZeroGens(mo) and IsTrivial(G) then
+    new:=ListWithIdenticalEntries(Length(ogens),One(mo.generators[1]));
+  else
+    new:=mo.generators;
+  fi;
+
+  hom:=GroupHomomorphismByImagesNC(G,Group(mo.generators),ogens,new);
+  # new gens; `gens` can be empty, so state the dimension. It is taken from
+  # the matrices, as <mo> need not have a `dimension` component.
+  mo:=GModuleByMats(List(gens,x->ImagesRepresentative(hom,x)),
+    NrRows(mo.generators[1]),mo.field);
 
   l1:=GeneratorsOfGroup(fpg);
   l1:=Concatenation(l1,List(l1,Inverse));
@@ -833,7 +844,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
   # tails.
   hastail:=[];
   rules:=[];
-  genkill:=[]; # relations that kill generators. Needed for presenation.
+  genkill:=[]; # relations that kill generators. Needed for presentation.
   for r in tzrules do
     if Length(r[1])>=2 then
       Add(rules,r);
@@ -845,7 +856,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
     else
       # Length of r[1] is 1. That is, this generator is not used!
       m:=First(RelationsOfFpMonoid(mon),x->List(x,LetterRepAssocWord)=r);
-      m:=List(m,x->PreImagesRepresentative(fm,ElementOfFpMonoid(FamilyObj(One(mon)),x)));
+      m:=List(m,x->PreImagesRepresentativeNC(fm,ElementOfFpMonoid(FamilyObj(One(mon)),x)));
       m:=List(m,UnderlyingElement); # free group elements/words
 
       if not IsOne(m[1]*Subword(m[2],1,1)) then
@@ -866,7 +877,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
   model:=ValueOption("model");
   if model<>fail then
     q:=GQuotients(model,G)[1];
-    pre:=List(gens,x->PreImagesRepresentative(q,x));
+    pre:=List(gens,x->PreImagesRepresentativeNC(q,x));
     ker:=KernelOfMultiplicativeGeneralMapping(q);
     pcgs:=Pcgs(ker);
     l1:=GModuleByMats(LinearActionLayer(Group(pre),pcgs),mo.field);
@@ -880,7 +891,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
     m:=GroupGeneralMappingByImagesNC(fpg,model,GeneratorsOfGroup(fpg),pre);
     mats:=List(GeneratorsOfMonoid(mon),
       x->ImagesRepresentative(m,
-      PreImagesRepresentative(fm,x))); #Elements for monoid generators
+      PreImagesRepresentativeNC(fm,x))); #Elements for monoid generators
     nonone:=[1..Length(mats)];
     pre:=mats;
     onemat:=One(G);
@@ -896,9 +907,9 @@ local field,fp,fpg,gens,hom,mats,fm,mon,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
   zerovec:=Zero(onemat[1]);
 
   mats:=List(GeneratorsOfMonoid(mon),
-    x->ImagesRepresentative(hom,PreImagesRepresentative(fp,
-    PreImagesRepresentative(fm,x)))); # matrices for monoid generators
-  one:=One(mats[1]);
+    x->ImagesRepresentative(hom,PreImagesRepresentativeNC(fp,
+    PreImagesRepresentativeNC(fm,x)))); # matrices for monoid generators
+  one:=onemat; # `mats` can be empty
   nonone:=Filtered([1..Length(mats)],x->not IsOne(mats[x]));
   zero:=zerovec;
   dim:=Length(zero);
@@ -986,8 +997,11 @@ local field,fp,fpg,gens,hom,mats,fm,mon,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
 
   #eqs:=Filtered(TriangulizedMat(eqs),x->not IsZero(x));
   eqs:=ShallowCopy(BasisVectors(eqs));
-  if Length(eqs)=0 then
-    eqs:=IdentityMat(Length(rules),field);
+  if nvars=0 then
+    eqs:=[]; # no tails, so no cocycles; IdentityMat would give NullMapMatrix
+  elif Length(eqs)=0 then
+    # no conditions, so the whole space of tail vectors consists of cocycles
+    eqs:=IdentityMat(nvars,field);
   else
     eqs:=ImmutableMatrix(field,eqs);
     eqs:=NullspaceMat(TransposedMat(eqs)); # basis of cocycles
@@ -1035,7 +1049,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
   bds:=List(bds,Immutable);
 
   if gens<>GeneratorsOfGroup(G) then
-    G:=GroupWithGenerators(gens);
+    G:=GroupWithGenerators(gens,One(G)); # `gens` can be empty
   fi;
   r:=rec(group:=G,module:=mo,cocycles:=eqs,coboundaries:=bds,zero:=zeroq,
          prime:=Size(field));
@@ -1046,7 +1060,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
   one:=One(FreeGroupOfFpGroup(fpg));
 
   k:=List(GeneratorsOfMonoid(mon),
-    x->UnderlyingElement(PreImagesRepresentative(fm,x)));
+    x->UnderlyingElement(PreImagesRepresentativeNC(fm,x)));
   # matrix corresponding to monoid word
   mapped2:=function(list)
   local a,i;
@@ -1124,8 +1138,8 @@ local field,fp,fpg,gens,hom,mats,fm,mon,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
     local a;
       if not IsBound(imagemonwords[nr]) then
         # apply automorphism
-        a:=PreImagesRepresentative(fm,GeneratorsOfMonoid(mon)[nr]);
-        a:=PreImagesRepresentative(fp,a);
+        a:=PreImagesRepresentativeNC(fm,GeneratorsOfMonoid(mon)[nr]);
+        a:=PreImagesRepresentativeNC(fp,a);
         a:=ImagesRepresentative(autom,a);
         a:=ImagesRepresentative(fp,a);
         a:=ImagesRepresentative(fm,a);
@@ -1298,13 +1312,22 @@ end);
 
 BindGlobal("PermrepSemidirectModule",function(G,module)
 local hom,mats,m,i,j,mo,bas,a,l,ugens,gi,r,cy,act,k,it,p;
-  if not MTX.IsIrreducible(module) then Error("reducible");fi;
   p:=Size(module.field);
   if not IsPrime(p) then Error("must be over prime field");fi;
+
+  if IsTrivial(G) then
+    # nothing acts, so the semidirect product is just the module
+    mo:=AbelianGroup(IsPermGroup,ListWithIdenticalEntries(module.dimension,p));
+    return rec(group:=mo,
+               ggens:=List(GeneratorsOfGroup(G),x->One(mo)),
+               basis:=AsList(Pcgs(mo)));
+  fi;
+
+  if not MTX.IsIrreducible(module) then Error("reducible");fi;
   k:=Length(module.generators);
   hom:=GroupHomomorphismByImagesNC(G,Group(module.generators),
     GeneratorsOfGroup(G),module.generators);
-  # we allow do go immediately to normal subgroup of index up to 4.
+  # we allow to go immediately to normal subgroup of index up to 4.
   # This reduces search space
   it:=DescSubgroupIterator(G:skip:=LogInt(Size(G),2));
   repeat
@@ -1439,7 +1462,8 @@ end);
 InstallGlobalFunction(FpGroupCocycle,function(arg)
 local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,sim,
       it,hom,trysy,prime,mindeg,fps,ei,mgens,mwrd,nn,newfree,mfpi,mmats,sub,
-      tab,tab0,evalprod,gensmrep,invsmrep,zerob,step,simi,simiq,wasbold,
+      tab,tab0,evalprod,gensmrep,invsmrep,zerob,simi,simiq,#wasbold,
+      #step,
       mon,ord,mn,melmvec,killgens,frew,fffam,ofgens,rws,formalinverse;
 
   # function to evaluate product (as integer list) in gens (and their
@@ -1670,7 +1694,7 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,sim,
   fp:=f/rels;
   SetSize(fp,Size(r.group)*prime^r.module.dimension);
   simi:=fail;
-  wasbold:=false;
+  #wasbold:=false;
 
   if mon<>fail then
     rels:=MakeFpGroupToMonoidHomType1(fp,mon);
@@ -1678,7 +1702,7 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,sim,
   fi;
 
   if Length(arg)>2 and arg[3]=true then
-    if IsZero(z) and MTX.IsIrreducible(r.module) then
+    if IsZero(z) and (IsTrivial(r.group) or MTX.IsIrreducible(r.module)) then
       # make SDP directly
       m:=PermrepSemidirectModule(r.group,r.module:cheap);
       p:=m.group;
@@ -1709,7 +1733,7 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,sim,
       fi;
       it:=fail;
       while Size(p)<Size(fp) do
-        # we allow do go immediately to normal subgroup of index up to 4.
+        # we allow to go immediately to normal subgroup of index up to 4.
         # This reduces search space
         repeat
           if it=fail then
@@ -1723,11 +1747,11 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,sim,
             e:=Filtered(DerivedSeriesOfGroup(m),
               # roughly 5 for 1000, 30 for 10^6, 170 for 10^9
               x->IndexNC(m,x)^4<=Size(m));
-            m:=e[Length(e)];
+            m:=Last(e);
             it:=DescSubgroupIterator(m:skip:=LogInt(Size(p),2));
           fi;
 
-          wasbold:=false;
+          #wasbold:=false;
           m:=NextIterator(it);
           # catch case of large permdegree, try naive first
           if Index(p,m)=1 and IsPermGroup(p)
@@ -1740,9 +1764,9 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,sim,
             fi;
             if IndexNC(p,m)>10*NrMovedPoints(p) then
               m:=p; # after all..
-              wasbold:=false;
+              #wasbold:=false;
             else
-              wasbold:=true;
+              #wasbold:=true;
             fi;
           fi;
           Info(InfoExtReps,3,"Found index ",Index(p,m));
@@ -1834,8 +1858,8 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,sim,
               # module is irreducible).
               e:=LargerQuotientBySubgroupAbelianization(mfpi,m:cheap);
               if e<>fail then
-                step:=0;
-                while step<=1 do
+#                step:=0;
+#                while step<=1 do
                   # Now write down the combined representation in wreath
 
                   e:=DefiningQuotientHomomorphism(e);
@@ -1859,26 +1883,30 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,sim,
                     x->IsOne(MappedWord(x,FreeGeneratorsOfFpGroup(fps),
                       GeneratorsOfGroup(e!.quot)))));
 
-                  if step=0 then
-                    i:=GroupHomomorphismByImagesNC(e!.quot,p,
-                      GeneratorsOfGroup(e!.quot),
-                      GeneratorsOfGroup(p));
-                    j:=PreImage(i,m);
-                    if AbelianInvariants(j)=AbelianInvariants(newfree) then
-                      step:=2;
-                      Info(InfoExtReps,2,"Small bit did good");
-                    else
-                      Info(InfoExtReps,2,"Need expensive version");
-                      e:=LargerQuotientBySubgroupAbelianization(mfpi,m:
-                        cheap:=false);
-                      e:=Intersection(e,
-                        KernelOfMultiplicativeGeneralMapping(quot));
-                    fi;
-                  fi;
-
-
-                  step:=step+1;
-                od;
+#                  if step=0 then
+#                    tab:=GroupHomomorphismByImagesNC(e!.quot,p,
+#                      GeneratorsOfGroup(e!.quot),
+#                      GeneratorsOfGroup(p));
+#                    j:=PreImage(tab,m);
+#                    if AbelianInvariants(j)=AbelianInvariants(newfree) then
+#                      step:=2;
+#                      Info(InfoExtReps,2,"Small bit did good");
+#                    else
+#                      Info(InfoExtReps,2,"Use expensive version");
+#
+#                      tab:=LargerQuotientBySubgroupAbelianization(mfpi,m:
+#                        cheap:=false);
+#                      if tab<>fail then
+#                        e:=Intersection(e,
+#                          KernelOfMultiplicativeGeneralMapping(quot));
+#                        step:=2;
+#                      fi;
+#                    fi;
+#                  fi;
+#
+#
+#                  step:=step+1;
+#                od;
 
               fi;
 
@@ -1894,12 +1922,12 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,sim,
                 j:=List(Orbits(j,MovedPoints(j)),x->Stabilizer(j,x[1]));
                 j:=List(j,x->PreImage(i,x));
                 e:=Intersection(j);
-                e:=Intersection(e,KernelOfMultiplicativeGeneralMapping(quot));
               fi;
             fi;
 
-
             if e<>fail then
+              e:=Intersection(e,KernelOfMultiplicativeGeneralMapping(quot));
+              Info(InfoExtReps,2,"Resulting deg=",NrMovedPoints(e!.quot));
               # can we do better degree -- greedy block reduction?
               nn:=e!.quot;
               if IsTransitive(nn,MovedPoints(nn)) then
@@ -1985,7 +2013,7 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,sim,
     fi;
     # if we used factor perm rep, be bolder
     if IsPermGroup(p) then
-      new:=new*SmallerDegreePermutationRepresentation(p:cheap:=wasbold<>true);
+      new:=new*SmallerDegreePermutationRepresentation(p:cheap);
       SetIsomorphismPermGroup(fp,new);
     elif IsPcGroup(p) then
       SetIsomorphismPcGroup(fp,new);

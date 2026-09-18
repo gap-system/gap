@@ -387,7 +387,7 @@ InstallGlobalFunction( IsGaussRat,
 ##  More precisely, they arise in the base conversion from (formally)
 ##  successively multiplying $\pm\zeta^i$ by
 ##  $1 = - \sum_{j=1}^{p-1} \zeta^{jn/p}$,
-##  for suitable prime diviors $p$ of $n$,
+##  for suitable prime divisors $p$ of $n$,
 ##  and then treating the summands $\pm\zeta^{i + jn/p}$ in the same way
 ##  until roots in the basis are reached.
 ##  It should be noted that all roots obtained this way are distinct.
@@ -1918,7 +1918,7 @@ InstallMethod( Factors,
 
     # We really have to compute the factorization.
     # First split the polynomial into leading coefficient and monic part.
-    lc:= coeffs[ Length( coeffs ) ];
+    lc:= Last(coeffs);
     if not IsOne( lc ) then
       coeffs:= coeffs / lc;
     fi;
@@ -2063,6 +2063,26 @@ function (A,B)
   if fail in ab then TryNextMethod(); fi;
   return IsSubset(ab[1], ab[2]);
 end );
+
+
+InstallMethod( IsSubset, "for a cyclotomic semiring and a range",
+             [IsCyclotomicCollection and IsSemiringWithOne,
+              IsRange],
+function (D, R)
+  if IsEmpty(R) then return true; fi;
+  # Since D is a semiring-with-one, and thus in particular an additive magma,
+  # it suffices to check whether the start and end point of the given range
+  # are contained in it. Actually it suffices if the smaller one is contained
+  # in it, but figuring out which end is smaller is more work than just
+  # directly checking both end points.
+  return First(R) in D and Last(R) in D;
+end );
+
+
+InstallMethod( IsSubset, "for a finite list and a cyclotomic semiring",
+             [IsList and IsFinite,
+              IsCyclotomicCollection and IsSemiringWithOne],
+    ReturnFalse );
 
 
 InstallMethod( Intersection2, "for certain cyclotomic semirings",

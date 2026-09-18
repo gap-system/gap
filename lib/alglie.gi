@@ -28,7 +28,7 @@ InstallMethod( LieUpperCentralSeries,
 
     S := [ TrivialSubalgebra( L ) ];
     C := LieCentre( L );
-    while C <> S[ Length(S) ]  do
+    while C <> Last(S)  do
 
       # Replace `L' by `L / C', compute its centre, and get the preimage
       # under the natural homomorphism.
@@ -61,7 +61,7 @@ InstallMethod( LieLowerCentralSeries,
     # Compute the series by repeated calling of `ProductSpace'.
     S := [ L ];
     C := LieDerivedSubalgebra( L );
-    while C <> S[ Length(S) ]  do
+    while C <> Last(S)  do
       Add( S, C );
       C:= ProductSpace( L, C );
     od;
@@ -104,7 +104,7 @@ InstallMethod( LieDerivedSeries,
     # Compute the series by repeated calling of `LieDerivedSubalgebra'.
     S := [ L ];
     D := LieDerivedSubalgebra( L );
-    while D <> S[ Length(S) ]  do
+    while D <> Last(S)  do
       Add( S, D );
       D:= LieDerivedSubalgebra( D );
     od;
@@ -127,7 +127,7 @@ InstallMethod( IsLieSolvable,
     local D;
 
     D:= LieDerivedSeries( L );
-    return Dimension( D[ Length( D ) ] ) = 0;
+    return Dimension( Last(D) ) = 0;
     end );
 
 InstallTrueMethod( IsLieSolvable, IsLieNilpotent );
@@ -146,7 +146,7 @@ InstallMethod( IsLieNilpotent,
     local D;
 
     D:= LieLowerCentralSeries( L );
-    return Dimension( D[ Length( D ) ] ) = 0;
+    return Dimension( Last(D) ) = 0;
     end );
 
 
@@ -597,7 +597,7 @@ InstallMethod( AdjointMatrix,
     x:= Coefficients( B, x );
     n:= Length( BasisVectors( B ) );
     T:= StructureConstantsTable( B );
-    zerovector:= [ 1 .. n ] * T[ Length( T ) ];
+    zerovector:= [ 1 .. n ] * Last(T);
     M:= [];
     for j in [ 1 .. n ] do
       row:= ShallowCopy( zerovector );
@@ -922,10 +922,9 @@ InstallMethod( AdjointBasis,
     inds:= [];
     for i in [1..n] do
       adi:= AdjointMatrix( B, bb[i] );
-      if not IsContainedInSpan( adLsp, adi ) then
+      if CloseMutableBasis( adLsp, adi ) then
         Add( adL, adi );
         Add( inds, i );
-        CloseMutableBasis( adLsp, adi );
       fi;
     od;
 
@@ -1489,7 +1488,7 @@ InstallMethod( AdjointAssociativeAlgebra,
             found:= false;
             l1:= 1; l2:= 1;
             while not found do
-              if m[l1][l2] <> Zero( F ) then
+              if not IsZero( m[l1][l2] ) then
                 Add( posits, [l1,l2] );
                 found:= true;
               else
@@ -1707,7 +1706,7 @@ InstallMethod( LieSolvableRadical,
       quo:= ImagesSource( hom );
       r1:= LieSolvableRadical( quo );
       B:= BasisVectors( Basis( r1 ) );
-      B:= List( B, x -> PreImagesRepresentative( hom, x ) );
+      B:= List( B, x -> PreImagesRepresentativeNC( hom, x ) );
       Append( B, BasisVectors( Basis( n ) ) );
 
     fi;
@@ -1859,8 +1858,7 @@ InstallMethod( DirectSumDecomposition,
         while k<=Length(bas) do
           if Length(bas)=Dimension(L)-Dimension(H) then break; fi;
           M:= bas[ k ]*bas[ l ];
-          if not IsContainedInSpan( sp, M ) then
-            CloseMutableBasis( sp, M );
+          if CloseMutableBasis( sp, M ) then
             Add( bas, M );
           fi;
           if l < Length(bas) then l:=l+1;
@@ -1910,11 +1908,7 @@ InstallMethod( DirectSumDecomposition,
                   Add( mat, Coefficients( Basis( B[k], b ), x ) );
                 od;
                 mat:= TransposedMat( mat );
-
-                if not IsContainedInSpan( sp, mat ) then
-                  CloseMutableBasis( sp, mat );
-                fi;
-
+                CloseMutableBasis( sp, mat );
               od;
               res:= BasisVectors( sp );
 
@@ -1992,7 +1986,7 @@ InstallMethod( DirectSumDecomposition,
                 Append( comlist, List( B[i], y -> bb[j]*y ) );
             od;
 
-            if not ForAll( comlist, x -> x = Zero(L) ) then
+            if not ForAll( comlist, IsZero ) then
               Append( bb, B[i] );
               B:= Filtered( B, x -> x <> B[i] );
               i:= 1;
@@ -2047,9 +2041,8 @@ InstallMethod( DirectSumDecomposition,
                    BasisVectors( Basis( CD ) ), Zero( CD ) );
           while Length( B1 ) + Dimension( CD ) <> Dimension( C ) do
             x:= bvc[k];
-            if not IsContainedInSpan( sp, x ) then
+            if CloseMutableBasis( sp, x ) then
               Add( B1, x );
-              CloseMutableBasis( sp, x );
             fi;
             k:=k+1;
           od;
@@ -2064,9 +2057,8 @@ InstallMethod( DirectSumDecomposition,
           sp:= MutableBasis( F, b );
           while Length( B2 )+Length( B1 ) <> n do
             x:= bvl[k];
-            if not IsContainedInSpan( sp, x ) then
+            if CloseMutableBasis( sp, x ) then
               Add( B2, x );
-              CloseMutableBasis( sp, x );
             fi;
             k:= k+1;
           od;
@@ -2100,7 +2092,7 @@ InstallMethod( DirectSumDecomposition,
       SetRadicalOfAlgebra( Q, Subalgebra( Q, [ Zero( Q ) ] ) );
 
       id:= List( CentralIdempotentsOfAlgebra( Q ),
-                                x->PreImagesRepresentative(hom,x));
+                                x->PreImagesRepresentativeNC(hom,x));
 
       # Now we lift the idempotents to the big algebra `A'. The
       # first idempotent is lifted as follows:
@@ -2281,7 +2273,7 @@ end );
 ##  2 or 3, having a nondegenerate Killing form. Such Lie algebras are
 ##  semisimple. They are characterized as direct sums of simple Lie algebras,
 ##  and these have been classified: a simple Lie algebra is either an element
-##  of the "great" classes of simple Lie algebas (A_n, B_n, C_n, D_n), or
+##  of the "great" classes of simple Lie algebras (A_n, B_n, C_n, D_n), or
 ##  an exceptional algebra (E_6, E_7, E_8, F_4, G_2). This function finds
 ##  the type of the semisimple Lie algebra `L'. Since for the calculations
 ##  eigenvalues and eigenvectors of the action of a Cartan subalgebra are
@@ -2392,9 +2384,8 @@ InstallMethod( SemiSimpleType,
     bvl:= BasisVectors( Basis( L ) );
     while Length( bas ) < Dimension( L ) do
       a:= bvl[k];
-      if not IsContainedInSpan( sp, a ) then
+      if CloseMutableBasis( sp, a ) then
         Add( bas, a );
-        CloseMutableBasis( sp, a );
       fi;
       k:= k+1;
     od;
@@ -2585,9 +2576,8 @@ InstallMethod( SemiSimpleType,
             r:= R[i];
             k:= Position( R, -r );
             h:= Rvecs[i] * Rvecs[k];
-            if not IsContainedInSpan( sp, h ) then
+            if CloseMutableBasis( sp, h ) then
               Add( basH, h );
-              CloseMutableBasis( sp, h );
               Add( basR, r );
             fi;
             i:= i+1;
@@ -2865,7 +2855,7 @@ InstallMethod( RootSystem,
           zero,       # zero of `F'
           hts,        # A list of the heights of the root vectors
           sorh,       # The set `Set( hts )'
-          sorR,       # The soreted set of roots
+          sorR,       # The sorted set of roots
           R,          # The root system.
           Rvecs,      # The root vectors.
           x,y,        # Canonical generators.
@@ -2975,8 +2965,7 @@ InstallMethod( RootSystem,
       a:= S[i];
       j:= Position( S, -a );
       h:= B[i][1]*B[j][1];
-      if not IsContainedInSpan( sp, h ) then
-        CloseMutableBasis( sp, h );
+      if CloseMutableBasis( sp, h ) then
         Add( basR, a );
         Add( basH, h );
       fi;
@@ -3166,7 +3155,7 @@ InstallMethod( ChevalleyBasis,
 
     # Now for every positive root vector `x' we set `y= -Image( f, x )'.
     # We compute a scalar `cf' such that `[x,y]=h', where `h' is the
-    # canonical Cartan element corresponding to the root (unquely determined).
+    # canonical Cartan element corresponding to the root (uniquely determined).
     # Then we have to multiply `x' and `y' by Sqrt( 2/cf ), in order to get
     # elements of a Chevalley basis.
 
@@ -4028,9 +4017,10 @@ InstallMethod( ImagesRepresentative,
 
 ###########################################################################
 ##
+#M   PreImagesRepresentativeNC( f, x )
 #M   PreImagesRepresentative( f, x )
 ##
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
     "for Fp to SCA mapping, and element",
     FamRangeEqFamElm,
     [ IsFptoSCAMorphism, IsSCAlgebraObj ], 0,
@@ -4083,8 +4073,7 @@ InstallMethod( PreImagesRepresentative,
                         if c <> [] then
 
                             imz:= Image( f, z );
-                            if not IsContainedInSpan( sp, imz ) then
-                                CloseMutableBasis( sp, imz );
+                            if CloseMutableBasis( sp, imz ) then
                                 Add( b1, z );
                                 Add( newlev, z );
                                 Add( newbracks, c );
@@ -4106,6 +4095,21 @@ InstallMethod( PreImagesRepresentative,
     return cf*f!.bases[1];
 
 end);
+
+InstallMethod( PreImagesRepresentative,
+    "for Fp to SCA mapping, and element",
+    FamRangeEqFamElm,
+    [ IsFptoSCAMorphism, IsSCAlgebraObj ], 0,
+
+    function( f, x )
+    if not ( x in Range( f ) ) then
+        Error( "<x> is not in the range of mapping <f>" );
+    elif not ( x in Image( f ) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentativeNC( f, x );
+
+end );
 
 #############################################################################
 ##
@@ -4208,7 +4212,7 @@ local ReductionModuloTable,   #
       cf,                     # Coefficient.
       t1,t2,                  # Indices.
       max,                    # Maximum.
-      R,                      # Lists of commtators that have been defined.
+      R,                      # Lists of commutators that have been defined.
       Rw1,                    # A new roe of `R'.
       one,                    # One of the field.
       zero,                   # Zero of the field.
@@ -5330,7 +5334,7 @@ local ReductionModuloTable,   #
                                       if d in degs then
                                         return gradcomps[Position(degs,d)];
                                       else
-                                        return gradcomps[Length(gradcomps)];
+                                        return Last(gradcomps);
                                       fi;
                                      end
                   ) );
@@ -5604,8 +5608,8 @@ InstallMethod( JenningsLieAlgebra,
     T:= EmptySCTable( dim , Zero(F) , "antisymmetric" );
     pimgs := [];
     for i in [1..dim] do
-        a:= PreImagesRepresentative( Homs[pos[i]] ,
-                    PreImagesRepresentative( hom_pcg[pos[i]], gens[i] ) );
+        a:= PreImagesRepresentativeNC( Homs[pos[i]] ,
+                    PreImagesRepresentativeNC( hom_pcg[pos[i]], gens[i] ) );
 
         # calculate the p-th power image of `a':
 
@@ -5622,8 +5626,8 @@ InstallMethod( JenningsLieAlgebra,
                # Calculate the commutator [a,b], and map the result into
                # the correct homogeneous component.
 
-                b:= PreImagesRepresentative( Homs[pos[j]],
-                         PreImagesRepresentative( hom_pcg[pos[j]], gens[j] ));
+                b:= PreImagesRepresentativeNC( Homs[pos[j]],
+                       PreImagesRepresentativeNC( hom_pcg[pos[j]], gens[j] ));
                 c:= Image( hom_pcg[pos[i] + pos[j]],
                            Image(Homs[pos[i] + pos[j]], a^-1*b^-1*a*b) );
                 e:= ExtRepOfObj(c);
@@ -5665,7 +5669,7 @@ InstallMethod( JenningsLieAlgebra,
                                             if d in [1..Length(grading)] then
                                               return grading[d];
                                             else
-                                              return grading[Length(grading)];
+                                              return Last(grading);
                                             fi;
                                          end
                       )
@@ -5800,8 +5804,8 @@ InstallMethod( PCentralLieAlgebra,
     T:= EmptySCTable( dim , Zero(F) , "antisymmetric" );
     pimgs := [];
     for i in [1..dim] do
-        a:= PreImagesRepresentative( Homs[pos[i]] ,
-                    PreImagesRepresentative( hom_pcg[pos[i]], gens[i] ) );
+        a:= PreImagesRepresentativeNC( Homs[pos[i]] ,
+                    PreImagesRepresentativeNC( hom_pcg[pos[i]], gens[i] ) );
 
 
         # calculate the p-th power image of `a':
@@ -5819,8 +5823,8 @@ InstallMethod( PCentralLieAlgebra,
                # Calculate the commutator [a,b], and map the result into
                # the correct homogeneous component.
 
-                b:= PreImagesRepresentative( Homs[pos[j]],
-                         PreImagesRepresentative( hom_pcg[pos[j]], gens[j] ));
+                b:= PreImagesRepresentativeNC( Homs[pos[j]],
+                       PreImagesRepresentativeNC( hom_pcg[pos[j]], gens[j] ));
                 c:= Image( hom_pcg[pos[i] + pos[j]],
                            Image(Homs[pos[i] + pos[j]], a^-1*b^-1*a*b) );
                 e:= ExtRepOfObj(c);
@@ -5864,7 +5868,7 @@ InstallMethod( PCentralLieAlgebra,
                                             if d in [1..Length(grading)] then
                                               return grading[d];
                                             else
-                                              return grading[Length(grading)];
+                                              return Last(grading);
                                             fi;
                                          end
                       )

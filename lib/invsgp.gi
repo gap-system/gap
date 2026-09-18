@@ -359,21 +359,21 @@ return ForAll(GeneratorsOfInverseSemigroup(s), x-> x in t)
 end);
 
 InstallMethod( String,
-    "for a inverse semigroup",
+    "for an inverse semigroup",
     [ IsInverseSemigroup ],
     function( S )
     return "InverseSemigroup( ... )";
     end );
 
 InstallMethod( PrintObj,
-    "for a inverse semigroup with known generators",
+    "for an inverse semigroup with known generators",
     [ IsInverseSemigroup and HasGeneratorsOfInverseSemigroup ],
     function( S )
     Print( "InverseSemigroup( ", GeneratorsOfInverseSemigroup( S ), " )" );
     end );
 
 InstallMethod( String,
-    "for a inverse semigroup with known generators as an inverse semigroup",
+    "for an inverse semigroup with known generators as an inverse semigroup",
     [ IsInverseSemigroup and HasGeneratorsOfInverseSemigroup ],
     function( S )
     return STRINGIFY( "InverseSemigroup( ",
@@ -381,7 +381,7 @@ InstallMethod( String,
     end );
 
 InstallMethod( String,
-    "for a inverse semigroup with known generators as a semigroup",
+    "for an inverse semigroup with known generators as a semigroup",
     [ IsInverseSemigroup and HasGeneratorsOfSemigroup ],
     function( S )
     return STRINGIFY( "Semigroup( ",
@@ -389,7 +389,7 @@ InstallMethod( String,
     end );
 
 InstallMethod( PrintString,
-    "for a inverse semigroup with known generators",
+    "for an inverse semigroup with known generators",
     [ IsInverseSemigroup and HasGeneratorsOfInverseSemigroup ],
     function( S )
     return PRINT_STRINGIFY( "InverseSemigroup( ",
@@ -397,14 +397,14 @@ InstallMethod( PrintString,
     end );
 
 InstallMethod( ViewString,
-    "for a inverse semigroup",
+    "for an inverse semigroup",
     [ IsInverseSemigroup ],
     function( S )
     return "<inverse semigroup>" ;
     end );
 
 #InstallMethod( ViewString,
-#    "for a inverse semigroup with generators",
+#    "for an inverse semigroup with generators",
 #    [ IsInverseSemigroup and HasGeneratorsOfInverseSemigroup ],
 #    function( S )
 #    return STRINGIFY( "<inverse semigroup with ",
@@ -415,21 +415,21 @@ InstallMethod( ViewString,
 #
 
 InstallMethod( String,
-    "for a inverse monoid",
+    "for an inverse monoid",
     [ IsInverseMonoid ],
     function( S )
     return "InverseMonoid( ... )";
     end );
 
 InstallMethod( PrintObj,
-    "for a inverse monoid with known generators",
+    "for an inverse monoid with known generators",
     [ IsInverseMonoid and HasGeneratorsOfInverseMonoid ],
     function( S )
     Print( "InverseMonoid( ", GeneratorsOfInverseMonoid( S ), " )" );
     end );
 
 InstallMethod( String,
-    "for a inverse monoid with known generators as a monoid",
+    "for an inverse monoid with known generators as a monoid",
     [ IsInverseMonoid and HasGeneratorsOfMonoid ],
     function( S )
     return STRINGIFY( "Monoid( ",
@@ -437,7 +437,7 @@ InstallMethod( String,
     end );
 
 InstallMethod( String,
-    "for a inverse monoid with known generators as an inverse monoid",
+    "for an inverse monoid with known generators as an inverse monoid",
     [ IsInverseMonoid and HasGeneratorsOfInverseMonoid ],
     function( S )
     return STRINGIFY( "InverseMonoid( ",
@@ -446,7 +446,7 @@ InstallMethod( String,
 
 
 InstallMethod( PrintString,
-    "for a inverse monoid with known generators",
+    "for an inverse monoid with known generators",
     [ IsInverseMonoid and HasGeneratorsOfInverseMonoid ],
     function( S )
     return PRINT_STRINGIFY( "InverseMonoid( ",
@@ -454,14 +454,14 @@ InstallMethod( PrintString,
     end );
 
 InstallMethod( ViewString,
-    "for a inverse monoid",
+    "for an inverse monoid",
     [ IsInverseMonoid ],
     function( S )
     return "<inverse monoid>" ;
     end );
 
 #InstallMethod( ViewString,
-#    "for a inverse monoid with generators",
+#    "for an inverse monoid with generators",
 #    [ IsInverseMonoid and HasGeneratorsOfInverseMonoid ],
 #    function( S )
 #    return STRINGIFY( "<inverse monoid with ",

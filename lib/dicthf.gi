@@ -162,7 +162,7 @@ function(m, v)
   return function(x)
     Assert(1, IsPositionsList(x));
     if not IsPlistRep(x) then
-      x := AsPlist(x);
+      x := PlainListCopy(x);
     fi;
     return HashKeyBag(x, 1, 0, Length(x) * GAPInfo.BytesPerVariable);
   end;
@@ -176,7 +176,7 @@ function(m, v)
   ## up to 56 full, then increasingly reduce
   #len:=Minimum(len,8*RootInt(len));
   #while Length(weights)<len do
-  #  Add(weights,weights[Length(weights)]+step);
+  #  Add(weights,Last(weights)+step);
   #  step:=NextPrimeInt(step);
   #od;
   #return function(a)
@@ -292,10 +292,10 @@ InstallMethod(SparseIntKey,"kernel pc group elements",true,
     IsElementFinitePolycyclicGroup and IsDataObjectRep and IsNBitsPcWordRep],0,
 function(d,e)
 local l,p;
-  # we want to use an small shift to avoid cancellation due to similar bit
+  # we want to use a small shift to avoid cancellation due to similar bit
   # patterns in many bytes (the exponent values in most cases are very
-  # small). The pcgs length is a reasonable small value-- otherwise we get
-  # already overlap for the generators alone.
+  # small). The pcgs length is a reasonable small value-- otherwise we
+  # already get overlap for the generators alone.
   p:=FamilyObj(e)!.DefiningPcgs;
   l:=NextPrimeInt(Length(p)+1);
   p:=Product(RelativeOrders(p));

@@ -869,6 +869,7 @@ InstallMethod( TriangulizeMat,
 ##
 #M  ViewObj( <R> )  . . . . . . . . . . . . . . . . method for full ring Z/nZ
 #M  PrintObj( <R> ) . . . . . . . . . . . . . . . . method for full ring Z/nZ
+#M  String( <R> ) . . . . . . . . . . . . . . . . . method for full ring Z/nZ
 ##
 InstallMethod( ViewObj,
     "for full ring Z/nZ",
@@ -883,6 +884,11 @@ InstallMethod( PrintObj,
     function( obj )
     Print( "(Integers mod ", Size( obj ), ")" );
     end );
+
+InstallMethod( String,
+    "for full ring Z/nZ",
+    [ IsZmodnZObjNonprimeCollection and IsWholeFamily ], SUM_FLAGS,
+    obj -> Concatenation( "(Integers mod ", String( Size( obj ) ), ")" ) );
 
 
 #############################################################################
@@ -1106,8 +1112,7 @@ InstallGlobalFunction( ZmodnZ, function( n )
     # Store the objects type.
     F!.typeOfZmodnZObj:= NewType( F, IsZmodnZObjNonprime and IsModulusRep );
 
-    # as n is no prime, the family is no UFD
-    SetIsUFDFamily(F,false);
+    # as n is no prime, the family is no UFD, so we don't add IsUFDFamily as a filter
 
     # Make the domain.
     R:= RingWithOneByGenerators( [ ZmodnZObj( F, 1 ) ] );

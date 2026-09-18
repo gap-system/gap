@@ -1,3 +1,5 @@
+#@local A,inputs,ints,filt,G,Q,F,gens,n,i
+
 #
 # tests for grp/basic*.*
 #
@@ -265,15 +267,14 @@ gap> IsDihedralGroup(Q);
 true
 gap> HasDihedralGenerators(Q);
 true
-gap> Unbind(F);; Unbind(Q);;
 
 #
 # dicyclic groups
 #
-gap> IdGroup(DicyclicGroup(4));
-[ 4, 1 ]
-gap> IdGroup(DicyclicGroup(IsFpGroup,4));
-[ 4, 1 ]
+gap> StructureDescription(DicyclicGroup(4));
+"C4"
+gap> StructureDescription(DicyclicGroup(IsFpGroup,4));
+"C4"
 gap> DicyclicGroup(8);
 <pc group of size 8 with 3 generators>
 gap> DicyclicGroup(IsPcGroup,8);
@@ -319,6 +320,57 @@ gap> DicyclicGroup(IsMatrixGroup, fail, 256);
 Error, usage: <field> must be a field
 gap> DicyclicGroup(IsMatrixGroup, GF(2), 256, "extra");
 Error, usage: DicyclicGroup( [<filter>, [<field>, ] ] <size> )
+
+#
+gap> for n in [ 8, 16, 32, 64 ] do
+>      G:= DicyclicGroup( n );
+>      if not IsDicyclicGroup( G ) then
+>        Error( "not a dicyclic group?" );
+>      elif not IsGeneralisedQuaternionGroup( G ) then
+>        Error( "not a gen. quat. group?" );
+>      elif GeneralisedQuaternionGenerators( G ) <> DicyclicGenerators( G ) then
+>        Error( "strange canon. generators?" );
+>      fi;
+>    od;
+gap> for n in [ 4, 12, 20, 24 ] do
+>      G:= DicyclicGroup( n );
+>      if not IsDicyclicGroup( G ) then
+>        Error( "not a dicyclic group?" );
+>      elif IsGeneralisedQuaternionGroup( G ) then
+>        Error( "gen. quat. group?" );
+>      fi;
+>    od;
+#@if IsPackageMarkedForLoading( "smallgrp", "" )
+gap> Number( AllSmallGroups( [  1 .. 32 ], IsDicyclicGroup ) );
+8
+gap> Number( AllSmallGroups( [  1 .. 32 ], IsGeneralisedQuaternionGroup ) );
+3
+#@fi
+
+#
+gap> Q:= DicyclicGroup( 20 );;
+gap> gens:= DicyclicGenerators( Q );;
+gap> Group( gens ) = Q;
+true
+gap> Q:= Group( GeneratorsOfGroup( DicyclicGroup( IsPermGroup, 20 ) ) );;
+gap> HasIsDicyclicGroup( Q );
+false
+gap> HasDicyclicGenerators( Q );
+false
+gap> gens:= DicyclicGenerators( Q );;
+gap> Group( gens ) = Q;
+true
+gap> IsDicyclicGroup( Q );
+true
+gap> Q:= Group( GeneratorsOfGroup( DicyclicGroup( IsPermGroup, 20 ) ) );;
+gap> HasIsDicyclicGroup( Q );
+false
+gap> HasDicyclicGenerators( Q );
+false
+gap> IsDicyclicGroup( Q );
+true
+gap> HasDicyclicGenerators( Q );
+true
 
 #
 # (generalised) quaternion groups
@@ -382,7 +434,6 @@ gap> IsGeneralisedQuaternionGroup(Q);
 true
 gap> HasGeneralisedQuaternionGenerators(Q);
 true
-gap> Unbind(F);; Unbind(Q);;
 
 #
 # elementary abelian groups

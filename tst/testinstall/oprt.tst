@@ -1,4 +1,4 @@
-#@local G,c5,d,eo,es,ess
+#@local G,V,c5,d,eo,es,ess,gens,res
 gap> START_TEST("oprt.tst");
 gap> c5:=CyclicGroup(IsPermGroup,5);;
 gap> d:=Combinations([1..5],2);;
@@ -43,4 +43,59 @@ gap> IsTransitive( G, [ 2, 3 ] );
 false
 gap> Transitivity( G, [ 2, 3 ] );
 0
+
+##  variants of Orbit( G[, Omega], pnt[, gens, acts][, act] )
+gap> G:= SymmetricGroup( 5 );;
+gap> gens:= GeneratorsOfGroup( G );;
+gap> res:= [ 1 .. 5 ];;
+gap> SortedList( Orbit( G, 1 ) ) = res;
+true
+gap> SortedList( Orbit( G, [ 1 .. 5 ], 1 ) ) = res;
+true
+gap> SortedList( Orbit( G, 1, gens, gens ) ) = res;
+true
+gap> SortedList( Orbit( G, [ 1 .. 5 ], 1, gens, gens ) ) = res;
+true
+gap> SortedList( Orbit( G, 1, OnPoints ) ) = res;
+true
+gap> SortedList( Orbit( G, [ 1 .. 5 ], 1, OnPoints ) ) = res;
+true
+gap> SortedList( Orbit( G, 1, gens, gens, OnPoints ) ) = res;
+true
+gap> SortedList( Orbit( G, [ 1 .. 5 ], 1, gens, gens, OnPoints ) ) = res;
+true
+gap> Orbit( G, GF(7), 1 );
+Error, wrong relation between <D> and <pnt>
+gap> Orbit( G, GF(7), 1, OnPoints );
+Error, wrong relation between <D> and <pnt>
+
+# the usage message must describe the operation it belongs to
+gap> V:= Group( (1,2)(3,4), (1,3)(2,4) );;
+gap> Blocks( V );
+Error, usage: Blocks(<xset>[,<seed>])
+or Blocks(<G>,<Omega>[,<seed>][,<gens>,<acts>][,<act>])
+gap> Blocks( V, 1 );
+Error, usage: Blocks(<xset>[,<seed>])
+or Blocks(<G>,<Omega>[,<seed>][,<gens>,<acts>][,<act>])
+gap> MaximalBlocks( V );
+Error, usage: MaximalBlocks(<xset>[,<seed>])
+or MaximalBlocks(<G>,<Omega>[,<seed>][,<gens>,<acts>][,<act>])
+gap> RepresentativesMinimalBlocks( V );
+Error, usage: RepresentativesMinimalBlocks(<xset>)
+or RepresentativesMinimalBlocks(<G>,<Omega>[,<gens>,<acts>][,<act>])
+gap> Orbit( V );
+Error, usage: Orbit(<xset>,<pnt>)
+or Orbit(<G>[,<Omega>],<pnt>[,<gens>,<acts>][,<act>])
+gap> Blocks( V, [1..4] );
+[ [ 1, 2 ], [ 3, 4 ] ]
+gap> Blocks( V, [1..4], [1,2] );
+[ [ 1, 2 ], [ 3, 4 ] ]
+
+# the transitivity check for a seed can be switched off
+gap> Blocks( Group( (1,2), (3,4,5) ), [1..5], [1,2] );
+Error, <G> must act transitively on <D>
+gap> Blocks( Group( (1,2), (3,4,5) ), [1..5], [1,2] : check := false );
+[ [ 1, 2 ], [ 3 ], [ 4 ], [ 5 ] ]
+
+##
 gap> STOP_TEST( "oprt.tst" );

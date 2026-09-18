@@ -160,7 +160,7 @@ gap> LargeGaloisField(bigPrime);
 GF(1152921504606847009)
 gap> F:=LargeGaloisField(bigPrime,2);
 GF(1152921504606847009^2)
-gap> Z(bigPrime,2) = PrimitiveElement(F);
+gap> Z(bigPrime,2) = PrimitiveRoot(F);
 true
 
 #

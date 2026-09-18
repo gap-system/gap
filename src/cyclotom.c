@@ -142,10 +142,11 @@ static inline void SET_NOF_CYC(Obj cyc, Obj val)
 
 // #define XXX_CYC(cyc,len)        (EXPOS_CYC(cyc,len)[0])
 
-
+#ifdef HPCGAP
 static ModuleStateOffset CycStateOffset = -1;
 
 struct CycModuleState {
+#endif
 
 /****************************************************************************
 **
@@ -158,7 +159,7 @@ struct CycModuleState {
 **  It is created in 'InitCyc' with room for up to 1000 coefficients  and  is
 **  resized when need arises.
 */
-Obj ResultCyc;
+DECL_MODULE_STATE Obj ResultCyc;
 
 /****************************************************************************
 **
@@ -178,21 +179,23 @@ Obj ResultCyc;
 **  is called to compute $e_n^i$ and can then do this easier by just  putting
 **  1 at the <i>th place in 'ResultCyc' and then calling 'Cyclotomic'.
 */
-Obj  LastECyc;
-UInt LastNCyc;
+DECL_MODULE_STATE Obj  LastECyc;
+DECL_MODULE_STATE UInt LastNCyc;
 
+#ifdef HPCGAP
 }; // end of struct CycModuleState
 
+// for debugging from GDB / lldb, we mark this as extern inline
 extern inline struct CycModuleState *CycState(void)
 {
     return (struct CycModuleState *)StateSlotsAtOffset(CycStateOffset);
 }
 
 // For convenience and readability
-#define ResultCyc   CycState()->ResultCyc
-#define LastECyc    CycState()->LastECyc
-#define LastNCyc    CycState()->LastNCyc
-
+#define ResultCyc   (CycState()->ResultCyc)
+#define LastECyc    (CycState()->LastECyc)
+#define LastNCyc    (CycState()->LastNCyc)
+#endif
 
 static void GrowResultCyc(UInt size)
 {
@@ -361,7 +364,7 @@ static Int EqCyc(Obj opL, Obj opR)
 **  Cyclotomics are first sorted according to the order of the primitive root
 **  they are written in.  That means that the rationals  are  smallest,  then
 **  come cyclotomics from $Q(e_3)$ followed by cyclotomics from $Q(e_4)$ etc.
-**  Cyclotomics from the same field are sorted lexicographicaly with  respect
+**  Cyclotomics from the same field are sorted lexicographically with  respect
 **  to their representation in the base of this field.  That means  that  the
 **  cyclotomic with smaller coefficient for the first base root  is  smaller,
 **  for cyclotomics with the same first coefficient the second decides  which
@@ -833,7 +836,7 @@ static UInt FindCommonField(UInt nl, UInt nr, UInt *ml, UInt *mr)
           "This computation requires a cyclotomic field of degree %d, larger "
           "than the current limit of %d",
           n, (Int)CyclotomicsLimit,
-          "You may return after raising the limit with SetCyclotomicsLimit");
+          "you can enter 'return;' after raising the limit with SetCyclotomicsLimit");
   }
 
   // Finish up
@@ -1101,7 +1104,7 @@ static Obj DiffCyc(Obj opL, Obj opR)
 **
 *F  ProdCycInt( <opL>, <opR> )  . . .  product of a cyclotomic and an integer
 **
-**  'ProdCycInt'    returns the product  of a    cyclotomic and  a integer or
+**  'ProdCycInt'    returns the product  of a    cyclotomic and  an integer or
 **  rational.  Which operand is the cyclotomic and which the integer does not
 **  matter.
 **
@@ -2201,8 +2204,10 @@ static StructInitInfo module = {
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
 
+#ifdef HPCGAP
     .moduleStateSize = sizeof(struct CycModuleState),
     .moduleStateOffsetPtr = &CycStateOffset,
+#endif
     .initModuleState = InitModuleState,
 };
 

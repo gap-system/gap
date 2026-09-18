@@ -25,7 +25,8 @@ false
 gap> iso4:=iso3*InnerAutomorphism(g,r^-1);;
 gap> iso4=IdentityMapping(g);
 true
-gap> g:=TransitiveGroup(6,7);;
+gap> g := Group([ (1,4)(2,5), (1,3,5)(2,4,6), (1,5)(2,4) ]);;
+gap> # g = TransitiveGroup(6,7)
 gap> IsSolvableGroup(g);
 true
 gap> Size(AutomorphismGroup(g));
@@ -57,7 +58,7 @@ G (size 6)
  | C2
 S (1 gens, size 3)
  | C3
-1 (size 1)
+1 (0 gens, size 1)
 
 # that's all, folks
 gap> STOP_TEST("morpheus.tst");

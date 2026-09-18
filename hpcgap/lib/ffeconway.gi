@@ -80,7 +80,7 @@ FFECONWAY.SetUpConwayStuff := function(p,d)
 
     if not IsCheapConwayPolynomial(p,d) then
         Error("Conway Polynomial ",p,"^",d,
-              " will need to computed and might be slow\n", "return to continue");
+              " will need to be computed and might be slow");
     fi;
     cp := CoefficientsOfUnivariatePolynomial(ConwayPolynomial(p,d));
 
@@ -1196,7 +1196,7 @@ end);
 
 #############################################################################
 ##
-#M  LogFFE( <x>, <base> )
+#M  LogFFE
 ##
 
 InstallMethod( LogFFE,
@@ -1213,6 +1213,7 @@ InstallMethod( LogFFE,
         IsIdenticalObj,
         [ IsFFE and IsCoeffsModConwayPolRep, IsFFE and IsInternalRep],
         DoDLog );
+
 
 #############################################################################
 ##

@@ -208,44 +208,33 @@ BIND_GLOBAL( "TYPE_CHAR", NewType( CharsFamily, IsChar and IsInternalRep ) );
 
 #############################################################################
 ##
-#V  TYPES_STRING . . . . . . . . . . . . . . . . . . . . . types of strings
-##
-##  <ManSection>
-##  <Var Name="TYPES_STRING"/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
+##  Types and family for strings
 ##
 BIND_GLOBAL( "StringFamily", NewFamily( "StringsFamily", IsCharCollection ) );
 
-BIND_GLOBAL( "TYPES_STRING",
-        [ NewType( StringFamily, IsString and IsStringRep and
-                IsMutable ), # T_STRING
+BIND_GLOBAL( "TYPE_STRING_MUTABLE",
+          NewType( StringFamily, IsString and IsStringRep and
+                IsMutable ) );
 
-          NewType( StringFamily, IsString and IsStringRep ),
-          # T_STRING + IMMUTABLE
+BIND_GLOBAL( "TYPE_STRING_IMMUTABLE",
+          NewType( StringFamily, IsString and IsStringRep ) );
 
+BIND_GLOBAL( "TYPE_STRING_NSORT_MUTABLE",
           NewType (StringFamily, IsString and IsStringRep and
-                  HasIsSSortedList and IsMutable ),
-          # T_STRING_NSORT
+                  HasIsSSortedList and IsMutable ) );
 
+BIND_GLOBAL( "TYPE_STRING_NSORT_IMMUTABLE",
           NewType (StringFamily, IsString and IsStringRep and
-                  HasIsSSortedList ),
-          # T_STRING_NSORT +IMMUTABLE
+                  HasIsSSortedList ) );
 
+BIND_GLOBAL( "TYPE_STRING_SSORT_MUTABLE",
           NewType (StringFamily, IsString and IsStringRep and
-                  IsSSortedList and IsMutable ),
-          # T_STRING_SSORT
+                  IsSSortedList and IsMutable ) );
 
+BIND_GLOBAL( "TYPE_STRING_SSORT_IMMUTABLE",
           NewType (StringFamily, IsString and IsStringRep and
-                  IsSSortedList )
-          # T_STRING_SSORT +IMMUTABLE
-          ]);
+                  IsSSortedList ) );
 
-if IsHPCGAP then
-    MakeReadOnlySingleObj( TYPES_STRING );
-fi;
 
 #############################################################################
 ##
@@ -337,6 +326,8 @@ InstallMethod( String,
 ##  function returns a new string with the leading <C>'~'</C> substituted by
 ##  the user's home directory as stored in <C>GAPInfo.UserHome</C>.
 ##  Otherwise <A>str</A> is returned unchanged.
+##  <P/>
+##  This function is the counterpart of <Ref Func="UserHomeShorten"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -348,6 +339,55 @@ BIND_GLOBAL("UserHomeExpand", function(str)
   else
     return str;
   fi;
+end);
+
+#############################################################################
+##
+#F  UserHomeShorten( <str> ) . . . . . . . . . . shorten leading user home
+##
+##  <#GAPDoc Label="UserHomeShorten">
+##  <ManSection>
+##  <Func Name="UserHomeShorten" Arg='str'/>
+##  <Description>
+##  If the string <A>str</A> starts with the user's home directory as stored
+##  in <C>GAPInfo.UserHome</C> then this function returns a new string with
+##  that prefix replaced by a leading <C>'~'</C> character.
+##  Otherwise <A>str</A> is returned unchanged.
+##  <P/>
+##  This function is the counterpart of <Ref Func="UserHomeExpand"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL("UserHomeShorten", function(str)
+  local homeLen;
+
+  if not IsString(str) or Length(str) = 0
+        or not IsString(GAPInfo.UserHome) or Length(GAPInfo.UserHome) = 0 then
+    return str;
+  fi;
+
+  if not IsMatchingSublist(str, GAPInfo.UserHome) then
+    return str;
+  fi;
+
+  homeLen := Length(GAPInfo.UserHome);
+  if Length(str) = homeLen then
+    return "~";
+  fi;
+
+  # Check that the string starts with GAPInfo.UserHome and that this is separate
+  # from the rest by a `/`. Otherwise if `GAPInfo.UserHome` is for example
+  # `/home/john` but str is `/home/johnny` we'd end up with `~ny`).
+  if str[homeLen + 1] <> '/' then
+    return str;
+  fi;
+
+  if Length(str) = homeLen + 1 then
+    return "~";
+  fi;
+
+  return Concatenation("~/", str{[homeLen + 2..Length(str)]});
 end);
 
 
@@ -362,6 +402,7 @@ BIND_GLOBAL("CHARS_ALPHA",
   MakeImmutable(LIST_SORTED_LIST("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")));
 BIND_GLOBAL("CHARS_SYMBOLS",
   MakeImmutable(LIST_SORTED_LIST(" !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~")));
+BIND_GLOBAL("CHARS_WHITESPACE", MakeImmutable(LIST_SORTED_LIST(" \n\t\r")));
 
 
 #############################################################################
@@ -413,6 +454,74 @@ BIND_GLOBAL("_StripEscapeSequences", function(str)
         i := p;
       fi;
     fi;
+  od;
+  return res;
+end);
+
+
+#############################################################################
+##
+#F  _FormatParagraph( <str>, <len>, <prefix>, <suffix> )  reformat a paragraph
+##
+##  This is a heavily simplified variant of GAPDoc's `FormatParagraph`,
+##  adapted from there, so that the GAP library can format text without
+##  loading GAPDoc.
+##
+##  The words in <str> are redistributed into lines of at most <len>
+##  characters, flush left. Each line starts with <prefix> and ends with
+##  <suffix>, both of which count towards <len>. Note that GAPDoc's version
+##  instead treats them as escape sequences of width zero.
+##
+##  The alternative alignments "both", "right" and "center" offered by
+##  GAPDoc's version are not supported, and neither are escape sequences
+##  (which GAPDoc's version copies verbatim and treats as having length
+##  zero). Line lengths are counted in bytes, that is, a multibyte character
+##  counts more than once; GAPDoc's version can be handed `WidthUTF8String`
+##  to avoid this.
+##
+BIND_GLOBAL("_FormatParagraph", function(str, len, prefix, suffix)
+  local words, l, i, j, lw, s, res;
+
+  # <prefix> and <suffix> are part of each line, hence count towards <len>
+  len := len - Length(prefix) - Length(suffix);
+
+  # scan the string for words, stored as ranges of positions in <str>
+  words := [];
+  i := 1;
+  l := Length(str);
+  while i <= l do
+    if str[i] in CHARS_WHITESPACE then
+      i := i+1;
+    else
+      j := i+1;
+      while j <= l and not str[j] in CHARS_WHITESPACE do
+        j := j+1;
+      od;
+      Add(words, [i..j-1]);
+      i := j;
+    fi;
+  od;
+
+  # distribute the words onto lines
+  res := "";
+  lw := Length(words);
+  i := 1;
+  while i <= lw do
+    # the first word of a line is always added, even if it is too long
+    Append(res, prefix);
+    Append(res, str{words[i]});
+    s := Length(words[i]);
+    i := i+1;
+    # further words are added as long as they fit, line breaks only
+    # happen at whitespace
+    while i <= lw and s + 1 + Length(words[i]) <= len do
+      Add(res, ' ');
+      Append(res, str{words[i]});
+      s := s + 1 + Length(words[i]);
+      i := i+1;
+    od;
+    Append(res, suffix);
+    Add(res, '\n');
   od;
   return res;
 end);

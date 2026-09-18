@@ -61,24 +61,24 @@ InstallAttributeFunction(
 ##  <Func Name="NewFamily" Arg='name[, req[, imp[, famfilter]]]'/>
 ##
 ##  <Description>
-##  <Ref Func="NewFamily"/> returns a new family <A>fam</A> with name
+##  <Ref Func="NewFamily"/> returns a new family <C>fam</C> with name
 ##  <A>name</A>.
-##  The argument <A>req</A>, if present, is a filter of which <A>fam</A>
-##  shall be a subset.
-##  If one tries to create an object in <A>fam</A> that does not lie in the
-##  filter <A>req</A>, an error message is printed.
-##  Also the argument <A>imp</A>, if present,
-##  is a filter of which <A>fam</A> shall be a subset.
-##  Any object that is created in the family <A>fam</A> will lie
-##  automatically in the filter <A>imp</A>.
+##  The arguments <A>req</A> and <A>imp</A>, if present, are filters of which
+##  <C>fam</C> shall be a subset.
+##  Any type that is created for <C>fam</C> (see <Ref Func="NewType"/>) will
+##  describe objects in these filters, and thus
+##  any object that is created in <C>fam</C> (see <Ref Func="Objectify"/>)
+##  will lie automatically in <A>req</A><C> and </C><A>imp</A>.
+##  (Thus it does not matter whether one uses <A>req</A> or <A>imp</A>
+##  or both in the call, the distinction has only historical reasons.)
 ##  <P/>
 ##  The filter <A>famfilter</A>, if given, specifies a filter that will hold
-##  for the family <A>fam</A> (not for objects in <A>fam</A>).
+##  for the object <C>fam</C> itself (not for objects in <C>fam</C>).
 ##  <P/>
 ##  Families are always represented as component objects
 ##  (see&nbsp;<Ref Sect="Component Objects"/>).
-##  This means that components can be used to store and access
-##  useful information about the family.
+##  This means that individual components can be set in <C>fam</C>
+##  in order to store and access useful information about it.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -118,6 +118,11 @@ BIND_GLOBAL( "NEW_FAMILY",
     fi;
     SET_TYPE_COMOBJ( family, type );
     family!.NAME            := IMMUTABLE_COPY_OBJ(name);
+    # The component 'REQ_FLAGS' corresponds to the argument 'req_filter',
+    # but 'IMP_FLAGS' corresponds to 'AND_FLAGS( imp_filter, req_filter )'.
+    # In practice, 'REQ_FLAGS' is not used, except for printing the family.
+    # We cannot get rid of the 'req' argument of 'NewFamily' because of its
+    # optional fourth argument.
     family!.REQ_FLAGS       := req_filter;
     family!.IMP_FLAGS       := imp_filter;
     family!.nTYPES          := 0;

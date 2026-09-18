@@ -54,6 +54,15 @@ InstallTrueMethod( IsCyclotomicMatrixGroup, IsRationalMatrixGroup );
 ##
 ##  <Description>
 ##  tests whether all matrices in <A>G</A> have integer entries.
+##  <Example><![CDATA[
+##  gap> A:=[[0,1,0],[0,0,1],[1,0,0]];;
+##  gap> B:=[[0,0,1],[0,1,0],[-1,0,0]];;
+##  gap> C:=[[E(4),0,0],[0,E(4)^(-1),0],[0,0,1]];;
+##  gap> IsIntegerMatrixGroup(Group(A, B));
+##  true
+##  gap> IsIntegerMatrixGroup(Group(A, C));
+##  false
+##  ]]></Example>
 ##  <!--  Not <C>IsIntegralMatrixGroup</C> to avoid confusion with matrix groups of-->
 ##  <!--  integral cyclotomic numbers. -->
 ##  </Description>

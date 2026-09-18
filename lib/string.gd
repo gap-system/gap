@@ -437,7 +437,7 @@ DeclareGlobalFunction( "LowercaseChar" );
 ##  <Func Name="UppercaseString" Arg='string'/>
 ##
 ##  <Description>
-##  Returns a uppercase version of the string <A>string</A>,
+##  Returns an uppercase version of the string <A>string</A>,
 ##  that is, a string in which each lowercase alphabet character is replaced
 ##  by the corresponding uppercase character.
 ##  <Example><![CDATA[

@@ -7,11 +7,13 @@ with caution. Contributions are welcomed!
 To build this manual, call
 
 ```
-gap makedocrelx.g
-````
+gap makedocrel.g
+```
 
 in this directory. This will build HTML, PDF and text versions.
 
-Please note that this manual is not a part of the GAP distribution,
-so it will not be built by calling `make doc`.
+This manual is also built (together with the other main manuals) by
+calling `make doc` in the top-level directory. Note however that it is not
+part of the GAP distribution: the release scripts remove `doc/dev` from the
+release archives.
 

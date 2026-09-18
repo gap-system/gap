@@ -23,4 +23,7 @@ gap> List( v );
 [  ]
 gap> List( v, DegreeFFE );
 [  ]
+gap> v1:= Vector( IsPlistVectorRep, Rationals, [] );;
+gap> v1[1]:= 0;
+Error, <p> is out of bounds
 gap> STOP_TEST("ListOp.tst");

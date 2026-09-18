@@ -53,7 +53,7 @@ BindGlobal( "PCGS_STABILIZER", function( arg )
             # add it if it is new
             if j = fail  then
                 o := ros[i];
-                Add( prod, prod[Length(prod)] * o );
+                Add( prod, Last(prod) * o );
                 Add( n, i );
                 len := Length(orb);
                 l1  := 0;
@@ -116,7 +116,7 @@ BindGlobal( "PCGS_STABILIZER", function( arg )
             # add it if it is new
             if j = fail  then
                 o := ros[i];
-                Add( prod, prod[Length(prod)] * o );
+                Add( prod, Last(prod) * o );
                 Add( n, i );
                 len := Length(orb);
                 l1  := 0;
@@ -210,7 +210,7 @@ BindGlobal( "PCGS_STABILIZER_HOMOMORPHIC", function( arg )
             # add it if it is new
             if j = fail  then
                 o := ros[i];
-                Add( prod, prod[Length(prod)] * o );
+                Add( prod, Last(prod) * o );
                 Add( n, i );
                 len := Length(orb);
                 l1  := 0;
@@ -743,10 +743,10 @@ end );
 ##
 ##  <f3>    if 'true' and <f2> is  'false', then intersections with different
 ##          prime than  the  module  are computed  using Glasby's  algorithm.
-##          Otherwise a ordinary orbit stabilizer algorithm is used.
+##          Otherwise an ordinary orbit stabilizer algorithm is used.
 ##
 ##  <f4>    if 'true', the first  intersection  is computed   using    linear
-##          operations.  Otherwise a ordinary orbit  stabilizer  algorithm is
+##          operations.  Otherwise an ordinary orbit  stabilizer  algorithm is
 ##          used.
 ##
 DeclareGlobalName("PcGroup_NormalizerWrtHomePcgs");

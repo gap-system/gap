@@ -1,6 +1,8 @@
 gap> START_TEST("ExtractSubVector.tst");
 gap> l1 := [1,2,3,4,5,6];
 [ 1, 2, 3, 4, 5, 6 ]
+gap> ExtractSubVector( l1, [1,2,4] );
+[ 1, 2, 4 ]
 gap> v3 := Vector(GF(5), l1*One(GF(5)));
 [ Z(5)^0, Z(5), Z(5)^3, Z(5)^2, 0*Z(5), Z(5)^0 ]
 gap> ExtractSubVector( v3, [1,2,4] );

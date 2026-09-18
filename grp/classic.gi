@@ -12,76 +12,112 @@
 
 #############################################################################
 ##
-#M  SymplecticGroupCons( <IsMatrixGroup>, <d>, <q> )
+#F  GeneratorsAndFormOfSymplecticGroupOverFiniteField( <filt>, <F>, <d>, <q> )
+##
+##  Return '[ <gens>, <form> ]'.
+##  The function is used in 'SymplecticGroupCons' and
+##  'ConformalSymplecticGroupCons'.
+##
+BindGlobal( "GeneratorsAndFormOfSymplecticGroupOverFiniteField",
+    function( filt, F, d, q )
+    local o, mat1, mat2, z, i, c;
+
+    # construct the generators of 'Sp(d, q)'
+    o:= One( F );
+    if d = 4 and q = 2  then
+      # special case Sp(4,2)
+      mat1:= Matrix( filt, F, [1,0,1,1,1,0,0,1,0,1,0,1,1,1,1,1] * o, 4 );
+      mat2:= Matrix( filt, F, [0,0,1,0,1,0,0,0,0,0,0,1,0,1,0,0] * o, 4 );
+    else
+      z:= PrimitiveRoot( F );
+      mat1:= IdentityMatrix( filt, F, d );
+      mat2:= ZeroMatrix( filt, F, d, d );
+      for i  in [ 2 .. d/2 ]      do mat2[i,i-1]:= o;  od;
+      for i  in [ d/2+1 .. d-1 ]  do mat2[i,i+1]:= o;  od;
+
+      if q mod 2 = 1  then
+        mat1[  1,    1] := z;
+        mat1[  d,    d] := z^-1;
+        mat2[  1,    1] := o;
+        mat2[  1,d/2+1] := o;
+        mat2[d-1,  d/2] := o;
+        mat2[  d,  d/2] := -o;
+      elif q <> 2  then
+        mat1[    1,    1] := z;
+        mat1[  d/2,  d/2] := z;
+        mat1[d/2+1,d/2+1] := z^-1;
+        mat1[    d,    d] := z^-1;
+        mat2[    1,d/2-1] := o;
+        mat2[    1,  d/2] := o;
+        mat2[    1,d/2+1] := o;
+        mat2[d/2+1,  d/2] := o;
+        mat2[    d,  d/2] := o;
+      else
+        mat1[    1,  d/2] := o;
+        mat1[    1,    d] := o;
+        mat1[d/2+1,    d] := o;
+        mat2[    1,d/2+1] := o;
+        mat2[    d,  d/2] := o;
+      fi;
+    fi;
+
+    mat1:= ImmutableMatrix( F, mat1, true );
+    mat2:= ImmutableMatrix( F, mat2, true );
+
+    # construct the matrix of the form
+    c:= ZeroMatrix( filt, F, d, d );
+    for i in [ 1 .. d/2 ] do
+      c[i,d-i+1]:= o;
+      c[d/2+i,d/2-i+1]:= -o;
+    od;
+
+    return [ [ mat1, mat2 ], c ];
+end );
+
+
+#############################################################################
+##
+#M  SymplecticGroupCons( <IsMatrixGroup>, <d>, <F> )
 ##
 InstallMethod( SymplecticGroupCons,
-    "matrix group for dimension and finite field size",
+    "matrix group for dimension and finite field",
     [ IsMatrixGroup and IsFinite,
       IsPosInt,
-      IsPosInt ],
-    function( filter, d, q )
-    local   g,  f,  z,  o,  mat1,  mat2,  i,  size,  qi,  c;
+      IsField and IsFinite ],
+    function( filter, d, f )
+    local q, o, filt, g, c, data, size, qi, i;
 
     # the dimension must be even
     if d mod 2 = 1  then
         Error( "the dimension <d> must be even" );
     fi;
-    f := GF(q);
-    z := PrimitiveRoot( f );
+    q := Size( f );
     o := One( f );
 
-    # if the dimension is two it is a special linear group
+    # Decide about the internal representation of group generators.
+    filt:= ValueOption( "ConstructingFilter" );
+    if filt = fail then
+      filt:= IsPlistRep;
+    fi;
+
     if d = 2 then
-        g := SL( 2, q );
+        # if the dimension is two it is a special linear group
+        g := SL( 2, f );
 
+        c:= ZeroMatrix( filt, f, 2, 2 );
+        c[1,2]:= o;
+        c[2,1]:= -o;
     else
+        data:= GeneratorsAndFormOfSymplecticGroupOverFiniteField( filt,
+                   f, d, q );
+        c:= data[2];
 
-        # Sp(4,2)
-        if d = 4 and q = 2  then
-            mat1 := [ [1,0,1,1], [1,0,0,1], [0,1,0,1], [1,1,1,1] ] * o;
-            mat2 := [ [0,0,1,0], [1,0,0,0], [0,0,0,1], [0,1,0,0] ] * o;
-
-        # Sp(d,q)
-        else
-            mat1 := IdentityMat( d, f );
-            mat2 := NullMat( d, d, f );
-            for i  in [ 2 .. d/2 ]      do mat2[i,i-1]:= o;  od;
-            for i  in [ d/2+1 .. d-1 ]  do mat2[i,i+1]:= o;  od;
-
-            if q mod 2 = 1  then
-                mat1[  1,    1] := z;
-                mat1[  d,    d] := z^-1;
-                mat2[  1,    1] := o;
-                mat2[  1,d/2+1] := o;
-                mat2[d-1,  d/2] := o;
-                mat2[  d,  d/2] := -o;
-
-            elif q <> 2  then
-                mat1[    1,    1] := z;
-                mat1[  d/2,  d/2] := z;
-                mat1[d/2+1,d/2+1] := z^-1;
-                mat1[    d,    d] := z^-1;
-                mat2[    1,d/2-1] := o;
-                mat2[    1,  d/2] := o;
-                mat2[    1,d/2+1] := o;
-                mat2[d/2+1,  d/2] := o;
-                mat2[    d,  d/2] := o;
-
-            else
-                mat1[    1,  d/2] := o;
-                mat1[    1,    d] := o;
-                mat1[d/2+1,    d] := o;
-                mat2[    1,d/2+1] := o;
-                mat2[    d,  d/2] := o;
-            fi;
-        fi;
-
-        mat1:=ImmutableMatrix(f,mat1,true);
-        mat2:=ImmutableMatrix(f,mat2,true);
         # avoid to call 'Group' because this would check invertibility ...
-        g := GroupWithGenerators( [ mat1, mat2 ] );
+        g := GroupWithGenerators( data[1] );
         SetName( g, Concatenation("Sp(",String(d),",",String(q),")") );
         SetDimensionOfMatrixGroup( g, d );
+
+        # The first generator contains a primitive root of 'f'.
         SetFieldOfMatrixGroup( g, f );
 
         # add the size
@@ -94,14 +130,9 @@ InstallMethod( SymplecticGroupCons,
         SetSize( g, q^((d/2)^2) * size );
     fi;
 
-    # construct the form
-    c := NullMat( d, d, f );
-    for i  in [ 1 .. d/2 ]  do
-        c[i,d-i+1] := o;
-        c[d/2+i,d/2-i+1] := -o;
-    od;
+    # set the form
     SetInvariantBilinearForm( g,
-        rec( matrix:= ImmutableMatrix( f, c, true ) ) );
+        rec( matrix:= ImmutableMatrix( f, c, true ), baseDomain:= f ) );
     SetIsFullSubgroupGLorSLRespectingBilinearForm(g,true);
     SetIsSubgroupSL(g,true);
 
@@ -109,15 +140,17 @@ InstallMethod( SymplecticGroupCons,
     return g;
     end );
 
+
+#############################################################################
+##
+#M  SymplecticGroupCons( <IsMatrixGroup>, <d>, <q> )
+##
 InstallMethod( SymplecticGroupCons,
-    "matrix group for dimension and finite field",
+    "matrix group for dimension and finite field size",
     [ IsMatrixGroup and IsFinite,
       IsPosInt,
-      IsField and IsFinite ],
-function(filt,n,f)
-  return SymplecticGroupCons(filt,n,Size(f));
-end);
-
+      IsPosInt ],
+    { filt, n, q } -> SymplecticGroupCons( filt, n, GF(q) ) );
 
 
 #############################################################################
@@ -150,7 +183,7 @@ InstallMethod( GeneralUnitaryGroupCons,
 
        # We use the isomorphism of 'SU(2,q)' and 'SL(2,q)':
        # 'e' is mapped to '-e' under the Frobenius mapping.
-       e:= Z(q^2) - Z(q^2)^q;
+       e:= z - z^q;
        if q = 2 then
          mat1[1,1]:= z;
          mat1[2,2]:= z;
@@ -200,6 +233,8 @@ InstallMethod( GeneralUnitaryGroupCons,
      g:= GroupWithGenerators( gens );
      SetName( g, Concatenation("GU(",String(n),",",String(q),")") );
      SetDimensionOfMatrixGroup( g, n );
+
+     # 'mat1' contains a primitive root of 'f'.
      SetFieldOfMatrixGroup( g, f );
 
      # Add the size.
@@ -216,7 +251,7 @@ InstallMethod( GeneralUnitaryGroupCons,
      # construct the form
      c := Reversed( One( g ) );
      SetInvariantSesquilinearForm( g,
-         rec( matrix:= ImmutableMatrix( f, c, true ) ) );
+         rec( matrix:= ImmutableMatrix( f, c, true ), baseDomain:= f ) );
      SetIsFullSubgroupGLorSLRespectingSesquilinearForm(g,true);
 
      # Return the group.
@@ -255,7 +290,7 @@ InstallMethod( SpecialUnitaryGroupCons,
 
          # We use the isomorphism of 'SU(2,q)' and 'SL(2,q)':
          # 'e' is mapped to '-e' under the Frobenius mapping.
-         e:= Z(q^2) - Z(q^2)^q;
+         e:= z - z^q;
          if q <= 3 then
            mat1[1,2]:= e;
            mat2[1,2]:= e;
@@ -313,7 +348,13 @@ InstallMethod( SpecialUnitaryGroupCons,
      g:= GroupWithGenerators( gens );
      SetName( g, Concatenation("SU(",String(n),",",String(q),")") );
      SetDimensionOfMatrixGroup( g, n );
-     SetFieldOfMatrixGroup( g, f );
+     if n <= 2 then
+       # The entries of 'gens' may generate a smaller field than 'f'.
+       SetFieldOfMatrixGroup( g, FieldOfMatrixList( gens ) );
+     else
+       # 'mat1' contains a primitive root of 'f'.
+       SetFieldOfMatrixGroup( g, f );
+     fi;
 
      # Add the size.
      size := 1;
@@ -329,7 +370,7 @@ InstallMethod( SpecialUnitaryGroupCons,
      # construct the form
      c := Reversed( One( g ) );
      SetInvariantSesquilinearForm( g,
-         rec( matrix:= ImmutableMatrix( f, c, true ) ) );
+         rec( matrix:= ImmutableMatrix( f, c, true ), baseDomain:= f ) );
      SetIsFullSubgroupGLorSLRespectingSesquilinearForm(g,true);
      SetIsSubgroupSL(g,true);
 
@@ -340,15 +381,23 @@ InstallMethod( SpecialUnitaryGroupCons,
 
 #############################################################################
 ##
-#M  SetInvariantQuadraticFormFromMatrix( <g>, <mat> )
+#M  SetInvariantQuadraticFormFromMatrix( <g>, <mat>, <F> )
 ##
-##  Set the invariant quadratic form of <g>  to the matrix <mat>, and also
-##  set the bilinear form to the value required by the documentation, i.e.,
-#   to <mat> + <mat>^T.
+##  Set the invariant quadratic form of <g>  to the matrix <mat>.
+##  Also set the bilinear form to the value required by the documentation,
+##  i.e., to <mat> + <mat>^T.
+##  In both forms, set the 'baseDomain' component.
 ##
-BindGlobal( "SetInvariantQuadraticFormFromMatrix", function( g, mat )
-    SetInvariantQuadraticForm( g, rec( matrix:= mat ) );
-    SetInvariantBilinearForm( g, rec( matrix:= mat+TransposedMat(mat) ) );
+BindGlobal( "SetInvariantQuadraticFormFromMatrix", function( g, mat, F... )
+    if Length( F ) <> 1 then
+      # In earlier versions of GAP, no 'baseDomain' was stored.
+      Error( "only the three argument variant of ",
+             "SetInvariantQuadraticFormFromMatrix is supported, ",
+             "the form record needs a 'baseDomain' component" );
+    fi;
+    SetInvariantQuadraticForm( g, rec( matrix:= mat, baseDomain:= F[1] ) );
+    SetInvariantBilinearForm( g, rec( matrix:= mat+TransposedMat(mat),
+                                      baseDomain:= F[1] ) );
 end );
 
 
@@ -392,6 +441,8 @@ BindGlobal( "Oplus45", function()
     g:=List(g,i->ImmutableMatrix(f,i));
     g := GroupWithGenerators( g );
     SetDimensionOfMatrixGroup( g, 4 );
+
+    # 'f' is a prime field.
     SetFieldOfMatrixGroup( g, f );
 
     # set the size
@@ -399,7 +450,7 @@ BindGlobal( "Oplus45", function()
 
     # construct the forms
     SetInvariantQuadraticFormFromMatrix( g, ImmutableMatrix( f,
-        [[0,1,0,0],[0,0,0,0],[0,0,1,0],[0,0,0,1]] * One( f ), true ) );
+        [[0,1,0,0],[0,0,0,0],[0,0,1,0],[0,0,0,1]] * One( f ), true ), f );
 
     # and return
     return g;
@@ -451,6 +502,8 @@ BindGlobal( "Opm3", function( s, d )
     g:=List(g,i->ImmutableMatrix(f,i,true));
     g := GroupWithGenerators( g );
     SetDimensionOfMatrixGroup( g, d );
+
+    # 'f' is a prime field.
     SetFieldOfMatrixGroup( g, f );
 
     # construct the forms
@@ -458,7 +511,7 @@ BindGlobal( "Opm3", function( s, d )
     delta{[1,2]}{[1,2]} := [[0,1],[0,0]]*One( f );
     delta[3,3] := One( f )*2;
     delta := ImmutableMatrix( f, delta, true );
-    SetInvariantQuadraticFormFromMatrix( g, delta );
+    SetInvariantQuadraticFormFromMatrix( g, delta, f );
 
     # set the size
     delta  := 1;
@@ -519,6 +572,8 @@ BindGlobal( "OpmSmall", function( s, d, q )
     g:=List(g,i->ImmutableMatrix(f,i,true));
     g := GroupWithGenerators( g );
     SetDimensionOfMatrixGroup( g, d );
+
+    # 'f' is a prime field.
     SetFieldOfMatrixGroup( g, f );
 
     # construct the forms
@@ -526,7 +581,7 @@ BindGlobal( "OpmSmall", function( s, d, q )
     delta{[1,2]}{[1,2]} := [[0,1],[0,0]]*One( f );
     delta[3,3] := One( f );
     delta := ImmutableMatrix( f, delta, true );
-    SetInvariantQuadraticFormFromMatrix( g, delta );
+    SetInvariantQuadraticFormFromMatrix( g, delta, f );
 
     # set the size
     delta  := 1;
@@ -588,7 +643,7 @@ BindGlobal( "OpmOdd", function( s, d, q )
                     [[1,0,0,0],[0,1,2,1],[2,0,2,0],[1,0,0,1]]*One( f ),
                     [[0,2,2,2],[0,1,1,2],[1,0,2,0],[1,2,2,0]]*One( f ) ] );
         SetInvariantQuadraticFormFromMatrix( g, ImmutableMatrix( f,
-          [[0,1,0,0],[0,0,0,0],[0,0,2,0],[0,0,0,1]]*One( f ), true ) );
+          [[0,1,0,0],[0,0,0,0],[0,0,2,0],[0,0,0,1]]*One( f ), true ), f );
         SetSize( g, 1152 );
         return g;
     elif q = 3 and d = 4 and s = -1  then
@@ -596,7 +651,7 @@ BindGlobal( "OpmOdd", function( s, d, q )
                     [[0,2,0,0],[2,1,0,1],[0,2,0,1],[0,0,1,0]]*One( f ),
                     [[2,0,0,0],[1,2,0,2],[1,0,0,1],[0,0,1,0]]*One( f ) ] );
         SetInvariantQuadraticFormFromMatrix( g, ImmutableMatrix( f,
-          [[0,1,0,0],[0,0,0,0],[0,0,1,0],[0,0,0,1]]*One( f ), true ) );
+          [[0,1,0,0],[0,0,0,0],[0,0,1,0],[0,0,0,1]]*One( f ), true ), f );
         SetSize( g, 1440 );
         return g;
     elif q = 5 and d = 4 and s = +1  then
@@ -652,6 +707,8 @@ BindGlobal( "OpmOdd", function( s, d, q )
     g:=List(g,i->ImmutableMatrix(f,i,true));
     g := GroupWithGenerators( g );
     SetDimensionOfMatrixGroup( g, d );
+
+    # 'phi' contains a primitive root of 'f'.
     SetFieldOfMatrixGroup( g, f );
 
     # construct the forms
@@ -659,7 +716,7 @@ BindGlobal( "OpmOdd", function( s, d, q )
     delta{[1,2]}{[1,2]} := [[0,1],[0,0]]*One( f );
     delta[3,3] := beta;
     delta := ImmutableMatrix( f, delta, true );
-    SetInvariantQuadraticFormFromMatrix( g, delta );
+    SetInvariantQuadraticFormFromMatrix( g, delta, f );
 
     # set the size
     delta := 1;
@@ -697,7 +754,7 @@ BindGlobal( "Oplus2", function( q )
     # construct the group, set the order, and return
     g := GroupWithGenerators( [ m1, m2 ] );
     SetInvariantQuadraticFormFromMatrix( g, ImmutableMatrix( f,
-        [ [ 0, 1 ], [ 0, 0 ] ] * z^0, true ) );
+        [ [ 0, 1 ], [ 0, 0 ] ] * z^0, true ), f );
     SetSize( g, 2*(q-1) );
     return g;
 end );
@@ -737,6 +794,8 @@ BindGlobal( "Oplus4Even", function( q )
     g:=List(g,i->ImmutableMatrix(f,i,true));
     g := GroupWithGenerators( g );
     SetDimensionOfMatrixGroup( g, 4 );
+
+    # 'phi*rho' contains a primitive root of 'f'.
     SetFieldOfMatrixGroup( g, f );
 
     # set the size
@@ -744,7 +803,7 @@ BindGlobal( "Oplus4Even", function( q )
 
     # construct the forms
     SetInvariantQuadraticFormFromMatrix( g, ImmutableMatrix( f,
-      [[0,1,0,0],[0,0,0,0],[0,0,0,1],[0,0,0,0]] * One( f ), true ) );
+      [[0,1,0,0],[0,0,0,0],[0,0,0,1],[0,0,0,0]] * One( f ), true ), f );
 
     # and return
     return g;
@@ -847,6 +906,8 @@ BindGlobal( "OplusEven", function( d, q )
     g:=List(g,i->ImmutableMatrix(f,i,true));
     g := GroupWithGenerators( g );
     SetDimensionOfMatrixGroup( g, d );
+
+    # 'phi*delta2' contains a primitive root of 'f'.
     SetFieldOfMatrixGroup( g, f );
 
     # construct the forms
@@ -854,7 +915,7 @@ BindGlobal( "OplusEven", function( d, q )
     for i  in [ 1 .. d/2 ]  do
         delta[2*i-1,2*i] := One( f );
     od;
-    SetInvariantQuadraticFormFromMatrix( g, ImmutableMatrix( f, delta, true ) );
+    SetInvariantQuadraticFormFromMatrix( g, ImmutableMatrix( f, delta, true ), f );
 
     # set the size
     delta := 1;
@@ -914,7 +975,7 @@ BindGlobal( "Ominus2", function( q )
     m2:=ImmutableMatrix(GF(q),m2,true);
     g := GroupWithGenerators( [ m1, m2 ] );
     SetInvariantQuadraticFormFromMatrix( g, ImmutableMatrix( f,
-      [ [ 1, 1 ], [ 0, t ] ] * one, true ) );
+      [ [ 1, 1 ], [ 0, t ] ] * one, true ), f );
     SetSize( g, 2*(q+1) );
 
     return g;
@@ -965,6 +1026,8 @@ BindGlobal( "Ominus4Even", function( q )
     g:=List(g,i->ImmutableMatrix(f,i,true));
     g := GroupWithGenerators( g );
     SetDimensionOfMatrixGroup( g, 4 );
+
+    # 'phi*rho' contains a primitive root of 'f'.
     SetFieldOfMatrixGroup( g, f );
 
     # set the size
@@ -972,7 +1035,7 @@ BindGlobal( "Ominus4Even", function( q )
 
     # construct the forms
     SetInvariantQuadraticFormFromMatrix( g, ImmutableMatrix( f,
-      [[0,1,0,0],[0,0,0,0],[0,0,t,1],[0,0,0,t]] * One( f ), true ) );
+      [[0,1,0,0],[0,0,0,0],[0,0,t,1],[0,0,0,t]] * One( f ), true ), f );
 
     # and return
     return g;
@@ -1083,6 +1146,8 @@ BindGlobal( "OminusEven", function( d, q )
     g:=List(g,i->ImmutableMatrix(f,i,true));
     g := GroupWithGenerators( g );
     SetDimensionOfMatrixGroup( g, d );
+
+    # 'phi*delta2' contains a primitive root of 'f'.
     SetFieldOfMatrixGroup( g, f );
 
     # construct the forms
@@ -1092,7 +1157,7 @@ BindGlobal( "OminusEven", function( d, q )
     od;
     delta[3,3] := t;
     delta[4,4] := t;
-    SetInvariantQuadraticFormFromMatrix( g, ImmutableMatrix( f, delta, true ) );
+    SetInvariantQuadraticFormFromMatrix( g, ImmutableMatrix( f, delta, true ), f );
 
     # set the size
     delta := 1;
@@ -1131,9 +1196,9 @@ BindGlobal( "OzeroOdd", function( d, q, b )
       s:= ImmutableMatrix( f, [ [ One( f ) ] ], true );
       g:= GroupWithGenerators( [ -s ] );
       SetDimensionOfMatrixGroup( g, d );
-      SetFieldOfMatrixGroup( g, f );
+      SetFieldOfMatrixGroup( g, PrimeField( f ) );
       SetSize( g, 2 );
-      SetInvariantQuadraticFormFromMatrix( g, s );
+      SetInvariantQuadraticFormFromMatrix( g, s, f );
       return g;
     fi;
 
@@ -1164,6 +1229,8 @@ BindGlobal( "OzeroOdd", function( d, q, b )
     g:=List(g,i->ImmutableMatrix(f,i,true));
     g := GroupWithGenerators( g );
     SetDimensionOfMatrixGroup( g, d );
+
+    # 'phi' contains a primitive root of 'f'.
     SetFieldOfMatrixGroup( g, f );
 
     # and set its size
@@ -1179,7 +1246,7 @@ BindGlobal( "OzeroOdd", function( d, q, b )
     # construct the forms
     s := b * IdentityMat( d, f );
     s{[1,2]}{[1,2]} := [[0,1],[0,0]]*One( f );
-    SetInvariantQuadraticFormFromMatrix( g, ImmutableMatrix( f, s, true ) );
+    SetInvariantQuadraticFormFromMatrix( g, ImmutableMatrix( f, s, true ), f );
 
     # and return
     return g;
@@ -1232,9 +1299,9 @@ BindGlobal( "OzeroEven", function( d, q )
       s:= ImmutableMatrix( f, [ [ o ] ], true );
       g:= GroupWithGenerators( [], s  );
       SetDimensionOfMatrixGroup( g, d );
-      SetFieldOfMatrixGroup( g, f );
+      SetFieldOfMatrixGroup( g, PrimeField( f ) );
       SetSize( g, 1 );
-      SetInvariantQuadraticFormFromMatrix( g, s );
+      SetInvariantQuadraticFormFromMatrix( g, s, f );
       return g;
 
     elif d = 3 then
@@ -1290,6 +1357,8 @@ BindGlobal( "OzeroEven", function( d, q )
     # avoid to call 'Group' because this would check invertibility ...
     g:= GroupWithGenerators( [ mat1, mat2 ] );
     SetDimensionOfMatrixGroup( g, d );
+
+    # 'mat1' contains a primitive root of 'f'.
     SetFieldOfMatrixGroup( g, f );
     SetIsSubgroupSL( g, true );
 
@@ -1309,7 +1378,7 @@ BindGlobal( "OzeroEven", function( d, q )
       s[(d-1)/2+i,i]:= o;
     od;
     s:= ImmutableMatrix( f, s, true );
-    SetInvariantQuadraticFormFromMatrix( g, s );
+    SetInvariantQuadraticFormFromMatrix( g, s, f );
 
     # and return
     return g;
@@ -1437,7 +1506,7 @@ InstallMethod( SpecialOrthogonalGroupCons,
       IsPosInt,
       IsPosInt ],
     function( filter, e, d, q )
-    local G, gens, U, i;
+    local G, gens, U, i, F, form;
 
     G:= GeneralOrthogonalGroupCons( filter, e, d, q );
     if q mod 2 = 1 then
@@ -1465,8 +1534,13 @@ InstallMethod( SpecialOrthogonalGroupCons,
                                      String(q), ")" ) );
 
       # Set the invariant quadratic form and the symmetric bilinear form.
-      SetInvariantBilinearForm( U, InvariantBilinearForm( G ) );
-      SetInvariantQuadraticForm( U, InvariantQuadraticForm( G ) );
+      F:= GF(q);
+      form:= InvariantBilinearForm( G );
+      SetInvariantBilinearForm( U, rec( matrix:= form.matrix,
+                                        baseDomain:= F ) );
+      form:= InvariantQuadraticForm( G );
+      SetInvariantQuadraticForm( U, rec( matrix:= form.matrix,
+                                         baseDomain:= F ) );
       SetIsFullSubgroupGLorSLRespectingQuadraticForm( U, true );
       SetIsFullSubgroupGLorSLRespectingBilinearForm( U, true );
       G:= U;
@@ -1570,6 +1644,8 @@ BindGlobal( "OmegaZero", function( d, q )
     g:= List( g, i -> ImmutableMatrix( f, i, true ) );
     g:= GroupWithGenerators( g );
     SetDimensionOfMatrixGroup( g, d );
+
+    # One of the generators contains a primitive root of 'f' or its square.
     SetFieldOfMatrixGroup( g, f );
 
     # and set its size
@@ -1591,7 +1667,7 @@ BindGlobal( "OmegaZero", function( d, q )
       x[i,d-i+1] := o;
     od;
     x[m+1,m+1] := (Characteristic(f)+1)/4*o;
-    SetInvariantQuadraticFormFromMatrix(g, ImmutableMatrix( f, x, true ) );
+    SetInvariantQuadraticFormFromMatrix(g, ImmutableMatrix( f, x, true ), f );
 
     # and return
     return g;
@@ -1683,6 +1759,11 @@ BindGlobal( "OmegaPlus", function( d, q )
     g:= List( g, i -> ImmutableMatrix( f, i, true ) );
     g:= GroupWithGenerators( g );
     SetDimensionOfMatrixGroup( g, d );
+
+    # - If 'd = 4' then 'z:= Z(q^2)^(q-1)' generates the field 'GF(q^2)',
+    #   and 'z + z^q' generates the field 'GF(q)'
+    #   because 'z' is a root of 'x^2 - (z + z^q) * x + 1'.
+    # - If 'd <> 4' then the first generator contains a primitive root of 'f'.
     SetFieldOfMatrixGroup( g, f );
 
     # and set its size
@@ -1704,7 +1785,7 @@ BindGlobal( "OmegaPlus", function( d, q )
       x[i,d-i+1] := o;
     od;
     x:= ImmutableMatrix( f, x, true );
-    SetInvariantQuadraticFormFromMatrix( g, x );
+    SetInvariantQuadraticFormFromMatrix( g, x, f );
 
     # and return
     return g;
@@ -1717,7 +1798,9 @@ BindGlobal( "OmegaPlus", function( d, q )
 ##
 BindGlobal( "OmegaMinus", function( d, q )
     local f, o, m, xi, mo, nu, nubar, nutrace, nuinvtrace, nunorm, h, x, n,
-          i, g, s, q2, q2i;
+          i, g, s, q2, q2i, form;
+
+    f:= GF(q);
 
     # <d> must be even
     if d mod 2 = 1 then
@@ -1739,11 +1822,16 @@ BindGlobal( "OmegaMinus", function( d, q )
         # and 'Omega(-1,2,q)' is its unique subgroup of index two.
         s:= GroupWithGenerators( [ h^2 ] );
       fi;
-      SetInvariantBilinearForm( s, InvariantBilinearForm( g ) );
-      SetInvariantQuadraticForm( s, InvariantQuadraticForm( g ) );
+      form:= InvariantBilinearForm( g );
+      SetInvariantBilinearForm( s, rec( matrix:= form.matrix,
+                                        baseDomain:= f ) );
+      form:= InvariantQuadraticForm( g );
+      SetInvariantQuadraticForm( s, rec( matrix:= form.matrix,
+                                         baseDomain:= f ) );
+      # We do not call 'SetFieldOfMatrixGroup'.
       return s;
     fi;
-    f:= GF(q);
+
     o:= One( f );
     m:= d / 2 - 1;
     xi:= Z(q);
@@ -1794,6 +1882,10 @@ BindGlobal( "OmegaMinus", function( d, q )
     g:= List( g, i -> ImmutableMatrix( f, i, true ) );
     g:= GroupWithGenerators( g );
     SetDimensionOfMatrixGroup( g, d );
+
+    # 'h' contains the entries '-nutrace' and 'nunorm',
+    # at most one of them can lie in a proper subfield of 'f'
+    # because 'nu' is a root of 'x^2 - nutrace * x + nunorm'.
     SetFieldOfMatrixGroup( g, f );
 
     # and set its size
@@ -1819,7 +1911,7 @@ BindGlobal( "OmegaMinus", function( d, q )
     x[m,d-m] := -o;
     x[m+1,d-m+1] := -xi;
     x:= ImmutableMatrix( f, x, true );
-    SetInvariantQuadraticFormFromMatrix( g, x );
+    SetInvariantQuadraticFormFromMatrix( g, x, f );
 
     # and return
     return g;
@@ -1965,7 +2057,7 @@ end );
 ##
 #F  IsSquareFFE( fld, e) . . . . . . . Tests whether <e> is a square in <fld>
 ##
-## For an finite field element <e> of <fld> this function returns
+## For a finite field element <e> of <fld> this function returns
 ## true if <e> is a square element in <fld> and otherwise false.
 BindGlobal( "IsSquareFFE", function( fld, e )
     local char, q;

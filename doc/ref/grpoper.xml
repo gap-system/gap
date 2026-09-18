@@ -348,8 +348,9 @@ remains invariant under the action of <M>G</M>.
 For operations concerning block systems, &GAP; assumes that <M>G</M> acts
 transitively on <M>\Omega</M>
 (see <Ref Oper="IsTransitive" Label="for a group, an action domain, etc."/>).
-One may get wrong results or error messages (perhaps at a much later stage)
-if this condition is not satisfied.
+If this condition is not satisfied, an error is signalled for a permutation
+group acting on points; for other actions one may get wrong results or error
+messages, perhaps at a much later stage.
 
 <#Include Label="Blocks">
 <#Include Label="MaximalBlocks">

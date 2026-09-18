@@ -61,7 +61,7 @@
 #include "modules.h"
 #include "plist.h"
 
-static void UnmarkTree(Obj z);
+static void UnmarkTree(Obj tree);
 static UInt Mark(Obj tree, Obj reftree, Int indexx);
 static Int  AlmostEqual(Obj tree1, Int index1, Obj tree2, Int index2);
 static Int  Equal(Obj tree1, Int index1, Obj tree2, Int index2);
@@ -726,16 +726,15 @@ static Int Leftof(Obj tree1, Int index1, Obj tree2, Int index2)
 */
 static Int Leftof2(Obj tree1, Int index1, Obj tree2, Int index2)
 {
-    if  ( DT_GEN(tree2, index2) < DT_GEN(tree1, DT_RIGHT(tree1, index1) )  )
-        return  0;
-    else if  (Equal(tree1, DT_RIGHT(tree1, index1), tree2, index2 )  )
-        return  0;
-    else if  (DT_GEN(tree2, index2) == DT_GEN(tree1, DT_RIGHT(tree1, index1)) )
-        return  Leftof(tree1, DT_RIGHT(tree1, index1), tree2, index2 );
-    else if  (Equal(tree1, DT_LEFT(tree1, index1), tree2, index2) )
-        return  0;
-    else
-        return  Leftof(tree1, DT_LEFT(tree1, index1), tree2, index2);
+    if (DT_GEN(tree2, index2) < DT_GEN(tree1, DT_RIGHT(tree1, index1)))
+        return 0;
+    if (Equal(tree1, DT_RIGHT(tree1, index1), tree2, index2))
+        return 0;
+    if (DT_GEN(tree2, index2) == DT_GEN(tree1, DT_RIGHT(tree1, index1)))
+        return Leftof(tree1, DT_RIGHT(tree1, index1), tree2, index2);
+    if (Equal(tree1, DT_LEFT(tree1, index1), tree2, index2))
+        return 0;
+    return Leftof(tree1, DT_LEFT(tree1, index1), tree2, index2);
 }
 
 
@@ -1625,6 +1624,8 @@ static void SetSubs(Obj list, Obj a, Obj tree)
         for  (j=1;  j <= len2;  j++)
             SET_DT_POS(tree, CELM( ELM_PLIST(list, i), j), ELM_PLIST(a, i) );
     }
+    // <tree> may be old and the entries of <a> young
+    CHANGED_BAG(tree);
 }
 
 

@@ -434,7 +434,8 @@ DeclareGlobalFunction( "ConcatenationOfVectors" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "ExtractSubVector", [ IsVectorObj, IsList ] );
+DeclareOperationKernel( "ExtractSubVector",
+    [ IsRowVectorOrVectorObj, IsList ], EXTRACT_SUB_VECTOR );
 
 
 #############################################################################
@@ -600,6 +601,77 @@ DeclareOperation( "ZeroVector", [ IsSemiring, IsInt ] );
 DeclareOperation( "ZeroVector", [ IsInt, IsVecOrMatObj ] );
 #DeclareOperation( "ZeroVector", [ IsInt, IsVectorObj ] );
 #DeclareOperation( "ZeroVector", [ IsInt, IsMatrixOrMatrixObj ] );
+
+
+############################################################################
+##
+#O  StandardBasisVector( <filt>, <R>, <len>, <i> )
+#O  StandardBasisVector( <R>, <len>, <i> )
+#O  StandardBasisVector( <len>, <v>, <i> )
+#O  StandardBasisVector( <len>, <M>, <i> )
+##
+##  <#GAPDoc Label="StandardBasisVector">
+##  <ManSection>
+##  <Oper Name="StandardBasisVector" Arg="filt,R,len,i"
+##   Label="for filter, base domain, length, and position"/>
+##  <Oper Name="StandardBasisVector" Arg="R,len,i"
+##   Label="for base domain, length, and position"/>
+##  <Oper Name="StandardBasisVector" Arg="len,v,i"
+##   Label="for length and vector object"/>
+##  <Oper Name="StandardBasisVector" Arg="len,M,i"
+##   Label="for length and matrix object"/>
+##
+##  <Returns>a vector object</Returns>
+##  <Description>
+##  For a filter <A>filt</A>, a semiring <A>R</A>, and positive integers
+##  <A>len</A> and <A>i</A>,
+##  this operation returns a new vector object of length <A>len</A> over
+##  <A>R</A> in the representation <A>filt</A>,
+##  containing zeros at the positions different from <A>i</A>
+##  and containing the identity at position <A>i</A>.
+##  <P/>
+##  If only <A>R</A>, <A>len</A>, and <A>i</A> are given,
+##  then &GAP; guesses a suitable representation.
+##  <P/>
+##  If a vector object <A>v</A> is given,
+##  this operation returns a new standard basis vector of length <A>len</A>
+##  in the same representation as <A>v</A>.
+##  <P/>
+##  For a matrix object <A>M</A> and a positive integer <A>len</A>,
+##  this operation returns a new standard basis vector of length
+##  <A>len</A> in the representation given by the
+##  <Ref Attr="CompatibleVectorFilter" Label="for a matrix object"/> value
+##  of <A>M</A>, provided that such a representation exists.
+##  <P/>
+##  If the <Ref Attr="ConstructingFilter" Label="for a vector object"/>
+##  value of the result implies <Ref Filt="IsCopyable"/> then the result is
+##  mutable.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> v:= StandardBasisVector( IsZmodnZVectorRep, Integers mod 6, 5, 3 );
+##  <vector mod 6: [ 0, 0, 1, 0, 0 ]>
+##  gap> StandardBasisVector( 4, v, 1 );
+##  <vector mod 6: [ 1, 0, 0, 0 ]>
+##  gap> v:= StandardBasisVector( IsPlistRep, GF(2), 5, 3 );
+##  [ 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2) ]
+##  gap> StandardBasisVector( 4, v, 1 );
+##  [ Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2) ]
+##  gap> v:= StandardBasisVector( Integers, 5, 3 );
+##  <plist vector over Integers of length 5>
+##  gap> StandardBasisVector( 4, v, 1 );
+##  <plist vector over Integers of length 4>
+##  gap> StandardBasisVector( 3, IdentityMatrix( GF(4), 2 ), 1 );
+##  [ Z(2)^0, 0*Z(2), 0*Z(2) ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "StandardBasisVector",
+    [ IsOperation, IsSemiring, IsPosInt, IsPosInt ] );
+DeclareOperation( "StandardBasisVector", [ IsSemiring, IsPosInt, IsPosInt ] );
+DeclareOperation( "StandardBasisVector",
+    [ IsPosInt, IsVecOrMatObj, IsPosInt ] );
 
 
 #############################################################################
@@ -875,7 +947,7 @@ DeclareOperation( "Randomize", [ IsRandomSource, IsMatrixOrMatrixObj and IsMutab
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
-##  For two vector objects <A>src</A> and <A>dst</A>,
+##  For two row vectors or vector objects <A>src</A> and <A>dst</A>,
 ##  such that <A>dst</A> is mutable,
 ##  and two lists <A>scols</A> and <A>dcols</A> of positions,
 ##  <Ref Oper="CopySubVector"/> assigns the entries
@@ -896,9 +968,9 @@ DeclareOperation( "Randomize", [ IsRandomSource, IsMatrixOrMatrixObj and IsMutab
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "CopySubVector",
-    [ IsVectorObj, IsVectorObj and IsMutable, IsList, IsList ] );
-
+DeclareOperationKernel( "CopySubVector",
+    [ IsRowVectorOrVectorObj, IsRowVectorOrVectorObj and IsMutable,
+      IsList, IsList ], COPY_SUB_VECTOR );
 
 
 #############################################################################
@@ -956,7 +1028,8 @@ DeclareOperation( "DistanceOfVectors", [ IsVectorObj, IsVectorObj ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "ExtractSubMatrix", [ IsMatrixOrMatrixObj, IsList, IsList ] );
+DeclareOperationKernel( "ExtractSubMatrix",
+    [ IsMatrixOrMatrixObj, IsList, IsList ], EXTRACT_SUB_MATRIX );
 
 
 #############################################################################
@@ -1005,8 +1078,11 @@ DeclareOperation( "MutableCopyMatrix", [ IsMatrixOrMatrixObj ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "CopySubMatrix",
-    [ IsMatrixOrMatrixObj, IsMatrixOrMatrixObj, IsList, IsList, IsList, IsList ] );
+DeclareOperationKernel( "CopySubMatrix",
+    [ IsMatrixOrMatrixObj, IsMatrixOrMatrixObj, IsList, IsList, IsList, IsList ],
+    COPY_SUB_MATRIX );
+#T We intentionally keep the second argument declaration broad, mirroring
+#T the pre-existing operation declaration for compatibility with packages.
 
 
 #############################################################################
@@ -1257,28 +1333,11 @@ DeclareOperation( "CompanionMatrix",
 ##  <#GAPDoc Label="MatObj_Matrix">
 ##  <ManSection>
 ##  <Heading>Matrix</Heading>
-##  <Oper Name="Matrix" Arg='filt,R,list,ncols'
-##   Label="for filter, base domain, list, ncols"/>
-##  <Oper Name="Matrix" Arg='filt,R,list'
-##   Label="for filter, base domain, and list"/>
-##  <Oper Name="Matrix" Arg='filt,R,M'
-##   Label="for filter, base domain, and matrix object"/>
-##  <Oper Name="Matrix" Arg='R,list,ncols'
-##   Label="for base domain, list, ncols"/>
-##  <Oper Name="Matrix" Arg='R,list'
-##   Label="for base domain and list"/>
-##  <Oper Name="Matrix" Arg='R,M'
-##   Label="for base domain and matrix object"/>
-##  <Oper Name="Matrix" Arg='list,ncols,M'
-##   Label="for a list, ncols, and a matrix object"/>
-##  <Oper Name="Matrix" Arg='list,M'
-##   Label="for a list and a matrix object"/>
-##  <Oper Name="Matrix" Arg='M1,M2'
-##   Label="for two matrix objects"/>
-##  <Oper Name="Matrix" Arg='list,ncols'
-##   Label="for a list and ncols"/>
-##  <Oper Name="Matrix" Arg='list'
-##   Label="for a list"/>
+##  <Oper Name="Matrix" Arg='[filt,]R,list[,ncols]' Label="for filter, base domain, list, ncols"/>
+##  <Oper Name="Matrix" Arg='[filt,]R,matobj' Label="for filter, base domain, and matrix object"/>
+##  <Oper Name="Matrix" Arg='list[,ncols],example_matobj' Label="for a list, ncols, and a matrix object"/>
+##  <Oper Name="Matrix" Arg='matobj,example_matobj' Label="for two matrix objects"/>
+##  <Oper Name="Matrix" Arg='list[,ncols]' Label="for a list and ncols"/>
 ##
 ##  <Returns>a matrix object</Returns>
 ##  <Description>
@@ -1287,7 +1346,7 @@ DeclareOperation( "CompanionMatrix",
 ##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/>
 ##  value <A>filt</A>, is defined over the base domain <A>R</A>,
 ##  and has the entries given by the list <A>list</A> or the matrix object
-##  <A>M</A>, respectively.
+##  <A>matobj</A>, respectively.
 ##  Here <A>list</A> can be either a list of plain lists that describe the
 ##  entries of the rows, or a flat list of the entries in row major order,
 ##  where <A>ncols</A> defines the number of columns.
@@ -1319,7 +1378,7 @@ DeclareOperation( "CompanionMatrix",
 ##  If the <Ref Attr="ConstructingFilter" Label="for a matrix object"/>
 ##  value of the result implies <Ref Filt="IsCopyable"/> then the result is
 ##  mutable if and only if the argument that determines the entries of the
-##  result (<A>list</A>, <A>M</A>, <A>M1</A>) is mutable.
+##  result (<A>list</A> or <A>matobj</A>) is mutable.
 ##  <P/>
 ##  In the case of a mutable result, it is guaranteed that the given list
 ##  <A>list</A> is copied in the sense of <Ref Oper="ShallowCopy"/>,
@@ -1745,7 +1804,7 @@ DeclareOperation( "[]", [IsMatrixOrMatrixObj,IsPosInt] );  # <mat>, <pos>
 # for matrices which are not row-lists. Efficient code will have to use MatElm and
 # SetMatElm instead.
 
-# TODO:   ... resp. it will use use M[i,j]
+# TODO:   ... resp. it will use M[i,j]
 # TODO: provide a default method which creates a proxy object for the given row
 # and translates accesses to it to corresponding MatElm / SetMatElm calls;
 #  creating such a proxy object prints an InfoWarning;
@@ -1790,12 +1849,10 @@ DeclareAttribute( "DimensionsMat", IsMatrixOrMatrixObj );
 #############################################################################
 ##
 #A  Length( <matobj> )
-#A  RowLength( <matobj> )
 ##
 ##  They had been used in older versions.
 ##
 DeclareAttribute( "Length", IsMatrixOrMatrixObj );
-DeclareSynonymAttr( "RowLength", NumberColumns );
 
 
 #############################################################################
@@ -2021,6 +2078,27 @@ DeclareOperation( "AddMatrixColumnsLeft", [ IsMatrixOrMatrixObj and IsMutable, I
 
 ############################################################################
 ##
+##  <#GAPDoc Label="PositionNonZeroInRow">
+##  <ManSection>
+##  <Oper Name="PositionNonZeroInRow" Arg='M,i[,from]'/>
+##
+##  <Returns>a positive integer</Returns>
+##
+##  <Description>
+##  <P/>
+##  Returns the position of the first nonzero entry in the <A>i</A>-th row of
+##  the matrix <A>M</A>, or <C>NrCols( M ) + 1</C> if the row is zero.
+##  If the optional argument <A>from</A> is given, the search starts after
+##  position <A>from</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "PositionNonZeroInRow", [ IsMatrixOrMatrixObj, IsPosInt ] );
+DeclareOperation( "PositionNonZeroInRow", [ IsMatrixOrMatrixObj, IsPosInt, IsInt ] );
+
+############################################################################
+##
 ##  <#GAPDoc Label="SwapMatrixRows">
 ##  <ManSection>
 ##  <Oper Name="SwapMatrixRows" Arg='M,i,j'/>
@@ -2052,3 +2130,88 @@ DeclareOperationKernel( "SwapMatrixRows", [ IsMatrixOrMatrixObj and IsMutable, I
 ##  <#/GAPDoc>
 ##
 DeclareOperationKernel( "SwapMatrixColumns", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt ], SWAP_MAT_COLS );
+
+############################################################################
+##
+##  <#GAPDoc Label="AddMatrix">
+##  <ManSection>
+##  <Oper Name="AddMatrix" Arg='M, N[, c]'/>
+##
+##  <Returns>nothing</Returns>
+##
+##  <Description>
+##  Computes the calculation <M>M + N \cdot c</M> in-place, storing the result in <A>M</A>.
+##  If the optional argument <A>c</A> is omitted, then <A>N</A> is added directly.
+##  The matrices must have the same dimensions, otherwise the result is undefined.
+##  Specialized methods may be defined only when <A>M</A> and <A>N</A> have the same
+##  representation.
+##  If both of the matrices are lists-of-lists, then the operation is delegated
+##  row by row to <Ref Oper="AddRowVector"/>.
+##  <Example><![CDATA[
+##  gap> mat1 := [ [ 1, 2 ], [ 3, 4 ] ];
+##  [ [ 1, 2 ], [ 3, 4 ] ]
+##  gap> mat2 := [ [ 1, 0 ], [ 3, -1 ] ];
+##  [ [ 1, 0 ], [ 3, -1 ] ]
+##  gap> AddMatrix( mat1, mat2, 2 );
+##  gap> mat1;
+##  [ [ 3, 2 ], [ 9, 2 ] ]
+##  gap> mat2;
+##  [ [ 1, 0 ], [ 3, -1 ] ]
+##  gap> AddMatrix( mat1, [ [ 1, 0], [ 3, -1] ] );
+##  gap> mat1;
+##  [ [ 4, 2 ], [ 12, 1 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "AddMatrix", [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj ] );
+DeclareOperation( "AddMatrix", [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj, IsScalar ] );
+
+############################################################################
+##
+##  <#GAPDoc Label="MultMatrix">
+##  <ManSection>
+##  <Oper Name="MultMatrix" Arg='mat, c'/>
+##  <Oper Name="MultMatrixLeft" Arg='mat, c'/>
+##  <Oper Name="MultMatrixRight" Arg='mat, c'/>
+##
+##  <Returns>nothing</Returns>
+##
+##  <Description>
+##  These functions multiply the entries of <A>mat</A> by <A>c</A> in-place.
+##  <Ref Oper="MultMatrixRight"/> performs the operation <A>mat</A><C>*</C><A>c</A>,
+##  whereas <Ref Oper="MultMatrixLeft"/> performs the operation <A>c</A><C>*</C><A>mat</A>
+##  and <Ref Oper="MultMatrix"/> is an alias for <Ref Oper="MultMatrixLeft"/>.
+##  In all of these, if the matrix <A>mat</A> is a lists-of-lists, then the
+##  operation is delegated row by row to <Ref Oper="MultVectorRight"/> and
+##  <Ref Oper="MultVectorLeft"/>.
+##  <Example><![CDATA[
+##  gap> mat1 := [ [ 1, 2 ], [ 3, 4 ] ];
+##  [ [ 1, 2 ], [ 3, 4 ] ]
+##  gap> MultMatrixRight(mat1, -2);
+##  gap> mat1;
+##  [ [ -2, -4 ], [ -6, -8 ] ]
+##  gap> MultMatrix(mat1, -2); # Note that this is the same as calling MultMatrixLeft(mat1, -2)
+##  gap> mat1;
+##  [ [ 4, 8 ], [ 12, 16 ] ]
+##  gap> A := FreeAssociativeAlgebra(Rationals, 2);
+##  <algebra over Rationals, with 2 generators>
+##  gap> mat2 := [ [ A.1, A.2 ], [ A.1 * 2, A.2 * 3 ] ];
+##  [ [ (1)*x.1, (1)*x.2 ], [ (2)*x.1, (3)*x.2 ] ]
+##  gap> MultMatrixLeft(mat2, A.1);
+##  gap> mat2;
+##  [ [ (1)*x.1^2, (1)*x.1*x.2 ], [ (2)*x.1^2, (3)*x.1*x.2 ] ]
+##  gap> mat2 := [ [ A.1, A.2 ], [ A.1 * 2, A.2 * 3 ] ];
+##  [ [ (1)*x.1, (1)*x.2 ], [ (2)*x.1, (3)*x.2 ] ]
+##  gap> MultMatrixRight(mat2, A.1);
+##  gap> mat2;
+##  [ [ (1)*x.1^2, (1)*x.2*x.1 ], [ (2)*x.1^2, (3)*x.2*x.1 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "MultMatrixRight", [ IsMatrixOrMatrixObj and IsMutable, IsScalar ] );
+DeclareOperation( "MultMatrixLeft", [ IsMatrixOrMatrixObj and IsMutable, IsScalar ] );
+DeclareSynonym( "MultMatrix", MultMatrixLeft );

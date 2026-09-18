@@ -3,7 +3,7 @@ dnl Setup autoconf
 dnl
 AC_PREREQ([2.68])
 
-m4_define([gap_version], [4.15dev])
+m4_define([gap_version], [4.17dev])
 m4_define([gap_releaseday], [today])
 m4_define([gap_releaseyear], [this year])
 
@@ -23,7 +23,7 @@ dnl 2. Otherwise (i.e., if no interfaces have been removed or changed),
 dnl    if any interfaces have been added since the last public release, then
 dnl    increment minor.
 dnl
-m4_define([kernel_major_version], [10])
+m4_define([kernel_major_version], [11])
 m4_define([kernel_minor_version], [0])
 
 m4_define([GAP_DEFINE], [GAP_DEFINES="$GAP_DEFINES -D$1"])
@@ -60,6 +60,9 @@ dnl
 dnl Get canonical host information
 dnl
 AC_CANONICAL_HOST
+
+dnl for Makefile.rules: generated files cannot be built when cross-compiling
+AC_SUBST([cross_compiling])
 
 
 dnl
@@ -186,7 +189,9 @@ CHECK_COMPILER_BUILTIN([__builtin_mul_overflow],[0,0,&x]);
 CHECK_COMPILER_BUILTIN([__builtin_clz],[0]);
 CHECK_COMPILER_BUILTIN([__builtin_clzl],[0]);
 CHECK_COMPILER_BUILTIN([__builtin_clzll],[0]);
+CHECK_COMPILER_BUILTIN([__builtin_popcount],[0]);
 CHECK_COMPILER_BUILTIN([__builtin_popcountl],[0]);
+CHECK_COMPILER_BUILTIN([__builtin_popcountll],[0]);
 
 dnl determine sizeof of some standard types, so that the GAP headers
 dnl can pick the correct builtins among those we just tested
@@ -631,7 +636,7 @@ AS_CASE([$with_zlib],
   ],
   [yes],[],
   [*],[
-    ZLIB_SEARCH_PATH="$with_gmp"
+    ZLIB_SEARCH_PATH="$with_zlib"
   ]
 )
 
@@ -727,12 +732,12 @@ for READLINE_PREFIX in ${READLINE_SEARCH_PATH} ; do
     [DEFAULTS_EREADLINE],[
       dnl ereadline is the name of GNU readline library on OpenBSD
       READLINE_PREFIX=""
-      READLINE_CPPFLAGS="-I/usr/local/include/ereadline"
+      READLINE_CPPFLAGS="-isystem /usr/local/include/ereadline"
       READLINE_LDFLAGS=""
       READLINE_LIBS="-lereadline"
     ],
     [*],[
-      READLINE_CPPFLAGS="-I${READLINE_PREFIX}/include"
+      READLINE_CPPFLAGS="-isystem ${READLINE_PREFIX}/include"
       READLINE_LDFLAGS="-L${READLINE_PREFIX}/lib"
       READLINE_LIBS="-lreadline"
     ]
@@ -815,8 +820,12 @@ AS_IF([test "x$with_julia" != xno ],[
   AS_IF([test "x$JULIA_CFLAGS" = x],[
     AS_IF([test -f "${JL_SHARE}/julia-config.jl"], [], [AC_MSG_ERROR([no julia-config.jl found])])
     JULIA_CFLAGS=$(${JULIA} --startup-file=no ${JL_SHARE}/julia-config.jl --cflags 2>/dev/null)
-    JULIA_CFLAGS=${JULIA_CFLAGS/-std=gnu99/}  # need to remove -std=gnu99 for our C11 and C++ code
     AS_IF([ test $? != 0 ], [AC_MSG_ERROR([failed to obtain JULIA_CFLAGS from julia-config.jl])])
+    JULIA_CFLAGS=${JULIA_CFLAGS/-std=gnu99/}  # need to remove -std=gnu99 for our C11 and C++ code
+    JULIA_CFLAGS=${JULIA_CFLAGS/-std=gnu11/}  # need to remove -std=gnu11 for our C++ code
+    # strip quotes: these flags are passed on to packages via sysinfo.gap,
+    # where they are subject to word splitting but not quote removal
+    JULIA_CFLAGS=${JULIA_CFLAGS//\'/}
   ])
   AC_MSG_RESULT([${JULIA_CFLAGS}])
 
@@ -963,7 +972,7 @@ dnl
 dnl check for functionality related to child process handling,
 dnl including pseudo TTY support, signals, etc.
 AC_CHECK_HEADERS([termios.h])
-AC_CHECK_HEADERS([sys/ioctl.h sys/resource.h])
+AC_CHECK_HEADERS([sys/ioctl.h sys/resource.h sys/utsname.h])
 
 
 # openpty() is available on various BSD variants, but also in glibc.
@@ -998,6 +1007,9 @@ AC_CHECK_TYPE([sig_atomic_t], [],
     [#include <signal.h>]
 )
 AC_CHECK_FUNCS([signal sigaction setpgid])
+
+dnl POSIX functions absent on native Windows (mingw)
+AC_CHECK_FUNCS([realpath readlink mkdtemp lstat ttyname])
 
 
 dnl

@@ -136,7 +136,7 @@ InstallGlobalFunction( RECORDS_FILE, function( name )
       if pos <> fail then
         r:= r{ [ 1 .. pos-1 ] };
       fi;
-      Append( recs, SplitString( r, "", " \n\t\r" ) );
+      Append( recs, SplitString( r, "", CHARS_WHITESPACE ) );
     od;
     return List( recs, LowercaseString );
     end );
@@ -615,13 +615,13 @@ if not IsBound( TextAttr ) then
 fi;
 #T needed? (decl. of GAPDoc is loaded before)
 
-InstallGlobalFunction( LogPackageLoadingMessage, function( arg )
-    local severity, message, currpkg, i;
+InstallGlobalFunction( LogPackageLoadingMessage, function( severity, message, currpkg... )
+    local i;
 
-    severity:= arg[1];
-    message:= arg[2];
-    if Length( arg ) = 3 then
-      currpkg:= arg[3];
+    if Length( currpkg ) = 1 then
+      currpkg:= currpkg[1];
+    elif Length( currpkg ) > 1 then
+      Error("usage: LogPackageLoadingMessage( <severity>, <message>[, <name>] )");
     elif IsBound( GAPInfo.PackageCurrent ) then
       # This happens inside availability tests.
       currpkg:= GAPInfo.PackageCurrent.PackageName;
@@ -1396,15 +1396,8 @@ InstallGlobalFunction( RereadPackage, function( arg )
 ##
 #F  LoadPackageDocumentation( <info> )
 ##
-##  In versions before 4.5, a second argument was required.
-##  For the sake of backwards compatibility, we do not forbid a second
-##  argument, but we ignore it.
-##  (In later versions, we may forbid the second argument.)
-##
-InstallGlobalFunction( LoadPackageDocumentation, function( arg )
-    local info, short, pkgdoc, long, sixfile;
-
-    info:= arg[1];
+InstallGlobalFunction( LoadPackageDocumentation, function( info )
+    local short, pkgdoc, long, sixfile;
 
     # Load all books for the package.
     for pkgdoc in info.PackageDoc do
@@ -1737,8 +1730,8 @@ InstallGlobalFunction( LoadPackage, function( arg )
         if IsBound( info.Extensions ) then
           for entry in info.Extensions do
             LogPackageLoadingMessage( PACKAGE_DEBUG,
-                "notify extension ", entry.filename,
-                " of package ", pkgname );
+                Concatenation( "notify extension ", entry.filename ),
+                pkgname );
             r:= ShallowCopy( entry );
             r.providedby:= pkgname;
             Add( GAPInfo.PackageExtensionsPending, Immutable( r ) );
@@ -1750,7 +1743,7 @@ InstallGlobalFunction( LoadPackage, function( arg )
             "start reading file 'init.g'",
             info.PackageName );
         GAPInfo.PackageCurrent:= info;
-        ReadPackage( pkgname, "init.g" );
+        ReadPackage( pkgname, "init.g" : ReadingPackageFiles:= true );
         Unbind( GAPInfo.PackageCurrent );
         LogPackageLoadingMessage( PACKAGE_DEBUG,
             "finish reading file 'init.g'",
@@ -1766,7 +1759,8 @@ InstallGlobalFunction( LoadPackage, function( arg )
       # (We have delayed this until now because it uses functionality
       # from the package GAPDoc.)
       # Note that no banners are printed during autoloading.
-      LoadPackage_ReadImplementationParts( secondrun, banner );
+      LoadPackage_ReadImplementationParts( secondrun, banner
+        : ReadingPackageFiles:= true );
       secondrun:= [];
 
     od;
@@ -1779,8 +1773,8 @@ InstallGlobalFunction( LoadPackage, function( arg )
         Add( GAPInfo.PackageExtensionsLoaded, entry );
         Unbind( GAPInfo.PackageExtensionsPending[i] );
         LogPackageLoadingMessage( PACKAGE_DEBUG,
-            "load extension ", entry.filename,
-            " of package ", entry.providedby );
+            Concatenation( "load extension ", entry.filename ),
+            entry.providedby );
       fi;
     od;
     GAPInfo.PackageExtensionsPending:= Compacted( GAPInfo.PackageExtensionsPending );
@@ -1951,8 +1945,8 @@ For backwards compatibility, the default lists most of packages \
 that were autoloaded in &GAP; 4.4 (add or remove packages as you like)."
     ],
   default:= [ "autpgrp", "alnuth", "crisp", "ctbllib", "factint", "fga",
-              "irredsol", "laguna", "polenta", "polycyclic", "resclasses",
-              "sophus", "tomlib" ],
+              "irredsol", "laguna", "PackageManager", "polenta", "polycyclic",
+              "resclasses", "sophus", "tomlib" ],
   values:= function() return RecNames( GAPInfo.PackagesInfo ); end,
   multi:= true,
   ) );
@@ -2229,8 +2223,8 @@ InstallGlobalFunction( DeclareAutoreadableVariables,
 ##
 InstallGlobalFunction( ValidatePackageInfo, function( info )
     local record, pkgdir, i, IsStringList, IsRecordList, IsProperBool, IsURL,
-          IsFilename, IsFilenameList, result, TestOption, TestMandat, subrec,
-          list, CheckDateValidity;
+          IsGitHubUsername, IsFilename, IsFilenameList, result, TestOption,
+          TestMandat, subrec, list, CheckDateValidity;
 
     if IsString( info ) then
       if IsReadableFile( info ) then
@@ -2267,6 +2261,19 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
           ( x[1] <> '/' and IsReadableFile( Concatenation( pkgdir, x ) ) ) );
     IsFilenameList:= x -> IsList( x ) and ForAll( x, IsFilename );
     IsURL := x -> ForAny(["http://","https://","ftp://"], s -> StartsWith(x,s));
+    IsGitHubUsername := function( x )
+      local len;
+      if not IsString( x ) then
+        return false;
+      fi;
+      len := Length( x );
+      return 0 < len and len <= 39
+          and x[1] <> '-' and x[len] <> '-'
+          and ForAll( x, c -> IsAlphaChar( c ) or IsDigitChar( c )
+                             or c = '-' )
+          and not ForAny( [ 1 .. len - 1 ],
+                          i -> x[i] = '-' and x[i+1] = '-' );
+    end;
 
     result:= true;
 
@@ -2383,6 +2390,8 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
         TestOption( subrec, "PostalAddress", IsString, "a string" );
         TestOption( subrec, "Place", IsString, "a string" );
         TestOption( subrec, "Institution", IsString, "a string" );
+        TestOption( subrec, "GitHubUsername", IsGitHubUsername,
+            "a string containing a valid GitHub username" );
       od;
     fi;
 
@@ -2436,6 +2445,16 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
                       l -> IsList( l ) and Length( l ) = 2
                                        and ForAll( l, IsString ) ),
           "a list of pairs `[ <pkgname>, <pkgversion> ]' of strings" );
+      TestOption( record.Dependencies, "TestPackages",
+          comp -> IsList( comp ) and ForAll( comp,
+                      l -> IsList( l ) and Length( l ) = 2
+                                       and ForAll( l, IsString ) ),
+          "a list of pairs `[ <pkgname>, <pkgversion> ]' of strings" );
+      TestOption( record.Dependencies, "NeededSystemPackages",
+          comp -> IsRecord( comp ) and ForAll( RecNames( comp ),
+                      l -> IsList( comp.( l ) ) and ForAll( comp.( l ),
+                               x -> IsList( x ) and IsString( First( x ) ) ) ),
+          "a record whose values are lists of lists `[ <syspkgname>, ... ]`" );
       TestOption( record.Dependencies, "ExternalConditions",
           comp -> IsList( comp ) and ForAll( comp,
                       l -> IsString( l ) or ( IsList( l ) and Length( l ) = 2
@@ -2557,7 +2576,27 @@ GAPInfo.PackagesRestrictions := AtomicRecord(rec(
               "  with the current version of GAP.\n",
               "  It is strongly recommended to update to the ",
               "most recent version, see URL\n",
-              "      https://www.gap-system.org/Packages/autpgrp.html\n" );
+              "      https://gap-packages.github.io/autpgrp/\n" );
+        fi;
+        end )),
+
+  polycyclic := MakeImmutable(rec(
+    OnInitialization := function( pkginfo )
+        if CompareVersionNumbers( pkginfo.Version, "2.17" ) = false then
+          return false;
+        fi;
+        return true;
+        end,
+    OnLoad := function( pkginfo )
+        if CompareVersionNumbers( pkginfo.Version, "2.17" ) = false then
+          Print( "  The package `polycyclic'",
+              " should better be upgraded at least to version 2.17,\n",
+              "  the given version (", pkginfo.Version,
+              ") is known to be incompatible\n",
+              "  with the current version of GAP.\n",
+              "  It is strongly recommended to update to the ",
+              "most recent version, see URL\n",
+              "      https://gap-packages.github.io/polycyclic/\n" );
         fi;
         end )) ));
 
@@ -2787,7 +2826,7 @@ InstallGlobalFunction( BibEntry, function( arg )
     # <Mark><C>author</C></Mark>
     # <Item>
     #   computed from the <C>Persons</C> component of the package,
-    #   not distinguishing authors and maintainers,
+    #   just taking authors,
     #   keeping the ordering of entries,
     # </Item>
     # <Mark><C>title</C></Mark>
@@ -2849,7 +2888,7 @@ InstallGlobalFunction( BibEntry, function( arg )
     else
       entry:= Concatenation( "<entry id=\"", key, "\"><misc>\n" );
       author:= List( Filtered( pkginfo.Persons,
-        person -> person.IsAuthor or person.IsMaintainer ),
+        person -> person.IsAuthor ),
           person -> Concatenation(
             "    <name>",
             CallFuncList( function(x) if IsBound( x.FirstNames ) then
@@ -3161,7 +3200,7 @@ InstallGlobalFunction( PackageVariablesInfo, function( pkgname, version )
       # Extract a comment if possible.
       if IsString( entry[1][2] ) then
         # Store also the comment for this method installation.
-        return [ name, entry[1][ Length( entry[1] ) ],
+        return [ name, Last(entry[1]),
                  entry[2], entry[3], entry[1][2] ];
       else
         pos:= PositionProperty( entry[1],
@@ -3170,13 +3209,13 @@ InstallGlobalFunction( PackageVariablesInfo, function( pkgname, version )
         if pos <> fail then
           # Create a comment from the list of strings that describe filters.
           return [ NameFunction( entry[1][1] ),
-                   entry[1][ Length( entry[1] ) ],
+                   Last(entry[1]),
                    entry[2], entry[3], Concatenation( "for ",
                    JoinStringsWithSeparator( entry[1][ pos ], ", " ) ) ];
         else
           # We know no comment.
           return [ NameFunction( entry[1][1] ),
-                   entry[1][ Length( entry[1] ) ],
+                   Last(entry[1]),
                    entry[2], entry[3] ];
         fi;
       fi;
@@ -3320,12 +3359,13 @@ InstallGlobalFunction( PackageVariablesInfo, function( pkgname, version )
       fi;
       num:= NumberArgumentsFunction( func );
       nam:= NamesLocalVariablesFunction( func );
-      if num = -1 then
-        str:= "arg";
-      elif nam = fail then
+      if nam = fail then
         str:= "...";
       else
-        str:= JoinStringsWithSeparator( nam{ [ 1 .. num ] }, ", " );
+        str:= JoinStringsWithSeparator( nam{ [ 1 .. AbsInt(num) ] }, ", " );
+        if num < 0 then
+          Append( str, "..." );
+        fi;
       fi;
       return Concatenation( "( ", str, " )" );
     end;
@@ -3470,7 +3510,7 @@ Unbind( NamesUserGVars );
 ##
 InstallGlobalFunction( ShowPackageVariables, function( arg )
     local version, arec, pkgname, info, show, documented, undocumented,
-          private, result, len, format, entry, first, subentry, str;
+          private, result, len, entry, first, subentry, str;
 
     # Get and check the arguments.
     version:= "";
@@ -3512,11 +3552,6 @@ InstallGlobalFunction( ShowPackageVariables, function( arg )
     # Render the relevant data.
     result:= "";
     len:= SizeScreen()[1] - 2;
-    if IsBoundGlobal( "FormatParagraph" ) then
-      format:= ValueGlobal( "FormatParagraph" );
-    else
-      format:= function( arg ) return Concatenation( arg[1], "\n" ); end;
-    fi;
     for entry in info do
       if entry[1] in show then
         first:= true;
@@ -3536,7 +3571,7 @@ InstallGlobalFunction( ShowPackageVariables, function( arg )
             Append( result, "\n" );
             if Length( subentry[1] ) = 4 and not IsEmpty( subentry[1][4] ) then
               Append( result,
-                      format( subentry[1][4], len, "left", [ "    ", "" ] ) );
+                      _FormatParagraph( subentry[1][4], len, "    ", "" ) );
             fi;
           fi;
         od;

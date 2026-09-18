@@ -603,7 +603,7 @@ end);
 ##
 #M  <unilau> / <unilau> (if possible)
 ##
-##  While w rely for ordinary rat. fun. on a*Inverse(b) we do not want this
+##  While we rely for ordinary rat. fun. on a*Inverse(b) we do not want this
 ##  for laurent polynomials, as the inverse would have to be represented as
 ##  a rational function, not a laurent polynomial.
 InstallMethod(\/,"upol/upol",true,
@@ -681,7 +681,7 @@ BIND_GLOBAL("QUOMOD_UPOLY",function (r,s,m)
 local f,g,h,fs,gs,hs,q,t;
     f := s;  fs := 1;
     g := m;  gs := 0;
-    while g <> Zero(g) do
+    while not IsZero(g) do
         t := QuotientRemainder(f,g);
         h := g;          hs := gs;
         g := t[2];       gs := fs - t[1]*gs;
@@ -753,7 +753,7 @@ local val,brci,fam;
 
   g:=PowerModCoeffs(g,Length(g),e,m,Length(m));
   if Length(g)>0 and (g[1]=fam!.zeroCoefficient or
-             g[Length(g)]=fam!.zeroCoefficient) then
+             Last(g)=fam!.zeroCoefficient) then
       g:=ShallowCopy(g);
       val:=RemoveOuterCoeffs(g,fam!.zeroCoefficient);
   else
@@ -883,7 +883,7 @@ local dom,deg,inum,i,c;
   for i in [0..deg] do
     Add(c,Random(dom));
   od;
-  while c[deg+1]=Zero(dom) do
+  while IsZero(c[deg+1]) do
     c[deg+1]:=Random(dom);
   od;
   return LaurentPolynomialByCoefficients(FamilyObj(c[1]),c,0,inum);
@@ -901,7 +901,7 @@ local fam;
   if Length(f[1])=0 then
     return fam!.zeroCoefficient;
   else
-    return f[1][Length(f[1])];
+    return Last(f[1]);
   fi;
 end);
 
@@ -1337,13 +1337,13 @@ function( fam, cofs,dc, val, ind )
   # construct a laurent polynomial
 
   fam:=RationalFunctionsFamily(fam);
-  if Length(cofs)>0 and (IsZero(cofs[1]) or IsZero(cofs[Length(cofs)])) then
+  if Length(cofs)>0 and (IsZero(cofs[1]) or IsZero(Last(cofs))) then
     if not IsMutable(cofs) then
       cofs:=ShallowCopy(cofs);
     fi;
     val:=val+RemoveOuterCoeffs(cofs,fam!.zeroCoefficient);
   fi;
-  if Length(dc)>0 and (IsZero(dc[1]) or IsZero(dc[Length(dc)])) then
+  if Length(dc)>0 and (IsZero(dc[1]) or IsZero(Last(dc))) then
     if not IsMutable(dc) then
       dc:=ShallowCopy(dc);
     fi;

@@ -970,7 +970,7 @@ DeclareGlobalFunction("NrPartitions");
 
 #############################################################################
 ##
-#F  PartitionsGreatestLE( <n>, <m> ) . . .  set of partitions of n parts <= n
+#F  PartitionsGreatestLE( <n>, <m> ) . . .  partitions of n with parts <= m
 ##
 ##  <#GAPDoc Label="PartitionsGreatestLE">
 ##  <ManSection>
@@ -979,6 +979,16 @@ DeclareGlobalFunction("NrPartitions");
 ##  <Description>
 ##  returns the set of all (unordered) partitions of the integer <A>n</A>
 ##  having parts less or equal to the integer <A>m</A>.
+##  For <M><A>n</A> = 0</M> and <M><A>m</A> \geq 0</M>, this returns the empty partition
+##  <C>[[]]</C>.
+##  Negative arguments yield the empty list.
+##  <Example><![CDATA[
+##  gap> PartitionsGreatestLE( 6, 3 );
+##  [ [ 1, 1, 1, 1, 1, 1 ], [ 2, 1, 1, 1, 1 ], [ 2, 2, 1, 1 ], [ 2, 2, 2 ],
+##    [ 3, 1, 1, 1 ], [ 3, 2, 1 ], [ 3, 3 ] ]
+##  gap> List( [ 0 .. 3 ], m -> PartitionsGreatestLE( 0, m ) );
+##  [ [ [  ] ], [ [  ] ], [ [  ] ], [ [  ] ] ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -988,7 +998,7 @@ DeclareGlobalFunction("PartitionsGreatestLE");
 
 #############################################################################
 ##
-#F  PartitionsGreatestEQ( <n>, <m> ) . . . . set of partitions of n parts = n
+#F  PartitionsGreatestEQ( <n>, <m> ) . . . . partitions of n with max part m
 ##
 ##  <#GAPDoc Label="PartitionsGreatestEQ">
 ##  <ManSection>
@@ -997,6 +1007,14 @@ DeclareGlobalFunction("PartitionsGreatestLE");
 ##  <Description>
 ##  returns the set of all (unordered) partitions of the integer <A>n</A>
 ##  having greatest part equal to the integer <A>m</A>.
+##  Since partitions use positive parts, this returns the empty list if
+##  <M><A>n</A> \leq 0</M> or <M><A>m</A> \leq 0</M>.
+##  <Example><![CDATA[
+##  gap> PartitionsGreatestEQ( 6, 3 );
+##  [ [ 3, 1, 1, 1 ], [ 3, 2, 1 ], [ 3, 3 ] ]
+##  gap> PartitionsGreatestEQ( 0, 1 );
+##  [  ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1151,14 +1169,16 @@ DeclareGlobalFunction("NrRestrictedPartitions");
 ##
 DeclareGlobalFunction( "IteratorOfPartitions" );
 
-
 #############################################################################
 ##
-#F  IteratorOfPartitionsSet( <set> [, <k> [ <flag> ] ] )
+#F  IteratorOfPartitionsSet( <set> [, <k> [, <flag> ] ] )
+#F  EnumeratorOfPartitionsSet( <set> [, <k> [, <flag> ] ] )
 ##
 ##  <#GAPDoc Label="IteratorOfPartitionsSet">
 ##  <ManSection>
-##  <Func Name="IteratorOfPartitionsSet" Arg='set [, k [ flag ] ]'/>
+##  <Heading>Iterator and enumerator of unordered set partitions</Heading>
+##  <Func Name="IteratorOfPartitionsSet" Arg='set [, k [, flag ] ]'/>
+##  <Func Name="EnumeratorOfPartitionsSet" Arg='set [, k [, flag ] ]'/>
 ##
 ##  <Description>
 ##  <Ref Func="IteratorOfPartitionsSet" /> returns an iterator
@@ -1169,12 +1189,33 @@ DeclareGlobalFunction( "IteratorOfPartitions" );
 ##  then only partitions of size <A>k</A> are computed.
 ##  If <A>k</A> is given and <A>flag</A> is equal to <K>true</K>,
 ##  then only partitions of size at most <A>k</A> are computed.
+##  <P/>
+##  <Ref Func="EnumeratorOfPartitionsSet"/> returns an enumerator
+##  (see&nbsp;<Ref Attr="Enumerator" />) for all unordered partitions of the
+##  set <A>set</A>. The arguments <A>k</A> and <A>flag</A> function in the
+##  same manner as for the iterator.
+##  <P/>
+##  The ordering of the partitions from these functions can be different and
+##  also different from the list returned by <Ref Func="PartitionsSet"/>.
+##  <P/>
+##  <Example>
+##  gap> m:=[1..9];;
+##  gap> Bell(9);
+##  21147
+##  gap> Length(PartitionsSet(m));
+##  21147
+##  gap> cm := EnumeratorOfPartitionsSet(m);;
+##  gap> cm[1000];
+##  [ [ 1, 2, 4, 9 ], [ 3, 6, 8 ], [ 5, 7 ] ]
+##  gap> Position(cm, last);
+##  1000
+##  </Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "IteratorOfPartitionsSet" );
-
+DeclareGlobalFunction( "EnumeratorOfPartitionsSet" );
 
 #############################################################################
 ##

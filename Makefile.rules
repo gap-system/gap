@@ -22,6 +22,17 @@ default: all
 
 
 ########################################################################
+# Developer helper targets
+########################################################################
+test_release_scripts:
+	cd dev/releases && python3 -m pytest
+.PHONY: test_release_scripts
+
+test_release_notes: test_release_scripts
+.PHONY: test_release_notes
+
+
+########################################################################
 # Source files
 #
 # We avoid line continuations, instead use repeatedly "SOURCES+=". This
@@ -192,13 +203,13 @@ SYSINFO_CPPFLAGS =
 GAP_CPPFLAGS += -I$(builddir)/build
 SYSINFO_CPPFLAGS += -I$(abs_builddir)/build
 
-# The other source files are relative to the srcdir
-GAP_CPPFLAGS += -I$(srcdir)/src
-SYSINFO_CPPFLAGS += -I$(abs_srcdir)/src
-
-# For backwards compatibility with certain packages and their kernel
-# extensions, also add the root of the srcdir to the package CPPFLAGS
-SYSINFO_CPPFLAGS += -I$(abs_srcdir)
+# The other source files are bundled and exported through the few headers in
+# the `src/extra/` directory. We deliberately do not add `src/` itself as an
+# include directory to improve portability: it helps avoid clashes between our
+# headers and system headers (e.g. for `io.h` this would otherwise be a
+# problem on MinGW).
+GAP_CPPFLAGS += -I$(srcdir)/src/extra
+SYSINFO_CPPFLAGS += -I$(abs_srcdir)/src/extra
 
 # Add GAP_DEFINES (from autoconf, contains -D flags)
 GAP_CPPFLAGS += $(GAP_DEFINES)
@@ -221,6 +232,17 @@ SYSINFO_CPPFLAGS += $(CPPFLAGS)
 
 
 ########################################################################
+# C and C++ compiler flags
+########################################################################
+
+# The Julia headers are external to GAP, so we pass their include directory via
+# `-isystem` to avoid warnings from julia.h being reported in GAP builds (and
+# in package builds, which may use `-Werror`). These flags are needed by
+# packages, too, as src/gasman.h includes julia.h.
+JULIA_ISYSTEM_CFLAGS = $(patsubst -I%,-isystem %,$(JULIA_CFLAGS))
+
+
+########################################################################
 # C compiler flags
 ########################################################################
 GAP_CFLAGS = $(ABI_CFLAGS)
@@ -229,7 +251,8 @@ SYSINFO_CFLAGS = $(ABI_CFLAGS)
 GAP_CFLAGS += $(PTHREAD_CFLAGS)
 SYSINFO_CFLAGS += $(PTHREAD_CFLAGS)
 
-GAP_CFLAGS += $(JULIA_CFLAGS) # not added to SYSINFO_CFLAGS
+GAP_CFLAGS += $(JULIA_ISYSTEM_CFLAGS)
+SYSINFO_CFLAGS += $(JULIA_ISYSTEM_CFLAGS)
 
 # Finally add user provided CFLAGS
 GAP_CFLAGS += $(CFLAGS)
@@ -244,6 +267,9 @@ SYSINFO_CXXFLAGS = $(ABI_CFLAGS)
 
 GAP_CXXFLAGS += $(PTHREAD_CFLAGS)
 SYSINFO_CXXFLAGS += $(PTHREAD_CFLAGS)
+
+GAP_CXXFLAGS += $(JULIA_ISYSTEM_CFLAGS)
+SYSINFO_CXXFLAGS += $(JULIA_ISYSTEM_CFLAGS)
 
 # Finally add user provided CXXFLAGS
 GAP_CXXFLAGS += $(CXXFLAGS)
@@ -431,7 +457,7 @@ build/obj/%.c.o: %.c cnf/GAP-CFLAGS cnf/GAP-CPPFLAGS $(obj_deps)
 ########################################################################
 
 LINK=$(CC)
-
+GAP_INSTALL_EXTRAFLAGS =
 SHLIB_MAJOR = $(GAP_KERNEL_MAJOR_VERSION)
 ifneq (,$(findstring cygwin,$(host_os)))
   SHLIB_EXT=.dll
@@ -447,7 +473,8 @@ else ifneq (,$(findstring darwin,$(host_os)))
   LINK_SHLIB_FLAGS += -compatibility_version $(LIBGAP_COMPAT_VER)
   LINK_SHLIB_FLAGS += -current_version $(LIBGAP_CURRENT_VER)
   LINK_SHLIB_FLAGS += -Wl,-single_module
-  LINK_SHLIB_FLAGS += -headerpad_max_install_names
+  LINK_SHLIB_FLAGS += -Wl,-headerpad_max_install_names
+  GAP_INSTALL_EXTRAFLAGS = -Wl,-headerpad_max_install_names
 
   GAP_CPPFLAGS += -DPIC
   GAP_CFLAGS += -fno-common
@@ -512,14 +539,15 @@ libgap$(SHLIB_EXT): $(LIBGAP_FULL)
 gap$(EXEEXT): build/obj/src/main.c.o $(OBJS) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
 	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $< $(OBJS) $(GAP_LIBS) -o $@
 
-# generate a modified copy of main.c for use by the `gap-install` binary
-build/main.c: src/main.c config.status
+# generate a special main.c which sets SYS_DEFAULT_PATHS and then includes
+# regular main.c; this is used to build the `gap-install` binary
+build/main.c: sysinfo.gap
 	@echo "#define SYS_DEFAULT_PATHS \"$(libdir)/gap;$(datarootdir)/gap\"" > $@
-	@cat $< >> $@
+	@echo "#include \"$(abs_srcdir)/src/main.c\"" >> $@
 
 # build rule for the gap executable used by the `install-bin` target
 build/gap-install: build/obj/build/main.c.o libgap$(SHLIB_EXT) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
-	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $< $(GAP_LIBS) -L${abs_builddir} -lgap -o $@
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $(GAP_INSTALL_EXTRAFLAGS) $< $(GAP_LIBS) -L${abs_builddir} -lgap -o $@
 	$(INSTALL_NAME_TOOL) -change $(LIBGAP_FULL) $(libdir)/$(LIBGAP_FULL) $@
 
 endif
@@ -531,9 +559,20 @@ endif
 build/gap-nocomp$(EXEEXT): $(OBJS_NOCOMP) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
 	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $(OBJS_NOCOMP) $(GAP_LIBS) -o $@
 
+ifeq ($(cross_compiling),yes)
+# these need just-built programs (gap-nocomp, ffgen), impossible when
+# cross-compiling: seed them from a native build into src/
+cross_seed_error = cannot generate $@ when cross-compiling; build GAP \
+  natively first and copy build/c_oper1.c, build/c_type1.c, \
+  build/ffdata.c and build/ffdata.h from there into this checkout's \
+  src/ directory
+build/c_%.c: $(srcdir)/lib/%.g
+	$(error $(cross_seed_error))
+else
 build/c_%.c: $(srcdir)/lib/%.g build/gap-nocomp$(EXEEXT)
 	@$(MKDIR_P) $(@D)
 	@"$(abs_srcdir)"/cnf/gap-c-gen.sh $< $@ $(basename $(notdir $<)) build/gap-nocomp$(EXEEXT)
+endif
 .PRECIOUS: build/c_%.c
 
 
@@ -541,11 +580,16 @@ build/c_%.c: $(srcdir)/lib/%.g build/gap-nocomp$(EXEEXT)
 # The "ffdata" target regenerates build/ffdata.{c,h} using etc/ffgen.c
 ########################################################################
 
-ffgen: $(srcdir)/etc/ffgen.c src/common.h build/config.h
+ffgen: $(srcdir)/etc/ffgen.c build/config.h
 	$(QUIET_CC)$(CC) -Wall -Wextra $(GAP_CPPFLAGS) $< -o $@
 
+ifeq ($(cross_compiling),yes)
+build/ffdata.h build/ffdata.c:
+	$(error $(cross_seed_error))
+else
 build/ffdata.h build/ffdata.c: ffgen
 	./ffgen -b build/ffdata
+endif
 
 ########################################################################
 # The "tags" target regenerates the tags file using Exuberant Ctags
@@ -582,9 +626,13 @@ clean:
 	rm -rf .libs
 	rm -f doc/wsp.g
 	rm -f cnf/GAP-*
+	rm -f configure~ src/config.h.in~
 	rmdir bin cnf dev doc extern src 2>/dev/null || : # remove dirs if they are now empty
 
-.PHONY: clean distclean
+cleanall: clean distclean clean-doc
+	rm -f src/config.h.in
+
+.PHONY: clean distclean cleanall
 
 
 ########################################################################
@@ -668,7 +716,7 @@ install-gaproot: install-dirs CITATION
 
 
 # the following lines adjust variables for the installed sysinfo.gap
-install-sysinfo: SYSINFO_CPPFLAGS = -I${includedir}/gap -I${includedir} $(GAP_DEFINES)
+install-sysinfo: SYSINFO_CPPFLAGS = -I${includedir}/gap/extra $(GAP_DEFINES)
 install-sysinfo: SYSINFO_LDFLAGS = $(ABI_CFLAGS)
 install-sysinfo: SYSINFO_GAP = $(bindir)/gap
 install-sysinfo: SYSINFO_GAC = $(bindir)/gac
@@ -685,6 +733,8 @@ install-headers: $(FFDATA_H) build/version.h
 	$(INSTALL) -m 0644 $(builddir)/build/version.h $(DESTDIR)$(includedir)/gap
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(includedir)/gap/hpc
 	$(INSTALL) -m 0644 $(srcdir)/src/hpc/*.h $(DESTDIR)$(includedir)/gap/hpc
+	$(INSTALL) -d -m 0755 $(DESTDIR)$(includedir)/gap/extra
+	$(INSTALL) -m 0644 $(srcdir)/src/extra/*.h $(DESTDIR)$(includedir)/gap/extra
 
 install-libgap: install-dirs $(LIBGAP_FULL) libgap.pc
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)
@@ -972,6 +1022,7 @@ clean-doc:
 	rm -f doc/*/chooser.html doc/*/manual*.pdf
 	rm -f doc/*/*.{aux,bbl,blg,brf,idx,ilg,ind,lab,log,out,pnr,six,tex,toc}
 	rm -f doc/manualbib.xml.bib
+	rm -f doc/ref/user_pref_list.xml
 
 # FIXME: we currently build the manual inside $srcdir; so we don't want "make clean"
 # to remove it, as other builds might share the manual.
@@ -990,7 +1041,7 @@ check: all
 # citests runs a subset of the tests run by CI -- this is SLOW and still doesn't
 # quite cover everything (e.g. we don't test out-of-tree builds and `make install`)
 citests: all
-	SRCDIR=$(abs_srcdir) dev/ci.sh testmockpkg testspecial test-compile testlibgap testkernel testworkspace testinstall
+	SRCDIR=$(abs_srcdir) dev/ci.sh testmockpkg testspecial test-compile testlibgap testkernel testworkspace
 
 LIBGAPTESTS := $(addprefix tst/testlibgap/,basic api wscreate wsload trycatch)
 
@@ -1003,6 +1054,7 @@ tst/testlibgap/%: build/obj/tst/testlibgap/%.c.o build/obj/tst/testlibgap/common
 clean: clean-testlibgap
 clean-testlibgap:
 	rm -f ${LIBGAPTESTS}
+	rm -f $(addsuffix .out,$(LIBGAPTESTS))
 
 # run all the tests in tst/testlibgap
 testlibgap: ${LIBGAPTESTS}
@@ -1044,6 +1096,7 @@ tst/testkernel/%: build/obj/tst/testkernel/%.c.o libgap$(SHLIB_EXT)
 clean: clean-testkernel
 clean-testkernel:
 	rm -f ${KERNELTESTS}
+	rm -f $(addsuffix .out,$(KERNELTESTS))
 
 # run all the tests in tst/testkernel
 testkernel: ${KERNELTESTS}

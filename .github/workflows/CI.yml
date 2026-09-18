@@ -10,14 +10,18 @@ on:
         type: boolean
   pull_request:
   push:
+    branches:
+      - 'master'
+      - 'stable-*'
+    tags: '*'
   schedule:
     # Every day at 2:30 AM UTC
     - cron: '30 2 * * *'
 
 concurrency:
   # group by workflow and ref; the last slightly strange component ensures that for pull
-  # requests, we limit to 1 concurrent job, but for the master branch we don't
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.ref != 'refs/heads/master' || github.run_number }}
+  # requests, we limit to 1 concurrent job, but for the default repository branch we don't
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.ref_name != github.event.repository.default_branch || github.run_number }}
   # Cancel intermediate builds, but only if it is a pull request build.
   cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
 
@@ -30,8 +34,6 @@ env:
 jobs:
   test:
     name: ${{ matrix.test-suites }} - ${{ matrix.extra }} - ${{ matrix.os }}
-    # Don't run this twice on PRs for branches pushed to the same repository
-    if: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     defaults:
@@ -45,7 +47,7 @@ jobs:
         test-suites:
           [
             # base test: fast first test
-            "testinstall",
+            "testinstall-bare",
 
             "teststandard",
 
@@ -71,11 +73,6 @@ jobs:
             shell: bash
             test-suites: "makemanuals testmakeinstall"
             extra: "CONFIGFLAGS=\"--prefix=/tmp/gapprefix\" NO_COVERAGE=1"
-
-          - os: ubuntu-22.04
-            shell: bash
-            test-suites: "teststandard"
-            extra: "ABI=32 CONFIGFLAGS=\"\""
 
           # FIXME: we used to run `teststandard` for HPC-GAP under Travis CI,
           # but somehow when running on GitHub Actions, it takes almost 4
@@ -126,13 +123,14 @@ jobs:
             test-suites: "testbuildsys testmockpkg testinstall"
             extra: "NO_COVERAGE=1 ABI=32 BUILDDIR=out-of-tree CONFIGFLAGS=\"\""
 
-          # test Julia integration
+          # test Julia integration; this also runs testmockpkg, to verify
+          # packages can still be compiled
           - os: ubuntu-22.04
             shell: bash
-            test-suites: "testinstall"
+            test-suites: "testmockpkg testinstall"
             extra: "JULIA=yes CONFIGFLAGS=\"--enable-debug\""
 
-          - os: windows-2019
+          - os: windows-2022
             # The 'run' steps in this job use Cygwin's bash, once it is set up.
             #   --login: make a login shell (so PATH is set up)
             #   -o igncr: Accept windows line endings
@@ -144,17 +142,17 @@ jobs:
       TEST_SUITES: ${{ matrix.test-suites }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: "Set up Python"
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.11"
 
-      - uses: gap-actions/setup-cygwin@v1
+      - uses: gap-actions/setup-cygwin@v2
         if: ${{ runner.os == 'Windows' }}
         with:
-          PKGS_TO_INSTALL: 'wget,git,gcc-g++,gcc-core,m4,libgmp-devel,make,automake,libtool,autoconf,autoconf2.5,zlib-devel,libreadline-devel,libmpc-devel,libmpfr-devel,xdg-utils,pkg-config'
+          extra-pkgs-to-install: 'libmpc-devel,libmpfr-devel,pkg-config'
 
       # There are two cygwin installs on github actions (ours,
       # and a preinstalled one which we can't use as not enough packages are installed.
@@ -189,6 +187,7 @@ jobs:
                ${{ matrix.extra }}
                echo "${{ matrix.extra }}" > extra.flags
                if [ "$RUNNER_OS" == "Linux" ]; then
+                   sudo apt-get update
                    packages=(${{ matrix.packages }})
                    if [[ $TEST_SUITES == *testbuildsys* ]] ; then
                        sudo apt-get remove libgmp-dev libreadline-dev zlib1g-dev
@@ -225,7 +224,6 @@ jobs:
                        done
                        packages+=(gcc-multilib g++-multilib)
                    fi
-                   sudo apt-get update
                    sudo apt-get install --no-install-recommends "${packages[@]}"
                    sudo apt-get install pkg-config
                elif [ "$RUNNER_OS" == "macOS" ]; then
@@ -257,7 +255,7 @@ jobs:
         run: ${{ matrix.extra }} dev/ci.sh ${{ matrix.test-suites }}
       - name: "Upload pdf manuals"
         if: ${{ contains(matrix.test-suites, 'makemanuals') }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           if-no-files-found: error
           name: manuals-pdf
@@ -268,7 +266,7 @@ jobs:
             doc/tut/manual.pdf
       - name: "Upload html manuals"
         if: ${{ contains(matrix.test-suites, 'makemanuals') }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           if-no-files-found: error
           name: manuals-html
@@ -279,30 +277,72 @@ jobs:
       - name: "Gather coverage data"
         run: ${{ matrix.extra }} dev/ci-gather-coverage.sh
       - name: "Upload coverage data to Codecov"
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
+  codecov-notify:
+    name: Finalize Codecov notifications
+    runs-on: ubuntu-slim
+    needs: test
+    if: ${{ always() }}
+
+    steps:
+      - name: "Send Codecov notifications"
+        uses: codecov/codecov-action@v7
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          run_command: send-notifications
 
   cross_compile:
     # The host should always be linux
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
     name: Cross compiler for s390x
 
     steps:
-      - name: Install Cross-Compile Support
-        uses: cyberjunk/gha-ubuntu-cross@v5
-        with:
-          arch: s390x
+      - name: Configure APT for amd64 host + s390x foreign arch
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          sudo dpkg --add-architecture s390x
+          . /etc/os-release
+
+          # Restrict the default runner sources to amd64, otherwise apt also tries
+          # to fetch s390x from security.ubuntu.com / archive.ubuntu.com and gets 404s.
+          if ! grep -q '^Architectures: amd64$' /etc/apt/sources.list.d/ubuntu.sources; then
+            sudo sed -i '/^Types: deb$/a Architectures: amd64' /etc/apt/sources.list.d/ubuntu.sources
+          fi
+
+          # Add the foreign-arch repositories from ubuntu-ports.
+          sudo tee /etc/apt/sources.list.d/s390x.sources >/dev/null <<EOF
+          Types: deb
+          URIs: http://ports.ubuntu.com/ubuntu-ports
+          Suites: ${UBUNTU_CODENAME} ${UBUNTU_CODENAME}-updates ${UBUNTU_CODENAME}-security ${UBUNTU_CODENAME}-backports
+          Components: main restricted universe multiverse
+          Architectures: s390x
+          Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+          EOF
+
+          sudo apt-get update
+
+      - name: Install cross toolchain
+        run: |
+          sudo apt-get install -y \
+            crossbuild-essential-s390x \
+            gcc-s390x-linux-gnu \
+            g++-s390x-linux-gnu \
+            libc6-dev-s390x-cross \
+            linux-libc-dev-s390x-cross
 
       - name: Install general build dependencies
         run: sudo apt-get install -q -y git autoconf
 
       - name: Install cross compile dependencies
-        run: sudo apt-get install -q -y git libgmp-dev:s390x libreadline-dev:s390x zlib1g-dev:s390x
+        run: sudo apt-get install -q -y libgmp-dev:s390x libreadline-dev:s390x zlib1g-dev:s390x
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - run: ./autogen.sh
 
@@ -331,10 +371,10 @@ jobs:
         run: make bootstrap-pkg-minimal
 
       - name: Run tests in VM
-        uses: uraimo/run-on-arch-action@v2
+        uses: uraimo/run-on-arch-action@v3
         with:
           arch: s390x
-          distro: ubuntu22.04
+          distro: ubuntu24.04
 
           # Not required, but speeds up builds
           githubToken: ${{ github.token }}
@@ -368,7 +408,7 @@ jobs:
     env:
       AUTOCONF_VERSION: 2.71
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Download required GAP packages
         run: |

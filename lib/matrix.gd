@@ -154,6 +154,107 @@ DeclareSynonym( "IsLowerTriangularMat", IsLowerTriangularMatrix );
 
 #############################################################################
 ##
+#P  IsSquareMatrix( <mat> )
+#P  IsSquareMat( <mat> )
+##
+##  <#GAPDoc Label="IsSquareMat">
+##  <ManSection>
+##  <Prop Name="IsSquareMatrix" Arg='mat'/>
+##  <Prop Name="IsSquareMat" Arg='mat'/>
+##
+##  <Description>
+##  return <K>true</K> if the matrix <A>mat</A> has the same number of rows
+##  and columns, and <K>false</K> otherwise.
+##  <Example><![CDATA[
+##  gap> IsSquareMatrix( [ [ 1 ] ] );
+##  true
+##  gap> IsSquareMatrix( [ [ 1, 2 ], [ 3, 4 ] ] );
+##  true
+##  gap> IsSquareMatrix( [ [ 1, 2, 3 ], [ 4, 5, 6 ] ] );
+##  false
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareProperty( "IsSquareMatrix", IsMatrixOrMatrixObj );
+
+DeclareSynonym( "IsSquareMat", IsSquareMatrix );
+
+
+#############################################################################
+##
+#P  IsSymmetricMatrix( <mat> )
+#P  IsSymmetricMat( <mat> )
+##
+##  <#GAPDoc Label="IsSymmetricMat">
+##  <ManSection>
+##  <Prop Name="IsSymmetricMatrix" Arg='mat'/>
+##  <Prop Name="IsSymmetricMat" Arg='mat'/>
+##
+##  <Description>
+##  return <K>true</K> if the matrix <A>mat</A> is a square matrix and
+##  satisfies <C><A>mat</A>[i,j] = <A>mat</A>[j,i]</C> for all
+##  <M>i, j</M>, and <K>false</K> otherwise.
+##  <Example><![CDATA[
+##  gap> IsSymmetricMatrix( [ [ 1 ] ] );
+##  true
+##  gap> IsSymmetricMatrix( [ [ 1, 2 ], [ 2, 1 ] ] );
+##  true
+##  gap> IsSymmetricMatrix( [ [ 0, 1 ], [ 2, 0 ] ] );
+##  false
+##  gap> IsSymmetricMatrix( [ [ 1, 2, 3 ], [ 2, 4, 5 ] ] );
+##  false
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareProperty( "IsSymmetricMatrix", IsMatrixOrMatrixObj );
+
+DeclareSynonym( "IsSymmetricMat", IsSymmetricMatrix );
+
+InstallTrueMethod( IsSquareMatrix, IsSymmetricMatrix );
+
+
+#############################################################################
+##
+#P  IsAntisymmetricMatrix( <mat> )
+#P  IsAntisymmetricMat( <mat> )
+##
+##  <#GAPDoc Label="IsAntisymmetricMat">
+##  <ManSection>
+##  <Prop Name="IsAntisymmetricMatrix" Arg='mat'/>
+##  <Prop Name="IsAntisymmetricMat" Arg='mat'/>
+##
+##  <Description>
+##  return <K>true</K> if the matrix <A>mat</A> is a square matrix and
+##  satisfies <C><A>mat</A>[i,j] = -<A>mat</A>[j,i]</C> for all
+##  <M>i, j</M>, and <K>false</K> otherwise.
+##  (In particular, the diagonal entries must be zero.)
+##  <Example><![CDATA[
+##  gap> IsAntisymmetricMatrix( [ [ 0 ] ] );
+##  true
+##  gap> IsAntisymmetricMatrix( [ [ 0, 1 ], [ -1, 0 ] ] );
+##  true
+##  gap> IsAntisymmetricMatrix( [ [ 0, 1 ], [ 1, 0 ] ] );
+##  false
+##  gap> IsAntisymmetricMatrix( [ [ 1, 2, 3 ], [ 4, 5, 6 ] ] );
+##  false
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareProperty( "IsAntisymmetricMatrix", IsMatrixOrMatrixObj );
+
+DeclareSynonym( "IsAntisymmetricMat", IsAntisymmetricMatrix );
+
+InstallTrueMethod( IsSquareMatrix, IsAntisymmetricMatrix );
+
+
+#############################################################################
+##
 #F  DiagonalOfMatrix( <mat> )
 #F  DiagonalOfMat( <mat> )
 ##
@@ -195,7 +296,7 @@ DeclareSynonym( "DiagonalOfMat", DiagonalOfMatrix );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "BaseMat", IsMatrix );
+DeclareAttribute( "BaseMat", IsMatrixOrMatrixObj );
 
 #############################################################################
 ##
@@ -222,7 +323,7 @@ DeclareAttribute( "BaseMat", IsMatrix );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "BaseMatDestructive", [ IsMatrix ] );
+DeclareOperation( "BaseMatDestructive", [ IsMatrixOrMatrixObj ] );
 
 #############################################################################
 ##
@@ -244,7 +345,7 @@ DeclareOperation( "BaseMatDestructive", [ IsMatrix ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "BaseOrthogonalSpaceMat", IsMatrix );
+DeclareAttribute( "BaseOrthogonalSpaceMat", IsMatrixOrMatrixObj );
 
 
 #############################################################################
@@ -271,7 +372,7 @@ DeclareAttribute( "BaseOrthogonalSpaceMat", IsMatrix );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "DefaultFieldOfMatrix", IsMatrix );
+DeclareAttribute( "DefaultFieldOfMatrix", IsMatrixOrMatrixObj );
 
 
 #############################################################################
@@ -295,7 +396,7 @@ DeclareAttribute( "DefaultFieldOfMatrix", IsMatrix );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "DepthOfUpperTriangularMatrix", IsMatrix );
+DeclareAttribute( "DepthOfUpperTriangularMatrix", IsMatrixOrMatrixObj );
 
 
 #############################################################################
@@ -402,7 +503,7 @@ DeclareSynonym( "DeterminantMatDivFree", DeterminantMatrixDivFree );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "DimensionsMat", IsMatrix );
+DeclareAttribute( "DimensionsMat", IsMatrixOrMatrixObj );
 
 
 #############################################################################
@@ -449,7 +550,7 @@ DeclareAttribute( "DimensionsMat", IsMatrix );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "ElementaryDivisorsMat", [IsRing,IsMatrix] );
+DeclareOperation( "ElementaryDivisorsMat", [IsRing, IsMatrixOrMatrixObj] );
 DeclareGlobalFunction( "ElementaryDivisorsMatDestructive" );
 
 #############################################################################
@@ -522,7 +623,7 @@ DeclareGlobalFunction( "ElementaryDivisorsMatDestructive" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "ElementaryDivisorsTransformationsMat", [IsRing,IsMatrix] );
+DeclareOperation( "ElementaryDivisorsTransformationsMat", [IsRing, IsMatrixOrMatrixObj] );
 DeclareGlobalFunction( "ElementaryDivisorsTransformationsMatDestructive" );
 
 #############################################################################
@@ -539,7 +640,7 @@ DeclareGlobalFunction( "ElementaryDivisorsTransformationsMatDestructive" );
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareOperation( "TriangulizedNullspaceMatNT", [ IsMatrix ] );
+DeclareOperation( "TriangulizedNullspaceMatNT", [ IsMatrixOrMatrixObj ] );
 
 
 #############################################################################
@@ -565,8 +666,8 @@ DeclareOperation( "TriangulizedNullspaceMatNT", [ IsMatrix ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "NullspaceMat", IsMatrix );
-DeclareAttribute( "TriangulizedNullspaceMat", IsMatrix );
+DeclareAttribute( "NullspaceMat", IsMatrixOrMatrixObj );
+DeclareAttribute( "TriangulizedNullspaceMat", IsMatrixOrMatrixObj );
 
 
 #############################################################################
@@ -605,8 +706,8 @@ DeclareAttribute( "TriangulizedNullspaceMat", IsMatrix );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "NullspaceMatDestructive", [ IsMatrix and IsMutable] );
-DeclareOperation( "TriangulizedNullspaceMatDestructive", [ IsMatrix and IsMutable] );
+DeclareOperation( "NullspaceMatDestructive", [ IsMatrixOrMatrixObj and IsMutable] );
+DeclareOperation( "TriangulizedNullspaceMatDestructive", [ IsMatrixOrMatrixObj and IsMutable] );
 
 
 #############################################################################
@@ -678,7 +779,7 @@ DeclareOperation( "Eigenvalues", [ IsRing, IsMatrixOrMatrixObj ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "Eigenspaces", [ IsRing, IsMatrix ] );
+DeclareOperation( "Eigenspaces", [ IsRing, IsMatrixOrMatrixObj ] );
 
 #############################################################################
 ##
@@ -694,7 +795,7 @@ DeclareOperation( "Eigenspaces", [ IsRing, IsMatrix ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "Eigenvectors", [ IsRing, IsMatrix ] );
+DeclareOperation( "Eigenvectors", [ IsRing, IsMatrixOrMatrixObj ] );
 
 
 #############################################################################
@@ -717,7 +818,7 @@ DeclareOperation( "Eigenvectors", [ IsRing, IsMatrix ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "ProjectiveOrder", IsMatrix );
+DeclareAttribute( "ProjectiveOrder", IsMatrixOrMatrixObj );
 
 #############################################################################
 ##
@@ -825,7 +926,7 @@ DeclareSynonymAttr( "RankMatDestructive", RankMatrixDestructive );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "SemiEchelonMat", IsMatrix );
+DeclareAttribute( "SemiEchelonMat", IsMatrixOrMatrixObj );
 
 #############################################################################
 ##
@@ -849,7 +950,7 @@ DeclareAttribute( "SemiEchelonMat", IsMatrix );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "SemiEchelonMatDestructive", [ IsMatrix and IsMutable] );
+DeclareOperation( "SemiEchelonMatDestructive", [ IsMatrixOrMatrixObj and IsMutable] );
 
 
 #############################################################################
@@ -886,7 +987,7 @@ DeclareOperation( "SemiEchelonMatDestructive", [ IsMatrix and IsMutable] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "SemiEchelonMatTransformation", IsMatrix );
+DeclareAttribute( "SemiEchelonMatTransformation", IsMatrixOrMatrixObj );
 
 #############################################################################
 ##
@@ -902,7 +1003,7 @@ DeclareAttribute( "SemiEchelonMatTransformation", IsMatrix );
 ##  </ManSection>
 ##
 DeclareOperation( "SemiEchelonMatTransformationDestructive", [
-        IsMatrix and IsMutable ] );
+        IsMatrixOrMatrixObj and IsMutable ] );
 
 
 #############################################################################
@@ -1034,7 +1135,7 @@ DeclareSynonym( "MutableTransposedMat", TransposedMatMutable ); # needed?
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareOperation( "MutableTransposedMatDestructive", [IsMatrix and IsMutable] );
+DeclareOperation( "MutableTransposedMatDestructive", [IsMatrixOrMatrixObj and IsMutable] );
 
 
 #############################################################################
@@ -1062,7 +1163,7 @@ DeclareOperation( "MutableTransposedMatDestructive", [IsMatrix and IsMutable] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "TransposedMatDestructive", [ IsMatrix ] );
+DeclareOperation( "TransposedMatDestructive", [ IsMatrixOrMatrixObj ] );
 
 
 
@@ -1085,7 +1186,7 @@ DeclareOperation( "TransposedMatDestructive", [ IsMatrix ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareProperty( "IsMonomialMatrix", IsMatrix );
+DeclareProperty( "IsMonomialMatrix", IsMatrixOrMatrixObj );
 
 
 #############################################################################
@@ -1110,7 +1211,7 @@ DeclareProperty( "IsMonomialMatrix", IsMatrix );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "InverseMatMod", [ IsMatrix, IsObject ] );
+DeclareOperation( "InverseMatMod", [ IsMatrixOrMatrixObj, IsObject ] );
 
 
 #############################################################################
@@ -1145,11 +1246,11 @@ DeclareOperation( "KroneckerProduct", [ IsMatrixOrMatrixObj, IsMatrixOrMatrixObj
 ##  <Oper Name="SolutionMatNoCo" Arg='mat, vec'/>
 ##
 ##  <Description>
-##  Does thework for <C>SolutionMat</C> and <C>SolutionMatDestructive</C>.
+##  Does the work for <C>SolutionMat</C> and <C>SolutionMatDestructive</C>.
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareOperation( "SolutionMatNoCo", [ IsMatrix, IsRowVector ] );
+DeclareOperation( "SolutionMatNoCo", [ IsMatrixOrMatrixObj, IsRowVectorOrVectorObj ] );
 
 
 #############################################################################
@@ -1167,7 +1268,7 @@ DeclareOperation( "SolutionMatNoCo", [ IsMatrix, IsRowVector ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "SolutionMat", [ IsMatrix, IsRowVector ] );
+DeclareOperation( "SolutionMat", [ IsMatrixOrMatrixObj, IsRowVectorOrVectorObj ] );
 
 #############################################################################
 ##
@@ -1199,7 +1300,7 @@ DeclareOperation( "SolutionMat", [ IsMatrix, IsRowVector ] );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "SolutionMatDestructive",
-    [ IsMatrix and IsMutable, IsRowVector ] );
+    [ IsMatrixOrMatrixObj and IsMutable, IsRowVectorOrVectorObj ] );
 
 
 ############################################################################
@@ -1225,7 +1326,7 @@ DeclareOperation( "SolutionMatDestructive",
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "SumIntersectionMat", [ IsMatrix, IsMatrix ] );
+DeclareOperation( "SumIntersectionMat", [ IsMatrixOrMatrixObj, IsMatrixOrMatrixObj ] );
 
 
 
@@ -1248,7 +1349,7 @@ DeclareOperation( "SumIntersectionMat", [ IsMatrix, IsMatrix ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "TriangulizedMat", [ IsMatrix ] );
+DeclareOperation( "TriangulizedMat", [ IsMatrixOrMatrixObj ] );
 DeclareSynonym( "RREF", TriangulizedMat);
 
 #############################################################################
@@ -1279,7 +1380,7 @@ DeclareSynonym( "RREF", TriangulizedMat);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "TriangulizeMat", [ IsMatrix and IsMutable ] );
+DeclareOperation( "TriangulizeMat", [ IsMatrixOrMatrixObj and IsMutable ] );
 
 
 #############################################################################
@@ -1473,7 +1574,7 @@ DeclareGlobalFunction( "BlownUpVector" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "DiagonalizeMat", [IsRing,IsMatrix and IsMutable] );
+DeclareOperation( "DiagonalizeMat", [IsRing, IsMatrixOrMatrixObj and IsMutable] );
 
 
 #############################################################################
@@ -1528,6 +1629,23 @@ DeclareGlobalFunction( "IdentityMat" );
 ##  </ManSection>
 ##
 DeclareOperation( "MutableCopyMatrix", [ IsList ] );
+
+
+#############################################################################
+##
+#O  MutableCopyMat( <mat> )
+##
+##  Declared obsolete in February 2023.
+##
+##  Still used in corelg, crisp, cryst, cubefree, cvec, fining, forms, genss,
+##  guava, hap, hapcryst, lpres, matricesforhomalg, modisom, polycyclic,
+##  recog, semigroups, smallsemi, sophus (02/2023)
+##
+##  (We cannot use 'DeclareObsoleteSynonym' because the cvec package wants to
+##  install a method for 'MutableCopyMat', thus 'MutableCopyMat' must be an
+##  operation.)
+##
+DeclareSynonym( "MutableCopyMat", MutableCopyMatrix );
 
 
 #############################################################################
@@ -1771,6 +1889,82 @@ DeclareGlobalFunction( "ReflectionMat" );
 
 #############################################################################
 ##
+#O  RandomInvertibleMatrix( [<filt>, ][<rs>, ]<R>, <m> )
+#O  RandomInvertibleMatrix( [<rs>, ]<m>, <M> )
+##
+##  <#GAPDoc Label="RandomInvertibleMatrix">
+##  <ManSection>
+##  <Oper Name="RandomInvertibleMatrix" Arg='[filt, ][rs, ]R, m'
+##   Label="with base domain"/>
+##  <Oper Name="RandomInvertibleMatrix" Arg='[rs, ]m, M'
+##   Label="with example matrix"/>
+##
+##  <Returns>
+##  a matrix or matrix object <M>I</M> with <A>m</A> columns,
+##  with base domain <A>R</A> or equal to <C>BaseDomain( <A>M</A> )</C>,
+##  such that <M>I</M> is invertible over its base domain.
+##  </Returns>
+##  <Description>
+##  If a semiring <A>R</A> is given then it will be the base domain
+##  (see <Ref Attr="BaseDomain" Label="for a matrix object"/>)
+##  of the returned matrix.
+##  In this case, a filter <A>filt</A> can be specified that defines the
+##  internal representation of the result
+##  (see <Ref Attr="ConstructingFilter" Label="for a matrix object"/>).
+##  The default value for <A>filt</A> is determined from <A>R</A>.
+##  <P/>
+##  If a matrix object <A>M</A> is given then the returned matrix will have
+##  the same internal representation and the same base domain as <A>M</A>.
+##  <P/>
+##  If a random source <A>rs</A> is given (see <Ref Sect="Random Sources"/>)
+##  then the entries of the result are computed using <A>rs</A>,
+##  the default random source is <Ref Var="GlobalMersenneTwister"/>.
+##  <P/>
+##  If the <Ref Attr="ConstructingFilter" Label="for a matrix object"/> value
+##  of the result implies <Ref Filt="IsCopyable"/> then the result is
+##  fully mutable.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m:= RandomInvertibleMatrix( GF(9), 2 );;
+##  gap> RankMatrix( m );
+##  2
+##  gap> DimensionsMat( m );
+##  [ 2, 2 ]
+##  gap> BaseDomain( m );
+##  GF(3^2)
+##  gap> Is8BitMatrixRep( m );
+##  true
+##  gap> m1:= RandomInvertibleMatrix( IsPlistMatrixRep, GF(9), 2 );;
+##  gap> IsPlistMatrixRep( m1 );
+##  true
+##  gap> m2:= RandomInvertibleMatrix( 2, m1 );;
+##  gap> IsPlistMatrixRep( m2 );
+##  true
+##  gap> m:= RandomInvertibleMatrix( Integers, 2 );;
+##  gap> IsUnit( Integers, DeterminantMatrix( m ) );
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareTagBasedOperation( "RandomInvertibleMatrix",
+    [ IsOperation, IsRandomSource, IsSemiring, IsInt ] );
+DeclareOperation( "RandomInvertibleMatrix",
+    [ IsRandomSource, IsSemiring, IsInt ] );
+DeclareOperation( "RandomInvertibleMatrix",
+    [ IsOperation, IsSemiring, IsInt ] );
+DeclareOperation( "RandomInvertibleMatrix",
+    [ IsSemiring, IsInt ] );
+
+DeclareOperation( "RandomInvertibleMatrix",
+    [ IsRandomSource, IsInt, IsMatrixOrMatrixObj ] );
+DeclareOperation( "RandomInvertibleMatrix",
+    [ IsInt, IsMatrixOrMatrixObj ] );
+
+
+#############################################################################
+##
 #F  RandomInvertibleMat( [rs ,] <m> [, <R>] ) . . .  random invertible matrix
 ##
 ##  <#GAPDoc Label="RandomInvertibleMat">
@@ -1782,13 +1976,19 @@ DeclareGlobalFunction( "ReflectionMat" );
 ##  matrix with <A>m</A> rows and columns with elements taken from the ring
 ##  <A>R</A>, which defaults to <Ref Var="Integers"/>.
 ##  Optionally, a random source <A>rs</A> can be supplied.
+##  <P/>
+##  Note that the result need <E>not</E> be invertible over
+##  the prescribed ring <A>R</A>.
+##  Use <Ref Oper="RandomInvertibleMatrix" Label="with base domain"/>
+##  for creating random matrices with this stronger property.
+##  <P/>
 ##  <Example><![CDATA[
-##  gap> m := RandomInvertibleMat(4);
-##  [ [ -4, 1, 0, -1 ], [ -1, -1, 1, -1 ], [ 1, -2, -1, -2 ],
-##    [ 0, -1, 2, -2 ] ]
+##  gap> m := RandomInvertibleMat( 4, Integers );
+##  [ [ 1, -4, 0, 1 ], [ 0, -2, 3, 1 ], [ 0, -2, -1, -1 ],
+##    [ 0, -2, 2, 4 ] ]
 ##  gap> m^-1;
-##  [ [ -1/8, -11/24, 1/24, 1/4 ], [ 1/4, -13/12, -1/12, 1/2 ],
-##    [ -1/8, 5/24, -7/24, 1/4 ], [ -1/4, 3/4, -1/4, -1/2 ] ]
+##  [ [ 1, -1/14, -19/14, -4/7 ], [ 0, -1/14, -5/14, -1/14 ],
+##    [ 0, 5/14, -3/14, -1/7 ], [ 0, -3/14, -1/14, 2/7 ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1823,6 +2023,78 @@ DeclareGlobalFunction( "RandomMat" );
 
 #############################################################################
 ##
+#O  RandomMatrix( [<filt>, ][<rs>, ]<R>, <m>, <n> )
+#O  RandomMatrix( [<rs>, ]<m>, <n>, <M> )
+##
+##  <#GAPDoc Label="RandomMatrix">
+##  <ManSection>
+##  <Oper Name="RandomMatrix" Arg='[filt, ][rs, ]R, m, n'
+##   Label="with base domain"/>
+##  <Oper Name="RandomMatrix" Arg='[rs, ]m, n, M'
+##   Label="with example matrix"/>
+##
+##  <Returns>
+##  a matrix or matrix object with <A>m</A> rows and <A>n</A> columns,
+##  with base domain <A>R</A> or equal to <C>BaseDomain( <A>M</A> )</C>.
+##  </Returns>
+##  <Description>
+##  If a semiring <A>R</A> is given then it will be the base domain
+##  (see <Ref Attr="BaseDomain" Label="for a matrix object"/>)
+##  of the returned matrix.
+##  In this case, a filter <A>filt</A> can be specified that defines the
+##  internal representation of the result
+##  (see <Ref Attr="ConstructingFilter" Label="for a matrix object"/>).
+##  The default value for <A>filt</A> is determined from <A>R</A>.
+##  <P/>
+##  If a matrix object <A>M</A> is given then the returned matrix will have
+##  the same internal representation and the same base domain as <A>M</A>.
+##  <P/>
+##  If a random source <A>rs</A> is given (see <Ref Sect="Random Sources"/>)
+##  then the entries of the result are computed using <A>rs</A>,
+##  the default random source is <Ref Var="GlobalMersenneTwister"/>.
+##  <P/>
+##  If the <Ref Attr="ConstructingFilter" Label="for a matrix object"/> value
+##  of the result implies <Ref Filt="IsCopyable"/> then the result is
+##  fully mutable.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m:= RandomMatrix( GF(9), 2, 3 );;
+##  gap> DimensionsMat( m );
+##  [ 2, 3 ]
+##  gap> BaseDomain( m );
+##  GF(3^2)
+##  gap> Is8BitMatrixRep( m );
+##  true
+##  gap> m1:= RandomMatrix( IsPlistMatrixRep, GF(9), 2, 3 );;
+##  gap> IsPlistMatrixRep( m1 );
+##  true
+##  gap> m2:= RandomMatrix( 3, 4, m1 );;
+##  gap> DimensionsMat( m2 );
+##  [ 3, 4 ]
+##  gap> IsPlistMatrixRep( m2 );
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareTagBasedOperation( "RandomMatrix",
+    [ IsOperation, IsRandomSource, IsSemiring, IsInt, IsInt ] );
+DeclareOperation( "RandomMatrix",
+    [ IsRandomSource, IsSemiring, IsInt, IsInt ] );
+DeclareOperation( "RandomMatrix",
+    [ IsOperation, IsSemiring, IsInt, IsInt ] );
+DeclareOperation( "RandomMatrix",
+    [ IsSemiring, IsInt, IsInt ] );
+
+DeclareOperation( "RandomMatrix",
+    [ IsRandomSource, IsInt, IsInt, IsMatrixOrMatrixObj ] );
+DeclareOperation( "RandomMatrix",
+    [ IsInt, IsInt, IsMatrixOrMatrixObj ] );
+
+
+#############################################################################
+##
 #F  RandomUnimodularMat( [rs ,] <m> ) . . . . . . . . random unimodular matrix
 ##
 ##  <#GAPDoc Label="RandomUnimodularMat">
@@ -1837,13 +2109,13 @@ DeclareGlobalFunction( "RandomMat" );
 ##  from <A>Integers</A>
 ##  <Example><![CDATA[
 ##  gap> m := RandomUnimodularMat(3);
-##  [ [ -5, 1, 0 ], [ 12, -2, -1 ], [ -14, 3, 0 ] ]
+##  [ [ 1, -5, 26 ], [ 0, 1, -6 ], [ 0, 0, 1 ] ]
 ##  gap> m^-1;
-##  [ [ -3, 0, 1 ], [ -14, 0, 5 ], [ -8, -1, 2 ] ]
+##  [ [ 1, 5, 4 ], [ 0, 1, 6 ], [ 0, 0, 1 ] ]
 ##  gap> RandomUnimodularMat(3:domain:=[-1000..1000]);
-##  [ [ 312330173, 15560030349, -125721926670 ],
-##  [ -307290, -15309014, 123693281 ],
-##  [ -684293792, -34090949551, 275448039848 ] ]
+##  [ [ 6001314, 239514853714734, -44705745791413 ],
+##    [ -1448123744, -57795200635226587, 10787546189680040 ],
+##    [ -671, -26780118200, 4998542420 ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1927,7 +2199,7 @@ DeclareSynonymAttr( "TraceMat", TraceMatrix );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "JordanDecomposition", IsMatrix );
+DeclareAttribute( "JordanDecomposition", IsMatrixOrMatrixObj );
 
 
 #############################################################################
@@ -2087,12 +2359,12 @@ DeclareSynonym("OnSubspacesByCanonicalBasisGF2",OnSubspacesByCanonicalBasis);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "CharacteristicPolynomial", IsMatrix );
-DeclareOperation( "CharacteristicPolynomial", [ IsMatrix, IsPosInt ] );
+DeclareAttribute( "CharacteristicPolynomial", IsMatrixOrMatrixObj );
+DeclareOperation( "CharacteristicPolynomial", [ IsMatrixOrMatrixObj, IsPosInt ] );
 DeclareOperation( "CharacteristicPolynomial",
-    [ IsRing, IsRing, IsMatrix, IsPosInt ] );
+    [ IsRing, IsRing, IsMatrixOrMatrixObj, IsPosInt ] );
 DeclareOperation( "CharacteristicPolynomial",
-    [ IsRing, IsRing, IsMatrix ] );
+    [ IsRing, IsRing, IsMatrixOrMatrixObj ] );
 
 
 #############################################################################
@@ -2110,7 +2382,7 @@ DeclareOperation( "CharacteristicPolynomial",
 ##
 DeclareOperation("CharacteristicPolynomialMatrixNC",
   #IsField is not yet known
-  [IsRing,IsOrdinaryMatrix,IsPosInt]);
+  [IsRing,IsMatrixOrMatrixObj,IsPosInt]);
 
 
 #############################################################################
@@ -2128,7 +2400,7 @@ DeclareOperation("CharacteristicPolynomialMatrixNC",
 ##
 DeclareOperation("MinimalPolynomialMatrixNC",
   #IsField is not yet known
-  [IsRing,IsOrdinaryMatrix,IsPosInt]);
+  [IsRing,IsMatrixOrMatrixObj,IsPosInt]);
 
 #############################################################################
 ##
@@ -2158,7 +2430,7 @@ DeclareOperation("FieldOfMatrixList",[IsListOrCollection]);
 ##  <M>R</M> such that all entries of the matrices lie in <M>R</M>. If
 ##  <M>R</M> has a quotient field that can be represented, this quotient
 ##  field is returned instead.
-##  In general <M>R</R> is not chosen to be as small as possible, but to
+##  In general <M>R</M> is not chosen to be as small as possible, but to
 ##  be determined quickly without being unnecessarily large
 ##  (see <Ref Attr="DefaultFieldOfMatrix"/>).
 ##  </Description>

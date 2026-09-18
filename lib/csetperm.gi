@@ -42,7 +42,9 @@ end );
 ##
 #F  RightTransversalPermGroupConstructor( <filter>, <G>, <U> )  . constructor
 ##
-MAX_SIZE_TRANSVERSAL := 100000;
+MAX_SIZE_TRANSVERSAL := 100000; # try to keep transversals shorter than this
+BITLIST_LIMIT_TRANSVERSAL:=10^8; # absolutely must keep transversals
+ # shorter, as otherwise too long bit lists might be produced
 
 # so far only orbits and perm groups -- TODO: Other deduced actions
 InstallGlobalFunction(ActionRefinedSeries,function(G,U)
@@ -55,7 +57,7 @@ local o,A,ser,act,i;
   i:=1;
   while i<=Length(o) and Size(A)>Size(U) do
     A:=Stabilizer(A,o[i],OnSets);
-    if Size(A)<Size(ser[Length(ser)]) then
+    if Size(A)<Size(Last(ser)) then
       Add(ser,A);
       Add(act,[o[i],OnSets]);
     fi;
@@ -121,14 +123,26 @@ BindGlobal( "RightTransversalPermGroupConstructor", function( filter, G, U )
             # go in biggish steps through the chain
             nc:=[ac[1]];
             nct:=[actions[1]];
-            for i in [3..Length(ac)] do
+            i:=3;
+            while i<=Length(ac) do
+              if Size(ac[i-1])/Size(nc[Length(nc)])
+                >BITLIST_LIMIT_TRANSVERSAL then
+                # the next step would be horrible -- insert
+                bpt:=AscendingChain(ac[i-1],nc[Length(nc)]:cheap);
+                bpt:=bpt{[2..Length(bpt)-1]};
+                ac:=Concatenation(ac{[1..i-2]},bpt,ac{[i-1..Length(ac)]});
+                actions:=Concatenation(actions{[1..i-2]},List(bpt,x->fail),
+                  actions{[i-1..Length(actions)]});
+              fi;
+
               if Size(ac[i])/Size(nc[Length(nc)])>MAX_SIZE_TRANSVERSAL then
                 Add(nc,ac[i-1]);
                 Add(nct,actions[i-1]);
               fi;
+              i:=i+1;
             od;
-            Add(nc,ac[Length(ac)]);
-            Add(nct,actions[Length(actions)]);
+            Add(nc,Last(ac));
+            Add(nct,Last(actions));
             if Length(nc)>2 then
               ac:=[];
               for i in [Length(nc),Length(nc)-1..2] do

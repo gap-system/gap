@@ -12,13 +12,14 @@ gap> ctn2 := CharacterTable( RepresentativeTom(t,26) ) ;;
 
 ######################################################################
 gap> ctf:=CharacterTable(RepresentativeTom(t,26)/RepresentativeTom(t,3));;
-gap> ctfprojectives := Irr(ctf)* DecompositionMatrix( ctf mod 3 );
+gap> ctfprojectives := Irr(ctf)* DecompositionMatrix( ctf mod 3 );;
+gap> SortedList( ctfprojectives );
 [ VirtualCharacter( CharacterTable( Group([ f1, f2, f3 ]) ),
-  [ 3, 1, 1, 0, 3, 0 ] ), VirtualCharacter( CharacterTable( Group(
-    [ f1, f2, f3 ]) ), [ 3, -1, -1, 0, 3, 0 ] ), 
+  [ 3, -1, -1, 0, 3, 0 ] ), VirtualCharacter( CharacterTable( Group(
+    [ f1, f2, f3 ]) ), [ 3, -1, 1, 0, -3, 0 ] ), 
   VirtualCharacter( CharacterTable( Group([ f1, f2, f3 ]) ),
-  [ 3, -1, 1, 0, -3, 0 ] ), VirtualCharacter( CharacterTable( Group(
-    [ f1, f2, f3 ]) ), [ 3, 1, -1, 0, -3, 0 ] ) ]
+  [ 3, 1, -1, 0, -3, 0 ] ), VirtualCharacter( CharacterTable( Group(
+    [ f1, f2, f3 ]) ), [ 3, 1, 1, 0, 3, 0 ] ) ]
 
 ######################################################################
 gap> STOP_TEST( "example_4.10.8.tst" );

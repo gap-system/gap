@@ -8,22 +8,22 @@
 **  SPDX-License-Identifier: GPL-2.0-or-later
 */
 
-#include "hpc/serialize.h"
+#include "serialize.h"
 
-#include "bool.h"
-#include "calls.h"
-#include "error.h"
-#include "gvars.h"
-#include "modules.h"
-#include "objset.h"
-#include "plist.h"
-#include "precord.h"
-#include "rational.h"
-#include "records.h"
-#include "stringobj.h"
-#include "trycatch.h"
+#include "../bool.h"
+#include "../calls.h"
+#include "../error.h"
+#include "../gvars.h"
+#include "../modules.h"
+#include "../objset.h"
+#include "../plist.h"
+#include "../precord.h"
+#include "../rational.h"
+#include "../records.h"
+#include "../stringobj.h"
+#include "../trycatch.h"
 
-#include "hpc/aobjects.h"
+#include "aobjects.h"
 
 #include <stdio.h>
 

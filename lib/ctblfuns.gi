@@ -1332,8 +1332,14 @@ end );
 InstallMethod( TrivialCharacter,
     "for a character table",
     [ IsNearlyCharacterTable ],
-    tbl -> Character( tbl,
-               ListWithIdenticalEntries( NrConjugacyClasses( tbl ), 1 ) ) );
+    function( tbl )
+    local chi;
+
+    chi:= Character( tbl,
+              ListWithIdenticalEntries( NrConjugacyClasses( tbl ), 1 ) );
+    SetIsIrreducibleCharacter( chi, true );
+    return chi;
+    end );
 
 
 #############################################################################
@@ -2043,8 +2049,8 @@ InstallMethod( InertiaSubgroup,
     if stab = permgrp then
       return G;
     else
-      return PreImagesSet( GroupHomomorphismByImages( G, permgrp,
-                               GeneratorsOfGroup( G ), perms ),
+      return PreImagesSetNC( GroupHomomorphismByImages( G, permgrp,
+                                 GeneratorsOfGroup( G ), perms ),
                  stab );
     fi;
     end );
@@ -2320,7 +2326,7 @@ InstallMethod( DeterminantOfCharacter,
 #T > (The latter function involves using algebraic numbers,
 #T > whereas  it might happen
 #T > that f has rational or integer coefficients ,
-#T > i.e. all the irrationalies cancel)
+#T > i.e. all the irrationalities cancel)
 #T
 #T For example, if the character values in question are rational
 #T one can use Galois sums of the irreducible characters of the cyclic
@@ -3127,6 +3133,11 @@ InstallMethod( InducedCyclic,
           j,
           single;
 
+    if HasUnderlyingGroup( tbl ) then
+      # Precompute the power maps if possible.
+      ComputeAllPowerMaps( tbl );
+    fi;
+
     centralizers:= SizesCentralizers( tbl );
     orders:= OrdersClassRepresentatives( tbl );
     independent:= List( orders, ReturnTrue );
@@ -3918,10 +3929,12 @@ InstallGlobalFunction( AntiSymmetricParts, function( tbl, characters, n )
         od;
 
       od;
-      if IsClassFunction( chi ) and sym[1] > 0 then
-        sym:= ClassFunctionSameType( tbl, chi, sym );
-      elif HasIsVirtualCharacter( chi ) and IsVirtualCharacter( chi ) then
-        sym:= VirtualCharacter( tbl, sym );
+      if IsClassFunction( chi ) then
+        if IsZero( sym ) then
+          sym:= VirtualCharacter( tbl, sym );
+        else
+          sym:= ClassFunctionSameType( tbl, chi, sym );
+        fi;
       fi;
       Add( antisymmetricparts, sym );
 
@@ -5295,7 +5308,7 @@ InstallGlobalFunction( CollapsedMat, function( mat, maps )
       for j in nontrivblocks[i] do fusion[j]:= pos; od;
       pos:= pos + 1;
     od;
-    for i in [ minima[ Length( minima ) ] + 1 .. Length( mat[1] ) ] do
+    for i in [ Last(minima) + 1 .. Length( mat[1] ) ] do
       if not IsBound( fusion[i] ) then
         fusion[i]:= pos;
         pos:= pos + 1;

@@ -34,3 +34,13 @@ gap> if false then Stabilizer; fi;
 Syntax error: found an expression when a statement was expected in stream:1
 if false then Stabilizer; fi;
                         ^
+
+#
+gap> oldBreakOnError:= BreakOnError;;
+gap> BreakOnError:= false;;
+gap> PushOptions( rec( test:= true ) );
+gap> Error( "!" );
+Error, !
+gap> Length( OptionsStack ) = 0;
+true
+gap> BreakOnError:= oldBreakOnError;;

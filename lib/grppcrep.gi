@@ -355,7 +355,7 @@ InstallGlobalFunction( ExtensionsOfModule, function( pcgsS, modu, conj, dim )
             L := GF(p^b);
             for j in [1..Length(f)] do
               w := PrimitiveRoot( L ) ^ ((p^b - 1)/r);
-              while Value( f[j], w ) <> Zero( E ) do
+              while not IsZero( Value( f[j], w ) ) do
                 w := w * PrimitiveRoot( L )^ ((p^b - 1)/r);
               od;
               mats:=List(Concatenation([w*c*iso],modu.generators),
@@ -432,7 +432,7 @@ InstallGlobalFunction( InitAbsAndIrredModules, function( r, F, dim )
                 E := GF( p^b );
                 for j in [ 1..Length( f ) ] do
                     w := PrimitiveRoot(E)^QuoInt( p^b-1, r );
-                    while Value( f[j], w ) <> Zero( F ) do
+                    while not IsZero( Value( f[j], w ) ) do
                         w := w * PrimitiveRoot(E)^QuoInt( p^b-1, r );
                     od;
                     modu := GModuleByMats( [ImmutableMatrix(E,[[w]])], E );
@@ -569,8 +569,8 @@ InstallGlobalFunction( AbsAndIrredModules, function( G, F, dim )
     m     := Length( pcgs );
 
     if m = 0 and (dim = 0 or Dimension( F ) <= dim) then
-        return [rec( irred  := TrivialModule( 0, F ),
-                     absirr := TrivialModule( 0, F ))];
+        return [pcgs, [rec( irred  := TrivialModule( 0, F ),
+                            absirr := TrivialModule( 0, F ))]];
     elif m = 0 then return [pcgs,[]]; fi;
 
     # the first step is separated - too many problems with empty lists

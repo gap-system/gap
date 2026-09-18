@@ -98,3 +98,5 @@ DeclareRepresentation( "IsZmodnZMatrixRep",
     and HasNumberRows and HasNumberColumns
     and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain,
     [] );
+
+Add( ConstructingFiltersForMatrixGroupElements, IsZmodnZMatrixRep );

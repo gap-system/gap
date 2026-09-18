@@ -1338,7 +1338,7 @@ InstallMethod(WreathProductOrdering,
           m,  #current position in scan of u (from right)
           n,  #current position in scan of v (from right)
        ug, vg,  #Current generators of u, v
-   ug_lev, vg_lev,  #levels of urrent generators of u, v
+   ug_lev, vg_lev,  #levels of current generators of u, v
      sl_lev,  #level at which one of the words  u,v  is
         #smaller in the shortlex ordering
                      sl,  #sl=1 or 2 if u or v, resp., is

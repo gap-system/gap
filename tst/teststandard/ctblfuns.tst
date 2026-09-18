@@ -5,7 +5,8 @@ gap> START_TEST( "ctblfuns.tst" );
 gap> ordtbl:= CharacterTable( GL(2,3) );;
 gap> modtbl:= ordtbl mod 2;;
 gap> irr:= Irr( ordtbl );;
-gap> chi:= irr[5] * irr[5];;
+gap> chi:= First( irr, x -> x[1] = 2 and not ForAll( x, IsInt ) );;
+gap> chi:= chi * chi;;
 gap> const:= ConstituentsOfCharacter( chi );;
 gap> List( const, ValuesOfClassFunction );
 [ [ 1, 1, 1, 1, 1, -1, -1, -1 ], [ 3, 0, 3, 0, -1, -1, -1, 1 ] ]
@@ -19,7 +20,8 @@ gap> const:= ConstituentsOfCharacter( ordtbl, ValuesOfClassFunction( chi ) );;
 gap> List( const, ValuesOfClassFunction );
 [ [ 1, 1, 1, 1, 1, -1, -1, -1 ], [ 3, 0, 3, 0, -1, -1, -1, 1 ] ]
 gap> ibr:= Irr( modtbl );;
-gap> phi:= ibr[2] * ibr[2];;
+gap> phi:= First( ibr, x -> x[1] = 2 );;
+gap> phi:= phi * phi;;
 gap> const:= ConstituentsOfCharacter( phi );;
 gap> List( const, ValuesOfClassFunction );
 [ [ 1, 1 ], [ 2, -1 ] ]

@@ -310,6 +310,9 @@ see&nbsp;<Ref Sect="Mutability and Copyability"/>.
 <#Include Label="IsDiagonalMat">
 <#Include Label="IsUpperTriangularMat">
 <#Include Label="IsLowerTriangularMat">
+<#Include Label="IsSquareMat">
+<#Include Label="IsSymmetricMat">
+<#Include Label="IsAntisymmetricMat">
 
 </Section>
 
@@ -338,7 +341,9 @@ see&nbsp;<Ref Sect="Mutability and Copyability"/>.
 <Heading>Random Matrices</Heading>
 
 <#Include Label="RandomMat">
+<#Include Label="RandomMatrix">
 <#Include Label="RandomInvertibleMat">
+<#Include Label="RandomInvertibleMatrix">
 <#Include Label="RandomUnimodularMat">
 
 </Section>

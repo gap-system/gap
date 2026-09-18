@@ -184,12 +184,12 @@ DeclareGlobalFunction("AlgExtSquareHensel");
 ##  <Func Name="IdealDecompositionsOfPolynomial" Arg='pol'/>
 ##
 ##  <Description>
-##  Let <M>f</M> be a univariate, rational, irreducible, polynomial. A
+##  Let <M>f</M> be a univariate, rational, irreducible polynomial. A
 ##  pair <M>g</M>,<M>h</M> of polynomials of degree strictly
 ##  smaller than that of <M>f</M>, such that <M>f(x)|g(h(x))</M> is
 ##  called an ideal decomposition. In the context of field
 ##  extensions, if <M>\alpha</M> is a root of <M>f</M> in a suitable extension
-##  and <M>Q</M> the field of rational numbers. Such decompositions correspond
+##  and <M>Q</M> the field of rational numbers, such decompositions correspond
 ##  to (proper) subfields <M>Q &lt; Q(\beta) &lt; Q(\alpha)</M>,
 ##  where <M>g</M> is the minimal polynomial of <M>\beta</M>.
 ##  This function determines such decompositions up to equality of the subfields

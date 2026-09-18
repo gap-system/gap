@@ -27,7 +27,7 @@ objects (types in the range \verb|FIRST_REAL_TNUM| to
 Certain additional entries are initialized via a call to function like
 \verb|InstallZeroObject|. This takes one argument specifying whether
 to install the verbose or silent versions of the functions. These
-\verb|InstallXXXObject| functions also also called by
+\verb|InstallXXXObject| functions are also called by
 \verb|ChangeDoOperations| when tracing is enabled or disabled. They
 set the table entries for the cases when one or more argument  is of
 type between \verb|FIRST_EXTERNAL_TNUM| and \verb|LAST_EXTERNAL_TNUM|
@@ -97,14 +97,14 @@ is incomplete, else SumListScl or SumListScl if one argument is a
 scalar and the other not, else SumListList if both are vectors or
 empty or matrices. Diff is like Sum.
 
-For Prod, there are again four functions, ProdList redespatches,
+For Prod, there are again four functions, ProdList redispatches,
 ProdListScl and ProdSclList do the obvious and ProdListList is inner
 product. ProdList is installed if either argument is incomplete,
 ProdListScl or ProdSclList if just one argument is scalar,
 ProdListList for vector* anything else, ProdListScl
 for matrix * vector and ProdSclList for matrix * empty. 
 
-Quo just has QuoList installed if eithert argument is incomplete,
+Quo just has QuoList installed if either argument is incomplete,
 likewise Lquo and Pow. Additionally ProdListList is installed for
 \verb|vector ^ matrix|, and PowDefault (conjugate) for matrix * matrix. Comm
 is like Quo.
@@ -181,7 +181,7 @@ these. Rather than rewrite it, I copy here the  explanation from
 **   T_PLIST_DENSE              known only not to have a hole
 **   T_PLIST_DENSE_NHOM         known to be dense but not homogeneous *  **
 **   T_PLIST_DENSE_NHOM_SSORT   dense, non-hom but strictly sorted
-**   T_PLIST_DENSE_NHOM_NSORT   dense, non-hom, known not be be sorted
+**   T_PLIST_DENSE_NHOM_NSORT   dense, non-hom, known not to be sorted
 **   T_PLIST_EMPTY              the empty list
 **   T_PLIST_HOM                known to be homogeneous *
 **   T_PLIST_HOM_NSORT           etc

@@ -21,18 +21,18 @@
 ##  <G>. This function returns a permutation group $H$, isomorphic to $G$,
 ##  such that all the automorphisms in <autos> can be represented by
 ##  conjugation of $H$ with elements of the symmetric group. It returns a
-##  list $[H2,\phi,a]$ where $\phi is the isomorphism $G\to H$, and $a$ a
+##  list $[H2,\phi,a]$ where $\phi$ is the isomorphism $G\to H$, and $a$ a
 ##  list of permutations corresponding to <autos> that induce the same
 ##  automorphisms of $H$. Finally $H2=\left\langle H,a\right\rangle$.
 ##  The algorithm may fail if <G> is not almost simple.
-##  The group $H$ is guaranteed to act on points [1..n] without fixedpoints.
+##  The group $H$ is guaranteed to act on points [1..n] without fixed points.
 DeclareGlobalFunction("AutomorphismRepresentingGroup");
 
 #############################################################################
 ##
 #F  EmbedAutomorphisms(<G>,<H>,<GT>,<HT>[,<outs>])
 ##
-##  Suposet that $GT$ and $HT$ are isomorphic simple groups and $GT\le
+##  Suppose that $GT$ and $HT$ are isomorphic simple groups and $GT\le
 ##  G\le\Aut(GT)$ and $HT\le H\le \Aut(HT)$. This function returns a new
 ##  group $P$ isomorphic to a subgroup of $\Aut(GT)$ and monomorphisms
 ##  $\phi\colon G\to P$ and $\psi\colon H\to P$ in the form of a list

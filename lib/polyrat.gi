@@ -83,7 +83,7 @@ local ac,bc,mc,i,j,pc,ci,f,fam;
   f:=false;
   for i in ac do
     if f then
-      # only do it 2nd time (here to avoin doing once too often)
+      # only do it 2nd time (here to avoid doing once too often)
       bc:=ShiftedCoeffs(bc,1);
       ReduceCoeffsMod(bc,mc,p);
       ShrinkRowVector(bc);
@@ -263,7 +263,7 @@ local a,b,c,d;
   # valuation gives only 0 as zero, this can be neglected
   f:=CoefficientsOfLaurentPolynomial(f)[1];
   # normieren
-  f:=f/f[Length(f)];
+  f:=f/Last(f);
   f:=UnivariatePolynomialByCoefficients(CyclotomicsFamily,f,1);
 
   a:=ApproxRootBound(f);
@@ -549,9 +549,9 @@ local fam,gcd, u, v, w, val, r, s;
     v := u;
     u := w;
   od;
-  #gcd := u * (a/u[Length(u)]);
+  #gcd := u * (a/Last(u));
   gcd:=u;
-  MultVector(gcd,a/u[Length(u)]);
+  MultVector(gcd,a/Last(u));
   ReduceCoeffsMod(gcd,p);
 
   # and return the polynomial
@@ -765,8 +765,8 @@ local brci,gcd,fam,fc,gc;
   fi;
   fc:=Minimum(fc[2],gc[2]);
   fc:=fc+RemoveOuterCoeffs(gcd,fam!.zeroCoefficient);
-  if Length(gcd)>0 and not IsOne(gcd[Length(gcd)]) then
-    gcd:=gcd/gcd[Length(gcd)];
+  if Length(gcd)>0 and not IsOne(Last(gcd)) then
+    gcd:=gcd/Last(gcd);
   fi;
   return LaurentPolynomialByExtRepNC(fam,gcd,fc,brci);
 end);
@@ -927,7 +927,7 @@ BindGlobal("RPGcdRepresentationModPrime",function(f,g,p)
   Info(InfoPoly,3,"<s> = ",s,", <sx> = ",sx);
 
   # compute conversion for standard associate
-  q := (1/s[Length(s)]) mod p;
+  q := (1/Last(s)) mod p;
 
   # convert <s> and <x> back into polynomials
   if 0 = Length(g)  then
@@ -1009,7 +1009,7 @@ local pol,n,nalpha,d,dis,rb,bound,a,i,j,k,l,w,bin,lm,bea,polc,ro,rbpow;
   # we want an upper bound of the root, RootInt will give a lower
   # bound. So we compute the root of w-1 (in case w is a perfect square)
   # and add 1. As we nowhere selected a specific galois representative,
-  # this bound (which is rational!) will bound all conjugactes as well.
+  # this bound (which is rational!) will bound all conjugates as well.
   lm:=(RootInt(Int(w)-1,2)+1);
   for k in [1..DegreeOfLaurentPolynomial(pol)] do
 
@@ -1354,7 +1354,7 @@ local  p2, res, j, i,ii,o,d,b,lco,degs, step, cnew, sel, deli,
   until 0 = Length(sel) or Length(sel)<step;
 
   # if <split> is true we *must* find a complete factorization.
-  if split and 0 < Length(res.remaining) and f<>f^0 then
+  if split and 0 < Length(res.remaining) and not IsOne(f) then
 #and not(IsBound(opt.onlydegs) or IsBound(opt.stopdegs)) then
 
     # the remaining f must be an irreducible factor,larger than deg/2
@@ -2068,8 +2068,8 @@ local xi, t, h, i, lf, lg, lh,fr,gr;
   # first test value for heuristic gcd:
   xi:=2+2*Minimum(Maximum(List(f,AbsInt)),Maximum(List(g,AbsInt)));
   i:=0;
-  lf:=f[Length(f)];
-  lg:=g[Length(g)];
+  lf:=Last(f);
+  lg:=Last(g);
 
   # and now the tests:
   while i< MAXTRYGCDHEU do
@@ -2084,7 +2084,7 @@ local xi, t, h, i, lf, lg, lh,fr,gr;
     if t<>1 then
       h:=h/t;
     fi;
-    lh:=h[Length(h)];
+    lh:=Last(h);
 
     # check if it divides f and g: if yes, ready! if no, try larger xi
 

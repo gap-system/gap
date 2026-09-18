@@ -429,7 +429,7 @@ BIND_GLOBAL( "INSTALL_METHOD",
           rank,
           method,
           oreqs,
-          req, reqs, match, j, k, imp, notmatch, lk, funcname;
+          req, reqs, match, j, k, imp, notmatch, lk, funcname, alt_rank;
 
     if IsHPCGAP then
         # TODO: once the GAP compiler supports 'atomic', use that
@@ -515,8 +515,38 @@ BIND_GLOBAL( "INSTALL_METHOD",
     elif IS_INT( arglist[ pos ] ) or
          (IS_FUNCTION( arglist[ pos ] ) and NARG_FUNC( arglist[ pos ] ) = 0
            and pos < LEN_LIST(arglist)) then
+        # An explicit incremental rank is given.
         rank := arglist[ pos ];
         pos := pos+1;
+    elif IS_LIST( arglist[ pos ] ) and LEN_LIST( arglist[ pos ] ) <= 2
+                                   and LEN_LIST( arglist[ pos ] ) >= 1
+                                   and IS_LIST( arglist[ pos ][1] )
+                                   and ( LEN_LIST( arglist[ pos ] ) = 1
+                                         or IS_INT( arglist[ pos ][2] ) ) then
+      # We want to compute the rank of the method w.r.t. a different list
+      # of requirements, ignoring the ranks of the given filters.
+      # In order to update this value later,
+      # using 'RECALCULATE_ALL_METHOD_RANKS',
+      # we construct a zero argument function that computes the incremental
+      # rank relative to that of the given filters.
+      alt_rank:= arglist[ pos ];
+
+      # If this filters list is given by a list of strings then evaluate them.
+      for i in [ 1 .. LEN_LIST( alt_rank[1] ) ] do
+        if IS_STRING_REP( alt_rank[1][i] ) then
+          alt_rank[1][i]:= EvalString( alt_rank[1][i] );
+          if not IS_FUNCTION( alt_rank[1][i] ) then
+            Error( "string does not evaluate to a function" );
+          fi;
+        fi;
+      od;
+
+      if LEN_LIST( alt_rank ) = 1 then
+        rank:= RANK_SHIFT_FUNCTION( filters, alt_rank[1], 0 );
+      else
+        rank:= RANK_SHIFT_FUNCTION( filters, alt_rank[1], alt_rank[2] );
+      fi;
+      pos := pos+1;
     else
       rank:= 0;
     fi;
@@ -898,12 +928,16 @@ end);
 ##  <P/>
 ##  <Log><![CDATA[
 ##  gap> SylowSubgroup( s4, 6 );
-##  Error, SylowSubgroup: <p> must be a prime called from
-##  <compiled or corrupted call value>  called from
-##  <function>( <arguments> ) called from read-eval-loop
-##  Entering break read-eval-print loop ...
-##  you can 'quit;' to quit to outer loop, or
-##  you can 'return;' to continue
+##  Error, SylowSubgroup: <p> must be a prime
+##  Stack trace:
+##  *[1] <<compiled GAP function>>
+##     @ GAPROOT/lib/oper1.g:964
+##   [2] <<compiled GAP function "SylowSubgroup default method">>
+##     @ GAPROOT/lib/oper1.g:1007
+##  <function "SylowSubgroup default method">( <arguments> )
+##   called from read-eval loop at *stdin*:3
+##  you can enter 'quit;' to quit to outer loop, or
+##  you can enter 'return;' to continue
 ##  brk> quit;
 ##  ]]></Log>
 ##  <P/>

@@ -83,8 +83,8 @@ enum { MAX_HOOK_COUNT = 6 };
 
 extern struct InterpreterHooks * activeHooks[MAX_HOOK_COUNT];
 
-void ActivateHooks(struct InterpreterHooks * hook);
-void DeactivateHooks(struct InterpreterHooks * hook);
+BOOL ActivateHooks(struct InterpreterHooks * hook);
+BOOL DeactivateHooks(struct InterpreterHooks * hook);
 
 /****************************************************************************
 **

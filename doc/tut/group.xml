@@ -927,11 +927,13 @@ gap> Size( Image( hom, DerivedSubgroup(s4) ) );
 <P/>
 <Log><![CDATA[
 gap> PreImage( hom, (1,2,3) );
-Error, <map> must be an inj. and surj. mapping called from
+Error, <map> must be an injective and surjective mapping
+Stack trace:
+*[1] ErrorNoReturn( "<map> must be an injective and surjective ", "mapping" );
+   @ GAPROOT/lib/mapping.gi:262
 <function "PreImage">( <arguments> )
- called from read-eval loop at line 4 of *stdin*
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+ called from read-eval loop at *stdin*:7
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 ]]></Log>
 <P/>
@@ -1218,7 +1220,9 @@ composition of two maps (a nice monomorphism and an isomorphism)
 which know that they are injective.
 In general, the injectivity flag of a map <C>map</C> gets set if one tests
 the property by calling <C>IsInjective( map )</C>;
-if one is sure that <C>map</C> is injective and wants to avoid the
+note that this call may compute and store some different nice monomorphism
+in the source of <C>map</C>.
+If one is sure that <C>map</C> is injective and wants to avoid the
 potentially expensive test then one can set the flag by explicitly
 calling <C>SetIsInjective( map, true )</C>.
 <P/>
@@ -1256,4 +1260,3 @@ Chapter&nbsp;<Ref Chap="Group Homomorphisms" BookName="ref"/>.
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
 <!-- %E -->
-

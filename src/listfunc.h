@@ -28,6 +28,7 @@ void AddList(Obj list, Obj obj);
 
 void AddPlist(Obj list, Obj obj);
 
+void AddPlist3(Obj list, Obj obj, Int pos);
 
 /****************************************************************************
 **

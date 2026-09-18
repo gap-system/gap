@@ -8,7 +8,7 @@
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
-##  This  file contains rotines for turning teaching mode on and off.
+##  This  file contains routines for turning teaching mode on and off.
 ##
 
 TEACHMODE:=fail;

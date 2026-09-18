@@ -376,3 +376,6 @@ DeclareGlobalFunction( "CoveringTriplesCharacters" );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "IrrConlon", IsGroup );
+
+DeclareGlobalName( "CharacterDegreesBaumClausen" );
+DeclareGlobalName( "CharacterDegreesConlon" );

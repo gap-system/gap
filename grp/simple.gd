@@ -56,7 +56,7 @@ DeclareGlobalFunction("SimpleGroup");
 ##  <Func Name="EpimorphismFromClassical" Arg='G'/>
 ##
 ##  <Description>
-##  For a nonabelian (almost) simple group this homomorphsim will try to construct an
+##  For a nonabelian (almost) simple group this homomorphism will try to construct an
 ##  epimorphism from a classical group onto it (or return fail if it does
 ##  not work or is not yet implemented).
 ##  </Description>
@@ -76,8 +76,9 @@ DeclareGlobalFunction("EpimorphismFromClassical");
 ##
 ##  <Description>
 ##  This function returns an iterator that will run over all nonabelian simple groups, starting
-##  at order <A>start</A> if specified, up to order <M>10^{27}</M> (or -- if specified
-##  -- order <A>end</A>). If the option <A>NOPSL2</A> is given, groups of type
+##  at order <A>start</A> if specified, and stopping at order <A>end</A> if specified.
+##  Only orders up to <M>10^{27}</M> are available. Attempting to iterate beyond that
+##  results in an error. If the option <A>NOPSL2</A> is given, groups of type
 ##  <M>PSL_2(q)</M> are omitted.
 ##  <Example><![CDATA[
 ##  gap> it:=SimpleGroupsIterator(20000);
@@ -134,7 +135,7 @@ DeclareAttribute("DataAboutSimpleGroup",IsGroup,"mutable");
 ##  For an order <M>n</M> this function returns a heuristic bound for a
 ##  small permutation degree of a simple group of that exact order.
 ##  This function
-##  can be used to decide whether it is worth to try the `SmallerDegree'
+##  can be used to decide whether it is worth trying the `SmallerDegree'
 ##  reduction.
 ##  <#/GAPDoc>
 DeclareGlobalFunction("SufficientlySmallDegreeSimpleGroupOrder");

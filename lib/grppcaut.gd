@@ -11,12 +11,7 @@
 
 DeclareGlobalFunction("SpaceAndOrbitStabilizer");
 
-#############################################################################
-##
-#P IsFrattiniFree
-##
-DeclareProperty( "IsFrattiniFree", IsGroup );
-
+# for IsFrattiniFree see grp.gd
 
 DeclareGlobalFunction("AutomorphismGroupNilpotentGroup");
 DeclareGlobalFunction("AutomorphismGroupSolvableGroup");

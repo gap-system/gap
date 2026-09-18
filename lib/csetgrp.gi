@@ -84,7 +84,9 @@ end );
 # Find element in G to conjugate B into A
 # call with G,A,B;
 InstallGlobalFunction(DoConjugateInto,function(g,a,b,onlyone)
-local cla,clb,i,j,k,bd,r,rep,b2,dc,
+# For the orbit matching below, dc stores candidate data, while clu groups
+# completed results whose final B-orbit partitions are A-conjugate.
+local cla,clb,i,j,k,bd,r,rep,b2,dc,clu,
   gens,conjugate;
 
   Info(InfoCoset,2,"call DoConjugateInto ",Size(g)," ",Size(a)," ",Size(b));
@@ -171,16 +173,53 @@ local cla,clb,i,j,k,bd,r,rep,b2,dc,
         od;
         if Length(dc)>0 then g:=Stabilizer(g,cla,OnTuplesSets);fi;
         rep:=[];
-        for i in dc do
-          r:=DoConjugateInto(g,a,b^i[2],onlyone);
+        for i in [1..Length(dc)] do
+          r:=DoConjugateInto(g,a,b^dc[i][2],onlyone);
           if onlyone then
-            if r<>fail then return i[2]*r;fi;
+            if r<>fail then return dc[i][2]*r;fi;
           else
-            if r<>fail then Append(rep,List(r,x->i[2]*x));fi;
+            if r<>fail then
+              Append(rep,List(r,x->dc[i][2]*x));
+            fi;
           fi;
         od;
         if onlyone then return fail; #otherwise would have found and stopped
-        else return rep;fi;
+        else
+          # Recursive conjugation can change a candidate's orbit partition,
+          # so cluster the completed results by their final partitions.
+          clu:=[];
+          for i in [1..Length(rep)] do
+            b2:=OnSetsSets(Set(clb),rep[i]);
+            j:=First([1..Length(clu)],x->RepresentativeAction(a,
+              OnSetsSets(Set(clb),rep[clu[x][1]]),b2,OnSetsSets)<>fail);
+            if j=fail then
+              Add(clu,[i]);
+            else
+              Add(clu[j],i);
+            fi;
+          od;
+
+          r:=rep;
+          rep:=[];
+          for i in clu do
+            if Length(i)=1 then
+              Add(rep,r[i[1]]);
+            else
+              Info(InfoCoset,2,"Testing ",i," for conjugacy");
+              bd:=[];
+              for j in i do
+                k:=b^r[j];
+                if not ForAny(bd,x->RepresentativeAction(a,x,k)<>fail) then
+                  Add(rep,r[j]);
+                  Add(bd,k);
+                else
+                  Info(InfoCoset,2,"Eliminated conjugate");
+                fi;
+              od;
+            fi;
+          od;
+          return rep;
+        fi;
       fi;
     else
       # orbits are fixed. Make sure b is so
@@ -199,7 +238,7 @@ local cla,clb,i,j,k,bd,r,rep,b2,dc,
     r:=SmallerDegreePermutationRepresentation(b:cheap);
     k:=Image(r,b);
     gens:=MorFindGeneratingSystem(k,MorMaxFusClasses(MorRatClasses(k)));
-    gens:=List(gens,x->PreImagesRepresentative(r,x));
+    gens:=List(gens,x->PreImagesRepresentativeNC(r,x));
   else
     gens:=MorFindGeneratingSystem(b,MorMaxFusClasses(MorRatClasses(b)));
   fi;
@@ -440,7 +479,7 @@ local bound,a,b,c,cnt,r,i,j,bb,normalStep,gens,cheap,olda;
         fi;
         if Index(b,a)>bound and Length(c)>1 then
           bb:=IntermediateGroup(b,c[Length(c)-1]);
-          if bb<>fail and Size(bb)>Size(c[Length(c)]) then
+          if bb<>fail and Size(bb)>Size(Last(c)) then
             c:=Concatenation(c{[1..Length(c)-1]},[bb],Filtered(cc,x->Size(x)>=Size(b)));
             return RefinedChain(G,c);
           fi;
@@ -454,8 +493,8 @@ local bound,a,b,c,cnt,r,i,j,bb,normalStep,gens,cheap,olda;
       od;
     fi;
   od;
-  Add(c,cc[Length(cc)]);
-  a:=c[Length(c)];
+  Add(c,Last(cc));
+  a:=Last(c);
   for i in [Length(c)-1,Length(c)-2..1] do
     #enforce parent relations
     if not HasParent(c[i]) then
@@ -833,7 +872,7 @@ end);
 #end);
 
 InstallGlobalFunction( DoubleCosets, function(G,U,V)
-  if not IsSubset(G,U) and IsSubset(G,V) then
+  if not (IsSubset(G,U) and IsSubset(G,V)) then
     Error("not contained");
   fi;
   return DoubleCosetsNC(G,U,V);
@@ -996,7 +1035,7 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
   avoidlimit:=200000; # beyond this index we want to get smaller
   badlimit:=5000000; # beyond this index things might break down
 
-  mayflip:=true; # are we allowed to flip?
+  mayflip:=true; # are we allowed to flip for better chain as well?
 
   # Do we *want* stabilizers
   includestab:=ValueOption("includestab")=true;
@@ -1064,7 +1103,7 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
     Assert(2,Size(a2)*Size(tra)=Size(b));
     SetKernelOfMultiplicativeGeneralMapping(r,a2);
 
-    dcs:=List(dcs,x->[PreImagesRepresentative(quot,x[1]),Size(a1)*x[2],
+    dcs:=List(dcs,x->[PreImagesRepresentativeNC(quot,x[1]),Size(a1)*x[2],
       PreImage(r,x[3])]);
     r:=List(dcs,x->x[1]);
     stabs:=List(dcs,x->x[3]);
@@ -1094,6 +1133,7 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
       a:=c;
       flip:=not flip;
       c:=c1;
+      stabs:=[b]; # make sure stabs also flips over
 
     elif IsPermGroup(G) then
 
@@ -1296,7 +1336,7 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
         cnt:=cnt-1;
 
         # compute orbit and stabilizers for the next step
-        # own Orbitalgorithm and stabilizer computation
+        # own orbit algorithm and stabilizer computation
 
         #while blist[posi] do posi:=posi+1;od;
         posi:=Position(blist,false,posi);
@@ -1818,11 +1858,14 @@ DeclareRepresentation( "IsFactoredTransversalRep",
     # group, subgroup, list of transversals (descending)
 BindGlobal("FactoredTransversal",function(G,S,t)
 local trans,m,i;
-  Assert(1,ForAll([1..Length(t)-1],i->t[i]!.subgroup=t[i+1]!.group));
+  Assert(1,ForAll([1..Length(t)-1],
+                  i ->    (not IsBound(t[i]!.subgroup))
+                       or (not IsBound(t[i+1]!.group))
+                       or t[i]!.subgroup = t[i+1]!.group));
 
   m:=[1];
   for i in [Length(t),Length(t)-1..2] do
-    Add(m,m[Length(m)]*Length(t[i]));
+    Add(m,Last(m)*Length(t[i]));
   od;
   m:=Reversed(m);
   trans:=Objectify(NewType(FamilyObj(G),

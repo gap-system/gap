@@ -921,10 +921,9 @@ BindGlobal( "NextIterator_WeylOrbit", function( it )
                 nu:= [];
                 foundsucc:= true;
             else
-                a:= stack[Length(stack)];
+                a:= Remove( stack );
                 mu:= a[1]; bound:= a[2]+1;
                 len:= len-1;
-                Remove( stack, Length(stack) );
             fi;
 
         fi;
@@ -1405,7 +1404,7 @@ InstallMethod( PrintObj,
             if lst[k+1] > 0 and k>1 then
                 Print("+" );
             fi;
-            if lst[k+1] <> lst[k+1]^0 then
+            if not IsOne(lst[k+1]) then
                 Print( lst[k+1],"*");
             fi;
             if lst[k] = [] then
@@ -2771,7 +2770,7 @@ end );
 #M  \+( <u>, <v> ) . . . . . . . . . . . . . . for two weight rep elements
 #M  AdditiveInverseOp( <u> ) . . . . . . . . . . . .  . . . for a weight rep element
 #M  \*( <scal>, <u> ) . . . . . . . . . . . .for a scalar and a weight rep elt
-#M  \*( <u>, <scal> ) . . . . . . . . . . . .for a wewight rep elt and a scalar
+#M  \*( <u>, <scal> ) . . . . . . . . . . . .for a weight rep elt and a scalar
 #M  ZeroOp( <u> ) . . . . . . . . . . . . .  for a weight rep element
 #M  \=( <u>, <v> ) . . . . . . . . . . . . . for two weight rep elements
 #M  \<( <u>, <v> ) . . . . . . . . . . . . . for two weight rep elements
@@ -3325,7 +3324,7 @@ InstallMethod( HighestWeightModule,
     rank:= Dimension(L) - 2*n;
 
     # `orbs' will be a list of lists of the form [ mult, wts ], where
-    # `wts' is a list of weights, and `mult' is theit multiplicity.
+    # `wts' is a list of weights, and `mult' is their multiplicity.
 
     char:= DominantCharacter( L, hw );
     orbs:= [ ];
@@ -3867,7 +3866,7 @@ InstallGlobalFunction( ExtendRepresentation,
        F:= LeftActingDomain( L );
 
        A:=EvalMat( w, mats );
-       if A <> Zero(F)*A then return false; fi;
+       if not IsZero(A) then return false; fi;
 
        mons:= [ ExtRepOfObj( w )[2][1] ];
        orb:=[ w ];
@@ -3893,7 +3892,7 @@ InstallGlobalFunction( ExtendRepresentation,
            c1:= elts[i]*c-c*elts[i];
            val:= EvalMat( c1, mats );
 
-           if val <> Zero( F ) * val then return false; fi;
+           if not IsZero( val ) then return false; fi;
            vv:= ListWithIdenticalEntries( Length(mons), Zero( F ) );
            r:= ExtRepOfObj( c1 )[2];
            mons1:= [ ];
@@ -3916,7 +3915,7 @@ InstallGlobalFunction( ExtendRepresentation,
                V:= MutableBasis( F, bb );
            fi;
 
-           if IsContainedInSpan( V, vv ) then
+           if not CloseMutableBasis( V, vv ) then
 
     # We take the next element of 'orb'.
 
@@ -3929,7 +3928,6 @@ InstallGlobalFunction( ExtendRepresentation,
 
              c:= c1;
              Add( orb1, c );
-             CloseMutableBasis( V, vv );
 
            fi;
 
@@ -4128,15 +4126,14 @@ InstallGlobalFunction( ExtendRepresentation,
       while i<= le do
         w:= ShallowCopy( wds[i] );
 
-        for j in [ w[ Length(w) ]..Length( mats )] do
+        for j in [ Last(w)..Length( mats )] do
             m:= asbas[i]*mats[j];
-            if not IsContainedInSpan( sp, m ) then
+            if CloseMutableBasis( sp, m ) then
                 ready:= false;
                 Add( asbas, m );
                 w1:= ShallowCopy(w);
                 Add( w1, j );
                 Add( wds, w1 );
-                CloseMutableBasis( sp, m );
             fi;
         od;
 
@@ -4152,10 +4149,9 @@ InstallGlobalFunction( ExtendRepresentation,
 
           cf:= List( asbas, m -> m[j][i] );
 
-        if not IsContainedInSpan( sp, cf ) then
+        if CloseMutableBasis( sp, cf ) then
           Add( fcts, cf );
           Add( cc, [i,j] );
-          CloseMutableBasis( sp, cf );
         fi;
       od;
     od;

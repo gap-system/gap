@@ -86,6 +86,7 @@
 #ifndef WARD_ENABLED
 
 #include <gmp.h>
+#include <limits.h>
 
 #if GMP_NAIL_BITS != 0
 #error Aborting compile: GAP does not support non-zero GMP nail size
@@ -160,7 +161,7 @@ static inline void ENSURE_BAG(Bag bag)
 {
 // Note: This workaround is only required with the original GMP and not with
 // MPIR
-#if defined(SYS_IS_CYGWIN32) && defined(SYS_IS_64_BIT) &&                    \
+#if defined(SYS_IS_WINDOWS) && defined(SYS_IS_64_BIT) &&                     \
     !defined(__MPIR_VERSION)
     memset(PTR_BAG(bag), 0, SIZE_BAG(bag));
 #endif
@@ -505,7 +506,7 @@ Obj ObjInt_Int( Int i )
   }
   else if (i < 0 ) {
     gmp = NewBag( T_INTNEG, sizeof(mp_limb_t) );
-    i = -i;
+    i = (Int)(0U - (UInt)i);
   }
   else {
     gmp = NewBag( T_INTPOS, sizeof(mp_limb_t) );
@@ -620,7 +621,7 @@ Int Int_ObjInt(Obj i)
     if ((!sign && (val > INT32_MAX)) || (sign && (val > (UInt)INT32_MIN)))
 #endif
         ErrorMayQuit("Conversion error: integer too large", 0, 0);
-    return sign ? -(Int)val : (Int)val;
+    return (Int)(sign ? (0U - val) : val);
 }
 
 UInt UInt_ObjInt(Obj i)
@@ -2119,10 +2120,17 @@ Obj GcdInt ( Obj opL, Obj opR )
     if (sizeR != 1) {
       SWAP(Obj, opL, opR);
     }
+    // Use mpn_gcd_1, which takes the small operand as an mp_limb_t; the
+    // seemingly more natural mpz_gcd_ui takes an 'unsigned long', which
+    // cannot hold a full limb on LLP64 systems (native Windows)
     UInt r = AbsOfSmallInt(opR);
-    FAKEMPZ_GMPorINTOBJ(mpzL, opL);
-    r = mpz_gcd_ui(0, MPZ_FAKEMPZ(mpzL), r);
-    CHECK_FAKEMPZ(mpzL);
+    if (IS_INTOBJ(opL)) {
+        UInt l = AbsOfSmallInt(opL);
+        r = mpn_gcd_1((mp_srcptr)&l, 1, r);
+    }
+    else {
+        r = mpn_gcd_1((mp_srcptr)CONST_ADDR_INT(opL), SIZE_INT(opL), r);
+    }
     return ObjInt_UInt(r);
   }
 
@@ -2223,6 +2231,11 @@ static Obj FuncFACTORIAL_INT(Obj self, Obj n)
 {
     RequireNonnegativeSmallInt(SELF_NAME, n);
 
+    // mpz_fac_ui takes an 'unsigned long', which is smaller than a small
+    // integer on LLP64 systems (native Windows)
+    if ((UInt)INT_INTOBJ(n) > ULONG_MAX)
+        ErrorMayQuit("Factorial: <n> is too large", 0, 0);
+
     mpz_t mpzResult;
     mpz_init(mpzResult);
     mpz_fac_ui(mpzResult, INT_INTOBJ(n));
@@ -2296,10 +2309,17 @@ Obj BinomialInt(Obj n, Obj k)
         return Fail;
 
     UInt K = IS_INTOBJ(k) ? INT_INTOBJ(k) : VAL_LIMB0(k);
+
+    // mpz_bin_ui and mpz_bin_uiui take K and N as 'unsigned long', which
+    // cannot hold a full limb on LLP64 systems (native Windows)
+    if (K > ULONG_MAX)
+        return Fail;
+
     mpz_t mpzResult;
     mpz_init( mpzResult );
 
-    if (SIZE_INT_OR_INTOBJ(n) == 1) {
+    if (SIZE_INT_OR_INTOBJ(n) == 1 &&
+        (IS_INTOBJ(n) ? (UInt)INT_INTOBJ(n) : VAL_LIMB0(n)) <= ULONG_MAX) {
         UInt N = IS_INTOBJ(n) ? INT_INTOBJ(n) : VAL_LIMB0(n);
         mpz_bin_uiui(mpzResult, N, K);
     } else {
@@ -2614,8 +2634,8 @@ static Obj FuncIS_PROBAB_PRIME_INT(Obj self, Obj n, Obj reps)
 **  InitRandomMT.
 **
 **  Implementation details are a bit tricky to obtain the same random
-**  integers on 32 bit and 64 bit machines (which have different long
-**  integer digit lengths and different ranges of small integers).
+**  integers on 32 bit and 64 bit machines (which have different ranges of
+**  integers).
 **
 */
 static Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
@@ -2641,9 +2661,9 @@ static Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
        res = INTOBJ_INT((Int)(nextrandMT_int32(mt) & ((UInt4)-1 >> (32-n))));
      }
      else {
-       unsigned long  rd;
+       UInt8 rd;
        rd = nextrandMT_int32(mt);
-       rd += (unsigned long) ((UInt4) nextrandMT_int32(mt) &
+       rd += (UInt8) ((UInt4) nextrandMT_int32(mt) &
                               ((UInt4)-1 >> (64-n))) << 32;
        res = INTOBJ_INT((Int)rd);
      }

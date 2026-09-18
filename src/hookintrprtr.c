@@ -109,19 +109,19 @@ static Obj ProfileEvalBoolPassthrough(Expr stat)
 **
 */
 
-void ActivateHooks(struct InterpreterHooks * hook)
+BOOL ActivateHooks(struct InterpreterHooks * hook)
 {
     Int i;
 
     if (HookActiveCount == MAX_HOOK_COUNT) {
-        return;
+        return FALSE;
     }
 
     HashLock(&activeHooks);
     for (i = 0; i < MAX_HOOK_COUNT; ++i) {
         if (activeHooks[i] == hook) {
             HashUnlock(&activeHooks);
-            return;
+            return FALSE;
         }
     }
 
@@ -135,13 +135,15 @@ void ActivateHooks(struct InterpreterHooks * hook)
         if (!activeHooks[i]) {
             activeHooks[i] = hook;
             HookActiveCount++;
-            break;
+            HashUnlock(&activeHooks);
+            return TRUE;
         }
     }
     HashUnlock(&activeHooks);
+    return FALSE;
 }
 
-void DeactivateHooks(struct InterpreterHooks * hook)
+BOOL DeactivateHooks(struct InterpreterHooks * hook)
 {
     HashLock(&activeHooks);
     for (int i = 0; i < MAX_HOOK_COUNT; ++i) {
@@ -158,6 +160,7 @@ void DeactivateHooks(struct InterpreterHooks * hook)
     }
 
     HashUnlock(&activeHooks);
+    return TRUE;
 }
 
 /****************************************************************************

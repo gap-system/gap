@@ -253,8 +253,8 @@ We will no longer mention the <B>Return</B> key from now on.
 <Index>break loops</Index>
 Sometimes a syntax error will cause &GAP; to enter a <E>break loop</E>.  This
 is indicated by the special prompt <C>brk></C>. If another syntax error occurs
-while  &GAP; is in  a break loop, the prompt  will  change to <C>brk_02></C>,
-<C>brk_03></C> and so on. You can leave the current break loop and exit to the
+while  &GAP; is in  a break loop, the prompt  will  change to <C>brk_2></C>,
+<C>brk_3></C> and so on. You can leave the current break loop and exit to the
 next outer one by either typing <C>quit;</C> or by hitting <B>Ctrl-D</B>.
 Eventually &GAP; will return to its normal state and show its normal
 prompt <C>gap></C> again.

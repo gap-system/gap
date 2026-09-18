@@ -4,28 +4,33 @@ gap> S4:= SymmetricGroup( 4 );
 Sym( [ 1 .. 4 ] )
 gap> V4:= Group( (1,2)(3,4), (1,3)(2,4) );
 Group([ (1,2)(3,4), (1,3)(2,4) ])
-gap> irr:= Irr( V4 );
+gap> irr:= SortedList( Irr( V4 ) );
 [ Character( CharacterTable( Group([ (1,2)(3,4), (1,3)(2,4) ]) ),
-  [ 1, 1, 1, 1 ] ), Character( CharacterTable( Group([ (1,2)(3,4), (1,3)(2,4) 
-     ]) ), [ 1, -1, -1, 1 ] ), Character( CharacterTable( Group(
+  [ 1, -1, -1, 1 ] ), Character( CharacterTable( Group(
     [ (1,2)(3,4), (1,3)(2,4) ]) ), [ 1, -1, 1, -1 ] ), 
   Character( CharacterTable( Group([ (1,2)(3,4), (1,3)(2,4) ]) ),
-  [ 1, 1, -1, -1 ] ) ]
+  [ 1, 1, -1, -1 ] ), Character( CharacterTable( Group(
+    [ (1,2)(3,4), (1,3)(2,4) ]) ), [ 1, 1, 1, 1 ] ) ]
 gap> List( irr, x -> InertiaSubgroup( S4, x ) );
-[ Sym( [ 1 .. 4 ] ), Group([ (1,4), (1,4)(2,3), (1,3)(2,4) ]), 
-  Group([ (1,4,3,2), (1,4)(2,3) ]), Group([ (3,4), (1,4)(2,3) ]) ]
+[ Group([ (1,4), (1,4)(2,3), (1,3)(2,4) ]), Group([ (1,4,3,2), (1,4)(2,3) ]), 
+  Group([ (3,4), (1,4)(2,3) ]), Sym( [ 1 .. 4 ] ) ]
 gap> List( last, Size );
-[ 24, 8, 8, 8 ]
-gap> l:=List( AllSmallGroups(12), CharacterTable );;
+[ 8, 8, 8, 24 ]
+
+#gap> l:=List( AllSmallGroups(12), CharacterTable );;
+gap> l:=List([ 3913, 266, 7012, 321, 1 ],
+>            i -> CharacterTable(PcGroupCode(i, 12)));;
 gap> List( l, ConjugacyClasses );;
 gap> List( l, SizesConjugacyClasses );;
 gap> List( l, OrdersClassRepresentatives );;
 gap> List( l, Irr );;
 gap> ForAll( l, IsInternallyConsistent);
 true
-gap> ForAll(AllSmallGroups(12),g -> IsInternallyConsistent(CharacterTable(g) mod 2));
+gap> l:=List([3913, 266, 7012, 321, 1], i -> PcGroupCode(i, 12));;
+gap> ForAll(l,g -> IsInternallyConsistent(CharacterTable(g) mod 2));
 true
-gap> ForAll(AllSmallGroups(12),g -> IsInternallyConsistent(TableOfMarks(g)));
+gap> l:=List([3913, 266, 7012, 321, 1], i -> PcGroupCode(i, 12));;
+gap> ForAll(l,g -> IsInternallyConsistent(TableOfMarks(g)));
 true
 
 # Up to GAP 4.11.1, the following returned 'fail' results.
@@ -89,6 +94,13 @@ true
 gap> chi:= TrivialCharacter( SymmetricGroup(1) );;
 gap> chi = chi^0;
 true
+
+#
+gap> tbl:= CharacterTable( SymmetricGroup( 4 ) );;
+gap> chi:= ClassFunction( tbl, 0 * Irr( tbl )[1] );
+ClassFunction( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 0, 0, 0, 0, 0 ] )
+gap> AntiSymmetricParts( tbl, [ chi ], 2 );
+[ VirtualCharacter( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 0, 0, 0, 0, 0 ] ) ]
 
 #
 gap> STOP_TEST("ctblfuns.tst");

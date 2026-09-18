@@ -8,7 +8,7 @@ possible.
 ## Packages versus contributions to the "core" system
 
 One way of contributing to GAP is to write a
-[GAP package](https://www.gap-system.org/Packages/packages.html) and send it
+[GAP package](https://www.gap-system.org/packages/authors/) and send it
 to us to consider for redistribution with GAP.  This is appropriate if your
 contribution adds a body of functionality for some area of mathematics (or
 some coherent batch of system functionality). A package is also appropriate

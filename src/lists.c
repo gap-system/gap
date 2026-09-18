@@ -81,6 +81,8 @@ BOOL (*IsSmallListFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 static Obj IsSmallListFilt;
 static Obj HasIsSmallListFilt;
 static Obj LengthAttr;
+static Obj NumberRowsAttr;
+static Obj NumberColumnsAttr;
 static Obj SetIsSmallList;
 
 static BOOL IsSmallListObject(Obj obj)
@@ -160,6 +162,41 @@ static Obj AttrLENGTH(Obj self, Obj list)
     else {
         return DoAttribute( LengthAttr, list );
     }
+}
+
+
+/****************************************************************************
+**
+*F  AttrNUMBER_ROWS( <self>, <mat> )  . . . . . .  'NumberRows' interface
+*/
+static Obj AttrNUMBER_ROWS(Obj self, Obj mat)
+{
+    if (IS_PLIST(mat)) {
+        return ObjInt_Int(LEN_PLIST(mat));
+    }
+
+    return DoAttribute(NumberRowsAttr, mat);
+}
+
+
+/****************************************************************************
+**
+*F  AttrNUMBER_COLUMNS( <self>, <mat> ) . . . .  'NumberColumns' interface
+*/
+static Obj AttrNUMBER_COLUMNS(Obj self, Obj mat)
+{
+    if (IS_PLIST(mat)) {
+        if (LEN_PLIST(mat) == 0) {
+            return INTOBJ_INT(0);
+        }
+
+        Obj row = ELM_PLIST(mat, 1);
+        if (row != 0) {
+            return AttrLENGTH(LengthAttr, row);
+        }
+    }
+
+    return DoAttribute(NumberColumnsAttr, mat);
 }
 
 
@@ -712,7 +749,7 @@ static Obj FuncELMS_LIST_DEFAULT(Obj self, Obj list, Obj poss)
 **
 *F  ElmsListCheck( <list>, <poss> ) . . . . . . . . . . . . . . . . ELMS_LIST
 **
-**  `ElmsListCheck' checks that <poss> is  a possitions lists before  calling
+**  `ElmsListCheck' checks that <poss> is  a positions list before  calling
 **  `ELMS_LIST'.
 */
 Obj ElmsListCheck (
@@ -728,7 +765,7 @@ Obj ElmsListCheck (
 **
 *F  ElmsListLevelCheck( <lists>, <poss>, <level> )  . . . . . . ElmsListLevel
 **
-**  `ElmsListLevelCheck'   checks that  <poss> is  a  possitions lists before
+**  `ElmsListLevelCheck'   checks that  <poss> is  a  positions list before
 **  calling `ElmsListLevel'.
 */
 void ElmsListLevelCheck (
@@ -1576,6 +1613,99 @@ void            AsssListLevel (
 
 /****************************************************************************
 **
+*F  FuncEXTRACT_SUB_VECTOR( <self>, <vec>, <poss> ) . . `EXTRACT_SUB_VECTOR'
+*/
+static Obj ExtractSubVectorOper;
+
+static Obj FuncEXTRACT_SUB_VECTOR(Obj self, Obj vec, Obj poss)
+{
+    if (IS_PLIST(vec)) {
+        CheckIsPossList("List Elements", poss);
+        return ELMS_LIST(vec, poss);
+    }
+
+    return DoOperation2Args(ExtractSubVectorOper, vec, poss);
+}
+
+
+/****************************************************************************
+**
+*F  FuncCOPY_SUB_VECTOR( <self>, <src>, <dst>, <scols>, <dcols> )
+*/
+static Obj CopySubVectorOper;
+
+static Obj FuncCOPY_SUB_VECTOR(
+    Obj self, Obj src, Obj dst, Obj scols, Obj dcols)
+{
+    if (IS_PLIST(src) && IS_PLIST(dst)) {
+        Obj rhss;
+
+        CheckIsPossList("List Assignments", scols);
+        CheckIsPossList("List Assignments", dcols);
+        rhss = ELMS_LIST(src, scols);
+        AsssListCheck(dst, dcols, rhss);
+        return 0;
+    }
+
+    return DoOperation4Args(CopySubVectorOper, src, dst, scols, dcols);
+}
+
+
+/****************************************************************************
+**
+*F  FuncEXTRACT_SUB_MATRIX( <self>, <mat>, <rows>, <cols> )
+*/
+static Obj ExtractSubMatrixOper;
+
+static Obj FuncEXTRACT_SUB_MATRIX(Obj self, Obj mat, Obj rows, Obj cols)
+{
+    if (IS_PLIST(mat)) {
+        Obj submat;
+
+        CheckIsPossList("List Elements", rows);
+        CheckIsPossList("List Elements", cols);
+        submat = ELMS_LIST(mat, rows);
+        ElmsListLevel(submat, cols, 1);
+        return submat;
+    }
+
+    return DoOperation3Args(ExtractSubMatrixOper, mat, rows, cols);
+}
+
+
+/****************************************************************************
+**
+*F  FuncCOPY_SUB_MATRIX( <self>, <src>, <dst>, <srows>, <drows>, <scols>,
+*F  <dcols> )
+*/
+static Obj CopySubMatrixOper;
+
+static Obj FuncCOPY_SUB_MATRIX(
+    Obj self, Obj src, Obj dst, Obj srows, Obj drows, Obj scols, Obj dcols)
+{
+    if (IS_PLIST(src) && IS_PLIST(dst)) {
+        Obj srcsub;
+        Obj dstsub;
+
+        CheckIsPossList("List Assignments", srows);
+        CheckIsPossList("List Assignments", drows);
+        CheckIsPossList("List Assignments", scols);
+        CheckIsPossList("List Assignments", dcols);
+
+        srcsub = ELMS_LIST(src, srows);
+        ElmsListLevel(srcsub, scols, 1);
+        dstsub = ELMS_LIST(dst, drows);
+        AsssListLevel(dstsub, dcols, srcsub, 1);
+        return 0;
+    }
+
+    return DoOperation6Args(CopySubMatrixOper, src, dst, srows, drows, scols,
+                            dcols);
+}
+
+
+/****************************************************************************
+**
 *F  PLAIN_LIST(<list>)  . . . . . . . . . . .  convert a list to a plain list
 *V  PlainListFuncs[<type>]  . . . . . . . . . . table of conversion functions
 *F  PlainListError(<list>)  . . . . . . . . . . . . error conversion function
@@ -1612,7 +1742,8 @@ Obj PLAIN_LIST_COPY(Obj list)
 
 Obj FuncPlainListCopy(Obj self, Obj list)
 {
-    RequireSmallList(SELF_NAME, list);
+    if (!IS_LIST(list))
+        RequireArgument(SELF_NAME, list, "must be a list");
     return PLAIN_LIST_COPY(list);
 }
 
@@ -1874,6 +2005,8 @@ static StructGVarFilt GVarFilts [] = {
 static StructGVarAttr GVarAttrs [] = {
 
     GVAR_ATTR(LENGTH, "list", &LengthAttr),
+    GVAR_ATTR(NUMBER_ROWS, "mat", &NumberRowsAttr),
+    GVAR_ATTR(NUMBER_COLUMNS, "mat", &NumberColumnsAttr),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -1913,6 +2046,13 @@ static StructGVarOper GVarOpers[] = {
 
     GVAR_OPER_4ARGS(ASS_MAT, mat, row, col, obj, &AssMatOper),
     GVAR_OPER_3ARGS(ELM_MAT, mat, row, col, &ElmMatOper),
+    GVAR_OPER_2ARGS(EXTRACT_SUB_VECTOR, vec, poss, &ExtractSubVectorOper),
+    GVAR_OPER_4ARGS(COPY_SUB_VECTOR, src, dst, scols, dcols,
+                    &CopySubVectorOper),
+    GVAR_OPER_3ARGS(EXTRACT_SUB_MATRIX, mat, rows, cols,
+                    &ExtractSubMatrixOper),
+    GVAR_OPER_6ARGS(COPY_SUB_MATRIX, src, dst, srows, drows, scols, dcols,
+                    &CopySubMatrixOper),
 
     GVAR_OPER_3ARGS(SWAP_MAT_ROWS, mat, row1, row2, &SwapMatRows),
     GVAR_OPER_3ARGS(SWAP_MAT_COLS, mat, col1, col2, &SwapMatCols),
@@ -2275,7 +2415,7 @@ static Int CheckInit (
 {
     Int         i;              // loop variable
     Int         j;              // loop variable
-    Int         success = 1;
+    BOOL        success = TRUE;
 
     Int         fnums[] = { FN_IS_DENSE, FN_IS_NDENSE,
                             FN_IS_HOMOG, FN_IS_NHOMOG,
@@ -2313,7 +2453,7 @@ static Int CheckInit (
         if ( ClearFiltsTNums[i] == 0 ) {
             Pr( "#W  ClearFiltsListTNums [%s] missing\n",
                     (Int)TNAM_TNUM(i), 0);
-            success = 0;
+            success = FALSE;
         }
     }
 
@@ -2324,7 +2464,7 @@ static Int CheckInit (
             if ( HasFiltListTNums[i][fnums[j]] == -1 ) {
                 Pr( "#W  HasFiltListTNums [%s] [%s] missing\n",
                     (Int)TNAM_TNUM(i), (Int)fnams[j] );
-                success = 0;
+                success = FALSE;
                 HasFiltListTNums[i][fnums[j]] = 0;
             }
         }
@@ -2337,7 +2477,7 @@ static Int CheckInit (
             if ( SetFiltListTNums[i][fnums[j]] == 0 ) {
                 Pr( "#W  SetFiltListTNums [%s] [%s] missing\n",
                     (Int)TNAM_TNUM(i), (Int)fnams[j] );
-                success = 0;
+                success = FALSE;
             }
         }
     }
@@ -2349,7 +2489,7 @@ static Int CheckInit (
             if ( ResetFiltListTNums[i][fnums[j]] == 0 ) {
                 Pr( "#W  ResetFiltListTNums [%s] [%s] missing\n",
                     (Int)TNAM_TNUM(i), (Int)fnams[j] );
-                success = 0;
+                success = FALSE;
             }
         }
     }
@@ -2368,7 +2508,7 @@ static Int CheckInit (
                     Pr(
                      "#W  ResetFiltListTNums [%s] [%s] failed to reset\n",
                      (Int)TNAM_TNUM(i), (Int)fnams[j] );
-                    success = 0;
+                    success = FALSE;
                 }
             }
         }
@@ -2384,7 +2524,7 @@ static Int CheckInit (
                     Pr(
                      "#W  SetFiltListTNums [%s] [%s] must not change\n",
                      (Int)TNAM_TNUM(i), (Int)fnams[j] );
-                    success = 0;
+                    success = FALSE;
                 }
             }
         }
@@ -2397,7 +2537,7 @@ static Int CheckInit (
             if ( ClearFiltsTNums[i]+IMMUTABLE != ClearFiltsTNums[i+IMMUTABLE]) {
                 Pr( "#W  ClearFiltsTNums [%s] mismatch between mutable and immutable\n",
                     (Int)TNAM_TNUM(i), 0 );
-                success = 0;
+                success = FALSE;
             }
             for ( j = 0;  j < ARRAY_SIZE(fnums);  j++ ) {
 
@@ -2405,21 +2545,21 @@ static Int CheckInit (
                      HasFiltListTNums[i+IMMUTABLE][fnums[j]]) {
                     Pr( "#W  HasFiltListTNums [%s] [%s] mismatch between mutable and immutable\n",
                         (Int)TNAM_TNUM(i), (Int)fnams[j] );
-                    success = 0;
+                    success = FALSE;
                 }
 
                 if ( (SetFiltListTNums[i][fnums[j]] | IMMUTABLE) !=
                      SetFiltListTNums[i+IMMUTABLE][fnums[j]]) {
                     Pr( "#W  SetFiltListTNums [%s] [%s] mismatch between mutable and immutable\n",
                         (Int)TNAM_TNUM(i), (Int)fnams[j] );
-                    success = 0;
+                    success = FALSE;
                 }
 
                 if ( (ResetFiltListTNums[i][fnums[j]] | IMMUTABLE) !=
                      ResetFiltListTNums[i+IMMUTABLE][fnums[j]]) {
                     Pr( "#W  ResetFiltListTNums [%s] [%s] mismatch between mutable and immutable\n",
                         (Int)TNAM_TNUM(i), (Int)fnams[j] );
-                    success = 0;
+                    success = FALSE;
                 }
 
             }
@@ -2430,43 +2570,43 @@ static Int CheckInit (
                 Pr(
                  "#W  HasFiltListTNums [%s] [ empty -> dense ] missing\n",
                  (Int)TNAM_TNUM(i), 0);
-                success = 0;
+                success = FALSE;
             }
             if ( HasFiltListTNums[i][FN_IS_NDENSE] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ empty + ndense ] illegal\n",
                  (Int)TNAM_TNUM(i), 0);
-                success = 0;
+                success = FALSE;
             }
             if ( ! HasFiltListTNums[i][FN_IS_HOMOG] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ empty -> homog ] missing\n",
                  (Int)TNAM_TNUM(i), 0);
-                success = 0;
+                success = FALSE;
             }
             if ( HasFiltListTNums[i][FN_IS_NHOMOG] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ empty + nhomog ] illegal\n",
                  (Int)TNAM_TNUM(i), 0);
-                success = 0;
+                success = FALSE;
             }
             if ( ! HasFiltListTNums[i][FN_IS_SSORT] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ empty -> ssort ] missing\n",
                  (Int)TNAM_TNUM(i), 0);
-                success = 0;
+                success = FALSE;
             }
             if ( HasFiltListTNums[i][FN_IS_NSORT] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ empty + nsort ] illegal\n",
                  (Int)TNAM_TNUM(i), 0);
-                success = 0;
+                success = FALSE;
             }
             if ( HasFiltListTNums[i][FN_IS_TABLE] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ empty + table ] illegal\n",
                  (Int)TNAM_TNUM(i), 0);
-                success = 0;
+                success = FALSE;
             }
         }
 
@@ -2475,7 +2615,7 @@ static Int CheckInit (
                 Pr(
                  "#W  HasFiltListTNums [%s] [ dense + ndense ] illegal\n",
                  (Int)TNAM_TNUM(i), 0);
-                success = 0;
+                success = FALSE;
             }
         }
 
@@ -2484,13 +2624,13 @@ static Int CheckInit (
                 Pr(
                  "#W  HasFiltListTNums [%s] [ ndense + homog ] illegal\n",
                  (Int)TNAM_TNUM(i), 0);
-                success = 0;
+                success = FALSE;
             }
             if ( HasFiltListTNums[i][FN_IS_TABLE] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ ndense + table ] illegal\n",
                  (Int)TNAM_TNUM(i), 0);
-                success = 0;
+                success = FALSE;
             }
         }
 
@@ -2499,19 +2639,19 @@ static Int CheckInit (
                 Pr(
                  "#W  HasFiltListTNums [%s] [ homog + nhomog ] illegal\n",
                  (Int)TNAM_TNUM(i), 0);
-                success = 0;
+                success = FALSE;
             }
             if ( ! HasFiltListTNums[i][FN_IS_DENSE] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ homog -> dense ] missing\n",
                  (Int)TNAM_TNUM(i), 0);
-                success = 0;
+                success = FALSE;
             }
             if ( HasFiltListTNums[i][FN_IS_NDENSE] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ homog + ndense ] illegal\n",
                  (Int)TNAM_TNUM(i), 0);
-                success = 0;
+                success = FALSE;
             }
         }
 
@@ -2520,7 +2660,7 @@ static Int CheckInit (
                 Pr(
                  "#W  HasFiltListTNums [%s] [ nhomog + table ] illegal\n",
                  (Int)TNAM_TNUM(i), 0);
-                success = 0;
+                success = FALSE;
             }
         }
 
@@ -2529,13 +2669,13 @@ static Int CheckInit (
                 Pr(
                  "#W  HasFiltListTNums [%s] [ table -> homog ] missing\n",
                  (Int)TNAM_TNUM(i), 0);
-                success = 0;
+                success = FALSE;
             }
             if ( ! HasFiltListTNums[i][FN_IS_DENSE] ) {
                 Pr(
                  "#W  HasFiltListTNums [%s] [ table -> dense ] missing\n",
                  (Int)TNAM_TNUM(i), 0);
-                success = 0;
+                success = FALSE;
             }
         }
 
@@ -2544,7 +2684,7 @@ static Int CheckInit (
                 Pr(
                  "#W  HasFiltListTNums [%s] [ ssort + nsort ] illegal\n",
                  (Int)TNAM_TNUM(i), 0);
-                success = 0;
+                success = FALSE;
             }
         }
     }

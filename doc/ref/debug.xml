@@ -41,10 +41,9 @@ error as in the following example occurs and a break loop is entered:
 <Log><![CDATA[
 gap> IsNormal(2,2);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `IsNormal' on 2 arguments at GAPROOT/lib/methsel2.g:250 called from
-<function "HANDLE_METHOD_NOT_FOUND">( <arguments> )
- called from read-eval loop at *stdin*:1
-type 'quit;' to quit to outer loop
+Error, no 1st choice method found for `IsNormal' on 2 arguments
+called from read-eval loop at *stdin*:1
+you can enter 'quit;' to quit to outer loop
 brk>
 ]]></Log>
 <P/>
@@ -73,6 +72,7 @@ afterwards.
 <Heading>Inspecting Applicable Methods</Heading>
 
 <#Include Label="ApplicableMethod">
+<#Include Label="MethodsOperation">
 
 </Section>
 
@@ -444,6 +444,10 @@ hour/minute format.
 that has passed since some fixed, but unspecified time in the past.
 
 This function is appropriate for doing wallclock time measurements.
+Only differences between two of its values are meaningful: despite the
+name, the values are not counted from 1-Jan-1970, and on most systems not
+from any particular date at all.  To find out what the current date and
+time are, use <Ref Func="CurrentSecondsSinceEpoch"/> instead.
 
 The actual resolution depends on the system that &GAP; is run on.
 Information about the used timers can be obtained by calling
@@ -914,39 +918,38 @@ to terminate the calculation, or enter <B>Return</B><C>;</C> to continue it.
 gap> dive:= function(depth) if depth>1 then dive(depth-1); fi; return; end;
 function( depth ) ... end
 gap> dive(100);
-gap> OnBreak:= function() Where(1); end; # shorter traceback
-function(  ) ... end
+gap> OnBreak:= function() Where(2); end;; # shorter traceback
 gap> dive(6000);
-recursion depth trap (5000)
- at
-dive( depth - 1 );
- called from
-dive( depth - 1 ); called from
-...
-Entering break read-eval-print loop ...
-you can 'quit;' to quit to outer loop, or
-you may 'return;' to continue
+Error, recursion depth trap (5000)
+Stack trace:
+*[1] dive( depth - 1 );
+   @ *stdin*:1
+ [2] dive( depth - 1 );
+   @ *stdin*:1
+...  at *stdin*:4
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> return;
 gap> dive(11000);
-recursion depth trap (5000)
- at
-dive( depth - 1 );
- called from
-dive( depth - 1 ); called from
-...
-Entering break read-eval-print loop ...
-you can 'quit;' to quit to outer loop, or
-you may 'return;' to continue
+Error, recursion depth trap (5000)
+Stack trace:
+*[1] dive( depth - 1 );
+   @ *stdin*:1
+ [2] dive( depth - 1 );
+   @ *stdin*:1
+...  at *stdin*:5
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> return;
-recursion depth trap (10000)
- at
-dive( depth - 1 );
- called from
-dive( depth - 1 ); called from
-...
-Entering break read-eval-print loop ...
-you can 'quit;' to quit to outer loop, or
-you may 'return;' to continue
+Error, recursion depth trap (10000)
+Stack trace:
+*[1] dive( depth - 1 );
+   @ *stdin*:1
+ [2] dive( depth - 1 );
+   @ *stdin*:1
+...  at *stdin*:5
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> return;
 gap>
 ]]></Log>
@@ -978,39 +981,33 @@ gap> dive := function(depth)
 >  fi;
 > end;;
 gap> SetRecursionTrapInterval(1000);
+gap> OnBreak:= function() Where(2); end;; # shorter traceback
 gap> dive(100);
 Depth 100
 gap> dive(2500);
-recursion depth trap (1000)
- at
-dive( depth - 1 );
- called from
-dive( depth - 1 ); called from
-...
-Entering break read-eval-print loop ...
-you can 'quit;' to quit to outer loop, or
-you may 'return;' to continue
+Error, recursion depth trap (1000)
+Stack trace:
+*[1] dive( depth - 1 );
+   @ *stdin*:4
+ [2] dive( depth - 1 );
+   @ *stdin*:4
+...  at *stdin*:12
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> return;
-recursion depth trap (2000)
- at
-dive( depth - 1 );
- called from
-dive( depth - 1 ); called from
-...
-Entering break read-eval-print loop ...
-you can 'quit;' to quit to outer loop, or
-you may 'return;' to continue
+Error, recursion depth trap (2000)
+Stack trace:
+*[1] dive( depth - 1 );
+   @ *stdin*:4
+ [2] dive( depth - 1 );
+   @ *stdin*:4
+...  at *stdin*:12
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> GetRecursionDepth();
 0
 brk> return;
-gap> SetRecursionTrapInterval(-1);
-Error, SetRecursionTrapInterval: <interval> must be a small integer greater than 5 (n\
-ot the integer -1)
-not in any function
-Entering break read-eval-print loop ...
-you can 'quit;' to quit to outer loop, or
-you can replace <interval> via 'return <interval>;' to continue
-brk> return 0;
+gap> SetRecursionTrapInterval(2^50);
 gap> dive(20000);
 Depth 20000
 gap> dive(2000000);

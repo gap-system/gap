@@ -1,3 +1,4 @@
+#@local f,r,l
 #
 # Tests for the GAP interpreter logic.
 #
@@ -15,14 +16,6 @@ gap> if 1 then fi;
 Error, <expr> must be 'true' or 'false' (not the integer 1)
 
 #
-# 'quit' inside functions
-#
-gap> function() quit; end;
-Syntax error: 'quit;' cannot be used in this context in stream:1
-function() quit; end;
-           ^^^^
-
-#
 # return is not allowed in interpreter
 #
 gap> return;
@@ -31,16 +24,12 @@ gap> return 1;
 'return' must not be used in file read-eval loop
 
 #
-# isolated quit and QUIT are ignore in test files
-#
-gap> quit;
-gap> QUIT;
-
-#
 # help system
 #
+#@if IsPackageMarkedForLoading( "gapdoc", "" )
 gap> ?qwert_asdf
 Help: no matching entry found
+#@fi
 
 #
 # function call with options

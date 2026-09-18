@@ -556,7 +556,7 @@ DeclareAttribute( "PrimePGroup", IsPGroup );
 ##  <Description>
 ##  The <M>p</M>-class of a <M>p</M>-group <A>G</A>
 ##  (see&nbsp;<Ref Prop="IsPGroup"/>)
-##  is the length of the lower <M>p</M>-central series
+##  is the number of steps in the lower <M>p</M>-central series
 ##  (see&nbsp;<Ref Oper="PCentralSeries"/>) of <A>G</A>.
 ##  If <A>G</A> is not a <M>p</M>-group then an error is issued.
 ##  </Description>
@@ -580,7 +580,9 @@ DeclareAttribute( "PClassPGroup", IsPGroup );
 ##  which is defined as the minimal size of a generating system of <A>G</A>.
 ##  If <A>G</A> is not a <M>p</M>-group then an error is issued.
 ##  <Example><![CDATA[
-##  gap> h:=Group((1,2,3,4),(1,3));;
+##  gap> h:= Group((1,2,3,4), (1,3));;
+##  gap> Length(PCentralSeries(h));
+##  3
 ##  gap> PClassPGroup(h);
 ##  2
 ##  gap> RankPGroup(h);
@@ -1395,10 +1397,12 @@ DeclareAttribute( "PerfectResiduum", IsGroup );
 ##  <Description>
 ##  returns a list of conjugacy representatives of perfect (respectively
 ##  simple) subgroups of <A>G</A>.
-##  This uses the library of perfect groups
-##  (see <Ref Func="PerfectGroup" Label="for group order (and index)"/>),
-##  thus it will issue an error if the library is insufficient to determine
-##  all perfect subgroups.
+##  This uses the library of perfect groups provided by the
+##  <Package>PerfGrp</Package> package
+##  (see <Ref BookName="perfgrp" Func="PerfectGroup"
+##  Label="for group order (and index)"/>),
+##  thus that package must be loaded, and it will issue an error if the
+##  library is insufficient to determine all perfect subgroups.
 ##  <Example><![CDATA[
 ##  gap> m11:=TransitiveGroup(11,6);
 ##  M(11)
@@ -1509,6 +1513,30 @@ DeclareAttribute( "LatticeSubgroups", IsGroup );
 
 #############################################################################
 ##
+#A  ChiefLength( <G> )
+##
+##  <#GAPDoc Label="ChiefLength">
+##  <ManSection>
+##  <Attr Name="ChiefLength" Arg='G'/>
+##
+##  <Description>
+##  The chief length of a group is the number of steps in any of its chief
+##  series, see <Ref Attr="ChiefSeries"/>.
+##  <Example><![CDATA[
+##  gap> List( ChiefSeries( g ), Size );
+##  [ 24, 12, 4, 1 ]
+##  gap> ChiefLength( g );
+##  3
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute( "ChiefLength", IsGroup );
+
+
+#############################################################################
+##
 #A  DerivedLength( <G> )
 ##
 ##  <#GAPDoc Label="DerivedLength">
@@ -1529,6 +1557,7 @@ DeclareAttribute( "LatticeSubgroups", IsGroup );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "DerivedLength", IsGroup );
+
 
 #############################################################################
 ##
@@ -1807,6 +1836,7 @@ DeclareAttribute( "PrefrattiniSubgroup", IsGroup );
 ##  <Description>
 ##  The Frattini subgroup of a group <A>G</A> is the intersection of all
 ##  maximal subgroups of <A>G</A>.
+##  See also <Ref Prop="IsFrattiniFree"/>.
 ##  <Example><![CDATA[
 ##  gap> FrattiniSubgroup(g);
 ##  Group(())
@@ -1816,6 +1846,105 @@ DeclareAttribute( "PrefrattiniSubgroup", IsGroup );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "FrattiniSubgroup", IsGroup );
+
+
+#############################################################################
+##
+#P  IsFrattiniFree( <G> )
+##
+##  <#GAPDoc Label="IsFrattiniFree">
+##  <ManSection>
+##  <Prop Name="IsFrattiniFree" Arg='G'/>
+##
+##  <Description>
+##  A group is called <E>Frattini-free</E> if its Frattini subgroup
+##  (see <Ref Attr="FrattiniSubgroup"/>) is trivial.
+##  <P/>
+##  Methods for this property are only installed for finite groups.
+##  Note that a finite nilpotent group is Frattini-free if and only if all
+##  of its Sylow subgroups are elementary abelian, and that a finite group
+##  of squarefree order is always Frattini-free.
+##  <Example><![CDATA[
+##  gap> IsFrattiniFree( SymmetricGroup( 4 ) );
+##  true
+##  gap> IsFrattiniFree( CyclicGroup( 6 ) );
+##  true
+##  gap> IsFrattiniFree( CyclicGroup( 4 ) );
+##  false
+##  gap> IsFrattiniFree( QuaternionGroup( 8 ) );
+##  false
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareProperty( "IsFrattiniFree", IsGroup );
+
+InstallIsomorphismMaintenance( IsFrattiniFree, IsGroup, IsGroup );
+
+InstallTrueMethod( IsFrattiniFree, IsGroup and IsTrivial );
+
+# In an (infinite dimensional) vector space over a field with p elements the
+# hyperplanes intersect trivially.
+InstallTrueMethod( IsFrattiniFree, IsGroup and IsElementaryAbelian );
+
+# A nontrivial finite group has a maximal subgroup, hence its Frattini
+# subgroup is a proper normal subgroup and thus trivial if the group
+# is simple.
+InstallTrueMethod( IsFrattiniFree, IsGroup and IsFinite and IsSimpleGroup );
+
+# For a finite p-group P we have Phi(P) = P'P^p, hence P is Frattini-free
+# if and only if it is elementary abelian; a finite nilpotent group is the
+# direct product of its Sylow subgroups.
+InstallTrueMethod( IsElementaryAbelian,
+    IsGroup and IsFinite and IsPGroup and IsFrattiniFree );
+InstallTrueMethod( IsCommutative,
+    IsGroup and IsFinite and IsNilpotentGroup and IsFrattiniFree );
+
+
+#############################################################################
+##
+#P  IsFittingFree( <G> )
+##
+##  <#GAPDoc Label="IsFittingFree">
+##  <ManSection>
+##  <Prop Name="IsFittingFree" Arg='G'/>
+##
+##  <Description>
+##  A group is called <E>Fitting-free</E> if its Fitting subgroup
+##  (see <Ref Attr="FittingSubgroup"/>) is trivial. For a finite group this
+##  is the case if and only if its solvable radical
+##  (see <Ref Attr="SolvableRadical"/>) is trivial, which is why such groups
+##  are also called groups with trivial Fitting subgroup, or TF-groups.
+##  <P/>
+##  Methods for this property are only installed for finite groups.
+##  A nontrivial finite solvable group is never Fitting-free, while every
+##  finite nonabelian simple group is.
+##  <Example><![CDATA[
+##  gap> IsFittingFree( SymmetricGroup( 5 ) );
+##  true
+##  gap> IsFittingFree( SymmetricGroup( 4 ) );
+##  false
+##  gap> IsFittingFree( SL( 2, 5 ) );
+##  false
+##  gap> IsFittingFree( PSL( 2, 5 ) );
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareProperty( "IsFittingFree", IsGroup );
+
+InstallIsomorphismMaintenance( IsFittingFree, IsGroup, IsGroup );
+
+InstallTrueMethod( IsFittingFree, IsGroup and IsTrivial );
+
+# a nonabelian simple group has no nontrivial proper normal subgroup at all
+InstallTrueMethod( IsFittingFree, IsGroup and IsFinite and IsNonabelianSimpleGroup );
+
+# for a finite group G we have Phi(G) <= F(G)
+InstallTrueMethod( IsFrattiniFree, IsGroup and IsFinite and IsFittingFree );
 
 
 #############################################################################
@@ -3709,6 +3838,9 @@ DeclareOperation( "GrowthFunctionOfGroup",
 ##  <Ref Oper="GroupByGenerators"/> returns the group <M>G</M> generated by the list <A>gens</A>.
 ##  If a second argument <A>id</A> is present then this is stored as the identity
 ##  element of the group.
+##  This second argument is mandatory if <A>gens</A> is empty,
+##  since the identity element cannot be determined from an empty list of
+##  generators.
 ##  <P/>
 ##  The value of the attribute <Ref Attr="GeneratorsOfGroup"/> of <M>G</M> need not be equal
 ##  to <A>gens</A>.
@@ -3735,6 +3867,9 @@ DeclareOperation( "GroupByGenerators",
 ##  the list <A>gens</A>.
 ##  If a second argument <A>id</A> is present then this is stored as the
 ##  identity element of the group.
+##  This second argument is mandatory if <A>gens</A> is empty,
+##  since the identity element cannot be determined from an empty list of
+##  generators.
 ##  The value of the attribute <Ref Attr="GeneratorsOfGroup"/> of <M>G</M>
 ##  is equal to <A>gens</A>.
 ##  </Description>
@@ -3777,6 +3912,9 @@ DeclareGlobalFunction("MakeGroupyObj");
 ##  If there are two arguments, a list <A>gens</A> and an element <A>id</A>,
 ##  then <C>Group( <A>gens</A>, <A>id</A> )</C> is the group generated by the
 ##  elements of <A>gens</A>, with identity <A>id</A>.
+##  This second argument is mandatory if the list <A>gens</A> is empty,
+##  since the identity element cannot be determined from an empty list of
+##  generators.
 ##  <P/>
 ##  Note that the value of the attribute <Ref Attr="GeneratorsOfGroup"/>
 ##  need not be equal to the list <A>gens</A> of generators entered as
@@ -3787,6 +3925,8 @@ DeclareGlobalFunction("MakeGroupyObj");
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,2,3,4),(1,2));
 ##  Group([ (1,2,3,4), (1,2) ])
+##  gap> Group([], ());
+##  Group(())
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -3984,7 +4124,7 @@ InParentFOA( "RightTransversal", IsGroup, IsGroup, DeclareAttribute );
 ##  <Oper Name="IntermediateSubgroups" Arg='G, U'/>
 ##
 ##  <Description>
-##  returns a list of all subgroups of <A>G</A> that properly contain
+##  returns a list of all proper subgroups of <A>G</A> that properly contain
 ##  <A>U</A>; that is all subgroups between <A>G</A> and <A>U</A>.
 ##  It returns a record with a component <C>subgroups</C>, which is a list of
 ##  these subgroups, as well as a component <C>inclusions</C>,
@@ -3994,6 +4134,15 @@ InParentFOA( "RightTransversal", IsGroup, IsGroup, DeclareAttribute );
 ##  <M>j</M>,
 ##  the numbers <M>0</M> and <M>1 +</M> <C>Length(subgroups)</C> are used to
 ##  denote <A>U</A> and <A>G</A>, respectively.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> G:= DihedralGroup( IsPermGroup, 8 );;
+##  gap> IntermediateSubgroups( G, Centre( G ) );
+##  rec( inclusions := [ [ 0, 1 ], [ 0, 2 ], [ 0, 3 ], [ 1, 4 ], [ 2, 4 ],
+##        [ 3, 4 ] ],
+##    subgroups := [ Group([ (2,4), (1,3)(2,4) ]), Group([ (1,2,3,4) ]),
+##        Group([ (1,2)(3,4), (1,3)(2,4) ]) ] )
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -4248,8 +4397,8 @@ DeclareGlobalFunction( "AllSmallNonabelianSimpleGroups" );
 ##  returns an isomorphism from <A>G</A> onto an isomorphic pc group.
 ##  The series chosen for this pc representation depends on
 ##  the method chosen.
-##  <A>G</A> must be a polycyclic group of any kind, for example a solvable
-##  permutation group.
+##  <A>G</A> must be a finite polycyclic group of any kind, for example a solvable
+##  permutation group. If <A>G</A> is finite but not solvable, <K>fail</K> is returned.
 ##  <Example><![CDATA[
 ##  gap> G := Group( (1,2,3), (3,4,1) );;
 ##  gap> iso := IsomorphismPcGroup( G );
@@ -4276,8 +4425,8 @@ DeclareAttribute( "IsomorphismPcGroup", IsGroup );
 ##  returns an isomorphism from <A>G</A> onto an isomorphic pc group
 ##  whose family pcgs is a special pcgs.
 ##  (This can be beneficial to the runtime of calculations.)
-##  <A>G</A> may be a polycyclic group of any kind, for example a solvable
-##  permutation group.
+##  <A>G</A> must be a finite polycyclic group of any kind, for example a solvable
+##  permutation group. If <A>G</A> is finite but not solvable, <K>fail</K> is returned.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

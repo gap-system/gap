@@ -550,10 +550,10 @@ BindGlobal( "AlgebraByStructureConstantsArg",
     zero := Zero( R );
     T    := arglist[2];
 
-    if zero = T[ Length( T ) ] then
+    if zero = Last(T) then
       T:= Immutable( T );
     else
-      if T[ Length( T ) ] = 0 then
+      if Last(T) = 0 then
         T:= ReducedSCTable( T, One( zero ) );
       else
         Error( "<R> and <T> are not compatible" );
@@ -654,8 +654,9 @@ InstallGlobalFunction( AlgebraByStructureConstants, function( arg )
 end );
 
 InstallGlobalFunction( AlgebraWithOneByStructureConstants, function( arg )
-    return AlgebraByStructureConstantsArg( arg{ [ 1 .. Length( arg )-1 ] },
-               IsSCAlgebraObj, arg[ Length( arg ) ] );
+    local onecoeffs;
+    onecoeffs := Remove(arg);
+    return AlgebraByStructureConstantsArg( arg, IsSCAlgebraObj, onecoeffs );
 end );
 
 InstallGlobalFunction( LieAlgebraByStructureConstants, function( arg )
@@ -672,7 +673,7 @@ InstallGlobalFunction( RestrictedLieAlgebraByStructureConstants, function( arg )
     SetIsRestrictedLieAlgebra( A, true );
     fam := FamilyObj(Representative(A));
     fam!.pMapping := [];
-    pmap := arg[Length(arg)];
+    pmap := Last(arg);
     while Length(pmap)<>Dimension(A) do
         Error("Pth power images list should have length ",Dimension(A));
     od;

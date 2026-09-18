@@ -18,10 +18,10 @@
 #include "compiler.h"
 #include "error.h"
 #include "funcs.h"
-#include "gapstate.h"
 #ifdef USE_GASMAN
 #include "gasman_intern.h"
 #endif
+#include "gapstate.h"
 #include "gaptime.h"
 #include "gvars.h"
 #include "integer.h"
@@ -123,11 +123,18 @@ static UInt Time;
 */
 static UInt MemoryAllocated;
 
-
 #ifndef HPCGAP
-GAPState MainGAPState;
-#endif
 
+// HACK: include gapstate a second time, but with DECL_GAP_STATE
+// defined to be empty, to root the global variables here; i.e.,
+// `DECL_GAP_STATE Obj Tilde;` is turned into just `Obj Tilde;`
+// and so on.
+#undef GAP_GAPSTATE_H
+#undef DECL_GAP_STATE
+#define DECL_GAP_STATE
+#include "gapstate.h"
+
+#endif
 
 /****************************************************************************
 **
@@ -402,10 +409,9 @@ int realmain(int argc, const char * argv[])
 {
   UInt                type;                   // result of compile
   Obj                 func;                   // function (compiler)
-  Int4                crc;                    // crc of file to compile
 
   // initialize everything and read init.g which runs the GAP session
-  InitializeGap(&argc, argv, 1);
+  InitializeGap(&argc, argc, argv, 1);
   if (!STATE(UserHasQUIT)) {         /* maybe the user QUIT from the initial
                                    read of init.g  somehow*/
     // maybe compile in which case init.g got skipped
@@ -418,12 +424,11 @@ int realmain(int argc, const char * argv[])
       if (!CloseInput(&input)) {
           return 2;
       }
-      crc  = SyGAPCRC(SyCompileInput);
       type = CompileFunc(
                          MakeImmString(SyCompileOutput),
                          func,
                          MakeImmString(SyCompileName),
-                         crc,
+                         SyGAPCRC(SyCompileInput),
                          MakeImmString(SyCompileMagic1) );
       return ( type == 0 ) ? 1 : 0;
     }
@@ -448,7 +453,7 @@ static Obj FuncID_FUNC(Obj self, Obj val1)
 static Obj FuncRETURN_FIRST(Obj self, Obj args)
 {
     if (!IS_PLIST(args) || LEN_PLIST(args) < 1)
-        ErrorMayQuit("RETURN_FIRST requires one or more arguments",0,0);
+        ErrorMayQuit("RETURN_FIRST requires at least one argument",0,0);
 
     return ELM_PLIST(args, 1);
 }
@@ -1442,7 +1447,7 @@ StructInitInfo * InitInfoGap ( void )
 **  does  assignments of auxiliary C   variables (for example, pointers  from
 **  objects, length of hash lists).  This function is only used for starting.
 **
-**  `PostRestore': Everything in  `InitLibrary' execpt  creating objects.  In
+**  `PostRestore': Everything in  `InitLibrary' except  creating objects.  In
 **  general    `InitLibrary'  will  create    all objects    and  then  calls
 **  `PostRestore'.  This function is only used when restoring.
 **
@@ -1452,21 +1457,18 @@ StructInitInfo * InitInfoGap ( void )
 **  function. We use the resulting pointer as a hint to the garbage collector
 **  as to where the execution stack (might) start.
 */
-void InitializeGap(int * pargc, const char * argv[], BOOL handleSignals)
+void InitializeGap(void * stackBottom, int argc, const char * argv[], BOOL handleSignals)
 {
-    const int argc = *pargc;
-
     // initialize the basic system and gasman
     InitSystem(argc, argv, handleSignals);
 
     // Initialise memory  -- have to do this here to make sure we are at top of C stack
-    InitBags(
+    Bag * alignedStackBottom = (Bag *)(((UInt)stackBottom / C_STACK_ALIGN) * C_STACK_ALIGN);
 #if defined(USE_GASMAN)
-        SyStorMin,
+    InitBags(SyStorMin, alignedStackBottom);
 #else
-        0,
+    InitBags(0, alignedStackBottom);
 #endif
-             (Bag *)(((UInt)pargc / C_STACK_ALIGN) * C_STACK_ALIGN));
 
     STATE(UserHasQUIT) = FALSE;
     STATE(UserHasQuit) = FALSE;
@@ -1477,6 +1479,8 @@ void InitializeGap(int * pargc, const char * argv[], BOOL handleSignals)
 
     // call kernel initialisation
     ModulesInitKernel();
+
+    InitRootPaths(argc, argv);
 
 #ifdef HPCGAP
     InitMainThread();

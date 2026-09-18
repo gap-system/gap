@@ -564,9 +564,32 @@ gap> m := [m[1], mm[1], m[2], mm[2],[]];
   <a GF2 vector of length 4>, <a GF2 vector of length 4>, [  ] ]
 gap> ConvertToMatrixRep(m);
 fail
+gap> m:= [ [ Z(3) ] ];;
+gap> ConvertToVectorRep( m[1], 9 ) = 9;
+true
+gap> ConvertToMatrixRep( m, 3 ) = 3;
+true
+gap> m:= [ [ Z(3) ] ];;
+gap> ConvertToVectorRep( m[1], 27 ) = 27;
+true
+gap> ConvertToMatrixRep( m, 9 ) = 9;
+true
+gap> m:= [ [ Z(3) ] ];;
+gap> ConvertToVectorRep( m[1], 9 ) = 9;
+true
+gap> ConvertToMatrixRep( m, 27 ) = 27;
+true
+gap> m:= [ [ Z(9) ] ];;
+gap> ConvertToVectorRep( m[1], 3 ) = 9;
+Error, ConvertToVectorRepNC: Vector cannot be written over GF(3)
+gap> ConvertToVectorRep( m[1], 9 );
+9
+gap> ConvertToMatrixRep( m, 3 );
+Error, ConvertToMatrixRep( <mat>, <q> ): not all entries of <mat> written over\
+ <q>
 
 # ConvertToMatrixRepNC
-gap> ConvertToMatrixRepNC([], 3);
+gap> ConvertToMatrixRepNC([], 3);   # What is this test supposed to show?
 3
 
 # DefaultFieldOfMatrix

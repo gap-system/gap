@@ -82,30 +82,9 @@ end );
 ##
 #M  DimensionOfMatrixGroup( <mat-grp> )
 ##
-InstallMethod( DimensionOfMatrixGroup, "from generators",
-    [ IsMatrixGroup and HasGeneratorsOfGroup ],
-    function( grp )
-    if not IsEmpty( GeneratorsOfGroup( grp ) )  then
-      return NumberRows( GeneratorsOfGroup( grp )[1] );
-    else
-        TryNextMethod();
-    fi;
-end );
-
-InstallMethod( DimensionOfMatrixGroup, "from one",
-    [ IsMatrixGroup and HasOne ], 1,
-    grp -> NumberRows( One( grp ) ) );
-
-# InstallOtherMethod( DimensionOfMatrixGroup,
-#         "from source of nice monomorphism",
-#         [ IsMatrixGroup and HasNiceMonomorphism ],
-#     grp -> DimensionOfMatrixGroup( Source( NiceMonomorphism( grp ) ) ) );
-#T this was illegal,
-#T since it assumes that the source is a different object than the
-#T original group; if this fails then we run into an infinite recursion!
-
-#T why not delegate to `Representative' instead of installing
-#T different methods?
+InstallMethod( DimensionOfMatrixGroup,
+    [ IsMatrixGroup ],
+    grp -> NumberRows( Representative( grp ) ) );
 
 
 #############################################################################
@@ -445,13 +424,11 @@ local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads,
   SetRange(hom,R);
   SetImagesSource(hom,R);
   SetMappingGeneratorsImages(hom,[acts,permimg]);
-#  p:=RUN_IN_GGMBI; # no niceomorphism translation here
-#  RUN_IN_GGMBI:=true;
+#  # no niceomorphism translation here
 #  SetAsGroupGeneralMappingByImages ( hom, GroupHomomorphismByImagesNC
-#            ( G, R, acts, permimg ) );
+#            ( G, R, acts, permimg : Run_In_GGMBI:= true ) );
 #
 #  SetFilterObj( hom, IsActionHomomorphismByBase );
-#  RUN_IN_GGMBI:=p;
   if act=OnRight or act=OnPoints then
     # only store for action on right. projective action needs is own call to
     # `LinearActionBase' as this will set other needed parameters.
@@ -557,20 +534,32 @@ end );
 BindGlobal( "IsomorphismPermGroupForMatrixGroup",
 function(G)
 local map;
-  if HasNiceMonomorphism(G) and IsPermGroup(Range(NiceMonomorphism(G))) then
-    map:=NiceMonomorphism(G);
+
+  if HasNiceMonomorphism( G ) then
+    map:= NiceMonomorphism( G );
+    if not IsPermGroup( Range( map ) ) then
+      # Trust GAP that this map is still useful.
+      map:= CompositionMapping( IsomorphismPermGroup( Image( map ) ), map );
+    fi;
   else
-    if not HasIsFinite(G) then
-      Info(InfoWarning,1,
-           "IsomorphismPermGroup: The group is not known to be finite");
+    # We cannot be sure about `IsHandledByNiceMonomorphism` for `G`.
+    if not HasIsFinite( G ) then
+      Info( InfoWarning,1,
+            "IsomorphismPermGroup: The group is not known to be finite" );
     fi;
     map:=NicomorphismOfGeneralMatrixGroup(G,false,false);
     SetNiceMonomorphism(G,map);
   fi;
-  if IsIdenticalObj(Source(map),G) then
+  # Now `G` stores a `NiceMonomorphism`.
+  if IsPermGroup(Range(NiceMonomorphism(G))) then
+    map:=RestrictedNiceMonomorphism(G);
+  fi;
+  if IsIdenticalObj(Source(map),G) and IsSurjective(map) then
     return map;
   fi;
-  return GeneralRestrictedMapping(map,G,NiceObject(G));
+  map:=GeneralRestrictedMapping(map, G, ImagesSet(map,G));
+  SetIsBijective(map, true);
+  return map;
 end);
 
 InstallMethod( IsomorphismPermGroup,
@@ -581,10 +570,11 @@ InstallMethod( IsomorphismPermGroup,
 InstallMethod( IsomorphismPermGroup,
     "finite matrix group",
     [ IsMatrixGroup and IsFinite and IsHandledByNiceMonomorphism ],
-    # The downranking is compatible with that for the method for
-    # 'IsGroup and IsFinite and IsHandledByNiceMonomorphism'
-    # (see 'lib/grpnice.gi').
-    5-NICE_FLAGS,
+    # We do not want the upranking via 'IsHandledByNiceMonomorphism',
+    # analogous to the situation with the method for
+    # 'IsGroup and IsFinite and IsHandledByNiceMonomorphism'in
+    # 'lib/grpnice.gi'.
+    [ [ IsMatrixGroup and IsFinite ], 1 ],
     IsomorphismPermGroupForMatrixGroup );
 
 
@@ -631,7 +621,7 @@ local gens,s,dom,mon,no;
   # call the recursive function to do the work
   gens:= SCMinSmaGens( no, s, [], One( no ), true ).gens;
   SetMinimalStabChain(G,s);
-  return List(gens,i->PreImagesRepresentative(mon,i));
+  return List(gens,i->PreImagesRepresentativeNC(mon,i));
 end);
 
 #############################################################################
@@ -668,7 +658,7 @@ local s,dom,mon, img;
                                       i->Position(HomeEnumerator(dom),i))));
   # call the recursive function to do the work
   s:= LargestElementStabChain( s, One( img ) );
-  return PreImagesRepresentative(mon,s);
+  return PreImagesRepresentativeNC(mon,s);
 end);
 
 #############################################################################
@@ -707,7 +697,7 @@ local mon,dom,S,o,oimgs,p,i,g;
     od;
 
     # change by corresponding matrix element
-    e:=PreImagesRepresentative(mon,g)*e;
+    e:=PreImagesRepresentativeNC(mon,g)*e;
 
     S:=S.stabilizer;
   od;
@@ -838,22 +828,34 @@ BindGlobal( "RespectsQuadraticForm", function( Q, M )
 #M  <mat> in <G>  . . . . . . . . . . . . . . . . . . . .  is form invariant?
 ##
 InstallMethod( \in, "respecting quadratic form", IsElmsColls,
-    [ IsMatrix, IsFullSubgroupGLorSLRespectingQuadraticForm ],
-    NICE_FLAGS,  # this method is better than the one using a nice monom.;
+    [ IsMatrixOrMatrixObj,
+      IsFullSubgroupGLorSLRespectingQuadraticForm ],
+    {} -> RankFilter( IsHandledByNiceMonomorphism ), # override nice mon. method
+                 # this method is better than the one using a nice monom.;
                  # it has the same rank as the method based on the inv.
                  # bilinear form, which is cheaper to check,
                  # thus we install the current method first
     function( mat, G )
+    # We may use `FieldOfMatrixGroup( G )` instead of `baseDomain` of the form.
+    # If 'FieldOfMatrixGroup( G )' differs from 'baseDomain' of the form
+    # then the former is a subset of the latter.
+    # Since 'mat' must be defined over 'FieldOfMatrixGroup( G )',
+    # we may check this perhaps stronger condition.
+    # This way, there are more situations where we get a 'false' result
+    # without checking whether the form is respected.
     return IsSubset( FieldOfMatrixGroup( G ), FieldOfMatrixList( [ mat ] ) )
        and ( not IsSubgroupSL( G ) or IsOne( DeterminantMat( mat ) ) )
        and RespectsQuadraticForm( InvariantQuadraticForm( G ).matrix, mat );
     end );
 
 InstallMethod( \in, "respecting bilinear form", IsElmsColls,
-    [ IsMatrix, IsFullSubgroupGLorSLRespectingBilinearForm ],
-    NICE_FLAGS,  # this method is better than the one using a nice monom.
+    [ IsMatrixOrMatrixObj,
+      IsFullSubgroupGLorSLRespectingBilinearForm ],
+    {} -> RankFilter( IsHandledByNiceMonomorphism ), # override nice mon. method
 function( mat, G )
     local inv;
+    # We may use `FieldOfMatrixGroup( G )` instead of `baseDomain` of the form,
+    # see the comment for the '\in' method above.
     if not IsSubset( FieldOfMatrixGroup( G ), FieldOfMatrixList( [ mat ] ) )
        or ( IsSubgroupSL( G ) and not IsOne( DeterminantMat( mat ) ) ) then
       return false;
@@ -863,19 +865,71 @@ function( mat, G )
 end );
 
 InstallMethod( \in, "respecting sesquilinear form", IsElmsColls,
-    [ IsMatrix, IsFullSubgroupGLorSLRespectingSesquilinearForm ],
-    NICE_FLAGS,  # this method is better than the one using a nice monom.
+    [ IsMatrixOrMatrixObj,
+      IsFullSubgroupGLorSLRespectingSesquilinearForm ],
+    {} -> RankFilter( IsHandledByNiceMonomorphism ), # override nice mon. method
 function( mat, G )
-    local pow, inv;
+    local form, pow, inv;
+    # We may use `FieldOfMatrixGroup( G )` instead of `baseDomain` of the form,
+    # see the comment for the '\in' method above.
     if not IsSubset( FieldOfMatrixGroup( G ), FieldOfMatrixList( [ mat ] ) )
        or ( IsSubgroupSL( G ) and not IsOne( DeterminantMat( mat ) ) ) then
       return false;
     fi;
-    pow:= RootInt( Size( FieldOfMatrixGroup( G ) ) );
-    inv:= InvariantSesquilinearForm(G).matrix;
+    form:= InvariantSesquilinearForm(G);
+    pow:= RootInt( Size( form.baseDomain ) );
+    inv:= form.matrix;
     return mat * inv * List( TransposedMat( mat ),
                              row -> List( row, x -> x^pow ) )
            = inv;
+end );
+
+# The forms package contains this function with the name '_IsEqualModScalars',
+# note that the function 'IsEqualProjective' from the recog package
+# cannot be used because the matrices that describe forms can have zero rows.
+BindGlobal( "_IsEqualModScalars_GAP",
+    function( mat1, mat2 )
+    local m, n, i, j, s;
+
+    m:= NrRows( mat1 );
+    if m <> NrRows( mat2 ) then
+      return false;
+    fi;
+    n:= NrCols( mat1 );
+    if n <> NrCols( mat2 ) then
+      return false;
+    fi;
+    for i in [ 1 .. m ] do
+      for j in [ 1 .. n ] do
+        if not IsZero( mat1[ i, j ] ) then
+          s:= mat2[ i, j ] / mat1[ i, j ];
+          if IsZero( s ) then
+            return false;
+          elif IsRowListMatrix( mat1 ) and IsRowListMatrix( mat2 ) then
+            # separate case for performance reasons
+            return ForAll( [ 1 .. m ], i -> s * mat1[i] = mat2[i] );
+          fi;
+          return s * mat1 = mat2;
+        fi;
+      od;
+    od;
+    return IsZero( mat2 );
+end );
+
+InstallMethod( \in, "respecting bilinear form up to scalars", IsElmsColls,
+  [ IsMatrixOrMatrixObj,
+    IsFullSubgroupGLRespectingBilinearFormUpToScalars ],
+  {} -> RankFilter( IsHandledByNiceMonomorphism ), # override nice mon. method
+function( mat, G )
+    local inv;
+    # We may use `FieldOfMatrixGroup( G )` instead of `baseDomain` of the form,
+    # see the comment for the '\in' method above.
+    if not IsSubset( FieldOfMatrixGroup( G ),
+                     FieldOfMatrixList( [ mat ] ) ) then
+      return false;
+    fi;
+    inv:= InvariantBilinearFormUpToScalars( G ).matrix;
+    return _IsEqualModScalars_GAP( inv, mat * inv * TransposedMat( mat ) );
 end );
 
 
@@ -1146,9 +1200,10 @@ InstallMethod( ImagesRepresentative,
 
 #############################################################################
 ##
-#M  PreImagesRepresentative( <iso>, <mat> )  . . .  for a blow up isomorphism
+#M  PreImagesRepresentativeNC( <iso>, <mat> ) . . . for a blow up isomorphism
+#M  PreImagesRepresentative( <iso>, <mat> ) . . . . for a blow up isomorphism
 ##
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
     "for a blow up isomorphism, and a matrix in the range",
     FamRangeEqFamElm,
     [ IsBlowUpIsomorphism, IsMatrix ],
@@ -1199,6 +1254,19 @@ InstallMethod( PreImagesRepresentative,
     od;
 
     return preim;
+    end );
+
+InstallMethod( PreImagesRepresentative,
+    "for a blow up isomorphism, and a matrix in the range",
+    FamRangeEqFamElm,
+    [ IsBlowUpIsomorphism, IsMatrix ],
+    function( iso, mat )
+    if not ( mat in Range(iso) ) then
+        Error( "<mat> is not in the range of mapping <iso>" );
+    elif not ( mat in Image(iso) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentativeNC( iso, mat );
     end );
 
 
@@ -1264,3 +1332,95 @@ InstallMethod( InvariantBilinearForm,
     Q:= InvariantQuadraticForm( matgrp ).matrix;
     return rec( matrix:= ( Q + TransposedMat( Q ) ) );
     end );
+
+#############################################################################
+##
+#M  ConjugateGroup( <G>, <g> ) of a matrix group
+##
+InstallMethod( ConjugateGroup, "<G>, <g>", IsCollsElms,
+    [ IsMatrixGroup, IsMultiplicativeElementWithInverse ],
+    function( G, g )
+    local   H, F, form, m, D, ginv, pow;
+
+    H := GroupByGenerators( OnTuples( GeneratorsOfGroup( G ), g ), One( G ) );
+    UseIsomorphismRelation( G, H );
+    if HasIsGeneralLinearGroup( G ) then
+      SetIsGeneralLinearGroup( H, IsGeneralLinearGroup( G ) );
+    fi;
+    if HasIsSpecialLinearGroup( G ) then
+      SetIsSpecialLinearGroup( H, IsSpecialLinearGroup( G ) );
+    fi;
+    if HasIsSubgroupSL( G ) then
+      SetIsSubgroupSL( H, IsSubgroupSL( G ) );
+    fi;
+
+    F:= DefaultScalarDomainOfMatrixList( [ g ] );
+    if not IsField( F ) then
+      return H;
+    fi;
+
+    if HasInvariantBilinearForm( G ) then
+      if not IsBound( ginv ) then
+        ginv := g^-1;
+      fi;
+      form := InvariantBilinearForm( G );
+      m := ginv * form.matrix * TransposedMat( ginv );
+      if not IsBound( D ) then
+        D:= form.baseDomain;
+        if not IsSubset( D, F ) then
+          D:= ClosureField( D, F );
+        fi;
+      fi;
+      SetInvariantBilinearForm( H, rec( matrix := m, baseDomain := D ) );
+    fi;
+    if HasInvariantQuadraticForm( G ) then
+      if not IsBound( ginv ) then
+        ginv := g^-1;
+      fi;
+      form := InvariantQuadraticForm( G );
+      m := ginv * form.matrix * TransposedMat( ginv );
+      if not IsBound( D ) then
+        D:= form.baseDomain;
+        if not IsSubset( D, F ) then
+          D:= ClosureField( D, F );
+        fi;
+      fi;
+      SetInvariantQuadraticForm( H, rec( matrix := m, baseDomain := D ) );
+    fi;
+    if IsSubset( FieldOfMatrixGroup( G ), F ) then
+      if HasIsNaturalGL( G ) then
+        SetIsNaturalGL( H, IsNaturalGL( G ) );
+      fi;
+      if HasIsNaturalSL( G ) then
+        SetIsNaturalSL( H, IsNaturalSL( G ) );
+      fi;
+
+      # We have in particular that the 'baseDomain' of a stored invariant form
+      # contains 'F'.
+      if HasIsFullSubgroupGLorSLRespectingBilinearForm( G )
+          and IsFullSubgroupGLorSLRespectingBilinearForm( G ) then
+        SetIsFullSubgroupGLorSLRespectingBilinearForm( H, true );
+      fi;
+      if HasIsFullSubgroupGLorSLRespectingQuadraticForm( G )
+          and IsFullSubgroupGLorSLRespectingQuadraticForm( G ) then
+        SetIsFullSubgroupGLorSLRespectingQuadraticForm( H, true );
+      fi;
+
+      # For a stored sesquilinear form, we have to keep the meaning
+      # of the involutory field automorphism,
+      # which is defined by the 'baseDomain' component of the form.
+      # We transfer the form only if the field of definition does not grow.
+      if HasInvariantSesquilinearForm( G ) then
+        if not IsBound( ginv ) then
+          ginv:= g^-1;
+        fi;
+        form:= InvariantSesquilinearForm( G );
+        D:= form.baseDomain;
+        pow:= RootInt( Size( D ) );
+        m:= ginv * form.matrix * List( TransposedMat( ginv ),
+                                       row -> List( row, x -> x^pow ) );
+        SetInvariantSesquilinearForm( H, rec( matrix:= m, baseDomain:= D ) );
+      fi;
+    fi;
+    return H;
+end );

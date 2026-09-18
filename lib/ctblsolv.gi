@@ -15,7 +15,7 @@
 ##  as words in generators.
 InstallMethod(LinearCharacters, ["CanEasilyComputePcgs"], function(G)
   local pcgs, hom, Gab, abinv, exp, e, Ee, genexp,
-        clexps, tab, irgens, a, lin, c, res, j, i, sz;
+        clexps, tab, irgens, a, lin, c, res, j, i, sz, chi;
   if Size(G) = 1 then
     return [TrivialCharacter(G)];
   fi;
@@ -54,7 +54,9 @@ InstallMethod(LinearCharacters, ["CanEasilyComputePcgs"], function(G)
   # coefficients of a linear combination of irgens
   c := 0*[1..Length(abinv)];
   for i in [1..sz] do
-    Add(res, Character(tab, Ee{((clexps * lin) mod exp)+1}));
+    chi:= Character(tab, Ee{((clexps * lin) mod exp)+1});
+    SetIsIrreducibleCharacter( chi, true );
+    Add(res, chi);
     if i < sz then
       c[1] := c[1]+1;
       lin := lin + irgens[1];
@@ -70,25 +72,6 @@ InstallMethod(LinearCharacters, ["CanEasilyComputePcgs"], function(G)
   od;
   return res;
 end);
-
-#############################################################################
-##
-#M  CharacterDegrees( <G>, <p> )  . . . . . . . . . . .  for an abelian group
-##
-InstallMethod( CharacterDegrees,
-    "for an abelian group, and an integer p (just strip off the p-part)",
-    [ IsGroup and IsAbelian, IsInt ],
-    {} -> RankFilter(IsZeroCyc), # There is a method for groups for
-                           # the integer zero which is worse
-    function( G, p )
-    G:= Size( G );
-    if p <> 0 then
-      while G mod p = 0 do
-        G:= G / p;
-      od;
-    fi;
-    return [ [ 1, G ] ];
-    end );
 
 
 #############################################################################
@@ -193,17 +176,15 @@ InstallGlobalFunction( ProjectiveCharDeg, function( G, z, q )
 
     # `N' is a normal subgroup such that `N/<z>' is a chief factor of `G'
     # of order `i' which is a power of `p'.
-    N:= PreImagesSet( h, N );
+    N:= PreImagesSetNC( h, N );
     i:= Size( N ) / oz;
     p:= Factors( i )[1];
 
     if not IsAbelian( N ) then
 
-      h:= NaturalHomomorphismByNormalSubgroupNC( G, SubgroupNC( G, [ z ] ) );
-
       # `c' is a list of complement classes of `N' modulo `z'
       c:= List( ComplementClassesRepresentatives( ImagesSource( h ), ImagesSet( h, N ) ),
-                x -> PreImagesSet( h, x ) );
+                x -> PreImagesSetNC( h, x ) );
       r:= Centralizer( G, N );
       for L in c do
         if IsSubset( L, r ) then
@@ -330,7 +311,7 @@ InstallGlobalFunction( ProjectiveCharDeg, function( G, z, q )
     orbs:= Filtered( orbs,
               o -> not IsZero( CanonicalRepresentativeOfExternalSet( o ) ) );
 
-    # In this case the stabilzers of the kernels are already the
+    # In this case the stabilizers of the kernels are already the
     # stabilizers of the characters.
     for orb in orbs do
       k:= KernelUnderDualAction( O, Opcgs,
@@ -462,19 +443,19 @@ BindGlobal( "CharacterDegreesConlon", function( G, q )
     # (Note that we must not call `TryNextMethod' because the method
     # for abelian groups has higher rank.)
     if IsAbelian( G ) then
-      r:= CharacterDegrees( G, q );
+      r:= CharacterDegreesAbelian( G, q );
       Info( InfoCharacterTable, 1,
             "CharacterDegrees: returns ", r );
       return r;
     elif not ( q = 0 or IsPrimeInt( q ) ) then
-      Error( "<q> mut be zero or a prime" );
+      Error( "<q> must be zero or a prime" );
     fi;
 
     # Choose a normal elementary abelian `p'-subgroup `N',
     # not necessarily minimal.
     N:= ElementaryAbelianSeriesLargeSteps( G );
     N:= N[ Length( N ) - 1 ];
-    r:= CharacterDegrees( G / N, q );
+    r:= CharacterDegreesConlon( G / N, q );
     p:= Factors( Size( N ) )[1];
 
     if p = q then
@@ -538,20 +519,6 @@ BindGlobal( "CharacterDegreesConlon", function( G, q )
     return r;
     end );
 
-InstallMethod( CharacterDegrees,
-    "for a solvable group and an integer (Conlon's algorithm)",
-    [ IsGroup and IsSolvableGroup, IsInt ],
-    {} -> RankFilter(IsZeroCyc), # There is a method for groups for
-                           # the integer zero which is worse
-    function( G, q )
-    if HasIrr( G ) then
-      # Use the known irreducibles.
-      TryNextMethod();
-    else
-      return CharacterDegreesConlon( G, q );
-    fi;
-    end );
-
 
 #############################################################################
 ##
@@ -596,7 +563,7 @@ InstallGlobalFunction( CoveringTriplesCharacters, function( G, z )
       N:= ChiefSeriesUnderAction( img, N );
       N:= N[ Length( N ) - 1 ];
     fi;
-    N:= PreImagesSet( h, N );
+    N:= PreImagesSetNC( h, N );
 
     if not IsAbelian( N ) then
       Info( InfoCharacterTable, 2,
@@ -615,9 +582,9 @@ InstallGlobalFunction( CoveringTriplesCharacters, function( G, z )
       h:= NaturalHomomorphismByNormalSubgroupNC( G, P );
       r:= List( CoveringTriplesCharacters( ImagesSource( h ),
                                            ImageElm( h, z ) ),
-                x -> [ PreImagesSet( h, x[1] ),
-                       PreImagesSet( h, x[2] ),
-                       PreImagesRepresentative( h, x[3] ) ] );
+                x -> [ PreImagesSetNC( h, x[1] ),
+                       PreImagesSetNC( h, x[2] ),
+                       PreImagesRepresentativeNC( h, x[3] ) ] );
 
       if p = i then
 
@@ -655,9 +622,9 @@ InstallGlobalFunction( CoveringTriplesCharacters, function( G, z )
             c:= Stabilizer( img, zn );
           fi;
           Append( r, List( CoveringTriplesCharacters( c, zn ),
-                           x -> [ PreImagesSet( h, x[1] ),
-                                  PreImagesSet( h, x[2] ),
-                                  PreImagesRepresentative( h, x[3] ) ] ) );
+                           x -> [ PreImagesSetNC( h, x[1] ),
+                                  PreImagesSetNC( h, x[2] ),
+                                  PreImagesRepresentativeNC( h, x[3] ) ] ) );
         od;
         return r;
 
@@ -690,14 +657,15 @@ InstallGlobalFunction( CoveringTriplesCharacters, function( G, z )
               CanonicalRepresentativeOfExternalSet( orb ) );
       if not zn in k then
         t:= StabilizerOfExternalSet( orb );
-        Assert( 1, IsIdenticalObj( Parent( t ), G ) );
+        Assert( 1, IsIdenticalObj( Parent( t ), G ),
+                "in CoveringTriplesCharacters" );
         h:= NaturalHomomorphismByNormalSubgroupNC( t, k );
         img:= ImagesSource( h );
         Append( r,
             List( CoveringTriplesCharacters( img, ImageElm( h, z ) ),
-                  x -> [ PreImagesSet( h, x[1] ),
-                         PreImagesSet( h, x[2] ),
-                         PreImagesRepresentative( h, x[3] ) ] ) );
+                  x -> [ PreImagesSetNC( h, x[1] ),
+                         PreImagesSetNC( h, x[2] ),
+                         PreImagesRepresentativeNC( h, x[3] ) ] ) );
       fi;
     od;
     return r;
@@ -856,9 +824,11 @@ InstallMethod( Irr,
     "for a supersolvable group (Conlon's algorithm)",
     [ IsGroup and IsSupersolvableGroup, IsZeroCyc ],
     function( G, zero )
-    local irr;
+    local irr, tbl;
     irr:= IrrConlon( G );
-    SetIrr( OrdinaryCharacterTable( G ), irr );
+    tbl:= OrdinaryCharacterTable( G );
+    SetIrr( tbl, irr );
+    SetInfoText( tbl, "origin: Conlon's Algorithm" );
     return irr;
     end );
 
@@ -866,9 +836,11 @@ InstallMethod( Irr,
     "for a supersolvable group with known `IrrConlon'",
     [ IsGroup and IsSupersolvableGroup and HasIrrConlon, IsZeroCyc ],
     function( G, zero )
-    local irr;
+    local irr, tbl;
     irr:= IrrConlon( G );
-    SetIrr( OrdinaryCharacterTable( G ), irr );
+    tbl:= OrdinaryCharacterTable( G );
+    SetIrr( tbl, irr );
+    SetInfoText( tbl, "origin: Conlon's Algorithm" );
     return irr;
     end );
 
@@ -881,9 +853,12 @@ InstallMethod( Irr,
     "for a supersolvable group (Baum-Clausen algorithm)",
     [ IsGroup and IsSupersolvableGroup, IsZeroCyc ],
     function( G, zero )
-    local irr;
+    local irr, tbl;
     irr:= IrrBaumClausen( G );
-    SetIrr( OrdinaryCharacterTable( G ), irr );
+    tbl:= OrdinaryCharacterTable( G );
+    SetIrr( tbl, irr );
+    ComputeAllPowerMaps( tbl );
+    SetInfoText( tbl, "origin: Baum-Clausen Algorithm" );
     return irr;
     end );
 
@@ -891,9 +866,12 @@ InstallMethod( Irr,
     "for a supersolvable group with known `IrrBaumClausen'",
     [ IsGroup and IsSupersolvableGroup and HasIrrBaumClausen, IsZeroCyc ],
     function( G, zero )
-    local irr;
+    local irr, tbl;
     irr:= IrrBaumClausen( G );
-    SetIrr( OrdinaryCharacterTable( G ), irr );
+    tbl:= OrdinaryCharacterTable( G );
+    SetIrr( tbl, irr );
+    ComputeAllPowerMaps( tbl );
+    SetInfoText( tbl, "origin: Baum-Clausen Algorithm" );
     return irr;
     end );
 
@@ -1014,6 +992,7 @@ InstallMethod( BaumClausenInfo,
           invX,          # inverse of `X'
           D_gi,          #
           hom,           # homomorphism to adjust the composition series
+          ds,            # series in the image of `hom'
           orb,           #
           Forb,          #
           sigma, pi,     # permutations needed in the fusion case
@@ -1086,15 +1065,14 @@ InstallMethod( BaumClausenInfo,
       # a list of subgroups such that any composition series through
       # `ds' from `G' down to the residuum is a chief series.
       pcgs:= [];
+      ds:= List( ssr.ds, U -> ImagesSet( hom, U ) );
       for i in [ 2 .. Length( ssr.ds ) ] do
-        j:= NaturalHomomorphismByNormalSubgroupNC( ssr.ds[ i-1 ], ssr.ds[i] );
+        j:= NaturalHomomorphismByNormalSubgroupNC( ds[ i-1 ], ds[i] );
         Append( pcgs, List( SpecialPcgs( ImagesSource( j ) ),
-                            x -> PreImagesRepresentative( j, x ) ) );
+                            x -> PreImagesRepresentativeNC( j, x ) ) );
       od;
-      Append( pcgs, SpecialPcgs( ssr.ds[ Length( ssr.ds ) ]) );
+      Append( pcgs, SpecialPcgs( Last( ds ) ) );
       G:= ImagesSource( hom );
-      pcgs:= List( pcgs, x -> ImagesRepresentative( hom, x ) );
-      pcgs:= Filtered( pcgs, x -> Order( x ) <> 1 );
       pcgs:= PcgsByPcSequence( ElementsFamily( FamilyObj( G ) ), pcgs );
       cs:= PcSeries( pcgs );
       lg:= Length( pcgs );
@@ -1357,7 +1335,7 @@ InstallMethod( BaumClausenInfo,
                                                             [ root ] ) ) ],
                               D ) );
           Assert( 2, BaumClausenInfoDebug.testrep( pcgs{ [ i .. lg ] },
-                              nextnonlin1[ Length( nextnonlin1 ) ], e ),
+                              Last(nextnonlin1), e ),
                   Concatenation( "BaumClausenInfo: failed assertion in ",
                       "inducing linear representations ",
                       "(i = ", String( i ), ")\n" ) );
@@ -1432,7 +1410,7 @@ InstallMethod( BaumClausenInfo,
                       diag := List( X.diag,
                              x -> ( x  + k + value ) mod e ) ) ], rep ) );
             Assert( 2, BaumClausenInfoDebug.testrep( pcgs{ [ i .. lg ] },
-                                nextnonlin2[ Length( nextnonlin2 ) ], e ),
+                                Last(nextnonlin2), e ),
                     Concatenation( "BaumClausenInfo: failed assertion in ",
                         "extending nonlinear representations ",
                         "(i = ", String( i ), ")\n" ) );
@@ -1517,7 +1495,7 @@ InstallMethod( BaumClausenInfo,
 
           Add( nextnonlin2, Concatenation( [ D_gi ], D ) );
           Assert( 2, BaumClausenInfoDebug.testrep( pcgs{ [ i .. lg ] },
-                              nextnonlin2[ Length( nextnonlin2 ) ], e ),
+                              Last(nextnonlin2), e ),
                   Concatenation( "BaumClausenInfo: failed assertion in ",
                       "inducing nonlinear representations ",
                       "(i = ", String( i ), ")\n" ) );
@@ -1933,7 +1911,7 @@ InstallMethod( BaumClausenInfo,
       k:= Pcgs( kernel );
       pcgs:= PcgsByPcSequence( ElementsFamily( FamilyObj( kernel ) ),
                Concatenation( List( pcgs,
-                                    x -> PreImagesRepresentative( hom, x ) ),
+                                    x -> PreImagesRepresentativeNC( hom, x ) ),
                               k ) );
       k:= ListWithIdenticalEntries( Length( k ), 0 );
 
@@ -2007,7 +1985,7 @@ BindGlobal( "IrreducibleRepresentationsByBaumClausen", function( G )
       for i in [ 1 .. lg ] do
         mat:= NullMat( dim, dim, Rationals );
         for k in [ 1 .. dim ] do
-          mat[k][ rep[i].perm[k] ]:=
+          mat[ k, rep[i].perm[k] ]:=
               Ee^( rep[i].diag[ rep[i].perm[k] ] / gcd );
         od;
         images[i]:= mat;
@@ -2197,6 +2175,25 @@ InstallMethod( IrrBaumClausen,
 
     # Return the result.
     return irreducibles;
+    end );
+
+
+#############################################################################
+##
+#F  CharacterDegreesBaumClausen( <G> )  . . . . . . . .  for a solvable group
+##
+##  For a solvable group <G>, return the character degrees of the factor
+##  group '<G> / DerivedSubgroup( <R> )',
+##  where <R> is the supersolvable residuum of <G>.
+##  The value is a sorted list of pairs '[ <d>, <n> ]'
+##  where <d> is an irreducible degree and <n> is its multiplicity.
+##
+BindGlobal( "CharacterDegreesBaumClausen", function( G )
+    local info;
+
+    info:= BaumClausenInfo( G );
+    return Concatenation( [ [ 1, Length( info.lin ) ] ],
+               Collected( List( info.nonlin, l -> Length( l[1].diag ) ) ) );
     end );
 
 

@@ -2812,7 +2812,7 @@ InstallGlobalFunction( PermCharInfoRelative, function( tbl, tbl2, permchars )
                 # If this is a `+' character then check whether also the
                 # corresponding `-' character occurs, and if yes then
                 # form constituents of the form `\pm'.
-                if irrnam2[i][j][ Length( irrnam2[i][j] ) ] = '+' then
+                if Last(irrnam2[i][j]) = '+' then
                   pos:= ShallowCopy( irrnam2[i][j] );
                   pos[ Length( pos ) ]:= '-';
                   pos:= Position( irrnam2[i], pos );

@@ -14,16 +14,16 @@ on:
       - v[1-9]+.[0-9]+.[0-9]    # allow v1.2.3
       - v[1-9]+.[0-9]+.[0-9]-*  # allow v1.2.3-beta3 etc.
     branches:
-      - master
-      - stable-*
+      - 'master'
+      - 'stable-*'
   schedule:
     # Every day at 3:33 AM UTC
     - cron: '33 3 * * *'
 
 concurrency:
   # group by workflow and ref; the last slightly strange component ensures that for pull
-  # requests, we limit to 1 concurrent job, but for the master branch we don't
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.ref != 'refs/heads/master' || github.run_number }}
+  # requests, we limit to 1 concurrent job, but for the default repository branch we don't
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.ref_name != github.event.repository.default_branch || github.run_number }}
   # Cancel intermediate builds, but only if it is a pull request build.
   cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
 
@@ -33,12 +33,12 @@ env:
 jobs:
   tools:
     name: "Validate release scripts"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: "Set up Python"
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.11"
 
@@ -56,24 +56,35 @@ jobs:
       #- name: "Validate types"
       #  run: python -m mypy --disallow-untyped-calls --disallow-untyped-defs dev/releases/*.py
 
-      #- name: "Run tests"
-      #  run: python -m pytest tools/tests/dev/releases*.py -vv
+      - name: "Run tests"
+        run: cd dev/releases && python -m pytest
 
   unix:
     name: "Create Unix archives and data"
     needs: tools
-    # Don't run this twice on PRs for branches pushed to the same repository
-    if: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     outputs:
       gap-build-version: ${{ steps.get-build.outputs.name }}
+    env:
+      # Ubuntu only ships autoconf 2.71, but we need 2.72 for compatibility
+      # with GCC 14 & recent clang versions, so we build it ourselves.
+      AUTOCONF_VERSION: "2.72"
+      AUTOCONF_SHA256: "ba885c1319578d6c94d46e9b0dceb4014caafe2490e437a0dbca3f270a223f5a"
 
     steps:
-      - uses: actions/checkout@v4
+      # We need to force fetch tags on the repository in the next step, which
+      # requires fetching the entire history. Therefore, we might as well do
+      # that here when checking out the repo, which is what setting fetch-depth
+      # to 0 accomplishes here.
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
+      # We need to know the git tags of the repository, because the GAP build
+      # system uses the tags to generate the version string for the GAP build,
+      # which we then extract in the "Record the GAP build version" step below.
+      #
       # When an annotated tag is pushed, then for some reason we don't see it
       # in this action; instead an unannotated tag with the same name is
       # present, we resolve this by force-fetching tags.
@@ -86,17 +97,49 @@ jobs:
           git fetch https://github.com/gap-system/gap --tags --force
           git fetch --tags --force
 
-      - name: "Install autoconf 2.72"   # for compatibility with GCC 14 & clang versions
+      # Downloading the autoconf tarball from the GNU file servers regularly
+      # fails with 5xx errors. So we keep a copy of it in the GitHub Actions
+      # cache: as long as this workflow keeps running (it does so daily), the
+      # cache never expires, and we hardly ever bother the GNU servers again.
+      - name: "Cache the autoconf ${{ env.AUTOCONF_VERSION }} tarball"
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/gnu
+          key: autoconf-${{ env.AUTOCONF_VERSION }}.tar.xz
+
+      - name: "Install autoconf ${{ env.AUTOCONF_VERSION }}"
         run: |
-          wget https://ftp.gnu.org/gnu/autoconf/autoconf-2.72.tar.xz
-          tar xvf autoconf-2.72.tar.xz
-          cd autoconf-2.72
+          set -e
+          TARBALL="autoconf-${AUTOCONF_VERSION}.tar.xz"
+          mkdir -p ~/.cache/gnu
+          if [ ! -f ~/.cache/gnu/"${TARBALL}" ] ; then
+            # ftpmirror.gnu.org redirects to a nearby mirror and hence is what
+            # GNU asks us to use; ftp.gnu.org is the master server, so only
+            # resort to it if all else fails.
+            for url in "https://ftpmirror.gnu.org/gnu/autoconf/${TARBALL}" \
+                       "https://mirrors.kernel.org/gnu/autoconf/${TARBALL}" \
+                       "https://ftp.gnu.org/gnu/autoconf/${TARBALL}" ; do
+              echo "Fetching ${url}"
+              wget --tries=3 --timeout=30 --retry-connrefused \
+                   --retry-on-http-error=429,500,502,503,504 \
+                   -O "${TARBALL}" "${url}" && break
+            done
+            # verify before caching, so that a failed or truncated download
+            # cannot poison the cache
+            echo "${AUTOCONF_SHA256}  ${TARBALL}" | sha256sum --check --strict
+            mv "${TARBALL}" ~/.cache/gnu/"${TARBALL}"
+          fi
+          # verify again, as this time the tarball may have come from the cache
+          echo "${AUTOCONF_SHA256}  ${HOME}/.cache/gnu/${TARBALL}" | sha256sum --check --strict
+          tar xf ~/.cache/gnu/"${TARBALL}"
+          cd "autoconf-${AUTOCONF_VERSION}"
           ./configure
-          make
+          make -j$(nproc)
           sudo make install
+          autoconf --version
 
       - name: "Set up Python"
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.11"
       - name: "Install some python packages"
@@ -146,7 +189,7 @@ jobs:
       #
       # Warning: the result is a single .zip file (so things are compressed twice).
       - name: "Upload GAP tarball"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           if-no-files-found: error
           name: gap
@@ -155,7 +198,7 @@ jobs:
 
       # Always upload metadata, and keep longer, since it is much smaller.
       - name: "Upload JSON metadata"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           if-no-files-found: error
           name: "JSON metadata"
@@ -171,7 +214,7 @@ jobs:
   cygwin:
     name: "Create Windows x86_64 installer"
     needs: unix
-    runs-on: windows-2019
+    runs-on: windows-2022
     timeout-minutes: 120
     env:
       CHERE_INVOKING: 1
@@ -190,7 +233,7 @@ jobs:
       # Download the artifact -- for an actual release, this contains the
       # exact same tarball as was uploaded to the release as an asset
       - name: "Download GAP archive from previous job"
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: gap
 
@@ -201,13 +244,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: "Clone the Windows installer maker scripts"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: gap-system/gap-windows
           ref: main
           path: gap-windows
 
-      - uses: gap-actions/setup-cygwin@v1
+      - uses: gap-actions/setup-cygwin@v2
 
       # Currently, the gap-windows/release_gap.sh script wraps the GAP
       # contained in gap-${GAP_VERSION}, and outputs its installer to
@@ -233,7 +276,7 @@ jobs:
       # Artifacts live for 1 day, i.e. until the next cron job runs.
       - name: "Upload the installer as an artifact"
         if: ${{ github.event_name == 'schedule' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           if-no-files-found: error
           name: gap-${{ env.GAP_VERSION }}-x86_64.exe
@@ -241,7 +284,7 @@ jobs:
           retention-days: 1
 
       - name: "Upload the installer to tag"
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         with:
           files: |
@@ -256,7 +299,7 @@ jobs:
       - unix
       - cygwin
     if: ${{ always() && github.event_name != 'pull_request' && github.repository == 'gap-system/gap' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
 
     steps:
       - name: Get branch name

@@ -1212,24 +1212,24 @@ InstallMethod( NaturalHomomorphismBySubAlgebraModule,
     if IsLeftAlgebraModuleElementCollection( V ) then
         if IsRightAlgebraModuleElementCollection( V ) then
             left_op:= function( x, v )
-                 return ImagesRepresentative( f, x^PreImagesRepresentative( f, v ) );
+                 return ImagesRepresentative( f, x^PreImagesRepresentativeNC( f, v ) );
             end;
             right_op:= function( v, x )
-                 return ImagesRepresentative( f, PreImagesRepresentative( f, v )^x );
+                 return ImagesRepresentative( f, PreImagesRepresentativeNC( f, v )^x );
             end;
             qmod:= BiAlgebraModule( LeftActingAlgebra( V ),
                            RightActingAlgebra( V ),
                            left_op, right_op, quot );
         else
             left_op:= function( x, v )
-                 return ImagesRepresentative( f, x^PreImagesRepresentative( f, v ) );
+                 return ImagesRepresentative( f, x^PreImagesRepresentativeNC( f, v ) );
             end;
             qmod:= LeftAlgebraModule( LeftActingAlgebra( V ),
                            left_op, quot);
         fi;
     else
         right_op:= function( v, x )
-             return ImagesRepresentative( f, PreImagesRepresentative( f, v )^x );
+             return ImagesRepresentative( f, PreImagesRepresentativeNC( f, v )^x );
         end;
         qmod:= RightAlgebraModule( RightActingAlgebra( V ),
                        right_op, quot );
@@ -1785,7 +1785,7 @@ InstallMethod( PrintObj,
             for i in [1..Length(eu[k])-1] do
                 Print(eu[k][i],"<x>");
             od;
-            Print( eu[k][Length(eu[k])], ")" );
+            Print( Last(eu[k]), ")" );
             if k+1 <> Length( eu ) then
                 if not ( IsRat( eu[k+3] ) and eu[k+3] < 0 ) then
                     Print("+");
@@ -2160,7 +2160,7 @@ InstallMethod( PrintObj,
             for i in [1..Length(eu[k])-1] do
                 Print(eu[k][i],"/\\");
             od;
-            Print( eu[k][Length(eu[k])], ")" );
+            Print( Last(eu[k]), ")" );
             if k+1 <> Length( eu ) then
                 if not ( IsRat( eu[k+3] ) and eu[k+3] < 0 ) then
                     Print("+");
@@ -2495,7 +2495,7 @@ InstallMethod( PrintObj,
             for i in [1..Length(eu[k])-1] do
                 Print(eu[k][i],".");
             od;
-            Print( eu[k][Length(eu[k])], ")" );
+            Print( Last(eu[k]), ")" );
             if k+1 <> Length( eu ) then
                 if not ( IsRat( eu[k+3] ) and eu[k+3] < 0 ) then
                     Print("+");
@@ -2800,7 +2800,7 @@ end );
 ##  Elements of sparse rowspaces are represented by a list of the
 ##  form [ i1, c1, i2, c2, ...], where the ik are the indices of the
 ##  standard row vectors, and the ck are coefficients, and  i1<i2<...
-##  So if ek are the unit row vectos then such a sparse element represents
+##  So if ek are the unit row vectors then such a sparse element represents
 ##  c1*e{i1}+c2*e{i2}+...
 ##
 InstallMethod( ObjByExtRep,
@@ -2848,7 +2848,7 @@ end );
 #M  \+( <u>, <v> ) . . . . . . . . . . . .  for sparse rowspace elements
 #M  AdditiveInverseOp( <u> ) . . . . . . . . . . . . . . for a sparse rowspace element
 #M  \*( <scal>, <u> )  . . . . . for a sparse rowspace element and scalar
-#M  \*( <u>, <scal> ) . . . . . .for a sclalar and sparse rowspace element
+#M  \*( <u>, <scal> ) . . . . . .for a scalar and sparse rowspace element
 #M  \<( <u>, <v> )  . . . . . . . . . . . . for sparse rowspace elements
 #M  \=( <u>, <v> ) . . . . . . . . . . . . for sparse rowspace elements
 ##

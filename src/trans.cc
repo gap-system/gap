@@ -175,21 +175,22 @@ static Int GetPositiveListEntryEx(const char * funcname,
     GetPositiveListEntryEx(funcname, list, idx, NICE_ARGNAME(list))
 
 
+#ifdef HPCGAP
 static ModuleStateOffset TransStateOffset = -1;
 
 typedef struct {
+#endif
     // TmpTrans is essentially the same as TmpPerm
-    Obj TmpTrans;
+    DECL_MODULE_STATE Obj TmpTrans;
+#ifdef HPCGAP
 } TransModuleState;
 
-static inline Obj GetTmpTrans(void)
-{
-    return MODULE_STATE(Trans).TmpTrans;
-}
+#define TmpTrans MODULE_STATE(Trans, TmpTrans)
+#endif
 
 static inline UInt4 * AddrTmpTrans(void)
 {
-    return ADDR_TRANS4(GetTmpTrans());
+    return ADDR_TRANS4(TmpTrans);
 }
 
 
@@ -255,9 +256,9 @@ static inline void SET_EXT_TRANS(Obj f, Obj deg)
 
 static inline void ResizeTmpTrans(UInt len)
 {
-    Obj tmpTrans = GetTmpTrans();
+    Obj tmpTrans = TmpTrans;
     if (tmpTrans == (Obj)0) {
-        MODULE_STATE(Trans).TmpTrans = NewBag(T_TRANS4, len * sizeof(UInt4) + 3 * sizeof(Obj));
+        TmpTrans = NewBag(T_TRANS4, len * sizeof(UInt4) + 3 * sizeof(Obj));
     }
     else if (SIZE_OBJ(tmpTrans) < len * sizeof(UInt4) + 3 * sizeof(Obj)) {
         ResizeBag(tmpTrans, len * sizeof(UInt4) + 3 * sizeof(Obj));
@@ -3864,7 +3865,8 @@ Obj OnSetsTrans(Obj set, Obj f)
     const UInt4 * ptf4;
     UInt    deg;
     Obj *   ptres, tmp, res;
-    UInt    i, isint, k;
+    UInt    i, k;
+    BOOL    isInt;
 
     // copy the list into a mutable plist, which we will then modify in place
     res = PLAIN_LIST_COPY(set);
@@ -3875,7 +3877,7 @@ Obj OnSetsTrans(Obj set, Obj f)
         ptf2 = CONST_ADDR_TRANS2(f);
         deg = DEG_TRANS2(f);
         // loop over the entries of the tuple
-        isint = 1;
+        isInt = TRUE;
         for (i = 1; i <= len; i++, ptres++) {
             tmp = *ptres;
             if (IS_POS_INTOBJ(tmp)) {
@@ -3885,7 +3887,7 @@ Obj OnSetsTrans(Obj set, Obj f)
                 }
             }
             else {
-                isint = 0;
+                isInt = FALSE;
                 tmp = POW(tmp, f);
                 ptres = ADDR_OBJ(res) + i;
                 ptf2 = CONST_ADDR_TRANS2(f);
@@ -3899,7 +3901,7 @@ Obj OnSetsTrans(Obj set, Obj f)
         deg = DEG_TRANS4(f);
 
         // loop over the entries of the tuple
-        isint = 1;
+        isInt = TRUE;
         for (i = 1; i <= len; i++, ptres++) {
             tmp = *ptres;
             if (IS_POS_INTOBJ(tmp)) {
@@ -3909,7 +3911,7 @@ Obj OnSetsTrans(Obj set, Obj f)
                 }
             }
             else {
-                isint = 0;
+                isInt = FALSE;
                 tmp = POW(tmp, f);
                 ptres = ADDR_OBJ(res) + i;
                 ptf4 = CONST_ADDR_TRANS4(f);
@@ -3920,7 +3922,7 @@ Obj OnSetsTrans(Obj set, Obj f)
     }
 
     // sort the result and remove dups
-    if (isint) {
+    if (isInt) {
         SortPlistByRawObj(res);
         REMOVE_DUPS_PLIST_INTOBJ(res);
         RetypeBagSM(res, T_PLIST_CYC_SSORT);
@@ -4120,7 +4122,8 @@ static StructGVarFilt GVarFilts[] = {
 
 };
 
-/******************************************************************************
+/****************************************************************************
+**
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs[] = {
@@ -4182,7 +4185,8 @@ static StructGVarFunc GVarFuncs[] = {
 };
 
 
-/******************************************************************************
+/****************************************************************************
+**
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel(StructInitInfo * module)
@@ -4211,7 +4215,7 @@ static Int InitKernel(StructInitInfo * module)
     InitHdlrFuncsFromTable(GVarFuncs);
 
     // register global bags with the garbage collector
-    InitGlobalBag(&MODULE_STATE(Trans).TmpTrans, "src/trans.c:TmpTrans");
+    InitGlobalBag(&TmpTrans, "src/trans.c:TmpTrans");
     InitGlobalBag(&IdentityTrans, "src/trans.c:IdentityTrans");
 
 #ifdef GAP_ENABLE_SAVELOAD
@@ -4270,7 +4274,8 @@ static Int InitKernel(StructInitInfo * module)
     return 0;
 }
 
-/******************************************************************************
+/****************************************************************************
+**
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary(StructInitInfo * module)
@@ -4284,9 +4289,8 @@ static Int InitLibrary(StructInitInfo * module)
     // code which would not otherwise be accessible, since no other
     // transformation created in this file is a T_TRANS4 unless its internal
     // degree is > 65536. Such transformation can be created by packages with
-    // a
-    // kernel module, and so we introduce the next transformation for testing
-    // purposes.
+    // a kernel module, and so we introduce the next transformation for
+    // testing purposes.
     Obj ID_TRANS4 = NEW_TRANS4(0);
     AssReadOnlyGVar(GVarName("ID_TRANS4"), ID_TRANS4);
 
@@ -4295,7 +4299,7 @@ static Int InitLibrary(StructInitInfo * module)
 
 static Int InitModuleState(void)
 {
-    MODULE_STATE(Trans).TmpTrans = 0;
+    TmpTrans = 0;
 
     return 0;
 }
@@ -4317,8 +4321,10 @@ static StructInitInfo module = {
  /* preSave     = */ 0,
  /* postSave    = */ 0,
  /* postRestore = */ 0,
+#ifdef HPCGAP
  /* moduleStateSize      = */ sizeof(TransModuleState),
  /* moduleStateOffsetPtr = */ &TransStateOffset,
+#endif
  /* initModuleState      = */ InitModuleState,
  /* destroyModuleState   = */ 0,
 };

@@ -77,7 +77,9 @@
 #define TRY_IF_NO_ERROR                                                      \
     if (!rs->s.NrError) {                                                    \
         volatile Int recursionDepth = GetRecursionDepth();                   \
-        if (_setjmp(STATE(ReadJmpError))) {                                  \
+        volatile GAP_GCStackState gcStack = GAP_GC_SAVE_STACK_STATE();       \
+        if (GAP_SETJMP(STATE(ReadJmpError))) {                               \
+            GAP_GC_RESTORE_STACK_STATE(gcStack);                             \
             SetRecursionDepth(recursionDepth);                               \
             rs->s.NrError++;                                                 \
         }                                                                    \
@@ -109,16 +111,16 @@ struct ReaderState {
     UInt ReadTilde;
 
     // 'CurrLHSGVar' is the current left hand side of an assignment.  It is
-    // used to prevent undefined global variable  warnings, when reading a
+    // used to prevent undefined global variable warnings, when reading a
     // recursive function.
     UInt CurrLHSGVar;
 
     UInt CurrentGlobalForLoopVariables[100];
     UInt CurrentGlobalForLoopDepth;
 
-    // 'LoopNesting' records how many nested loops are active. It starts out
-    // at 0 and is increment each time we enter a loop, and decrement when we
-    // exit one. It is used to determine whether 'break' and 'continue'
+    // 'LoopNesting' records how many nested loops are active. Initially it
+    // is 0 and is incremented each time we enter a loop, and decremented when
+    // we exit one. It is used to determine whether 'break' and 'continue'
     // statements are valid.
     UInt LoopNesting;
 };
@@ -319,7 +321,7 @@ GAP_STATIC_ASSERT(sizeof(LHSRef) <= 8, "LHSRef is too big");
 /****************************************************************************
 **
 */
-static UInt EvalRef(ReaderState * rs, const LHSRef ref, Int needExpr)
+static UInt EvalRef(ReaderState * rs, const LHSRef ref, BOOL needExpr)
 {
     TRY_IF_NO_ERROR
     {
@@ -643,7 +645,7 @@ static void ReadReferenceModifiers(ReaderState * rs, TypSymbolSet follow)
     // read one or more selectors
     while (IS_IN(rs->s.Symbol, S_LPAREN | S_LBRACK | S_LBRACE | S_DOT)) {
         LHSRef ref = ReadSelector(rs, follow, level);
-        level = EvalRef(rs, ref, 1);
+        level = EvalRef(rs, ref, TRUE);
     }
 }
 
@@ -864,13 +866,13 @@ static void ReadCallVarAss(ReaderState * rs, TypSymbolSet follow, Char mode)
     while (IS_IN(rs->s.Symbol, S_LPAREN | S_LBRACK | S_LBRACE | S_DOT)) {
 
         // so the prefix was a reference
-        UInt level = EvalRef(rs, ref, 1);
+        UInt level = EvalRef(rs, ref, TRUE);
         ref = ReadSelector(rs, follow, level);
     }
 
     // if we need a reference
     if (mode == 'r' || (mode == 'x' && rs->s.Symbol != S_ASSIGN)) {
-        Int needExpr = mode == 'r' || !IS_IN(rs->s.Symbol, S_SEMICOLON);
+        BOOL needExpr = mode == 'r' || !IS_IN(rs->s.Symbol, S_SEMICOLON);
         EvalRef(rs, ref, needExpr);
     }
 
@@ -2065,7 +2067,7 @@ static void ReadFor(ReaderState * rs, TypSymbolSet follow)
     // <Var>
     volatile LHSRef ref = ReadVar(rs, follow);
     if (ref.type != R_INVALID)
-        EvalRef(rs, ref, 1);
+        EvalRef(rs, ref, TRUE);
     CheckUnboundGlobal(rs, ref);
 
     // 'in' <Expr>

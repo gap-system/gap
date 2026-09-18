@@ -1,5 +1,5 @@
 
-/* The Liouville function on a integer n is L(n) = (-1)^r where r is
+/* The Liouville function on an integer n is L(n) = (-1)^r where r is
    the number of prime factors in the prime factorization of n (L(1) = 1).
    This program is called as 
            sumliouville begin end 

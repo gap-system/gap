@@ -232,11 +232,6 @@ InstallMethod( PositionNonZero, "for a zmodnz vector", [ IsZmodnZVectorRep ],
     return PositionNonZero( v![ELSPOS] );
   end );
 
-InstallMethod( PositionNonZero, "for a zmodnz vector", [ IsZmodnZVectorRep ],
-  function( v )
-    return PositionNonZero( v![ELSPOS] );
-  end );
-
 InstallOtherMethod( PositionNonZero, "for a zmodnz vector and start",
   [ IsZmodnZVectorRep,IsInt ],
   function( v,s )
@@ -351,7 +346,7 @@ function( a, b )
   return a![ELSPOS]=List(b,x->x![1]);
 end );
 
-InstallMethod( \=, "for plist an zmodnz vector",IsIdenticalObj,
+InstallMethod( \=, "for plist and zmodnz vector",IsIdenticalObj,
   [ IsPlistRep,IsZmodnZVectorRep],
 function(b,a)
   return a![ELSPOS]=List(b,x->x![1]);
@@ -693,27 +688,15 @@ InstallTagBasedMethod( NewIdentityMatrix,
 
 InstallOtherMethod( BaseDomain, "for a zmodnz matrix",
   [ IsZmodnZMatrixRep ],
-  function( m )
-    return m![BDPOS];
-  end );
+  M -> M![BDPOS] );
 
 InstallMethod( NumberRows, "for a zmodnz matrix",
   [ IsZmodnZMatrixRep ],
-  function( m )
-    return Length(m![ROWSPOS]);
-  end );
+  M -> Length( M![ROWSPOS] ) );
 
 InstallMethod( NumberColumns, "for a zmodnz matrix",
   [ IsZmodnZMatrixRep ],
-  function( m )
-    return m![RLPOS];
-  end );
-
-# InstallMethod( DimensionsMat, "for a zmodnz matrix",
-#   [ IsZmodnZMatrixRep ],
-#   function( m )
-#     return [Length(m![ROWSPOS]),m![RLPOS]];
-#   end );
+  M -> M![RLPOS] );
 
 
 ############################################################################
@@ -1003,7 +986,7 @@ InstallMethod( CopySubMatrix, "for two zmodnz matrices and four lists",
       Error( "<m> and <n> have different base domains" );
     fi;
     # This eventually should go into the kernel without creating
-    # a intermediate objects:
+    # intermediate objects:
     for i in [1..Length(srcrows)] do
         n![ROWSPOS][dstrows[i]]![ELSPOS]{dstcols} :=
                   m![ROWSPOS][srcrows[i]]![ELSPOS]{srccols};
@@ -1228,27 +1211,6 @@ InstallMethod( IsZero, "for a zmodnz matrix",
     return true;
   end );
 
-InstallMethod( IsOne, "for a zmodnz matrix",
-  [ IsZmodnZMatrixRep ],
-  function( m )
-    local i,j,n;
-    if Length(m![ROWSPOS]) <> m![RLPOS] then
-        #Error("IsOne: Matrix must be square");
-        return false;
-    fi;
-    n := m![RLPOS];
-    for i in [1..n] do
-        if not IsOne(m![ROWSPOS][i]![ELSPOS][i]) then return false; fi;
-        for j in [1..i-1] do
-            if not IsZero(m![ROWSPOS][i]![ELSPOS][j]) then return false; fi;
-        od;
-        for j in [i+1..n] do
-            if not IsZero(m![ROWSPOS][i]![ELSPOS][j]) then return false; fi;
-        od;
-    od;
-    return true;
-  end );
-
 InstallMethod( OneSameMutability, "for a zmodnz matrix",
   [ IsZmodnZMatrixRep ],
   function( m )
@@ -1352,14 +1314,6 @@ InstallMethod( InverseSameMutability, "for a zmodnz matrix",
     fi;
     return n;
   end );
-
-InstallMethod( RankMat, "for a zmodnz matrix", [ IsZmodnZMatrixRep ],
-function( m )
-  m:=MutableCopyMatrix(m);
-  m:=SemiEchelonMatDestructive(m);
-  if m<>fail then m:=Length(m.vectors);fi;
-  return m;
-end);
 
 
 #InstallMethodWithRandomSource( Randomize,
@@ -1489,14 +1443,6 @@ InstallMethod( CompatibleVector, "for a zmodnz matrix",
     return NewZeroVector(IsZmodnZVectorRep,BaseDomain(v),NumberRows(v));
   end );
 
-InstallMethod( DeterminantMat, "for a zmodnz matrix", [ IsZmodnZMatrixRep ],
-function( a )
-local m;
-  m:=Size(BaseDomain(a));
-  a:=List(a![ROWSPOS],x->x![ELSPOS]);
-  return ZmodnZObj(DeterminantMat(a),m);
-end );
-
 
 # Minimal/Characteristic  Polynomial stuff
 #############################################################################
@@ -1573,7 +1519,7 @@ end );
 
 InstallOtherMethod( MinimalPolynomial, "ZModnZ, spinning over field",
     IsElmsCollsX,
-    [ IsField and IsFinite, IsMatrixObj, IsPosInt ],
+    [ IsField and IsFinite, IsZmodnZMatrixRep, IsPosInt ],
 function( fld, mat, ind )
     local i, n, base, vec, one, fam,
           mp, dim, span,op,w, piv,j;
@@ -1600,7 +1546,7 @@ function( fld, mat, ind )
         op := ZModnZMOPI( fld, mat, vec, span);
         op:=List(op);
         mp:=QUOTREM_LAURPOLS_LISTS(ProductCoeffs(mp,op),GcdCoeffs(mp,AsList(op)))[1];
-        mp:=mp/mp[Length(mp)];
+        mp:=mp/Last(mp);
         Info(InfoMatrix,2,"So Far ",dim,", Span=",Length(span));
 
         for j in [1..Length(span)] do
@@ -1637,7 +1583,7 @@ end);
 
 InstallOtherMethod( CharacteristicPolynomialMatrixNC, "zmodnz spinning over field",
     IsElmsCollsX,
-    [ IsField, IsMatrixObj, IsPosInt ], function( fld, mat, ind)
+    [ IsField, IsZmodnZMatrixRep, IsPosInt ], function( fld, mat, ind)
 local i, n, base, imat, vec, one,cp,op,zero,fam;
     Info(InfoMatrix,1,"Characteristic Polynomial called on ",
     NrRows(mat)," x ",NrCols(mat)," matrix over ",fld);

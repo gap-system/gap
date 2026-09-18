@@ -744,7 +744,7 @@ end );
 ##  A finite vector space can be handled via the mechanism of nice bases.
 ##  We exclude the situation that all given generators are zero (and thus the
 ##  vector space is trivial) because such a space should be handled be the
-##  mechanism that deals with nontrivial spaces caontaining it,
+##  mechanism that deals with nontrivial spaces containing it,
 ##  for example in order to admit a consistent ordering of spaces via `\<'.
 ##
 InstallHandlingByNiceBasis( "IsGenericFiniteSpace", rec(
@@ -1400,7 +1400,7 @@ InstallMethod( Coefficients,
     IsCollsElms,
     [ IsBasis and IsEmpty, IsVector ], SUM_FLAGS,
     function( B, v )
-    if v = Zero( UnderlyingLeftModule( B ) ) then
+    if IsZero( v ) then
       return [];
     else
       return fail;

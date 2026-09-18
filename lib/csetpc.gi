@@ -18,12 +18,12 @@
 ##  Main part of the computation of a canonical coset representative in a
 ##  PcGroup. This is done by factoring with the canonical generators of the
 ##  subgroup to set the appropriate exponents to zero. Since the
-##  representation as an PcWord is "from left to right", we can multiply with
+##  representation as a PcWord is "from left to right", we can multiply with
 ##  subgroup elements from _right_, without changing exponents of the
 ##  generators with lower depth (that are supposedly in canonical form yet).
 ##  Since we want _right_ cosets, everything is done with the _inverse_
 ##  elements, which are representatives for the left cosets.  The routine
-##  supposes, that an Cgs has been set up and the relative orders of the
+##  supposes, that a Cgs has been set up and the relative orders of the
 ##  generators have been computed by the calling routine.
 ##
 InstallMethod(CanonicalRightCosetElement,"Pc",IsCollsElms,

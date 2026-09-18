@@ -413,7 +413,7 @@ local l;
   then
     Error("inconsistency!");
   fi;
-  return CoefficientsOfLaurentPolynomial(f);
+  return CoefficientsOfUnivariateRationalFunction(f);
 end);
 
 ## now everything else will be installed based on properties and will use
@@ -504,7 +504,7 @@ local fam,ext,zero,one,mone,i,j,ind,bra,str,s,b,c, mbra,le;
   le:=Length(ext);
 
   if le=0 then
-    return String(zero);
+    return ShallowCopy(String(zero));
   fi;
   for i  in [ le-1,le-3..1] do
     if i<le-1 then
@@ -965,6 +965,57 @@ InstallMethod( \=,"polynomial", IsIdenticalObj,
 function( left, right )
   return ExtRepPolynomialRatFun(left)=ExtRepPolynomialRatFun(right);
 end);
+
+
+#############################################################################
+##
+#M  IsZero( <ratfun> )
+##
+InstallMethod( IsZero,
+    "ratfun",
+    [ IsRationalFunction ],
+    function( f )
+    if HasCoefficientsOfLaurentPolynomial(f) then
+      f := CoefficientsOfLaurentPolynomial(f);
+      return Length(f[1]) = 0;
+    elif HasCoefficientsOfUnivariateRationalFunction(f) then
+      f := CoefficientsOfUnivariateRationalFunction(f);
+      return Length(f[1]) = 0;
+    elif HasExtRepPolynomialRatFun(f) then
+      return Length(ExtRepPolynomialRatFun(f)) = 0;
+    elif HasExtRepNumeratorRatFun(f) then
+      return Length(ExtRepNumeratorRatFun(f)) = 0;
+    fi;
+    TryNextMethod();
+    end );
+
+
+#############################################################################
+##
+#M  IsOne( <ratfun> )
+##
+InstallMethod( IsOne,
+    "ratfun",
+    [ IsRationalFunction ],
+    function( f )
+    if HasCoefficientsOfLaurentPolynomial(f) then
+      f := CoefficientsOfLaurentPolynomial(f);
+      return Length(f) = 2 and Length(f[1]) = 1 and IsOne(f[1][1]) and f[2] = 0;
+    elif HasCoefficientsOfUnivariateRationalFunction(f) then
+      f := CoefficientsOfUnivariateRationalFunction(f);
+      return Length(f) = 3 and f[3] = 0 and f[1] = f[2];
+    elif HasExtRepPolynomialRatFun(f) then
+      f := ExtRepPolynomialRatFun(f);
+      return Length(f) = 2 and Length(f[1]) = 0 and IsOne(f[2]);
+    elif HasExtRepNumeratorRatFun(f) and HasExtRepDenominatorRatFun(f) then
+      return ExtRepDenominatorRatFun(f) = ExtRepNumeratorRatFun(f);
+    elif HasExtRepNumeratorRatFun(f) then
+      f := ExtRepNumeratorRatFun(f);
+      return Length(f) = 2 and Length(f[1]) = 0 and IsOne(f[2]);
+    fi;
+    TryNextMethod();
+    end );
+
 
 #############################################################################
 ##
@@ -1473,7 +1524,7 @@ local e;
   if Length(e)=0 then
     return FamilyObj(pol)!.zeroCoefficient;
   fi;
-  return e[Length(e)];
+  return Last(e);
 end );
 
 #############################################################################
@@ -1654,7 +1705,7 @@ local fam,tw,res,m,n,mn,r,e,s,d,dr,px,x,y,onepol,stop;
   fi;
 
   if n>m then
-    # force f to be of larger degee
+    # force f to be of larger degree
     res:=(onepol)^(n*m);
     tw:=f; f:=g; g:=tw;
     tw:=m; m:=n; n:=tw;
@@ -1702,7 +1753,7 @@ local fam,tw,res,m,n,mn,r,e,s,d,dr,px,x,y,onepol,stop;
     n:=dr;
 
     f:=g;
-#    was: g:=r/(x*y^mn) However the double division seems more gently;
+#    was: g:=r/(x*y^mn) However the double division seems gentler;
     g:=r/x/y^mn;
     x:=LeadingCoefficient(f,ind);
     y:=x^mn/y^(mn-1);
@@ -1782,7 +1833,7 @@ end);
 #
 #  11-15-04,  WDJ and AH
 
-# n is the number of terms in m. n1 is the number of variable occurring
+# n is the number of terms in m. n1 is the number of variables occurring
 # in each monomial term of m. returns the degrees of each variable in the
 # monomial m.
 BindGlobal("MVFactorDegreeMonomialTerm",function(m)
@@ -1927,8 +1978,8 @@ local cp, mons, L, T, perm, vars, nvars, F, R1, var, degrees, d, p,
       div:=Product(L{terms});
       div:=MVFactorInverseKroneckerMapUnivariate(div,varpow);
       ediv:=ExtRepPolynomialRatFun(div);
-      #if not IsOne(ediv[Length(ediv)]) then
-      #  div:=div/ediv[Length(ediv)];
+      #if not IsOne(Last(ediv)) then
+      #  div:=div/Last(ediv);
       #  ediv:=ExtRepPolynomialRatFun(div);
       #fi;
       # call the library routine used to test quotient of polynomials

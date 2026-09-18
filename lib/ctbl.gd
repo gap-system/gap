@@ -1083,6 +1083,7 @@ DeclareAttributeSuppCT( "OrdinaryCharacterTable", IsGroup, [] );
 #############################################################################
 ##
 #A  AbelianInvariants( <tbl> )
+#A  ChiefLength( <tbl> )
 #A  CommutatorLength( <tbl> )
 #A  Exponent( <tbl> )
 #P  IsAbelian( <tbl> )
@@ -1105,6 +1106,7 @@ DeclareAttributeSuppCT( "OrdinaryCharacterTable", IsGroup, [] );
 ##  <ManSection>
 ##  <Heading>Group Operations Applicable to Character Tables</Heading>
 ##  <Attr Name="AbelianInvariants" Arg='tbl' Label="for a character table"/>
+##  <Attr Name="ChiefLength" Arg='tbl' Label="for a character table"/>
 ##  <Attr Name="CommutatorLength" Arg='tbl' Label="for a character table"/>
 ##  <Attr Name="Exponent" Arg='tbl' Label="for a character table"/>
 ##  <Prop Name="IsAbelian" Arg='tbl' Label="for a character table"/>
@@ -1139,6 +1141,8 @@ DeclareAttributeSuppCT( "OrdinaryCharacterTable", IsGroup, [] );
 ##  >               CharacterTable( SL( 2, 5 ) ) ];;
 ##  gap> List( tables, AbelianInvariants );
 ##  [ [ 3 ], [ 2 ], [  ], [  ] ]
+##  gap> List( tables, ChiefLength );
+##  [ 1, 3, 1, 2 ]
 ##  gap> List( tables, CommutatorLength );
 ##  [ 1, 1, 1, 1 ]
 ##  gap> List( tables, Exponent );
@@ -1192,6 +1196,7 @@ DeclareAttributeSuppCT( "OrdinaryCharacterTable", IsGroup, [] );
 ##  <#/GAPDoc>
 ##
 DeclareAttributeSuppCT( "AbelianInvariants", IsNearlyCharacterTable, [] );
+DeclareAttributeSuppCT( "ChiefLength", IsNearlyCharacterTable, [] );
 DeclareAttributeSuppCT( "CommutatorLength", IsNearlyCharacterTable, [] );
 DeclareAttributeSuppCT( "Exponent", IsNearlyCharacterTable, [] );
 DeclarePropertySuppCT( "IsAbelian", IsNearlyCharacterTable );
@@ -1629,8 +1634,8 @@ DeclareAttributeSuppCT( "CharacterParameters", IsNearlyCharacterTable,
 ##  "A5"
 ##  gap> tbl:= CharacterTable( Group( () ) );;
 ##  gap> Identifier( tbl );  Identifier( tbl mod 2 );
-##  "CT9"
-##  "CT9mod2"
+##  "CT8"
+##  "CT8mod2"
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -4297,7 +4302,7 @@ DeclareOperation( "SortedCharacters",
 ##  w.r.t.&nbsp;increasing class length, element order, or both.
 ##  <A>classes</A> and <A>orders</A> must be Booleans.
 ##  If <A>orders</A> is <K>true</K> then classes of element of smaller order
-##  precede classes of elements of larger order after peruting with
+##  precede classes of elements of larger order after permuting with
 ##  <M>\pi</M>.
 ##  If both <A>classes</A> and <A>orders</A> are <K>true</K> then
 ##  additionally classes of elements of the same order are sorted
@@ -4394,7 +4399,7 @@ DeclareOperation( "CharacterTableWithSortedClasses",
 ##  of a class of <M>F</M> are consecutive,
 ##  and that the succession of preimages is that of <A>facttbl</A>.
 ##  The <Ref Attr="Irr" Label="for a character table"/> value of <A>tbl</A>
-##  is sorted as with <C>SortCharTable( <A>tbl</A>, <A>kernel</A> )</C>.
+##  is sorted as with <C>SortedCharacterTable( <A>tbl</A>, <A>kernel</A> )</C>.
 ##  <P/>
 ##  (<E>Note</E> that the transformation is only unique up to table
 ##  automorphisms of <M>F</M>, and this need not be unique up to table

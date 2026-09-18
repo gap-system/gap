@@ -31,16 +31,38 @@ InstallGlobalFunction(ParseTestInput, function(str, ignorecomments, fnam)
         ErrorNoReturn(s, " at ", fnam, ":", i);
     fi;
   end;
-  checkifelsefi := l -> ForAny(["#@if","#@else","#@fi"], x -> StartsWith(l, x));
-  # Set to true if we find a #@if, #@else or #@fi. Used to check these do not
-  # occur in the middle of a single input/output test block.
+  checkifelsefi := l -> ForAny(["#@if","#@elif","#@else","#@fi"],
+                               x -> StartsWith(l, x));
+  # Set to true if we find a #@if, #@elif, #@else or #@fi. Used to check these
+  # do not occur in the middle of a single input/output test block.
   foundcmd := false;
-  # skipstate represents the current status of '#@if/#@else/#@fi'
+  # skipstate represents the current status of '#@if/#@elif/#@else/#@fi'
   # 0: not in a '#@if'
-  # 1: in a #@if with a true condition
-  #-1: in a #@if with a false condition
-  # 2: in the #@else of a #@if with a false condition
-  #-2: in the #@else of a #@if with a true condition
+  # 1: in the first #@if or #@elif with a true condition
+  #-1: in an #@if or #@elif with a false condition before the first #@if or
+  #    @elif with a true condition
+  # 2: in the #@else when all #@if and #@elif had a false condition
+  #-2: in the #@else after an #@if or #@elif with a true condition
+  #-3: in an #@elif after an #@if or #@elif with a true condition
+  # The transition table can be written as
+  # state | keyword | condition | new state
+  #  0    | #@if    | true      |  1
+  #  0    | #@if    | false     | -1
+  #  1    | #@elif  | true      | -3
+  #  1    | #@elif  | false     | -3
+  #  1    | #@else  |           | -2
+  #  1    | #@fi    |           |  0
+  # -1    | #@elif  | true      |  1
+  # -1    | #@elif  | false     | -1
+  # -1    | #@else  |           |  2
+  # -1    | #@fi    |           |  0
+  #  2    | #@fi    |           |  0
+  # -2    | #@fi    |           |  0
+  # -3    | #@elif  | true      | -3
+  # -3    | #@elif  | false     | -3
+  # -3    | #@else  |           | -2
+  # -3    | #@fi    |           |  0
+  # Any other transition is a syntax error.
   # Code is executed whenever skipstate >= 0
   skipstate := 0;
   while i <= Length(lines) do
@@ -56,14 +78,33 @@ InstallGlobalFunction(ParseTestInput, function(str, ignorecomments, fnam)
             else
                 skipstate := -1;
             fi;
+        elif StartsWith(lines[i], "#@elif") then
+            if skipstate = 0 then
+                testError("Invalid test file: #@elif without #@if");
+            elif skipstate = 2 or skipstate = -2 then
+                testError("Invalid test file: #@elif after #@else");
+            elif skipstate = -1 then
+                # No ifs or elifs were true, check condition
+                if EvalString(lines[i]{[7..Length(lines[i])]}) then
+                    skipstate := 1;
+                else
+                    skipstate := -1;
+                fi;
+            else
+                # Some if or elif was true, dont evaluate elif
+                skipstate := -3;
+            fi;
         elif StartsWith(lines[i], "#@else") then
             if skipstate = 0 then
                 testError("Invalid test file: #@else without #@if");
-            elif AbsoluteValue(skipstate) = 2 then
+            elif skipstate = 2 or skipstate = -2 then
                 testError("Invalid test file: two #@else");
+            elif skipstate = -1 then
+                # No ifs or elifs were true, evaluate else
+                skipstate := 2;
             else
-                # change 1 -> -2, -1 -> 2
-                skipstate := skipstate * -2;
+                # Some if or elif was true, dont evaluate else
+                skipstate := -2;
             fi;
         else # Must be #@fi
             if skipstate = 0 then
@@ -118,15 +159,15 @@ InstallGlobalFunction(ParseTestInput, function(str, ignorecomments, fnam)
       foundcmd := false;
       Add(outp, "");
       Add(inp, lines[i]{[6..Length(lines[i])]});
-      Add(inp[Length(inp)], '\n');
+      Add(Last(inp), '\n');
       Add(pos, i);
       i := i+1;
     elif StartsWith(lines[i], "> ") then
       if foundcmd then
         testError("Invalid test file: #@ command found in the middle of a single test");
       fi;
-      Append(inp[Length(inp)], lines[i]{[3..Length(lines[i])]});
-      Add(inp[Length(inp)], '\n');
+      Append(Last(inp), lines[i]{[3..Length(lines[i])]});
+      Add(Last(inp), '\n');
       i := i+1;
     elif StartsWith(lines[i], ">\t") then
         testError("Invalid test file: Continuation prompt '> ' followed by a tab, expected a regular space");
@@ -134,8 +175,8 @@ InstallGlobalFunction(ParseTestInput, function(str, ignorecomments, fnam)
       if foundcmd and not ForAll(lines[i], c -> c = ' ' or c = '\t') then
         testError("Invalid test file: #@ command found in the middle of a single test");
       fi;
-      Append(outp[Length(outp)], lines[i]);
-      Add(outp[Length(outp)], '\n');
+      Append(Last(outp), lines[i]);
+      Add(Last(outp), '\n');
       i := i+1;
     else
       testError("Invalid test file");
@@ -277,14 +318,14 @@ BindGlobal("TEST", AtomicRecord( rec(Timings := rec())));
 TEST.transformFunctions := AtomicRecord(rec());
 TEST.transformFunctions.removenl := function(a)
   a := ShallowCopy(a);
-  while Length(a) > 0 and a[Length(a)] = '\n' do
+  while Length(a) > 0 and Last(a) = '\n' do
     Remove(a);
   od;
   return a;
 end;
 TEST.transformFunctions.removewhitespace := function(a)
   a := ReplacedString(ShallowCopy(a), "\\\n", "");
-  RemoveCharacters(a, " \n\t\r");
+  RemoveCharacters(a, CHARS_WHITESPACE);
   return a;
 end;
 
@@ -318,6 +359,19 @@ InstallGlobalFunction(CREATE_LOCAL_VARIABLES_BAG, function(namelist)
     func := Concatenation("(function() ", localvars,
                           "return GetCurrentLVars(); end)()");
     return EvalString(func);
+end);
+
+BindGlobal("TEST_NICE_FILENAME", function(path)
+    local cwd;
+    cwd := GAP_getcwd();
+    if not EndsWith(cwd, "/") then
+        cwd := Concatenation(cwd, "/");
+    fi;
+
+    if StartsWith(path, cwd) then
+        return path{[Length(cwd)+1 .. Length(path)]};
+    fi;
+    return UserHomeShorten(path);
 end);
 
 ##
@@ -373,20 +427,29 @@ end);
 ##  <Item>Execute the code <C>gapcode</C> before any test in the input is run.
 ##  This allows defining global variables when using <C>#@local</C>.
 ##  </Item>
-##  <Mark>#@if EXPR ...  [#@else] ... #@fi</Mark>
+##  <Mark>#@if EXPR ... {#@elif EXPR ...} [#@else ...] #@fi</Mark>
 ##  <Item>A <C>#@if</C> allows to conditionally skip parts of the test input depending on
 ##  the value of a boolean expression. The exact behavior is done as follows:
 ##  <P/>
-##  If the &GAP; expression <C>EXPR</C> evaluates to <K>true</K>, then the lines after the
-##  <C>#@if</C> are used until either a <C>#@else</C> or <C>#@fi</C> is
-##  reached. If a <C>#@else</C> is present then the code after the <C>#@else</C>
-##  is used if and only if <C>EXPR</C> evaluated to <K>false</K>. Finally,
-##  once <C>#fi</C> is reached, evaluation continues normally.
+##  If the first &GAP; expression <C>EXPR</C> evaluates to <K>true</K>, then the lines after
+##  the <C>#@if</C> are used until either a <C>#@elif</C>, <C>#@else</C> or <C>#@fi</C> is
+##  reached.
+##  If an <C>#@elif</C> is present, then the lines after <C>#@elif</C> are used if and
+##  only if its <C>EXPR</C> evaluates to <K>true</K> and all previous <C>#@if</C> and
+##  <C>#@elif</C> clauses had expressions evaluating to <K>false</K>. In this case
+##  the lines after <C>#@elif</C> are used until either a <C>#@elif</C>, <C>#@else</C> or
+##  <C>#@fi</C> is reached.
+##  If an <C>#@else</C> is present then the lines after the <C>#@else</C>
+##  are used if and only if <C>EXPR</C> evaluated to <K>false</K> in all <C>#@if</C> and
+##  <C>#@elif</C> clauses. Finally, once <C>#fi</C> is reached, evaluation continues
+##  normally.
 ##  <P/>
-##  Note that <C>EXPR</C> is evaluated after all <C>#@exec</C> lines have been
+##  Note that each <C>EXPR</C> is evaluated after all <C>#@exec</C> lines have been
 ##  executed but before any tests are run. Thus, it cannot depend on test
 ##  results or packages loaded in tests, but it can depend on packages loaded
 ##  via <C>#@exec</C>.
+##  <P/>
+##  In addition <C>#@if</C> clauses cannot be nested within each other.
 ##  <P/>
 ##  As an example, the &GAP; test suite contains the test file
 ##  <C>tst/testinstall/pperm.tst</C> which contains the lines:
@@ -550,12 +613,14 @@ end);
 DeclareGlobalName("TextAttr"); # from GAPDoc
 DeclareGlobalName("DefaultReportDiffColors"); # initialized in Test() or by the user
 BindGlobal("DefaultReportDiff", function(inp, expout, found, fnam, line, time)
-  if UserPreference("UseColorsInTerminal") = true then
+  if UserPreference("UseColorsInTerminal") = true
+     and IsBound( DefaultReportDiffColors ) then
     Print(DefaultReportDiffColors.message);
     Print("########> Diff in ");
     if IsStream(fnam) then
       Print("test stream, line ",line,":");
     else
+      fnam:=TEST_NICE_FILENAME(fnam);
       Print(fnam,":",line);
     fi;
     Print(TextAttr.reset, "\n", DefaultReportDiffColors.message);
@@ -582,7 +647,8 @@ BindGlobal("DefaultReportDiff", function(inp, expout, found, fnam, line, time)
     Print("# Input is:\n", inp);
     Print("# Expected output:\n", expout);
     Print("# But found:\n", found);
-    Print("########\n");  fi;
+    Print("########\n");
+  fi;
 end);
 
 InstallGlobalFunction("Test", function(arg)
@@ -596,7 +662,8 @@ InstallGlobalFunction("Test", function(arg)
   else
     nopts := rec();
   fi;
-  if not IsBound(DefaultReportDiffColors) then
+  if not IsBound(DefaultReportDiffColors)
+     and IsBound( GAPInfo.PackagesLoaded.gapdoc ) then
     BindGlobal("DefaultReportDiffColors", rec(
         message := TextAttr.4,  # blue text
         input := "",
@@ -710,7 +777,7 @@ InstallGlobalFunction("Test", function(arg)
   fi;
   if IsString(opts.rewriteToFile) then
     lines := SplitString(full, "\n", "");
-    ign := pf.pos[Length(pf.pos)];
+    ign := Last(pf.pos);
     new := [];
     for i in ign do
       new[i] := lines[i];
@@ -955,7 +1022,7 @@ InstallGlobalFunction( "TestDirectory", function(arg)
 
   for i in [1..Length(files)] do
     if opts.showProgress then
-      Print("testing: ", files[i].name, "\n");
+      Print("testing: ", TEST_NICE_FILENAME(files[i].name), "\n");
     fi;
 
     startTime := Runtime();

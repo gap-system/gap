@@ -107,6 +107,7 @@ ReadLib( "wordass.gd"  );
 
 ReadLib( "matobj2.gd"  );
 ReadLib( "matobjplist.gd" );
+ReadLib( "matobjgeneric.gd" );
 ReadLib( "matobjnz.gd" );
 
 # files dealing with rewriting systems
@@ -208,7 +209,7 @@ ReadLib( "grpramat.gd" );
 # group library
 ReadGrp( "basic.gd"    );
 ReadGrp( "classic.gd"  );
-ReadGrp( "perf.gd"     );
+ReadGrp( "conformal.gd" );
 ReadGrp( "suzuki.gd"   );
 ReadGrp( "ree.gd"   );
 ReadGrp( "simple.gd"   );

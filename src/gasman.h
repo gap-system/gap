@@ -366,7 +366,30 @@ EXPORT_INLINE void CHANGED_BAG(Bag bag)
 
 #elif defined(USE_JULIA_GC)
 
-void CHANGED_BAG(Bag bag);
+// Julia's headers include C++ headers when compiled as C++; since our own
+// headers may be included from within an `extern "C"` block, we must ensure
+// julia.h is not affected by that.
+#ifdef __cplusplus
+extern "C++" {
+#endif
+#include <julia.h>
+#ifdef __cplusplus
+}
+#endif
+
+EXPORT_INLINE void CHANGED_BAG(Bag bag)
+{
+    // The following is a copy of Julia's write barrier `jl_gc_wb_back` and
+    // must be kept in sync with it. We cannot just call `jl_gc_wb_back`, as
+    // Julia declares it `static inline`, and C forbids referencing an
+    // identifier with internal linkage from an inline function with external
+    // linkage. Marking `CHANGED_BAG` as `static inline` instead is not an
+    // option either, as it is used by other `EXPORT_INLINE` functions (such
+    // as `PushPlist`), which then would run into the very same problem.
+    void * p = BAG_HEADER(bag);
+    if (__unlikely(jl_astaggedvalue(p)->bits.gc == 3 /* GC_OLD_MARKED */))
+        jl_gc_queue_root((jl_value_t *)p);
+}
 
 BOOL IsGapObj(void *);
 
@@ -462,6 +485,29 @@ EXPORT_INLINE Bag NewWordSizedBag(UInt type, UInt size)
     }
     return NewBag(type, size + padding);
 }
+
+/****************************************************************************
+**
+*F  GAP_GC_SAVE_STACK_STATE() . . . . . . . record the collector's root stack
+*F  GAP_GC_RESTORE_STACK_STATE(<state>) . . . . . . . . . . . . restore it
+**
+**  A GAP error 'longjmp's out of the call chain that raised it. Whatever
+**  that chain registered with the collector - the Julia GC keeps a chain of
+**  root frames on the C stack - is never unregistered, and points into
+**  stack that is gone. So every place that sets up such a jump saves the
+**  state before, and restores it on the error path. Collectors that find
+**  their roots by scanning the C stack have nothing to record.
+*/
+typedef void * GAP_GCStackState;
+
+#if defined(USE_JULIA_GC)
+GAP_GCStackState GAP_GC_SAVE_STACK_STATE(void) JL_NOTSAFEPOINT;
+void GAP_GC_RESTORE_STACK_STATE(GAP_GCStackState state) JL_NOTSAFEPOINT;
+#else
+#define GAP_GC_SAVE_STACK_STATE() ((GAP_GCStackState)0)
+#define GAP_GC_RESTORE_STACK_STATE(state) ((void)(state))
+#endif
+
 
 /****************************************************************************
 **

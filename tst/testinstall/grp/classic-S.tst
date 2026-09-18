@@ -125,6 +125,18 @@ or SymplecticGroup( [<filt>, ]<d>, <R>[, <form>] )
 or SymplecticGroup( [<filt>, ]<form> )
 gap> Sp(4,6);
 Error, <subfield> must be a prime or a finite field
+gap> for para in [ [ IsGF2MatrixRep, GF(2) ],
+>                  [ Is8BitMatrixRep, GF(3) ],
+>      #           [ IsZmodnZMatrixRep, Integers mod 25 ], # not yet converted
+>                  [ IsPlistMatrixRep, GF(4) ] ] do
+>      f:= para[1];
+>      F:= para[2];
+>      G:= Sp( f, 4, F );
+>      if not f( G.1 ) or not f( InvariantBilinearForm( G ).matrix ) then
+>        Error( "wrong internal representation of matrices in Sp( ",
+>               f, ", 4, ", F, " )" );
+>      fi;
+>    od;
 
 #
 gap> SigmaL(3,5);

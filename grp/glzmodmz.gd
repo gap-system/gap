@@ -24,7 +24,7 @@ DeclareGlobalFunction( "SizeOfGLdZmodmZ" );
 ##
 #F  ConstructFormPreservingGroup(oper [,sign] d, R )
 ##
-##  constructs the classical group sefined by <A>oper</A> over a prime field
+##  constructs the classical group defined by <A>oper</A> over a prime field
 ##  over the residue class ring <A>R</A>, which must be modulo an odd prime
 ##  power.
 DeclareGlobalFunction("ConstructFormPreservingGroup");

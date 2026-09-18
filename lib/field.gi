@@ -911,17 +911,16 @@ InstallMethod( MinimalPolynomial,
       coe:= Coefficients( B, pow );
       mat:= [ coe ];
       MB:= MutableBasis( F, [ coe ] );
-      repeat
-        CloseMutableBasis( MB, coe );
+      while CloseMutableBasis( MB, coe ) do
         pow:= pow * z;
         coe:= Coefficients( B, pow );
         Add( mat, coe );
-      until IsContainedInSpan( MB, coe );
+      od;
 
       # The coefficients of the minimal polynomial
       # are given by the linear relation.
       coe:= NullspaceMat( mat )[1];
-      coe:= Inverse( coe[ Length( coe ) ] ) * coe;
+      coe:= Inverse( Last(coe) ) * coe;
 
     fi;
 
@@ -1140,7 +1139,7 @@ InstallMethod( IsAssociated,
     IsCollsElmsElms,
     [ IsDivisionRing, IsRingElement, IsRingElement ],
     function ( F, r, s )
-    return (r = Zero( F ) ) = (s = Zero( F ) );
+    return IsZero( r ) = IsZero( s );
     end );
 
 
@@ -1153,7 +1152,7 @@ InstallMethod( StandardAssociate,
     IsCollsElms,
     [ IsDivisionRing, IsScalar ],
     function ( R, r )
-    if r = Zero( R ) then
+    if IsZero( r ) then
         return Zero( R );
     else
         return One( R );
@@ -1170,7 +1169,7 @@ InstallMethod( StandardAssociateUnit,
     IsCollsElms,
     [ IsDivisionRing, IsScalar ],
     function ( R, r )
-    if r = Zero( R ) then
+    if IsZero( r ) then
         return One( R );
     else
         return r^-1;
@@ -1316,15 +1315,16 @@ InstallMethod( ImagesSet,
 
 #############################################################################
 ##
-#M  PreImagesElm( <hom>, <elm> )  . . . . . . . . . . . .  preimage of an elm
+#M  PreImagesElmNC( <hom>, <elm> )  . . . . . . . . . . . .  preimage of an elm
+#M  PreImagesElm( <hom>, <elm> )  . . . . . . . . . . . . .  preimage of an elm
 ##
-InstallMethod( PreImagesElm,
+InstallMethod( PreImagesElmNC,
     "for field homomorphism and element",
     FamRangeEqFamElm,
     [ IsFieldHomomorphism, IsObject ],
     function ( hom, elm )
-    if IsInjective( hom ) = 1 then
-      return [ PreImagesRepresentative( hom, elm ) ];
+    if IsInjective( hom ) then
+      return [ PreImagesRepresentativeNC( hom, elm ) ];
     elif IsZero( elm ) then
       return Source( hom );
     else
@@ -1332,18 +1332,42 @@ InstallMethod( PreImagesElm,
     fi;
     end );
 
+InstallMethod( PreImagesElm,
+    "for field homomorphism and element",
+    FamRangeEqFamElm,
+    [ IsFieldHomomorphism, IsObject ],
+    function ( hom, elm )
+    if not (elm in Range(hom)) then
+      Error( "<elm> is not in the range of <hom>" );
+    elif not (elm in Image(hom)) then
+      return [];
+    fi;
+    return PreImagesElmNC( hom, elm );
+    end );
 
 #############################################################################
 ##
-#M  PreImagesSet( <hom>, <elm> )  . . . . . . . . . . . . . preimage of a set
+#M  PreImagesSetNC
+#M  PreImagesSet
 ##
-InstallMethod( PreImagesSet,
+InstallMethod( PreImagesSetNC,
     "for field homomorphism and field",
     CollFamRangeEqFamElms,
     [ IsFieldHomomorphism, IsField ],
     function ( hom, elms )
     elms:= FieldByGenerators( List( GeneratorsOfField( elms ),
-               gen -> PreImagesRepresentative( hom, gen ) ) );
+               gen -> PreImagesRepresentativeNC( hom, gen ) ) );
     UseSubsetRelation( Source( hom ), elms );
     return elms;
+    end );
+
+InstallMethod( PreImagesSet,
+    "for field homomorphism and field",
+    CollFamRangeEqFamElms,
+    [ IsFieldHomomorphism, IsField ],
+    function ( hom, elms )
+    if not IsSubset( Range(hom), elms ) then
+        Error( "<elms> is not a subset of the range of <hom>" );
+    fi;
+    return PreImagesSetNC( hom, Intersection( elms, Image( hom ) ) );
     end );

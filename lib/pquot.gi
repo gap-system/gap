@@ -81,7 +81,7 @@ end );
 
 #############################################################################
 ##
-##  The  following  functions work  with a lower trianguar matrix (LTM).  A
+##  The  following  functions work  with a lower triangular matrix (LTM).  A
 ##  LTM may have the following shape where . (*) denotes a (non-) zero entry:
 ##
 ##                      . . . . . . . . . . . . . .
@@ -498,7 +498,7 @@ BindGlobal( "UpdateWeightInfo", function( qs )
     Append( avector, [Length(avector)+1..n+nhwg] );
     qs!.collector![SCP_AVECTOR] := avector;
 
-    ##  Update the weight informataion
+    ##  Update the weight information
     class := class + 1;
     qs!.collector![SCP_CLASS] := class;
 
@@ -857,7 +857,7 @@ function( qs )
 
                     if bs[ 1 ] > c then
                         bs := [];
-                    elif c <= bs[ Length(bs) ] then
+                    elif c <= Last(bs) then
                         bs := [bs[1]..c];
                     fi;
                 fi;
@@ -1848,7 +1848,13 @@ local a,h,i,q,d,img,geni,gen,hom,lcs,c,sqa,cnqs,genum;
         Error("infinite quotients currently impossible");
     fi;
     if Length(a) = 0 then
-        return NaturalHomomorphismByNormalSubgroup(g,g);
+        hom:= NaturalHomomorphismByNormalSubgroup(g,g);
+        if IsSubgroupFpGroup( Range( hom ) ) then
+          # Do not return an identity mapping,
+          # in order to avoid  infinite recursions.
+          hom:= GroupHomomorphismByImages( g, SymmetricGroup( 1 ), [], [] );
+        fi;
+        return hom;
     fi;
 
     h:=[];

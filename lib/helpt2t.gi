@@ -93,7 +93,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
     # this is meant to catch lines that except for some initial
     # whitespace are of form: "\begingroup ... %"
     # or: "{\obeylines ... %" or: "{%" or "}%"
-    if not displaymath and 1<Length(line) and line[Length(line)] = '%' then
+    if not displaymath and 1<Length(line) and Last(line) = '%' then
       line := FlushLeft(line);
       return 1=Length(line) or
              line{[1..Length(line)-1]} in ["{", "}"] or
@@ -127,7 +127,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
         line := Chomp( ReadLine(stream) );
     od;
     # a '%' at end-of-line indicates a continuation
-    while line<> fail and 0<Length(line) and line[Length(line)]='%' do
+    while line<> fail and 0<Length(line) and Last(line)='%' do
         line := line{[1..Length(line)-1]};
         repeat
             nextline := ReadLine(stream);
@@ -394,7 +394,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
         or MATCH_BEGIN(line,"\\atindex{")  then
           # A '%' at end-of-line indicates a continuation
           while line <> fail and line <> "" and
-                (line[1] = '%' or line[Length(line)] = '%') do
+                (line[1] = '%' or Last(line) = '%') do
               line := Chomp( ReadLine(stream) );
           od;
           line:="";
@@ -590,7 +590,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
                       elif macro[1] in "'`=^.\"~" then
                           # \. could be an accent or multiplication
                           # ... we treat them the same. We don't support \~.
-                          if Length(line)>0 and line[Length(line)]='{' and
+                          if Length(line)>0 and Last(line)='{' and
                              Length(tail)>=2 and tail[2]='}' then
                               # We assume they appear as e.g.: {\'a}
                               line:=line{[1..Length(line)-1]};
@@ -651,8 +651,8 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
                       fi;
                       # If macro enclosed in {..} or $..$ remove them
                       if  Length(line)>0 and Length(tail)>0 and
-                          ((line[Length(line)]='{' and tail[1]='}') or
-                           (line[Length(line)]='$' and tail[1]='$')) then
+                          ((Last(line)='{' and tail[1]='}') or
+                           (Last(line)='$' and tail[1]='$')) then
                           line:=line{[1..Length(line)-1]};
                           tail:=tail{[2..Length(tail)]};
                       fi;
@@ -770,7 +770,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
 
                       # font changing commands
                       elif macro in ["bsf","sf","bf","rm","cal","sl","it"] then
-                          if Length(line)>0 and line[Length(line)]='{' then
+                          if Length(line)>0 and Last(line)='{' then
                               line:=line{[1..Length(line)-1]};
                               while 0<Length(tail) and tail[1]=' ' do
                                 tail:=tail{[2..Length(tail)]};
@@ -940,7 +940,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
               Add(lines,line);
               if keynotfound then start := start+1; fi;
           elif singleline=0 then
-              if Length(buff)>0 and buff[Length(buff)] <> '~' then
+              if Length(buff)>0 and Last(buff) <> '~' then
                   Add(buff,' '); # separating ' '
               elif item>0 and initem and 0=Length(buff) and
                    0<Length(line) and line[1]<>'~' then

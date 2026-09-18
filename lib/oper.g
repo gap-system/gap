@@ -814,7 +814,7 @@ end );
 ##  <P/>
 ##  Note that the method selection for constructors works slightly differently
 ##  than for usual operations.
-##  As stated above, applicabilty to the first argument in an argument tuple
+##  As stated above, applicability to the first argument in an argument tuple
 ##  is tested by determining whether the argument-filter is a <E>subset</E> of
 ##  <A>args-filts</A><M>[1]</M>.
 ##  <P/>
@@ -1272,9 +1272,10 @@ end );
 ##  <Ref Oper="SylowSubgroup"/>,
 ##  and this list is mutable because one may want to enter groups into it
 ##  as they are computed.
-##  <!-- in the current implementation, one can overwrite values of mutable-->
-##  <!-- attributes; is this really intended?-->
-##  <!-- if yes then it should be documented!-->
+##  <P/>
+##  Mutable and immutable attributes behave differently w. r. t. repeated
+##  calls of the function that sets the attribute value,
+##  see <Ref Func="Setter"/>.
 ##  <P/>
 ##  If no argument for <A>rank</A> is given, then the rank of the tester is 1.
 ##  <P/>
@@ -2016,7 +2017,35 @@ if BASE_SIZE_METHODS_OPER_ENTRY <> 6 then
     Error("MethodsOperation must be updated for new BASE_SIZE_METHODS_OPER_ENTRY");
 fi;
 
-# TODO: document this?!
+
+#############################################################################
+##
+#F  MethodsOperation( <oper>, <n> )
+##
+##  <#GAPDoc Label="MethodsOperation">
+##  <ManSection>
+##  <Func Name="MethodsOperation" Arg='oper, n'/>
+##
+##  <Description>
+##  Return a list of records that describe the installed methods for the
+##  operation <A>oper</A>, with <A>n</A> arguments.
+##  <P/>
+##  Each record has at least the following components.
+##  <P/>
+##  <List>
+##  <Mark>func</Mark>
+##  <Item>the method itself, a &GAP; function,</Item>
+##  <Mark>rank</Mark>
+##  <Item>the rank of the method, an integer or infinity,</Item>
+##  <Mark>info</Mark>
+##  <Item>a string that describes when the method is applicable,</Item>
+##  <Mark>location</Mark>
+##  <Item>filename and start line where the method gets installed.</Item>
+##  </List>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 BIND_GLOBAL("MethodsOperation", function(oper, nargs)
     local early, meths, len, result, i, m;
 
@@ -2064,6 +2093,34 @@ BIND_GLOBAL("MethodsOperation", function(oper, nargs)
         ADD_LIST(result, m);
     od;
     return result;
+end );
+
+
+#############################################################################
+##
+#F  RANK_SHIFT_FUNCTION( <filters>, <alt_rank> )
+##
+##  Apparently it is important that this function does not get compiled,
+##  thus it cannot be in 'lib/oper1.g', in particular not inside the body
+##  of the function 'INSTALL_METHOD'.
+##  (When one puts the code there and compiles 'lib/oper1.g' then calling
+##  'BindingsOfClosure(INSTALL_METHOD)', which occurs in the tests from
+##  'tst/testinstall/opers/BindingsOfClosure.tst', ends in a
+##  segmentation fault.)
+##
+BIND_GLOBAL( "RANK_SHIFT_FUNCTION", function( filters, alt_filters, rank )
+    return function()
+      local i, res;
+
+      res:= rank;
+      for i in filters do
+        res:= res - RankFilter( i );
+      od;
+      for i in alt_filters do
+        res:= res + RankFilter( i );
+      od;
+      return res;
+    end;
 end );
 
 

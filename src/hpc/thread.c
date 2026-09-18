@@ -8,22 +8,22 @@
 **  SPDX-License-Identifier: GPL-2.0-or-later
 */
 
-#include "hpc/thread.h"
+#include "thread.h"
 
-#include "code.h"
-#include "error.h"
-#include "fibhash.h"
-#include "gapstate.h"
-#include "gvars.h"
-#include "modules.h"
-#include "plist.h"
-#include "stats.h"
-#include "stringobj.h"
-#include "vars.h"
+#include "../code.h"
+#include "../error.h"
+#include "../fibhash.h"
+#include "../gapstate.h"
+#include "../gvars.h"
+#include "../modules.h"
+#include "../plist.h"
+#include "../stats.h"
+#include "../stringobj.h"
+#include "../vars.h"
 
-#include "hpc/guards.h"
-#include "hpc/misc.h"
-#include "hpc/threadapi.h"
+#include "guards.h"
+#include "misc.h"
+#include "threadapi.h"
 
 #include <errno.h>
 #include <pthread.h>
@@ -975,7 +975,7 @@ static void InterruptCurrentThread(int locked, Stat stat)
     if (handler)
         CALL_WITH_CATCH(handler, NEW_PLIST(T_PLIST, 0));
     else
-        ErrorReturnVoid("system interrupt", 0, 0, "you can 'return;'");
+        ErrorReturnVoid("system interrupt", 0, 0, 0);
     if (!locked)
         pthread_mutex_unlock(thread->lock);
 }

@@ -293,7 +293,7 @@ Error, ExecuteProcess: <in> must be a small integer (not the value 'fail')
 gap> ExecuteProcess("","",0,fail,fail);
 Error, ExecuteProcess: <out> must be a small integer (not the value 'fail')
 gap> ExecuteProcess("","",0,0,fail);
-Error, ExecuteProcess: <args> must be a small list (not the value 'fail')
+Error, ExecuteProcess: <args> must be a plain list (not the value 'fail')
 gap> ExecuteProcess("","",0,0,[1]);
 Error, ExecuteProcess: <tmp> must be a string (not the integer 1)
 

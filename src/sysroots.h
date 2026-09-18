@@ -13,6 +13,17 @@
 #define GAP_SYSROOTS_H
 
 #include "common.h"
+#include "system.h"
+
+
+/****************************************************************************
+**
+*V  SyDefaultRootPath
+**
+**  Default initial root path. Default is the current directory, if we have
+**  no other idea, for backwards compatibility.
+*/
+extern char SyDefaultRootPath[GAP_PATH_MAX];
 
 #include <stddef.h>
 

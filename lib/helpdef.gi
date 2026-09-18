@@ -177,7 +177,7 @@ InstallGlobalFunction(HELP_PRINT_SECTION_URL, function(arg)
     else
       d := book;
     fi;
-    if d[Length(d)] = '/' then
+    if Last(d) = '/' then
       d := d{[1..Length(d)-1]};
     fi;
 

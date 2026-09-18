@@ -71,11 +71,52 @@ fail
 gap> GroupHomomorphismByImages(G, H, [], []);
 fail
 
+# Order for homomorphisms
+gap> G:= SymmetricGroup( 3 );;
+gap> hom:= IdentityMapping( G );;
+gap> Order( hom );
+1
+gap> One( hom ) = hom;
+true
+gap> H:= Group( (1,2) );;
+gap> hom:= RestrictedMapping( hom, H );;
+gap> Order( hom );
+Error, Source and Range of <hom> must be equal
+gap> One( hom );
+fail
+
 # Check that group homomorphisms created by a function can compute preimages.
-gap> for G in [ SymmetricGroup(5), SmallGroup( 24, 12 ), GL(2,3) ] do
+gap> for G in [ SymmetricGroup(5), DihedralGroup(8), GL(2,3) ] do
 >      hom:= GroupHomomorphismByFunction( G, G, x -> x );
 >      PreImagesRepresentative( hom, G.1 );
 >    od;
+
+# Check PreImages... now that NC versions have been added
+gap> gens := [ (1,2,3,4), (1,2,3) ];;
+gap> G := Group( gens );;
+gap> H := Group( [ (4,5,6,7,8,9), (5,9)(6,8) ] );;
+gap> imgs := [ (5,9)(6,8), (4,6,8)(5,7,9) ];;
+gap> hom := GroupHomomorphismByImages( G, H, gens, imgs );;
+gap> PreImagesSet( hom, [ (4,6)(7,9) ] );
+[ (2,3), (1,2,4,3), (1,3,4,2), (1,4) ]
+gap> PreImagesSet( hom, [ (4,5,6,7,8,9) ] );
+[  ]
+gap> PreImagesSet( hom, [ (4,6)(7,9), (4,5,6,7,8,9) ] );
+[ (2,3), (1,2,4,3), (1,3,4,2), (1,4) ]
+gap> PreImagesSet( hom, [ (7,8,9) ] );
+Error, <elms> is not a subset of the range of <map>
+gap> PreImagesElm( hom, (4,6)(7,9) );
+RightCoset(Group([ (1,4)(2,3), (1,2)(3,4) ]),(1,2,4,3))
+gap> PreImagesRepresentative( hom, (4,6)(7,9) );
+(1,2,4,3)
+gap> PreImagesElm( hom, (4,5,6,7,8,9) );
+[  ]
+gap> PreImagesRepresentative( hom, (4,5,6,7,8,9) );
+fail
+gap> PreImagesElm( hom, (7,8,9) );
+Error, <elm> is not in the range of <map>
+gap> PreImagesRepresentative( hom, (7,8,9) );
+Error, <elm> is not in the range of mapping <hom>
 
 #
 gap> STOP_TEST( "mapphomo.tst" );

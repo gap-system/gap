@@ -1587,6 +1587,23 @@
   <other type="fjournal">Archiv der Mathematik</other>
 </article></entry>
 
+<entry id="DFO13"><article>
+  <author>
+    <name><first>A. S.</first><last>Detinko</last></name>
+    <name><first>D. L.</first><last>Flannery</last></name>
+    <name><first>E. A.</first><last>O'Brien</last></name>
+  </author>
+  <title>Recognizing finite matrix groups over infinite fields</title>
+  <journal><value key="jsymc"/></journal>
+  <year>2013</year>
+  <volume>50</volume>
+  <pages>100&ndash;109</pages>
+  <issn>0747-7171</issn>
+  <other type="fjournal">Journal of Symbolic Computation</other>
+  <url>https://doi.org/10.1016/j.jsc.2012.04.002</url>
+  <other type="doi">10.1016/j.jsc.2012.04.002</other>
+</article></entry>
+
 <entry id="Dix67"><article>
   <author>
     <name><first>John D.</first><last>Dixon</last></name>
@@ -2442,6 +2459,23 @@
   <howpublished><URL>http://www.math.rwth-aachen.de/~MOC/CoMoChaT/</URL></howpublished>
 </misc></entry>
 
+<entry id="Holt85"><article>
+  <author>
+    <name><first>Derek F.</first><last>Holt</last></name>
+  </author>
+  <title>The mechanical computation of first and second cohomology
+              groups</title>
+  <journal><value key="jsymc"/></journal>
+  <year>1985</year>
+  <volume>1</volume>
+  <number>4</number>
+  <pages>351&ndash;361</pages>
+  <issn>0747-7171</issn>
+  <mrnumber>849041 (87j:20087)</mrnumber>
+  <mrclass>20J06 (20-04)</mrclass>
+  <other type="fjournal">Journal of Symbolic Computation</other>
+</article></entry>
+
 <entry id="Holt94"><incollection>
   <author>
     <name><first>Derek F.</first><last>Holt</last></name>
@@ -3155,6 +3189,20 @@
   <mrclass>68.00 (65.00)</mrclass>
   <mrreviewer>M. Muller</mrreviewer>
   <other type="pages">xi+624</other>
+</book></entry>
+
+<entry id="Lan70"><book>
+  <author>
+    <name><first>Serge</first><last>Lang</last></name>
+  </author>
+  <title>Algebraic number theory</title>
+  <publisher>Addison-Wesley Publishing Co., Reading, Mass.-London-Don
+              Mills, Ont.</publisher>
+  <year>1970</year>
+  <mrnumber>282947</mrnumber>
+  <mrclass>10.68</mrclass>
+  <mrreviewer>G. Whaples</mrreviewer>
+  <other type="pages">xi+354</other>
 </book></entry>
 
 <entry id="Lau82"><book>
@@ -4869,6 +4917,15 @@
   <volume>3</volume>
   <url>https://arxiv.org/abs/2201.09155</url>
 </article></entry>
+
+<entry id="Tay21"><misc>
+  <author>
+    <name><first>D. E.</first><last>Taylor</last></name>
+  </author>
+  <title>Conjugacy Classes in Finite Conformal Symplectic Groups</title>
+  <year>2021</year>
+  <howpublished>https://www.maths.usyd.edu.au/u/don/code/Magma/CSpConjugacy.pdf</howpublished>
+</misc></entry>
 
 <entry id="Theissen93"><mastersthesis>
   <author>

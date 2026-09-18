@@ -518,7 +518,7 @@ BIND_GLOBAL( "CycleFromList", function( list )
     for i in [1..Length(list)-1] do
         images[ list[i] ] := list[i+1];
     od;
-    images[ list[Length(list)] ] := list[1];
+    images[ Last(list) ] := list[1];
 
     return PermList(images);
 end );

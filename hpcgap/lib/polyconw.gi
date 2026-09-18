@@ -133,7 +133,7 @@ end);
 ##    str := "";
 ##    get := OutputTextString(str, false);
 ##    comm := "wget -q ftp://ftp.comlab.ox.ac.uk/pub/Documents/techpapers/Richard.Brent/factors/factors.gz -O - | gzip -dc ";
-##    Process(DirectoryCurrent(), Filename(DirectoriesSystemPrograms(),"sh"),
+##    Process(DirectoryCurrent(), PathSystemProgram("sh"),
 ##            InputTextUser(), get, ["-c", comm]);
 ##    res := [[],[]];
 ##    n := 0;
@@ -446,7 +446,7 @@ InstallGlobalFunction( ConwayPol, function( p, n )
       cpol:= [];
       while c <> 0 do
         Add(cpol, c mod p);
-        c := (c - cpol[Length(cpol)]) / p;
+        c := (c - Last(cpol)) / p;
       od;
       while Length( cpol ) < n do
         Add( cpol, 0 );

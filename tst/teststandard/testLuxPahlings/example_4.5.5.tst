@@ -129,7 +129,7 @@ gap> for A in cand do
 >      ibr := List( ibr, y -> y{preg} );
 >      x := List( permbrau, y -> SolutionMat( ibr, y ) );;
 >      f := Filtered([1..Length(x)], i -> x[i][6] <>0 and x[i][7] <> 0);;
->      Print( f[Length(f)]," , ", x[f[Length(f)]], "\n" );
+>      Print( Last(f)," , ", x[Last(f)], "\n" );
 >    od;
 149 , [ 10, 4, 4, 6, 1, 1, 1 ]
 149 , [ 10, 4, 4, 4, 1, 1, 1 ]

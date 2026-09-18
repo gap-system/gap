@@ -282,7 +282,7 @@ local brg,str,p,a,param,g,s,small,plus,sets;
       if '=' in brg then
         brg:=brg{[1..Position(brg,'=')-1]};
       fi;
-      while brg[Length(brg)]=' ' do
+      while Last(brg)=' ' do
         brg:=brg{[1..Length(brg)-1]};
       od;
       brg:=[brg];
@@ -299,9 +299,14 @@ local brg,str,p,a,param,g,s,small,plus,sets;
     then
     str:=Concatenation(str{[1..p-1]},",",str{[p+1..Length(str)]});
   fi;
+
+  # the weird F3+ name
+  if UppercaseString(str)="F3+" then str:="FI24'";fi;
+
   # blanks,parentheses,_,^,' do not contribute to parsing
   a:=" ()_^'";
   str:=UppercaseString(Filtered(str,x->not x in a));
+
   # are there parameters in the string?
   # skip leading numbers for indicating 2/3 twist
   if Length(str)>1 then
@@ -782,6 +787,19 @@ InstallGlobalFunction(SimpleGroupsIterator,function(arg)
   fi;
   nopsl2:=ValueOption("NOPSL2")=true or ValueOption("nopsl2")=true;
 
+  # The non-L2 orders come in two lists, the second loaded on demand.
+  # We do so early, so that a `start' beyond the data is rejected at
+  # once rather than after searching for it.
+  pos:=PositionProperty(SIMPLEGPSNONL2,x->x[1]>=start);
+  if pos=fail then
+    LOADSIMPLE2();
+    pos:=PositionProperty(SIMPLEGPSNONL2,x->x[1]>=start);
+    if pos=fail then
+      Error("simple groups of order > ",SIMPLE_GROUPS_ITERATOR_RANGE,
+        " are not available");
+    fi;
+  fi;
+
   # find relevant L2 order
   a:=RootInt(start,3)-1;
   stack:=fail;
@@ -791,8 +809,6 @@ InstallGlobalFunction(SimpleGroupsIterator,function(arg)
     stack:=a[3];
     a:=a[2];
   until SizeL2Q(b)>=start;
-  if start>=10^18 then LOADSIMPLE2(); fi;
-  pos:=First([1..Length(SIMPLEGPSNONL2)],x->SIMPLEGPSNONL2[x][1]>=start);
   return IteratorByFunctions(rec(
     IsDoneIterator:=IsDoneIterator_SimGp,
     NextIterator:=NextIterator_SimGp,
@@ -963,15 +979,15 @@ local nam,e,efactors,par,expo,prime,result,aut,i,classical,classaut,shortname,
   local s;
     if IsCyclic(gp) then
       return String(Size(gp));
-    elif IdGroup(gp)=[4,2] then
+    elif Size(gp)=4 then
       return "2^2";
-    elif IdGroup(gp)=[6,1] then
+    elif Size(gp)=6 then
       return "3.2";
-    elif IdGroup(gp)=[8,3] then
+    elif Size(gp)=8 and IsDihedralGroup(gp) then
       return "2^2.2";
-    elif IdGroup(gp)=[9,2] then
+    elif Size(gp)=9 then
       return "3^2";
-    elif IdGroup(gp)=[18,3] then
+    elif Size(gp)=18 and Size(DerivedSubgroup(gp))=3 then
       return "3^2.2";
     elif Size(gp)<=31 or Size(gp) in [33..47] then
       s:=StructureDescription(gp);
@@ -1024,7 +1040,7 @@ local nam,e,efactors,par,expo,prime,result,aut,i,classical,classaut,shortname,
   classical:=fail;
   if id.series="Spor" then
     nam:=id.name;
-    # deal wirth stupid names in identification
+    # deal with stupid names in identification
 
     if nam in ["M(11)","M(12)","M(22)","M(23)","M(24)","J(1)","J(3)",
                "J(4)","Co(3)","Co(2)","Fi(22)","Fi(23)"] then
@@ -1158,18 +1174,18 @@ local nam,e,efactors,par,expo,prime,result,aut,i,classical,classaut,shortname,
       if efactors<>fail and Size(classaut)<>Product(efactors) then
         Error("outer automorphism efactor fail");
       fi;
-      if IdGroup(classaut)=[4,2] then
+      if Size(classaut)=4 and not IsCyclic(classaut) then
         # subgroup classes V4
         e:=[[2,"2_1"],[2,"2_2"],[2,"2_3"],[4,"2^2"]];
-      elif IdGroup(classaut)=[6,1] then
+      elif Size(classaut)=6 and not IsCyclic(classaut) then
         # subgroup classes S_3
         e:=[  [ 2, "2" ], [ 3, "3" ], [ 6, "3.2" ] ];
-      elif IdGroup(classaut)=[12,4] then
+      elif Size(classaut)=12 and IsDihedralGroup(classaut) then
         # subgroup classes 2\times S_3 (since S3 cannot act on C2)
         e:=[ [ 2, "2_1" ], [ 2, "2_2" ], [ 2, "2_3" ], [ 3, "3" ],
              [ 4, "2^2" ], [ 6, "3.2_1" ], [ 6, "3.2_2" ], [ 6, "6" ],
              [ 12, "3.2^2" ] ];
-      elif IdGroup(classaut)=[24,12] then
+      elif Size(classaut)=24 and Size(DerivedSubgroup(classaut))=12 then
         # subgroup classes S_4
         e:=[  [ 2, "2_1" ],[ 2, "2_2" ], [ 3, "3" ],
               [ 4, "4" ], [ 4, "(2^2)_{111}" ], [4,"(2^2)_{122}"],

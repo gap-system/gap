@@ -78,17 +78,21 @@ fi;
 ##  Group([ b ])
 ##  gap> Index( f, u );
 ##  Error, the coset enumeration has defined more than 4096000 cosets
-##   called from
-##  TCENUM.CosetTableFromGensAndRels( fgens, grels, fsgens ) called from
-##  CosetTableFromGensAndRels( fgens, grels, fsgens ) called from
-##  TryCosetTableInWholeGroup( H ) called from
-##  CosetTableInWholeGroup( H ) called from
-##  IndexInWholeGroup( H ) called from
-##  ...
-##  Entering break read-eval-print loop ...
-##  type 'return;' if you want to continue with a new limit of 8192000 cosets,
-##  type 'quit;' if you want to quit the coset enumeration,
-##  type 'maxlimit := 0; return;' in order to continue without a limit
+##  Stack trace:
+##  *[1] Error( "the coset enumeration has defined more ", "than ", limit, " cosets\n" );
+##     @ GAPROOT/lib/grpfp.gi:1230
+##   [2] TCENUM.CosetTableFromGensAndRels( fgens, grels, fsgens )
+##     @ GAPROOT/lib/grpfp.gi:1068
+##   [3] CosetTableFromGensAndRels( fgens, grels, fsgens )
+##     @ GAPROOT/lib/grpfp.gi:1346
+##   [4] TryCosetTableInWholeGroup( H )
+##     @ GAPROOT/lib/grpfp.gi:1359
+##   [5] CosetTableInWholeGroup( H )
+##     @ GAPROOT/lib/grpfp.gi:1733
+##  ...  at *stdin*:3
+##  you can enter 'return;' to continue with a new limit of 8192000 cosets,
+##  you can enter 'quit;' to abort the coset enumeration,
+##  you can enter 'maxlimit := 0; return;' in order to continue without a limit
 ##  brk> quit;
 ##  ]]></Log>
 ##  <P/>
@@ -408,7 +412,7 @@ DeclareAttribute( "FpElementNFFunction",IsElementOfFpGroupFamily);
 # ##
 # ##  <Description>
 # ##  If <A>fam</A> is the elements family of a finitely presented group this
-# ##  attribute returns a list [<A>iso</A>,<A>k</A>,<A>id</A>] where <A>iso</A> is a isomorphism to an
+# ##  attribute returns a list [<A>iso</A>,<A>k</A>,<A>id</A>] where <A>iso</A> is an isomorphism to an
 # ##  fp monoid, <A>k</A> a confluent rewriting system for the image of <A>iso</A> and
 # ##  <A>id</A> the element in the free monoid corresponding to the image of the
 # ##  identity element under <A>iso</A>.

@@ -80,7 +80,9 @@ if ARCH_IS_WINDOWS() then
       winfilename:=MakeExternalFilename( SplitString( filename, "#" )[1] );
     fi;
     Print( "Opening help page ", winfilename, " in default windows browser ... \c" );
-    Exec( Concatenation("start ", winfilename ) );
+    # the empty string is the window title argument of `start`, without
+    # which `start` would mistake the filename for a title
+    RunProcess( "cmd.exe", "/c", "start", "", winfilename );
     Print( "done! \n" );
   end
   );
@@ -138,7 +140,7 @@ elif ARCH_IS_MAC_OS_X() then
             fi;
             file := file.file;
           fi;
-          Exec(Concatenation("open -a Preview ", file));
+          RunProcess("open", "-a", "Preview", file);
           Print("#  see page ", page, " in the Preview window.\n");
         end
     );
@@ -155,7 +157,7 @@ elif ARCH_IS_MAC_OS_X() then
             fi;
             file := file.file;
           fi;
-          Exec(Concatenation("open -a \"Adobe Reader\" ", file));
+          RunProcess("open", "-a", "Adobe Reader", file);
           Print("#  see page ", page, " in the Adobe Reader window.\n");
         end
     );
@@ -172,7 +174,7 @@ elif ARCH_IS_MAC_OS_X() then
             fi;
             file := file.file;
           fi;
-          Exec(Concatenation("open ", file));
+          RunProcess("open", file);
           Print("#  see page ", page, " in the pdf viewer window.\n");
         end
     );
@@ -187,16 +189,17 @@ elif ARCH_IS_MAC_OS_X() then
                 fi;
                 file := file.file;
             fi;
-            Exec( Concatenation(
-                "osascript <<ENDSCRIPT\n",
-                    "tell application \"Skim\"\n",
-                    "activate\n",
-                    "open \"", file, "\"\n",
-                    "set theDoc to document of front window\n",
-                    "go theDoc to page ",String(page)," of theDoc\n",
-                    "end tell\n",
-                "ENDSCRIPT\n" ) );
-            return;
+            RunProcess("osascript", "-", file, page,
+                rec(input := InputTextString("""
+                    on run argv
+                      tell application "Skim"
+                        activate
+                        open (item 1 of argv)
+                        set theDoc to document of front window
+                        go theDoc to page ((item 2 of argv) as integer) of theDoc
+                      end tell
+                    end run
+                """)));
         end
     );
 
@@ -210,7 +213,8 @@ else # UNIX but not macOS
       # Ignoring part of the URL after '#' since we are unable
       # to navigate to the precise location on Windows
       url := SplitString( url, "#" )[1];
-      Exec(Concatenation("explorer.exe \"$(wslpath -a -w \"",url, "\")\""));
+      url := Chomp( RunProcess("wslpath", "-a", "-w", url).output );
+      RunProcess("explorer.exe", url);
     end
     );
 
@@ -226,7 +230,8 @@ else # UNIX but not macOS
             fi;
             file := file.file;
           fi;
-          Exec(Concatenation("explorer.exe \"$(wslpath -a -w \"",file, "\")\""));
+          file := Chomp( RunProcess("wslpath", "-a", "-w", file).output );
+          RunProcess("explorer.exe", file);
           Print("#  see page ", page, " in PDF.\n");
     end
     );
@@ -235,7 +240,7 @@ else # UNIX but not macOS
     HELP_VIEWER_INFO.netscape := rec(
     type := "url",
     show := function(url)
-      Exec(Concatenation("netscape -remote \"openURL(file:", url, ")\""));
+      RunProcess("netscape", "-remote", Concatenation("openURL(file:", url, ")"));
     end
     );
 
@@ -243,7 +248,7 @@ else # UNIX but not macOS
     HELP_VIEWER_INFO.mozilla := rec(
     type := "url",
     show := function(url)
-      Exec(Concatenation("mozilla -remote \"openURL(file:", url, ")\""));
+      RunProcess("mozilla", "-remote", Concatenation("openURL(file:", url, ")"));
     end
     );
 
@@ -272,11 +277,14 @@ else # UNIX but not macOS
     );
   fi;
 
+  # The following viewers are interactive, so they are given GAP's terminal,
+  # which they used to inherit implicitly via `Exec`.
+
   # html version with lynx
   HELP_VIEWER_INFO.lynx := rec(
   type := "url",
   show := function(url)
-    Exec(Concatenation("lynx \"", url, "\""));
+    RunProcess("lynx", url, rec(input := InputTextUser(), output := OutputTextUser()));
   end
   );
 
@@ -284,28 +292,28 @@ else # UNIX but not macOS
   HELP_VIEWER_INFO.w3m := rec(
   type := "url",
   show := function(url)
-    Exec(Concatenation("w3m \"", url, "\""));
+    RunProcess("w3m", url, rec(input := InputTextUser(), output := OutputTextUser()));
   end
   );
 
   HELP_VIEWER_INFO.elinks := rec(
   type := "url",
   show := function(url)
-    Exec(Concatenation("elinks \"", url, "\""));
+    RunProcess("elinks", url, rec(input := InputTextUser(), output := OutputTextUser()));
   end
   );
 
   HELP_VIEWER_INFO.links2ng := rec(
   type := "url",
   show := function(url)
-    Exec(Concatenation("links2 \"", url, "\""));
+    RunProcess("links2", url, rec(input := InputTextUser(), output := OutputTextUser()));
   end
   );
 
   HELP_VIEWER_INFO.links2 := rec(
   type := "url",
   show := function(url)
-    Exec(Concatenation("links2 -g \"", url, "\""));
+    RunProcess("links2", "-g", url, rec(input := InputTextUser(), output := OutputTextUser()));
   end
   );
 fi;
