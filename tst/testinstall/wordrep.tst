@@ -310,5 +310,13 @@ true
 gap> IsMutable(ExtRepOfObj(f.1));
 true
 
+# printing powers in words over infinitely many generators
+gap> f:= FreeGroup(IsSyllableWordsFamily, infinity, "x");;
+gap> (f.1^20*f.2)^3;
+(x1^20*x2)^3
+gap> f:= FreeGroup(infinity, "x");;
+gap> (f.1^20*f.2)^3;
+(x1^20*x2)^3
+
 #
 gap> STOP_TEST("wordrep.tst");

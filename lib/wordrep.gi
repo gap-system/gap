@@ -208,20 +208,16 @@ end);
 PRINTWORDPOWERS:=true;
 
 DeclareGlobalName("DoNSAW");
-BindGlobal( "DoNSAW", function(l,names,tseed)
-local a,n,t,
+BindGlobal( "DoNSAW", function(l,names,tseed,n)
+local a,t,
       word,
       exp,
       i,j,
       str;
 
-  n:=Length(names);
   if (PRINTWORDPOWERS=true
    or (IsInt(PRINTWORDPOWERS) and Length(l)<PRINTWORDPOWERS)) and
      ValueOption("printnopowers")<>true then
-    if Length(l)>0 and n=infinity then
-      n:=2*(Maximum(List(l,AbsInt))+1);
-    fi;
     a:=FindSubstringPowers(l,n+Length(tseed)); # tseed numbers are already used
   else
     a:=[l,[]];
@@ -252,7 +248,7 @@ local a,n,t,
       else
         # decode longer word -- it will occur as power, so use ()
         Add(str,'(');
-        Append(str,DoNSAW(t,names,Filtered(a[2],x->x[1]=0)));
+        Append(str,DoNSAW(t,names,Filtered(a[2],x->x[1]=0),n));
         Add(str,')');
       fi;
     elif word[i]<0 then
@@ -282,13 +278,17 @@ local a,n,t,
 end );
 
 BindGlobal("NiceStringAssocWord",function(elm)
-local names,word;
+local names,word,n;
   names:= FamilyObj( elm )!.names;
   word:= LetterRepAssocWord( elm );
   if Length(word)=0 then
     return "<identity ...>";
   fi;
-  word:=DoNSAW(word,names,[]);
+  n:=Length(names);
+  if n=infinity then
+    n:=2*(Maximum(List(word,AbsInt))+1);
+  fi;
+  word:=DoNSAW(word,names,[],n);
   return word;
 end);
 
