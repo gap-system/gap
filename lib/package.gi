@@ -1890,13 +1890,12 @@ InstallGlobalFunction( ExtendPackageDirectories, function( paths_or_dirs )
     local p, changed;
     changed:= false;
     for p in paths_or_dirs do
-      if IsString( p ) then
-        p:= Directory( GAP_realpath ( p ) );
-      elif IsDirectory( p ) then
-        p:= Directory( GAP_realpath ( p![1] ) );
-      else
+      if IsDirectory( p ) then
+        p:= Filename( p, "" );
+      elif not IsString( p ) then
         Error("input must be a list of path strings or directory objects");
       fi;
+      p:= Directory( GAP_realpath( p ) );
       if not p in GAPInfo.PackageDirectories then
         Add( GAPInfo.PackageDirectories, p );
         changed:= true;
