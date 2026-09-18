@@ -319,6 +319,8 @@ gap> String(f.1^(2^100) * f.2^-(2^70));
 "f1^1267650600228229401496703205376*f2^-1180591620717411303424"
 gap> (f.1^20*f.2)^3;
 (f1^20*f2)^3
+gap> f.1^(2^100)*f.2^(2^70)*f.1^(2^100)*f.2^(2^70);
+(f1^1267650600228229401496703205376*f2^1180591620717411303424)^2
 
 # printing powers in words over infinitely many generators
 gap> f:= FreeGroup(IsSyllableWordsFamily, infinity, "x");;
