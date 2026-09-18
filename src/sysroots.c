@@ -18,7 +18,6 @@
 #include "sysstr.h"
 #include "system.h"
 
-#include <limits.h>
 #include <stdlib.h>
 
 
@@ -218,9 +217,9 @@ void SySetGapRootPath(const Char * string)
         }
 
         // convert all paths to absolute paths
-        char tempstr[PATH_MAX];
+        char tempstr[GAP_PATH_MAX];
 
-        if (NULL == realpath(SyGapRootPaths[i], tempstr)) {
+        if (NULL == SyRealpath(SyGapRootPaths[i], tempstr)) {
             SySetErrorNo();
         } else {
             strxcpy(SyGapRootPaths[i], tempstr, sizeof(SyGapRootPaths[i]));
