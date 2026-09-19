@@ -2048,15 +2048,22 @@ end);
 ##
 #M  Extensions( G, M )
 ##
-InstallOtherMethod(Extensions,"generic method for finite groups",
-    true,[IsGroup and IsFinite,IsObject],
-    -RankFilter(IsGroup and IsFinite),
-function(G,M)
+##  undocumented, not safe because the documented method for pc groups
+##  with the same input assumes that 'M.generators' corresponds to
+##  'Pcgs( G )' not to 'GeneratorsOfGroup( G )'
+##
+BindGlobal( "ExtensionsWRTGenerators", function( G, M )
 local coh;
+
   coh:=TwoCohomologyGeneric(G,M);
   return List(Elements(VectorSpace(coh.module.field,coh.cohomology,coh.zero)),
     x->FpGroupCocycle(coh,x,true:normalform));
 end);
+
+InstallOtherMethod(Extensions,"generic method for finite groups",
+    true,[IsGroup and IsFinite,IsObject],
+    -RankFilter(IsGroup and IsFinite),
+    ExtensionsWRTGenerators );
 
 InstallOtherMethod(ExtensionRepresentatives,"generic method for finite groups",
   true,[IsGroup and IsFinite,IsObject,IsGroup],
@@ -2067,4 +2074,3 @@ local coh;
   return List(CompatiblePairOrbitRepsGeneric(P,coh),
     x->FpGroupCocycle(coh,x,true:normalform));
 end);
-
