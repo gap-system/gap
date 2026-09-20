@@ -208,20 +208,16 @@ end);
 PRINTWORDPOWERS:=true;
 
 DeclareGlobalName("DoNSAW");
-BindGlobal( "DoNSAW", function(l,names,tseed)
-local a,n,t,
+BindGlobal( "DoNSAW", function(l,names,tseed,n)
+local a,t,
       word,
       exp,
       i,j,
       str;
 
-  n:=Length(names);
   if (PRINTWORDPOWERS=true
    or (IsInt(PRINTWORDPOWERS) and Length(l)<PRINTWORDPOWERS)) and
      ValueOption("printnopowers")<>true then
-    if Length(l)>0 and n=infinity then
-      n:=2*(Maximum(List(l,AbsInt))+1);
-    fi;
     a:=FindSubstringPowers(l,n+Length(tseed)); # tseed numbers are already used
   else
     a:=[l,[]];
@@ -252,7 +248,7 @@ local a,n,t,
       else
         # decode longer word -- it will occur as power, so use ()
         Add(str,'(');
-        Append(str,DoNSAW(t,names,Filtered(a[2],x->x[1]=0)));
+        Append(str,DoNSAW(t,names,Filtered(a[2],x->x[1]=0),n));
         Add(str,')');
       fi;
     elif word[i]<0 then
@@ -282,13 +278,48 @@ local a,n,t,
 end );
 
 BindGlobal("NiceStringAssocWord",function(elm)
-local names,word;
+local names,word,n,tseed,e,i,g,x,pow,pos;
   names:= FamilyObj( elm )!.names;
-  word:= LetterRepAssocWord( elm );
+  n:=Length(names);
+  tseed:=[];
+  if IsSyllableAssocWordRep(elm) then
+    # Syllables with large exponents become the tokens FindSubstringPowers
+    # would create from their letters anyway, so exponents need not be
+    # small integers.
+    e:=ExtRepOfObj(elm);
+    if n=infinity and Length(e)>0 then
+      n:=2*(Maximum(e{[1,3..Length(e)-1]})+1);
+    fi;
+    word:=[];
+    for i in [1,3..Length(e)-1] do
+      g:=e[i];
+      x:=e[i+1];
+      if x<0 then
+        g:=-g;
+        x:=-x;
+      fi;
+      if x>9 then # same threshold as in FindSubstringPowers
+        pow:=[0,g,x];
+        pos:=Position(tseed,pow);
+        if pos=fail then
+          Add(tseed,pow);
+          pos:=Length(tseed);
+        fi;
+        Add(word,n+pos);
+      else
+        Append(word,ListWithIdenticalEntries(x,g));
+      fi;
+    od;
+  else
+    word:= LetterRepAssocWord( elm );
+    if n=infinity and Length(word)>0 then
+      n:=2*(Maximum(List(word,AbsInt))+1);
+    fi;
+  fi;
   if Length(word)=0 then
     return "<identity ...>";
   fi;
-  word:=DoNSAW(word,names,[]);
+  word:=DoNSAW(word,names,tseed,n);
   return word;
 end);
 
