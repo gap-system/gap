@@ -605,12 +605,10 @@ static Obj  HdlrFunc8 (
  CHECK_BOUND( t_2, "CallFuncList" );
  t_3 = NEW_PLIST( T_PLIST, 2 );
  SET_LEN_PLIST( t_3, 2 );
- SET_ELM_PLIST( t_3, 1, l_IsCustomFunction );
- CHANGED_BAG( t_3 );
+ SET_ELM_PLIST_WB( t_3, 1, l_IsCustomFunction );
  t_4 = GC_IsList;
  CHECK_BOUND( t_4, "IsList" );
- SET_ELM_PLIST( t_3, 2, t_4 );
- CHANGED_BAG( t_3 );
+ SET_ELM_PLIST_WB( t_3, 2, t_4 );
  t_4 = NewFunction( NameFunc[9], 2, NewPlistFromArgs(MakeImmString("func"), MakeImmString("args")), HdlrFunc9 );
  SET_ENVI_FUNC( t_4, STATE(CurrLVars) );
  t_5 = NewFunctionBody();

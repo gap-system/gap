@@ -187,8 +187,7 @@ Obj             SumSclList (
         if (elmR)
           {
             elmS = SUM( listL, elmR );
-            SET_ELM_PLIST( listS, i, elmS );
-            CHANGED_BAG( listS );
+            SET_ELM_PLIST_WB( listS, i, elmS );
           }
     }
 
@@ -217,8 +216,7 @@ Obj             SumListScl (
         if (elmL)
           {
             elmS = SUM( elmL, listR );
-            SET_ELM_PLIST( listS, i, elmS );
-            CHANGED_BAG( listS );
+            SET_ELM_PLIST_WB( listS, i, elmS );
           }
     }
 
@@ -268,8 +266,7 @@ Obj             SumListList (
         elmR ? (mutS ? SHALLOW_COPY_OBJ(elmR): elmR) : 0;
       if (elmS)
         {
-          SET_ELM_PLIST( listS, i, elmS );
-          CHANGED_BAG( listS );
+          SET_ELM_PLIST_WB( listS, i, elmS );
         }
     }
 
@@ -327,8 +324,7 @@ static Obj ZeroListDefault(Obj list)
         Obj tmp = ELM0_LIST( list, i);
         if (tmp) {
           tmp = ZERO_SAMEMUT(tmp);
-          SET_ELM_PLIST( res, i,tmp );
-          CHANGED_BAG( res);
+          SET_ELM_PLIST_WB( res, i,tmp );
         }
       }
     // Now adjust the result TNUM info
@@ -390,8 +386,7 @@ static Obj ZeroListMutDefault(Obj list)
         Obj tmp = ELM0_LIST( list, i);
         if (tmp) {
           tmp = ZERO_MUT(tmp);
-          SET_ELM_PLIST( res, i,tmp );
-          CHANGED_BAG( res);
+          SET_ELM_PLIST_WB( res, i,tmp );
         }
       }
     // Now adjust the result TNUM info
@@ -486,8 +481,7 @@ static Obj AInvMutListDefault(Obj list)
         elm = ELM0_LIST( list, i );
         if (elm) {
           elm = AINV_MUT( elm );
-          SET_ELM_PLIST( res, i, elm );
-          CHANGED_BAG( res );
+          SET_ELM_PLIST_WB( res, i, elm );
         }
     }
 
@@ -541,8 +535,7 @@ static Obj AInvListDefault(Obj list)
         elm = ELM0_LIST( list, i );
         if (elm) {
           elm = AINV_SAMEMUT( elm );
-          SET_ELM_PLIST( res, i, elm );
-          CHANGED_BAG( res );
+          SET_ELM_PLIST_WB( res, i, elm );
         }
     }
 
@@ -624,8 +617,7 @@ Obj             DiffSclList (
         if (elmR)
           {
             elmD = DIFF( listL, elmR );
-            SET_ELM_PLIST( listD, i, elmD );
-            CHANGED_BAG( listD );
+            SET_ELM_PLIST_WB( listD, i, elmD );
           }
     }
 
@@ -667,8 +659,7 @@ Obj             DiffListScl (
         if (elmL)
           {
             elmD = DIFF( elmL, listR );
-            SET_ELM_PLIST( listD, i, elmD );
-            CHANGED_BAG( listD );
+            SET_ELM_PLIST_WB( listD, i, elmD );
           }
 
     }
@@ -752,8 +743,7 @@ Obj             DiffListList (
 
         if (elmD)
           {
-            SET_ELM_PLIST( listD, i, elmD );
-            CHANGED_BAG( listD );
+            SET_ELM_PLIST_WB( listD, i, elmD );
           }
     }
     // Now adjust the result TNUM info. There's not so much we can say
@@ -830,8 +820,7 @@ Obj             ProdSclList (
         if (elmR)
           {
             elmP = PROD( listL, elmR );
-            SET_ELM_PLIST( listP, i, elmP );
-            CHANGED_BAG( listP );
+            SET_ELM_PLIST_WB( listP, i, elmP );
           }
     }
     if (IS_PLIST( listR ))
@@ -870,8 +859,7 @@ Obj             ProdListScl (
         elmL = ELMV0_LIST( listL, i );
         if (elmL) {
           elmP = PROD( elmL, listR );
-          SET_ELM_PLIST( listP, i, elmP );
-          CHANGED_BAG( listP );
+          SET_ELM_PLIST_WB( listP, i, elmP );
         }
     }
 
@@ -1041,8 +1029,7 @@ static Obj OneMatrix(Obj mat, UInt mut)
         SET_ELM_PLIST( row, i, one );
         if (!rmut)
             MakeImmutableNoRecurse(row);
-        SET_ELM_PLIST( res, i, row );
-        CHANGED_BAG( res );
+        SET_ELM_PLIST_WB( res, i, row );
     }
     if (!cmut)
         MakeImmutableNoRecurse(res);
@@ -1142,8 +1129,7 @@ static Obj InvMatrix(Obj mat, UInt mut)
     for (i = 1; i <= len; i++) {
         row = NEW_PLIST(T_PLIST, 2 * len);
         SET_LEN_PLIST(row, 2 * len);
-        SET_ELM_PLIST(res, i, row);
-        CHANGED_BAG(res);
+        SET_ELM_PLIST_WB(res, i, row);
     }
     for ( i = 1; i <= len; i++ ) {
         row = ELM_PLIST( res, i );
@@ -1155,8 +1141,7 @@ static Obj InvMatrix(Obj mat, UInt mut)
         row = ELM_PLIST( res, i );
         row2 = ELM_LIST( mat, i );
         for ( k = 1; k <= len; k++ ) {
-            SET_ELM_PLIST( row, k + len, ELM_LIST( row2, k )  );
-            CHANGED_BAG( row );
+            SET_ELM_PLIST_WB( row, k + len, ELM_LIST( row2, k )  );
         }
     }
 
@@ -1183,8 +1168,7 @@ static Obj InvMatrix(Obj mat, UInt mut)
           elm2 = INV( ELM_PLIST( row, k ) );
         for ( l = 1; l <= 2*len; l++ ) {
             elm = PROD( elm2, ELM_PLIST( row, l ) );
-            SET_ELM_PLIST( row, l, elm );
-            CHANGED_BAG( row );
+            SET_ELM_PLIST_WB( row, l, elm );
         }
 
         // clear all entries in this column
@@ -1198,8 +1182,7 @@ static Obj InvMatrix(Obj mat, UInt mut)
                 for ( l = 1; l <= 2*len; l++ ) {
                     elm2 = PROD( elm, ELM_PLIST( row, l ) );
                     elm2 = SUM( ELM_PLIST( row2, l ), elm2 );
-                    SET_ELM_PLIST( row2, l, elm2 );
-                    CHANGED_BAG( row2 );
+                    SET_ELM_PLIST_WB( row2, l, elm2 );
                 }
             }
         }
@@ -1294,8 +1277,7 @@ static Obj FuncADD_ROW_VECTOR_5_FAST(
         }
         if (!ARE_INTOBJS(e1, prd) || !SUM_INTOBJS(sum, e1, prd)) {
             sum = SUM(e1, prd);
-            SET_ELM_PLIST(list1, i, sum);
-            CHANGED_BAG(list1);
+            SET_ELM_PLIST_WB(list1, i, sum);
         }
         else
             SET_ELM_PLIST(list1, i, sum);
@@ -1358,8 +1340,7 @@ static Obj FuncADD_ROW_VECTOR_3_FAST(Obj self, Obj list1, Obj list2, Obj mult)
       if ( !ARE_INTOBJS(e1, prd) || !SUM_INTOBJS( sum, e1, prd) )
         {
           sum = SUM(e1,prd);
-          SET_ELM_PLIST(list1,i,sum);
-          CHANGED_BAG(list1);
+          SET_ELM_PLIST_WB(list1,i,sum);
         }
       else
           SET_ELM_PLIST(list1,i,sum);
@@ -1417,8 +1398,7 @@ static Obj FuncADD_ROW_VECTOR_2_FAST(Obj self, Obj list1, Obj list2)
       if ( !ARE_INTOBJS(e1, e2) || !SUM_INTOBJS( sum, e1, e2) )
         {
           sum = SUM(e1,e2);
-          SET_ELM_PLIST(list1,i,sum);
-          CHANGED_BAG(list1);
+          SET_ELM_PLIST_WB(list1,i,sum);
         }
       else
           SET_ELM_PLIST(list1,i,sum);
@@ -1490,8 +1470,7 @@ static Obj FuncMULT_VECTOR_2_FAST(Obj self, Obj list, Obj mult)
       if (!ARE_INTOBJS(el, mult) || !PROD_INTOBJS(prd,el,mult))
         {
           prd = PROD(el,mult);
-          SET_ELM_PLIST(list,i,prd);
-          CHANGED_BAG(list);
+          SET_ELM_PLIST_WB(list,i,prd);
         }
       else
           SET_ELM_PLIST(list,i,prd);
@@ -1591,11 +1570,9 @@ static Obj InvMatWithRowVecs(Obj mat, UInt mut)
     {
       row = SHALLOW_COPY_OBJ(zerov);
       ASS_LIST(row,i,one);
-      SET_ELM_PLIST(res,i,row);
-      CHANGED_BAG(res);
+      SET_ELM_PLIST_WB(res,i,row);
       row = SHALLOW_COPY_OBJ(ELM_LIST(mat,i));
-      SET_ELM_PLIST(matcopy,i,row);
-      CHANGED_BAG(matcopy);
+      SET_ELM_PLIST_WB(matcopy,i,row);
     }
 
 
@@ -1735,8 +1712,7 @@ FuncADD_TO_LIST_ENTRIES_PLIST_RANGE(Obj self, Obj list, Obj range, Obj x)
           !SUM_INTOBJS(z,x,y))
         {
           z = SUM(x,y);
-          SET_ELM_PLIST(list,i,z);
-          CHANGED_BAG(list);
+          SET_ELM_PLIST_WB(list,i,z);
         }
       else
         SET_ELM_PLIST(list,i,z);

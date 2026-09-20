@@ -1368,8 +1368,7 @@ void AssPosObj(Obj obj, Int idx, Obj val)
         if (SIZE_OBJ(obj) / sizeof(Obj) - 1 < idx) {
             ResizeBag(obj, (idx + 1) * sizeof(Obj));
         }
-        SET_ELM_PLIST(obj, idx, val);
-        CHANGED_BAG(obj);
+        SET_ELM_PLIST_WB(obj, idx, val);
     }
 #ifdef HPCGAP
     else if (TNUM_OBJ(obj) == T_APOSOBJ) {

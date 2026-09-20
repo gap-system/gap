@@ -887,8 +887,7 @@ static Obj EvalListExpr(Expr expr)
         }
 
         sub = EVAL_EXPR(subExpr);
-        SET_ELM_PLIST(list, i, sub);
-        CHANGED_BAG(list);
+        SET_ELM_PLIST_WB(list, i, sub);
     }
 
     SET_FILT_LIST(list, dense ? FN_IS_DENSE : FN_IS_NDENSE);

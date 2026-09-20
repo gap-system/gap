@@ -165,8 +165,7 @@ static void SCTableProdAdd(Obj res, Obj coeff, Obj basis_coeffs, Int dim)
         c1 = PROD( coeff, c1 );
         c2 = ELM_PLIST( res, INT_INTOBJ(k) );
         c2 = SUM( c2, c1 );
-        SET_ELM_PLIST( res, INT_INTOBJ(k), c2 );
-        CHANGED_BAG( res );
+        SET_ELM_PLIST_WB( res, INT_INTOBJ(k), c2 );
     }
 }
 

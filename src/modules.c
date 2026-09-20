@@ -411,31 +411,24 @@ static Obj FuncLoadedModules(Obj self)
     for (i = 0; i < NrModules; i++) {
         m = Modules[i].info;
         if (IS_MODULE_BUILTIN(m->type)) {
-            SET_ELM_PLIST(list, 3 * i + 1, ObjsChar[(Int)'b']);
-            CHANGED_BAG(list);
+            SET_ELM_PLIST_WB(list, 3 * i + 1, ObjsChar[(Int)'b']);
             str = MakeImmString(m->name);
             SET_ELM_PLIST(list, 3 * i + 2, str);
             SET_ELM_PLIST(list, 3 * i + 3, INTOBJ_INT(m->version));
         }
         else if (IS_MODULE_DYNAMIC(m->type)) {
-            SET_ELM_PLIST(list, 3 * i + 1, ObjsChar[(Int)'d']);
-            CHANGED_BAG(list);
+            SET_ELM_PLIST_WB(list, 3 * i + 1, ObjsChar[(Int)'d']);
             str = MakeImmString(m->name);
-            SET_ELM_PLIST(list, 3 * i + 2, str);
-            CHANGED_BAG(list);
+            SET_ELM_PLIST_WB(list, 3 * i + 2, str);
             str = MakeImmString(Modules[i].filename);
-            SET_ELM_PLIST(list, 3 * i + 3, str);
-            CHANGED_BAG(list);
+            SET_ELM_PLIST_WB(list, 3 * i + 3, str);
         }
         else if (IS_MODULE_STATIC(m->type)) {
-            SET_ELM_PLIST(list, 3 * i + 1, ObjsChar[(Int)'s']);
-            CHANGED_BAG(list);
+            SET_ELM_PLIST_WB(list, 3 * i + 1, ObjsChar[(Int)'s']);
             str = MakeImmString(m->name);
-            SET_ELM_PLIST(list, 3 * i + 2, str);
-            CHANGED_BAG(list);
+            SET_ELM_PLIST_WB(list, 3 * i + 2, str);
             str = MakeImmString(Modules[i].filename);
-            SET_ELM_PLIST(list, 3 * i + 3, str);
-            CHANGED_BAG(list);
+            SET_ELM_PLIST_WB(list, 3 * i + 3, str);
         }
     }
     return list;

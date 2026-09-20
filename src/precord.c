@@ -545,8 +545,7 @@ static Obj InnerRecNames(Obj rec)
         // could have been moved by garbage collection
         name = NAME_RNAM( rnam );
         string = CopyToStringRep( name );
-        SET_ELM_PLIST( list, i, string );
-        CHANGED_BAG( list );
+        SET_ELM_PLIST_WB( list, i, string );
     }
 
     // return the list

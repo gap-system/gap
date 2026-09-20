@@ -936,8 +936,7 @@ static Obj FuncIDENTS_GVAR(Obj self)
         /* Copy the string here, because we do not want members of NameGVars
          * accessible to users, as these strings must not be changed */
         strcopy = CopyToStringRep( NameGVar( i ) );
-        SET_ELM_PLIST( copy, i, strcopy );
-        CHANGED_BAG( copy );
+        SET_ELM_PLIST_WB( copy, i, strcopy );
     }
     SET_LEN_PLIST( copy, numGVars );
     return copy;
@@ -959,8 +958,7 @@ static Obj FuncIDENTS_BOUND_GVARS(Obj self)
             * NameGVars accessible to users, as these strings must not be
             * changed */
            strcopy = CopyToStringRep( NameGVar( i ) );
-           SET_ELM_PLIST( copy, j, strcopy );
-           CHANGED_BAG( copy );
+           SET_ELM_PLIST_WB( copy, j, strcopy );
            j++;
         }
     }

@@ -340,8 +340,7 @@ static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
         }
         else {
           SET_ELM_PLIST( sst, st, INTOBJ_INT(syl) );
-          SET_ELM_PLIST( est, st, ELM_PLIST( w, syl+1 ));
-          CHANGED_BAG( est );
+          SET_ELM_PLIST_WB( est, st, ELM_PLIST( w, syl+1 ));
         }
       }
     }

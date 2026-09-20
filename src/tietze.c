@@ -212,8 +212,7 @@ static Obj FuncTzSortC(Obj self, Obj tietze)
         SET_LEN_PLIST( rels,  i );  SHRINK_PLIST( rels,  i );
         SET_LEN_PLIST( lens,  i );  SHRINK_PLIST( lens,  i );
         SET_LEN_PLIST( flags, i );  SHRINK_PLIST( flags, i );
-        SET_ELM_PLIST( tietze, TZ_NUMRELS, INTOBJ_INT(i) );
-        CHANGED_BAG(tietze);
+        SET_ELM_PLIST_WB( tietze, TZ_NUMRELS, INTOBJ_INT(i) );
     }
 
     return 0;
