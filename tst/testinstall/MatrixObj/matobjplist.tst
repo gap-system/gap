@@ -84,8 +84,10 @@ gap> IsMutable( v );
 true
 gap> IsIntVector( v );
 true
-gap> IsFFEVector( v );
+gap> IsFFEVectorObj( v );
 false
+gap> IsCyclotomicVectorObj( v );
+true
 gap> IsCyclotomicCollection( v );
 true
 gap> IsFFECollection( v );
@@ -98,8 +100,10 @@ gap> IsMutable( v );
 true
 gap> IsIntVector( v );
 false
-gap> IsFFEVector( v );
+gap> IsFFEVectorObj( v );
 true
+gap> IsCyclotomicVectorObj( v );
+false
 gap> IsCyclotomicCollection( v );
 false
 gap> IsFFECollection( v );

@@ -863,9 +863,8 @@ InstallMethod( InverseOp,
 InstallMethod( InverseSameMutability,
     "for plain list of GF2 vectors",
     true,
-    [ IsPlistRep and IsFFEMatrixOrMatrixObj],
-        {} -> RankFilter(IsPlistRep and IsFFECollColl and IsMatrix)
-            - RankFilter(IsPlistRep and IsFFEMatrixOrMatrixObj),
+    [ IsPlistRep and IsFFECollColl and IsMatrix],
+        0,
         function(m)
     local inv,i;
     inv := INV_PLIST_GF2VECS_DESTRUCTIVE(List(m, ShallowCopy));

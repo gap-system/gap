@@ -28,6 +28,13 @@ BindGlobal( "MakeIsGenericMatrixRep",
       if CanEasilyCompareElementsFamily( efam ) then
         filter := filter and CanEasilyCompareElements;
       fi;
+      # 'IsFFECollection' and 'IsCyclotomicCollection' are determined by
+      # 'fam', hence caching the resulting types in 'fam' is safe.
+      if IsFFECollection( basedomain ) then
+        filter := filter and IsFFEMatrixObj;
+      elif IsCyclotomicCollection( basedomain ) then
+        filter := filter and IsCyclotomicMatrixObj;
+      fi;
       fam!.GenericMatrixRepTypes := [
           NewType( fam, filter ),
           NewType( fam, filter and IsMutable ),

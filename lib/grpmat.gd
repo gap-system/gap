@@ -27,7 +27,7 @@
 ##  <#/GAPDoc>
 ##
 DeclareCategory( "IsMatrixGroup", IsGroup );
-InstallTrueMethod( IsMatrixGroup, IsRingElementCollCollColl and IsGroup ); # TODO
+InstallTrueMethod( IsMatrixGroup, IsRingElementCollCollColl and IsGroup );
 
 #############################################################################
 ##
