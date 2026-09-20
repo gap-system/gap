@@ -93,11 +93,11 @@
 */
 typedef struct {
     ObjFunc handlers[8];
+    Int nargs;
+    UInt nloc;
     Obj name;
-    Obj nargs;
     Obj namesOfArgsAndLocals;
     Obj prof;
-    Obj nloc;
     Obj body;
     Obj envi;
 #ifdef HPCGAP
@@ -132,7 +132,7 @@ EXPORT_INLINE Obj NAME_FUNC(Obj func)
 
 EXPORT_INLINE Int NARG_FUNC(Obj func)
 {
-    return INT_INTOBJ(CONST_FUNC(func)->nargs);
+    return CONST_FUNC(func)->nargs;
 }
 
 EXPORT_INLINE Obj NAMS_FUNC(Obj func)
@@ -149,7 +149,7 @@ EXPORT_INLINE Obj PROF_FUNC(Obj func)
 
 EXPORT_INLINE UInt NLOC_FUNC(Obj func)
 {
-    return INT_INTOBJ(CONST_FUNC(func)->nloc);
+    return CONST_FUNC(func)->nloc;
 }
 
 EXPORT_INLINE Obj BODY_FUNC(Obj func)
@@ -180,7 +180,7 @@ void SET_NAME_FUNC(Obj func, Obj name);
 
 EXPORT_INLINE void SET_NARG_FUNC(Obj func, Int nargs)
 {
-    FUNC(func)->nargs = INTOBJ_INT(nargs);
+    FUNC(func)->nargs = nargs;
 }
 
 EXPORT_INLINE void SET_NAMS_FUNC(Obj func, Obj namesOfArgsAndLocals)
@@ -195,7 +195,7 @@ EXPORT_INLINE void SET_PROF_FUNC(Obj func, Obj prof)
 
 EXPORT_INLINE void SET_NLOC_FUNC(Obj func, UInt nloc)
 {
-    FUNC(func)->nloc = INTOBJ_INT(nloc);
+    FUNC(func)->nloc = nloc;
 }
 
 EXPORT_INLINE void SET_BODY_FUNC(Obj func, Obj body)
