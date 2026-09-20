@@ -36,6 +36,7 @@ More can be added as soon as there is need for them.
 <#Include Label="IsRowListMatrix">
 <#Include Label="IsFFERowVectorOrVectorObj">
 <#Include Label="IsFFEMatrixOrMatrixObj">
+<#Include Label="IsFiniteFieldMatrixOrMatrixObj">
 
 </Section>
 

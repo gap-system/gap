@@ -53,7 +53,7 @@ that represent a faithful action on vectors.
 <#Include Label="DefaultFieldOfMatrixGroup">
 <#Include Label="FieldOfMatrixGroup">
 <#Include Label="TransposedMatrixGroup">
-<#Include Label="IsFFEMatrixGroup">
+<#Include Label="IsFiniteFieldMatrixGroup">
 
 </Section>
 
