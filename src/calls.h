@@ -186,11 +186,13 @@ EXPORT_INLINE void SET_NARG_FUNC(Obj func, Int nargs)
 EXPORT_INLINE void SET_NAMS_FUNC(Obj func, Obj namesOfArgsAndLocals)
 {
     FUNC(func)->namesOfArgsAndLocals = namesOfArgsAndLocals;
+    CHANGED_BAG(func);
 }
 
 EXPORT_INLINE void SET_PROF_FUNC(Obj func, Obj prof)
 {
     FUNC(func)->prof = prof;
+    CHANGED_BAG(func);
 }
 
 EXPORT_INLINE void SET_NLOC_FUNC(Obj func, UInt nloc)
@@ -202,17 +204,20 @@ EXPORT_INLINE void SET_BODY_FUNC(Obj func, Obj body)
 {
     GAP_ASSERT(TNUM_OBJ(body) == T_BODY);
     FUNC(func)->body = body;
+    CHANGED_BAG(func);
 }
 
 EXPORT_INLINE void SET_ENVI_FUNC(Obj func, Obj envi)
 {
     FUNC(func)->envi = envi;
+    CHANGED_BAG(func);
 }
 
 #ifdef HPCGAP
 EXPORT_INLINE void SET_LCKS_FUNC(Obj func, Obj locks)
 {
     FUNC(func)->locks = locks;
+    CHANGED_BAG(func);
 }
 #endif
 

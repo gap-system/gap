@@ -160,7 +160,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 7);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG(t_1);
  AssGVar( G_runtest, t_1 );
  
  /* return; */
@@ -223,7 +222,6 @@ static Int InitLibrary ( StructInitInfo * module )
  SET_ENVI_FUNC( func1, STATE(CurrLVars) );
  body1 = NewFunctionBody();
  SET_BODY_FUNC( func1, body1 );
- CHANGED_BAG( func1 );
  CALL_0ARGS( func1 );
  
  return 0;
