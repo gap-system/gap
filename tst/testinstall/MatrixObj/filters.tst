@@ -48,12 +48,14 @@ gap> for v in [ NewVector( IsPlistVectorRep, GF(4), [ Z(4) ] ),
 >               Vector( GF(4), [ Z(4) ] ),
 >               Vector( GF(2), [ Z(2) ] ) ] do
 >   Assert( 0, IsFFEVectorObj( v ) );
+>   Assert( 0, IsFiniteFieldVectorObj( v ) );
 >   Assert( 0, not IsCyclotomicVectorObj( v ) );
 > od;
 gap> for v in [ NewVector( IsPlistVectorRep, Integers, [ 1 ] ),
 >               NewVector( IsPlistVectorRep, Rationals, [ 1/2 ] ) ] do
 >   Assert( 0, IsCyclotomicVectorObj( v ) );
 >   Assert( 0, not IsFFEVectorObj( v ) );
+>   Assert( 0, not IsFiniteFieldVectorObj( v ) );
 > od;
 
 #
@@ -62,6 +64,10 @@ gap> for v in [ NewVector( IsPlistVectorRep, Integers, [ 1 ] ),
 gap> IS_IMPLIED_BY( IsFiniteFieldMatrixOrMatrixObj, IsFFEMatrixOrMatrixObj );
 true
 gap> IS_IMPLIED_BY( IsFFEMatrixOrMatrixObj, IsFiniteFieldMatrixOrMatrixObj );
+false
+gap> IS_IMPLIED_BY( IsFiniteFieldRowVectorOrVectorObj, IsFFERowVectorOrVectorObj );
+true
+gap> IS_IMPLIED_BY( IsFFERowVectorOrVectorObj, IsFiniteFieldRowVectorOrVectorObj );
 false
 
 #

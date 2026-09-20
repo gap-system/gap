@@ -384,6 +384,7 @@ InstallTrueMethod( IsCyclotomicMatrixOrMatrixObj, IsCyclotomicCollColl and IsMat
 #############################################################################
 ##
 #C  IsFiniteFieldMatrixOrMatrixObj( <obj> )
+#C  IsFiniteFieldRowVectorOrVectorObj( <obj> )
 ##
 ##  <#GAPDoc Label="IsFiniteFieldMatrixOrMatrixObj">
 ##  <ManSection>
@@ -391,29 +392,40 @@ InstallTrueMethod( IsCyclotomicMatrixOrMatrixObj, IsCyclotomicCollColl and IsMat
 ##  <Filt Name="IsFiniteFieldMatrixOrMatrixObj" Arg='obj' Type="Category"/>
 ##  <Filt Name="IsFiniteFieldMatrix" Arg='obj' Type="Category"/>
 ##  <Filt Name="IsFiniteFieldMatrixObj" Arg='obj' Type="Category"/>
+##  <Filt Name="IsFiniteFieldRowVectorOrVectorObj" Arg='obj' Type="Category"/>
+##  <Filt Name="IsFiniteFieldVector" Arg='obj' Type="Category"/>
+##  <Filt Name="IsFiniteFieldVectorObj" Arg='obj' Type="Category"/>
 ##
 ##  <Description>
-##  The category of matrices and matrix objects over a finite field.
-##  <Ref Filt="IsFiniteFieldMatrix"/> and
-##  <Ref Filt="IsFiniteFieldMatrixObj"/> are its restrictions to
-##  <Ref Filt="IsMatrix"/> and <Ref Filt="IsMatrixObj"/>, respectively.
+##  The categories of matrices, matrix objects, row vectors and vector
+##  objects over a finite field.  <Ref Filt="IsFiniteFieldMatrix"/> and
+##  <Ref Filt="IsFiniteFieldMatrixObj"/> are the restrictions of
+##  <Ref Filt="IsFiniteFieldMatrixOrMatrixObj"/> to
+##  <Ref Filt="IsMatrix"/> and <Ref Filt="IsMatrixObj"/>, respectively,
+##  and likewise on the vector side.
 ##  <P/>
-##  Unlike <Ref Filt="IsFFEMatrixOrMatrixObj"/>, this category does not
+##  Unlike <Ref Filt="IsFFEMatrixOrMatrixObj"/>, these categories do not
 ##  prescribe how the field elements are represented:
-##  <Ref Filt="IsFFEMatrixOrMatrixObj"/> implies it, and an implementation
-##  of matrices over a finite field whose elements are not in
+##  <Ref Filt="IsFFEMatrixOrMatrixObj"/> implies
+##  <Ref Filt="IsFiniteFieldMatrixOrMatrixObj"/>, and an implementation of
+##  matrices over a finite field whose elements are not in
 ##  <Ref Filt="IsFFE"/> --such as the fields provided by the
 ##  <Package>StandardFF</Package> package-- can imply it as well.
-##  Algorithms that only need a finite field to work over should use this
-##  category rather than <Ref Filt="IsFFEMatrixOrMatrixObj"/>.
+##  Algorithms that only need a finite field to work over should use these
+##  categories rather than <Ref Filt="IsFFEMatrixOrMatrixObj"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+DeclareCategory( "IsFiniteFieldRowVectorOrVectorObj", IsRowVectorOrVectorObj );
+DeclareSynonym( "IsFiniteFieldVector", IsFiniteFieldRowVectorOrVectorObj and IsRowVector );
+DeclareSynonym( "IsFiniteFieldVectorObj", IsFiniteFieldRowVectorOrVectorObj and IsVectorObj );
+
 DeclareCategory( "IsFiniteFieldMatrixOrMatrixObj", IsMatrixOrMatrixObj );
 DeclareSynonym( "IsFiniteFieldMatrix", IsFiniteFieldMatrixOrMatrixObj and IsMatrix );
 DeclareSynonym( "IsFiniteFieldMatrixObj", IsFiniteFieldMatrixOrMatrixObj and IsMatrixObj );
 
+InstallTrueMethod( IsFiniteFieldRowVectorOrVectorObj, IsFFERowVectorOrVectorObj );
 InstallTrueMethod( IsFiniteFieldMatrixOrMatrixObj, IsFFEMatrixOrMatrixObj );
 
 
