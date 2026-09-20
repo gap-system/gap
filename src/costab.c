@@ -2062,20 +2062,20 @@ static Obj FuncLOWINDEX_COSET_SCAN(Obj self,
 {
   UInt ok,i,j,d,e,x,y,l,sd;
   Obj  rx;
-  UInt * s1a;
-  UInt * s2a;
+  Obj * s1a;
+  Obj * s2a;
 
   ok=1;
   j=1;
-  // we convert stack entries to c-integers to avoid conversion
+  // the stacks stay filled with immediate integers throughout: GROW_PLIST
+  // below can collect, and the marking loop would follow any raw C integer
+  // that happens to be even (see IS_BAG_REF)
   sd=LEN_PLIST(s1);
-  s1a=(UInt*)ADDR_OBJ(s1);
-  s2a=(UInt*)ADDR_OBJ(s2);
-  s1a[1]=INT_INTOBJ((Obj)s1a[1]);
-  s2a[1]=INT_INTOBJ((Obj)s2a[1]);
+  s1a=ADDR_OBJ(s1);
+  s2a=ADDR_OBJ(s2);
   while ((ok==1) && (j>0)) {
-    d=s1a[j];
-    x=s2a[j];
+    d=INT_INTOBJ(s1a[j]);
+    x=INT_INTOBJ(s2a[j]);
     j--;
     rx=ELM_PLIST(r,x);
     l=LEN_PLIST(rx);
@@ -2092,11 +2092,11 @@ static Obj FuncLOWINDEX_COSET_SCAN(Obj self,
           GROW_PLIST(s2,sd);
           SET_LEN_PLIST(s2,sd);
           CHANGED_BAG(s2);
-          s1a=(UInt*)ADDR_OBJ(s1);
-          s2a=(UInt*)ADDR_OBJ(s2);
+          s1a=ADDR_OBJ(s1);
+          s2a=ADDR_OBJ(s2);
         }
-        s1a[j]=ret1;
-        s2a[j]=ret2;
+        s1a[j]=INTOBJ_INT(ret1);
+        s2a[j]=INTOBJ_INT(ret2);
         ok=1;
       }
       i++;
@@ -2113,21 +2113,25 @@ static Obj FuncLOWINDEX_COSET_SCAN(Obj self,
         if (j>sd) {
           sd=2*sd;
           GROW_PLIST(s1,sd);
+          SET_LEN_PLIST(s1,sd);
+          CHANGED_BAG(s1);
           GROW_PLIST(s2,sd);
-          s1a=(UInt*)ADDR_OBJ(s1);
-          s2a=(UInt*)ADDR_OBJ(s2);
+          SET_LEN_PLIST(s2,sd);
+          CHANGED_BAG(s2);
+          s1a=ADDR_OBJ(s1);
+          s2a=ADDR_OBJ(s2);
         }
-        s1a[j]=ret1;
-        s2a[j]=ret2;
+        s1a[j]=INTOBJ_INT(ret1);
+        s2a[j]=INTOBJ_INT(ret2);
         ok=1;
       }
       i++;
     }
   }
-  // clean up the mess we made
+  // reset the stacks for the next call
   for (i=1;i<=sd;i++) {
-    s1a[i]=(Int)INTOBJ_INT(0);
-    s2a[i]=(Int)INTOBJ_INT(0);
+    s1a[i]=INTOBJ_INT(0);
+    s2a[i]=INTOBJ_INT(0);
   }
   if (ok==1)
     return True;
