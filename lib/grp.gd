@@ -3358,7 +3358,9 @@ DeclareOperation( "IsSubnormal", [ IsGroup, IsGroup ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-InParentFOA( "NormalClosure", IsGroup, IsGroup, DeclareAttribute );
+DeclareOperation( "NormalClosureOp", [ IsGroup, IsGroup ] );
+DeclareAttribute( "NormalClosureInParent", IsGroup );
+DeclareOperation( "NormalClosure", [ IsGroup, IsGroup ] );
 
 
 #############################################################################
