@@ -1611,11 +1611,16 @@ InstallMethod( BaumClausenInfo,
               pos:= pilinear[i][ pos ];
             od;
 
-            # Compute $\pi = \sigma^{-1} (1,2,\ldots,p) \sigma$.
+            # Compute $\pi = \sigma^{-1} (1,2,\ldots,p) \sigma$,
+            # the permutation of the blocks of $D^{g_j}(g_i)$,
+            # see Phase 2, Case 2 in Section 3 of~\cite{BC94}.
+            # Permutations are multiplied from right to left there
+            # (see the product of monomial matrices in Section 4),
+            # thus $\pi( \sigma^{-1}(u) ) = \sigma^{-1}(u+1)$.
             pi:= [];
-            pi[ sigma[p] ]:= sigma[1];
+            pi[ Position( sigma, p ) ]:= Position( sigma, 1 );
             for u in [ 1 .. p-1 ] do
-              pi[ sigma[u] ]:= sigma[ u+1 ];
+              pi[ Position( sigma, u ) ]:= Position( sigma, u+1 );
             od;
 
             # Compute the values $c_{\pi^u(0)}$, for $0 \leq u \leq p-1$.
@@ -1786,11 +1791,12 @@ InstallMethod( BaumClausenInfo,
               pos:= pinonlin[i][ pos ];
             od;
 
-            # Compute $\pi = \sigma^{-1} (1,2,\ldots,p) \sigma$.
+            # Compute $\pi = \sigma^{-1} (1,2,\ldots,p) \sigma$
+            # as for the linear representations.
             pi:= [];
-            pi[ sigma[p] ]:= sigma[1];
+            pi[ Position( sigma, p ) ]:= Position( sigma, 1 );
             for u in [ 1 .. p-1 ] do
-              pi[ sigma[u] ]:= sigma[ u+1 ];
+              pi[ Position( sigma, u ) ]:= Position( sigma, u+1 );
             od;
 
             # Compute the positions of the constituents
