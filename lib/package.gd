@@ -815,6 +815,15 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 ##  <P/>
 ##  After a package has been loaded, all its code becomes
 ##  available to use with the rest of the &GAP; library.
+##  <P/>
+##  Load all packages you need at the start of a session, before doing any
+##  computations.
+##  Loading a package can install new methods and thus change which methods
+##  get selected, so results can depend on whether they were computed before
+##  or after the package was loaded.
+##  For the same reason, code should not call <Ref Func="LoadPackage"/>
+##  inside its functions,
+##  see Section&nbsp;<Ref Sect="Package dependencies"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

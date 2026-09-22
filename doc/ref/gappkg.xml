@@ -1219,12 +1219,14 @@ decides that loading the package in this situation makes no sense,
 then the missing component is <E>needed</E>.
 <P/>
 
-On the other hand, if <Ref Func="LoadPackage"/> is called
-inside functions of the package then there is no such problem, provided
-that these functions are called only after the package has been loaded,
-so it is not necessary to specify the other package as suggested. The same
-applies to test files and manual examples, which may be simply extended
-by calls to <Ref Func="LoadPackage"/>.
+Do not call <Ref Func="LoadPackage"/> inside functions of the package
+either. Loading a package can install new methods and thus change which
+methods get selected, so objects created before the call may then behave
+differently from those created after it. Declare the other package as
+needed or suggested instead, and use <Ref Func="IsPackageMarkedForLoading"/>
+to check whether a suggested package is available.
+Test files and manual examples may call <Ref Func="LoadPackage"/> at their
+start.
 <P/>
 
 <Index Key="OnlyNeeded" Subkey="option"><C>OnlyNeeded</C></Index>
