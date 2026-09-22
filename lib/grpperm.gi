@@ -852,7 +852,6 @@ ReturnFirst);
 BindGlobal("DoNormalClosurePermGroup",function ( G, U )
     local   N,          # normal closure of <U> in <G>, result
             chain,      # stabilizer chain for the result
-            rchain,     # restored version of <chain>, for `VerifySGS'
             options,    # options record for stabilizer chain construction
             gensG,      # generators of the group <G>
             genG,       # one generator of the group <G>
@@ -860,11 +859,10 @@ BindGlobal("DoNormalClosurePermGroup",function ( G, U )
             genN,       # one generator of the group <N>
             cnj,        # conjugated of a generator of <U>
             random,  k, # values measuring randomness of <chain>
-            param,  missing,  correct,  result,  i, one;
+            param,  result,  i;
 
     # get a set of monoid generators of <G>
     gensG := GeneratorsOfGroup( G );
-    one:= One( G );
 
     # make a copy of the group to be closed
     N := SubgroupNC( G, GeneratorsOfGroup(U) );
@@ -875,6 +873,7 @@ BindGlobal("DoNormalClosurePermGroup",function ( G, U )
     if IsBound( options.random )  then  random := options.random;
                                   else  random := 1000;            fi;
     options.temp   := true;
+    options.random := random;
 
     # make list of conjugates to be added to N
     repeat
@@ -919,16 +918,9 @@ BindGlobal("DoNormalClosurePermGroup",function ( G, U )
         fi;
         result := chain.identity;
     elif random = 1000  then
-        missing := chain.missing;
-        correct := chain.correct;
-        rchain  := SCRRestoredRecord( chain );
-        result  := VerifySGS( rchain, missing, correct );
-        if not IsPerm(result) then
-            repeat
-                result := SCRStrongGenTest2(chain,[0,0,1,10/chain.diam,0,0]);
-            until result <> one;
-        fi;
-        chain := rchain;
+        # ClosureGroup has verified the chain already
+        chain  := SCRRestoredRecord( chain );
+        result := chain.identity;
     else
         k := First([0..14],x->(3/5)^x <= 1-random/1000);
         if IsBound(options.knownBase) then
