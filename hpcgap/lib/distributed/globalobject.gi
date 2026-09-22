@@ -73,7 +73,7 @@ DoPushObj := fail;
 ReadLib ("distributed/globalobject_messages.g");
 ReadLib ("distributed/globalobject_io.g");
 
-#################################################################################
+#############################################################################
 # functions that deal with requests (created via calls to <...>NonBlocking
 # functions)
 InstallGlobalFunction (RequestCompleted, atomic function (readonly request)

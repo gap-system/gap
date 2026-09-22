@@ -15,7 +15,7 @@
 ##  Andrew Solomon
 ##
 
-######################################################################
+#############################################################################
 ##
 ##
 #P  LeftSemigroupCongruenceByGeneratingPairs( <semigroup>, <gens> )
@@ -23,7 +23,7 @@
 #P  SemigroupCongruenceByGeneratingPairs( <semigroup>, <gens> )
 ##
 ##
-######################################################################
+#############################################################################
 
 InstallMethod( LeftSemigroupCongruenceByGeneratingPairs,
     "for a Semigroup  and a list of pairs of its elements",

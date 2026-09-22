@@ -1167,7 +1167,7 @@ DeclareOperation( "TransposedMatDestructive", [ IsMatrixOrMatrixObj ] );
 
 
 
-############################################################################
+#############################################################################
 ##
 #P  IsMonomialMatrix( <mat> )
 ##
@@ -1303,7 +1303,7 @@ DeclareOperation( "SolutionMatDestructive",
     [ IsMatrixOrMatrixObj and IsMutable, IsRowVectorOrVectorObj ] );
 
 
-############################################################################
+#############################################################################
 ##
 #O  SumIntersectionMat( <M1>, <M2> )  . .  sum and intersection of two spaces
 ##

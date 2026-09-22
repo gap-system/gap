@@ -166,7 +166,7 @@ InstallGlobalFunction(PermutationGModule, function(g, F)
    return GModuleByMats(List(gens,g->PermutationMat(g,deg,F)),F);
 end);
 
-###############################################################################
+#############################################################################
 ##
 #F  TensorProductGModule( module1, module2 )  . . tensor product of two G-modules
 ##
@@ -185,7 +185,7 @@ InstallGlobalFunction(TensorProductGModule, function(module1, module2)
    return GModuleByMats(gens, SMTX.Field(module1));
 end);
 
-###############################################################################
+#############################################################################
 ##
 #F  DirectSumGModule( module1, module2 )  . . direct sum of two G-modules
 ##
@@ -201,7 +201,7 @@ InstallGlobalFunction(DirectSumGModule, function(module1, module2)
                         SMTX.Field(module1));
 end);
 
-###############################################################################
+#############################################################################
 ##
 #F  WedgeGModule( module ) . . . . . wedge product of a G-module
 ##
@@ -1885,7 +1885,7 @@ SMTX.FieldGenCentMat:=function(module)
   return SMTX.FGCentMat(module);
 end;
 
-###############################################################################
+#############################################################################
 ##
 #F  SMTX.CollectedFactors( module ) . . find composition factors of a module
 ##
@@ -2019,7 +2019,7 @@ SMTX.CompositionFactors:=function(module)
   fi;
 end;
 
-###############################################################################
+#############################################################################
 ##
 #F  SMTX.Distinguish( cf, i )  distinguish a composition factor of a module
 ##
@@ -2165,7 +2165,7 @@ SMTX.Distinguish:=function(cf, i)
 
 end;
 
-###############################################################################
+#############################################################################
 ##
 #F  SMTX.MinimalSubGModule( module, cf, i ) . .  find minimal submodule
 ##                                     containing a given composition factor.
@@ -2985,7 +2985,7 @@ local gens;
   return module.Dual;
 end;
 
-###############################################################################
+#############################################################################
 ##
 #F  DualGModule( module ) . . . . . dual of a G-module
 ##

@@ -2159,7 +2159,7 @@ DeclareAttribute( "CharacteristicSubgroups", IsGroup );
 DeclareGlobalFunction("NormalSubgroupsAbove");
 
 
-############################################################################
+#############################################################################
 ##
 #A  NrConjugacyClasses( <G> )
 ##
@@ -4880,7 +4880,7 @@ DeclareGlobalFunction("Group_PseudoRandom");
 
 DeclareGlobalFunction("GroupEnumeratorByClosure");
 
-############################################################################
+#############################################################################
 ##
 #O  LowIndexSubgroups( <G>, <index> )
 ##

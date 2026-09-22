@@ -310,7 +310,7 @@ DeclareOperation( "OrderingByLessThanOrEqualFunctionNC" ,
     [IsFamily,IsFunction]);
 
 
-############################################################################
+#############################################################################
 ##
 ##  Orderings on families of associative words
 ##

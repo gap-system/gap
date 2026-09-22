@@ -376,7 +376,7 @@ InstallGlobalFunction( IsGaussRat,
     x -> IsCyc( x ) and (Conductor( x ) = 1 or Conductor( x ) = 4) );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  DescriptionOfRootOfUnity( <root> )
 ##

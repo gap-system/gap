@@ -1097,7 +1097,7 @@ InstallMethod( IsZeroSimpleSemigroup,
 end);
 
 
-############################################################################
+#############################################################################
 ##
 #A  ANonReesCongruenceOfSemigroup( <S> ) . . . .  for a finite semigroup <S>
 ##
@@ -1148,7 +1148,7 @@ end);
 RedispatchOnCondition( ANonReesCongruenceOfSemigroup,
     true, [IsSemigroup], [IsFinite], 0);
 
-############################################################################
+#############################################################################
 ##
 #P  IsReesCongruenceSemigroup( <S> )
 ##

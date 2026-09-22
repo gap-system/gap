@@ -1155,7 +1155,7 @@ InstallGlobalFunction( WreathProductProductAction, function( G, H )
     return W;
 end );
 
-##############################################################################
+#############################################################################
 ##
 #M  SemidirectProduct                                   for permutation groups
 
@@ -1236,7 +1236,7 @@ local Ugens,imgs,conj,auc,d,embn,embs,l,u,P,info;
   TryNextMethod();
 end);
 
-##############################################################################
+#############################################################################
 ##
 #M  Embedding                              for permutation semidirect products
 ##
@@ -1258,7 +1258,7 @@ function( D, i )
     return hom;
 end );
 
-##############################################################################
+#############################################################################
 ##
 #M  Projection                             for permutation semidirect products
 ##

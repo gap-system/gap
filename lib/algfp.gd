@@ -74,7 +74,7 @@ DeclareOperation( "ElementOfFpAlgebra",
     [ IsElementOfFpAlgebraFamily, IsRingElement ] );
 
 
-############################################################################
+#############################################################################
 ##
 #O  MappedExpression( <expr>, <gens1>, <gens2> )
 ##
@@ -117,7 +117,7 @@ DeclareAttribute( "FreeGeneratorsOfFpAlgebra",
     IsSubalgebraFpAlgebra and IsFullFpAlgebra  );
 
 
-############################################################################
+#############################################################################
 ##
 #A  RelatorsOfFpAlgebra( <A> )
 ##

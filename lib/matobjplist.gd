@@ -8,7 +8,7 @@
 ##  to list here. Please refer to the COPYRIGHT file for details.
 ##
 
-############################################################################
+#############################################################################
 #
 # This file is a sample implementation for new style vectors and matrices.
 # It stores matrices as dense lists of lists with wrapping.

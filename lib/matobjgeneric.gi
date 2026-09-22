@@ -8,7 +8,7 @@
 ##  to list here. Please refer to the COPYRIGHT file for details.
 ##
 
-############################################################################
+#############################################################################
 #
 # Dense matrix objects backed by plain lists of plain row lists.
 #

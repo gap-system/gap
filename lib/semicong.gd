@@ -15,7 +15,7 @@
 ##  Andrew Solomon
 ##
 
-###########################################################################
+#############################################################################
 ##
 #O  SemigroupCongruenceByGeneratingPairs(<s>,<list>)
 ##
@@ -74,7 +74,7 @@ DeclareSynonym("MeetSemigroupCongruences", MeetMagmaCongruences);
 DeclareSynonym("GeneratingPairsOfSemigroupCongruence",
                     GeneratingPairsOfMagmaCongruence);
 
-###########################################################################
+#############################################################################
 ##
 #P  IsLeftSemigroupCongruence(<c>)
 ##
@@ -88,7 +88,7 @@ DeclareSynonym("GeneratingPairsOfSemigroupCongruence",
 ##
 DeclareProperty("IsLeftSemigroupCongruence", IsLeftMagmaCongruence);
 
-###########################################################################
+#############################################################################
 ##
 #P  IsRightSemigroupCongruence(<c>)
 ##
@@ -102,7 +102,7 @@ DeclareProperty("IsLeftSemigroupCongruence", IsLeftMagmaCongruence);
 ##
 DeclareProperty("IsRightSemigroupCongruence", IsRightMagmaCongruence);
 
-###########################################################################
+#############################################################################
 ##
 #P  IsSemigroupCongruence(<c>)
 ##
@@ -120,7 +120,7 @@ DeclareProperty("IsSemigroupCongruence", IsMagmaCongruence);
 InstallTrueMethod(IsLeftSemigroupCongruence,IsSemigroupCongruence);
 InstallTrueMethod(IsRightSemigroupCongruence,IsSemigroupCongruence);
 
-###########################################################################
+#############################################################################
 ##
 #P  IsReesCongruence(<c>)
 ##

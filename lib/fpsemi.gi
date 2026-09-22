@@ -321,7 +321,7 @@ InstallMethod( RelationsOfFpSemigroup,
     [ IsSubsemigroupFpSemigroup and IsWholeFamily ], 0,
     S -> ElementsFamily( FamilyObj( S ) )!.relations );
 
-############################################################################
+#############################################################################
 ##
 #O  NaturalHomomorphismByGenerators( <f>, <s> )
 ##

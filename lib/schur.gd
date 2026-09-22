@@ -64,7 +64,7 @@ DeclareInfoClass( "InfoSchur" );
 ##
 DeclareAttribute( "SchurCover", IsGroup );
 
-##############################################################################
+#############################################################################
 ##
 #O  EpimorphismSchurCover(<G>[,<pl>])
 ##
@@ -117,7 +117,7 @@ DeclareAttribute( "SchurCover", IsGroup );
 ##
 DeclareAttribute( "EpimorphismSchurCover", IsGroup );
 
-##############################################################################
+#############################################################################
 ##
 #A  AbelianInvariantsMultiplier(<G>)
 ##
@@ -168,10 +168,10 @@ DeclareAttribute( "EpimorphismSchurCover", IsGroup );
 ##
 DeclareAttribute( "AbelianInvariantsMultiplier", IsGroup );
 
-##############################################################################
+#############################################################################
 ####  Derived functions.                                       Robert F. Morse
 ####
-##############################################################################
+#############################################################################
 ##
 #A  Epicentre(<G>)
 #A  ExteriorCentre(<G>)
@@ -196,7 +196,7 @@ DeclareSynonymAttr("Epicenter", Epicentre);
 DeclareSynonymAttr("ExteriorCentre", Epicentre);
 DeclareSynonymAttr("ExteriorCenter", Epicentre);
 
-##############################################################################
+#############################################################################
 ##
 #O  NonabelianExteriorSquare(<G>)
 ##
@@ -215,7 +215,7 @@ DeclareSynonymAttr("ExteriorCenter", Epicentre);
 ##
 DeclareOperation("NonabelianExteriorSquare", [IsGroup]);
 
-##############################################################################
+#############################################################################
 ##
 #O  EpimorphismNonabelianExteriorSquare(<G>)
 ##
@@ -233,7 +233,7 @@ DeclareOperation("NonabelianExteriorSquare", [IsGroup]);
 ##
 DeclareOperation("EpimorphismNonabelianExteriorSquare", [IsGroup]);
 
-##############################################################################
+#############################################################################
 ##
 #P  IsCentralFactor(<G>)
 ##
@@ -254,11 +254,11 @@ DeclareOperation("EpimorphismNonabelianExteriorSquare", [IsGroup]);
 ##
 DeclareProperty("IsCentralFactor", IsGroup);
 
-##############################################################################
+#############################################################################
 ###########################END RFM############################################
 
 
-##############################################################################
+#############################################################################
 ##
 #F  SchuMu(<G>,<p>)
 ##
@@ -279,7 +279,7 @@ DeclareProperty("IsCentralFactor", IsGroup);
 ##
 DeclareGlobalFunction("SchuMu");
 
-##############################################################################
+#############################################################################
 ##
 #F  CorestEval(<FG>,<s>)
 ##
@@ -300,7 +300,7 @@ DeclareGlobalFunction("SchuMu");
 ##
 DeclareGlobalFunction("CorestEval");
 
-##############################################################################
+#############################################################################
 ##
 #F  RelatorFixedMultiplier(<hom>,<p>)
 ##

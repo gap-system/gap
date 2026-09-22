@@ -33,7 +33,7 @@ PrintPromptHook := CPROMPT;
 PreInputHook := function() end;
 EndLineHook := function() end;
 
-############################################################################
+#############################################################################
 ##
 #F  ColorPrompt( <bool> ) . . . . . . (un)set using a colored prompt and input
 #F  ColorPrompt( <bool>, <optrec> ) . . . . . . . . .  same with customization

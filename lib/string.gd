@@ -367,7 +367,7 @@ DeclareGlobalFunction( "StringTime" );
 DeclareGlobalFunction( "StringPP" );
 
 
-############################################################################
+#############################################################################
 ##
 #F  WordAlp( <alpha>, <nr> ) . . . . . .  <nr>-th word over alphabet <alpha>
 ##

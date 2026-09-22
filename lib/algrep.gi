@@ -77,7 +77,7 @@ InstallMethod( PrintObj,
 
 end );
 
-############################################################################
+#############################################################################
 ##
 #M  ExtRepOfObj( <elm> )  . . . . . . . . . . . .  for algebra module elements
 ##
@@ -471,7 +471,7 @@ InstallMethod( BiAlgebraModule,
 end );
 
 
-############################################################################
+#############################################################################
 ##
 #R  IsMutableBasisViaUnderlyingMutableBasisRep( <B> )
 ##
@@ -479,7 +479,7 @@ DeclareRepresentation( "IsMutableBasisViaUnderlyingMutableBasisRep",
     IsComponentObjectRep,
         [ "moduleElementsFam", "underlyingMutableBasis" ] );
 
-############################################################################
+#############################################################################
 ##
 #M  MutableBasis( <R>, <vectors> )
 #M  MutableBasis( <R>, <vectors>, <zero> )
@@ -546,7 +546,7 @@ InstallMethod( PrintObj,
     end );
 
 
-############################################################################
+#############################################################################
 ##
 #M  BasisVectors( <MB> )
 #M  CloseMutableBasis( <MB>, <v> )
@@ -844,7 +844,7 @@ end );
 
 
 
-##############################################################################
+#############################################################################
 ##
 #M  Coefficients( <B>, <v> ). . . . . . for basis of a space of algebra
 ##                                      module elements and vector
@@ -858,7 +858,7 @@ InstallMethod( Coefficients,
       return Coefficients( B!.delegateBasis, v![1] );
 end );
 
-##############################################################################
+#############################################################################
 ##
 #M  Basis( <V>, <vecs> )
 #M  BasisNC( <V>, <vecs> )
@@ -895,7 +895,7 @@ InstallMethod( BasisNC,
       return BasisOfAlgebraModule( V, vectors );
 end );
 
-##########################################################################
+#############################################################################
 ##
 #M  IsFiniteDimensional( <V> ) . . . . . . .  . for a space of algebra module
 ##                                              elements
@@ -908,7 +908,7 @@ InstallMethod( IsFiniteDimensional,
     return Length( Basis( V ) ) < infinity;
 end );
 
-##########################################################################
+#############################################################################
 ##
 #M  GeneratorsOfLeftModule( <V> ) . . . . . . .  . for a space of algebra
 ##                                                 module elements
@@ -921,7 +921,7 @@ InstallMethod( GeneratorsOfLeftModule,
     return BasisVectors( Basis( V ) );
 end );
 
-############################################################################
+#############################################################################
 ##
 #M  SubAlgebraModule( <V>, <gens> [,<"basis">] )
 ##
@@ -990,7 +990,7 @@ InstallOtherMethod( SubAlgebraModule,
      IsString ],
    _SubAlgebraModuleHelper );
 
-##############################################################################
+#############################################################################
 ##
 #M  LeftModuleByHomomorphismToMatAlg( <A>, <f> ) . . for algebra and hom to
 ##                                                   matrix algebra
@@ -1019,7 +1019,7 @@ InstallMethod( LeftModuleByHomomorphismToMatAlg,
 
    end );
 
-##############################################################################
+#############################################################################
 ##
 #M  RightModuleByHomomorphismToMatAlg( <A>, <f> ) . . for algebra and hom to
 ##                                                    matrix algebra
@@ -1048,7 +1048,7 @@ InstallMethod( RightModuleByHomomorphismToMatAlg,
 
    end );
 
-##############################################################################
+#############################################################################
 ##
 #M  AdjointModule( <A> ) . . . . . . . . . . . . . . . . . . . for an algebra
 ##
@@ -1179,7 +1179,7 @@ InstallOtherMethod( ModuleByRestriction,
 end );
 
 
-########################################################################
+#############################################################################
 ##
 #M  NaturalHomomorphismBySubAlgebraModule( <V>, <W> )
 ##
@@ -1278,7 +1278,7 @@ InstallOtherMethod( \/,
 end );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  MatrixOfAction( <B>, <x> )
 #M  MatrixOfAction( <B>, <x>, <side> )
@@ -1318,7 +1318,7 @@ InstallOtherMethod( MatrixOfAction,
 end );
 
 
-##############################################################################
+#############################################################################
 ##
 #R  IsMonomialElementRep( <obj> )
 ##
@@ -1332,7 +1332,7 @@ end );
 DeclareRepresentation( "IsMonomialElementRep", IsPositionalObjectRep, [1,2] );
 
 
-############################################################################
+#############################################################################
 ##
 #M  ObjByExtRep( <fam>, <list> ) . . . for a MonomialElementFamily and a list
 #M  ExtRepOfObj( <t> )  . . . . . . .  for a monomial element in monomial rep.
@@ -1352,7 +1352,7 @@ InstallMethod( ExtRepOfObj,
         function( t )  return t![1];
 end );
 
-##############################################################################
+#############################################################################
 ##
 #M  ZeroOp( <m> ) . . . . . . . . . . . . . . for a monomial element
 #M  \+( <m1>, <m2> )  . . . . . . . . . . . . for two monomial elements
@@ -1486,7 +1486,7 @@ InstallMethod(\=,
     return u1![1] = v1![1];
 end );
 
-############################################################################
+#############################################################################
 ##
 #F  TriangulizeMonomialElementList( <tt>, <zero>, <LM>, <LC> )
 ##
@@ -1626,7 +1626,7 @@ BindGlobal( "BasisOfMonomialSpace",
 end );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  Basis( <V>, <vecs> )
 #M  BasisNC( <V>, <vecs> )
@@ -1724,7 +1724,7 @@ InstallMethod( Basis,
 end );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  Coefficients( <B>, <v> ). . . . . . for basis of a monomial space
 ##                                      and vector
@@ -1761,7 +1761,7 @@ InstallMethod( Coefficients,
 
 end );
 
-##############################################################################
+#############################################################################
 ##
 #M  PrintObj( <te> ) . . . . . . . . . . . . . for tensor elements
 ##
@@ -1797,7 +1797,7 @@ InstallMethod( PrintObj,
 
 end );
 
-##############################################################################
+#############################################################################
 ##
 #M  ConvertToNormalFormMonomialElement( <te> ) . . for a tensor element
 ##
@@ -1907,7 +1907,7 @@ InstallMethod( ConvertToNormalFormMonomialElement,
 end );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  TensorProductOp( <list> ) . . . . for a list of vectorspaces.
 ##
@@ -2002,7 +2002,7 @@ InstallGlobalFunction(TensorProduct, function(arg)
     return d;
 end);
 
-##############################################################################
+#############################################################################
 ##
 #M  TensorProductOfAlgebraModules( <list> )  for a list of Lie algebra modules
 ##
@@ -2172,7 +2172,7 @@ InstallMethod( PrintObj,
 
 end );
 
-###########################################################################
+#############################################################################
 ##
 #M  ConvertToNormalFormMonomialElement( <we> ) . . . . for a wedge element
 ##
@@ -2473,7 +2473,7 @@ InstallMethod( ExteriorPowerOfAlgebraModule,
 
 end );
 
-############################################################################
+#############################################################################
 ##
 #M  PrintObj( <se> ) . . . . . . . . . . . for symmetric elements
 ##
@@ -2507,7 +2507,7 @@ InstallMethod( PrintObj,
 
 end );
 
-############################################################################
+#############################################################################
 ##
 #M  ConvertToNormalFormMonomialElement( <se> ) . . . for a symmetric element
 ##
@@ -2643,7 +2643,7 @@ InstallMethod( ConvertToNormalFormMonomialElement,
 end );
 
 
-############################################################################
+#############################################################################
 ##
 #M  SymmetricPower( <V>, <k> ) . . . . . for a vector space and an integer
 ##
@@ -2690,7 +2690,7 @@ InstallMethod( SymmetricPower,
 end);
 
 
-############################################################################
+#############################################################################
 ##
 #M  SymmetricPowerOfAlgebraModule( <V>, <k> )
 ##
@@ -2792,7 +2792,7 @@ InstallMethod( SymmetricPowerOfAlgebraModule,
 end );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  ObjByExtRep( <fam>, <list> ) . . . for a sparse rowspace elt fam. and list
 #M  ExtRepOfObj( <v> ) . . . . . . . . for a sparse rowspace element.
@@ -2819,7 +2819,7 @@ InstallMethod( ExtRepOfObj,
 end);
 
 
-##############################################################################
+#############################################################################
 ##
 #M  PrintObj( <v> ) . . . . . . for a sparse rowspace element
 ##
@@ -2969,7 +2969,7 @@ end );
 DeclareRepresentation( "IsBasisOfSparseRowSpaceRep", IsComponentObjectRep,
         [ "echelonBasis", "heads", "baseChange", "zeroCoefficient" ] );
 
-##############################################################################
+#############################################################################
 ##
 #F  BasisOfSparseRowSpace( <V>, <vectors> )  for a sparse row space and a list
 ##
@@ -3137,7 +3137,7 @@ InstallMethod( Basis,
 
 end );
 
-##############################################################################
+#############################################################################
 ##
 #M  Coefficients( <B>, <v> ). . . . . . for basis of a sparse row space
 ##                                      and vector
@@ -3248,7 +3248,7 @@ InstallMethod( FullSparseRowSpace,
 end );
 
 
-###############################################################################
+#############################################################################
 ##
 #M  PrintObj( <u> ) . . . . . . . . . . . . . . . . . for a direct sum element
 ##
@@ -3269,7 +3269,7 @@ InstallMethod( PrintObj,
 
 end );
 
-############################################################################
+#############################################################################
 ##
 #M  ObjByExtRep( <fam>, <list> ) . . . for a DirectSumElementFamily and a list
 #M  ExtRepOfObj( <t> )  . . . . . . .  for a direct sum element in packed rep.
@@ -3413,7 +3413,7 @@ InstallHandlingByNiceBasis( "IsDirectSumElementsSpace", rec(
       end ) );
 
 
-############################################################################
+#############################################################################
 ##
 #M  DirectSumOfAlgebraModules( <list> )
 #M  DirectSumOfAlgebraModules( <V>, <W> )
@@ -3566,7 +3566,7 @@ InstallOtherMethod( DirectSumOfAlgebraModules,
     return DirectSumOfAlgebraModules( [ V, W ] );
 end );
 
-############################################################################
+#############################################################################
 ##
 #M  TranslatorSubalgebra( <M>, <U>, <W> )
 ##

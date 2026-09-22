@@ -13,7 +13,7 @@
 ##
 
 
-############################################################################
+#############################################################################
 ##
 #F  AbelianInvariantsNormalClosureFpGroupRrs(<G>,<H>)
 ##
@@ -80,7 +80,7 @@
 ##
 DeclareGlobalFunction("AbelianInvariantsNormalClosureFpGroupRrs");
 
-############################################################################
+#############################################################################
 ##
 #F  AbelianInvariantsNormalClosureFpGroup(<G>,<H>)
 ##
@@ -99,7 +99,7 @@ AbelianInvariantsNormalClosureFpGroup :=
     AbelianInvariantsNormalClosureFpGroupRrs;
 
 
-############################################################################
+#############################################################################
 ##
 #F  AbelianInvariantsSubgroupFpGroupMtc(<G>,<H>)
 ##
@@ -143,7 +143,7 @@ DeclareGlobalFunction("AbelianInvariantsSubgroupFpGroupMtc");
 DeclareGlobalFunction("AbelianInvariantsSubgroupFpGroupRrs");
 
 
-############################################################################
+#############################################################################
 ##
 #F  AbelianInvariantsSubgroupFpGroup(<G>,<H>)
 ##
@@ -371,7 +371,7 @@ DeclareGlobalFunction("CanonicalRelator");
 DeclareGlobalFunction("CheckCosetTableFpGroup");
 
 
-############################################################################
+#############################################################################
 ##
 #F  IsStandardized(<table>)
 ##
@@ -385,7 +385,7 @@ DeclareGlobalFunction("CheckCosetTableFpGroup");
 DeclareGlobalFunction("IsStandardized");
 
 
-############################################################################
+#############################################################################
 ##
 #C  IsPresentation( <obj> )
 ##
@@ -399,7 +399,7 @@ DeclareGlobalFunction("IsStandardized");
 DeclareCategory( "IsPresentation", IsCopyable );
 
 
-############################################################################
+#############################################################################
 ##
 #V  PresentationsFamily
 ##

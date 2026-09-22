@@ -70,26 +70,26 @@
 ##  Testing: All primes < 10^7 tested. All 236021 "Brent factors" tested,
 ##  but two such primes could not be proven prime (1.8*10^104 and 3.2*10^86).
 ##
-##############################################################################
+#############################################################################
 
-##############################################################################
+#############################################################################
 ##
 ##  Section 1: Prerequisites
 ##
 ##  (a) record our tables of small primes and pseudoprimes
 ##  (b) Define IsSquareInt
 ##
-##############################################################################
+#############################################################################
 
 
-##############################################################################
+#############################################################################
 ##
 ##  Tables - We define a table
 ##  CompositeSPP2 which contains a list of
 ##  the composite numbers < 10^7 that are strong pseudoprimes for
 ##  base 2, and that have no prime factors < 1000.
 ##
-##############################################################################
+#############################################################################
 
 BindGlobal("CompositeSPP2",
   [ 1194649, 1678541, 2284453, 2304167, 3090091, 3125281,
@@ -101,18 +101,18 @@ BindGlobal("CompositeSPP2",
 
 MakeImmutable(CompositeSPP2);
 
-##############################################################################
+#############################################################################
 ##
 ##  Caches - install flushable values into the cache if they are not already
 ##  installed.
 ##
-##############################################################################
+#############################################################################
 InstallFlushableValue(PrimesProofs,[]);
 if IsHPCGAP then
     ShareSpecialObj(PrimesProofs);
 fi;
 
-##############################################################################
+#############################################################################
 ##
 #F  IsSquareInt - Check if an integer is a square
 ##
@@ -123,7 +123,7 @@ fi;
 ##  Please note: This is unimaginably faster than the simpler RootInt(n)^2=n
 ##  because of the initial residue tests.
 ##
-##############################################################################
+#############################################################################
 BindGlobal("CCANT_1_7_3_q11",List([1..11],i->0));
 BindGlobal("CCANT_1_7_3_q63",List([1..63],i->0));
 BindGlobal("CCANT_1_7_3_q64",List([1..64],i->0));
@@ -158,7 +158,7 @@ end);
 InstallGlobalFunction(IsSquareInt,CCANT_1_7_3);
 
 
-##############################################################################
+#############################################################################
 ##
 #F  LucasMod(P,Q,N,k) - return the reduction modulo N of the k'th terms of
 ##  the Lucas Sequences U,V associated to x^2+Px+Q.
@@ -216,7 +216,7 @@ function(P,Q,N,K)
 end);
 
 
-##############################################################################
+#############################################################################
 ##
 ##  Section 2: Baillie-Pomerance-Selfridge-Wagstaff pseudoprimality test
 ##
@@ -224,15 +224,15 @@ end);
 ##  (2) IsLucasPseudoPrime (the BPSW version with hardcoded discriminant)
 ##  (3) IsBPSWPsuedoPrime - main interface to optimized test
 ##
-##############################################################################
+#############################################################################
 
 
-##############################################################################
+#############################################################################
 ##
 #F  IsStrongPseudoPrimeBaseA(N,A) - If A does not have odd multiplicative
 ##  order mod N, then check -1 in <A>.
 ##
-##############################################################################
+#############################################################################
 InstallGlobalFunction(IsStrongPseudoPrimeBaseA,
 function(n,A)
   local e,o,i,x;
@@ -275,14 +275,14 @@ BindGlobal("TraceModQF", function ( p, k, n )
   return trc;
 end);
 
-##############################################################################
+#############################################################################
 ##
 #F  IsBPSWLucasPseudoPrime(N) - Check if N is a Lucas pseudoprime for
 ##  x^2+P*x+1 where P is the smallest positive integer such that P^2 - 4 is
 ##  not a square mod N. N should be odd. N should be prime or greater
 ##  than 100.
 ##
-##############################################################################
+#############################################################################
 InstallGlobalFunction(IsBPSWLucasPseudoPrime,
 function(N)
   local P;
@@ -348,14 +348,14 @@ end);
 #  return [ (P^2-4) mod N, P, 1 ];
 #end;
 
-##############################################################################
+#############################################################################
 ##
 #F  IsBSPWPseudoPrime(N) - Check if N is a Baillie-Pomerance-Selfridge-Wagstaff
 ##  pseudoprime (that is, N is a possibly composite number with no proper
 ##  divisors less than 1000, N is a strong pseudoprime base 2, and N is a
 ##  Lucas pseudoprime as above.
 ##
-##############################################################################
+#############################################################################
 InstallGlobalFunction(IsBPSWPseudoPrime,
 function(n)
   # Step 1 handle n with prime factors < 103
@@ -434,7 +434,7 @@ BindGlobal("BPSW_ProvedBound", 2^64);
 ##  then we will succeed in our proof production. Currently GAP's FactorsInt
 ##  gives us a value of B=10^6, and applicability for N < 10^18.
 
-##############################################################################
+#############################################################################
 ##
 #F  PrimalityProof_FindFermat(N,P) - find a base A such that
 ##  N is a strong Fermat pseudoprime base A and such that
@@ -443,7 +443,7 @@ BindGlobal("BPSW_ProvedBound", 2^64);
 ##  Return [true,A] if such a base is found, or [false,B] if N
 ##  has been proven composite (where B may help to verify this).
 ##
-##############################################################################
+#############################################################################
 InstallGlobalFunction(PrimalityProof_FindFermat,
 function(N,p)
   local Np,a,b,c,g;
@@ -462,7 +462,7 @@ function(N,p)
   return [true,a];
 end);
 
-##############################################################################
+#############################################################################
 ##
 #F  PrimalityProof_FindLucas(N,D,K) - Find a polynomial
 ##  x^2+P*x+Q with discriminant D=P^2-4Q such that the
@@ -473,7 +473,7 @@ end);
 ##  [false,B] if N is shown to be composite (where B
 ##  may help to verify this).
 ##
-##############################################################################
+#############################################################################
 InstallGlobalFunction(PrimalityProof_FindLucas,
 function(N,D,K)
   local P,Q,g;
@@ -492,7 +492,7 @@ function(N,D,K)
 end);
 
 
-##############################################################################
+#############################################################################
 ##
 #F  PrimalityProof_FindStructure(N) - Find divisors of N+-1 which can be
 ##  used to prove primality of N based on the ideas in BLS1975.
@@ -502,7 +502,7 @@ end);
 ##
 ##  This routine requires a partial factorization routine.
 ##
-##############################################################################
+#############################################################################
 InstallGlobalFunction(PrimalityProof_FindStructure,
 function(N)
   local cheap, FactIntPartial, factorsp, factorsm, sqrtN,
@@ -604,14 +604,14 @@ function(N)
   return fail;
 end);
 
-##############################################################################
+#############################################################################
 ##
 #F  PrimalityProof(N) - Construct a machine verifiable proof of the primality
 ##  of (the probable prime) N, following the ideas of the paper Brillhart,
 ##  Lehmer, Selfridge's "New Primality Criteria and Factorizations of 2^m +-1",
 ##  1975.
 ##
-##############################################################################
+#############################################################################
 InstallGlobalFunction(PrimalityProof,
 function(N)
   local factors,certs,D,J,p,ret;
@@ -681,7 +681,7 @@ function(N)
 end);
 
 
-##############################################################################
+#############################################################################
 ##
 ##  Section 4: Primality proof verification
 ##
@@ -689,14 +689,14 @@ end);
 ##  (2) Verify the collection of witnesses would provide a primality proof
 ##  (3) Main interface
 ##
-##############################################################################
+#############################################################################
 
-##############################################################################
+#############################################################################
 ##
 #F  PrimalityProof_VerifyWitness(N,witness) - ensure that the proposed
 ##  witness is valid. In other words check condition II or IV from BLS1975.
 ##
-##############################################################################
+#############################################################################
 InstallGlobalFunction(PrimalityProof_VerifyWitness,
 function(N,witness)
   local type, divisor, base, D, P, Q;
@@ -719,7 +719,7 @@ function(N,witness)
 end);
 
 
-##############################################################################
+#############################################################################
 ##
 #F  PrimalityProof_VerifyStructure(N,witnesses) - Verify that the collection
 ##  of witness actually satisfies the hypotheses of one of the results in
@@ -733,7 +733,7 @@ end);
 ##  DivisorBound is always small enough to make this check feasible
 ##  (currently capped at 10^6).
 ##
-##############################################################################
+#############################################################################
 InstallGlobalFunction(PrimalityProof_VerifyStructure,
 function(N,witnesses)
   local Fs,Ls,BF,BL, MaxB, B1, B2, F1s, F2s, R1s, R2s, F1, F2, R1, R2, r, s,
@@ -855,12 +855,12 @@ function(N,witnesses)
   return rets;
 end);
 
-##############################################################################
+#############################################################################
 ##
 #F  PrimalityProof_Verify(N,proof) - Verbosely verify a proposed primality
 ##  proof.
 ##
-##############################################################################
+#############################################################################
 InstallGlobalFunction(PrimalityProof_Verify,
 function(N,proof)
   local theorems,theorem,x;
@@ -887,7 +887,7 @@ function(N,proof)
 end);
 
 
-##############################################################################
+#############################################################################
 ##
 ##  Section 5: Pretty interface
 ##
@@ -896,14 +896,14 @@ end);
 ##  (3) IsProbablyPrimeIntReplacement - handle caching
 ##  (4) Optional code to replace the main gap functions
 ##
-##############################################################################
+#############################################################################
 
-##############################################################################
+#############################################################################
 ##
 #F  IsPrimeInt(N) - Perform as IsPrimeInt, but use PrimalityProof
 ##  to avoid using any unproven primes. Store proofs in PrimesProofs.
 ##
-##############################################################################
+#############################################################################
 InstallGlobalFunction(IsPrimeInt,
 function(N)
   local ret;
@@ -929,7 +929,7 @@ function(N)
   Error("Bad return from IsBPSWPseudoPrime");
 end);
 
-##############################################################################
+#############################################################################
 ##
 #F  IsProbablyPrimeInt(N) - Perform as isProbablyPrimeInt
 ##  calling the optimized BPSW test instead of the current GAP default.
@@ -938,7 +938,7 @@ end);
 ##  probabilistic tests to be run for larger N. The cost can be quite
 ##  significant for large N.
 ##
-##############################################################################
+#############################################################################
 InstallGlobalFunction(IsProbablyPrimeInt,
 function(N)
   local ret, RabinMillerTrials;

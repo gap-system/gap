@@ -773,7 +773,7 @@ end);
 InstallMethod(IsGroupHClass, "for Green's H-class", true,
     [IsGreensHClass], 0, h->ForAny(h, IsIdempotent));
 
-############################################################################
+#############################################################################
 ##
 #M  GroupHClassOfGreensDClass( <Dclass> )
 ##
