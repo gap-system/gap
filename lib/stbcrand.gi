@@ -1116,12 +1116,10 @@ InstallGlobalFunction( VerifyStabilizer, function(S,z,missing,correct)
        result,         # output, witness perm if something is wrong
        g,              # generator of stabpt2
        where1,         # stores which orbit of stab pts of S.orbit belong to
-       orbit1count,    # index running through orbits of stab
        leaders,        # list of orbit representatives of stab
        i, j, l,        # loop variables
        residue,        # result of sifting as word
        where2,         # boolean list to mark orbits of stabpt2 as processed
-       k,              # point of an orbit of stab
        gen,            # a generator of stab
        transversal,    # transversal of stab, on all of its orbits
        orb,            # an orbit of stabpt2
@@ -1129,7 +1127,70 @@ InstallGlobalFunction( VerifyStabilizer, function(S,z,missing,correct)
        pnt,            # a point from orb
        w1, w2, w3, w4, # words/permutations coding coset representatives
        w1inv,          # inverse of w1
-       schgen;         # Schreier generator
+       schgen,         # Schreier generator
+       addOrbit;       # computes a shallow Schreier tree for one orbit
+
+    # Schreier tree of depth at most 2*Length(treegen) for the orbit of
+    # <leader> under stab. A tree over stab.generators alone can be as deep
+    # as the orbit is long, and so is every coset representative. Each new
+    # tree generator doubles the cube of tree generators, so there are at
+    # most Log2(Size(stab)) of them.
+    addOrbit := function(leader, nr)
+      local treegen, treegeninv, orb, depth, prev, len, new, pnt, gen, h;
+
+      treegen := [];
+      treegeninv := [];
+      orb := [leader];
+      transversal[leader] := S.identity;
+      repeat
+        # find a generator of stab moving a point out of orb
+        new := fail;
+        for pnt in orb do
+          for gen in stab.generators do
+            if new = fail and not IsBound(transversal[pnt^gen]) then
+              new := [pnt, gen];
+            fi;
+          od;
+          if new <> fail then
+            break;
+          fi;
+        od;
+
+        if new <> fail then
+          # h maps leader to a point outside orb
+          h := Product(CosetRepAsWord(leader, new[1], transversal))^-1*new[2];
+          Add(treegen, h);
+          Add(treegeninv, h^-1);
+
+          for pnt in orb do
+            Unbind(transversal[pnt]);
+          od;
+          orb := [leader];
+          transversal[leader] := S.identity;
+          prev := 0;
+          for depth in [1..2*Length(treegen)] do
+            len := Length(orb);
+            for pnt in orb{[prev+1..len]} do
+              for gen in [1..Length(treegen)] do
+                if not IsBound(transversal[pnt^treegen[gen]]) then
+                  transversal[pnt^treegen[gen]] := treegeninv[gen];
+                  Add(orb, pnt^treegen[gen]);
+                fi;
+                if not IsBound(transversal[pnt^treegeninv[gen]]) then
+                  transversal[pnt^treegeninv[gen]] := treegen[gen];
+                  Add(orb, pnt^treegeninv[gen]);
+                fi;
+              od;
+            od;
+            prev := len;
+          od;
+        fi;
+      until new = fail;
+
+      for pnt in orb do
+        where1[pnt] := nr;
+      od;
+    end;
 
     pt1 := S.orbit[1];
     zinv := z^(-1);
@@ -1146,43 +1207,12 @@ InstallGlobalFunction( VerifyStabilizer, function(S,z,missing,correct)
     # store which orbit of stab the pts of S.orbit belong to
     # in each orbit, compute transversals from a representative
     where1 := []; # orbits of stab
-    leaders := [pt2];
-    orbit1count := 1;
+    leaders := [];
     transversal := [];
-    transversal[pt2] := S.identity;
-    where1[pt2] := 1;
-    orb := [pt2];
-    j := 1;
-    while j <= Length( orb )  do
-    for gen  in stab.generators  do
-       k := orb[j] / gen;
-       if not IsBound( transversal[k] )  then
-             transversal[k] := gen;
-             Add( orb, k );
-             where1[k] := orbit1count;
-          fi;
-       od;
-       j := j + 1;
-    od;
-    for i in S.orbit do
+    for i in Concatenation( [pt2], S.orbit ) do
         if not IsBound(where1[i]) then
-           orbit1count := orbit1count + 1;
            Add(leaders, i);
-           orb := [i];
-           where1[i] := orbit1count;
-           transversal[i] := S.identity;
-           j := 1;
-           while j <= Length( orb )  do
-             for gen  in stab.generators  do
-                 k := orb[j] / gen;
-                 if not IsBound( transversal[k] )  then
-                    transversal[k] := gen;
-                    Add( orb, k );
-                    where1[k] := orbit1count;
-                 fi;
-             od;
-             j := j + 1;
-           od;
+           addOrbit(i, Length(leaders));
         fi;
     od;
 
