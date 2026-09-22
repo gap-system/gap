@@ -926,7 +926,8 @@ fields are missing:
 <Log><![CDATA[
 gap> ValidatePackageInfo("PackageInfo.g");
 #E  component `Subtitle' must be bound to a string
-#E  component `Date' must be bound to a string of the form `dd/mm/yyyy'
+#E  component `Date' must be bound to a string of the form yyyy-mm-dd or dd/mm/yyyy that represents a date since 1999
+#E  component `License' must be bound to a nonempty string containing an SPDX ID
 #E  component `ArchiveURL' must be bound to a string started with http://, https:// or ftp://
 #E  component `ArchiveFormats' must be bound to a string
 #E  component `README_URL' must be bound to a string started with http://, https:// or ftp://
@@ -2043,8 +2044,6 @@ gap> Read( Filename( DirectoriesLibrary( "tst" ), "testinstall.g" ) );
 You will get a large number of lines with output about the progress of
 the tests, for example:
 <Log><![CDATA[
-You should start GAP4 using `gap -A -x 80 -r'.
-
 Architecture: SOMETHING-SOMETHING-gcc-default64
 
 testing: ..../gap-4.X.Y/tst/testinstall/alghom.tst
@@ -2062,12 +2061,8 @@ total     62829 ms (24136 ms GC) and 8.61GB allocated
 ]]></Log>
 <P/>
 
-(optionally, you may start &GAP; with the command line options which you
-will see in the test output, to run it in a more conservative settings).
-<P/>
-
 The more thorough test is <F>teststandard.g</F> which exercises more of &GAP;'s
-capabilities, also including all test files from <F>teststandard.g</F>.
+capabilities, also including all test files from <F>testinstall.g</F>.
 It runs quite a bit longer, maybe 10-20 minutes, and produces
 an output similar to the testinstall.g test.
 To run it, also start a new &GAP; session and then call
@@ -2149,7 +2144,7 @@ more explicit by making the exact reference to the GPL license, for example:
 <E>
 <Package>packagename</Package> is free software; you can redistribute it
 and/or modify it under the terms of the
-<URL Text="GNU General Public License">https://www.fsf.org/licenses/gpl.html</URL>
+<URL Text="GNU General Public License">https://www.gnu.org/licenses/old-licenses/gpl-2.0.html</URL>
 as published by the Free Software Foundation; either version 2 of the License,
 or (at your option) any later version.
 </E>
@@ -2379,10 +2374,6 @@ well as to everyone involved in the depositing and refereeing of &GAP; packages.
         as specified in the <F>PackageInfo.g</F> file;
     </Item>
     <Item>
-        has the same version, release date and package authors
-        details as stated in the <F>PackageInfo.g</F> file;
-    </Item>
-    <Item>
         is searchable using the &GAP; help system in all formats
         (text, HTML and PDF);
     </Item>
@@ -2465,7 +2456,7 @@ has correct list of needed and suggested packages
 <Item>
 Revise licensing information:
 check that the package states clearly under which conditions it is distributed
-and includes a <F>LICENSING</F> file with the text of a license
+and includes a <F>LICENSE</F> file with the text of a license
 (see Section <Ref Label="Selecting a license for a GAP Package"/>).
 </Item>
 
@@ -2482,7 +2473,7 @@ the package documentation by picking up the changes in documenting tools.
 Check if the package still relies on some obsolete variables
 (see Chapter <Ref Chap="Replaced and Removed Command Names"/>)
 and replace their usage by the new commands. To perform such check, start &GAP;
-with `-O` command line option to disable loading obsoletes, and then load
+with the <C>-O</C> command line option to disable loading obsoletes, and then load
 your package.
 </Item>
 
