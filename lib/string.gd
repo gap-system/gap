@@ -174,7 +174,7 @@ DeclareGlobalFunction( "DayDMY" );
 
 #############################################################################
 ##
-#F  SecondsDMYhms( <DMYhms> ) . . . . . convert day-month-year-hms into seconds
+#F  SecondsDMYhms( <DMYhms> ) . . . . convert day-month-year-hms into seconds
 ##
 ##  <#GAPDoc Label="SecondsDMYhms">
 ##  <ManSection>
@@ -196,7 +196,7 @@ DeclareGlobalFunction( "SecondsDMYhms" );
 
 #############################################################################
 ##
-#F  DMYhmsSeconds( <secs> ) . . . . . . . . . . . . . inverse of SecondsDMYhms
+#F  DMYhmsSeconds( <secs> ) . . . . . . . . . . . .  inverse of SecondsDMYhms
 ##
 ##  <#GAPDoc Label="DMYhmsSeconds">
 ##  <ManSection>
@@ -285,7 +285,7 @@ DeclareGlobalFunction( "StringDate" );
 
 #############################################################################
 ##
-#F  HMSMSec( <msec> )  . . . . . . . .  convert seconds into hour-min-sec-mill
+#F  HMSMSec( <msec> )  . . . . . . . . convert seconds into hour-min-sec-mill
 ##
 ##  <#GAPDoc Label="HMSMSec">
 ##  <ManSection>
@@ -522,7 +522,7 @@ DeclareGlobalFunction( "RemoveCharacters" );
 
 #############################################################################
 ##
-#F  NormalizedWhitespace( <str> ) .  copy of string with normalized whitespace
+#F  NormalizedWhitespace( <str> ) . copy of string with normalized whitespace
 ##
 ##  <#GAPDoc Label="NormalizedWhitespace">
 ##  <ManSection>
@@ -837,8 +837,8 @@ BindGlobal("BHINT", MakeImmutable("\>\<"));
 
 #############################################################################
 ##
-#F StringOfMemoryAmount( <m> )    returns an appropriate human-readable string
-##                        representation of <m> bytes
+#F StringOfMemoryAmount( <m> ) . returns an appropriate human-readable string
+##                               representation of <m> bytes
 ##
 ##
 ##  <#GAPDoc Label="StringOfMemoryAmount">

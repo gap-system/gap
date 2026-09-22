@@ -13,7 +13,7 @@
 
 #############################################################################
 ##
-#F  ParityPol(<f>) . . . . . . . . . . . . . . . . . . parity of a
+#F  ParityPol(<f>) . . . . . . . . . . . . . . . . . . parity of a polynomial
 ##
 InstallGlobalFunction(ParityPol,function(ring,f)
 local d;
@@ -304,7 +304,7 @@ end);
 
 #############################################################################
 ##
-##  Tschirnhausen(<pol>[,<trans>][,true]) . . . . . Tschirnhausen-Transformation
+##  Tschirnhausen(<pol>[,<trans>][,true]) . . .  Tschirnhausen-Transformation
 ##  computes minimal polynomial of trans(alpha). If no <trans> is given, it
 ##  is taken by random. An added true will also return the <trans> polynomial.
 ##

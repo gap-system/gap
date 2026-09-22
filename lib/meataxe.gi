@@ -2351,7 +2351,7 @@ end;
 
 #############################################################################
 ##
-#F  SMTX.Homomorphisms( module1, module2) . . . . homomorphisms from an irreducible
+#F  SMTX.Homomorphisms( module1, module2) . homomorphisms from an irreducible
 ##                         . . . GModule to an arbitrary GModule
 ##
 ## It is assumed that module1 is a module that has been proved irreducible

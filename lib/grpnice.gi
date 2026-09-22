@@ -365,7 +365,7 @@ GroupMethodByNiceMonomorphismCollColl( CoreOp,
 
 #############################################################################
 ##
-#M  ChiefLength( <G> ) . . . . . . . . . . length of a chief series of a group
+#M  ChiefLength( <G> ) . . . . . . . . .  length of a chief series of a group
 ##
 AttributeMethodByNiceMonomorphism( ChiefLength,
     [ IsGroup ] );
@@ -373,7 +373,7 @@ AttributeMethodByNiceMonomorphism( ChiefLength,
 
 #############################################################################
 ##
-#M  CommutatorLength( <G> )  . . . . . . . . . .  commutator length of a group
+#M  CommutatorLength( <G> )  . . . . . . . . . . commutator length of a group
 ##
 AttributeMethodByNiceMonomorphism( CommutatorLength,
     [ IsGroup ] );
@@ -381,7 +381,7 @@ AttributeMethodByNiceMonomorphism( CommutatorLength,
 
 #############################################################################
 ##
-#M  DerivedLength( <G> ) . . . . . . . . . . . . . . derived length of a group
+#M  DerivedLength( <G> ) . . . . . . . . . . . . .  derived length of a group
 ##
 AttributeMethodByNiceMonomorphism( DerivedLength,
     [ IsGroup ] );
@@ -937,7 +937,7 @@ end );
 
 #############################################################################
 ##
-#M  GroupGeneralMappingByImagesNC( <G>, <H>, <gens>, <imgs> ) . . . . make GHBI
+#M  GroupGeneralMappingByImagesNC( <G>, <H>, <gens>, <imgs> ) . . . make GHBI
 ##
 InstallMethod( GroupGeneralMappingByImagesNC,
    "from a group handled by a niceomorphism",true,

@@ -536,7 +536,7 @@ DeclareConstructor( "FreeAbelianGroupCons", [ IsGroup, IsInt ] );
 
 #############################################################################
 ##
-#F  FreeAbelianGroup( [<filt>, ]<rank> ) . . . . . . . . . .  free abelian group
+#F  FreeAbelianGroup( [<filt>, ]<rank> ) . . . . . . . . . free abelian group
 ##
 ##  <#GAPDoc Label="FreeAbelianGroup">
 ##  <ManSection>

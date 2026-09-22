@@ -104,8 +104,8 @@ end );
 
 #############################################################################
 ##
-#M  CochainSpace( <V>, <s> ) . . . . . . . for a module over a Lie algebra and
-##                                         an integer
+#M  CochainSpace( <V>, <s> ) . . . . . .  for a module over a Lie algebra and
+##                                        an integer
 ##
 ##
 InstallMethod( CochainSpace,
@@ -159,13 +159,13 @@ end );
 
 #############################################################################
 ##
-#M  \+( <c1>, <c2> ) . . . . . . . . . . . . . . . . . . . for two cochains
-#M  AdditiveInverseOp( <c> ) . . . . .  . . . . . . . . . . . . . . . . for a cochain
-#M  \*( <scal>, <c> ) . . . . . . . . . . . . . . for a scalar and a cochain
-#M  \*( <c>, <scal> ) . . . . . . . . . . . . . . for a chain and a scalar
-#M  \<( <c1>, <c2> ) . . . . . . . . . . . . . . . . . . . for two cochains
-#M  \=( <c1>, <c2> ) . . . . . . . . . . . . . . . . . . . for two cochains
-#M  ZeroOp( <c> ) . . . . . . . . . . . . . . . . . . . .  for a cochain
+#M  \+( <c1>, <c2> ) . . . . . . . . . . . . . . . . . . . . for two cochains
+#M  AdditiveInverseOp( <c> ) . . . . .  . . . . . . . . . . . . for a cochain
+#M  \*( <scal>, <c> ) . . . . . . . . . . . . . .  for a scalar and a cochain
+#M  \*( <c>, <scal> ) . . . . . . . . . . . . . . .  for a chain and a scalar
+#M  \<( <c1>, <c2> ) . . . . . . . . . . . . . . . . . . . . for two cochains
+#M  \=( <c1>, <c2> ) . . . . . . . . . . . . . . . . . . . . for two cochains
+#M  ZeroOp( <c> ) . . . . . . . . . . . . . . . . . . . . . . . for a cochain
 ##
 InstallMethod( \+,
     "for two cochains",
@@ -351,9 +351,9 @@ end );
 
 #############################################################################
 ##
-#M  NiceFreeLeftModuleInfo( <C> ) . . . . . . . . . for a module of cochains
-#M  NiceVector ( <C>, <c> ) . . . . .for a module of cochains and a cochain
-#M  UglyVector( <C>, <v> ) . . . . . for a module of cochains and a row vector
+#M  NiceFreeLeftModuleInfo( <C> ) . . . . . . . . .  for a module of cochains
+#M  NiceVector ( <C>, <c> ) . . . . .  for a module of cochains and a cochain
+#M  UglyVector( <C>, <v> ) . . . .  for a module of cochains and a row vector
 ##
 InstallHandlingByNiceBasis( "IsCochainsSpace", rec(
     detect := function( R, gens, V, zero )
@@ -448,7 +448,7 @@ InstallHandlingByNiceBasis( "IsCochainsSpace", rec(
 
 #############################################################################
 ##
-#F   ValueCochain( <c>, <y1>, ... ,<ys> )
+#F  ValueCochain( <c>, <y1>, ... ,<ys> )
 ##
 ##
 InstallGlobalFunction( ValueCochain,
@@ -617,7 +617,7 @@ end );
 
 #############################################################################
 ##
-#M  Coboundaries( <V>, <s> ) . . . . . . . . . for alg module and integer
+#M  Coboundaries( <V>, <s> ) . . . . . . . . . . . for alg module and integer
 ##
 ##
 InstallMethod( Coboundaries,
@@ -1439,12 +1439,12 @@ end );
 
 #############################################################################
 ##
-#M  OneOp( <m> ) . . . . . . . . . . . . . . . . for a UEALattice element
-#M  ZeroOp( <m> ) . . . . . . . . . . . . . . .  for a UEALattice element
-#M  \<( <m1>, <m2> ) . . . . . . . . . . . . . . for two UEALattice elements
-#M  \=( <m1>, <m2> ) . . . . . . . . . . . . . . for two UEALattice elements
-#M  \+( <m1>, <m2> ) . . . . . . . . . . . . . . for two UEALattice elements
-#M  \AdditiveInverseOp( <m> )     . . . . . . . . . . . . . . for a UEALattice element
+#M  OneOp( <m> ) . . . . . . . . . . . . . . . . . . for a UEALattice element
+#M  ZeroOp( <m> ) . . . . . . . . . . . . . . . . .  for a UEALattice element
+#M  \<( <m1>, <m2> ) . . . . . . . . . . . . . .  for two UEALattice elements
+#M  \=( <m1>, <m2> ) . . . . . . . . . . . . . .  for two UEALattice elements
+#M  \+( <m1>, <m2> ) . . . . . . . . . . . . . .  for two UEALattice elements
+#M  \AdditiveInverseOp( <m> )     . . . . . . . . .  for a UEALattice element
 ##
 ##
 InstallMethod( OneOp,
@@ -2767,13 +2767,13 @@ end );
 
 #############################################################################
 ##
-#M  \+( <u>, <v> ) . . . . . . . . . . . . . . for two weight rep elements
-#M  AdditiveInverseOp( <u> ) . . . . . . . . . . . .  . . . for a weight rep element
-#M  \*( <scal>, <u> ) . . . . . . . . . . . .for a scalar and a weight rep elt
-#M  \*( <u>, <scal> ) . . . . . . . . . . . .for a weight rep elt and a scalar
-#M  ZeroOp( <u> ) . . . . . . . . . . . . .  for a weight rep element
-#M  \=( <u>, <v> ) . . . . . . . . . . . . . for two weight rep elements
-#M  \<( <u>, <v> ) . . . . . . . . . . . . . for two weight rep elements
+#M  \+( <u>, <v> ) . . . . . . . . . . . . . . .  for two weight rep elements
+#M  AdditiveInverseOp( <u> ) . . . . . . . . . . . . for a weight rep element
+#M  \*( <scal>, <u> ) . . . . . . . . . . . for a scalar and a weight rep elt
+#M  \*( <u>, <scal> ) . . . . . . . . . . . for a weight rep elt and a scalar
+#M  ZeroOp( <u> ) . . . . . . . . . . . . . . . . .  for a weight rep element
+#M  \=( <u>, <v> ) . . . . . . . . . . . . . . .  for two weight rep elements
+#M  \<( <u>, <v> ) . . . . . . . . . . . . . . .  for two weight rep elements
 ##
 InstallMethod(\+,
         "for weight rep elements",

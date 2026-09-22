@@ -844,7 +844,7 @@ PERM_INVERSE_THRESHOLD := 10000;
 
 #############################################################################
 ##
-#m  ViewObj( <perm> )  . . . . . . . . . . . . . . . . . . . for a permutation
+#m  ViewObj( <perm> ) . . . . . . . . . . . . . . . . . . . for a permutation
 ##
 InstallMethod( ViewObj, "for a permutation", [ IsPerm ],
 function( perm )

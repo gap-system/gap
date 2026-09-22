@@ -1949,8 +1949,8 @@ InstallMethod( PreImagesElm,
 
 #############################################################################
 ##
-#M  PreImagesSetNC( <aut>, <field> )  . . . . . for autom. of ab. number fields
-#M  PreImagesSet( <aut>, <field> )  . . . . . . for autom. of ab. number fields
+#M  PreImagesSetNC( <aut>, <field> )  . . . . for autom. of ab. number fields
+#M  PreImagesSet( <aut>, <field> )  . . . . . for autom. of ab. number fields
 ##
 InstallMethod( PreImagesSetNC,
     "for ANF automorphism and scalar",

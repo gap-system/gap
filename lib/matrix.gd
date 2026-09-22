@@ -2095,7 +2095,7 @@ DeclareOperation( "RandomMatrix",
 
 #############################################################################
 ##
-#F  RandomUnimodularMat( [rs ,] <m> ) . . . . . . . . random unimodular matrix
+#F  RandomUnimodularMat( [rs ,] <m> ) . . . . . . .  random unimodular matrix
 ##
 ##  <#GAPDoc Label="RandomUnimodularMat">
 ##  <ManSection>

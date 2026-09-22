@@ -79,7 +79,7 @@ end );
 
 #############################################################################
 ##
-#M  ExtRepOfObj( <elm> )  . . . . . . . . . . . .  for algebra module elements
+#M  ExtRepOfObj( <elm> ) . . . . . . . . . . . .  for algebra module elements
 ##
 InstallMethod( ExtRepOfObj,
     "for algebra module element in packed element rep",
@@ -89,7 +89,7 @@ InstallMethod( ExtRepOfObj,
 
 #############################################################################
 ##
-#M  ObjByExtRep( <Fam>, <descr> ) . . . . . . . .  for algebra module elements
+#M  ObjByExtRep( <Fam>, <descr> ) . . . . . . . . for algebra module elements
 ##
 ##
 InstallMethod( ObjByExtRep,
@@ -534,7 +534,7 @@ end );
 
 #############################################################################
 ##
-#M  PrintObj( <MB> ) . . . . . . . . . . . . . . . . . .  view a mutable basis
+#M  PrintObj( <MB> ) . . . . . . . . . . . . . . . . . . view a mutable basis
 ##
 InstallMethod( PrintObj,
     "for mutable basis with underlying mutable basis",
@@ -606,7 +606,7 @@ end );
 
 #############################################################################
 ##
-#M  PrintObj( <obj> ) . . . . . . . . . . . . . . . for algebra module element
+#M  PrintObj( <obj> ) . . . . . . . . . . . . . .  for algebra module element
 ##
 InstallMethod( PrintObj,
     "for algebra module element in packed representation",
@@ -615,13 +615,13 @@ InstallMethod( PrintObj,
 
 #############################################################################
 ##
-#M  \=( <u>, <v> ) . . . . . . . . . . . . . . . for algebra module elements
-#M  \<( <u>, <v> ) . . . . . . . . . . . . . . . for algebra module elements
-#M  \+( <u>, <v> ) . . . . . . . . . . . . . . . for algebra module elements
-#M  AdditiveInverseOp( <u> ) . .. . . . . . . . . . . . . . . for an algebra module element
-#M  \*( <u>, <scal> ) . . . . . . for an algebra module element and a scalar
-#M  \*( <scal>, <u> ) . . . . . . for a scalar and an algebra module element
-#M  ZeroOp( <u> ) . . . . . . . . . . . . . . . .for an algebra module element
+#M  \=( <u>, <v> ) . . . . . . . . . . . . . . .  for algebra module elements
+#M  \<( <u>, <v> ) . . . . . . . . . . . . . . .  for algebra module elements
+#M  \+( <u>, <v> ) . . . . . . . . . . . . . . .  for algebra module elements
+#M  AdditiveInverseOp( <u> ) . . . . . . . . .  for an algebra module element
+#M  \*( <u>, <scal> ) . . . . . .  for an algebra module element and a scalar
+#M  \*( <scal>, <u> ) . . . . . .  for a scalar and an algebra module element
+#M  ZeroOp( <u> ) . . . . . . . . . . . . . . . for an algebra module element
 ##
 ##
 
@@ -683,8 +683,8 @@ InstallMethod( ZeroOp,
 
 #############################################################################
 ##
-#M  \*( <obj>, <vec> ) . . . . . . . . . . . for a Lie object and a row vector
-#M  \*( <vec>, <obj> ) . . . . . . . . . . . for a row vector and a Lie object
+#M  \*( <obj>, <vec> ) . . . . . . . . . .  for a Lie object and a row vector
+#M  \*( <vec>, <obj> ) . . . . . . . . . .  for a row vector and a Lie object
 ##
 ##
 InstallMethod( \*,
@@ -846,8 +846,8 @@ end );
 
 #############################################################################
 ##
-#M  Coefficients( <B>, <v> ). . . . . . for basis of a space of algebra
-##                                      module elements and vector
+#M  Coefficients( <B>, <v> ) . . . . . . . .  for basis of a space of algebra
+##                                            module elements and vector
 ##
 InstallMethod( Coefficients,
     "for basis of a space of algebra module elements, and algebra module element",
@@ -897,8 +897,7 @@ end );
 
 #############################################################################
 ##
-#M  IsFiniteDimensional( <V> ) . . . . . . .  . for a space of algebra module
-##                                              elements
+#M  IsFiniteDimensional( <V> ) . . . . for a space of algebra module elements
 ##
 InstallMethod( IsFiniteDimensional,
         "for a space of algebra module elements",
@@ -910,8 +909,7 @@ end );
 
 #############################################################################
 ##
-#M  GeneratorsOfLeftModule( <V> ) . . . . . . .  . for a space of algebra
-##                                                 module elements
+#M  GeneratorsOfLeftModule( <V> ) . .  for a space of algebra module elements
 ##
 InstallMethod( GeneratorsOfLeftModule,
         "for a space of algebra module elements",
@@ -1335,7 +1333,7 @@ DeclareRepresentation( "IsMonomialElementRep", IsPositionalObjectRep, [1,2] );
 #############################################################################
 ##
 #M  ObjByExtRep( <fam>, <list> ) . . . for a MonomialElementFamily and a list
-#M  ExtRepOfObj( <t> )  . . . . . . .  for a monomial element in monomial rep.
+#M  ExtRepOfObj( <t> )  . . . . . . . for a monomial element in monomial rep.
 ##
 InstallMethod( ObjByExtRep,
         "for a family of monomial elements and a list",
@@ -1354,13 +1352,13 @@ end );
 
 #############################################################################
 ##
-#M  ZeroOp( <m> ) . . . . . . . . . . . . . . for a monomial element
-#M  \+( <m1>, <m2> )  . . . . . . . . . . . . for two monomial elements
-#M  AdditiveInverseOp( <m> ) . . . . . . . . . . . . . . . for a monomial element
+#M  ZeroOp( <m> ) . . . . . . . . . . . . . . . . . .  for a monomial element
+#M  \+( <m1>, <m2> )  . . . . . . . . . . . . . . . for two monomial elements
+#M  AdditiveInverseOp( <m> ) . . . . . . . . . . . . . for a monomial element
 #M  \*( <m>, <scal> ) . . . . . . . . . . for a monomial element and a scalar
-#M  \*( <scal>, <m> ) . . . . . . . . . . for scalar and a monomial element
-#M  \<( <m1>, <m2> ) . . . . . . . . . . . .  for two monomial elements
-#M  \=( <m1>, <m2> ) . . . . . . . . . . . .  for two monomial elements
+#M  \*( <scal>, <m> ) . . . . . . . . . . . for scalar and a monomial element
+#M  \<( <m1>, <m2> ) . . . . . . . . . . . . . . .  for two monomial elements
+#M  \=( <m1>, <m2> ) . . . . . . . . . . . . . . .  for two monomial elements
 ##
 InstallMethod( ZeroOp,
         "for monomial elements",
@@ -2844,13 +2842,13 @@ end );
 
 #############################################################################
 ##
-#M  ZeroOp( <v> ) . . . . . . . . . . . . . for a sparse rowspace element
-#M  \+( <u>, <v> ) . . . . . . . . . . . .  for sparse rowspace elements
-#M  AdditiveInverseOp( <u> ) . . . . . . . . . . . . . . for a sparse rowspace element
-#M  \*( <scal>, <u> )  . . . . . for a sparse rowspace element and scalar
-#M  \*( <u>, <scal> ) . . . . . .for a scalar and sparse rowspace element
-#M  \<( <u>, <v> )  . . . . . . . . . . . . for sparse rowspace elements
-#M  \=( <u>, <v> ) . . . . . . . . . . . . for sparse rowspace elements
+#M  ZeroOp( <v> ) . . . . . . . . . . . . . . . for a sparse rowspace element
+#M  \+( <u>, <v> ) . . . . . . . . . . . . . . . for sparse rowspace elements
+#M  AdditiveInverseOp( <u> ) . . . . . . . . .  for a sparse rowspace element
+#M  \*( <scal>, <u> ) . . . . . . .  for a sparse rowspace element and scalar
+#M  \*( <u>, <scal> ) . . . . . . .  for a scalar and sparse rowspace element
+#M  \<( <u>, <v> ) . . . . . . . . . . . . . . . for sparse rowspace elements
+#M  \=( <u>, <v> ) . . . . . . . . . . . . . . . for sparse rowspace elements
 ##
 InstallMethod( ZeroOp,
         "for sparse rowspace elements",
@@ -3139,8 +3137,7 @@ end );
 
 #############################################################################
 ##
-#M  Coefficients( <B>, <v> ). . . . . . for basis of a sparse row space
-##                                      and vector
+#M  Coefficients( <B>, <v> ) . . . for basis of a sparse row space and vector
 ##
 InstallMethod( Coefficients,
         "for basis of a sparse rowspace, and a vector",
@@ -3211,7 +3208,7 @@ InstallHandlingByNiceBasis( "IsMonomialElementVectorSpace", rec(
 
 #############################################################################
 ##
-#M  FullSparseRowSpace( <F>, <n> )  . . . . . . for a ring and an integer
+#M  FullSparseRowSpace( <F>, <n> ) . . . . . . . .  for a ring and an integer
 ##
 ##
 InstallMethod( FullSparseRowSpace,
@@ -3250,7 +3247,7 @@ end );
 
 #############################################################################
 ##
-#M  PrintObj( <u> ) . . . . . . . . . . . . . . . . . for a direct sum element
+#M  PrintObj( <u> ) . . . . . . . . . . . . . . . .  for a direct sum element
 ##
 InstallMethod( PrintObj,
         "for direct sum elements",
@@ -3271,8 +3268,8 @@ end );
 
 #############################################################################
 ##
-#M  ObjByExtRep( <fam>, <list> ) . . . for a DirectSumElementFamily and a list
-#M  ExtRepOfObj( <t> )  . . . . . . .  for a direct sum element in packed rep.
+#M  ObjByExtRep( <fam>, <list> ) . .  for a DirectSumElementFamily and a list
+#M  ExtRepOfObj( <t> ) . . . . . . .  for a direct sum element in packed rep.
 ##
 InstallMethod( ObjByExtRep,
         "for a family of direct sum elements and a list",
@@ -3356,8 +3353,8 @@ end );
 #############################################################################
 ##
 #M  NiceFreeLeftModuleInfo( <C> ) . . . . . . .  for a module of dir sum elts
-#M  NiceVector ( <C>, <c> ) . . for a module of dir sum elts and a dir sum elt
-#M  UglyVector( <C>, <v> ) . . .for a module of dir sum elts and a row vector
+#M  NiceVector ( <C>, <c> ) .  for a module of dir sum elts and a dir sum elt
+#M  UglyVector( <C>, <v> ) . .  for a module of dir sum elts and a row vector
 ##
 InstallHandlingByNiceBasis( "IsDirectSumElementsSpace", rec(
     detect:= function( R, gens, V, zero )

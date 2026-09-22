@@ -201,7 +201,7 @@ InstallMethod( PrintObj,
 
 #############################################################################
 ##
-#M  String( <elm> )  . . . . . . . . . . . . . . .  for s.~c. algebra elements
+#M  String( <elm> ) . . . . . . . . . . . . . . .  for s.~c. algebra elements
 ##
 InstallMethod( String,
     "for s. c. algebra element",

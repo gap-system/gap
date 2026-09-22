@@ -226,7 +226,7 @@ InstallTrueMethod( IsLieAbelian, IsAlgebra and IsZeroMultiplicationRing );
 
 #############################################################################
 ##
-#M  LieCentre( <L> )  . . . . . . . . . . . . . . . . . . .  for a Lie algebra
+#M  LieCentre( <L> )  . . . . . . . . . . . . . . . . . . . for a Lie algebra
 ##
 ##  We solve the system
 ##  $\sum_{i=1}^n a_i c_{ijk} = 0$ for $1 \leq j, k \leq n$
@@ -298,7 +298,7 @@ InstallMethod( LieCentre,
 
 #############################################################################
 ##
-#M  LieCentralizer( <A>, <S> )  . . . . . for a Lie algebra and a vector space
+#M  LieCentralizer( <A>, <S> ) . . . . . for a Lie algebra and a vector space
 ##
 ##  Let $(b_1, \ldots, b_n)$ be a basis of <A>, and $(s_1, \ldots, s_m)$
 ##  be a basis of <S>, with $s_j = \sum_{l=1}^m v_{jl} b_l$.
@@ -395,7 +395,7 @@ InstallMethod( LieCentralizer,
 
 #############################################################################
 ##
-#M  LieNormalizer( <L>, <U> ) . . . . . . for a Lie algebra and a vector space
+#M  LieNormalizer( <L>, <U> ) . . . . .  for a Lie algebra and a vector space
 ##
 ##  If $(x_1, \ldots, x_n)$ is a basis of $L$ and $(u_1, \ldots, u_s)$ is
 ##  a basis of $U$, then $x = \sum_{i=1}^n a_i x_i$ is an element of $N_L(U)$
@@ -501,7 +501,7 @@ InstallMethod( LieNormalizer,
 
 #############################################################################
 ##
-#M  KappaPerp( <L>, <U> ) . . . . . . . . for a Lie algebra and a vector space
+#M  KappaPerp( <L>, <U> ) . . . . . . .  for a Lie algebra and a vector space
 ##
 #T  Should this better be `OrthogonalSpace( <F>, <U> )' where <F> is a
 #T  bilinear form?
@@ -942,7 +942,7 @@ InstallMethod( AdjointBasis,
 
 #############################################################################
 ##
-#M  IsRestrictedLieAlgebra( <L> ) . . . . . . . . . . . . .  for a Lie algebra
+#M  IsRestrictedLieAlgebra( <L> ) . . . . . . . . . . . . . for a Lie algebra
 ##
 ##  A Lie algebra <L> is defined to be {\em restricted} when it is defined
 ##  over a field of characteristic $p \neq 0$, and for every basis element
@@ -1237,7 +1237,7 @@ InstallMethod( PthPowerImages,
 ##  $F$ of cardinality greater than the dimension of <L> we can proceed as
 ##  follows.
 ##  Let $a$ be a non nilpotent element of <L> and $K$ the corresponding
-##  Engel subalgebra.  Furthermore, let $b$ be a non nilpotent element of $K$.
+##  Engel subalgebra. Furthermore, let $b$ be a non nilpotent element of $K$.
 ##  Then there is an element $c \in F$ such that $a + c ( b - a )$ has an
 ##  Engel subalgebra strictly contained in $K$
 ##  (see Humphreys, proof of Lemma A, p 79).
@@ -2143,7 +2143,7 @@ InstallMethod( DirectSumDecomposition,
 
 #############################################################################
 ##
-#M  IsSimpleAlgebra( <L> )  . . . . . . . . . . . . . . . .  for a Lie algebra
+#M  IsSimpleAlgebra( <L> )  . . . . . . . . . . . . . . . . for a Lie algebra
 ##
 ##  A test whether <L> is simple.
 ##  It works only over fields of characteristic 0.
@@ -2820,7 +2820,7 @@ end );
 
 #############################################################################
 ##
-#M  RootSystem( <L> ) . . . . . . . . . . . . . . . . . . .  for a Lie algebra
+#M  RootSystem( <L> ) . . . . . . . . . . . . . . . . . . . for a Lie algebra
 ##
 InstallMethod( RootSystem,
     "for a (semisimple) Lie algebra",

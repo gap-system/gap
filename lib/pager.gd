@@ -15,7 +15,7 @@
 
 #############################################################################
 ##
-#F  Pager( <lines> ) . . . . . . . . . . . . display text on screen in a pager
+#F  Pager( <lines> ) . . . . . . . . . . .  display text on screen in a pager
 
 ##  <#GAPDoc Label="Pager">
 ##  <ManSection>

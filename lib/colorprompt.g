@@ -35,8 +35,8 @@ EndLineHook := function() end;
 
 #############################################################################
 ##
-#F  ColorPrompt( <bool> ) . . . . . . (un)set using a colored prompt and input
-#F  ColorPrompt( <bool>, <optrec> ) . . . . . . . . .  same with customization
+#F  ColorPrompt( <bool> ) . . . . .  (un)set using a colored prompt and input
+#F  ColorPrompt( <bool>, <optrec> ) . . . . . . . . . same with customization
 ##
 ##  <#GAPDoc Label="ColorPrompt">
 ##  <ManSection>

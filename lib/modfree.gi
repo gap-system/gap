@@ -154,7 +154,7 @@ InstallMethod( Size,
 #############################################################################
 ##
 #M  AsList( <V> ) . . . . . . . . . . . . . .  elements of a free left module
-#M  AsSSortedList( <V> ) . . . . . . . . . . .  elements of a free left module
+#M  AsSSortedList( <V> ) . . . . . . . . . . . elements of a free left module
 ##
 ##  is the set of elements of the free left module <V>,
 ##  computed from a basis of <V>.

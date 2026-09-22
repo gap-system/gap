@@ -449,7 +449,7 @@ end);
 
 #############################################################################
 ##
-#F  PageSource( func ) . . . . . . . . . . . . . . . show source code in pager
+#F  PageSource( func ) . . . . . . . . . . . . . . .show source code in pager
 ##
 ##  <#GAPDoc Label="PageSource">
 ##  <ManSection>

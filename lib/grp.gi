@@ -381,7 +381,7 @@ InstallMethod( IsPGroup,
 
 #############################################################################
 ##
-#M  IsPowerfulPGroup( <G> ) . . . . . . . . . . is a group a powerful p-group ?
+#M  IsPowerfulPGroup( <G> ) . . . . . . . . . is a group a powerful p-group ?
 ##
 InstallMethod( IsPowerfulPGroup,
     "use characterisation of powerful p-groups based on rank ",
@@ -1249,7 +1249,7 @@ end);
 
 #############################################################################
 ##
-#M  ChiefLength( <G> ) . . . . . . . . . . . . . . . . chief length of a group
+#M  ChiefLength( <G> ) . . . . . . . . . . . . . . .  chief length of a group
 ##
 ##  For small groups, computing the 'IsSupersolvableGroup' flag is more
 ##  expensive than computing a chief series,
@@ -1273,7 +1273,7 @@ InstallMethod( ChiefLength,
 
 #############################################################################
 ##
-#M  DerivedLength( <G> ) . . . . . . . . . . . . . . derived length of a group
+#M  DerivedLength( <G> ) . . . . . . . . . . . . .  derived length of a group
 ##
 InstallMethod( DerivedLength,
     "generic method for groups",
@@ -1283,7 +1283,7 @@ InstallMethod( DerivedLength,
 
 #############################################################################
 ##
-#M  HirschLength( <G> ) . . . . .hirsch length of a polycyclic-by-finite group
+#M  HirschLength( <G> ) . . . . Hirsch length of a polycyclic-by-finite group
 ##
 InstallMethod( HirschLength,
     "generic method for finite groups",

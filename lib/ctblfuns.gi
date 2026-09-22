@@ -1472,7 +1472,7 @@ InstallMethod( PermutationCharacter,
 
 #T #############################################################################
 #T ##
-#T #M  PermutationCharacter( <G>, <U> )  . . . . . . . . .  for two small groups
+#T #M  PermutationCharacter( <G>, <U> ) . . . . . . . . . . for two small groups
 #T ##
 #T InstallMethod( PermutationCharacter,
 #T     "for two small groups",

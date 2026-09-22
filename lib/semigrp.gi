@@ -405,7 +405,7 @@ InstallMethod( PrintString,
 
 #############################################################################
 ##
-#M  ViewString( <S> )  . . . . . . . . . . . . . . . . . . . .  view a semigroup
+#M  ViewString( <S> ) . . . . . . . . . . . . . . . . . . .  view a semigroup
 ##
 InstallMethod( ViewString,
     "for a semigroup",
