@@ -806,6 +806,13 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 ##  <K>true</K> or <K>false</K>;
 ##  in the latter case, the effect is that no package banner is printed.
 ##  <P/>
+##  <Index Key="OnlyNeeded" Subkey="option"><C>OnlyNeeded</C></Index>
+##  If the global option <C>OnlyNeeded</C> is given, as in
+##  <C>LoadPackage("sonata" : OnlyNeeded)</C>, then the suggested packages
+##  of <A>name</A> and, recursively, of its dependencies are not loaded.
+##  This is meant for checking that a package works without its suggested
+##  packages, see Section&nbsp;<Ref Sect="Package dependencies"/>.
+##  <P/>
 ##  After a package has been loaded, all its code becomes
 ##  available to use with the rest of the &GAP; library.
 ##  </Description>
