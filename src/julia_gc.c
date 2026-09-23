@@ -850,8 +850,8 @@ void SwapMasterPoint(Bag bag1, Bag bag2)
 {
     SWAP(UInt *, bag1->body, bag2->body);
 
-    jl_gc_wb((void *)bag1, BAG_HEADER(bag1));
-    jl_gc_wb((void *)bag2, BAG_HEADER(bag2));
+    jl_gc_wb_object((void *)bag1);
+    jl_gc_wb_object((void *)bag2);
 }
 
 UInt CollectBags(UInt size, UInt full)
@@ -942,7 +942,7 @@ Bag NewBag(UInt type, UInt size)
 
     // change the masterpointer to reference the new bag memory
     bag->body = header + 1;
-    jl_gc_wb_back((void *)bag);
+    jl_gc_wb_object((void *)bag);
 
     // return the identifier of the new bag
     return bag;
@@ -976,7 +976,7 @@ UInt ResizeBag(Bag bag, UInt new_size)
 
         // update the master pointer
         bag->body = header + 1;
-        jl_gc_wb_back((void *)bag);
+        jl_gc_wb_object((void *)bag);
     }
 
     // update the size
