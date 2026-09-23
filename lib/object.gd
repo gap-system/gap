@@ -219,7 +219,7 @@ DeclareCategoryKernel( "IsMutable", IsObject, IS_MUTABLE_OBJ );
 
 #############################################################################
 ##
-#C  IsInternallyMutable( <obj> )  . . . .  test if an object has mutable state
+#C  IsInternallyMutable( <obj> ) . . . .  test if an object has mutable state
 ##
 ##  <#GAPDoc Label="IsInternallyMutable">
 ##  <ManSection>

@@ -110,7 +110,7 @@ InstallMethod( LieObject,
 
 #############################################################################
 ##
-#M  UnderlyingRingElement( <obj> )  . . . . . . . . . . . .   for a Lie object
+#M  UnderlyingRingElement( <obj> ) . . . . . . . . . . . . . for a Lie object
 ##
 InstallMethod( UnderlyingRingElement,
     "for a Lie object in default representation",

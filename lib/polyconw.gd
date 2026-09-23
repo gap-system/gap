@@ -13,7 +13,7 @@
 ##
 
 
-###############################################################################
+#############################################################################
 ##
 #F  PowerModEvalPol( <f>, <g>, <xpownmodf> )
 ##
@@ -37,7 +37,7 @@ DeclareGlobalFunction( "PowerModEvalPol" );
 
 
 
-############################################################################
+#############################################################################
 ##
 #F  ConwayPol( <p>, <n> ) . . . . . <n>-th Conway polynomial in charact. <p>
 ##
@@ -51,7 +51,7 @@ DeclareGlobalFunction( "PowerModEvalPol" );
 DeclareGlobalFunction( "ConwayPol" );
 
 
-############################################################################
+#############################################################################
 ##
 #F  ConwayPolynomial( <p>, <n> ) .  <n>-th Conway polynomial in charact. <p>
 ##
@@ -136,7 +136,7 @@ DeclareGlobalFunction( "ConwayPol" );
 ##
 DeclareGlobalFunction( "ConwayPolynomial" );
 
-############################################################################
+#############################################################################
 ##
 #F  IsCheapConwayPolynomial( <p>, <n> ) . . . tell if Conway polynomial is cheap to obtain
 ##
@@ -155,7 +155,7 @@ DeclareGlobalFunction( "ConwayPolynomial" );
 ##
 DeclareGlobalFunction( "IsCheapConwayPolynomial" );
 
-############################################################################
+#############################################################################
 ##
 #F  RandomPrimitivePolynomial( <F>, <n>[, <i> ] ) . . . . . random primitive polynomial over finite field
 ##

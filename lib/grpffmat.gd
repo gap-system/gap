@@ -116,12 +116,12 @@ DeclareGlobalFunction("Phi2_Md");
 #F  NrConjugacyClassesGU( <n>, <q> ) . . . . . . . . Class number for GU(n,q)
 #F  NrConjugacyClassesSL( <n>, <q> ) . . . . . . . . Class number for SL(n,q)
 #F  NrConjugacyClassesSU( <n>, <q> ) . . . . . . . . Class number for SU(n,q)
-#F  NrConjugacyClassesPGL( <n>, <q> ) . . . . . . .  Class number for PGL(n,q)
-#F  NrConjugacyClassesPGU( <n>, <q> ) . . . . . . .  Class number for PGU(n,q)
-#F  NrConjugacyClassesPSL( <n>, <q> ) . . . . . . .  Class number for PSL(n,q)
-#F  NrConjugacyClassesPSU( <n>, <q> ) . . . . . . .  Class number for PSU(n,q)
-#F  NrConjugacyClassesSLIsogeneous( <n>, <q>, <f> ) . . for SL(n,q) isogeneous
-#F  NrConjugacyClassesSUIsogeneous( <n>, <q>, <f> ) . . for SU(n,q) isogeneous
+#F  NrConjugacyClassesPGL( <n>, <q> ) . . . . . . . Class number for PGL(n,q)
+#F  NrConjugacyClassesPGU( <n>, <q> ) . . . . . . . Class number for PGU(n,q)
+#F  NrConjugacyClassesPSL( <n>, <q> ) . . . . . . . Class number for PSL(n,q)
+#F  NrConjugacyClassesPSU( <n>, <q> ) . . . . . . . Class number for PSU(n,q)
+#F  NrConjugacyClassesSLIsogeneous( <n>, <q>, <f> ) .  for SL(n,q) isogeneous
+#F  NrConjugacyClassesSUIsogeneous( <n>, <q>, <f> ) .  for SU(n,q) isogeneous
 ##
 ##  <#GAPDoc Label="NrConjugacyClassesGL">
 ##  <ManSection>

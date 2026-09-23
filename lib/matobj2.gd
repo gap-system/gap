@@ -603,7 +603,7 @@ DeclareOperation( "ZeroVector", [ IsInt, IsVecOrMatObj ] );
 #DeclareOperation( "ZeroVector", [ IsInt, IsMatrixOrMatrixObj ] );
 
 
-############################################################################
+#############################################################################
 ##
 #O  StandardBasisVector( <filt>, <R>, <len>, <i> )
 #O  StandardBasisVector( <R>, <len>, <i> )
@@ -904,7 +904,7 @@ DeclareOperation( "ChangedBaseDomain", [ IsVecOrMatObj, IsSemiring ] );
 #DeclareOperation( "ChangedBaseDomain", [ IsMatrixOrMatrixObj, IsSemiring ] );
 
 
-############################################################################
+#############################################################################
 ##
 #O  Randomize( [Rs, ]v )
 #O  Randomize( [Rs, ]M )
@@ -1405,7 +1405,7 @@ DeclareOperation( "Matrix", [ IsList, IsInt ] );
 DeclareOperation( "Matrix", [ IsList ]);
 
 
-############################################################################
+#############################################################################
 ##
 #A  CompatibleVector( <M> )
 ##
@@ -1431,7 +1431,7 @@ DeclareOperation( "Matrix", [ IsList ]);
 DeclareOperation( "CompatibleVector", [ IsMatrixOrMatrixObj ] );
 
 
-############################################################################
+#############################################################################
 ##
 #A  RowsOfMatrix( <M> )
 ##
@@ -1480,7 +1480,7 @@ DeclareGlobalFunction( "DefaultMatrixRepForBaseDomain" );
 ##
 
 
-############################################################################
+#############################################################################
 ##
 #O  <M>[ <pos> ]<v>
 ##
@@ -1504,7 +1504,7 @@ DeclareGlobalFunction( "DefaultMatrixRepForBaseDomain" );
 DeclareOperation( "[]", [ IsRowListMatrix, IsPosInt ] );
 
 
-############################################################################
+#############################################################################
 ##
 #O  <M>[ <pos> ]:= <v>
 ##
@@ -1791,9 +1791,9 @@ DeclareProperty( "IsEmptyMatrix", IsMatrixOrMatrixObj );
 ##  matrix object implementation, but the ``row access'' will force one to
 ##  provide one.)
 
-############################################################################
+#############################################################################
 # In the following sense matrices behave like lists:
-############################################################################
+#############################################################################
 
 DeclareOperation( "[]", [IsMatrixOrMatrixObj,IsPosInt] );  # <mat>, <pos>
 # This is guaranteed to return a vector object that has the property
@@ -1904,11 +1904,11 @@ DeclareOperation( "[]", [ IsMatrixOrMatrixObj, IsPosInt, IsPosInt ] );
 DeclareOperation( "[]:=", [ IsMatrixOrMatrixObj, IsPosInt, IsPosInt, IsObject ] );
 
 
-############################################################################
+#############################################################################
 # Elementary matrix operations
-############################################################################
+#############################################################################
 #
-############################################################################
+#############################################################################
 ##
 ##  <#GAPDoc Label="MultMatrixRow">
 ##  <ManSection>
@@ -1932,7 +1932,7 @@ DeclareOperation( "[]:=", [ IsMatrixOrMatrixObj, IsPosInt, IsPosInt, IsObject ] 
 DeclareOperation( "MultMatrixRowLeft", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsObject ] );
 DeclareSynonym( "MultMatrixRow", MultMatrixRowLeft);
 
-############################################################################
+#############################################################################
 ##
 ##  <#GAPDoc Label="MultMatrixRowRight">
 ##  <ManSection>
@@ -1950,7 +1950,7 @@ DeclareSynonym( "MultMatrixRow", MultMatrixRowLeft);
 ##
 DeclareOperation( "MultMatrixRowRight", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsObject ]);
 
-############################################################################
+#############################################################################
 ##
 ##  <#GAPDoc Label="MultMatrixColumn">
 ##  <ManSection>
@@ -1974,7 +1974,7 @@ DeclareOperation( "MultMatrixRowRight", [ IsMatrixOrMatrixObj and IsMutable, IsI
 DeclareOperation( "MultMatrixColumnRight", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsObject ] );
 DeclareSynonym( "MultMatrixColumn",  MultMatrixColumnRight);
 
-############################################################################
+#############################################################################
 ##
 ##  <#GAPDoc Label="MultMatrixColumnLeft">
 ##  <ManSection>
@@ -1992,7 +1992,7 @@ DeclareSynonym( "MultMatrixColumn",  MultMatrixColumnRight);
 ##
 DeclareOperation( "MultMatrixColumnLeft", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsObject ] );
 
-############################################################################
+#############################################################################
 ##
 ##  <#GAPDoc Label="AddMatrixRows">
 ##  <ManSection>
@@ -2016,7 +2016,7 @@ DeclareOperation( "MultMatrixColumnLeft", [ IsMatrixOrMatrixObj and IsMutable, I
 DeclareOperation( "AddMatrixRowsLeft", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
 DeclareSynonym( "AddMatrixRows", AddMatrixRowsLeft);
 
-############################################################################
+#############################################################################
 ##
 ##  <#GAPDoc Label="AddMatrixRowsRight">
 ##  <ManSection>
@@ -2034,7 +2034,7 @@ DeclareSynonym( "AddMatrixRows", AddMatrixRowsLeft);
 ##
 DeclareOperation( "AddMatrixRowsRight", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
 
-############################################################################
+#############################################################################
 ##
 ##  <#GAPDoc Label="AddMatrixColumns">
 ##  <ManSection>
@@ -2058,7 +2058,7 @@ DeclareOperation( "AddMatrixRowsRight", [ IsMatrixOrMatrixObj and IsMutable, IsI
 DeclareOperation( "AddMatrixColumnsRight", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
 DeclareSynonym( "AddMatrixColumns", AddMatrixColumnsRight);
 
-############################################################################
+#############################################################################
 ##
 ##  <#GAPDoc Label="AddMatrixColumnsLeft">
 ##  <ManSection>
@@ -2076,7 +2076,7 @@ DeclareSynonym( "AddMatrixColumns", AddMatrixColumnsRight);
 ##
 DeclareOperation( "AddMatrixColumnsLeft", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
 
-############################################################################
+#############################################################################
 ##
 ##  <#GAPDoc Label="PositionNonZeroInRow">
 ##  <ManSection>
@@ -2097,7 +2097,7 @@ DeclareOperation( "AddMatrixColumnsLeft", [ IsMatrixOrMatrixObj and IsMutable, I
 DeclareOperation( "PositionNonZeroInRow", [ IsMatrixOrMatrixObj, IsPosInt ] );
 DeclareOperation( "PositionNonZeroInRow", [ IsMatrixOrMatrixObj, IsPosInt, IsInt ] );
 
-############################################################################
+#############################################################################
 ##
 ##  <#GAPDoc Label="SwapMatrixRows">
 ##  <ManSection>
@@ -2114,7 +2114,7 @@ DeclareOperation( "PositionNonZeroInRow", [ IsMatrixOrMatrixObj, IsPosInt, IsInt
 ##
 DeclareOperationKernel( "SwapMatrixRows", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt ], SWAP_MAT_ROWS );
 
-############################################################################
+#############################################################################
 ##
 ##  <#GAPDoc Label="SwapMatrixColumns">
 ##  <ManSection>
@@ -2131,7 +2131,7 @@ DeclareOperationKernel( "SwapMatrixRows", [ IsMatrixOrMatrixObj and IsMutable, I
 ##
 DeclareOperationKernel( "SwapMatrixColumns", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt ], SWAP_MAT_COLS );
 
-############################################################################
+#############################################################################
 ##
 ##  <#GAPDoc Label="AddMatrix">
 ##  <ManSection>
@@ -2168,7 +2168,7 @@ DeclareOperationKernel( "SwapMatrixColumns", [ IsMatrixOrMatrixObj and IsMutable
 DeclareOperation( "AddMatrix", [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj ] );
 DeclareOperation( "AddMatrix", [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj, IsScalar ] );
 
-############################################################################
+#############################################################################
 ##
 ##  <#GAPDoc Label="MultMatrix">
 ##  <ManSection>

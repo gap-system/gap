@@ -1626,14 +1626,14 @@ InstallMethod( Root,
 
 #############################################################################
 ##
-#M  RoundCyc( <cyc> ) . . . . . . . . . . cyclotomic integer near to <cyc>
+#M  RoundCyc( <cyc> ) . . . . . . . . . . .  cyclotomic integer near to <cyc>
 ##
 InstallMethod( RoundCyc, "Integer", true, [ IsInt ], 0,  x->x );
 
 
 #############################################################################
 ##
-#M  RoundCycDown( <cyc> ) . . . . . . . . . . cyclotomic integer near to <cyc>
+#M  RoundCycDown( <cyc> ) . . . . . . . . .  cyclotomic integer near to <cyc>
 ##
 InstallMethod( RoundCycDown, "Integer", true, [ IsInt ], 0,  x->x );
 

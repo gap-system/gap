@@ -43,7 +43,7 @@
 ##  <#/GAPDoc>
 ##
 
-##############################################################################
+#############################################################################
 ##
 #C  IsAlgebraModuleElement( <obj> )
 #C  IsAlgebraModuleElementCollection( <obj> )
@@ -69,7 +69,7 @@ DeclareCategory( "IsAlgebraModuleElement", IsVector );
 DeclareCategoryCollections( "IsAlgebraModuleElement" );
 DeclareCategoryFamily( "IsAlgebraModuleElement" );
 
-##############################################################################
+#############################################################################
 ##
 #C  IsLeftAlgebraModuleElement( <obj> )
 #C  IsLeftAlgebraModuleElementCollection( <obj> )
@@ -89,7 +89,7 @@ DeclareCategoryFamily( "IsAlgebraModuleElement" );
 DeclareCategory( "IsLeftAlgebraModuleElement", IsAlgebraModuleElement );
 DeclareCategoryCollections( "IsLeftAlgebraModuleElement" );
 
-##############################################################################
+#############################################################################
 ##
 #C  IsRightAlgebraModuleElement( <obj> )
 #C  IsRightAlgebraModuleElementCollection( <obj> )
@@ -133,7 +133,7 @@ DeclareCategoryCollections( "IsLeftAlgebraModuleElement" );
 DeclareCategory( "IsRightAlgebraModuleElement", IsAlgebraModuleElement );
 DeclareCategoryCollections( "IsRightAlgebraModuleElement" );
 
-##############################################################################
+#############################################################################
 ##
 #P  IsAlgebraModule( <M> )
 ##
@@ -147,7 +147,7 @@ DeclareCategoryCollections( "IsRightAlgebraModuleElement" );
 DeclareProperty( "IsAlgebraModule", IsLeftModule );
 InstallTrueMethod( IsLeftModule, IsAlgebraModule );
 
-##############################################################################
+#############################################################################
 ##
 #P  IsLeftAlgebraModule( <M> )
 ##
@@ -161,7 +161,7 @@ InstallTrueMethod( IsLeftModule, IsAlgebraModule );
 DeclareProperty( "IsLeftAlgebraModule", IsLeftModule );
 InstallTrueMethod( IsLeftModule, IsLeftAlgebraModule );
 
-##############################################################################
+#############################################################################
 ##
 #P  IsRightAlgebraModule( <M> )
 ##
@@ -174,7 +174,7 @@ InstallTrueMethod( IsLeftModule, IsLeftAlgebraModule );
 ##
 DeclareProperty( "IsRightAlgebraModule", IsLeftModule );
 
-##############################################################################
+#############################################################################
 ##
 #A  LeftActingAlgebra( <V> )
 ##
@@ -208,7 +208,7 @@ DeclareAttribute( "LeftActingAlgebra", IsAlgebraModule );
 ##
 DeclareAttribute( "RightActingAlgebra", IsAlgebraModule );
 
-##############################################################################
+#############################################################################
 ##
 #O  ActingAlgebra( <V> )
 ##
@@ -239,7 +239,7 @@ DeclareAttribute( "RightActingAlgebra", IsAlgebraModule );
 DeclareOperation( "ActingAlgebra", [ IsAlgebraModule ] );
 
 
-##############################################################################
+#############################################################################
 ##
 #A  GeneratorsOfAlgebraModule( <M> )
 ##
@@ -262,7 +262,7 @@ DeclareOperation( "ActingAlgebra", [ IsAlgebraModule ] );
 DeclareAttribute( "GeneratorsOfAlgebraModule", IsAlgebraModule );
 
 
-##############################################################################
+#############################################################################
 ##
 #O  LeftAlgebraModuleByGenerators( <A>, <op>, <gens> )
 ##
@@ -284,7 +284,7 @@ DeclareAttribute( "GeneratorsOfAlgebraModule", IsAlgebraModule );
 DeclareOperation( "LeftAlgebraModuleByGenerators", [ IsAlgebra, IS_FUNCTION,
                                            IsHomogeneousList ]);
 
-##############################################################################
+#############################################################################
 ##
 #O  RightAlgebraModuleByGenerators( <A>, <op>, <gens> )
 ##
@@ -307,7 +307,7 @@ DeclareOperation( "RightAlgebraModuleByGenerators", [ IsAlgebra, IS_FUNCTION,
                                            IsHomogeneousList ]);
 
 
-##############################################################################
+#############################################################################
 ##
 #O  BiAlgebraModuleByGenerators( <A>, <B>, <opl>, <opr>, <gens> )
 ##
@@ -349,7 +349,7 @@ DeclareOperation( "RightAlgebraModuleByGenerators", [ IsAlgebra, IS_FUNCTION,
 DeclareOperation( "BiAlgebraModuleByGenerators", [ IsAlgebra, IsAlgebra,
                        IS_FUNCTION, IS_FUNCTION, IsHomogeneousList ]);
 
-##############################################################################
+#############################################################################
 ##
 #O  LeftAlgebraModule( <A>, <op>, <V> )
 ##
@@ -370,7 +370,7 @@ DeclareOperation( "BiAlgebraModuleByGenerators", [ IsAlgebra, IsAlgebra,
 DeclareOperation( "LeftAlgebraModule", [ IsAlgebra, IS_FUNCTION,
                                            IsVectorSpace ]);
 
-##############################################################################
+#############################################################################
 ##
 #O  RightAlgebraModule( <A>, <op>, <V> )
 ##
@@ -393,7 +393,7 @@ DeclareOperation( "RightAlgebraModule", [ IsAlgebra, IS_FUNCTION,
                                            IsVectorSpace ]);
 
 
-##############################################################################
+#############################################################################
 ##
 #O  BiAlgebraModule( <A>, <B>, <opl>, <opr>, <V> )
 ##
@@ -432,7 +432,7 @@ DeclareOperation( "BiAlgebraModule", [ IsAlgebra, IsAlgebra,
                        IS_FUNCTION, IS_FUNCTION, IsVectorSpace ]);
 
 
-##############################################################################
+#############################################################################
 ##
 #C  IsBasisOfAlgebraModuleElementSpace( <B> )
 ##
@@ -468,7 +468,7 @@ DeclareOperation( "BiAlgebraModule", [ IsAlgebra, IsAlgebra,
 ##
 DeclareCategory( "IsBasisOfAlgebraModuleElementSpace", IsBasis );
 
-##############################################################################
+#############################################################################
 ##
 #O  SubAlgebraModule( <M>, <gens> [,<"basis">] )
 ##
@@ -501,7 +501,7 @@ DeclareCategory( "IsBasisOfAlgebraModuleElementSpace", IsBasis );
 DeclareOperation( "SubAlgebraModule", [ IsAlgebraModule,
                             IsAlgebraModuleElementCollection ] );
 
-##############################################################################
+#############################################################################
 ##
 #O  LeftModuleByHomomorphismToMatAlg( <A>, <hom> )
 ##
@@ -520,7 +520,7 @@ DeclareOperation( "SubAlgebraModule", [ IsAlgebraModule,
 DeclareOperation( "LeftModuleByHomomorphismToMatAlg", [ IsAlgebra,
                                                  IsAlgebraHomomorphism ]);
 
-##############################################################################
+#############################################################################
 ##
 #O  RightModuleByHomomorphismToMatAlg( <A>, <hom> )
 ##
@@ -571,7 +571,7 @@ DeclareOperation( "LeftModuleByHomomorphismToMatAlg", [ IsAlgebra,
 DeclareOperation( "RightModuleByHomomorphismToMatAlg", [ IsAlgebra,
                                                  IsAlgebraHomomorphism ]);
 
-##############################################################################
+#############################################################################
 ##
 #A  AdjointModule( <A> )
 ##
@@ -603,7 +603,7 @@ DeclareOperation( "RightModuleByHomomorphismToMatAlg", [ IsAlgebra,
 ##
 DeclareAttribute( "AdjointModule", IsAlgebra );
 
-##############################################################################
+#############################################################################
 ##
 #A  FaithfulModule( <A> )
 ##
@@ -655,7 +655,7 @@ DeclareAttribute( "AdjointModule", IsAlgebra );
 DeclareAttribute( "FaithfulModule", IsAlgebra );
 
 
-##############################################################################
+#############################################################################
 ##
 #O  ModuleByRestriction( <V>, <sub1>[, <sub2>] )
 ##
@@ -688,7 +688,7 @@ DeclareAttribute( "FaithfulModule", IsAlgebra );
 DeclareOperation( "ModuleByRestriction", [ IsAlgebraModule, IsAlgebra ] );
 
 
-##############################################################################
+#############################################################################
 ##
 #O  NaturalHomomorphismBySubAlgebraModule( <V>, <W> )
 ##
@@ -738,7 +738,7 @@ DeclareOperation( "ModuleByRestriction", [ IsAlgebraModule, IsAlgebra ] );
 DeclareOperation( "NaturalHomomorphismBySubAlgebraModule", [ IsAlgebraModule,
                                                 IsAlgebraModule ] );
 
-##############################################################################
+#############################################################################
 ##
 #O  MatrixOfAction( <B>, <x>[, <side>] )
 ##
@@ -815,7 +815,7 @@ DeclareHandlingByNiceBasis( "IsMonomialElementVectorSpace",
 DeclareOperation( "ConvertToNormalFormMonomialElement",
                                       [ IsMonomialElement ] );
 
-##############################################################################
+#############################################################################
 ##
 #C  IsTensorElement( <obj> )
 ##
@@ -831,7 +831,7 @@ DeclareOperation( "ConvertToNormalFormMonomialElement",
 DeclareCategory( "IsTensorElement", IsMonomialElement );
 DeclareCategoryCollections( "IsTensorElement" );
 
-##############################################################################
+#############################################################################
 ##
 #O  TensorProduct( <list> )
 #O  TensorProduct( <V>, <W>, ... )
@@ -880,7 +880,7 @@ DeclareCategoryCollections( "IsTensorElement" );
 DeclareOperation( "TensorProductOp", [ IsList, IsVectorSpace ] );
 DeclareGlobalFunction( "TensorProduct" );
 
-###############################################################################
+#############################################################################
 ##
 #O  TensorProductOfAlgebraModules( <list> )
 #O  TensorProductOfAlgebraModules( <V>, <W> )
@@ -917,7 +917,7 @@ DeclareGlobalFunction( "TensorProduct" );
 ##
 DeclareOperation( "TensorProductOfAlgebraModules", [ IsList ] );
 
-###############################################################################
+#############################################################################
 ##
 #C  IsWedgeElement( <obj> )
 ##
@@ -934,7 +934,7 @@ DeclareCategory( "IsWedgeElement", IsMonomialElement );
 DeclareCategoryCollections( "IsWedgeElement" );
 
 
-##############################################################################
+#############################################################################
 ##
 #O  ExteriorPower( <V>, <k> )
 ##
@@ -975,7 +975,7 @@ DeclareCategoryCollections( "IsWedgeElement" );
 ##
 DeclareOperation( "ExteriorPower", [ IsLeftModule, IsInt ] );
 
-##############################################################################
+#############################################################################
 ##
 #O  ExteriorPowerOfAlgebraModule( <V>, <k> )
 ##
@@ -1005,7 +1005,7 @@ DeclareOperation( "ExteriorPower", [ IsLeftModule, IsInt ] );
 DeclareOperation( "ExteriorPowerOfAlgebraModule", [ IsAlgebraModule, IsInt ] );
 
 
-##############################################################################
+#############################################################################
 ##
 #C  IsSymmetricPowerElement( <obj> )
 ##
@@ -1022,7 +1022,7 @@ DeclareCategory( "IsSymmetricPowerElement", IsMonomialElement );
 DeclareCategoryCollections( "IsSymmetricPowerElement" );
 
 
-##############################################################################
+#############################################################################
 ##
 #O  SymmetricPower( <V>, <k> )
 ##
@@ -1049,7 +1049,7 @@ DeclareCategoryCollections( "IsSymmetricPowerElement" );
 ##
 DeclareOperation( "SymmetricPower", [ IsLeftModule, IsInt ] );
 
-##############################################################################
+#############################################################################
 ##
 #O  SymmetricPowerOfAlgebraModule( <V>, <k> )
 ##
@@ -1080,7 +1080,7 @@ DeclareOperation( "SymmetricPower", [ IsLeftModule, IsInt ] );
 DeclareOperation( "SymmetricPowerOfAlgebraModule",[ IsAlgebraModule,IsInt ]);
 
 
-##############################################################################
+#############################################################################
 ##
 #C  IsDirectSumElement( <obj> )
 ##
@@ -1097,7 +1097,7 @@ DeclareCategory( "IsDirectSumElement", IsVector );
 DeclareCategoryCollections( "IsDirectSumElement" );
 DeclareCategoryFamily( "IsDirectSumElement" );
 
-##############################################################################
+#############################################################################
 ##
 #O  DirectSumOfAlgebraModules( <list> )
 #O  DirectSumOfAlgebraModules( <V>, <W> )
@@ -1182,7 +1182,7 @@ DeclareHandlingByNiceBasis( "IsSparseVectorSpace",
     "for free left modules of sparse vectors");
 
 
-##############################################################################
+#############################################################################
 ##
 #O  FullSparseRowSpace( <R>, <n> )
 ##
@@ -1212,7 +1212,7 @@ DeclareOperation( "FullSparseRowSpace", [ IsRing, IsInt ] );
 DeclareHandlingByNiceBasis( "IsDirectSumElementsSpace",
     "for free left modules of direct-sum-elements" );
 
-###############################################################################
+#############################################################################
 ##
 #O  TranslatorSubalgebra( <M>, <U>, <W> )
 ##

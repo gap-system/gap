@@ -1548,7 +1548,7 @@ DeclareOperationKernel( "*", [ IsExtRElement, IsExtLElement ], PROD );
 #A  OneImmutable( <obj> )  multiplicative neutral of an element/domain/family
 #A  One( <obj> )
 #A  Identity( <obj> )
-#O  OneMutable( <obj> )  . . . . . . . .  multiplicative neutral of an element
+#O  OneMutable( <obj> ) . . . . . . . .  multiplicative neutral of an element
 #O  OneOp( <obj> )
 #O  OneSameMutability( <obj> )
 ##

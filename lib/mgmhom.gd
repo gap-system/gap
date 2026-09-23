@@ -63,7 +63,7 @@ DeclareGlobalFunction( "MagmaHomomorphismByFunctionNC");
 DeclareGlobalFunction( "MagmaIsomorphismByFunctionsNC");
 
 
-############################################################################
+#############################################################################
 ##
 #O  NaturalHomomorphismByGenerators( <f>, <s> )
 ##

@@ -690,7 +690,7 @@ DeclareGlobalFunction("RemoveRelator");
 DeclareGlobalFunction("SimplifiedFpGroup");
 
 
-############################################################################
+#############################################################################
 ##
 #F  TzCheckRecord
 ##
@@ -888,7 +888,7 @@ DeclareGlobalFunction("TzEliminateGens");
 DeclareGlobalFunction("TzFindCyclicJoins");
 
 
-############################################################################
+#############################################################################
 ##
 #F  TzGeneratorExponents(<P>)
 ##
@@ -930,7 +930,7 @@ DeclareGlobalFunction("TzGeneratorExponents");
 ##
 DeclareGlobalFunction("TzGo");
 
-############################################################################
+#############################################################################
 ##
 #F  SimplifyPresentation(<P>)
 ##
@@ -1001,7 +1001,7 @@ DeclareGlobalFunction("TzGo");
 SimplifyPresentation := TzGo;
 
 
-############################################################################
+#############################################################################
 ##
 #F  TzGoGo(<P>)
 ##
@@ -1088,7 +1088,7 @@ SimplifyPresentation := TzGo;
 ##
 DeclareGlobalFunction("TzGoGo");
 
-############################################################################
+#############################################################################
 ##
 #F  TzGoElim(<P>,<len>)
 ##
@@ -1267,7 +1267,7 @@ DeclareGlobalFunction("TzPreImagesNewGens");
 DeclareGlobalFunction("TzMostFrequentPairs");
 
 
-############################################################################
+#############################################################################
 ##
 #F  TzNewGenerator(<P>)
 ##
@@ -1626,7 +1626,7 @@ DeclareGlobalFunction("TzPrintOptions");
 DeclareGlobalFunction("TzPrintPairs");
 
 
-############################################################################
+#############################################################################
 ##
 #F  TzPrintPresentation(<P>)
 ##
@@ -1647,7 +1647,7 @@ DeclareGlobalFunction("TzPrintPairs");
 DeclareGlobalFunction("TzPrintPresentation");
 
 
-############################################################################
+#############################################################################
 ##
 #F  TzPrintRelators(<P>[, <list>])
 ##
@@ -1702,7 +1702,7 @@ DeclareGlobalFunction("TzPrintRelators");
 DeclareGlobalFunction("TzPrintStatus");
 
 
-############################################################################
+#############################################################################
 ##
 #f  TzRecoverFromFile
 ##
@@ -1710,7 +1710,7 @@ DeclareGlobalFunction("TzPrintStatus");
 #T up to now no function is installed
 
 
-############################################################################
+#############################################################################
 ##
 #F  TzRelator( <P>, <word> )
 ##
@@ -1727,7 +1727,7 @@ DeclareGlobalFunction("TzPrintStatus");
 DeclareGlobalFunction("TzRelator");
 
 
-############################################################################
+#############################################################################
 ##
 #F  TzRemoveGenerators(<P>)
 ##
@@ -1745,7 +1745,7 @@ DeclareGlobalFunction("TzRelator");
 DeclareGlobalFunction("TzRemoveGenerators");
 
 
-############################################################################
+#############################################################################
 ##
 #F  TzSearch(<P>)
 ##
@@ -1826,7 +1826,7 @@ DeclareGlobalFunction("TzRemoveGenerators");
 DeclareGlobalFunction("TzSearch");
 
 
-############################################################################
+#############################################################################
 ##
 #F  TzSearchEqual(<P>)
 ##
@@ -1862,7 +1862,7 @@ DeclareGlobalFunction("TzSearch");
 DeclareGlobalFunction("TzSearchEqual");
 
 
-############################################################################
+#############################################################################
 ##
 #F  TzSort(<P>)
 ##
@@ -2144,7 +2144,7 @@ DeclareGlobalFunction("TzSort");
 DeclareGlobalFunction("TzSubstitute");
 
 
-############################################################################
+#############################################################################
 ##
 #F  TzSubstituteCyclicJoins(<P>)
 ##

@@ -1085,7 +1085,7 @@ InstallMethod( PrimitiveRoot,
 
 #############################################################################
 ##
-#M  EuclideanDegree( Integers, <n> )  . . . . . . . . . . . . . absolute value
+#M  EuclideanDegree( Integers, <n> )  . . . . . . . . . . . .  absolute value
 ##
 InstallMethod( EuclideanDegree,
     "for a division ring and a ring element",
@@ -1315,8 +1315,8 @@ InstallMethod( ImagesSet,
 
 #############################################################################
 ##
-#M  PreImagesElmNC( <hom>, <elm> )  . . . . . . . . . . . .  preimage of an elm
-#M  PreImagesElm( <hom>, <elm> )  . . . . . . . . . . . . .  preimage of an elm
+#M  PreImagesElmNC( <hom>, <elm> ) . . . . . . . . . . . . preimage of an elm
+#M  PreImagesElm( <hom>, <elm> ) . . . . . . . . . . . . . preimage of an elm
 ##
 InstallMethod( PreImagesElmNC,
     "for field homomorphism and element",

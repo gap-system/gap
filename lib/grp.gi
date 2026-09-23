@@ -381,7 +381,7 @@ InstallMethod( IsPGroup,
 
 #############################################################################
 ##
-#M  IsPowerfulPGroup( <G> ) . . . . . . . . . . is a group a powerful p-group ?
+#M  IsPowerfulPGroup( <G> ) . . . . . . . . . is a group a powerful p-group ?
 ##
 InstallMethod( IsPowerfulPGroup,
     "use characterisation of powerful p-groups based on rank ",
@@ -1104,7 +1104,7 @@ InstallMethod( CommutatorFactorGroup,
     end );
 
 
-############################################################################
+#############################################################################
 ##
 #M MaximalAbelianQuotient(<group>)
 ##
@@ -1247,9 +1247,9 @@ end);
 ##
 
 
-##############################################################################
+#############################################################################
 ##
-#M  ChiefLength( <G> ) . . . . . . . . . . . . . . . . chief length of a group
+#M  ChiefLength( <G> ) . . . . . . . . . . . . . . .  chief length of a group
 ##
 ##  For small groups, computing the 'IsSupersolvableGroup' flag is more
 ##  expensive than computing a chief series,
@@ -1271,9 +1271,9 @@ InstallMethod( ChiefLength,
     end );
 
 
-##############################################################################
+#############################################################################
 ##
-#M  DerivedLength( <G> ) . . . . . . . . . . . . . . derived length of a group
+#M  DerivedLength( <G> ) . . . . . . . . . . . . .  derived length of a group
 ##
 InstallMethod( DerivedLength,
     "generic method for groups",
@@ -1281,9 +1281,9 @@ InstallMethod( DerivedLength,
     G -> Length( DerivedSeriesOfGroup( G ) ) - 1 );
 
 
-##############################################################################
+#############################################################################
 ##
-#M  HirschLength( <G> ) . . . . .hirsch length of a polycyclic-by-finite group
+#M  HirschLength( <G> ) . . . . Hirsch length of a polycyclic-by-finite group
 ##
 InstallMethod( HirschLength,
     "generic method for finite groups",
@@ -1394,7 +1394,7 @@ InstallMethod( DerivedSubgroup,
     TrivialSubgroup );
 
 
-##########################################################################
+#############################################################################
 ##
 #M  DimensionsLoewyFactors( <G> )  . . . . . . dimension of the Loewy factors
 ##
@@ -3685,7 +3685,7 @@ InstallMethod( SylowSubgroupOp,
     end );
 
 
-############################################################################
+#############################################################################
 ##
 #M  HallSubgroupOp (<grp>, <pi>)
 ##
@@ -3866,7 +3866,7 @@ InstallGlobalFunction( NormalHallSubgroupsFromSylows, function( arg )
   fi;
 end);
 
-############################################################################
+#############################################################################
 ##
 #M  NormalHallSubgroups( <G> )
 ##
@@ -3879,7 +3879,7 @@ function( G )
 end);
 
 
-############################################################################
+#############################################################################
 ##
 #M  SylowComplementOp (<grp>, <p>)
 ##
@@ -5385,7 +5385,7 @@ local nrm;        # normal subgroups of <G>,result
 end);
 
 
-##############################################################################
+#############################################################################
 ##
 #F  MaximalNormalSubgroups(<G>)
 ##
@@ -5458,7 +5458,7 @@ InstallMethod( MaximalNormalSubgroups, "general method selection",
 end);
 
 
-##############################################################################
+#############################################################################
 ##
 #F  MinimalNormalSubgroups(<G>)
 ##

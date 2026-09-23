@@ -446,7 +446,7 @@ end );
 
 
 
-###########################################################################
+#############################################################################
 ##
 #F  Calcrepsn(<n>, <avec>, <pr>, <max>)
 ##
@@ -666,7 +666,7 @@ end );
 
 #############################################################################
 ##
-#F  Calcreps2( <pr> ) . . . . . . . . . . compute the Deep-Thought-polynomials
+#F  Calcreps2( <pr> ) . . . . . . . . .  compute the Deep-Thought-polynomials
 ##
 ##  'Calcreps2' returns the polynomials which have to be evaluated when
 ##  computing word*g_n^(y_n) for all <dtbound> <= n <= m where m is the

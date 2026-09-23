@@ -12,13 +12,13 @@
 ##
 
 
-###########################################################################
+#############################################################################
 ##
 #R  IsZeroCochainRep( <c> )
 ##
 DeclareRepresentation( "IsZeroCochainRep", IsPackedElementDefaultRep, [1] );
 
-##############################################################################
+#############################################################################
 ##
 #M  Cochain( <V>, <s>, <list> )
 ##
@@ -78,7 +78,7 @@ InstallMethod( Cochain,
 
 end );
 
-##############################################################################
+#############################################################################
 ##
 #M  ExtRepOfObj( <coch> ) . . . . . . . . . . . . . . . for a cochain
 ##
@@ -88,7 +88,7 @@ InstallMethod( ExtRepOfObj,
         c -> c![1] );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  PrintObj( <coch> ) . . . . . . . . . . . . . . . for cochains
 ##
@@ -102,10 +102,10 @@ InstallMethod( PrintObj,
 end );
 
 
-##############################################################################
+#############################################################################
 ##
-#M  CochainSpace( <V>, <s> ) . . . . . . . for a module over a Lie algebra and
-##                                         an integer
+#M  CochainSpace( <V>, <s> ) . . . . . .  for a module over a Lie algebra and
+##                                        an integer
 ##
 ##
 InstallMethod( CochainSpace,
@@ -157,15 +157,15 @@ end );
 
 
 
-##############################################################################
+#############################################################################
 ##
-#M  \+( <c1>, <c2> ) . . . . . . . . . . . . . . . . . . . for two cochains
-#M  AdditiveInverseOp( <c> ) . . . . .  . . . . . . . . . . . . . . . . for a cochain
-#M  \*( <scal>, <c> ) . . . . . . . . . . . . . . for a scalar and a cochain
-#M  \*( <c>, <scal> ) . . . . . . . . . . . . . . for a chain and a scalar
-#M  \<( <c1>, <c2> ) . . . . . . . . . . . . . . . . . . . for two cochains
-#M  \=( <c1>, <c2> ) . . . . . . . . . . . . . . . . . . . for two cochains
-#M  ZeroOp( <c> ) . . . . . . . . . . . . . . . . . . . .  for a cochain
+#M  \+( <c1>, <c2> ) . . . . . . . . . . . . . . . . . . . . for two cochains
+#M  AdditiveInverseOp( <c> ) . . . . .  . . . . . . . . . . . . for a cochain
+#M  \*( <scal>, <c> ) . . . . . . . . . . . . . .  for a scalar and a cochain
+#M  \*( <c>, <scal> ) . . . . . . . . . . . . . . .  for a chain and a scalar
+#M  \<( <c1>, <c2> ) . . . . . . . . . . . . . . . . . . . . for two cochains
+#M  \=( <c1>, <c2> ) . . . . . . . . . . . . . . . . . . . . for two cochains
+#M  ZeroOp( <c> ) . . . . . . . . . . . . . . . . . . . . . . . for a cochain
 ##
 InstallMethod( \+,
     "for two cochains",
@@ -351,9 +351,9 @@ end );
 
 #############################################################################
 ##
-#M  NiceFreeLeftModuleInfo( <C> ) . . . . . . . . . for a module of cochains
-#M  NiceVector ( <C>, <c> ) . . . . .for a module of cochains and a cochain
-#M  UglyVector( <C>, <v> ) . . . . . for a module of cochains and a row vector
+#M  NiceFreeLeftModuleInfo( <C> ) . . . . . . . . .  for a module of cochains
+#M  NiceVector ( <C>, <c> ) . . . . .  for a module of cochains and a cochain
+#M  UglyVector( <C>, <v> ) . . . .  for a module of cochains and a row vector
 ##
 InstallHandlingByNiceBasis( "IsCochainsSpace", rec(
     detect := function( R, gens, V, zero )
@@ -446,9 +446,9 @@ InstallHandlingByNiceBasis( "IsCochainsSpace", rec(
       end ) );
 
 
-##############################################################################
+#############################################################################
 ##
-#F   ValueCochain( <c>, <y1>, ... ,<ys> )
+#F  ValueCochain( <c>, <y1>, ... ,<ys> )
 ##
 ##
 InstallGlobalFunction( ValueCochain,
@@ -615,9 +615,9 @@ InstallGlobalFunction( LieCoboundaryOperator,
 end );
 
 
-##############################################################################
+#############################################################################
 ##
-#M  Coboundaries( <V>, <s> ) . . . . . . . . . for alg module and integer
+#M  Coboundaries( <V>, <s> ) . . . . . . . . . . . for alg module and integer
 ##
 ##
 InstallMethod( Coboundaries,
@@ -681,7 +681,7 @@ InstallMethod( Cocycles,
 
 end );
 
-############################################################################
+#############################################################################
 ##
 #M  WeylGroup( <R> ) . . . . . . . . . . . . . . . . . . . for a root system
 ##
@@ -751,7 +751,7 @@ function( SC, i, w )
 
 end );
 
-############################################################################
+#############################################################################
 ##
 #M  LongestWeylWordPerm( <W> ) . . . . . . . . . . . . . . . for a Weyl group
 ##
@@ -805,7 +805,7 @@ InstallMethod( ConjugateDominantWeight,
 
 end);
 
-###########################################################################
+#############################################################################
 ##
 #M  ConjugateDominantWeightWithWord( <W>, <wt> )
 ##
@@ -850,14 +850,14 @@ end);
 ##  midLen with the longest Weyl element...
 ##
 
-############################################################################
+#############################################################################
 ##
 #M  IsDoneIterator( <it> ) . . . . . . . . . . . . for Weyl orbit iterator
 ##
 BindGlobal( "IsDoneIterator_WeylOrbit", it -> it!.isDone );
 
 
-############################################################################
+#############################################################################
 ##
 #M  NextIterator( <it> ) . . . . . . . . . . . . for a Weyl orbit iterator
 ##
@@ -1262,7 +1262,7 @@ InstallOtherMethod( DominantCharacter,
 end );
 
 
-###############################################################################
+#############################################################################
 ##
 #M  DecomposeTensorProduct( <L>, <w1>, <w2> )
 ##
@@ -1324,7 +1324,7 @@ InstallMethod( DecomposeTensorProduct,
 
 end );
 
-###############################################################################
+#############################################################################
 ##
 #M  DimensionOfHighestWeightModule( <L>, <w> )
 ##
@@ -1359,7 +1359,7 @@ end );
 
 
 
-############################################################################
+#############################################################################
 ##
 #M  ObjByExtRep( <fam>, <list> )
 #M  ExtRepOfObj( <obj> )
@@ -1382,7 +1382,7 @@ InstallMethod( ExtRepOfObj,
 
 end );
 
-###########################################################################
+#############################################################################
 ##
 #M  PrintObj( <m> ) . . . . . . . . . . . . . . . . for an UEALattice element
 ##
@@ -1439,12 +1439,12 @@ end );
 
 #############################################################################
 ##
-#M  OneOp( <m> ) . . . . . . . . . . . . . . . . for a UEALattice element
-#M  ZeroOp( <m> ) . . . . . . . . . . . . . . .  for a UEALattice element
-#M  \<( <m1>, <m2> ) . . . . . . . . . . . . . . for two UEALattice elements
-#M  \=( <m1>, <m2> ) . . . . . . . . . . . . . . for two UEALattice elements
-#M  \+( <m1>, <m2> ) . . . . . . . . . . . . . . for two UEALattice elements
-#M  \AdditiveInverseOp( <m> )     . . . . . . . . . . . . . . for a UEALattice element
+#M  OneOp( <m> ) . . . . . . . . . . . . . . . . . . for a UEALattice element
+#M  ZeroOp( <m> ) . . . . . . . . . . . . . . . . .  for a UEALattice element
+#M  \<( <m1>, <m2> ) . . . . . . . . . . . . . .  for two UEALattice elements
+#M  \=( <m1>, <m2> ) . . . . . . . . . . . . . .  for two UEALattice elements
+#M  \+( <m1>, <m2> ) . . . . . . . . . . . . . .  for two UEALattice elements
+#M  \AdditiveInverseOp( <m> )     . . . . . . . . .  for a UEALattice element
 ##
 ##
 InstallMethod( OneOp,
@@ -2208,7 +2208,7 @@ InstallMethod( \*,
     return ObjByExtRep( FamilyObj(x), lst );
 end );
 
-############################################################################
+#############################################################################
 ##
 ##
 ##
@@ -2504,7 +2504,7 @@ InstallMethod(Display,
 
 
 
-############################################################################
+#############################################################################
 ##
 #M  LatticeGeneratorsInUEA( <L> )
 ##
@@ -2714,7 +2714,7 @@ InstallGlobalFunction( LeftReduceUEALatticeElement,
 end );
 
 
-############################################################################
+#############################################################################
 ##
 #M  ObjByExtRep( <fam>, <list> ) . . . . . . for a WeightRepFamily and a list
 #M  ExtRepOfObj( <wte> ) . . . . . . . . . . for a weight rep element
@@ -2767,13 +2767,13 @@ end );
 
 #############################################################################
 ##
-#M  \+( <u>, <v> ) . . . . . . . . . . . . . . for two weight rep elements
-#M  AdditiveInverseOp( <u> ) . . . . . . . . . . . .  . . . for a weight rep element
-#M  \*( <scal>, <u> ) . . . . . . . . . . . .for a scalar and a weight rep elt
-#M  \*( <u>, <scal> ) . . . . . . . . . . . .for a weight rep elt and a scalar
-#M  ZeroOp( <u> ) . . . . . . . . . . . . .  for a weight rep element
-#M  \=( <u>, <v> ) . . . . . . . . . . . . . for two weight rep elements
-#M  \<( <u>, <v> ) . . . . . . . . . . . . . for two weight rep elements
+#M  \+( <u>, <v> ) . . . . . . . . . . . . . . .  for two weight rep elements
+#M  AdditiveInverseOp( <u> ) . . . . . . . . . . . . for a weight rep element
+#M  \*( <scal>, <u> ) . . . . . . . . . . . for a scalar and a weight rep elt
+#M  \*( <u>, <scal> ) . . . . . . . . . . . for a weight rep elt and a scalar
+#M  ZeroOp( <u> ) . . . . . . . . . . . . . . . . .  for a weight rep element
+#M  \=( <u>, <v> ) . . . . . . . . . . . . . . .  for two weight rep elements
+#M  \<( <u>, <v> ) . . . . . . . . . . . . . . .  for two weight rep elements
 ##
 InstallMethod(\+,
         "for weight rep elements",
@@ -3122,7 +3122,7 @@ BindGlobal( "TriangulizeWeightRepElementList", function( ww )
     return rec( echelonbas:= ww, heads:= heads, basechange:= basechange );
 end );
 
-##############################################################################
+#############################################################################
 ##
 #M  Basis( <V>, <vecs> )
 #M  BasisNC( <V>, <vecs> )
@@ -3194,7 +3194,7 @@ InstallMethod( Basis,
 end );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  Coefficients( <B>, <v> ). . . . . . for basis of a space of weight rep
 ##                                      elements and vector
@@ -3233,7 +3233,7 @@ end );
 
 
 
-##############################################################################
+#############################################################################
 ##
 #M  HighestWeightModule( <L>, <hw> ) for a Lie algebra and a dominant weight.
 ##

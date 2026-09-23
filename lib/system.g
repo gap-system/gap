@@ -258,7 +258,7 @@ BIND_GLOBAL( "InstallAndCallPostRestore", function( func )
 end );
 
 
-#########################################################################
+#############################################################################
 # For backwards compatibility, we make the canonical version of an option
 # its short version if it exists.
 #

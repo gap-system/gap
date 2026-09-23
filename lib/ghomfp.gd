@@ -9,7 +9,7 @@
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 
-############################################################################
+#############################################################################
 ##
 #R  IsFromFpGroupGeneralMapping(<map>)
 #R  IsFromFpGroupHomomorphism(<map>)
@@ -30,7 +30,7 @@ DeclareCategory( "IsFromFpGroupGeneralMapping", IsGroupGeneralMapping
 DeclareSynonym("IsFromFpGroupHomomorphism",
   IsFromFpGroupGeneralMapping and IsMapping);
 
-############################################################################
+#############################################################################
 ##
 #R  IsFromFpGroupGeneralMappingByImages(<map>)
 #R  IsFromFpGroupHomomorphismByImages(<map>)
@@ -54,7 +54,7 @@ DeclareRepresentation( "IsFromFpGroupGeneralMappingByImages",
 DeclareSynonym("IsFromFpGroupHomomorphismByImages",
   IsFromFpGroupGeneralMappingByImages and IsMapping);
 
-############################################################################
+#############################################################################
 ##
 #R  IsFromFpGroupStdGensGeneralMappingByImages(<map>)
 #R  IsFromFpGroupStdGensHomomorphismByImages(<map>)
@@ -79,7 +79,7 @@ DeclareSynonym("IsFromFpGroupStdGensHomomorphismByImages",
   IsFromFpGroupStdGensGeneralMappingByImages and IsMapping);
 
 
-############################################################################
+#############################################################################
 ##
 #R  IsToFpGroupGeneralMappingByImages(<map>)
 #R  IsToFpGroupHomomorphismByImages(<map>)
@@ -98,7 +98,7 @@ DeclareRepresentation( "IsToFpGroupGeneralMappingByImages",
 DeclareSynonym("IsToFpGroupHomomorphismByImages",
   IsToFpGroupGeneralMappingByImages and IsMapping);
 
-############################################################################
+#############################################################################
 ##
 #P  IsWordDecompHomomorphism(<map>)
 ##

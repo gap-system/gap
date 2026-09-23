@@ -291,7 +291,7 @@ DeclareAttribute("DClassOfHClass", IsGreensHClass);
 DeclareAttribute("DClassOfLClass", IsGreensLClass);
 DeclareAttribute("DClassOfRClass", IsGreensRClass);
 
-############################################################################
+#############################################################################
 ##
 #A  GroupHClassOfGreensDClass( <Dclass> )
 ##

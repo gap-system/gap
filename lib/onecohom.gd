@@ -410,7 +410,7 @@ DeclareGlobalFunction("OCSmallEquationVector");
 
 #############################################################################
 ##
-#O  OCAddComplement( <ocr>, <ocr.group>, <K> ) . . . . . . . . . . . . . local
+#O  OCAddComplement( <ocr>, <ocr.group>, <K> ) . . . . . . . . . . . . .local
 ##
 ##  <ManSection>
 ##  <Oper Name="OCAddComplement" Arg='ocr, ocr.group, K'/>

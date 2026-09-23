@@ -35,9 +35,9 @@ InstallMethod( CompatibleVectorFilter, "zmodnz",
   [ IsZmodnZMatrixRep ],
   M -> IsZmodnZVectorRep );
 
-############################################################################
+#############################################################################
 # Vectors
-############################################################################
+#############################################################################
 
 InstallTagBasedMethod( NewVector,
   IsZmodnZVectorRep,
@@ -153,9 +153,9 @@ InstallMethod( PostMakeImmutable, "for a zmodnz vector", [ IsZmodnZVectorRep ],
     MakeImmutable( v![ELSPOS] );
   end );
 
-############################################################################
+#############################################################################
 # Representation preserving constructors:
-############################################################################
+#############################################################################
 
 # not needed according to MH
 # InstallMethod( ZeroVector, "for an integer and a zmodnz vector",
@@ -205,9 +205,9 @@ InstallMethod( Vector, "for a list and a zmodnz vector",
   end );
 
 
-############################################################################
+#############################################################################
 # A selection of list operations:
-############################################################################
+#############################################################################
 
 InstallMethod( \[\], "for a zmodnz vector and a positive integer",
   [ IsZmodnZVectorRep, IsPosInt ],
@@ -270,9 +270,9 @@ local fam;
   return List([1..Length(v![ELSPOS])],x->ZmodnZObj(fam,v![ELSPOS][x]));
 end );
 
-############################################################################
+#############################################################################
 # Arithmetical operations:
-############################################################################
+#############################################################################
 
 InstallMethod( \+, "for two zmodnz vectors",IsIdenticalObj,
   [ IsZmodnZVectorRep, IsZmodnZVectorRep ],
@@ -602,9 +602,9 @@ function( l1, l2 )
   return PRODUCT_COEFFS_GENERIC_LISTS(l1,Length(l1),l2,Length(l2));
 end);
 
-############################################################################
+#############################################################################
 # Matrices
-############################################################################
+#############################################################################
 
 InstallTagBasedMethod( NewMatrix,
   IsZmodnZMatrixRep,
@@ -699,9 +699,9 @@ InstallMethod( NumberColumns, "for a zmodnz matrix",
   M -> M![RLPOS] );
 
 
-############################################################################
+#############################################################################
 # Representation preserving constructors:
-############################################################################
+#############################################################################
 
 # redundant according to MH
 # InstallMethod( ZeroMatrix, "for two integers and a zmodnz matrix",
@@ -767,9 +767,9 @@ InstallMethod( Matrix, "for a list and a zmodnz matrix",
     return res;
   end );
 
-############################################################################
+#############################################################################
 # Printing and viewing methods:
-############################################################################
+#############################################################################
 
 InstallMethod( ViewObj, "for a zmodnz matrix", [ IsZmodnZMatrixRep ],
   function( m )
@@ -834,9 +834,9 @@ InstallMethod( String, "for zmodnz matrix", [ IsZmodnZMatrixRep ],
   end );
 
 
-############################################################################
+#############################################################################
 # A selection of list operations:
-############################################################################
+#############################################################################
 
 InstallOtherMethod( \[\], "for a zmodnz matrix and a positive integer",
 #T Once the declaration of '\[\]' for 'IsMatrixObj' disappears,
@@ -1025,9 +1025,9 @@ InstallMethod( SetMatElm, "for a zmodnz matrix, two positions, and an object",
   end );
 
 
-############################################################################
+#############################################################################
 # Arithmetical operations:
-############################################################################
+#############################################################################
 
 InstallMethod( \+, "for two zmodnz matrices",
   [ IsZmodnZMatrixRep, IsZmodnZMatrixRep ],

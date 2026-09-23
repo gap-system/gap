@@ -42,7 +42,7 @@ Obj Elm0AList(Obj list, Int pos);
 Obj LengthAList(Obj list);
 
 
-/*****************************************************************************
+/****************************************************************************
 **
 *F  CompareAndSwapObj(<addr>, <old>, <new_>)
 **
@@ -66,7 +66,7 @@ EXPORT_INLINE int CompareAndSwapObj(Obj *addr, Obj old, Obj new_) {
 #endif
 }
 
-/*****************************************************************************
+/****************************************************************************
 **
 *F  ATOMIC_SET_ELM_PLIST(<list>, <index>, <value>)
 *F  ATOMIC_SET_ELM_PLIST_ONCE(<list>, <index>, <value>)

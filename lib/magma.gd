@@ -764,7 +764,7 @@ InParentFOA( "Centralizer", IsMagma, IsObject, DeclareAttribute );
 DeclareOperation( "SquareRoots", [ IsMagma, IsMultiplicativeElement ] );
 
 
-################################################################################
+#############################################################################
 ##
 DeclareGlobalFunction("FreeXArgumentProcessor");
 

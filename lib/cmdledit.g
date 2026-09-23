@@ -78,7 +78,7 @@ when searching backwards in history."
 
 
 if GAPInfo.CommandLineOptions.E then
-############################################################################
+#############################################################################
 ##       readline interface functions
 GAPInfo.UseReadline := true;
 
@@ -711,7 +711,7 @@ GAPInfo.CommandLineEditFunctions.Functions.(INT_CHAR('R') mod 32) :=
                    GAPInfo.CommandLineEditFunctions.Functions.HistorySubstring;
 BindKeysToGAPHandler("\022");
 
-############################################################################
+#############################################################################
 ##
 #F  SaveCommandLineHistory( [<fname>], [append] )
 #F  ReadCommandLineHistory( [<fname>] )
