@@ -1,4 +1,4 @@
-#@local e, v, v2, w, M, z, rows, a, b, c, d, p, ev, n, ai, inv, zm, zs, N, T, R
+#@local e, v, v2, w, M, z, rows, a, b, c, d, p, ev, n, ai, inv, zm, zs, N, T, R, sem
 gap> START_TEST( "matobjgeneric.tst" );
 
 #
@@ -460,6 +460,37 @@ gap> IsCyclotomicCollColl( M );
 false
 gap> IsFFECollColl( M );
 true
+
+#
+# echelonization, which works row by row, without row access
+#
+gap> M:= Matrix( IsGenericMatrixRep, GF(3),
+>                Z(3)^0 * [ [ 1, 2, 0 ], [ 2, 1, 0 ], [ 0, 0, 1 ] ] );;
+gap> RankMat( M );
+2
+gap> SemiEchelonMat( M ).heads;
+[ 1, 0, 2 ]
+gap> Unpack( NullspaceMat( M ) );
+[ [ Z(3)^0, Z(3)^0, 0*Z(3) ] ]
+gap> sem:= SemiEchelonMatTransformation( M );;
+gap> List( sem.coeffs, c -> c * M ) = sem.vectors;
+true
+gap> ForAll( sem.relations, r -> IsZero( r * M ) );
+true
+
+#
+# in-place triangulization and Zassenhaus' algorithm
+#
+gap> Unpack( TriangulizedMat( M ) );
+[ [ Z(3)^0, Z(3), 0*Z(3) ], [ 0*Z(3), 0*Z(3), Z(3)^0 ], 
+  [ 0*Z(3), 0*Z(3), 0*Z(3) ] ]
+gap> N:= MutableCopyMatrix( M );;  TriangulizeMat( N );  Unpack( N );
+[ [ Z(3)^0, Z(3), 0*Z(3) ], [ 0*Z(3), 0*Z(3), Z(3)^0 ], 
+  [ 0*Z(3), 0*Z(3), 0*Z(3) ] ]
+gap> N:= Matrix( IsGenericMatrixRep, GF(3), Z(3)^0 * [ [ 1, 1, 0 ], [ 0, 0, 1 ] ] );;
+gap> List( SumIntersectionMat( M, N ), l -> List( l, Unpack ) );
+[ [ [ Z(3)^0, Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0, 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), Z(3)^0 ] ], [ [ 0*Z(3), 0*Z(3), Z(3)^0 ] ] ]
 
 #
 # ordering, which sets of generic matrices rely on

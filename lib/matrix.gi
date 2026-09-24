@@ -1313,6 +1313,71 @@ InstallMethod( IsOne,
 
 #############################################################################
 ##
+#F  SEMIECHELON_MATOBJ_DESTRUCTIVE( <mat> )
+##
+##  brings the mutable matrix object <mat> into semi-echelon form in place,
+##  using row operations rather than row objects.  Returns 'fail' if a pivot
+##  is not invertible, otherwise a record with the component 'heads' as for
+##  'SemiEchelonMat' and the component 'rows', the positions in <mat> of the
+##  basis vectors; all other rows of <mat> are zero.
+##
+BindGlobal( "SEMIECHELON_MATOBJ_DESTRUCTIVE", function( mat )
+    local zero, ncols, heads, nzheads, rows, i, j, x, inv;
+
+    zero:= ZeroOfBaseDomain( mat );
+    ncols:= NrCols( mat );
+    heads:= ListWithIdenticalEntries( ncols, 0 );
+    nzheads:= [];
+    rows:= [];
+
+    for i in [ 1 .. NrRows( mat ) ] do
+
+      # Reduce the row with the known basis vectors.
+      for j in [ 1 .. Length( nzheads ) ] do
+        x:= mat[ i, nzheads[j] ];
+        if x <> zero then
+          AddMatrixRowsLeft( mat, i, rows[j], -x );
+        fi;
+      od;
+
+      j:= PositionNonZeroInRow( mat, i );
+      if j <= ncols then
+
+        # We found a new basis vector.
+        inv:= Inverse( mat[i,j] );
+        if inv = fail then
+          return fail;
+        fi;
+        MultMatrixRowLeft( mat, i, inv );
+        Add( rows, i );
+        Add( nzheads, j );
+        heads[j]:= Length( rows );
+
+      fi;
+
+    od;
+
+    return rec( heads:= heads, rows:= rows );
+end );
+
+
+#############################################################################
+##
+#F  ROWS_OF_MATOBJ( <M>, <pos> )
+##
+##  returns the rows of the matrix object <M> at the positions in <pos>,
+##  as a list of vectors.
+##
+BindGlobal( "ROWS_OF_MATOBJ", function( M, pos )
+    if IsRowListMatrix( M ) then
+      return List( pos, i -> M[i] );
+    fi;
+    return RowsOfMatrix( ExtractSubMatrix( M, pos, [ 1 .. NrCols( M ) ] ) );
+end );
+
+
+#############################################################################
+##
 #M  BaseMat( <mat> )  . . . . . . . . . .  base for the row space of a matrix
 ##
 InstallMethod( BaseMatDestructive,
@@ -2380,7 +2445,8 @@ InstallOtherMethod( TriangulizedNullspaceMatDestructive,
     if IsPlistRep(ns) and Length(ns)>0
       # filter for vector objects, not compressed FF vectors
       and ForAll(ns,x->IsVectorObj(x) and not IsDataObjectRep(x)) then
-      ns:=Matrix(BaseDomain(mat),ns);
+      # keep the representation of <mat>
+      ns:=Matrix(ns,Length(ns[1]),mat);
     fi;
     TriangulizeMat(ns);
     return ns;
@@ -2632,6 +2698,23 @@ InstallOtherMethod( SemiEchelonMatDestructive,
     mat -> SemiEchelonRowsDestructive( mat, NrRows( mat ), NrCols( mat ),
                ZeroOfBaseDomain( mat ) ) );
 
+InstallOtherMethod( SemiEchelonMatDestructive,
+    "for a mutable matrix object, using row operations",
+    [ IsMatrixObj and IsMutable ],
+    function( mat )
+    local res;
+
+    # compressed matrices are lists whose rows have kernel methods
+    if IsMatrix( mat ) then
+      TryNextMethod();
+    fi;
+    res:= SEMIECHELON_MATOBJ_DESTRUCTIVE( mat );
+    if res = fail then
+      return fail;
+    fi;
+    return rec( heads   := res.heads,
+                vectors := ROWS_OF_MATOBJ( mat, res.rows ) );
+    end );
 
 InstallMethod( SemiEchelonMat,
     "generic method for matrices",
@@ -2662,6 +2745,11 @@ InstallOtherMethod( SemiEchelonMat,
     return SemiEchelonRowsDestructive( copymat, Length( copymat ),
                Length( copymat[1] ), ZeroOfBaseDomain( copymat[1] ) );
 end );
+
+InstallMethod( SemiEchelonMat,
+    "for a matrix object",
+    [ IsMatrixObj ],
+    mat -> SemiEchelonMatDestructive( MutableCopyMatrix( mat ) ) );
 
 
 #############################################################################
@@ -2770,13 +2858,60 @@ InstallOtherMethod( SemiEchelonMatTransformationDestructive,
     DefaultFieldOfMatrix(mat),mat));
 
 InstallOtherMethod( SemiEchelonMatTransformationDestructive,
-    "generic method for matrix objects over fields",
-    [ IsMatrixObj and IsRowListMatrix and IsMutable],function(mat)
-local f;
-  f:=BaseDomain(mat);
-  if not IsField(f) then TryNextMethod();fi;
-  return DoSemiEchelonMatTransformationDestructive(f,mat);
-end);
+    "for a mutable matrix object over a field, using row operations",
+    [ IsMatrixObj and IsMutable ],
+function( mat )
+  local zero, nrows, ncols, T, heads, rows, relations, i, j, head, x;
+
+  if not IsField( BaseDomain( mat ) ) then
+    TryNextMethod();
+  fi;
+  zero:= ZeroOfBaseDomain( mat );
+  nrows:= NrRows( mat );
+  ncols:= NrCols( mat );
+  T:= IdentityMatrix( nrows, mat );
+  heads:= ListWithIdenticalEntries( ncols, 0 );
+  rows:= [];
+  relations:= [];
+
+  for i in [ 1 .. nrows ] do
+
+    # Reduce the row with the known basis vectors.
+    for j in [ 1 .. ncols ] do
+      head:= heads[j];
+      if head <> 0 then
+        x:= - mat[i,j];
+        if x <> zero then
+          AddMatrixRowsLeft( T, i, rows[ head ], x );
+          AddMatrixRowsLeft( mat, i, rows[ head ], x );
+        fi;
+      fi;
+    od;
+
+    j:= PositionNonZeroInRow( mat, i );
+    if j <= ncols then
+
+      # We found a new basis vector.
+      x:= Inverse( mat[i,j] );
+      if x = fail then
+        TryNextMethod();
+      fi;
+      MultMatrixRowLeft( T, i, x );
+      MultMatrixRowLeft( mat, i, x );
+      Add( rows, i );
+      heads[j]:= Length( rows );
+
+    else
+      Add( relations, i );
+    fi;
+
+  od;
+
+  return rec( heads     := heads,
+              vectors   := ROWS_OF_MATOBJ( mat, rows ),
+              coeffs    := ROWS_OF_MATOBJ( T, rows ),
+              relations := ROWS_OF_MATOBJ( T, relations ) );
+end );
 
 
 #############################################################################
@@ -3253,11 +3388,10 @@ InstallOtherMethod( SumIntersectionMat,"MatrixObject", IsIdenticalObj,
     [ IsMatrixObj, IsMatrixObj ],
 function( M1, M2 )
     local n,      # number of columns
+          r1, r2, # numbers of rows of 'M1' and 'M2'
           mat,    # matrix for Zassenhaus algorithm
-          v,      # loop over 'M1' and 'M2'
-          heads,  # list of leading positions
+          res,    # semi-echelon information for 'mat'
           sum,    # base of the sum
-          i,      # loop over rows of 'mat'
           int;    # base of the intersection
 
     if   NrRows( M1 ) = 0 then
@@ -3271,50 +3405,27 @@ function( M1, M2 )
     fi;
 
     n:= NrCols( M1 );
-    mat:= [];
+    r1:= NrRows( M1 );
+    r2:= NrRows( M2 );
 
     # Set up the matrix for Zassenhaus' algorithm.
-    mat:= ZeroMatrix(BaseDomain(M1),NrRows(M1)+NrRows(M2),2*n);
-
-    i:=1;
-    for v in List(M1) do
-      CopySubVector(v,mat[i],[1..n],[1..n]);
-      CopySubVector(v,mat[i],[1..n],[n+1..2*n]);
-      #v:= ShallowCopy( v );
-      #Append( v, v );
-      i:=i+1;
-    od;
-    for v in List(M2) do
-      CopySubVector(v,mat[i],[1..n],[1..n]);
-      #mat[i]{[n+1..2*n]}:=zero; # not needed, as initially 0
-      #v:= ShallowCopy( v );
-      #Append( v, zero );
-      i:=i+1;
-    od;
+    mat:= ZeroMatrix( r1 + r2, 2*n, M1 );
+    CopySubMatrix( M1, mat, [ 1 .. r1 ], [ 1 .. r1 ], [ 1 .. n ], [ 1 .. n ] );
+    CopySubMatrix( M1, mat, [ 1 .. r1 ], [ 1 .. r1 ], [ 1 .. n ],
+                   [ n+1 .. 2*n ] );
+    CopySubMatrix( M2, mat, [ 1 .. r2 ], [ r1+1 .. r1+r2 ], [ 1 .. n ],
+                   [ 1 .. n ] );
 
     # Transform `mat' into semi-echelon form.
-    mat   := SemiEchelonMatDestructive( mat );
-    heads := mat.heads;
-    mat   := mat.vectors;
+    res:= SEMIECHELON_MATOBJ_DESTRUCTIVE( mat );
 
-    # Extract the bases for the sum \ldots
-    sum:= [];
-    for i in [ 1 .. n ] do
-      if heads[i] <> 0 then
-        Add( sum, mat[ heads[i] ]{ [ 1 .. n ] } );
-      fi;
-    od;
-
-    # \ldots and the intersection.
-    int:= [];
-    for i in [ n+1 .. Length( heads ) ] do
-      if heads[i] <> 0 then
-        Add( int, mat[ heads[i] ]{ [ n+1 .. 2*n ] } );
-      fi;
-    od;
-
-    # return the result
-    return [ sum, int ];
+    # Extract the bases for the sum and the intersection.
+    sum:= List( Filtered( res.heads{ [ 1 .. n ] }, h -> h <> 0 ),
+                h -> res.rows[h] );
+    int:= List( Filtered( res.heads{ [ n+1 .. 2*n ] }, h -> h <> 0 ),
+                h -> res.rows[h] );
+    return [ RowsOfMatrix( ExtractSubMatrix( mat, sum, [ 1 .. n ] ) ),
+             RowsOfMatrix( ExtractSubMatrix( mat, int, [ n+1 .. 2*n ] ) ) ];
 end );
 
 
@@ -3396,12 +3507,47 @@ function(mat)
 end);
 
 InstallOtherMethod( TriangulizeMat,
-    "generic method for mutable matrix obj",
+    "for a mutable matrix object, using row operations",
     [ IsMatrixObj and IsMutable ],
-function(mat)
-  TRIANGULIZE_MAT_GENERIC(mat,NrRows(mat),NrCols(mat),
-    ZeroOfBaseDomain(mat));
-end);
+function( mat )
+  local m, n, zero, i, j, k, x;
+
+  m:= NrRows( mat );
+  n:= NrCols( mat );
+  zero:= ZeroOfBaseDomain( mat );
+
+  i:= 0;
+  for k in [ 1 .. n ] do
+
+    # find a nonzero entry in this column
+    j:= i + 1;
+    while j <= m and mat[j,k] = zero do
+      j:= j + 1;
+    od;
+    if j <= m then
+
+      # make its row the current row and normalize it
+      i:= i + 1;
+      SwapMatrixRows( mat, i, j );
+      x:= Inverse( mat[i,k] );
+      if x = fail then
+        TryNextMethod();
+      fi;
+      MultMatrixRowLeft( mat, i, x );
+
+      # clear all other entries in this column
+      for j in [ 1 .. m ] do
+        if j <> i then
+          x:= mat[j,k];
+          if x <> zero then
+            AddMatrixRowsLeft( mat, j, i, -x );
+          fi;
+        fi;
+      od;
+
+    fi;
+  od;
+end );
 
 InstallOtherMethod( TriangulizeMat,
     "list of mutable vectors",
