@@ -202,7 +202,7 @@ BindGlobal("DoSparseLinearActionOnFaithfulSubset",
 function(G,act,sort)
 local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads,
       orb, delay, permimg, maxlim, starti, ll, ltwa, img, v, en, p, kill,
-      i, lo, imgs, xset, hom, R;
+      i, lo, imgs, xset, hom, R, ex;
 
   field:=DefaultFieldOfMatrixGroup(G);
   acts:=GeneratorsOfGroup(G);
@@ -219,7 +219,14 @@ local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads,
   else
     Error("illegal action");
   fi;
-  start:=List(start,x->ImmutableVector(field,x));
+  if IsMatrixObj(One(G)) and not IsMatrix(One(G)) then
+    # the points must be in the representation that the group acts on,
+    # 'BasisVectorsForMatrixAction' may return vectors in another one
+    ex:=ZeroVector(NrCols(One(G)),One(G));
+    start:=List(start,x->MakeImmutable(Vector(x,ex)));
+  else
+    start:=List(start,x->ImmutableVector(field,x));
+  fi;
 
   zerov:=Zero(start[1]);
   zero:=zerov[1];
@@ -332,17 +339,10 @@ local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads,
             AddRowVector( v, partbas[j], - en );
           fi;
         od;
-        if v<>zerov then
+        if not IsZero(v) then
           Add(base,orb[i]);
           Add(partbas,ShallowCopy(orb[i]));
-          # filter for vector objects, not compressed FF vectors
-          if ForAny(partbas,x->IsVectorObj(x) and not IsDataObjectRep(x)) then
-            partbas:=Matrix(BaseDomain(partbas[1]),partbas);
-          fi;
           TriangulizeMat(partbas);
-          if IsMatrixObj(partbas) then
-            partbas:=ShallowCopy(RowsOfMatrix(partbas));
-          fi;
           heads:=List(partbas,PositionNonZero);
           if Length(partbas)>=dim then
             # full dimension reached
@@ -432,7 +432,12 @@ local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads,
   if act=OnRight or act=OnPoints then
     # only store for action on right. projective action needs is own call to
     # `LinearActionBase' as this will set other needed parameters.
-    base:=ImmutableMatrix(field,base);
+    if ForAll(base,IsRowVector) then
+      base:=ImmutableMatrix(field,base);
+    else
+      # vector objects that are not lists cannot be compressed
+      base:=Immutable(base);
+    fi;
     SetLinearActionBasis(hom,base);
   fi;
 
