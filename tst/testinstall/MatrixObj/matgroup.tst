@@ -1,4 +1,4 @@
-#@local F, gens, G, cl, H, K, a, filt, iso
+#@local F, gens, G, cl, H, K, a, filt, v, iso
 gap> START_TEST( "matgroup.tst" );
 
 #
@@ -88,6 +88,45 @@ gap> ForAll( [ 1 .. 10 ], function( s )
 >             ForAll( gens, x -> PreImagesRepresentative( iso, Image( iso, x ) ) = x );
 >    end );
 true
+gap> iso:= IsomorphismPermGroup( G );;
+gap> Size( Image( iso ) );
+1944
+gap> ForAll( gens, x -> PreImagesRepresentative( iso, Image( iso, x ) ) = x );
+true
+
+#
+# a group of matrix objects without row access, which is not a full GL
+#
+gap> F:= GF(9);;
+gap> gens:= [ Matrix( IsGenericMatrixRep, F,
+>               [ [ Z(9), 0*Z(9), 0*Z(9) ], [ 0*Z(9), Z(9)^0, 0*Z(9) ],
+>                 [ 0*Z(9), 0*Z(9), Z(9)^0 ] ] ),
+>             Matrix( IsGenericMatrixRep, F,
+>               [ [ Z(9)^0, Z(9)^0, 0*Z(9) ], [ 0*Z(9), Z(9)^0, Z(9)^0 ],
+>                 [ 0*Z(9), 0*Z(9), Z(9)^0 ] ] ) ];;
+gap> G:= Group( gens );;
+gap> Size( G );  IsNaturalGL( G );
+1944
+false
+gap> Length( ConjugacyClasses( G ) );  Size( DerivedSubgroup( G ) );
+30
+81
+gap> v:= Vector( F, [ Z(9)^0, 0*Z(9), 0*Z(9) ] );;
+gap> Length( Orbit( G, v, OnRight ) );  Size( Stabilizer( G, v, OnRight ) );
+648
+3
+gap> Size( Centralizer( G, gens[1] ) );  Size( Normalizer( G, Group( gens[1] ) ) );
+24
+24
+gap> Length( NormalSubgroups( G ) );
+11
+gap> MTX.IsIrreducible( GModuleByMats( gens, F ) );
+false
+gap> SortedList( List( MTX.CompositionFactors( GModuleByMats( gens, F ) ),
+>                      x -> x.dimension ) );
+[ 1, 1, 1 ]
+gap> Length( MTX.BasesSubmodules( GModuleByMats( gens, F ) ) );
+4
 gap> iso:= IsomorphismPermGroup( G );;
 gap> Size( Image( iso ) );
 1944
