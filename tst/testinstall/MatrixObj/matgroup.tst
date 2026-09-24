@@ -1,4 +1,4 @@
-#@local F, gens, G, cl, H, K, a, filt
+#@local F, gens, G, cl, H, K, a, filt, iso
 gap> START_TEST( "matgroup.tst" );
 
 #
@@ -65,6 +65,33 @@ gap> FlushCaches();
 gap> G:= GL( 2, GF(4) : ConstructingFilter:= IsPlistMatrixRep );;
 gap> ForAll( GeneratorsOfGroup( G ), g -> PreImagesRepresentative(
 >        NiceMonomorphism( G ), ImagesRepresentative( NiceMonomorphism( G ), g ) ) = g );
+true
+
+#
+# a group of plist matrices that is not a full GL, so that
+# IsomorphismPermGroup uses a sparse linear action
+#
+gap> F:= GF(9);;
+gap> gens:= [ Matrix( IsPlistMatrixRep, F,
+>               [ [ Z(9), 0*Z(9), 0*Z(9) ], [ 0*Z(9), Z(9)^0, 0*Z(9) ],
+>                 [ 0*Z(9), 0*Z(9), Z(9)^0 ] ] ),
+>             Matrix( IsPlistMatrixRep, F,
+>               [ [ Z(9)^0, Z(9)^0, 0*Z(9) ], [ 0*Z(9), Z(9)^0, Z(9)^0 ],
+>                 [ 0*Z(9), 0*Z(9), Z(9)^0 ] ] ) ];;
+gap> G:= Group( gens );;
+gap> ForAll( [ 1 .. 10 ], function( s )
+>      local iso;
+>      # the random start vectors must not matter
+>      Reset( GlobalMersenneTwister, s );  Reset( GlobalRandomSource, s );
+>      iso:= IsomorphismPermGroup( Group( gens ) );
+>      return Size( Image( iso ) ) = 1944 and
+>             ForAll( gens, x -> PreImagesRepresentative( iso, Image( iso, x ) ) = x );
+>    end );
+true
+gap> iso:= IsomorphismPermGroup( G );;
+gap> Size( Image( iso ) );
+1944
+gap> ForAll( gens, x -> PreImagesRepresentative( iso, Image( iso, x ) ) = x );
 true
 
 #
