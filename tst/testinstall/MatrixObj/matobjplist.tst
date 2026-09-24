@@ -126,6 +126,14 @@ gap> IsFFECollColl( M );
 true
 
 #
+# SemiEchelonMat of a list of vector objects over a small field
+#
+gap> SemiEchelonMat( [ NewVector( IsPlistVectorRep, GF(9), [ Z(9), Z(9)^0 ] ),
+>                      NewVector( IsPlistVectorRep, GF(9), [ Z(9)^2, Z(9) ] ),
+>                      NewVector( IsPlistVectorRep, GF(9), [ Z(9)^0, Z(9) ] ) ] ).heads;
+[ 1, 2 ]
+
+#
 # ImmutableMatrix compresses rows that are vector objects
 #
 gap> for q in [ 2, 9, 257 ] do
