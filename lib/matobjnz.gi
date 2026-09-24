@@ -340,16 +340,17 @@ InstallMethod( \=, "for two zmodnz vectors",IsIdenticalObj,
     return EQ_LIST_LIST_DEFAULT(a![ELSPOS],b![ELSPOS]);
   end );
 
-InstallMethod( \=, "for zmodnz vector and plist",IsIdenticalObj,
-  [ IsZmodnZVectorRep, IsPlistRep ],
+# 'Int' also covers FFE entries, which occur for a prime modulus
+InstallMethod( \=, "for zmodnz vector and list",IsIdenticalObj,
+  [ IsZmodnZVectorRep, IsList ],
 function( a, b )
-  return a![ELSPOS]=List(b,x->x![1]);
+  return a![ELSPOS]=List(b,Int);
 end );
 
-InstallMethod( \=, "for plist and zmodnz vector",IsIdenticalObj,
-  [ IsPlistRep,IsZmodnZVectorRep],
+InstallMethod( \=, "for list and zmodnz vector",IsIdenticalObj,
+  [ IsList,IsZmodnZVectorRep],
 function(b,a)
-  return a![ELSPOS]=List(b,x->x![1]);
+  return a![ELSPOS]=List(b,Int);
 end );
 
 InstallMethod( \<, "for two zmodnz vectors",IsIdenticalObj,
