@@ -1,4 +1,4 @@
-#@local F, gens, G, cl, H
+#@local F, gens, G, cl, H, K, a, filt
 gap> START_TEST( "matgroup.tst" );
 
 #
@@ -65,6 +65,22 @@ gap> FlushCaches();
 gap> G:= GL( 2, GF(4) : ConstructingFilter:= IsPlistMatrixRep );;
 gap> ForAll( GeneratorsOfGroup( G ), g -> PreImagesRepresentative(
 >        NiceMonomorphism( G ), ImagesRepresentative( NiceMonomorphism( G ), g ) ) = g );
+true
+
+#
+# over a finite field whose elements are not FFEs, the default field is
+# the base domain; the generators' entries are not inspected
+#
+gap> K:= AlgebraicExtension( GF(2),
+>             UnivariatePolynomial( GF(2), Z(2)^0 * [ 1, 1, 1 ] ) );;
+gap> a:= RootOfDefiningPolynomial( K );;
+gap> for filt in [ IsPlistMatrixRep, IsGenericMatrixRep ] do
+>      G:= Group( Matrix( filt, K, [ [ a, Zero(K) ], [ Zero(K), One(K) ] ] ) );
+>      Print( DefaultFieldOfMatrixGroup( G ) = K, "\n" );
+>    od;
+true
+true
+gap> DefaultFieldOfMatrixGroup( Group( [ [ a, Zero(K) ], [ Zero(K), One(K) ] ] ) ) = K;
 true
 
 #
