@@ -1651,8 +1651,10 @@ local sf, rep, ind, ind2, row, i,big,l,nr;
   ind2:=[]; # rows to rebuild
   for i in [1..nr] do
     if not rep(matrix[i]) then
+      # a vector object that is not a list cannot be converted in place
       if big or IsLockedRepresentationVector(matrix[i])
-        or (IsMutable(matrix[i]) and not change) then
+        or (IsMutable(matrix[i]) and not change)
+        or not IsList(matrix[i]) then
         Add(ind2,i);
       else
         # wrong rep, but can be converted
@@ -1697,7 +1699,11 @@ local sf, rep, ind, ind2, row, i,big,l,nr;
     fi;
   else
     for i in ind2 do
-      row := CopyToVectorRep(matrix[i], sf);
+      row := matrix[i];
+      if not IsList(row) then
+        row := Unpack(row);
+      fi;
+      row := CopyToVectorRep(row, sf);
       if row <> fail then
         matrix[i] := row;
       fi;
