@@ -113,6 +113,10 @@ gap> FreeMagma("bacon", "eggs", "beans");
 <free magma on the generators [ bacon, eggs, beans ]>
 gap> FreeMagma("shed");
 <free magma on the generators [ shed ]>
+gap> FreeMagma("shed", "shed");
+Error, FreeMagma( <name1>, <name2>, ... ): the names must be distinct
+gap> FreeMagma("a", "b", "c", "d", "b", "e", "f");
+Error, FreeMagma( <name1>, <name2>, ... ): the names must be distinct
 
 # FreeMagma( [ <name1>[, <name2>, ...] ] )
 gap> FreeMagma(InfiniteListOfNames("a"));
@@ -238,6 +242,10 @@ gap> FreeMagmaWithOne("bacon", "eggs", "beans");
 <free magma-with-one on the generators [ bacon, eggs, beans ]>
 gap> FreeMagmaWithOne("shed");
 <free magma-with-one on the generators [ shed ]>
+gap> FreeMagmaWithOne("shed", "shed");
+Error, FreeMagmaWithOne( <name1>, <name2>, ... ): the names must be distinct
+gap> FreeMagmaWithOne("a", "b", "c", "d", "b", "e", "f");
+Error, FreeMagmaWithOne( <name1>, <name2>, ... ): the names must be distinct
 
 # FreeMagmaWithOne( [ <name1>[, <name2>, ...] ] )
 gap> FreeMagmaWithOne(InfiniteListOfNames("a"));
