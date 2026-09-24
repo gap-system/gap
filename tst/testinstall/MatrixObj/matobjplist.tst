@@ -1,4 +1,4 @@
-#@local e, v, w, M, v2, z
+#@local e, v, w, M, v2, z, en
 gap> START_TEST( "matobjplist.tst" );
 
 #
@@ -123,6 +123,16 @@ true
 gap> IsCyclotomicCollColl( M );
 false
 gap> IsFFECollColl( M );
+true
+
+#
+# positions in the enumerator of a full row space over a finite field
+#
+gap> en:= Enumerator( GF(9)^3 );;
+gap> v:= NewVector( IsPlistVectorRep, GF(9), [ Z(9), 0*Z(9), Z(9)^0 ] );;
+gap> PositionCanonical( en, v ) = PositionCanonical( en, Unpack( v ) );
+true
+gap> en[ PositionCanonical( en, v ) ] = Unpack( v );
 true
 
 #
