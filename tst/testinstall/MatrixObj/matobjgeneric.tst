@@ -462,4 +462,14 @@ gap> IsFFECollColl( M );
 true
 
 #
+# ordering, which sets of generic matrices rely on
+#
+gap> a:= Matrix( IsGenericMatrixRep, GF(3), Z(3)^0 * [ [ 1, 0 ], [ 0, 1 ] ] );;
+gap> b:= Matrix( IsGenericMatrixRep, GF(3), Z(3)^0 * [ [ 1, 1 ], [ 0, 1 ] ] );;
+gap> a < b;  b < a;  a < a;
+true
+false
+false
+
+#
 gap> STOP_TEST( "matobjgeneric.tst" );
