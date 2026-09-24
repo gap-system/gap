@@ -1090,7 +1090,7 @@ InstallMethod( \*, "for two zmodnz matrices",IsIdenticalObj,
               #fi;
             od;
             ZNZVECREDUCE(w,b![RLPOS],m);
-            w:=Vector(r,w);
+            w:=Vector(IsZmodnZVectorRep,r,w);
 
             l[i] := w;
         fi;
@@ -1363,7 +1363,7 @@ BindGlobal( "ZMZVECMAT", function( v, m )
       fi;
     od;
     ZNZVECREDUCE(res,Length(res),Size(r));
-    res:=Vector(r,res);
+    res:=Vector(IsZmodnZVectorRep,r,res);
 
     if not IsMutable(v) and not IsMutable(m) then
         MakeImmutable(res);
