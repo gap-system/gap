@@ -1390,6 +1390,20 @@ InstallMethod( BaseMat,
     [ IsMatrix ],
     mat -> BaseMatDestructive( MutableCopyMatrix( mat ) ) );
 
+InstallMethod( BaseMatDestructive,
+    "for a matrix object",
+    [ IsMatrixObj ],
+    function( mat )
+    local res;
+    res:= SEMIECHELON_MATOBJ_DESTRUCTIVE( mat );
+    return ExtractSubMatrix( mat, res.rows, [ 1 .. NrCols( mat ) ] );
+    end );
+
+InstallMethod( BaseMat,
+    "for a matrix object",
+    [ IsMatrixObj ],
+    mat -> MakeImmutable( BaseMatDestructive( MutableCopyMatrix( mat ) ) ) );
+
 
 #############################################################################
 ##

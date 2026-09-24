@@ -134,6 +134,13 @@ gap> SemiEchelonMat( [ NewVector( IsPlistVectorRep, GF(9), [ Z(9), Z(9)^0 ] ),
 [ 1, 2 ]
 
 #
+gap> M:= Matrix( IsPlistMatrixRep, GF(3),
+>                Z(3)^0 * [ [ 1, 2, 0 ], [ 2, 1, 0 ], [ 0, 0, 1 ] ] );;
+gap> IsPlistMatrixRep( BaseMat( M ) );  Unpack( BaseMat( M ) );
+true
+[ [ Z(3)^0, Z(3), 0*Z(3) ], [ 0*Z(3), 0*Z(3), Z(3)^0 ] ]
+
+#
 # ImmutableMatrix compresses rows that are vector objects
 #
 gap> for q in [ 2, 9, 257 ] do

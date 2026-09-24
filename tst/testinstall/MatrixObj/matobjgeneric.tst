@@ -1,4 +1,4 @@
-#@local e, v, v2, w, M, z, rows, a, b, c, d, p, ev, n, ai, inv, zm, zs, N, T, R, sem
+#@local e, v, v2, w, M, z, rows, a, b, c, d, p, ev, n, ai, inv, zm, zs, N, T, R, sem, B
 gap> START_TEST( "matobjgeneric.tst" );
 
 #
@@ -491,6 +491,13 @@ gap> N:= Matrix( IsGenericMatrixRep, GF(3), Z(3)^0 * [ [ 1, 1, 0 ], [ 0, 0, 1 ] 
 gap> List( SumIntersectionMat( M, N ), l -> List( l, Unpack ) );
 [ [ [ Z(3)^0, Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0, 0*Z(3) ], 
       [ 0*Z(3), 0*Z(3), Z(3)^0 ] ], [ [ 0*Z(3), 0*Z(3), Z(3)^0 ] ] ]
+gap> B:= BaseMat( M );;
+gap> IsGenericMatrixRep( B );  IsMutable( B );  Unpack( B );
+true
+false
+[ [ Z(3)^0, Z(3), 0*Z(3) ], [ 0*Z(3), 0*Z(3), Z(3)^0 ] ]
+gap> NrRows( BaseMat( ZeroMutable( M ) ) );
+0
 
 #
 # ordering, which sets of generic matrices rely on
