@@ -7,3 +7,4 @@ filenames which occur in output.
 `./run_gap.sh` : This runs GAP, capturing its input/output
 `./run_all.sh` : This runs all the tests
 `./regenerate_tests.sh` : Regenerate all outputs
+`README-window-cmd.md` : Notes on the `window-cmd-*.g` tests
