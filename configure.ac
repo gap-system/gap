@@ -422,8 +422,27 @@ AC_MSG_CHECKING([whether to enable debug mode])
 AC_MSG_RESULT([$enable_debug])
 
 AS_IF([test "x$enable_debug" != "xno"],
-    [GAP_DEFINE([GAP_KERNEL_DEBUG=1])
-     GAP_DEFINE([GAP_PRINT_BACKTRACE=1])],
+    [GAP_DEFINE([GAP_KERNEL_DEBUG=1])],
+)
+
+dnl
+dnl User setting: print a backtrace upon crashes. On by default in debug and
+dnl HPC-GAP mode, where crashes are expected often enough to be worth it.
+dnl
+AS_IF([test "x$enable_debug" != "xno" -o "x$enable_hpcgap" = "xyes"],
+    [enable_backtrace_default=yes],
+    [enable_backtrace_default=no])
+AC_ARG_ENABLE([backtrace],
+    [AS_HELP_STRING([--enable-backtrace],
+        [print a backtrace upon crashes (default: yes with --enable-debug or --enable-hpcgap, else no)])],
+    [],
+    [enable_backtrace=$enable_backtrace_default]
+    )
+AC_MSG_CHECKING([whether to print backtraces upon crashes])
+AC_MSG_RESULT([$enable_backtrace])
+
+AS_IF([test "x$enable_backtrace" != "xno"],
+    [GAP_DEFINE([GAP_PRINT_BACKTRACE=1])],
 )
 
 dnl
@@ -1057,8 +1076,6 @@ AX_EXECINFO
 
 AS_IF([test "x$enable_hpcgap" = xyes],[
   AS_BOX([WARNING: Experimental HPC-GAP mode enabled])
-  dnl also enable backtrace, to help debug spurious crashes
-  AC_DEFINE([GAP_PRINT_BACKTRACE], [1], [to enable backtraces upon crashes])
   ])
 
 AS_IF([test "x$enable_macos_tls_asm" = xno],[
