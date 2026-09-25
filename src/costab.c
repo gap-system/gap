@@ -1249,6 +1249,7 @@ static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
                     ptWord[i] = ptTree2[i];
                 }
                 SET_LEN_PLIST( word, LEN_PLIST(objTree2) );
+                CLEAR_FILTS_LIST( word );
             }
         }
 
@@ -1320,6 +1321,7 @@ static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
 
             // save the word length
             SET_LEN_PLIST( word, last );
+            CLEAR_FILTS_LIST( word );
         }
     }
 
@@ -1331,40 +1333,6 @@ static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
 
     // return true
     return True;
-}
-
-
-/****************************************************************************
-**
-*F  FuncCopyRel( <self>, <rel> )   . . . . . . . . . . . .  copy of a relator
-**
-**  'FuncCopyRel' returns a copy  of the given RRS  relator such that the bag
-**  of the copy does not exceed the minimal required size.
-*/
-static Obj FuncCopyRel(Obj self, Obj rel) // the given relator
-{
-    Obj *               ptRel;          // pointer to the given relator
-    Obj                 copy;           // the copy
-    Obj *               ptCopy;         // pointer to the copy
-    Int                 leng;           // length of the given word
-
-    RequirePlainList(0, rel);
-    leng = LEN_PLIST(rel);
-
-    // Allocate a bag for the copy
-    copy   = NEW_PLIST( T_PLIST, leng );
-    SET_LEN_PLIST( copy, leng );
-    ptRel = BASE_PTR_PLIST(rel);
-    ptCopy = BASE_PTR_PLIST(copy);
-
-    // Copy the relator to the new bag
-    while ( leng > 0 ) {
-        *ptCopy++ = *ptRel++;
-        leng--;
-    }
-
-    // Return the copy
-    return copy;
 }
 
 
@@ -1515,6 +1483,8 @@ static Obj FuncMakeCanonical(Obj self, Obj rel) // the given relator
             }
         }
     }
+
+    CLEAR_FILTS_LIST( rel );
 
     return 0;
 }
@@ -2313,7 +2283,6 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_1ARGS(MakeConsequencesPres, list),
     GVAR_FUNC_2ARGS(StandardizeTableC, table, standard),
     GVAR_FUNC_3ARGS(ApplyRel2, app, relators, nums),
-    GVAR_FUNC_1ARGS(CopyRel, relator),
     GVAR_FUNC_1ARGS(MakeCanonical, relator),
     GVAR_FUNC_2ARGS(TreeEntry, relator, word),
     GVAR_FUNC_3ARGS(StandardizeTable2C, table, table, standard),

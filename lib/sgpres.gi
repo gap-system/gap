@@ -1868,7 +1868,7 @@ function (arg)
             if last > 0 then
                 MakeCanonical( rel );
                 if Length( rel ) > 0 and not rel in rels then
-                    AddSet( rels, Immutable(CopyRel( rel ) ));
+                    AddSet( rels, MakeImmutable( ShallowCopy( rel ) ) );
                 fi;
             fi;
         od;
@@ -1949,7 +1949,7 @@ function (arg)
         if last > 0 then
             MakeCanonical( rel );
             if Length( rel ) > 0 and not rel in rels then
-                AddSet( rels, Immutable(CopyRel(rel)));
+                AddSet( rels, MakeImmutable( ShallowCopy( rel ) ) );
             fi;
         fi;
       else
