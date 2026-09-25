@@ -116,6 +116,7 @@ EXPORT_INLINE Obj FLAG1_FILT(Obj oper)
 EXPORT_INLINE void SET_FLAG1_FILT(Obj oper, Obj x)
 {
     OPER(oper)->flag1 = x;
+    CHANGED_BAG(oper);
 }
 
 
@@ -131,6 +132,7 @@ EXPORT_INLINE Obj FLAG2_FILT(Obj oper)
 EXPORT_INLINE void SET_FLAG2_FILT(Obj oper, Obj x)
 {
     OPER(oper)->flag2 = x;
+    CHANGED_BAG(oper);
 }
 
 
@@ -146,6 +148,7 @@ EXPORT_INLINE Obj FLAGS_FILT(Obj oper)
 EXPORT_INLINE void SET_FLAGS_FILT(Obj oper, Obj x)
 {
     OPER(oper)->flags = x;
+    CHANGED_BAG(oper);
 }
 
 
@@ -161,6 +164,7 @@ EXPORT_INLINE Obj SETTR_FILT(Obj oper)
 EXPORT_INLINE void SET_SETTR_FILT(Obj oper, Obj x)
 {
     OPER(oper)->setter = x;
+    CHANGED_BAG(oper);
 }
 
 
@@ -176,6 +180,7 @@ EXPORT_INLINE Obj TESTR_FILT(Obj oper)
 EXPORT_INLINE void SET_TESTR_FILT(Obj oper, Obj x)
 {
     OPER(oper)->tester = x;
+    CHANGED_BAG(oper);
 }
 
 
@@ -193,6 +198,7 @@ EXPORT_INLINE void SET_METHS_OPER(Obj oper, Int i, Obj x)
 {
     GAP_ASSERT(0 <= i && i <= MAX_OPER_ARGS);
     OPER(oper)->methods[i] = x;
+    CHANGED_BAG(oper);
 }
 
 
@@ -210,6 +216,7 @@ EXPORT_INLINE void SET_CACHE_OPER(Obj oper, Int i, Obj x)
 {
     GAP_ASSERT(0 <= i && i <= MAX_OPER_ARGS);
     OPER(oper)->cache[i] = x;
+    CHANGED_BAG(oper);
 }
 
 
