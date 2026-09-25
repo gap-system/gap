@@ -73,8 +73,22 @@ jobs:
           open(ENV["GITHUB_ENV"], "a") do io
               println(io, "GAPJLPATH=$path")
           end
+      - name: "Check libgap soname compatibility"
+        # a released GAP.jl is tied to the libgap soname of its GAP_jll; if this
+        # checkout changed the kernel major version, the test cannot work
+        id: soname
+        if: matrix.gapjl-version == 'latest-release'
+        run: |
+          jll=$(julia --project=$GAPJLPATH -e 'using Pkg; Pkg.instantiate(); using GAP_jll; print(basename(GAP_jll.libgap_path))')
+          expected=$(echo "$jll" | grep -oE '[0-9]+' | head -1)
+          actual=$(sed -n 's/^m4_define(\[kernel_major_version\], \[\([0-9]*\)\])$/\1/p' GAPROOT/configure.ac)
+          echo "GAP_jll ships $jll, this checkout has kernel major version $actual"
+          if [ "$expected" != "$actual" ]; then
+            echo "::warning::libgap soname mismatch (GAP_jll: $expected, GAP: $actual), skipping tests"
+            echo "skip=true" >> $GITHUB_OUTPUT
+          fi
       - name: "Install dependencies (for macOS)"
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS' && steps.soname.outputs.skip != 'true'
         run: |
           # - autoconf, gmp, zlib are needed by GAP's build system
           # - coreutils provides nproc
@@ -91,6 +105,7 @@ jobs:
           ln -sf "$(brew --prefix)/bin/g++-14" "${shimdir}/g++"
           echo "${shimdir}" >> "${GITHUB_PATH}"
       - name: "Build GAP"
+        if: steps.soname.outputs.skip != 'true'
         run: |
           mv GAPROOT /tmp/GAPROOT
           cd /tmp/GAPROOT
@@ -108,8 +123,10 @@ jobs:
           ./configure --enable-Werror
           make -j`nproc`
       - name: "Override bundled GAP"
+        if: steps.soname.outputs.skip != 'true'
         run: |
           julia --project=$GAPJLPATH $GAPJLPATH/etc/setup_override_dir.jl /tmp/GAPROOT /tmp/gap_jll_override --enable-Werror ${{ matrix.validate-marking && '--validate-marking' || '' }}
       - name: "Run tests"
+        if: steps.soname.outputs.skip != 'true'
         run: |
           julia --project=$GAPJLPATH $GAPJLPATH/etc/run_with_override.jl /tmp/gap_jll_override --depwarn=error -e "using Pkg; Pkg.test(\"GAP\")"
