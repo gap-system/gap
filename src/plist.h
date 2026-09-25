@@ -188,6 +188,20 @@ EXPORT_INLINE void SET_ELM_PLIST(Obj list, Int pos, Obj val)
 
 /****************************************************************************
 **
+*F  SET_ELM_PLIST_WB(<list>,<pos>,<val>)  . . .  assign with GC write barrier
+**
+**  'SET_ELM_PLIST_WB' does the same as 'SET_ELM_PLIST' followed by
+**  'CHANGED_BAG'. Prefer it over that pair: whether the write barrier has to
+**  run before or after the store depends on the garbage collector.
+*/
+EXPORT_INLINE void SET_ELM_PLIST_WB(Obj list, Int pos, Obj val)
+{
+    SET_ELM_PLIST(list, pos, val);
+    CHANGED_BAG(list);
+}
+
+/****************************************************************************
+**
 *F  ELM_PLIST(<list>,<pos>) . . . . . . . . . . . . . element of a plain list
 **
 **  'ELM_PLIST' return the  <pos>-th element of  the list <list>.  <pos> must

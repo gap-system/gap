@@ -1734,8 +1734,7 @@ Obj PLAIN_LIST_COPY(Obj list)
     Obj res = NEW_PLIST(T_PLIST, len);
     SET_LEN_PLIST(res, len);
     for (Int i = 1; i <= len; i++) {
-        SET_ELM_PLIST(res, i, ELMV0_LIST(list, i));
-        CHANGED_BAG(res);
+        SET_ELM_PLIST_WB(res, i, ELMV0_LIST(list, i));
     }
     return res;
 }

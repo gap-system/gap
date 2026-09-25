@@ -915,8 +915,7 @@ static Obj InversePlistGF2VecsDesstructive(Obj list)
     for (i = len; 0 < i; i--) {
         NEW_GF2VEC(row, TYPE_LIST_GF2VEC, len);
         BLOCK_ELM_GF2VEC(row, i) |= MASK_POS_GF2VEC(i);
-        SET_ELM_PLIST(tmp, i, row);
-        CHANGED_BAG(tmp);
+        SET_ELM_PLIST_WB(tmp, i, row);
     }
     SET_LEN_PLIST(tmp, len);
     inv = tmp;
@@ -1021,8 +1020,7 @@ static Obj InverseGF2Mat(Obj mat, UInt mut)
         end = ptP + ((len + BIPEB - 1) / BIPEB);
         while (ptP < end)
             *ptP++ = *ptQ++;
-        SET_ELM_PLIST(tmp, i, row);
-        CHANGED_BAG(tmp);
+        SET_ELM_PLIST_WB(tmp, i, row);
     }
     SET_LEN_PLIST(tmp, len);
     inv = InversePlistGF2VecsDesstructive(tmp);
@@ -1146,19 +1144,16 @@ static Obj SemiEchelonListGF2Vecs(Obj mat, UInt TransformationsNeeded)
 
         // garbage collection OK again after here
         if (j <= ncols) {
-            SET_ELM_PLIST(vectors, ++nvecs, row);
-            CHANGED_BAG(vectors);    // Could be an old bag by now. Max.
+            SET_ELM_PLIST_WB(vectors, ++nvecs, row);
             SET_LEN_PLIST(vectors, nvecs);
             SET_ELM_PLIST(heads, j, INTOBJ_INT(nvecs));
             if (TransformationsNeeded) {
-                SET_ELM_PLIST(coeffs, nvecs, coeffrow);
-                CHANGED_BAG(coeffs);    // Could be an old bag by now. Max.
+                SET_ELM_PLIST_WB(coeffs, nvecs, coeffrow);
                 SET_LEN_PLIST(coeffs, nvecs);
             }
         }
         else if (TransformationsNeeded) {
-            SET_ELM_PLIST(relns, ++nrels, coeffrow);
-            CHANGED_BAG(relns);    // Could be an old bag by now. Max.
+            SET_ELM_PLIST_WB(relns, ++nrels, coeffrow);
             SET_LEN_PLIST(relns, nrels);
         }
         TakeInterrupt();
@@ -3084,8 +3079,7 @@ static void DistVecClosVec(
             else {
                 cnt = SumInt(cnt, one);
                 vec = CONST_BLOCKS_GF2VEC(ovec);
-                SET_ELM_PLIST(d, di + 1, cnt);
-                CHANGED_BAG(d);
+                SET_ELM_PLIST_WB(d, di + 1, cnt);
             }
         }
         AddGF2VecToGF2Vec(BLOCKS_GF2VEC(osum),
@@ -3328,8 +3322,7 @@ static UInt CosetLeadersInnerGF2(
                 NEW_GF2VEC(vc, TYPE_LIST_GF2VEC_IMM, len);
                 memcpy(BLOCKS_GF2VEC(vc), CONST_BLOCKS_GF2VEC(v),
                        NUMBER_BLOCKS_GF2VEC(v) * sizeof(UInt));
-                SET_ELM_PLIST(leaders, sy + 1, vc);
-                CHANGED_BAG(leaders);
+                SET_ELM_PLIST_WB(leaders, sy + 1, vc);
                 if (++found == tofind)
                     return found;
             }

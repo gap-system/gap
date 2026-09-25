@@ -880,8 +880,7 @@ static Int TreeEntryC ( void )
         SET_ELM_PLIST( objTree, 3, INTOBJ_INT(numgens) );
 
         SET_LEN_PLIST( objTree1, treesize );
-        SET_ELM_PLIST( objTree1, numgens, objNew );
-        CHANGED_BAG(objTree1);
+        SET_ELM_PLIST_WB( objTree1, numgens, objNew );
 
         // copy the word to the new bag
         ptWord = BASE_PTR_PLIST(objTree2) - 1;
@@ -1631,8 +1630,7 @@ static Obj FuncTreeEntry(Obj self, Obj tree, Obj word)
         SET_LEN_PLIST( new, leng );
 
         SET_ELM_PLIST( objTree, 3, INTOBJ_INT(numgens) );
-        SET_ELM_PLIST( objTree1, numgens, new );
-        CHANGED_BAG(objTree1);
+        SET_ELM_PLIST_WB( objTree1, numgens, new );
 
         // copy the word to the new bag
         ptWord = BASE_PTR_PLIST(objTree2) - 1;

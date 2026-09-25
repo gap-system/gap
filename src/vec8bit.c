@@ -2228,8 +2228,7 @@ static void DistDistrib8Bits(
             }
             else {
                 cnt = SumInt(cnt, one);
-                SET_ELM_PLIST(d, di + 1, cnt);
-                CHANGED_BAG(d);
+                SET_ELM_PLIST_WB(d, di + 1, cnt);
             }
         }
         AddVec8BitVec8BitInner(sum, sum, ELM_PLIST(vp, i + 1), 1, len);
@@ -2563,8 +2562,7 @@ static UInt CosetLeadersInner8Bits(Obj  veclis,
                 Obj  qk;
                 Obj  wc;
                 vc = CopyVec8Bit(v, 0);
-                SET_ELM_PLIST(leaders, sy + 1, vc);
-                CHANGED_BAG(leaders);
+                SET_ELM_PLIST_WB(leaders, sy + 1, vc);
                 // Also record all the multiples here
                 wc = ZeroVec8Bit(q, lenw, 1);
                 settab = SETELT_FIELDINFO_8BIT(info);
@@ -2592,8 +2590,7 @@ static UInt CosetLeadersInner8Bits(Obj  veclis,
                     ptr = BYTES_VEC8BIT(v) + (i - 1) / elts;
                     ptrw = BYTES_VEC8BIT(w);
                     MultVec8BitFFEInner(vc, v, qk, 1, len);
-                    SET_ELM_PLIST(leaders, sy + 1, vc);
-                    CHANGED_BAG(leaders);
+                    SET_ELM_PLIST_WB(leaders, sy + 1, vc);
                 }
                 found += (q - 1);
                 if (found == tofind)
@@ -3795,8 +3792,7 @@ static Obj InverseMat8Bit(Obj mat, UInt mut)
     for (i = 1; i <= len; i++) {
         row = ELM_MAT8BIT(mat, i);
         row = SHALLOW_COPY_OBJ(row);
-        SET_ELM_PLIST(cmat, i, row);
-        CHANGED_BAG(cmat);
+        SET_ELM_PLIST_WB(cmat, i, row);
         row = SHALLOW_COPY_OBJ(zero);
         ptr = BYTES_VEC8BIT(row) + (i - 1) / elts;
 
@@ -3804,8 +3800,7 @@ static Obj InverseMat8Bit(Obj mat, UInt mut)
         settab = SETELT_FIELDINFO_8BIT(info);
         // we know we are replacing a zero
         *ptr = settab[256 * ((i - 1) % elts + o * elts)];
-        SET_ELM_PLIST(inv, i + 1, row);
-        CHANGED_BAG(inv);
+        SET_ELM_PLIST_WB(inv, i + 1, row);
     }
 
     // Now do Gaussian elimination in cmat and mirror it on inv
@@ -5035,8 +5030,7 @@ static Obj MakeShiftedVecs(Obj v, UInt len)
         // fill the rest up with zero vectors of suitable lengths
         for (i = 1; i < elts; i++) {
             ashift = ZeroVec8Bit(q, len + i, 0);
-            SET_ELM_PLIST(shifts, (len + i - 1) % elts + 1, ashift);
-            CHANGED_BAG(shifts);
+            SET_ELM_PLIST_WB(shifts, (len + i - 1) % elts + 1, ashift);
         }
 
         // reload the tables, in case there was a garbage collection
@@ -5341,21 +5335,18 @@ static Obj SemiEchelonListVec8Bits(Obj mat, UInt TransformationsNeeded)
         if (j <= ncols) {
             y = INV(convtab1[x]);
             MultVec8BitFFEInner(row, row, y, 1, ncols);
-            SET_ELM_PLIST(vectors, ++nvecs, row);
-            CHANGED_BAG(vectors);
+            SET_ELM_PLIST_WB(vectors, ++nvecs, row);
             SET_LEN_PLIST(vectors, nvecs);
             SET_ELM_PLIST(heads, j, INTOBJ_INT(nvecs));
             if (TransformationsNeeded) {
                 MultVec8BitFFEInner(coeffrow, coeffrow, y, 1, nrows);
-                SET_ELM_PLIST(coeffs, nvecs, coeffrow);
-                CHANGED_BAG(coeffs);
+                SET_ELM_PLIST_WB(coeffs, nvecs, coeffrow);
                 SET_LEN_PLIST(coeffs, nvecs);
             }
             // garbage collection OK again after here
         }
         else if (TransformationsNeeded) {
-            SET_ELM_PLIST(relns, ++nrels, coeffrow);
-            CHANGED_BAG(relns);
+            SET_ELM_PLIST_WB(relns, ++nrels, coeffrow);
             SET_LEN_PLIST(relns, nrels);
         }
         TakeInterrupt();

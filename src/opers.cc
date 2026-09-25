@@ -1575,8 +1575,7 @@ static inline Obj CacheOper(Obj oper, UInt i)
         SET_LEN_PLIST(cache, len);
 #ifdef HPCGAP
         MakeBagPublic(cache);
-        SET_ELM_PLIST(STATE(MethodCache), cacheIndex, cache);
-        CHANGED_BAG(STATE(MethodCache));
+        SET_ELM_PLIST_WB(STATE(MethodCache), cacheIndex, cache);
 #else
         SET_CACHE_OPER(oper, i, cache);
 #endif
@@ -3080,8 +3079,7 @@ static Obj FuncNEW_GLOBAL_FUNCTION(Obj self, Obj name)
     args = MakeImmString("args");
     list = NEW_PLIST( T_PLIST, 1 );
     SET_LEN_PLIST( list, 1 );
-    SET_ELM_PLIST( list, 1, args );
-    CHANGED_BAG( list );
+    SET_ELM_PLIST_WB( list, 1, args );
     return NewGlobalFunction( name, list );
 }
 
@@ -3382,21 +3380,18 @@ static Obj FuncOPERS_CACHE_INFO(Obj self)
     for (i = 1; i <= CACHE_SIZE; i++) {
         Obj mat = NEW_PLIST_IMM(T_PLIST, CACHE_SIZE);
         SET_LEN_PLIST(mat, CACHE_SIZE);
-        SET_ELM_PLIST(tensor, i, mat);
-        CHANGED_BAG(tensor);
+        SET_ELM_PLIST_WB(tensor, i, mat);
         for (Int j = 1; j <= CACHE_SIZE; j++) {
             Obj vec = NEW_PLIST_IMM(T_PLIST, 7);
             SET_LEN_PLIST(vec, 7);
-            SET_ELM_PLIST(mat, j, vec);
-            CHANGED_BAG(mat);
+            SET_ELM_PLIST_WB(mat, j, vec);
             for (Int k = 0; k <= 6; k++)
                 SET_ELM_PLIST(
                     vec, k + 1,
                     INTOBJ_INT(CacheHitStatistics[i - 1][j - 1][k]));
         }
     }
-    SET_ELM_PLIST(list, 12, tensor);
-    CHANGED_BAG(list);
+    SET_ELM_PLIST_WB(list, 12, tensor);
 
     // and similarly the 2D matrix of cache miss information (by
     // precedence and number of arguments)
@@ -3405,14 +3400,12 @@ static Obj FuncOPERS_CACHE_INFO(Obj self)
     for (Int j = 1; j <= CACHE_SIZE + 1; j++) {
         Obj vec = NEW_PLIST_IMM(T_PLIST, 7);
         SET_LEN_PLIST(vec, 7);
-        SET_ELM_PLIST(mat, j, vec);
-        CHANGED_BAG(mat);
+        SET_ELM_PLIST_WB(mat, j, vec);
         for (Int k = 0; k <= 6; k++)
             SET_ELM_PLIST(vec, k + 1,
                           INTOBJ_INT(CacheMissStatistics[j - 1][k]));
     }
-    SET_ELM_PLIST(list, 13, mat);
-    CHANGED_BAG(list);
+    SET_ELM_PLIST_WB(list, 13, mat);
 #else
     for (i = 1; i <= 13; i++)
         SET_ELM_PLIST(list, i, INTOBJ_INT(0));

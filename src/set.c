@@ -113,8 +113,7 @@ Obj SetList (
         elm = ELMV0_LIST( list, i );
         if ( elm != 0 ) {
             lenSet += 1;
-            SET_ELM_PLIST( set, lenSet, elm );
-            CHANGED_BAG(set);   // in case elm had to be made, not just extracted
+            SET_ELM_PLIST_WB( set, lenSet, elm );
         }
     }
     SET_LEN_PLIST( set, lenSet );
@@ -343,8 +342,7 @@ static Obj FuncADD_SET(Obj self, Obj set, Obj obj)
     SET_LEN_PLIST( set, len+1 );
     Obj * ptr = ADDR_OBJ(set) + pos;
     SyMemmove(ptr + 1, ptr, sizeof(Obj) * (len - pos + 1));
-    SET_ELM_PLIST( set, pos, obj );
-    CHANGED_BAG( set );
+    SET_ELM_PLIST_WB( set, pos, obj );
 
     // fix up the type of the result
     if ( HAS_FILT_LIST( set, FN_IS_SSORT ) ) {

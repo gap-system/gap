@@ -838,8 +838,7 @@ static Obj FuncGASMAN_STATS(Obj self)
   for (i = 1; i <= 2; i++)
     {
       row = NEW_PLIST_IMM(T_PLIST_CYC, 9);
-      SET_ELM_PLIST(res, i, row);
-      CHANGED_BAG(res);
+      SET_ELM_PLIST_WB(res, i, row);
       SET_LEN_PLIST(row, 9);
       for (j = 1; j <= 8; j++)
         {

@@ -862,8 +862,7 @@ static ExecStatus ExecInfo(Stat stat)
             // of arg, which may happen after the pointer to args has been
             // extracted
             arg = EVAL_EXPR(ARGI_INFO(stat, i+2));
-            SET_ELM_PLIST(args, i, arg);
-            CHANGED_BAG(args);
+            SET_ELM_PLIST_WB(args, i, arg);
         }
 
         // and print them

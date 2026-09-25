@@ -269,8 +269,7 @@ static Obj FuncAPPEND_LIST_INTR(Obj self, Obj list1, Obj list2)
     else {
         for ( i = 1; i <= len2; i++ ) {
             elm = ELMV0_LIST( list2, i );
-            SET_ELM_PLIST( list1, i+len1, elm );
-            CHANGED_BAG( list1 );
+            SET_ELM_PLIST_WB( list1, i+len1, elm );
         }
     }
 
@@ -967,11 +966,9 @@ static Obj FuncOnPairs(Obj self, Obj pair, Obj elm)
 
     // and enter the images of the points into the result bag
     tmp = POW( ELMV_LIST( pair, 1 ), elm );
-    SET_ELM_PLIST( img, 1, tmp );
-    CHANGED_BAG( img );
+    SET_ELM_PLIST_WB( img, 1, tmp );
     tmp = POW( ELMV_LIST( pair, 2 ), elm );
-    SET_ELM_PLIST( img, 2, tmp );
-    CHANGED_BAG( img );
+    SET_ELM_PLIST_WB( img, 2, tmp );
 
     return img;
 }
@@ -1028,8 +1025,7 @@ static Obj FuncOnTuples(Obj self, Obj tuple, Obj elm)
     // and enter the images of the points into the result bag
     for ( i = LEN_LIST(tuple); 1 <= i; i-- ) {
         tmp = POW( ELMV_LIST( tuple, i ), elm );
-        SET_ELM_PLIST( img, i, tmp );
-        CHANGED_BAG( img );
+        SET_ELM_PLIST_WB( img, i, tmp );
     }
 
     return img;
