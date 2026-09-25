@@ -1202,7 +1202,9 @@ InstallMethod( DefaultFieldOfMatrixGroup,
 ##
 #M  AsInternalFFE( <zmodpzobj> )
 ##
-##  A ZmodpZ object can be a finite field element, but is never equal to
-##  an internal FFE, so this method just returns fail
+##  Only primes up to 'MAXSIZE_GF_INTERNAL' have internal FFEs.
 ##
-InstallMethod(AsInternalFFE, [IsZmodpZObj], ReturnFail);
+InstallMethod( AsInternalFFE, [ IsZmodpZObjSmall and IsModulusRep ],
+    x -> x![1] * Z( Characteristic( x ) )^0 );
+
+InstallMethod( AsInternalFFE, [ IsZmodpZObjLarge ], ReturnFail );
