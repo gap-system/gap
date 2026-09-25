@@ -867,10 +867,43 @@ InstallGlobalFunction("Test", function(arg)
 end);
 
 
+BindGlobal("TEST_WRITE_STATS", function(fnam, stats)
+  local esc, entry, out;
+
+  esc := function(str)
+    str := ReplacedString(str, "\\", "\\\\");
+    str := ReplacedString(str, "\"", "\\\"");
+    return Concatenation("\"", ReplacedString(str, "\n", "\\n"), "\"");
+  end;
+
+  entry := f -> Concatenation(
+      "    {\"name\": ", esc(f.name),
+      ", \"shortName\": ", esc(f.shortName),
+      ", \"failures\": ", String(f.failures),
+      ", \"time\": ", String(f.time),
+      ", \"gcTime\": ", String(f.gcTime),
+      ", \"mem\": ", String(f.mem), "}");
+
+  out := Concatenation(
+      "{\n  \"failures\": ", String(stats.failures),
+      ",\n  \"failedFiles\": ", String(stats.failedFiles),
+      ",\n  \"time\": ", String(stats.time),
+      ",\n  \"gcTime\": ", String(stats.gcTime),
+      ",\n  \"mem\": ", String(stats.mem),
+      ",\n  \"files\": [\n",
+      JoinStringsWithSeparator(List(stats.files, entry), ",\n"),
+      "\n  ]\n}\n");
+
+  if FileString(fnam, out) = fail then
+    Info(InfoWarning, 1, "Could not write test statistics to ", fnam);
+  fi;
+end);
+
 ##  <#GAPDoc Label="TestDirectory">
 ##  <ManSection>
 ##  <Func Name="TestDirectory" Arg='inlist[, optrec]'/>
-##  <Returns><K>true</K> or <K>false</K>.</Returns>
+##  <Returns><K>true</K> or <K>false</K>, or a record if <C>returnStats</C>
+##  is given.</Returns>
 ##  <Description>
 ##  The argument <Arg>inlist</Arg> must be either a single filename
 ##  or directory name, or a list of filenames and directories.
@@ -915,6 +948,23 @@ end);
 ##  <Item>Rather than returning <K>true</K> or <K>false</K>, exit GAP with the return value
 ##  of GAP set to success or fail, depending on if all tests passed (defaults to <K>false</K>).
 ##  </Item>
+##  <Mark><C>returnStats</C></Mark>
+##  <Item>If <K>true</K>, return the measurements taken while testing instead
+##  of <K>true</K> or <K>false</K> (defaults to <K>false</K>).
+##  The result is a record with the totals <C>failures</C>, <C>failedFiles</C>,
+##  <C>time</C>, <C>gcTime</C> and <C>mem</C>, and a component <C>files</C>
+##  holding one record per test file with its <C>name</C>, <C>shortName</C>,
+##  <C>failures</C>, <C>time</C> and <C>gcTime</C> in milliseconds, and
+##  <C>mem</C> in bytes.
+##  Under <C>earlyStop</C> only the files actually run are listed;
+##  <C>exitGAP</C> takes precedence, as it never returns.
+##  </Item>
+##  <Mark><C>statsFile</C></Mark>
+##  <Item>If this is bound to a string it is considered as the name of a file
+##  to write those same measurements to, as JSON (defaults to <K>false</K>).
+##  This is written before <C>exitGAP</C> quits, so it is the way to collect
+##  the numbers from a test run that ends by exiting &GAP;.
+##  </Item>
 ##  </List>
 ##
 ##  </Description>
@@ -924,9 +974,9 @@ InstallGlobalFunction( "TestDirectory", function(arg)
     local  testTotalFailures, testFailedFiles, totalTime, totalMem, STOP_TEST_CPY,
            basedirs, nopts, opts, testOptions, earlyStop,
            showProgress, suppressStatusMessage, exitGAP, c, files,
-           filetimes, filemems, recurseFiles, f, i, startTime,
+           recurseFiles, f, i, startTime, finish, result,
            startMem, testResult, time, mem, startGcTime, gctime,
-           totalGcTime, filegctimes;
+           totalGcTime;
 
   testTotalFailures := 0;
   testFailedFiles := 0;
@@ -958,6 +1008,8 @@ InstallGlobalFunction( "TestDirectory", function(arg)
     rewriteToFile := false,
     exclude := [],
     exitGAP := false,
+    returnStats := false,
+    statsFile := false,
   );
 
   for c in RecNames(nopts) do
@@ -971,9 +1023,24 @@ InstallGlobalFunction( "TestDirectory", function(arg)
   fi;
 
   files := [];
-  filetimes := [];
-  filemems := [];
-  filegctimes := [];
+
+  # build the result, and write it out if asked; must run before any QuitGap
+  finish := function()
+    local stats;
+    stats := rec( files := files,
+                  failures := testTotalFailures,
+                  failedFiles := testFailedFiles,
+                  time := totalTime,
+                  gcTime := totalGcTime,
+                  mem := totalMem );
+    if IsString(opts.statsFile) then
+      TEST_WRITE_STATS(opts.statsFile, stats);
+    fi;
+    if not opts.returnStats then
+      return testTotalFailures = 0;
+    fi;
+    return stats;
+  end;
 
   recurseFiles := function(dirs, prefix)
     local dircontents, testfiles, t, testrecs, shortName, recursedirs, d, subdirs;
@@ -1033,31 +1100,35 @@ InstallGlobalFunction( "TestDirectory", function(arg)
       opts.testOptions.rewriteToFile := files[i].name;
     fi;
     testResult := Test(files[i].name, opts.testOptions);
+
+    time := Runtime() - startTime;
+    mem := TotalMemoryAllocated() - startMem;
+    gctime := TOTAL_GC_TIME() - startGcTime;
+    files[i].failures := testResult;
+    files[i].time := time;
+    files[i].gcTime := gctime;
+    files[i].mem := mem;
+    totalTime := totalTime + time;
+    totalMem := totalMem + mem;
+    totalGcTime := totalGcTime + gctime;
+    testTotalFailures := testTotalFailures + testResult;
+    if testResult <> 0 then
+      testFailedFiles := testFailedFiles + 1;
+    fi;
+
     if (testResult <> 0) and opts.earlyStop then
       STOP_TEST := STOP_TEST_CPY;
       if not opts.suppressStatusMessage then
         # Do not change the next line - it is needed for testing scripts
         Print( "#I  Errors detected while testing\n\n" );
       fi;
+      files := files{[1..i]};
+      result := finish();
       if opts.exitGAP then
         QuitGap(1);
       fi;
-      return false;
+      return result;
     fi;
-    if testResult <> 0 then
-      testFailedFiles := testFailedFiles + 1;
-    fi;
-    testTotalFailures := testTotalFailures + testResult;
-
-    time := Runtime() - startTime;
-    mem := TotalMemoryAllocated() - startMem;
-    gctime := TOTAL_GC_TIME() - startGcTime;
-    filetimes[i] := time;
-    filemems[i] := mem;
-    filegctimes[i] := gctime;
-    totalTime := totalTime + time;
-    totalMem := totalMem + mem;
-    totalGcTime := totalGcTime + gctime;
 
     if opts.showProgress then
         Print( String( time, 8 ), " ms (",String(gctime)," ms GC) and ",
@@ -1088,6 +1159,8 @@ InstallGlobalFunction( "TestDirectory", function(arg)
     fi;
   fi;
 
+  result := finish();
+
   if opts.exitGAP then
     if testTotalFailures = 0 then
       QuitGap(0);
@@ -1096,7 +1169,7 @@ InstallGlobalFunction( "TestDirectory", function(arg)
     fi;
   fi;
 
-  return testTotalFailures = 0;
+  return result;
 end);
 
 #############################################################################
