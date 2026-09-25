@@ -359,9 +359,18 @@ static void * SyAnonMMap(size_t size)
     void *result;
     size = SyRoundUpToPagesize(size);
 #ifdef SYS_IS_64_BIT
+#ifdef HAVE_SV39_MMU
+    /* On Linux (the only place we check for it), this MMU can only
+     * address 38 bits of virtual memory. The hint supplied to mmap()
+     * therefore needs to be much smaller than the default 16TB. Trial
+     * and error shows that 96GB works well enough. */
+    result = mmap((void *) (96L*1024*1024*1024), size,
+                  PROT_READ|PROT_WRITE, GAP_MMAP_FLAGS, -1, 0);
+#else
     // The following is at 16 Terabyte:
     result = mmap((void *) (16L*1024*1024*1024*1024), size,
                   PROT_READ|PROT_WRITE, GAP_MMAP_FLAGS, -1, 0);
+#endif
     if (result == MAP_FAILED) {
         result = mmap(NULL, size, PROT_READ|PROT_WRITE,
             GAP_MMAP_FLAGS, -1, 0);
