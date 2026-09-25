@@ -59,15 +59,16 @@ void syWinPut(Int fid, const Char * cmd, const Char * str);
 
 /****************************************************************************
 **
-*F  SyWinCmd( <str>, <len> )  . . . . . . . . . . . .  . execute a window cmd
+*F  SyWinCmd( <str> ) . . . . . . . . . . . . . . . . .  execute a window cmd
 **
-**  'SyWinCmd' send   the  command <str> to  the   window  handler (<len>  is
-**  ignored).  In the string <str> '@' characters are duplicated, and control
-**  characters  are converted to  '@<chr>', e.g.,  <newline> is converted  to
-**  '@J'.  Then  'SyWinCmd' waits for  the window handlers answer and returns
-**  that string.
+**  'SyWinCmd' sends the command <str> to the window handler.  In the string
+**  <str> '@' characters are duplicated, and control characters are converted
+**  to '@<chr>', e.g., <newline> is converted to '@J'.  Then 'SyWinCmd' waits
+**  for the window handlers answer '@a<len>+<data>' and returns <data> with
+**  these conversions undone, as a string object.  <len> is the length of
+**  <data> as sent, least significant digit first.
 */
-const Char * SyWinCmd(const Char * str, UInt len);
+Obj SyWinCmd(const Char * str);
 
 
 /****************************************************************************

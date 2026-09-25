@@ -567,11 +567,14 @@ static Obj FuncWindowCmd(Obj self, Obj args)
 {
   Obj             tmp;
   Obj               list;
+  Obj             answer;
   Int             len;
   Int             n,  m;
   Int             i;
+  Int             pos;
+  UChar           kind;
   Char *          ptr;
-  const Char *    inptr;
+  const UChar *   inptr;
   const Char *    qtr;
 
   RequireSmallList(SELF_NAME, args);
@@ -640,36 +643,43 @@ static Obj FuncWindowCmd(Obj self, Obj args)
 
   // now call the window front end with the argument string
   qtr = CONST_CSTR_STRING(WindowCmdString);
-  inptr = SyWinCmd( qtr, strlen(qtr) );
-  len = strlen(inptr);
+  answer = SyWinCmd(qtr);
+  len = GET_LEN_STRING(answer);
 
   // now convert result back into a list
   list = NEW_PLIST( T_PLIST, 11 );
   i = 1;
-  while ( 0 < len ) {
-    if ( *inptr == 'I' ) {
-      inptr++;
-      for ( n=0,m=1; '0' <= *inptr && *inptr <= '9'; inptr++,m *= 10,len-- )
-        n += (*inptr-'0') * m;
-      if ( *inptr++ == '-' )
-        n *= -1;
-      len -= 2;
-      AssPlist( list, i, INTOBJ_INT(n) );
-    }
-    else if ( *inptr == 'S' ) {
-      inptr++;
-      for ( n=0,m=1;  '0' <= *inptr && *inptr <= '9';  inptr++,m *= 10,len-- )
-        n += (*inptr-'0') * m;
-      inptr++; // ignore the '+'
-      tmp = MakeImmStringWithLen(inptr, n);
-      inptr += n;
-      len -= n+2;
-      AssPlist( list, i, tmp );
-    }
-    else {
-      ErrorQuit( "unknown return value '%s'", (Int)inptr, 0 );
-    }
-    i++;
+  pos = 0;
+  while (pos < len) {
+      // a garbage collection may have moved <answer>; it is null terminated,
+      // so reading the byte at <pos> = <len> is fine
+      inptr = CONST_CHARS_STRING(answer);
+      kind = inptr[pos++];
+      for (n = 0, m = 1; IsDigit(inptr[pos]); pos++, m *= 10) {
+          if (INT_INTOBJ_MAX / 10 < m)
+              ErrorQuit("WindowCmd: number too large in answer", 0, 0);
+          n += (inptr[pos] - '0') * m;
+      }
+      if (kind == 'I') {
+          if (inptr[pos++] == '-')
+              n *= -1;
+          AssPlist(list, i, INTOBJ_INT(n));
+      }
+      else if (kind == 'S') {
+          pos++;    // ignore the '+'
+          if (len - pos < n)
+              ErrorQuit("WindowCmd: string of length %d exceeds the answer",
+                        n, 0);
+          tmp = NEW_STRING(n);
+          memcpy(CHARS_STRING(tmp), CONST_CHARS_STRING(answer) + pos, n);
+          MakeImmutableNoRecurse(tmp);
+          pos += n;
+          AssPlist(list, i, tmp);
+      }
+      else {
+          ErrorQuit("WindowCmd: unknown entry '%c' in answer", kind, 0);
+      }
+      i++;
   }
 
   // if the first entry is one signal an error
