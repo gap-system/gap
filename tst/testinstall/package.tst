@@ -690,6 +690,18 @@ gap> Last( GAPInfo.PackagesInfo.mockpkg ).InstallationPath =
 >      GAPInfo.PackagesLoaded.mockpkg[1];
 true
 
+# paths are made absolute, so equivalent paths are not added again
+gap> n:= Length( GAPInfo.PackageDirectories );;
+gap> ExtendPackageDirectories( [ Concatenation( Filename( mockpkgpath, "" ),
+>                                               "../mockpkg" ) ] );
+gap> Length( GAPInfo.PackageDirectories ) = n;
+true
+gap> n:= Length( GAPInfo.RootPaths );;
+gap> ExtendRootDirectories( List( Filtered( GAPInfo.RootPaths, IsDirectoryPath ),
+>        path -> Concatenation( path, "./" ) ) );
+gap> Length( GAPInfo.RootPaths ) = n;
+true
+
 #
 gap> SetPackagePath( "mockpkg", Filename( mockpkgpath, "" ) );
 gap> SetPackagePath( "mockpkg", "/some/other/directory" );

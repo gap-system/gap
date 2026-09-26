@@ -304,7 +304,7 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
     # the first time this is called, add the cmd line args to the list
     if IsEmpty(GAPInfo.PackageDirectories) then
         for pkgdirstrs in GAPInfo.CommandLineOptions.packagedirs do
-            pkgdirs:= List( SplitString( pkgdirstrs, ";" ), Directory );
+            pkgdirs:= List( List( SplitString( pkgdirstrs, ";" ), GAP_realpath ), Directory );
             for pkgdir in pkgdirs do
                 if not pkgdir in GAPInfo.PackageDirectories then
                     Add( GAPInfo.PackageDirectories, pkgdir );
@@ -1858,14 +1858,15 @@ InstallGlobalFunction( SetPackagePath, function( pkgname, pkgpath )
 InstallGlobalFunction( ExtendRootDirectories, function( rootpaths )
     local i;
 
+    rootpaths:= List( rootpaths, GAP_realpath );
+    # 'DirectoriesLibrary' concatenates root paths with directory names.
+    for i in [ 1 .. Length( rootpaths ) ] do
+      if not EndsWith( rootpaths[i], "/" ) then
+        rootpaths[i]:= Concatenation( rootpaths[i], "/" );
+      fi;
+    od;
     rootpaths:= Filtered( rootpaths, path -> not path in GAPInfo.RootPaths );
     if not IsEmpty( rootpaths ) then
-      # 'DirectoriesLibrary' concatenates root paths with directory names.
-      for i in [ 1 .. Length( rootpaths ) ] do
-        if not EndsWith( rootpaths[i], "/" ) then
-          rootpaths[i]:= Concatenation( rootpaths[i], "/" );
-        fi;
-      od;
       # Append the new root paths.
       GAPInfo.RootPaths:= Immutable( Concatenation( GAPInfo.RootPaths,
           rootpaths ) );
@@ -1889,11 +1890,12 @@ InstallGlobalFunction( ExtendPackageDirectories, function( paths_or_dirs )
     local p, changed;
     changed:= false;
     for p in paths_or_dirs do
-      if IsString( p ) then
-        p:= Directory( p );
-      elif not IsDirectory( p ) then
+      if IsDirectory( p ) then
+        p:= Filename( p, "" );
+      elif not IsString( p ) then
         Error("input must be a list of path strings or directory objects");
       fi;
+      p:= Directory( GAP_realpath( p ) );
       if not p in GAPInfo.PackageDirectories then
         Add( GAPInfo.PackageDirectories, p );
         changed:= true;
