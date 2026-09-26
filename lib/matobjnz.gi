@@ -295,13 +295,13 @@ end );
 InstallOtherMethod( \+, "for zmodnz vector and plist",IsIdenticalObj,
   [ IsZmodnZVectorRep, IsList ],
 function( a, b )
-  return a+Vector(BaseDomain(a),b);
+  return a+Vector(b,a);
 end );
 
 InstallOtherMethod( \+, "for plist and zmodnz vector",IsIdenticalObj,
   [ IsList,IsZmodnZVectorRep ],
 function( a, b )
-  return Vector(BaseDomain(b),a)+b;
+  return Vector(a,b)+b;
 end );
 
 InstallMethod( \-, "for two zmodnz vectors",IsIdenticalObj,
@@ -325,13 +325,13 @@ end );
 InstallOtherMethod( \-, "for zmodnz vector and plist",IsIdenticalObj,
   [ IsZmodnZVectorRep, IsList ],
 function( a, b )
-  return a-Vector(BaseDomain(a),b);
+  return a-Vector(b,a);
 end );
 
 InstallOtherMethod( \-, "for plist and zmodnz vector",IsIdenticalObj,
   [ IsList,IsZmodnZVectorRep ],
 function( a, b )
-  return Vector(BaseDomain(b),a)-b;
+  return Vector(a,b)-b;
 end );
 
 InstallMethod( \=, "for two zmodnz vectors",IsIdenticalObj,
@@ -372,7 +372,7 @@ InstallMethod( AddRowVector, "for two zmodnz vectors, and a scalar",
   [ IsZmodnZVectorRep and IsMutable, IsZmodnZVectorRep, IsObject ],
 function( a, b, s )
 local i,m;
-  if IsZmodnZObj(s) then s:=Int(s);fi;
+  if IsFFE(s) or IsZmodnZObj(s) then s:=Int(s);fi;
   a:=a![ELSPOS];
   if IsSmallIntRep(s) then
       ADD_ROW_VECTOR_3_FAST( a, b![ELSPOS], s );
@@ -392,7 +392,7 @@ InstallOtherMethod( AddRowVector, "for zmodnz vector, plist, and a scalar",
 function( a, b, s )
 local i,m;
   if not ForAll(b,IsModulusRep) then TryNextMethod();fi;
-  if IsZmodnZObj(s) then s:=Int(s);fi;
+  if IsFFE(s) or IsZmodnZObj(s) then s:=Int(s);fi;
   m:=Size(a![BDPOS]);
   a:=a![ELSPOS];
   b:=List(b,x->x![1]);
@@ -434,7 +434,7 @@ InstallMethod( AddRowVector,
     IsObject, IsPosInt, IsPosInt ],
 function( a, b, s, from, to )
 local i,m;
-  if IsZmodnZObj(s) then s:=Int(s);fi;
+  if IsFFE(s) or IsZmodnZObj(s) then s:=Int(s);fi;
   a:=a![ELSPOS];
   if IsSmallIntRep(s) then
       ADD_ROW_VECTOR_5_FAST( a, b![ELSPOS], s, from, to );
@@ -455,7 +455,7 @@ InstallMethod( MultVectorLeft,
 function( v, s )
 local i,m;
   m:=Size(v![BDPOS]);
-  if IsZmodnZObj(s) then s:=Int(s);fi;
+  if IsFFE(s) or IsZmodnZObj(s) then s:=Int(s);fi;
   v:=v![ELSPOS];
   MULT_VECTOR_2_FAST(v,s);
   if s>=0 then
@@ -474,7 +474,7 @@ local i,m,t,b,v;
   t:=TypeObj(w);
   b:=w![BDPOS];
   m:=Size(b);
-  if IsZmodnZObj(s) then s:=Int(s);fi;
+  if IsFFE(s) or IsZmodnZObj(s) then s:=Int(s);fi;
   v:=PROD_LIST_SCL_DEFAULT(w![ELSPOS],s);
   if not IsMutable(v) then
     v:=ShallowCopy(v);
@@ -1090,7 +1090,7 @@ InstallMethod( \*, "for two zmodnz matrices",IsIdenticalObj,
               #fi;
             od;
             ZNZVECREDUCE(w,b![RLPOS],m);
-            w:=Vector(r,w);
+            w:=Vector(w,b![EMPOS]);
 
             l[i] := w;
         fi;
@@ -1104,7 +1104,7 @@ InstallMethod( \*, "for two zmodnz matrices",IsIdenticalObj,
 InstallMethod(\*,"for zmodnz matrix and ordinary matrix",IsIdenticalObj,
   [IsZmodnZMatrixRep,IsMatrix],
 function(a,b)
-  return Matrix(BaseDomain(a),List(RowsOfMatrix(a),x->x*b));
+  return Matrix(List(RowsOfMatrix(a),x->x*b),NumberColumns(b),a);
 end);
 
 
@@ -1363,7 +1363,7 @@ BindGlobal( "ZMZVECMAT", function( v, m )
       fi;
     od;
     ZNZVECREDUCE(res,Length(res),Size(r));
-    res:=Vector(r,res);
+    res:=Vector(res,v);
 
     if not IsMutable(v) and not IsMutable(m) then
         MakeImmutable(res);
@@ -1394,7 +1394,7 @@ BindGlobal( "PLISTVECZMZMAT", function( v, m )
       fi;
     od;
     ZNZVECREDUCE(res,Length(res),Size(r));
-    res:=Vector(r,res);
+    res:=Vector(res,m![EMPOS]);
 
     if not IsMutable(v) and not IsMutable(m) then
         MakeImmutable(res);
@@ -1421,7 +1421,7 @@ BindGlobal( "ZMZVECTIMESPLISTMAT", function( v, m )
         AddRowVector(res,m[i],s);
       fi;
     od;
-    res:=Vector(r,res);
+    res:=Vector(res,v);
 
     if not IsMutable(v) and not IsMutable(m) then
         MakeImmutable(res);
