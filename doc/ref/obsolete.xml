@@ -261,6 +261,8 @@ to use even in code which is meant to run in older GAP versions.
 
 </List>
 
+<#Include Label="NaturalHomomorphism">
+
 <ManSection>
 <InfoClass Name="InfoObsolete"/>
 <Description>
