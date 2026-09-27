@@ -344,7 +344,7 @@ InstallGlobalFunction( SCRMakeStabStrong,
                 basesize[where[S.orbit[1]]]
                     := basesize[where[S.orbit[1]]] + 1;
             fi;
-            missing := Difference( missing, [ firstmove ] );
+            RemoveSet( missing, firstmove );
         else
             if Position(base,firstmove) < Position(base,S.orbit[1]) then
                 S.stabilizer               := ShallowCopy(S);
@@ -358,7 +358,7 @@ InstallGlobalFunction( SCRMakeStabStrong,
                     basesize[where[S.orbit[1]]]
                       := basesize[where[S.orbit[1]]] + 1;
                 fi;
-                missing := Difference( missing, [ firstmove ] );
+                RemoveSet( missing, firstmove );
             fi;
         fi;
 
