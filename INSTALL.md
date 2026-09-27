@@ -242,6 +242,9 @@ description of each is also available via
 
     ./configure --help
 
+One option not described below is `--with-gc`, which selects the garbage
+collector (GASMAN by default).
+
 GMP
 ---
 

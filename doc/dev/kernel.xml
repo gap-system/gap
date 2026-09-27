@@ -184,6 +184,24 @@ pass control back from that level:
 <Section Label="Sect-Gasman">
 <Heading>Garbage collection in &GAP;</Heading>
 
+The garbage collector is chosen with the <C>--with-gc</C> option of
+<C>configure</C>:
+<List>
+<Item><C>gasman</C>: &GASMAN;, the default, described below;</Item>
+<Item><C>julia</C>: the Julia GC, the default with <C>--with-julia</C>,
+  as used by GAP.jl;</Item>
+<Item><C>boehm</C>: the Boehm-Demers-Weiser GC, the default and only choice
+  for HPC-GAP.</Item>
+</List>
+All three implement the bag interface in <F>gasman.h</F>, and its rules below
+apply to each. Only &GASMAN; moves bags during a collection (elsewhere just
+<C>ResizeBag</C> may move bag data) and supports workspaces, the weak pointer
+interface of Subsection
+<Ref Subsect="The GASMAN Interface for Weak Pointer Objects"/>, and the
+debugging options <C>--enable-memory-checking</C> and
+<C>--enable-valgrind</C>.
+<P/>
+
 <Subsection Label="Subsect-Gasman">
 <Heading>&GASMAN;</Heading>
 
