@@ -1,4 +1,4 @@
-#@local R, a, b, v, w, pa, pv, s, G, hom
+#@local R, a, b, m, v, w, pa, pv, s, G, hom
 gap> START_TEST( "matobjnz.tst" );
 
 # Arithmetic results stay in the ZmodnZ representations, for a prime
@@ -30,6 +30,16 @@ gap> for R in [ Integers mod 7, Integers mod 8 ] do
 >     Assert( 0, IsZmodnZVectorRep( w ) and Unpack( w ) = pv * pa );
 >   od;
 > od;
+
+# Products with a matrix row, including a prime above the FFE range
+gap> for R in [ Integers mod 15, GF(7), GF( NextPrimeInt( 2^16 ) ) ] do
+>      m:= Matrix( IsZmodnZMatrixRep, R, [ [ 1, 2 ], [ 3, 4 ] ] );
+>      v:= m[1];
+>      Assert( 0, Unpack( m * m ) = Unpack( m ) * Unpack( m ) );
+>      Assert( 0, ForAll( RowsOfMatrix( m * m ), IsZmodnZVectorRep ) );
+>      Assert( 0, IsZmodnZVectorRep( v * m ) );
+>      Assert( 0, Unpack( v * m ) = Unpack( v ) * Unpack( m ) );
+>    od;
 
 # Groups of ZmodnZ matrices
 gap> R := Integers mod 7;;
