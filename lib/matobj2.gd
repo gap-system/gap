@@ -729,6 +729,16 @@ DeclareOperation( "StandardBasisVector",
 ##  <Ref Attr="BaseDomain" Label="for a vector object"/> are guessed from
 ##  this list.
 ##  <P/>
+##  The variants without an example vector object are intended only for
+##  situations where no such example is available.
+##  If a vector object <A>v</A> of the intended kind is known then use
+##  <C>Vector( </C><A>list</A><C>, </C><A>v</A><C> )</C> instead of
+##  <C>Vector( BaseDomain( </C><A>v</A><C> ), </C><A>list</A><C> )</C>,
+##  because the latter ignores the
+##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> value of
+##  <A>v</A>, and the guessed value may differ from it,
+##  see the example below.
+##  <P/>
 ##  The variant <C>Vector( </C><A>v1</A><C>, </C><A>v2</A><C> )</C>
 ##  is supported also for the case that <A>v2</A> is a row vector but not
 ##  a vector object.
@@ -750,6 +760,16 @@ DeclareOperation( "StandardBasisVector",
 ##  Default methods for
 ##  <Ref Oper="Vector" Label="for filter, base domain, and list"/>
 ##  delegate to <Ref Oper="NewVector"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> R:= Integers mod 8;;
+##  gap> v:= Vector( IsZmodnZVectorRep, R, [ 1, 2, 3 ] );
+##  <vector mod 8: [ 1, 2, 3 ]>
+##  gap> Vector( [ 4, 5, 6 ], v );
+##  <vector mod 8: [ 4, 5, 6 ]>
+##  gap> Vector( BaseDomain( v ), [ 4, 5, 6 ] * One( R ) );
+##  <plist vector over (Integers mod 8) of length 3>
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1368,8 +1388,20 @@ DeclareOperation( "CompanionMatrix",
 ##  Finally, if only a list <A>list</A> and perhaps <A>ncols</A> is given
 ##  then both the
 ##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/> and the
-##  <Ref Attr="BaseDomain" Label="for a vector object"/> are guessed from
+##  <Ref Attr="BaseDomain" Label="for a matrix object"/> are guessed from
 ##  the list.
+##  <P/>
+##  The variants without an example matrix object are intended only for
+##  situations where no such example is available.
+##  If a matrix object <A>example_matobj</A> of the intended kind is known
+##  then use
+##  <C>Matrix( </C><A>list</A><C>, </C><A>example_matobj</A><C> )</C>
+##  instead of
+##  <C>Matrix( BaseDomain( </C><A>example_matobj</A><C> ), </C><A>list</A><C> )</C>,
+##  because the latter ignores the
+##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/> value of
+##  <A>example_matobj</A>, and the guessed value may differ from it,
+##  see the example below.
 ##  <P/>
 ##  If the global option <C>check</C> is set to <K>false</K> then
 ##  <Ref Oper="Matrix" Label="for filter, base domain, list, ncols"/>
@@ -1388,6 +1420,16 @@ DeclareOperation( "CompanionMatrix",
 ##  Default methods for
 ##  <Ref Oper="Matrix" Label="for filter, base domain, list, ncols"/>
 ##  delegate to <Ref Oper="NewMatrix"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> R:= Integers mod 8;;
+##  gap> M:= Matrix( IsZmodnZMatrixRep, R, [ [ 1, 2 ], [ 3, 4 ] ] );
+##  <matrix mod 8: [ [ 1, 2 ], [ 3, 4 ] ]>
+##  gap> Matrix( [ [ 5, 6 ], [ 7, 0 ] ], M );
+##  <matrix mod 8: [ [ 5, 6 ], [ 7, 0 ] ]>
+##  gap> Matrix( BaseDomain( M ), [ [ 5, 6 ], [ 7, 0 ] ] * One( R ) );
+##  <2x2-matrix over (Integers mod 8)>
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
