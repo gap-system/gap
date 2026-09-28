@@ -1351,7 +1351,7 @@ InstallOtherMethod( DirectSumOfAlgebras,
     else
       b1:= GeneratorsOfAlgebra( A1 );
       b2:= GeneratorsOfAlgebra( A2 );
-      type:= "geberators";
+      type:= "generators";
     fi;
 
     d1:= Length( b1 );
