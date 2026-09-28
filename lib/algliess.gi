@@ -1602,7 +1602,7 @@ end );
 ##
 
 InstallGlobalFunction( SimpleLieAlgebra, function( type, n, F )
-    local A;
+    local A, fam;
 
     # Check the arguments.
     if not ( IsString( type ) and ( IsInt( n ) or IsList( n ) ) and
@@ -1627,9 +1627,11 @@ InstallGlobalFunction( SimpleLieAlgebra, function( type, n, F )
              "\"F\", \"G\", \"H\", \"K\", \"M\", \"S\", \"W\" " );
     fi;
 
-    # store the pth power images in the family (LB)
+    # store the pth power images in the family (LB);
+    # 'A' may be a proper subalgebra of the family's full s.c. algebra
     if IsRestrictedLieAlgebra(A) then
-        FamilyObj(Representative(A))!.pMapping := PthPowerImages(Basis(A));
+        fam := FamilyObj(Representative(A));
+        fam!.pMapping := PthPowerImages(Basis(fam!.fullSCAlgebra));
     fi;
     return A;
 end );
