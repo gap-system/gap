@@ -2763,7 +2763,7 @@ Unicode:= "dummy";
 Encode:= "dummy";
 
 InstallGlobalFunction( BibEntry, function( arg )
-    local key, pkgname, pkginfo, GAP, ps, val, entry, author;
+    local key, pkgname, pkginfo, GAP, ps, monthyear, entry, author;
 
     key:= false;
     if   Length( arg ) = 1 and IsString( arg[1] ) then
@@ -2815,6 +2815,23 @@ InstallGlobalFunction( BibEntry, function( arg )
       return Encode( uni, "UTF-8" );
     end;
 
+    # <month> and <year> elements for a date yyyy-mm-dd or dd/mm/yyyy
+    monthyear:= function( date )
+      local val;
+
+      val:= SplitString( date, "-" );
+      if Length( val ) <> 3 then
+        val:= Reversed( SplitString( date, "/" ) );
+      fi;
+      if Length( val ) <> 3 then
+        return "";
+      elif Int( val[2] ) in [ 1 .. 12 ] then
+        val[2]:= NameMonth[ Int( val[2] ) ];
+      fi;
+      return Concatenation( "  <month>", val[2], "</month>\n",
+                            "  <year>", val[1], "</year>\n" );
+    end;
+
     # According to <Cite Key="La85"/>,
     # the supported fields of a Bib&TeX; entry of <C>@misc</C> type are
     # the following.
@@ -2858,18 +2875,6 @@ InstallGlobalFunction( BibEntry, function( arg )
     # the <C>edition</C> component is not supported in the base styles.
 
     if GAP then
-      val:= SplitString( GAPInfo.Date, "-" );
-      if Length( val ) = 3 then
-        if Int( val[2] ) in [ 1 .. 12 ] then
-          val:= Concatenation( "  <month>", NameMonth[ Int( val[2] ) ],
-                               "</month>\n  <year>", val[1], "</year>\n" );
-        else
-          val:= Concatenation( "  <month>", val[2],
-                               "</month>\n  <year>", val[1], "</year>\n" );
-        fi;
-      else
-        val:= "";
-      fi;
       entry:= Concatenation(
         "<entry id=\"", key, "\"><misc>\n",
         "  <title><C>GAP</C> &ndash;",
@@ -2877,7 +2882,7 @@ InstallGlobalFunction( BibEntry, function( arg )
         "         and <C>P</C>rogramming,",
         " <C>V</C>ersion ", GAPInfo.Version, "</title>\n",
         "  <howpublished><URL>https://www.gap-system.org</URL></howpublished>\n",
-        val,
+        monthyear( GAPInfo.Date ),
         "  <key>GAP</key>\n",
         "  <keywords>groups; *; gap; manual</keywords>\n",
         "  <other type=\"organization\">The GAP <C>G</C>roup</other>\n",
@@ -2914,18 +2919,8 @@ InstallGlobalFunction( BibEntry, function( arg )
           "  <howpublished><URL>", pkginfo.PackageWWWHome,
           "</URL></howpublished>\n" ) );
       fi;
-      if IsBound( pkginfo.Date ) and IsDenseList( pkginfo.Date )
-                                 and Length( pkginfo.Date ) = 10 then
-        if Int( pkginfo.Date{ [ 4, 5 ] } ) in [ 1 .. 12 ] then
-          Append( entry, Concatenation(
-            "  <month>", NameMonth[ Int( pkginfo.Date{ [ 4, 5 ] } ) ],
-            "</month>\n",
-            "  <year>", pkginfo.Date{ [ 7 .. 10 ] }, "</year>\n" ) );
-        else
-          Append( entry, Concatenation(
-            "  <month>", pkginfo.Date{ [ 4, 5 ] }, "</month>\n",
-            "  <year>", pkginfo.Date{ [ 7 .. 10 ] }, "</year>\n" ) );
-        fi;
+      if IsBound( pkginfo.Date ) and IsString( pkginfo.Date ) then
+        Append( entry, monthyear( pkginfo.Date ) );
       fi;
       Append( entry, "  <note>" );
 #     Append( entry, "<Package>GAP</Package> package</note>\n" );
