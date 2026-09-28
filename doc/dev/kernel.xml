@@ -155,6 +155,10 @@ and displays the structure of the &GAP; kernel:
 ------------------------------------------------------------------------------------
 </Alt>
 
+The <Q>gasman</Q> layer is the garbage collector, which need not be &GASMAN;
+(see Section <Ref Sect="Sect-Gasman"/>).
+<P/>
+
 The 2nd line of the scheme,
 the "interpreter/coder/expressions/statements/vars/funcs/calls/compiler" level
 is essentially the &GAP; runtime system. It takes in &GAP; code and (possibly
@@ -917,12 +921,13 @@ This will be broken by the garbage collection.
 </Subsection>
 
 <Subsection Label="Subsect-MoreGasman">
-<Heading>One More Bit of GASMAN interface</Heading>
+<Heading>One More Bit of GC interface</Heading>
 
 When you store a Bag ID in a &C; global variable, you must declare
-the address of the global to &GASMAN; (so the GC knows that the bag is
+the address of the global to the GC (so it knows that the bag is
 alive). This is done by calling <C>InitGlobalBag</C> passing the address
 and another "cookie" which is used by save/load.
+The Boehm GC finds such globals itself, but kernel code must still make this call.
 <P/>
 There are nice ways to do all the global and handler
 initializations from tables.
