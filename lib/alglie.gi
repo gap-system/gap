@@ -2465,7 +2465,13 @@ InstallMethod( SemiSimpleType,
         s:= Lcm( Flat( List( mp, p -> List( Factors( p ),
                            DegreeOfLaurentPolynomial ) )));
 
-        if p=65521 then p:= 1; fi;
+        if p^s > 65536 then
+          if 65521 <= p then
+            p:= 1;
+            break;
+          fi;
+          p:= NextPrimeInt( p );
+        fi;
 
       od;
 
