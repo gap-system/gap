@@ -381,6 +381,20 @@ gap> ValidatePackageInfo(info);
 ng a valid GitHub username
 false
 
+# BibEntry accepts both date formats
+gap> pkginfo := rec( PackageName := "TestPkg", Persons := [], Date := "2024-11-20" );;
+gap> Print( BibEntry( pkginfo ), "\n" );
+<entry id="TestPkg"><misc>
+  <title><C>TestPkg</C></title>
+  <month>Nov</month>
+  <year>2024</year>
+  <note>GAP package</note>
+</misc></entry>
+gap> entry := BibEntry( pkginfo );;
+gap> pkginfo.Date := "20/11/2024";;
+gap> BibEntry( pkginfo ) = entry;
+true
+
 #
 # Deal with mock package
 #
