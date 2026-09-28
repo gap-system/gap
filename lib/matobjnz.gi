@@ -537,12 +537,11 @@ InstallMethod( AdditiveInverseSameMutability, "for a zmodnz vector",
 InstallMethod( AdditiveInverseImmutable, "for a zmodnz vector",
   [ IsZmodnZVectorRep ],
   function( v )
-    local res;
-    res := Objectify( ZMODNZVECTYPE(v![BDPOS],true),
-       [v![BDPOS],ZMODNZVECADDINVCLEANUP(Size(v![BDPOS]),
-       AdditiveInverseSameMutability(v![ELSPOS]))] );
-    MakeImmutable(res);
-    return res;
+    local l;
+    l := ZMODNZVECADDINVCLEANUP(Size(v![BDPOS]),
+                                AdditiveInverseMutable(v![ELSPOS]));
+    MakeImmutable(l);
+    return Objectify( ZMODNZVECTYPE(v![BDPOS],false), [v![BDPOS],l] );
   end );
 
 InstallMethod( AdditiveInverseMutable, "for a zmodnz vector",
@@ -1119,12 +1118,11 @@ InstallMethod( AdditiveInverseSameMutability, "for a zmodnz matrix",
 InstallMethod( AdditiveInverseImmutable, "for a zmodnz matrix",
   [ IsZmodnZMatrixRep ],
   function( m )
-    local l,res;
+    local l;
     l := List(m![ROWSPOS],AdditiveInverseImmutable);
-    res := Objectify( ZMODNZMATTYPE(m![BDPOS],true),
+    MakeImmutable(l);
+    return Objectify( ZMODNZMATTYPE(m![BDPOS],false),
                       [m![BDPOS],m![EMPOS],m![RLPOS],l] );
-    MakeImmutable(res);
-    return res;
   end );
 
 InstallMethod( AdditiveInverseMutable, "for a zmodnz matrix",
@@ -1151,12 +1149,11 @@ InstallMethod( ZeroSameMutability, "for a zmodnz matrix",
 InstallMethod( ZeroImmutable, "for a zmodnz matrix",
   [ IsZmodnZMatrixRep ],
   function( m )
-    local l,res;
+    local l;
     l := List(m![ROWSPOS],ZeroImmutable);
-    res := Objectify( ZMODNZMATTYPE(m![BDPOS],true),
+    MakeImmutable(l);
+    return Objectify( ZMODNZMATTYPE(m![BDPOS],false),
                       [m![BDPOS],m![EMPOS],m![RLPOS],l] );
-    MakeImmutable(res);
-    return res;
   end );
 
 InstallMethod( ZeroMutable, "for a zmodnz matrix",
