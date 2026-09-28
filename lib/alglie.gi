@@ -2316,14 +2316,14 @@ InstallMethod( SemiSimpleType,
           R,             # Root system.
           basR,          # Basis of `R'.
           posR,          # List of the positive roots.
+          posS,          # Set of the positive roots.
           fundR,         # A fundamental system.
-          r,r1,r2,rt,    # Roots.
+          r,rt,          # Roots.
           Rvecs,         # List of root vectors.
           basH,          # List of basis vectors of a Cartan subalg. of `I'
           sp,            # Vector space.
           h,             # Element of a Cartan subalgebra of `I'.
           cf,            # Coefficient.
-          issum,         # Boolean.
           CM,            # Cartan Matrix.
           endpts;        # The endpoints of the Dynkin diagram of `I'.
 
@@ -2599,22 +2599,9 @@ InstallMethod( SemiSimpleType,
           # A positive root is a fundamental root if it is not
           # the sum of two other positive roots.
 
-          fundR:= [ ];
-          for r in posR do
-            issum:= false;
-            for r1 in posR do
-              for r2 in posR do
-                if r = r1+r2 then
-                  issum:= true;
-                  break;
-                fi;
-              od;
-              if issum then break; fi;
-            od;
-            if not issum then
-              Add( fundR, r );
-            fi;
-          od;
+          posS:= Set( posR );
+          fundR:= Filtered( posR,
+                            r -> ForAll( posR, r1 -> not r - r1 in posS ) );
 
           # `CM' will be the matrix of Cartan integers
           # of the fundamental roots.
