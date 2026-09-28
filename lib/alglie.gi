@@ -2916,17 +2916,9 @@ InstallMethod( RootSystem,
     S:= [];
     zero:= Zero( F );
     for i in [ 1 .. Length(B) ] do
-      a:= [ ];
-      ind:= 0;
-      cf:= zero;
-      while cf = zero do
-        ind:= ind+1;
-        cf:= Coefficients( BL, B[i][1] )[ ind ];
-      od;
-      for j in [1..Length(basH)] do
-        Add( a, Coefficients( BL, basH[j]*B[i][1] )[ind] / cf );
-      od;
-      Add( S, a );
+      cf:= Coefficients( BL, B[i][1] );
+      ind:= PositionNonZero( cf );
+      Add( S, List( basH, h -> Coefficients( BL, h*B[i][1] )[ind] / cf[ind] ) );
     od;
 
     Rvecs:= List( B, x -> x[1] );
