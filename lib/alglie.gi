@@ -2428,8 +2428,8 @@ InstallMethod( SemiSimpleType,
 # `mp' will be a list of minimum polynomials of basis elements of the
 # Cartan subalgebra.
 
-      mp:= List( BasisVectors( BK ){[1..rk]},
-                 x -> CharacteristicPolynomial( F, F, AdjointMatrix( BK, x ) ) );
+      adH:= List( BasisVectors( BK ){[1..rk]}, x -> AdjointMatrix( BK, x ) );
+      mp:= List( adH, x -> CharacteristicPolynomial( F, F, x ) );
       mp:= List( mp, x -> x/Gcd( Derivative( x ), x ) );
       d:= d * Product( List( mp, p ->
                    CoefficientsOfLaurentPolynomial(p)[1][1] ) );
@@ -2450,18 +2450,8 @@ InstallMethod( SemiSimpleType,
         od;
 
         F:= GF( p );
-
-        S1:= EmptySCTable( Dimension( K ), Zero( F ), "antisymmetric" );
-        for i in [1..Dimension(K)] do
-          for j in [1..Dimension(K)] do
-            S1[i][j]:= [S[i][j][1], One( F )*List( S[i][j][2], x -> x mod p)];
-          od;
-        od;
-
-        K:= LieAlgebraByStructureConstants( F, S1 );
-        BK:= Basis( K );
-        mp:= List( BasisVectors( BK ){[1..rk]},
-                 x -> CharacteristicPolynomial( F, F, AdjointMatrix( BK, x ) ) );
+        mp:= List( adH,
+                 x -> CharacteristicPolynomial( F, F, One( F ) * (x mod p) ) );
         s:= Lcm( Flat( List( mp, p -> List( Factors( p ),
                            DegreeOfLaurentPolynomial ) )));
 
@@ -2481,6 +2471,13 @@ InstallMethod( SemiSimpleType,
 
         return fail;
       fi;
+
+      S1:= EmptySCTable( Dimension( K ), Zero( F ), "antisymmetric" );
+      for i in [1..Dimension(K)] do
+        for j in [1..Dimension(K)] do
+          S1[i][j]:= [S[i][j][1], One( F )*List( S[i][j][2], x -> x mod p)];
+        od;
+      od;
 
     else
 
