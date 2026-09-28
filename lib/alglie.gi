@@ -1138,13 +1138,26 @@ InstallMethod( PthPowerImage,
     fi;
     end );
 
+# Bind 'fam!.pMapping' on first use if the family's full s.c. algebra is
+# restricted; return whether it is bound.
+BindGlobal( "PMAPPING_OF_SC_FAMILY", function(fam)
+    local A;
+    if not IsBound(fam!.pMapping) and IsBound(fam!.fullSCAlgebra) then
+        A := fam!.fullSCAlgebra;
+        if IsLieAlgebra(A) and IsRestrictedLieAlgebra(A) then
+            fam!.pMapping := PthPowerImages(Basis(A));
+        fi;
+    fi;
+    return IsBound(fam!.pMapping);
+end );
+
 InstallMethod( PthPowerImage, "for an element of a restricted Lie algebra",
     [ IsJacobianElement ], # weaker filter, we maybe only discovered later
                            # that the algebra is restricted
     function(x)
     local fam;
     fam := FamilyObj(x);
-    if not IsBound(fam!.pMapping) then TryNextMethod(); fi;
+    if not PMAPPING_OF_SC_FAMILY(fam) then TryNextMethod(); fi;
     return PTHPOWERIMAGE_PPI_VEC(fam!.fullSCAlgebra,fam!.zerocoeff,Characteristic(fam),fam!.basisVectors,fam!.pMapping,ExtRepOfObj(x),x);
 end);
 
@@ -1153,7 +1166,7 @@ InstallMethod( PthPowerImage, "for an element of a restricted Lie algebra and an
     function(x,n)
     local fam;
     fam := FamilyObj(x);
-    if not IsBound(fam!.pMapping) then TryNextMethod(); fi;
+    if not PMAPPING_OF_SC_FAMILY(fam) then TryNextMethod(); fi;
     while n>0 do
         x := PTHPOWERIMAGE_PPI_VEC(fam!.fullSCAlgebra,fam!.zerocoeff,Characteristic(fam),fam!.basisVectors,fam!.pMapping,ExtRepOfObj(x),x);
         n := n-1;
