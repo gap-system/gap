@@ -3075,9 +3075,10 @@ InstallOtherMethod( DirectSumOfAlgebras,
     fi;
 
     L:= AlgebraByStructureConstants( LeftActingDomain( A1 ), T );
-Print("here\n");
+
     SetDirectSumInfo( L, rec( algebras := [A1,A2],
-                              first  := A1,
+                              first := [1,n1+1,n1+n2+1],
+                              type := "basis vectors", 
                               embeddings := [],
                               projections := [] ) );
 
@@ -3206,7 +3207,7 @@ InstallMethod( DirectSumOfAlgebras,
     "for list of algebras",
     [ IsDenseList ],
     function( list )
-    local R, A, i;
+    local R, A, i, dim, first;
 
     if IsEmpty( list ) then
       Error( "<list> must be nonempty" );
@@ -3220,18 +3221,56 @@ InstallMethod( DirectSumOfAlgebras,
     od;
 
     A:= list[1];
+    first:= [ 1, Dimension( A ) + 1 ];
     for i in [ 2 .. Length( list ) ] do
+      dim:= Dimension( list[i] );
+      Add( first, first[i] + dim );
       A:= DirectSumOfAlgebras( A, list[i] );
     od;
-
     SetDirectSumInfo( A, rec( algebras := list,
-                              first  := list[1],
+                              first := first,
+                              type := "basis vectors",
                               embeddings := [],
                               projections := [] ) );
-
     return A;
     end );
 
+
+#############################################################################
+##
+#A Embedding
+##
+InstallMethod( Embedding, "algebra direct sum and integer",
+    [ IsAlgebra and HasDirectSumInfo, IsPosInt ],
+    function( D, i )
+    local info, type, first, A, imgs, map, gens;
+
+    # check
+    info := DirectSumInfo( D );
+    if IsBound( info.embeddings[i] ) then
+        return info.embeddings[i];
+    fi;
+    type := info.type;
+    if not ( type = "basis vectors" ) then
+        Error( "type = generators not yet catered for" );
+    fi;
+
+    first := info.first;
+    if not ( i < Length(first) ) then
+        Error( "value of second parameter is too large" );
+    fi;
+    info.onelist:=List(info.algebras,One);
+    # compute embedding
+    A := info.algebras[i];
+    gens := BasisVectors( Basis( A ) );
+    imgs := BasisVectors( Basis( D ) ){[first[i] .. first[i+1]-1]};
+    map := AlgebraGeneralMappingByImages( A, D, gens, imgs );
+    SetIsInjective( map, true );
+
+    # store information
+    info.embeddings[i] := map;
+    return map;
+end );
 
 #############################################################################
 ##
