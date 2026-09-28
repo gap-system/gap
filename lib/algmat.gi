@@ -1372,6 +1372,11 @@ InstallOtherMethod( DirectSumOfAlgebras,
     SetIsAssociative( A, true );
 #T nec. ?
 
+    SetDirectSumInfo( A, rec( algebras := [A1,A2],
+                              first  := A1,
+                              embeddings := [],
+                              projections := [] ) );
+
     return A;
     end );
 
@@ -1435,6 +1440,11 @@ InstallOtherMethod( DirectSumOfAlgebras,
       UseBasis( A, B );
     fi;
     SetIsLieAlgebra( A, true );
+
+    SetDirectSumInfo( A, rec( algebras := [A1,A2],
+                              first  := A1,
+                              embeddings := [],
+                              projections := [] ) );
 
     return A;
     end );
