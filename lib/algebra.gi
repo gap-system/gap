@@ -3078,7 +3078,7 @@ InstallOtherMethod( DirectSumOfAlgebras,
 
     SetDirectSumInfo( L, rec( algebras := [A1,A2],
                               first := [1,n1+1,n1+n2+1],
-                              type := "basis vectors", 
+                              type := "basis vectors",
                               embeddings := [],
                               projections := [] ) );
 
@@ -3251,10 +3251,6 @@ InstallMethod( Embedding, "algebra direct sum and integer",
         return info.embeddings[i];
     fi;
     type := info.type;
-    if not ( type = "basis vectors" ) then
-        Error( "type = generators not yet catered for" );
-    fi;
-
     first := info.first;
     if not ( i < Length(first) ) then
         Error( "value of second parameter is too large" );
@@ -3262,13 +3258,67 @@ InstallMethod( Embedding, "algebra direct sum and integer",
     info.onelist:=List(info.algebras,One);
     # compute embedding
     A := info.algebras[i];
-    gens := BasisVectors( Basis( A ) );
-    imgs := BasisVectors( Basis( D ) ){[first[i] .. first[i+1]-1]};
+    if ( type = "basis vectors" ) then
+        gens := BasisVectors( Basis( A ) );
+        imgs := BasisVectors( Basis( D ) ){[first[i] .. first[i+1]-1]};
+    elif ( type = "generators" ) then
+        gens := GeneratorsOfAlgebra( A );
+        imgs := GeneratorsOfAlgebra( D ){[first[i] .. first[i+1]-1]};
+    else
+        Error( "unknown type" );
+    fi;
     map := AlgebraGeneralMappingByImages( A, D, gens, imgs );
     SetIsInjective( map, true );
 
     # store information
     info.embeddings[i] := map;
+    return map;
+end );
+
+#############################################################################
+##
+#A  Projection
+##
+InstallMethod( Projection, "algebra direct sum and integer",
+    [ IsAlgebra and HasDirectSumInfo, IsPosInt ],
+    function( D, i )
+    local info, type, first, len, A, genA, genD, imgs, map, N;
+
+    # check
+    info := DirectSumInfo( D );
+    if IsBound( info.projections[i] ) then
+        return info.projections[i];
+    fi;
+    type := info.type;
+    first := info.first;
+    len := Length( first );
+    if not ( i < len ) then
+        Error( "value of second parameter is too large" );
+    fi;
+    # compute projection
+    A    := info.algebras[i];
+    if ( type = "basis vectors" ) then
+        genA := BasisVectors( Basis( A ) );
+        genD := BasisVectors( Basis( D ) );
+    elif ( type = "generators" ) then
+        genA := GeneratorsOfAlgebra( A );
+        genD := GeneratorsOfAlgebra( D );
+    else
+        Error( "unknown type" );
+    fi;
+    imgs := Concatenation(
+               List( [1..first[i]-1], x -> One(A) ),
+               genA,
+               List( [first[i+1]..first[len]-1], x -> One(A) ) );
+    map := AlgebraGeneralMappingByImages( D, A, genD, imgs );
+
+    N := Subalgebra( D, genD{Concatenation( [1..first[i]-1],
+                               [first[i+1]..first[len]-1] )} );
+    SetIsSurjective( map, true );
+    SetKernelOfMultiplicativeGeneralMapping( map, N );
+
+    # store information
+    info.projections[i] := map;
     return map;
 end );
 
