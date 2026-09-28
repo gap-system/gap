@@ -2824,7 +2824,7 @@ InstallMethod( RootSystem,
           h,          # An element of `H'
           posR,       # A list of the positive roots
           fundR,      # A list of the fundamental roots
-          issum,      # A boolean
+          posS,       # The set of the positive roots
           CartInt,    # The function that calculates the Cartan integer of
                       # two roots
           C,          # The Cartan matrix
@@ -2969,20 +2969,8 @@ InstallMethod( RootSystem,
     # positive roots.
     # We calculate the set of simple roots `fundR'.
 
-    fundR:= [ ];
-    for a in posR do
-      issum:= false;
-      for i in [1..Length(posR)] do
-        for j in [i+1..Length(posR)] do
-          if a = posR[i]+posR[j] then
-            issum:=true;
-          fi;
-        od;
-      od;
-      if not issum then
-        Add( fundR, a );
-      fi;
-    od;
+    posS:= Set( posR );
+    fundR:= Filtered( posR, a -> ForAll( posR, b -> not a - b in posS ) );
 
     # Now we calculate the Cartan matrix `C' of the root system.
 
