@@ -19,6 +19,36 @@ local i;
   od;
 end);
 
+# Types for new vectors and matrices. Reusing the type of an existing
+# object would also copy the properties stored in it, such as 'IsZero'.
+BindGlobal("ZMODNZVECTYPE",function(basedomain,mutable)
+local fam;
+  fam:=FamilyObj(basedomain);
+  if not IsBound(fam!.ZmodnZVectorRepTypes) then
+    # TODO: make this thread safe for HPC-GAP
+    fam!.ZmodnZVectorRepTypes:=[
+      NewType(fam,IsZmodnZVectorRep and CanEasilyCompareElements),
+      NewType(fam,IsZmodnZVectorRep and CanEasilyCompareElements
+                  and IsMutable) ];
+  fi;
+  if mutable then return fam!.ZmodnZVectorRepTypes[2]; fi;
+  return fam!.ZmodnZVectorRepTypes[1];
+end);
+
+BindGlobal("ZMODNZMATTYPE",function(basedomain,mutable)
+local fam;
+  fam:=CollectionsFamily(FamilyObj(basedomain));
+  if not IsBound(fam!.ZmodnZMatrixRepTypes) then
+    # TODO: make this thread safe for HPC-GAP
+    fam!.ZmodnZMatrixRepTypes:=[
+      NewType(fam,IsZmodnZMatrixRep and CanEasilyCompareElements),
+      NewType(fam,IsZmodnZMatrixRep and CanEasilyCompareElements
+                  and IsMutable) ];
+  fi;
+  if mutable then return fam!.ZmodnZMatrixRepTypes[2]; fi;
+  return fam!.ZmodnZMatrixRepTypes[1];
+end);
+
 InstallMethod( ConstructingFilter, "for a zmodnz vector",
   [ IsZmodnZVectorRep ],
   function( v )
@@ -42,14 +72,12 @@ InstallMethod( CompatibleVectorFilter, "zmodnz",
 InstallTagBasedMethod( NewVector,
   IsZmodnZVectorRep,
   function( filter, basedomain, l )
-    local check, typ, v;
+    local check, v;
     check:= ValueOption( "check" ) <> false;
     if check and not ( IsZmodnZObjNonprimeCollection( basedomain ) or
         ( IsFinite( basedomain ) and IsPrimeField( basedomain ) ) ) then
       Error( "<basedomain> must be Integers mod <n> for some <n>" );
     fi;
-    typ:=NewType(FamilyObj(basedomain),IsZmodnZVectorRep and IsMutable and
-      CanEasilyCompareElements);
     # force list of integers
     if FamilyObj(basedomain)=FamilyObj(l) then
       l:=List(l,Int);
@@ -59,24 +87,22 @@ InstallTagBasedMethod( NewVector,
       l:=ShallowCopy(l);
     fi;
     v := [basedomain,l];
-    Objectify(typ,v);
+    Objectify(ZMODNZVECTYPE(basedomain,true),v);
     return v;
   end );
 
 InstallTagBasedMethod( NewZeroVector,
   IsZmodnZVectorRep,
   function( filter, basedomain, l )
-    local check, typ, v;
+    local check, v;
     check:= ValueOption( "check" ) <> false;
     if check and not ( IsZmodnZObjNonprimeCollection( basedomain ) or
         ( IsFinite( basedomain ) and IsPrimeField( basedomain ) ) ) then
       Error( "<basedomain> must be Integers mod <n> for some <n>" );
     fi;
-    typ:=NewType(FamilyObj(basedomain),IsZmodnZVectorRep and IsMutable and
-      CanEasilyCompareElements);
     # represent list as integers
     v := [basedomain,0*[1..l]];
-    Objectify(typ,v);
+    Objectify(ZMODNZVECTYPE(basedomain,true),v);
     return v;
   end );
 
@@ -140,10 +166,8 @@ InstallMethod( Length, "for a zmodnz vector", [ IsZmodnZVectorRep ],
 
 InstallMethod( ShallowCopy, "for a zmodnz vector", [ IsZmodnZVectorRep ],
   function( v )
-    local res;
-    res := Objectify(TypeObj(v),[v![BDPOS],ShallowCopy(v![ELSPOS])]);
-    if not IsMutable(v) then SetFilterObj(res,IsMutable); fi;
-    return res;
+    return Objectify(ZMODNZVECTYPE(v![BDPOS],true),
+                     [v![BDPOS],ShallowCopy(v![ELSPOS])]);
   end );
 
 # StructuralCopy works automatically
@@ -181,12 +205,9 @@ InstallMethod( PostMakeImmutable, "for a zmodnz vector", [ IsZmodnZVectorRep ],
 InstallMethod( Vector, "for a plain list and a zmodnz vector",IsIdenticalObj,
   [ IsList and IsPlistRep, IsZmodnZVectorRep ],
   function( l, t )
-    local v;
     # force list of integers
     if FamilyObj(t![BDPOS])=FamilyObj(l) then l:=List(l,Int); fi;
-    v := Objectify(TypeObj(t),[t![BDPOS],l]);
-    if not IsMutable(v) then SetFilterObj(v,IsMutable); fi;
-    return v;
+    return Objectify(ZMODNZVECTYPE(t![BDPOS],true),[t![BDPOS],l]);
   end );
 
 InstallMethod( Vector, "for a list and a zmodnz vector",
@@ -199,9 +220,7 @@ InstallMethod( Vector, "for a list and a zmodnz vector",
     elif Is8BitVectorRep(l) then
         PLAIN_VEC8BIT(v);
     fi;
-    v := Objectify(TypeObj(t),[t![BDPOS],v]);
-    if not IsMutable(v) then SetFilterObj(v,IsMutable); fi;
-    return v;
+    return Objectify(ZMODNZVECTYPE(t![BDPOS],true),[t![BDPOS],v]);
   end );
 
 
@@ -224,7 +243,7 @@ InstallMethod( \[\]\:\=, "for a zmodnz vector, a positive integer, and an obj",
 InstallMethod( \{\}, "for a zmodnz vector and a list",
   [ IsZmodnZVectorRep, IsList ],
   function( v, l )
-    return Objectify(TypeObj(v),[v![BDPOS],v![ELSPOS]{l}]);
+    return Objectify(ZMODNZVECTYPE(v![BDPOS],true),[v![BDPOS],v![ELSPOS]{l}]);
   end );
 
 InstallMethod( PositionNonZero, "for a zmodnz vector", [ IsZmodnZVectorRep ],
@@ -278,11 +297,7 @@ InstallMethod( \+, "for two zmodnz vectors",IsIdenticalObj,
   [ IsZmodnZVectorRep, IsZmodnZVectorRep ],
 function( a, b )
 local ty,i,m,mu;
-  if not IsMutable(a) and IsMutable(b) then
-      ty := TypeObj(b);
-  else
-      ty := TypeObj(a);
-  fi;
+  ty := ZMODNZVECTYPE(a![BDPOS],IsMutable(a) or IsMutable(b));
   m:=Size(a![BDPOS]);
   b:=SUM_LIST_LIST_DEFAULT(a![ELSPOS],b![ELSPOS]);
   if not IsMutable(b) then mu:=true;b:=ShallowCopy(b);
@@ -308,11 +323,7 @@ InstallMethod( \-, "for two zmodnz vectors",IsIdenticalObj,
   [ IsZmodnZVectorRep, IsZmodnZVectorRep ],
 function( a, b )
 local ty,i,m,mu;
-  if not IsMutable(a) and IsMutable(b) then
-      ty := TypeObj(b);
-  else
-      ty := TypeObj(a);
-  fi;
+  ty := ZMODNZVECTYPE(a![BDPOS],IsMutable(a) or IsMutable(b));
   m:=Size(a![BDPOS]);
   b:=a![ELSPOS] - b![ELSPOS];
   if not IsMutable(b) then mu:=true;b:=ShallowCopy(b);
@@ -471,7 +482,7 @@ end );
 BindGlobal("ZMODNZVECSCAMULT",
 function( w, s )
 local i,m,t,b,v;
-  t:=TypeObj(w);
+  t:=ZMODNZVECTYPE(w![BDPOS],IsMutable(w));
   b:=w![BDPOS];
   m:=Size(b);
   if IsZmodnZObj(s) then s:=Int(s);fi;
@@ -518,7 +529,7 @@ end);
 InstallMethod( AdditiveInverseSameMutability, "for a zmodnz vector",
   [ IsZmodnZVectorRep ],
   function( v )
-    return Objectify( TypeObj(v),
+    return Objectify( ZMODNZVECTYPE(v![BDPOS],IsMutable(v)),
        [v![BDPOS],ZMODNZVECADDINVCLEANUP(Size(v![BDPOS]),
         AdditiveInverseSameMutability(v![ELSPOS]))] );
   end );
@@ -527,7 +538,7 @@ InstallMethod( AdditiveInverseImmutable, "for a zmodnz vector",
   [ IsZmodnZVectorRep ],
   function( v )
     local res;
-    res := Objectify( TypeObj(v),
+    res := Objectify( ZMODNZVECTYPE(v![BDPOS],true),
        [v![BDPOS],ZMODNZVECADDINVCLEANUP(Size(v![BDPOS]),
        AdditiveInverseSameMutability(v![ELSPOS]))] );
     MakeImmutable(res);
@@ -537,12 +548,9 @@ InstallMethod( AdditiveInverseImmutable, "for a zmodnz vector",
 InstallMethod( AdditiveInverseMutable, "for a zmodnz vector",
   [ IsZmodnZVectorRep ],
   function( v )
-    local res;
-    res := Objectify(TypeObj(v),
+    return Objectify(ZMODNZVECTYPE(v![BDPOS],true),
         [v![BDPOS],ZMODNZVECADDINVCLEANUP(Size(v![BDPOS]),
           AdditiveInverseMutable(v![ELSPOS]))]);
-    if not IsMutable(v) then SetFilterObj(res,IsMutable); fi;
-    return res;
   end );
 
 # redundant according to MH
@@ -561,11 +569,8 @@ InstallMethod( AdditiveInverseMutable, "for a zmodnz vector",
 
 InstallMethod( ZeroMutable, "for a zmodnz vector", [ IsZmodnZVectorRep ],
   function( v )
-    local res;
-    res := Objectify(TypeObj(v),
+    return Objectify(ZMODNZVECTYPE(v![BDPOS],true),
                      [v![BDPOS],ZeroMutable(v![ELSPOS])]);
-    if not IsMutable(v) then SetFilterObj(res,IsMutable); fi;
-    return res;
   end );
 
 InstallMethod( IsZero, "for a zmodnz vector", [ IsZmodnZVectorRep ],
@@ -609,7 +614,7 @@ end);
 InstallTagBasedMethod( NewMatrix,
   IsZmodnZMatrixRep,
   function( filter, basedomain, rl, l )
-    local check, nd, filterVectors, m, e, filter2, i;
+    local check, nd, filterVectors, m, e, i;
 
     check:= ValueOption( "check" ) <> false;
     if check and not ( IsZmodnZObjNonprimeCollection( basedomain ) or
@@ -640,13 +645,7 @@ InstallTagBasedMethod( NewMatrix,
     od;
     e := NewVector(filterVectors, basedomain, []);
     m := [basedomain,e,rl,m];
-    filter2 := IsZmodnZMatrixRep and IsMutable;
-    if HasCanEasilyCompareElements(Representative(basedomain)) and
-       CanEasilyCompareElements(Representative(basedomain)) then
-        filter2 := filter2 and CanEasilyCompareElements;
-    fi;
-    Objectify( NewType(CollectionsFamily(FamilyObj(basedomain)),
-                       filter2), m );
+    Objectify( ZMODNZMATTYPE(basedomain,true), m );
     return m;
   end );
 
@@ -669,8 +668,7 @@ InstallTagBasedMethod( NewZeroMatrix,
         m[i] := ZeroVector( cols, e );
     od;
     m := [basedomain,e,cols,m];
-    Objectify( NewType(CollectionsFamily(FamilyObj(basedomain)),
-                       filter and IsMutable), m );
+    Objectify( ZMODNZMATTYPE(basedomain,true), m );
     return m;
   end );
 
@@ -720,24 +718,20 @@ InstallMethod( NumberColumns, "for a zmodnz matrix",
 InstallMethod( IdentityMatrix, "for an integer and a zmodnz matrix",
   [ IsInt, IsZmodnZMatrixRep ],
   function( rows,m )
-    local i,l,o,t,res;
+    local i,l,o,t;
     t := m![EMPOS];
     l := List([1..rows],i->ZeroVector(rows,t));
     o := One(m![BDPOS]);
     for i in [1..rows] do
         l[i][i] := o;
     od;
-    res := Objectify( TypeObj(m), [m![BDPOS],t,rows,l] );
-    if not IsMutable(m) then
-        SetFilterObj(res,IsMutable);
-    fi;
-    return res;
+    return Objectify( ZMODNZMATTYPE(m![BDPOS],true), [m![BDPOS],t,rows,l] );
   end );
 
 InstallMethod( Matrix, "for a list and a zmodnz matrix",
   [ IsList, IsInt, IsZmodnZMatrixRep ],
   function( rows,rowlen,m )
-    local i,l,nrrows,res,t;
+    local i,l,nrrows,t;
     t := m![EMPOS];
     if Length(rows) > 0 then
         if IsVectorObj(rows[1]) and IsZmodnZVectorRep(rows[1]) then
@@ -760,11 +754,7 @@ InstallMethod( Matrix, "for a list and a zmodnz matrix",
         l := [];
         nrrows := 0;
     fi;
-    res := Objectify( TypeObj(m), [m![BDPOS],t,rowlen,l] );
-    if not IsMutable(m) then
-        SetFilterObj(res,IsMutable);
-    fi;
-    return res;
+    return Objectify( ZMODNZMATTYPE(m![BDPOS],true), [m![BDPOS],t,rowlen,l] );
   end );
 
 #############################################################################
@@ -858,7 +848,8 @@ InstallOtherMethod( \{\}, "for a zmodnz matrix and a list",
   function( m, p )
     local l;
     l := m![ROWSPOS]{p};
-    return Objectify(TypeObj(m),[m![BDPOS],m![EMPOS],m![RLPOS],l]);
+    return Objectify(ZMODNZMATTYPE(m![BDPOS],true),
+                     [m![BDPOS],m![EMPOS],m![RLPOS],l]);
   end );
 
 InstallMethod( Add, "for a zmodnz matrix and a zmodnz vector",
@@ -915,15 +906,8 @@ InstallMethod( Append, "for two zmodnz matrices",
 InstallMethod( ShallowCopy, "for a zmodnz matrix",
   [ IsZmodnZMatrixRep ],
   function( m )
-    local res;
-    res := Objectify(TypeObj(m),[m![BDPOS],m![EMPOS],m![RLPOS],
-                                 ShallowCopy(m![ROWSPOS])]);
-    if not IsMutable(m) then
-        SetFilterObj(res,IsMutable);
-    fi;
-#T 'ShallowCopy' MUST return a mutable object
-#T if such an object exists at all!
-    return res;
+    return Objectify(ZMODNZMATTYPE(m![BDPOS],true),
+                     [m![BDPOS],m![EMPOS],m![RLPOS],ShallowCopy(m![ROWSPOS])]);
   end );
 
 InstallMethod( PostMakeImmutable, "for a zmodnz matrix",
@@ -957,13 +941,10 @@ local fam;
 InstallMethod( MutableCopyMatrix, "for a zmodnz matrix",
   [ IsZmodnZMatrixRep ],
   function( m )
-    local l,res;
+    local l;
     l := List(m![ROWSPOS],ShallowCopy);
-    res := Objectify(TypeObj(m),[m![BDPOS],m![EMPOS],m![RLPOS],l]);
-    if not IsMutable(m) then
-        SetFilterObj(res,IsMutable);
-    fi;
-    return res;
+    return Objectify(ZMODNZMATTYPE(m![BDPOS],true),
+                     [m![BDPOS],m![EMPOS],m![RLPOS],l]);
   end);
 
 InstallMethod( ExtractSubMatrix, "for a zmodnz matrix, and two lists",
@@ -972,9 +953,11 @@ InstallMethod( ExtractSubMatrix, "for a zmodnz matrix, and two lists",
     local i,l;
     l := m![ROWSPOS]{p};
     for i in [1..Length(l)] do
-        l[i] := Objectify(TypeObj(l[i]),[l[i]![BDPOS],l[i]![ELSPOS]{q}]);
+        l[i] := Objectify(ZMODNZVECTYPE(l[i]![BDPOS],true),
+                          [l[i]![BDPOS],l[i]![ELSPOS]{q}]);
     od;
-    return Objectify(TypeObj(m),[m![BDPOS],m![EMPOS],Length(q),l]);
+    return Objectify(ZMODNZMATTYPE(m![BDPOS],true),
+                     [m![BDPOS],m![EMPOS],Length(q),l]);
   end );
 
 InstallMethod( CopySubMatrix, "for two zmodnz matrices and four lists",
@@ -1033,11 +1016,7 @@ InstallMethod( \+, "for two zmodnz matrices",
   [ IsZmodnZMatrixRep, IsZmodnZMatrixRep ],
   function( a, b )
     local ty;
-    if not IsMutable(a) and IsMutable(b) then
-        ty := TypeObj(b);
-    else
-        ty := TypeObj(a);
-    fi;
+    ty := ZMODNZMATTYPE(a![BDPOS],IsMutable(a) or IsMutable(b));
     return Objectify(ty,[a![BDPOS],a![EMPOS],a![RLPOS],
                          SUM_LIST_LIST_DEFAULT(a![ROWSPOS],b![ROWSPOS])]);
   end );
@@ -1046,11 +1025,7 @@ InstallMethod( \-, "for two zmodnz matrices",
   [ IsZmodnZMatrixRep, IsZmodnZMatrixRep ],
   function( a, b )
     local ty;
-    if not IsMutable(a) and IsMutable(b) then
-        ty := TypeObj(b);
-    else
-        ty := TypeObj(a);
-    fi;
+    ty := ZMODNZMATTYPE(a![BDPOS],IsMutable(a) or IsMutable(b));
     return Objectify(ty,[a![BDPOS],a![EMPOS],a![RLPOS],
                          DIFF_LIST_LIST_DEFAULT(a![ROWSPOS],b![ROWSPOS])]);
   end );
@@ -1060,11 +1035,7 @@ InstallMethod( \*, "for two zmodnz matrices",IsIdenticalObj,
   function( a, b )
     # Here we do full checking since it is rather cheap!
     local i,j,l,ty,v,w,m,r;
-    if not IsMutable(a) and IsMutable(b) then
-        ty := TypeObj(b);
-    else
-        ty := TypeObj(a);
-    fi;
+    ty := ZMODNZMATTYPE(a![BDPOS],IsMutable(a) or IsMutable(b));
     if not a![RLPOS] = Length(b![ROWSPOS]) then
         ErrorNoReturn("\\*: Matrices do not fit together");
     fi;
@@ -1141,7 +1112,8 @@ InstallMethod( AdditiveInverseSameMutability, "for a zmodnz matrix",
     if not IsMutable(m) then
         MakeImmutable(l);
     fi;
-    return Objectify( TypeObj(m), [m![BDPOS],m![EMPOS],m![RLPOS],l] );
+    return Objectify( ZMODNZMATTYPE(m![BDPOS],IsMutable(m)),
+                      [m![BDPOS],m![EMPOS],m![RLPOS],l] );
   end );
 
 InstallMethod( AdditiveInverseImmutable, "for a zmodnz matrix",
@@ -1149,7 +1121,8 @@ InstallMethod( AdditiveInverseImmutable, "for a zmodnz matrix",
   function( m )
     local l,res;
     l := List(m![ROWSPOS],AdditiveInverseImmutable);
-    res := Objectify( TypeObj(m), [m![BDPOS],m![EMPOS],m![RLPOS],l] );
+    res := Objectify( ZMODNZMATTYPE(m![BDPOS],true),
+                      [m![BDPOS],m![EMPOS],m![RLPOS],l] );
     MakeImmutable(res);
     return res;
   end );
@@ -1157,13 +1130,10 @@ InstallMethod( AdditiveInverseImmutable, "for a zmodnz matrix",
 InstallMethod( AdditiveInverseMutable, "for a zmodnz matrix",
   [ IsZmodnZMatrixRep ],
   function( m )
-    local l,res;
+    local l;
     l := List(m![ROWSPOS],AdditiveInverseMutable);
-    res := Objectify( TypeObj(m), [m![BDPOS],m![EMPOS],m![RLPOS],l] );
-    if not IsMutable(m) then
-        SetFilterObj(res,IsMutable);
-    fi;
-    return res;
+    return Objectify( ZMODNZMATTYPE(m![BDPOS],true),
+                      [m![BDPOS],m![EMPOS],m![RLPOS],l] );
   end );
 
 InstallMethod( ZeroSameMutability, "for a zmodnz matrix",
@@ -1174,7 +1144,8 @@ InstallMethod( ZeroSameMutability, "for a zmodnz matrix",
     if not IsMutable(m) then
         MakeImmutable(l);
     fi;
-    return Objectify( TypeObj(m), [m![BDPOS],m![EMPOS],m![RLPOS],l] );
+    return Objectify( ZMODNZMATTYPE(m![BDPOS],IsMutable(m)),
+                      [m![BDPOS],m![EMPOS],m![RLPOS],l] );
   end );
 
 InstallMethod( ZeroImmutable, "for a zmodnz matrix",
@@ -1182,7 +1153,8 @@ InstallMethod( ZeroImmutable, "for a zmodnz matrix",
   function( m )
     local l,res;
     l := List(m![ROWSPOS],ZeroImmutable);
-    res := Objectify( TypeObj(m), [m![BDPOS],m![EMPOS],m![RLPOS],l] );
+    res := Objectify( ZMODNZMATTYPE(m![BDPOS],true),
+                      [m![BDPOS],m![EMPOS],m![RLPOS],l] );
     MakeImmutable(res);
     return res;
   end );
@@ -1190,13 +1162,10 @@ InstallMethod( ZeroImmutable, "for a zmodnz matrix",
 InstallMethod( ZeroMutable, "for a zmodnz matrix",
   [ IsZmodnZMatrixRep ],
   function( m )
-    local l,res;
+    local l;
     l := List(m![ROWSPOS],ZeroMutable);
-    res := Objectify( TypeObj(m), [m![BDPOS],m![EMPOS],m![RLPOS],l] );
-    if not IsMutable(m) then
-        SetFilterObj(res,IsMutable);
-    fi;
-    return res;
+    return Objectify( ZMODNZMATTYPE(m![BDPOS],true),
+                      [m![BDPOS],m![EMPOS],m![RLPOS],l] );
   end );
 
 InstallMethod( IsZero, "for a zmodnz matrix",
@@ -1336,7 +1305,8 @@ InstallMethod( TransposedMatMutable, "for a zmodnz matrix",
         v := Vector(List(m![ROWSPOS],v->v![ELSPOS][i]),m![EMPOS]);
         n[i] := v;
     od;
-    return Objectify(TypeObj(m),[m![BDPOS],m![EMPOS],Length(m![ROWSPOS]),n]);
+    return Objectify(ZMODNZMATTYPE(m![BDPOS],true),
+                     [m![BDPOS],m![EMPOS],Length(m![ROWSPOS]),n]);
   end );
 
 InstallMethod( TransposedMatImmutable, "for a zmodnz matrix",
