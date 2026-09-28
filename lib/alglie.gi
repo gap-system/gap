@@ -3248,6 +3248,7 @@ InstallGlobalFunction( DescriptionOfNormalizedUEAElement,
     function( T, listofpairs )
 
     local normalized,        # ordered list of normalized coeff./monom. pairs
+          mons, coeffs,      # sorted normalized monomials, their coeffs.
           indices,           # list that stores at position $i$ up to what
                              # position the $i$-th monomial is known to be
                              # normalized
@@ -3261,10 +3262,10 @@ InstallGlobalFunction( DescriptionOfNormalizedUEAElement,
           tail,              # trailing part of the monomial under work
           index,             # new value of `indices[i]'
           Tcoeffs,           # one entry in `T'
-          lennorm,           # length of `normalized' at the moment
           zero;              # zero coefficient
 
-    normalized := [];
+    mons:= [];
+    coeffs:= [];
 
     while not IsEmpty( listofpairs ) do
 
@@ -3375,30 +3376,15 @@ InstallGlobalFunction( DescriptionOfNormalizedUEAElement,
 
         od;
 
-        # If the monomial is normalized then move it to `normalized'.
+        # If the monomial is normalized then merge it into `mons'.
         if len - 2 <= j then
 
-          # Find the correct position in `normalized',
-          # and insert the monomial.
-          lennorm:= Length( normalized );
-          k:= 2;
-          while k <= lennorm do
-            if listofpairs[ 2i-1 ] < normalized[ k-1 ] then
-              for l in [ lennorm, lennorm-1 .. k-1 ] do
-                normalized[l+2]:= normalized[l];
-              od;
-              normalized[ k-1 ]:= listofpairs[ 2i-1 ];
-              normalized[  k  ]:= scalar;
-              break;
-            elif listofpairs[ 2i-1 ] = normalized[ k-1 ] then
-              normalized[k]:= normalized[k] + scalar;
-              break;
-            fi;
-            k:= k+2;
-          od;
-          if lennorm < k then
-            normalized[ lennorm+1 ]:= listofpairs[ 2i-1 ];
-            normalized[ lennorm+2 ]:= scalar;
+          k:= PositionSorted( mons, listofpairs[ 2i-1 ] );
+          if k <= Length( mons ) and mons[k] = listofpairs[ 2i-1 ] then
+            coeffs[k]:= coeffs[k] + scalar;
+          else
+            Add( mons, listofpairs[ 2i-1 ], k );
+            Add( coeffs, scalar, k );
           fi;
 
           # Remove the monomial from `listofpairs'.
@@ -3411,16 +3397,16 @@ InstallGlobalFunction( DescriptionOfNormalizedUEAElement,
 
     od;
 
-    # Remove monomials with multiplicity zero;
-    if not IsEmpty( normalized ) then
-      zero:= Zero( normalized[2] );
-      for i in [ 2, 4 .. Length( normalized ) ] do
-        if normalized[i] = zero then
-          Unbind( normalized[ i-1 ] );
-          Unbind( normalized[  i  ] );
+    # Interleave, dropping monomials with multiplicity zero.
+    normalized:= [];
+    if not IsEmpty( coeffs ) then
+      zero:= Zero( coeffs[1] );
+      for i in [ 1 .. Length( mons ) ] do
+        if coeffs[i] <> zero then
+          Add( normalized, mons[i] );
+          Add( normalized, coeffs[i] );
         fi;
       od;
-      normalized:= Compacted( normalized );
     fi;
 
     # Return the normal form.
