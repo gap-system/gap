@@ -592,29 +592,26 @@ InstallMethod( AdjointMatrix,
           j, i, l,      # loop variables
           cij,          # structure constants vector
           k,            # one position in structure constants vector
-          nz,           # positions of nonzero coefficients of `x'
-          row;          # one row of `M'
+          nz;           # positions of nonzero coefficients of `x'
 
     x:= Coefficients( B, x );
     n:= Length( BasisVectors( B ) );
     T:= StructureConstantsTable( B );
     zerovector:= [ 1 .. n ] * Last(T);
-    M:= [];
+    M:= List( [ 1 .. n ], k -> ShallowCopy( zerovector ) );
     # for basis vectors, most coefficients are zero
     nz:= Filtered( [ 1 .. n ], i -> not IsZero( x[i] ) );
     for j in [ 1 .. n ] do
-      row:= ShallowCopy( zerovector );
       for i in nz do
         cij:= T[i][j];
         for l in [ 1 .. Length( cij[1] ) ] do
           k:= cij[1][l];
-          row[k]:= row[k] + x[i] * cij[2][l];
+          M[k][j]:= M[k][j] + x[i] * cij[2][l];
         od;
       od;
-      M[j]:= row;
     od;
 
-    return TransposedMat( M );
+    return MakeImmutable( M );
     end );
 
 #T general function for arbitrary algebras? (right/left multiplication)
