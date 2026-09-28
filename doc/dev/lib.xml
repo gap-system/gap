@@ -34,8 +34,8 @@ the line starting <C>Configuration:</C> when &GAP; is started.
 
 The next two options are more experimental, and are not designed to be constantly
 enabled. They are particularly designed to track down bugs relating to memory
-corruption relating to GASMAN (&GAP;'s memory manager). They cannot both be enabled
-at the same time.
+corruption relating to GASMAN (&GAP;'s memory manager). They require GASMAN, and
+cannot both be enabled at the same time.
 
 These options assume you are familiar somewhat familiar with the internals of GASMAN
 (see gasman.c for more information). In particular, GASMAN represents memory using

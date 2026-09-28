@@ -644,6 +644,7 @@ gap> quit;
 <Ref Func="SaveWorkspace"/> can only be used at the main <C>gap></C> prompt.
 It cannot be included in the body of a loop or function,
 or called from a break loop.
+It is available only if the <C>GASMAN</C> garbage collector is used.
 </Description>
 </ManSection>
 
