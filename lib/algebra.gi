@@ -3074,8 +3074,12 @@ InstallOtherMethod( DirectSumOfAlgebras,
         T[n + 1] := 1;
     fi;
 
-
     L:= AlgebraByStructureConstants( LeftActingDomain( A1 ), T );
+Print("here\n");
+    SetDirectSumInfo( L, rec( algebras := [A1,A2],
+                              first  := A1,
+                              embeddings := [],
+                              projections := [] ) );
 
     # Maintain useful information.
     if     HasIsLieAlgebra( A1 ) and HasIsLieAlgebra( A2 )
@@ -3219,6 +3223,11 @@ InstallMethod( DirectSumOfAlgebras,
     for i in [ 2 .. Length( list ) ] do
       A:= DirectSumOfAlgebras( A, list[i] );
     od;
+
+    SetDirectSumInfo( A, rec( algebras := list,
+                              first  := list[1],
+                              embeddings := [],
+                              projections := [] ) );
 
     return A;
     end );
