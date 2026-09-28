@@ -2433,44 +2433,31 @@ InstallMethod( SemiSimpleType,
       mp:= List( mp, x -> x/Gcd( Derivative( x ), x ) );
       d:= d * Product( List( mp, p ->
                    CoefficientsOfLaurentPolynomial(p)[1][1] ) );
-      p:= 5;
-      s:=7;
 
-      # We determine a prime `p>5' not dividing `d' and an integer `s'
+      # We determine a prime `p>=5' not dividing `d' and an integer `s'
       # such that the minimum polynomials of the basis elements
       # of the Cartan subalgebra will split into linear factors
       # over the field of `p^s' elements,
       # and such that `p^s<=2^16'
       # (the maximum size of a finite field in GAP).
 
+      p:= 3;
+      s:= 17;
       while p^s > 65536 do
-
-        while d mod p = 0 do
-          p:= NextPrimeInt( p );
-        od;
-
-        F:= GF( p );
-        mp:= List( adH,
-                 x -> CharacteristicPolynomial( F, F, One( F ) * (x mod p) ) );
-        s:= Lcm( Flat( List( mp, p -> List( Factors( p ),
-                           DegreeOfLaurentPolynomial ) )));
-
-        if p^s > 65536 then
-          if 65521 <= p then
-            p:= 1;
-            break;
-          fi;
-          p:= NextPrimeInt( p );
+        p:= NextPrimeInt( p );
+        if 65521 < p then
+          Info( InfoAlgebra, 1,
+                  "We cannot find a small modular splitting field for <L>" );
+          return fail;
         fi;
-
+        if d mod p <> 0 then
+          F:= GF( p );
+          mp:= List( adH,
+                   x -> CharacteristicPolynomial( F, F, One( F ) * (x mod p) ) );
+          s:= Lcm( Flat( List( mp, p -> List( Factors( p ),
+                             DegreeOfLaurentPolynomial ) )));
+        fi;
       od;
-
-      if p = 1 then
-        Info( InfoAlgebra, 1,
-                "We cannot find a small modular splitting field for <L>" );
-
-        return fail;
-      fi;
 
       S1:= EmptySCTable( Dimension( K ), Zero( F ), "antisymmetric" );
       for i in [1..Dimension(K)] do
