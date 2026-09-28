@@ -3000,9 +3000,9 @@ InstallMethod( RootSystem,
     noPosR:= Length( Rvecs )/2;
     y:= Rvecs{[1+noPosR..Length(C)+noPosR]};
     for i in [1..Length(x)] do
-        V:= VectorSpace( LeftActingDomain(L), [ x[i] ] );
-        B:= Basis( V, [x[i]] );
-        y[i]:= y[i]*2/Coefficients( B, (x[i]*y[i])*x[i] )[1];
+        cf:= Coefficients( BL, x[i] );
+        ind:= PositionNonZero( cf );
+        y[i]:= y[i]*2*cf[ind]/Coefficients( BL, (x[i]*y[i])*x[i] )[ind];
     od;
 
     h:= List([1..Length(C)], j -> x[j]*y[j] );
@@ -3023,8 +3023,9 @@ InstallMethod( RootSystem,
 
     posR:= [ ];
     for i in [1..noPosR] do
-        B:= Basis( VectorSpace( F, [ Rvecs[i] ] ), [ Rvecs[i] ] );
-        posR[i]:= List( h, hj ->  Coefficients( B, hj*Rvecs[i] )[1] );
+        cf:= Coefficients( BL, Rvecs[i] );
+        ind:= PositionNonZero( cf );
+        posR[i]:= List( h, hj -> Coefficients( BL, hj*Rvecs[i] )[ind] / cf[ind] );
     od;
 
     SetPositiveRoots( R, posR );
@@ -3046,16 +3047,17 @@ InstallMethod( CanonicalGenerators,
     [ IsRootSystemFromLieAlgebra ], 0,
     function( R )
 
-    local   L, rank,  x,  y,  i,  V,  b,  c;
+    local   L, rank,  x,  y,  i,  B,  k,  c;
 
     L:= UnderlyingLieAlgebra( R );
+    B:= Basis( L );
     rank:= Length( CartanMatrix( R ) );
     x:= PositiveRootVectors( R ){[1..rank]};
     y:= NegativeRootVectors( R ){[1..rank]};
     for i in [1..Length(x)] do
-        V:= VectorSpace( LeftActingDomain(L), [ x[i] ] );
-        b:= Basis( V, [x[i]] );
-        c:= Coefficients( b, (x[i]*y[i])*x[i] )[1];
+        c:= Coefficients( B, x[i] );
+        k:= PositionNonZero( c );
+        c:= Coefficients( B, (x[i]*y[i])*x[i] )[k] / c[k];
         y[i]:= y[i]*2/c;
     od;
 
@@ -3074,7 +3076,7 @@ InstallMethod( ChevalleyBasis,
 
     local   R,  n,  cg,  b1p,  b1m,  b2p,  b2m,  k,  r,  i,  r1,  pos,
             b1,  b2,  f,  cfs,  bHa,  posRV,  negRV,  x,  y,  ha,  cf,
-            F,  T,  K,  B, BK;
+            F,  T,  K,  B, BK,  j;
 
     # We first calculate an automorphism `f' of `L' such that
     # F(L_{\alpha}) = L_{-\alpha}, and f(H)=H, and f acts as multiplication
@@ -3124,8 +3126,9 @@ InstallMethod( ChevalleyBasis,
         x:= PositiveRootVectors( R )[i];
         y:= -Image( f, x );
         ha:= x*y;
-        cf:= Coefficients( Basis( VectorSpace( LeftActingDomain(L),
-                     [x] ), [x] ), ha*x )[1];
+        cf:= Coefficients( Basis( L ), x );
+        j:= PositionNonZero( cf );
+        cf:= Coefficients( Basis( L ), ha*x )[j] / cf[j];
         if i <= Length( CartanMatrix( R ) ) then Add( bHa, (2/cf)*ha ); fi;
         Add( cfs, Sqrt( 2/cf ) );
         posRV[i]:= x; negRV[i]:= y;
