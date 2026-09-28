@@ -1033,7 +1033,11 @@ function( mat )
             od;
         fi;
     fi;
-    Objectify( TypeObj(mat), new );
+    if IsMutable(mat) then
+        Objectify( TYPE_LIST_GF2MAT, new );
+    else
+        Objectify( TYPE_LIST_GF2MAT_IMM, new );
+    fi;
     return new;
 end );
 
