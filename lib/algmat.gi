@@ -1326,7 +1326,10 @@ InstallOtherMethod( DirectSumOfAlgebras,
     function( A1, A2 )
 
     local b1,   # Basis vectors of `A1'.
+          d1,   # Dimension of `A1'.
           b2,   # Basis vectors of `A2'.
+          d2,   # Dimension of `A2'.
+          type, # basis vectors or generators.
           p1,   # Length of the matrices of `b1'.
           p2,   # Length of the matrices of `b2'.
           B,    # A basis of `A1 \oplus A2'.
@@ -1344,11 +1347,15 @@ InstallOtherMethod( DirectSumOfAlgebras,
     if HasBasis( A1 ) and HasBasis( A2 ) then
       b1:= BasisVectors( Basis( A1 ) );
       b2:= BasisVectors( Basis( A2 ) );
+      type:= "basis vectors";
     else
       b1:= GeneratorsOfAlgebra( A1 );
       b2:= GeneratorsOfAlgebra( A2 );
+      type:= "geberators";
     fi;
 
+    d1:= Length( b1 );
+    d2:= Length( b2 );
     p1:= DimensionOfVectors( A1 )[1];
     p2:= DimensionOfVectors( A2 )[1];
 
@@ -1373,7 +1380,8 @@ InstallOtherMethod( DirectSumOfAlgebras,
 #T nec. ?
 
     SetDirectSumInfo( A, rec( algebras := [A1,A2],
-                              first  := A1,
+                              first := [1,d1+1,d1+d2+1],
+                              type := type,
                               embeddings := [],
                               projections := [] ) );
 
@@ -1397,7 +1405,10 @@ InstallOtherMethod( DirectSumOfAlgebras,
     function( A1, A2 )
 
     local b1,   # Basis vectors of `A1'.
+          d1,   # Dimension of `A1'.
           b2,   # Basis vectors of `A2'.
+          d2,   # Dimension of `A2'.
+          type, # basis vectors or generators.
           p1,   # Length of the matrices of `b1'.
           p2,   # Length of the matrices of `b2'.
           B,    # A basis of `A1 \oplus A2'.
@@ -1415,11 +1426,15 @@ InstallOtherMethod( DirectSumOfAlgebras,
     if HasBasis( A1 ) and HasBasis( A2 ) then
       b1:= BasisVectors( Basis( A1 ) );
       b2:= BasisVectors( Basis( A2 ) );
+      type:= "basis vectors";
     else
       b1:= GeneratorsOfAlgebra( A1 );
       b2:= GeneratorsOfAlgebra( A2 );
+      type:= "generators";
     fi;
 
+    d1:= Length( b1 );
+    d2:= Length( b2 );
     p1:= DimensionOfVectors( A1 )[1];
     p2:= DimensionOfVectors( A2 )[1];
 
@@ -1442,7 +1457,7 @@ InstallOtherMethod( DirectSumOfAlgebras,
     SetIsLieAlgebra( A, true );
 
     SetDirectSumInfo( A, rec( algebras := [A1,A2],
-                              first  := A1,
+                              first  := [1,d1+1,d1+d2+1],
                               embeddings := [],
                               projections := [] ) );
 
