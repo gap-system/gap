@@ -1398,6 +1398,8 @@ DeclareOperation( "Collected", [ IsList ] );
 ##  <Description>
 ##  returns a new mutable list whose entries are the elements of the list
 ##  <A>list</A> with duplicates removed.
+##  The order of the entries in the new list is the order of the
+##  first occurrences of the respective entries in <A>list</A>.
 ##  <Ref Oper="DuplicateFreeList"/> only uses the <C>=</C> comparison
 ##  and will not sort the result.
 ##  Therefore <Ref Oper="DuplicateFreeList"/> can be used even if the
