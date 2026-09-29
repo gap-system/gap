@@ -2519,7 +2519,7 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
                 break;
 
             case CTR('Y'): // insert (yank) deleted text
-                if (strlen(yank) + strlen(line) - 2 > length) {
+                if (strlen(yank) + strlen(line) > length + 2) {
                     syEchoch(CTR('G'), fid);
                     break;
                 }

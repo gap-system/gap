@@ -11,7 +11,7 @@
 ##  This file contains the declarations for semigroups defined by rws.
 ##
 
-############################################################################
+#############################################################################
 ##
 #A  ReducedConfluentRewritingSystem( <S>[, <ordering>] )
 ##

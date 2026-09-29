@@ -998,7 +998,6 @@ static Obj SetterAndFilter(Obj getter)
         obj = SetterFilter( FLAG2_FILT(getter) );
         SET_FLAG2_FILT(setter, obj);
         SET_SETTR_FILT(getter, setter);
-        CHANGED_BAG(getter);
     }
 
     return SETTR_FILT(getter);
@@ -1032,8 +1031,6 @@ static Obj TesterAndFilter(Obj getter)
         tester = NewAndFilter( TesterFilter( FLAG1_FILT(getter) ),
                                TesterFilter( FLAG2_FILT(getter) ) );
         SET_TESTR_FILT(getter, tester);
-        CHANGED_BAG(getter);
-
     }
     return TESTR_FILT(getter);
 }
@@ -1073,7 +1070,6 @@ static Obj NewSetterFilter(Obj getter)
                            (ObjFunc)DoSetFilter );
     SET_FLAG1_FILT(setter, FLAG1_FILT(getter));
     SET_FLAG2_FILT(setter, INTOBJ_INT(0));
-    CHANGED_BAG(setter);
 
     return setter;
 }
@@ -1123,12 +1119,10 @@ Obj NewFilter (
     SET_ELM_FLAGS( flags, flag1 );
     SET_FLAGS_FILT(getter, flags);
     SET_IS_FILTER(getter);
-    CHANGED_BAG(getter);
 
     setter = NewSetterFilter( getter );
     SET_SETTR_FILT(getter, setter);
     SET_TESTR_FILT(getter, ReturnTrueFilter);
-    CHANGED_BAG(getter);
 
     return getter;
 }
@@ -1202,7 +1196,6 @@ Obj NewAndFilter (
     SET_SETTR_FILT(getter, INTOBJ_INT(0xBADBABE));
     SET_TESTR_FILT(getter, INTOBJ_INT(0xBADBABE));
     SET_IS_FILTER(getter);
-    CHANGED_BAG(getter);
 
     return getter;
 }
@@ -1241,7 +1234,6 @@ static Obj SetterReturnTrueFilter(Obj getter)
         (ObjFunc)DoSetReturnTrueFilter );
     SET_FLAG1_FILT(setter, INTOBJ_INT(0));
     SET_FLAG2_FILT(setter, INTOBJ_INT(0));
-    CHANGED_BAG(setter);
 
     return setter;
 }
@@ -1265,11 +1257,9 @@ static Obj NewReturnTrueFilter(void)
     flags = NEW_FLAGS( 0 );
     SET_FLAGS_FILT(getter, flags);
     SET_IS_FILTER(getter);
-    CHANGED_BAG(getter);
 
     setter = SetterReturnTrueFilter( getter );
     SET_SETTR_FILT(getter, setter);
-    CHANGED_BAG(getter);
 
     // the tester also returns true, so we can reuse the getter
     SET_TESTR_FILT(getter, getter);
@@ -1589,7 +1579,6 @@ static inline Obj CacheOper(Obj oper, UInt i)
         CHANGED_BAG(STATE(MethodCache));
 #else
         SET_CACHE_OPER(oper, i, cache);
-        CHANGED_BAG(oper);
 #endif
     }
 
@@ -2541,7 +2530,6 @@ static Obj MakeSetter(Obj name, Int flag1, Int flag2, ObjFunc_2ARGS setFunc)
     setter = NewOperation(fname, 2, 0, (ObjFunc)setFunc);
     SET_FLAG1_FILT(setter, INTOBJ_INT(flag1));
     SET_FLAG2_FILT(setter, INTOBJ_INT(flag2));
-    CHANGED_BAG(setter);
     return setter;
 }
 
@@ -2561,7 +2549,6 @@ static Obj MakeTester( Obj name, Int flag1, Int flag2)
     SET_SETTR_FILT(tester, 0);
     SET_TESTR_FILT(tester, ReturnTrueFilter);
     SET_IS_FILTER(tester);
-    CHANGED_BAG(tester);
     return tester;
 }
 
@@ -2578,7 +2565,6 @@ static void SetupAttribute(Obj attr, Obj setter, Obj tester, Int flag2)
     SET_SETTR_FILT(attr, setter);
     SET_TESTR_FILT(attr, tester);
     SET_ENABLED_ATTR(attr, 1);
-    CHANGED_BAG(attr);
 }
 
 
@@ -2846,7 +2832,6 @@ Obj NewProperty (
     SET_TESTR_FILT(getter, tester);
     SET_ENABLED_ATTR(getter, 1);
     SET_IS_FILTER(getter);
-    CHANGED_BAG(getter);
 
     /*N 1996/06/28 mschoene bad hack see comment in <setter>               */
     SET_FLAGS_FILT(setter, flags);
@@ -2898,7 +2883,6 @@ static Obj NewGlobalFunction(Obj name, Obj nams)
     // added the name
     namobj = ImmutableString(name);
     SET_NAME_FUNC(func, namobj);
-    CHANGED_BAG(func);
 
     // We set the location to a description, to make clear the function
     // hasn't been defined yet
@@ -2911,8 +2895,6 @@ static Obj NewGlobalFunction(Obj name, Obj nams)
     SET_FILENAME_BODY(body_bag, filename);
     SET_LOCATION_BODY(body_bag, MakeImmString(""));
     SET_BODY_FUNC(func, body_bag);
-    CHANGED_BAG(body_bag);
-    CHANGED_BAG(func);
 
     // and return
     return func;
@@ -3162,7 +3144,6 @@ static Obj MethsOper(Obj oper, UInt i)
         MakeBagReadOnly(methods);
 #endif
         SET_METHS_OPER(oper, i, methods);
-        CHANGED_BAG( oper );
     }
     return methods;
 }
@@ -3333,7 +3314,6 @@ static Obj FuncSETTER_FUNCTION(Obj self, Obj name, Obj filter)
     tmp = NewPlistFromArgs(INTOBJ_INT(RNamObj(name)), filter);
     MakeImmutableNoRecurse(tmp);
     SET_ENVI_FUNC(func, tmp);
-    CHANGED_BAG(func);
     return func;
 }
 

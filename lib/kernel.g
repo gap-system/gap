@@ -162,7 +162,7 @@ end;
 
 #############################################################################
 ##
-#F  Runtimes() . . . . . . . . self-explaining version of result of RUNTIMES()
+#F  Runtimes() . . . . . . .  self-explaining version of result of RUNTIMES()
 ##
 ##  <ManSection>
 ##  <Func Name="Runtimes" Arg=''/>

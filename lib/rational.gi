@@ -109,7 +109,7 @@ InstallMethod( Coefficients,
     end );
 
 
-############################################################################
+#############################################################################
 ##
 #M  Iterator( Rationals )
 ##
@@ -353,7 +353,7 @@ end );
 
 #############################################################################
 ##
-#M  RoundCyc( <cyc> ) . . . . . . . . . . cyclotomic integer near to <cyc>
+#M  RoundCyc( <cyc> ) . . . . . . . . . . .  cyclotomic integer near to <cyc>
 ##
 InstallMethod( RoundCyc,
     "Rational",
@@ -369,7 +369,7 @@ end );
 
 #############################################################################
 ##
-#M  RoundCycDown( <cyc> ) . . . . . . . . . . cyclotomic integer near to <cyc>
+#M  RoundCycDown( <cyc> ) . . . . . . . . .  cyclotomic integer near to <cyc>
 ##
 InstallMethod( RoundCycDown,
     "Rational",

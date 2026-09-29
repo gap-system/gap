@@ -88,7 +88,7 @@ DeclareGlobalFunction( "MolienSeries" );
 DeclareGlobalFunction( "MolienSeriesWithGivenDenominator" );
 
 
-##############################################################################
+#############################################################################
 ##
 #A  MolienSeriesInfo( <ratfun> )
 ##

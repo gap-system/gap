@@ -1167,7 +1167,7 @@ DeclareOperation( "TransposedMatDestructive", [ IsMatrixOrMatrixObj ] );
 
 
 
-############################################################################
+#############################################################################
 ##
 #P  IsMonomialMatrix( <mat> )
 ##
@@ -1303,7 +1303,7 @@ DeclareOperation( "SolutionMatDestructive",
     [ IsMatrixOrMatrixObj and IsMutable, IsRowVectorOrVectorObj ] );
 
 
-############################################################################
+#############################################################################
 ##
 #O  SumIntersectionMat( <M1>, <M2> )  . .  sum and intersection of two spaces
 ##
@@ -2095,7 +2095,7 @@ DeclareOperation( "RandomMatrix",
 
 #############################################################################
 ##
-#F  RandomUnimodularMat( [rs ,] <m> ) . . . . . . . . random unimodular matrix
+#F  RandomUnimodularMat( [rs ,] <m> ) . . . . . . .  random unimodular matrix
 ##
 ##  <#GAPDoc Label="RandomUnimodularMat">
 ##  <ManSection>

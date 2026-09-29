@@ -350,7 +350,7 @@ InstallMethod( \*,
                    Representative(x1)*Representative(x2));
     end );
 
-############################################################################
+#############################################################################
 ##
 #M  One(<congruence class>)
 ##
@@ -368,7 +368,7 @@ InstallOtherMethod(One,
                    One(Representative(x)));
     end);
 
-######################################################################
+#############################################################################
 ##
 #F  MagmaCongruencePartition(<cong>,<partialcond>)
 ##
@@ -418,7 +418,7 @@ InstallOtherMethod(One,
 ##     This insures that the root of the left tree being merged does not change
 ##     and hence is an invariant.
 ##
-######################################################################
+#############################################################################
 BindGlobal("MagmaCongruencePartition",
     function(cong,partialcond)
 
@@ -693,12 +693,12 @@ BindGlobal("MagmaCongruencePartition",
         fi;
     end);
 
-######################################################################
+#############################################################################
 ##
 ##  EquivalenceRelationPartition(<cong>)
 ##  Calculate the partition attribute of a left congruence
 ##
-######################################################################
+#############################################################################
 
 InstallMethod(EquivalenceRelationPartition,
     "for a left congruence on a magma",
@@ -713,12 +713,12 @@ InstallMethod(EquivalenceRelationPartition,
 
     end);
 
-######################################################################
+#############################################################################
 ##
 ##  EquivalenceRelationPartition(<cong>)
 ##  Calculate the partition attribute of a right congruence
 ##
-######################################################################
+#############################################################################
 
 InstallMethod(EquivalenceRelationPartition,
     "for a right congruence on a magma",
@@ -733,12 +733,12 @@ InstallMethod(EquivalenceRelationPartition,
 
     end);
 
-######################################################################
+#############################################################################
 ##
 ##  EquivalenceRelationPartition(<cong>)
 ##  Calculate the partition attribute of a congruence
 ##
-######################################################################
+#############################################################################
 
 InstallMethod(EquivalenceRelationPartition,
     "for a congruence on a magma",

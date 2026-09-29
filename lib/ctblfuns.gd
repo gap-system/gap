@@ -2714,7 +2714,7 @@ DeclareGlobalFunction( "SymplecticComponents" );
 DeclareGlobalFunction( "FrobeniusCharacterValue" );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  ReductionToFiniteField( <value>, <p> )
 ##
@@ -2979,7 +2979,7 @@ DeclareHandlingByNiceBasis( "IsClassFunctionsSpace",
 ##
 
 
-##############################################################################
+#############################################################################
 ##
 #F  OrbitChar( <chi>, <linear> )
 ##
@@ -3001,7 +3001,7 @@ DeclareHandlingByNiceBasis( "IsClassFunctionsSpace",
 DeclareGlobalFunction( "OrbitChar" );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  OrbitsCharacters( <chars> )
 ##
@@ -3021,7 +3021,7 @@ DeclareGlobalFunction( "OrbitChar" );
 DeclareGlobalFunction( "OrbitsCharacters" );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  OrbitRepresentativesCharacters( <irr> )
 ##

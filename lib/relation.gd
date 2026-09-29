@@ -249,7 +249,7 @@ DeclareGlobalFunction("EmptyBinaryRelation");
 ##
 DeclareGlobalFunction("AsBinaryRelationOnPoints");
 
-###############################################################################
+#############################################################################
 ##
 #A  Successors( <R> )
 ##
@@ -281,7 +281,7 @@ DeclareGlobalFunction("AsBinaryRelationOnPoints");
 ##
 DeclareAttribute("Successors", IsBinaryRelation);
 
-###############################################################################
+#############################################################################
 ##
 #A  DegreeOfBinaryRelation(<R>)
 ##
@@ -303,7 +303,7 @@ DeclareAttribute("Successors", IsBinaryRelation);
 ##
 DeclareAttribute("DegreeOfBinaryRelation", IsBinaryRelation);
 
-############################################################################
+#############################################################################
 ##
 #A  UnderlyingDomainOfBinaryRelation(<R>)
 ##
@@ -509,7 +509,7 @@ DeclareProperty("IsLatticeOrderBinaryRelation",IsBinaryRelation);
 
 InstallTrueMethod(IsPartialOrderBinaryRelation, IsLatticeOrderBinaryRelation);
 
-############################################################################
+#############################################################################
 ##
 ## Equivalence Relations
 ##

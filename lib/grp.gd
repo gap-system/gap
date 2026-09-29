@@ -2159,7 +2159,7 @@ DeclareAttribute( "CharacteristicSubgroups", IsGroup );
 DeclareGlobalFunction("NormalSubgroupsAbove");
 
 
-############################################################################
+#############################################################################
 ##
 #A  NrConjugacyClasses( <G> )
 ##
@@ -3027,9 +3027,10 @@ DeclareOperation( "FactorGroupNC", [ IsGroup, IsGroup ] );
 ##  <Oper Name="NaturalHomomorphism" Arg='F'/>
 ##
 ##  <Description>
-##  This function is obsolete now and will give an error message. Users
-##  should use <C>NaturalHomomorphismByNormalSubgroup</C> in the first place to
-##  get the homomorphism and then get the factor group as the image.
+##  For a group <A>F</A> created by <Ref Func="FactorGroup"/>, this returns
+##  the natural homomorphism onto <A>F</A>. This usage is obsolete: use
+##  <Ref Func="NaturalHomomorphismByNormalSubgroup"/> to get the
+##  homomorphism, and then get the factor group as its image.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -4880,7 +4881,7 @@ DeclareGlobalFunction("Group_PseudoRandom");
 
 DeclareGlobalFunction("GroupEnumeratorByClosure");
 
-############################################################################
+#############################################################################
 ##
 #O  LowIndexSubgroups( <G>, <index> )
 ##

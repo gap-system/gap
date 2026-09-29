@@ -166,7 +166,7 @@ DeclareOperation( "RoundCycDown" , [ IsCyclotomic ] );
 DeclareGlobalFunction( "CoeffsCyc" );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  DescriptionOfRootOfUnity( <root> )
 ##

@@ -9,7 +9,7 @@
 ##
 
 
-############################################################################
+#############################################################################
 ##
 ##  This file together with 'matobj2.gd' formally define the interface to
 ##  those vector and matrix objects in GAP that are not represented

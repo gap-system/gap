@@ -360,7 +360,6 @@ static void AssGVarInternal(UInt gvar,
             onam = CopyToStringRep(NameGVar(gvar));
             MakeImmutable(onam);
             SET_NAME_FUNC(val, onam);
-            CHANGED_BAG(val);
         }
 #ifdef HPCGAP
     }

@@ -719,8 +719,8 @@ InstallMethod( PreImageElm,
 
 #############################################################################
 ##
-#M  PreImagesElmNC( <map>, <elm> )  . . . . . . . . . . for mapping by function
-#M  PreImagesElm( <map>, <elm> )  . . . . . . . . . . . for mapping by function
+#M  PreImagesElmNC( <map>, <elm> ) . . . . . . . . .  for mapping by function
+#M  PreImagesElm( <map>, <elm> ) . . . . . . . . . .  for mapping by function
 ##
 InstallMethod( PreImagesElmNC,
     "for mapping by function",

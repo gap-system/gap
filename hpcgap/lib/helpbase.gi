@@ -852,7 +852,7 @@ end);
 
 #############################################################################
 ##
-#F  HELP_SHOW_PREV_CHAPTER( <book> ) . . . . . . . . show chapter introduction
+#F  HELP_SHOW_PREV_CHAPTER( <book> ) . . . . . . .  show chapter introduction
 ##
 InstallGlobalFunction(HELP_SHOW_PREV_CHAPTER, function( arg )
   local   info,  match;

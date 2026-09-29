@@ -228,7 +228,7 @@ end);
 
 #############################################################################
 ##
-#F  CONextCocycles( <cor>, <ocr>, <S> )    . . . . . . . . . . . . . . . . local
+#F  CONextCocycles( <cor>, <ocr>, <S> ) . . . . . . . . . . . . . . . . local
 ##
 ##  Get the next conjugacy classes of  complements  under  operation  of  <S>
 ##  using affine operation on the onecohomologygroup of <K>  and  <N>,  where
@@ -369,7 +369,7 @@ end );
 
 #############################################################################
 ##
-#F  CONextCentral( <cor>, <ocr>, <S> )     . . . . . . . . . . . . . . . . local
+#F  CONextCentral( <cor>, <ocr>, <S> ) . . . . . . . . . . . . . . . .  local
 ##
 ##  Get the conjugacy classes of complements in case <ocr.module> is central.
 ##
@@ -816,7 +816,7 @@ end );
 
 #############################################################################
 ##
-#M  COComplementsMain( <G>, <N>, <all>, <fun> )  . . . . . . . . . . . . . local
+#M  COComplementsMain( <G>, <N>, <all>, <fun> ) . . . . . . . . . . . . local
 ##
 ##  Prepare arguments for 'ComplementCO'.
 ##

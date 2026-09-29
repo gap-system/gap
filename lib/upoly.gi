@@ -196,7 +196,7 @@ InstallGlobalFunction( CyclotomicPol, function(n)
     return res;
 end);
 
-############################################################################
+#############################################################################
 ##
 #F  CyclotomicPolynomial( <F>, <n> ) . . . . . .  <n>-th cycl. pol. over <F>
 ##

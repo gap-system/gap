@@ -42,7 +42,7 @@ end);
 
 #############################################################################
 ##
-#M IrreducibleModules( <G>, <F>, <dim> ). . . .constituents of regular module
+#M IrreducibleModules( <G>, <F>, <dim> ) . . . constituents of regular module
 ##
 InstallMethod(IrreducibleModules,"generic method for groups and finite field",
     true, [ IsGroup, IsField and IsFinite, IsInt ], 0,
@@ -319,7 +319,8 @@ end);
 
 #############################################################################
 ##
-#M AbsolutelyIrreducibleModules( <G>, <F>, <dim> ). . . .constituents of regular module
+#M AbsolutelyIrreducibleModules( <G>, <F>, <dim> ) . . . . .  constituents of
+##                                                             regular module
 ##
 InstallMethod( AbsolutelyIrreducibleModules,
     "generic method for groups and finite field",

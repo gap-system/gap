@@ -553,7 +553,7 @@ end );
 
 #############################################################################
 ##
-#M  IsSubset( <U>, <V> )  . . . . . . . . .  for two subgroups of a f.p. group
+#M  IsSubset( <U>, <V> ) . . . . . . . . .  for two subgroups of a f.p. group
 ##
 InstallMethod( IsSubset, "subgroups of fp group: test generators",
   IsIdenticalObj,

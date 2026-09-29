@@ -68,7 +68,7 @@
 ##
 
 
-##############################################################################
+#############################################################################
 ##
 #C  IsCochain( <obj> )
 #C  IsCochainCollection( <obj> )
@@ -256,7 +256,7 @@ DeclareOperation( "Cocycles", [ IsAlgebraModule, IS_INT  ] );
 DeclareOperation( "Coboundaries", [ IsAlgebraModule, IS_INT ] );
 
 
-############################################################################
+#############################################################################
 ##
 #P  IsWeylGroup( <G> )
 ##
@@ -274,7 +274,7 @@ DeclareOperation( "Coboundaries", [ IsAlgebraModule, IS_INT ] );
 DeclareProperty( "IsWeylGroup", IsGroup );
 InstallTrueMethod( IsGroup, IsWeylGroup );
 
-############################################################################
+#############################################################################
 ##
 #A  WeylGroup( <R> )
 ##
@@ -308,7 +308,7 @@ InstallTrueMethod( IsGroup, IsWeylGroup );
 ##
 DeclareAttribute( "WeylGroup", IsRootSystem );
 
-############################################################################
+#############################################################################
 ##
 #A  SparseCartanMatrix( <W> )
 ##
@@ -329,7 +329,7 @@ DeclareAttribute( "WeylGroup", IsRootSystem );
 ##
 DeclareAttribute( "SparseCartanMatrix", IsWeylGroup );
 
-############################################################################
+#############################################################################
 ##
 #O  ApplySimpleReflection( <SC>, <i>, <wt> )
 ##
@@ -356,7 +356,7 @@ DeclareAttribute( "SparseCartanMatrix", IsWeylGroup );
 ##
 DeclareOperation( "ApplySimpleReflection", [ IsList, IS_INT, IsList ] );
 
-############################################################################
+#############################################################################
 ##
 #A  LongestWeylWordPerm( <W> )
 ##
@@ -383,7 +383,7 @@ DeclareOperation( "ApplySimpleReflection", [ IsList, IS_INT, IsList ] );
 ##
 DeclareAttribute( "LongestWeylWordPerm", IsWeylGroup );
 
-############################################################################
+#############################################################################
 ##
 #O  ConjugateDominantWeight( <W>, <wt> )
 #O  ConjugateDominantWeightWithWord( <W>, <wt> )
@@ -425,7 +425,7 @@ DeclareOperation( "ConjugateDominantWeight", [ IsWeylGroup, IsList ] );
 DeclareOperation( "ConjugateDominantWeightWithWord", [ IsWeylGroup, IsList ]);
 
 
-############################################################################
+#############################################################################
 ##
 #O  WeylOrbitIterator( <W>, <wt> )
 ##
@@ -461,7 +461,7 @@ DeclareOperation( "ConjugateDominantWeightWithWord", [ IsWeylGroup, IsList ]);
 ##
 DeclareOperation( "WeylOrbitIterator", [ IsWeylGroup, IsList ] );
 
-############################################################################
+#############################################################################
 ##
 #A  PositiveRootsAsWeights( <R> )
 ##
@@ -476,7 +476,7 @@ DeclareOperation( "WeylOrbitIterator", [ IsWeylGroup, IsList ] );
 ##
 DeclareAttribute( "PositiveRootsAsWeights", IsRootSystem );
 
-############################################################################
+#############################################################################
 ##
 #O  DominantWeights( <R>, <maxw> )
 ##
@@ -504,7 +504,7 @@ DeclareAttribute( "PositiveRootsAsWeights", IsRootSystem );
 DeclareOperation( "DominantWeights", [ IsRootSystem, IsList ] );
 
 
-############################################################################
+#############################################################################
 ##
 #O  DominantCharacter( <L>, <maxw> )
 #O  DominantCharacter( <R>, <maxw> )
@@ -654,7 +654,7 @@ DeclareOperation( "DimensionOfHighestWeightModule", [ IsLieAlgebra, IsList ] );
 ##
 
 
-##############################################################################
+#############################################################################
 ##
 #C  IsUEALatticeElement( <obj> )
 #C  IsUEALatticeElementCollection( <obj> )
@@ -679,7 +679,7 @@ DeclareCategoryCollections( "IsUEALatticeElement" );
 DeclareCategoryFamily( "IsUEALatticeElement" );
 
 
-##############################################################################
+#############################################################################
 ##
 #A  LatticeGeneratorsInUEA( <L> )
 ##
@@ -720,7 +720,7 @@ DeclareCategoryFamily( "IsUEALatticeElement" );
 ##
 DeclareAttribute( "LatticeGeneratorsInUEA", IsLieAlgebra );
 
-##############################################################################
+#############################################################################
 ##
 #F  CollectUEALatticeElement( <noPosR>, <BH>, <f>, <vars>, <Rvecs>, <RT>,
 ##                                                          <posR>, <lst> )
@@ -735,7 +735,7 @@ DeclareAttribute( "LatticeGeneratorsInUEA", IsLieAlgebra );
 DeclareGlobalFunction( "CollectUEALatticeElement" );
 
 
-##############################################################################
+#############################################################################
 ##
 #C  IsWeightRepElement( <obj> )
 #C  IsWeightRepElementCollection( <obj> )
@@ -776,7 +776,7 @@ DeclareCategory( "IsWeightRepElement", IsVector );
 DeclareCategoryCollections( "IsWeightRepElement" );
 DeclareCategoryFamily( "IsWeightRepElement" );
 
-##############################################################################
+#############################################################################
 ##
 #C  IsBasisOfWeightRepElementSpace( <B> )
 ##
@@ -870,7 +870,7 @@ DeclareOperation( "HighestWeightModule", [ IsAlgebra, IsList ] );
 DeclareOperation( "LeadingUEALatticeMonomial",
                                    [ IsInt, IsUEALatticeElement ] );
 
-##############################################################################
+#############################################################################
 ##
 #F  LeftReduceUEALatticeElement( <novar>, <G>, <lms>, <p> )
 ##
@@ -884,7 +884,7 @@ DeclareOperation( "LeadingUEALatticeMonomial",
 DeclareGlobalFunction( "LeftReduceUEALatticeElement" );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  ExtendRepresentation( <L>, <newelts>, <I>, <mats> )
 ##

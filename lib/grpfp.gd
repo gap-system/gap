@@ -805,7 +805,7 @@ DeclareGlobalFunction("DefiningQuotientHomomorphism");
 DeclareAttribute("AsSubgroupOfWholeGroupByQuotient", IsSubgroupFpGroup);
 
 
-############################################################################
+#############################################################################
 ##
 #O  LowIndexSubgroupsFpGroupIterator( <G>[, <H>], <index>[, <excluded>] )
 #O  LowIndexSubgroupsFpGroup( <G>[, <H>], <index>[, <excluded>] )
@@ -926,7 +926,7 @@ DeclareOperation("LowIndexSubgroupsFpGroup",
   [IsSubgroupFpGroup,IsSubgroupFpGroup,IsPosInt]);
 
 
-############################################################################
+#############################################################################
 ##
 #F  MostFrequentGeneratorFpGroup( <G> )
 ##
@@ -973,7 +973,7 @@ DeclareAttribute( "FreeGeneratorsOfFpGroup",
 DeclareOperation( "FreeGeneratorsOfWholeGroup",
      [IsSubgroupFpGroup]  );
 
-############################################################################
+#############################################################################
 ##
 #A  RelatorsOfFpGroup(<G>)
 ##
@@ -1055,7 +1055,7 @@ DeclareAttribute("FreeGroupOfFpGroup",IsSubgroupFpGroup and IsGroupOfFamily);
 DeclareAttribute("IndicesInvolutaryGenerators",
   IsSubgroupFpGroup and IsGroupOfFamily);
 
-############################################################################
+#############################################################################
 ##
 #F  RelatorRepresentatives(<rels>)
 ##

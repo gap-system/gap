@@ -374,7 +374,7 @@ InstallMethod( Centre,
 
 #############################################################################
 ##
-#A  Idempotents( <M> ) . .  . . . . . . . . . . . . . . idempotents of a magma
+#A  Idempotents( <M> ) . . . . . . . . . . . . . . . . idempotents of a magma
 ##
 InstallMethod(Idempotents,"for finite magmas", true,
                [IsMagma], 0,

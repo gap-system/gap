@@ -694,7 +694,7 @@ end);
 
 #############################################################################
 ##
-#M  SSortedList( <list> )  . . . . . . . . . . . set of the elements of a list
+#M  SSortedList( <list> ) . . . . . . . . . . . set of the elements of a list
 ##
 InstallMethod( SSortedList, "for a plist",
     [ IsList and IsPlistRep ],
@@ -2245,7 +2245,7 @@ InstallMethod( ReversedOp,
 
 #############################################################################
 ##
-#M  Shuffle( <list> ) . . . . . . . . . . . . . . . . permute entries randomly
+#M  Shuffle( <list> ) . . . . . . . . . . . . . . .  permute entries randomly
 InstallMethod(Shuffle, [IsDenseList and IsMutable], function(l)
   local len, j, tmp, i;
   len := Length(l);

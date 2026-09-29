@@ -12,7 +12,7 @@
 ##  sources.
 ##
 
-###########################################################################
+#############################################################################
 ##  Generic methods for random sources.
 ##
 # The generic initializer of a random source creates a dummy object of the
@@ -69,7 +69,7 @@ InstallMethod(PrintObj, [IsRandomSource], function(rs)
 end);
 
 
-############################################################################
+#############################################################################
 ##  The classical GAP random generator as independent random sources.
 ##
 
@@ -138,7 +138,7 @@ InstallMethod(Random, [IsGAPRandomSource, IsList and IsDenseList],
 end);
 
 
-############################################################################
+#############################################################################
 ##  We provide the "classical" GAP random generator via a random source.
 ##
 if IsHPCGAP then
@@ -160,7 +160,7 @@ else
 fi;
 
 
-##############################################################################
+#############################################################################
 ##  Random source using the Mersenne twister kernel functions.
 ##
 InstallMethod(Init, [IsMersenneTwister, IsObject], function(rs, seed)

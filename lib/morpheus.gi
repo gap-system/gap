@@ -1,4 +1,4 @@
-###########################################################################
+#############################################################################
 ##
 ##  This file is part of GAP, a system for computational discrete algebra.
 ##  This file's authors include Alexander Hulpke.
@@ -1757,7 +1757,7 @@ end);
 
 #############################################################################
 ##
-#F  Morphium(<G>,<H>,<DoAuto>) . . . . . . . .Find isomorphisms between G and H
+#F  Morphium(<G>,<H>,<DoAuto>) . . . . . .  Find isomorphisms between G and H
 ##       modulo inner automorphisms. DoAuto indicates whether all
 ##       automorphisms are to be found
 ##       This function thus does the main combinatoric work for creating

@@ -2960,7 +2960,7 @@ InstallGlobalFunction(Lucas,function ( P, Q, k )
     return l;
 end);
 
-##############################################################################
+#############################################################################
 ##
 #F  LucasMod(P,Q,N,k) - return the reduction modulo N of the k'th terms of
 ##  the Lucas Sequences U,V associated to x^2+Px+Q.

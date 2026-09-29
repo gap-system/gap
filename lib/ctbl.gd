@@ -4515,7 +4515,7 @@ DeclareAttributeSuppCT( "ClassPermutation", IsNearlyCharacterTable,
 ##
 
 
-##############################################################################
+#############################################################################
 ##
 #A  NormalSubgroupClassesInfo( <tbl> )
 ##
@@ -4581,7 +4581,7 @@ DeclareAttributeSuppCT( "ClassPermutation", IsNearlyCharacterTable,
 DeclareAttribute( "NormalSubgroupClassesInfo", IsOrdinaryTable, "mutable" );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  ClassPositionsOfNormalSubgroup( <tbl>, <N> )
 ##
@@ -4600,7 +4600,7 @@ DeclareAttribute( "NormalSubgroupClassesInfo", IsOrdinaryTable, "mutable" );
 DeclareGlobalFunction( "ClassPositionsOfNormalSubgroup" );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  NormalSubgroupClasses( <tbl>, <classes> )
 ##
@@ -4626,7 +4626,7 @@ DeclareGlobalFunction( "ClassPositionsOfNormalSubgroup" );
 DeclareGlobalFunction( "NormalSubgroupClasses" );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  FactorGroupNormalSubgroupClasses( <tbl>, <classes> )
 ##

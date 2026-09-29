@@ -1,7 +1,7 @@
 #@local T0,T1,T2,T3,a,b,c,coeff,der,e,fam,g,gens,i,id,j,k,l1,l2,l3,lcs,orb
 #@local TestMonomialUseLattice_Orig,permgrp,ps,q,s,s1,s2,s3,sc,t,theta
 #@local U,ucs,v,vecs,vectors,w,z,A,V,W
-#@local L,l
+#@local L,l,lder,B,isder
 gap> START_TEST("algsc.tst");
 
 #############################################################################
@@ -352,6 +352,31 @@ gap> IsMatrixSpace( der );
 true
 gap> Dimension( der );
 11
+
+# right derivations satisfy D(xy) = D(x)y + xD(y)
+gap> isder:= function( B, d )
+>      local D;
+>      D:= x -> LinearCombination( B, Coefficients( B, x ) * d );
+>      return ForAll( B, x -> ForAll( B,
+>                 y -> D( x*y ) = D( x ) * y + x * D( y ) ) );
+>    end;;
+gap> ForAll( Basis( der ), d -> isder( b, d ) );
+true
+gap> B:= Basis( OctaveAlgebra( Rationals ) );;
+gap> ForAll( Basis( Derivations( B ) ), d -> isder( B, d ) );
+true
+
+# left derivations are the transposes of right derivations
+gap> lder:= LeftDerivations( b );
+<Lie algebra of dimension 11 over Rationals>
+gap> lder = Subspace( lder,
+>        List( Basis( der ), d -> LieObject( TransposedMat( d ) ) ) );
+true
+gap> lder:= LeftDerivations( B );
+<Lie algebra of dimension 14 over Rationals>
+gap> lder = Subspace( lder,
+>        List( Basis( Derivations( B ) ), d -> LieObject( TransposedMat( d ) ) ) );
+true
 gap> Print(KillingMatrix( b ),"\n");
 [ [ -24, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 24, 0, 0, 0, 0, 0, 0, 0, 0 ], 
   [ 0, 0, 0, 0, 12, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, -12, 0, 0, 0, 0 ], 

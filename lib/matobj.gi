@@ -865,7 +865,7 @@ InstallMethod( ChangedBaseDomain,
     { M, R } -> Matrix( R, M ) );
 
 
-############################################################################
+#############################################################################
 ##
 #M  Randomize( [Rs, ]v )
 #M  Randomize( [Rs, ]M )
@@ -1249,7 +1249,7 @@ InstallMethod( \/,
 #T no default methods should be needed for M^n, n an integer!
 
 
-############################################################################
+#############################################################################
 ##
 #M  \*( <vecobj>, <matobj> )
 #M  \*( <matobj>, <vecobj> )
@@ -1283,7 +1283,7 @@ InstallOtherMethod( \^,
     \* );
 
 
-############################################################################
+#############################################################################
 ##
 #M  IsEmptyMatrix( <matobj> )
 ##
@@ -1643,7 +1643,7 @@ InstallMethod( String,
                String( Unpack( M ) ), " )" ) );
 
 
-############################################################################
+#############################################################################
 ##
 #M  CompatibleVector( <M> )
 ##
@@ -1654,7 +1654,7 @@ InstallMethod( CompatibleVector,
                         NumberRows( M ) ) );
 
 
-############################################################################
+#############################################################################
 ##
 #M  RowsOfMatrix( <M> )
 ##
@@ -1670,7 +1670,7 @@ InstallMethod( RowsOfMatrix,
     end );
 
 
-############################################################################
+#############################################################################
 ##
 ##  Backwards compatibility
 ##
@@ -1708,9 +1708,9 @@ InstallMethod( \[\,\]\:\=, "for a matrix object, two positions, and an object",
   {} -> -RankFilter(IsMatrixOrMatrixObj),
   ASS_LIST );
 
-############################################################################
+#############################################################################
 # Elementary matrix operations
-############################################################################
+#############################################################################
 
 InstallMethod( MultMatrixRowLeft, "for a mutable matrix object, a row number, and a scalar",
   [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsObject ],
@@ -1732,7 +1732,7 @@ InstallEarlyMethod( MultMatrixRowLeft,
     fi;
   end );
 
-############################################################################
+#############################################################################
 
 InstallMethod( MultMatrixColumnRight, "for a mutable matrix object, a column number, and a scalar",
   [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsObject ],
@@ -1757,7 +1757,7 @@ InstallEarlyMethod( MultMatrixColumnRight,
     fi;
   end );
 
-############################################################################
+#############################################################################
 
 InstallMethod( MultMatrixRowRight, "for a mutable matrix object, a row number, and a scalar",
   [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsObject ],
@@ -1779,7 +1779,7 @@ InstallEarlyMethod( MultMatrixRowRight,
     fi;
   end );
 
-############################################################################
+#############################################################################
 
 InstallMethod( MultMatrixColumnLeft, "for a mutable matrix object, a column number, and a scalar",
   [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsObject ],
@@ -1804,7 +1804,7 @@ InstallEarlyMethod( MultMatrixColumnLeft,
     fi;
   end );
 
-############################################################################
+#############################################################################
 
 InstallMethod( AddMatrixRowsLeft, "for a mutable matrix object, two row numbers, and a scalar",
   [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt, IsObject ] ,
@@ -1848,7 +1848,7 @@ InstallEarlyMethod( AddMatrixRowsRight,
     fi;
   end );
 
-############################################################################
+#############################################################################
 
 InstallMethod( AddMatrixColumnsRight, "for a mutable matrix object, two column numbers, and a scalar",
   [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt, IsObject ] ,
@@ -1873,7 +1873,7 @@ InstallEarlyMethod( AddMatrixColumnsRight,
     fi;
   end );
 
-############################################################################
+#############################################################################
 
 InstallMethod( AddMatrixColumnsLeft, "for a mutable matrix object, two column numbers, and a scalar",
   [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt, IsObject ] ,
@@ -1898,7 +1898,7 @@ InstallEarlyMethod( AddMatrixColumnsLeft,
     fi;
   end );
 
-############################################################################
+#############################################################################
 
 InstallMethod( PositionNonZeroInRow,
   "for a row list matrix and a row number",
@@ -1955,7 +1955,7 @@ InstallEarlyMethod( PositionNonZeroInRow,
     end );
 
 
-############################################################################
+#############################################################################
 
 InstallMethod( SwapMatrixRows, "for a mutable matrix object, and two row numbers",
   [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt ],
@@ -1972,7 +1972,7 @@ InstallMethod( SwapMatrixRows, "for a mutable matrix object, and two row numbers
 
   end );
 
-############################################################################
+#############################################################################
 
 InstallMethod( SwapMatrixColumns, "for a mutable matrix object, and two column numbers",
   [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt ],
@@ -2179,7 +2179,7 @@ InstallMethod( MultMatrixLeft, "for a mutable IsRowListMatrix and a scalar",
     od;
   end );
 
-############################################################################
+#############################################################################
 ##  Fallback method for DeterminantMatrix
 
 InstallMethod(DeterminantMatrix, ["IsMatrixObj"],

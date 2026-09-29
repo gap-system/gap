@@ -260,7 +260,7 @@ DeclareAttribute("FreeGeneratorsOfFpSemigroup",  IsFpSemigroup );
 ##
 DeclareAttribute("FreeSemigroupOfFpSemigroup", IsFpSemigroup);
 
-############################################################################
+#############################################################################
 ##
 #A  RelationsOfFpSemigroup(<s>)
 #A  RelationsOfFpMonoid(<m>)
@@ -290,7 +290,7 @@ DeclareAttribute("FreeSemigroupOfFpSemigroup", IsFpSemigroup);
 ##
 DeclareAttribute("RelationsOfFpSemigroup",IsFpSemigroup);
 
-############################################################################
+#############################################################################
 ##
 #A  IsomorphismFpSemigroup( <m> )
 #A  IsomorphismFpMonoid( <g> )
@@ -325,7 +325,7 @@ DeclareAttribute("RelationsOfFpSemigroup",IsFpSemigroup);
 ##
 DeclareAttribute("IsomorphismFpSemigroup",IsSemigroup);
 
-############################################################################
+#############################################################################
 ##
 #O  FpGrpMonSmgOfFpGrpMonSmgElement( <elm> )
 ##

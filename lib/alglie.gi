@@ -224,9 +224,9 @@ InstallMethod( IsLieAbelian,
 InstallTrueMethod( IsLieAbelian, IsAlgebra and IsZeroMultiplicationRing );
 
 
-##############################################################################
+#############################################################################
 ##
-#M  LieCentre( <L> )  . . . . . . . . . . . . . . . . . . .  for a Lie algebra
+#M  LieCentre( <L> )  . . . . . . . . . . . . . . . . . . . for a Lie algebra
 ##
 ##  We solve the system
 ##  $\sum_{i=1}^n a_i c_{ijk} = 0$ for $1 \leq j, k \leq n$
@@ -296,9 +296,9 @@ InstallMethod( LieCentre,
     end );
 
 
-##############################################################################
+#############################################################################
 ##
-#M  LieCentralizer( <A>, <S> )  . . . . . for a Lie algebra and a vector space
+#M  LieCentralizer( <A>, <S> ) . . . . . for a Lie algebra and a vector space
 ##
 ##  Let $(b_1, \ldots, b_n)$ be a basis of <A>, and $(s_1, \ldots, s_m)$
 ##  be a basis of <S>, with $s_j = \sum_{l=1}^m v_{jl} b_l$.
@@ -393,9 +393,9 @@ InstallMethod( LieCentralizer,
     end );
 
 
-##############################################################################
+#############################################################################
 ##
-#M  LieNormalizer( <L>, <U> ) . . . . . . for a Lie algebra and a vector space
+#M  LieNormalizer( <L>, <U> ) . . . . .  for a Lie algebra and a vector space
 ##
 ##  If $(x_1, \ldots, x_n)$ is a basis of $L$ and $(u_1, \ldots, u_s)$ is
 ##  a basis of $U$, then $x = \sum_{i=1}^n a_i x_i$ is an element of $N_L(U)$
@@ -499,9 +499,9 @@ InstallMethod( LieNormalizer,
     end );
 
 
-##############################################################################
+#############################################################################
 ##
-#M  KappaPerp( <L>, <U> ) . . . . . . . . for a Lie algebra and a vector space
+#M  KappaPerp( <L>, <U> ) . . . . . . .  for a Lie algebra and a vector space
 ##
 #T  Should this better be `OrthogonalSpace( <F>, <U> )' where <F> is a
 #T  bilinear form?
@@ -592,26 +592,26 @@ InstallMethod( AdjointMatrix,
           j, i, l,      # loop variables
           cij,          # structure constants vector
           k,            # one position in structure constants vector
-          row;          # one row of `M'
+          nz;           # positions of nonzero coefficients of `x'
 
     x:= Coefficients( B, x );
     n:= Length( BasisVectors( B ) );
     T:= StructureConstantsTable( B );
     zerovector:= [ 1 .. n ] * Last(T);
-    M:= [];
+    M:= List( [ 1 .. n ], k -> ShallowCopy( zerovector ) );
+    # for basis vectors, most coefficients are zero
+    nz:= Filtered( [ 1 .. n ], i -> not IsZero( x[i] ) );
     for j in [ 1 .. n ] do
-      row:= ShallowCopy( zerovector );
-      for i in [ 1 .. n ] do
+      for i in nz do
         cij:= T[i][j];
         for l in [ 1 .. Length( cij[1] ) ] do
           k:= cij[1][l];
-          row[k]:= row[k] + x[i] * cij[2][l];
+          M[k][j]:= M[k][j] + x[i] * cij[2][l];
         od;
       od;
-      M[j]:= row;
     od;
 
-    return TransposedMat( M );
+    return MakeImmutable( M );
     end );
 
 #T general function for arbitrary algebras? (right/left multiplication)
@@ -647,7 +647,9 @@ InstallMethod( RightDerivations,
           n,           # dimension of 'L'
           eqno,offset,
           A,
-          i, j, k, m,
+          i, j, k, m, l,
+          cij, ckj, cik, # structure constants vectors
+          c,
           M;             # the Lie algebra of derivations
 
     if not IsAlgebra( UnderlyingLeftModule( B ) ) then
@@ -681,17 +683,28 @@ InstallMethod( RightDerivations,
     eqno:= 0;
     for i in [ 1 .. n ] do
       for j in [ offset*i+1 .. n ] do
-        for m in [ 1 .. n ] do
-          eqno:= eqno+1;
-          for k in [ 1 .. n ] do
-            A[ (k-1)*n+m ][eqno]:= A[ (k-1)*n+m ][eqno] +
-                                        SCTableEntry( T,i,j,k );
-            A[ (i-1)*n+k ][eqno]:= A[ (i-1)*n+k ][eqno] -
-                                        SCTableEntry( T,k,j,m );
-            A[ (j-1)*n+k ][eqno]:= A[ (j-1)*n+k ][eqno] -
-                                        SCTableEntry( T,i,k,m );
+        # the equation for $(i,j,m)$ has number `eqno + m'
+        cij:= T[i][j];
+        for l in [ 1 .. Length( cij[1] ) ] do
+          k:= cij[1][l];
+          c:= cij[2][l];
+          for m in [ 1 .. n ] do
+            A[ (k-1)*n+m ][eqno+m]:= A[ (k-1)*n+m ][eqno+m] + c;
           od;
         od;
+        for k in [ 1 .. n ] do
+          ckj:= T[k][j];
+          for l in [ 1 .. Length( ckj[1] ) ] do
+            m:= ckj[1][l];
+            A[ (i-1)*n+k ][eqno+m]:= A[ (i-1)*n+k ][eqno+m] - ckj[2][l];
+          od;
+          cik:= T[i][k];
+          for l in [ 1 .. Length( cik[1] ) ] do
+            m:= cik[1][l];
+            A[ (j-1)*n+k ][eqno+m]:= A[ (j-1)*n+k ][eqno+m] - cik[2][l];
+          od;
+        od;
+        eqno:= eqno+n;
       od;
     od;
 
@@ -745,7 +758,9 @@ InstallMethod( LeftDerivations,
           n,           # dimension of 'L'
           eqno,offset,
           A,
-          i, j, k, m,
+          i, j, k, m, l,
+          cij, ckj, cik, # structure constants vectors
+          c,
           M;             # the Lie algebra of derivations
 
     if not IsAlgebra( UnderlyingLeftModule( B ) ) then
@@ -779,17 +794,28 @@ InstallMethod( LeftDerivations,
     eqno:= 0;
     for i in [ 1 .. n ] do
       for j in [ offset*i+1 .. n ] do
-        for m in [ 1 .. n ] do
-          eqno:= eqno+1;
-          for k in [ 1 .. n ] do
-            A[ (m-1)*n+k ][eqno]:= A[ (m-1)*n+k ][eqno] +
-                                        SCTableEntry( T,i,j,k );
-            A[ (k-1)*n+i ][eqno]:= A[ (k-1)*n+i ][eqno] -
-                                        SCTableEntry( T,k,j,m );
-            A[ (k-1)*n+j ][eqno]:= A[ (k-1)*n+j ][eqno] -
-                                        SCTableEntry( T,i,k,m );
+        # the equation for $(i,j,m)$ has number `eqno + m'
+        cij:= T[i][j];
+        for l in [ 1 .. Length( cij[1] ) ] do
+          k:= cij[1][l];
+          c:= cij[2][l];
+          for m in [ 1 .. n ] do
+            A[ (m-1)*n+k ][eqno+m]:= A[ (m-1)*n+k ][eqno+m] + c;
           od;
         od;
+        for k in [ 1 .. n ] do
+          ckj:= T[k][j];
+          for l in [ 1 .. Length( ckj[1] ) ] do
+            m:= ckj[1][l];
+            A[ (k-1)*n+i ][eqno+m]:= A[ (k-1)*n+i ][eqno+m] - ckj[2][l];
+          od;
+          cik:= T[i][k];
+          for l in [ 1 .. Length( cik[1] ) ] do
+            m:= cik[1][l];
+            A[ (k-1)*n+j ][eqno+m]:= A[ (k-1)*n+j ][eqno+m] - cik[2][l];
+          od;
+        od;
+        eqno:= eqno+n;
       od;
     od;
 
@@ -882,7 +908,7 @@ InstallMethod( KillingMatrix,
     end );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  AdjointBasis( <B> )
 ##
@@ -940,9 +966,9 @@ InstallMethod( AdjointBasis,
     end );
 
 
-##############################################################################
+#############################################################################
 ##
-#M  IsRestrictedLieAlgebra( <L> ) . . . . . . . . . . . . .  for a Lie algebra
+#M  IsRestrictedLieAlgebra( <L> ) . . . . . . . . . . . . . for a Lie algebra
 ##
 ##  A Lie algebra <L> is defined to be {\em restricted} when it is defined
 ##  over a field of characteristic $p \neq 0$, and for every basis element
@@ -1061,7 +1087,7 @@ InstallMethod( PowerS,
     end );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  PthPowerImage( <B>, <x> )
 ##
@@ -1138,13 +1164,26 @@ InstallMethod( PthPowerImage,
     fi;
     end );
 
+# Bind 'fam!.pMapping' on first use if the family's full s.c. algebra is
+# restricted; return whether it is bound.
+BindGlobal( "PMAPPING_OF_SC_FAMILY", function(fam)
+    local A;
+    if not IsBound(fam!.pMapping) and IsBound(fam!.fullSCAlgebra) then
+        A := fam!.fullSCAlgebra;
+        if IsLieAlgebra(A) and IsRestrictedLieAlgebra(A) then
+            fam!.pMapping := PthPowerImages(Basis(A));
+        fi;
+    fi;
+    return IsBound(fam!.pMapping);
+end );
+
 InstallMethod( PthPowerImage, "for an element of a restricted Lie algebra",
     [ IsJacobianElement ], # weaker filter, we maybe only discovered later
                            # that the algebra is restricted
     function(x)
     local fam;
     fam := FamilyObj(x);
-    if not IsBound(fam!.pMapping) then TryNextMethod(); fi;
+    if not PMAPPING_OF_SC_FAMILY(fam) then TryNextMethod(); fi;
     return PTHPOWERIMAGE_PPI_VEC(fam!.fullSCAlgebra,fam!.zerocoeff,Characteristic(fam),fam!.basisVectors,fam!.pMapping,ExtRepOfObj(x),x);
 end);
 
@@ -1153,7 +1192,7 @@ InstallMethod( PthPowerImage, "for an element of a restricted Lie algebra and an
     function(x,n)
     local fam;
     fam := FamilyObj(x);
-    if not IsBound(fam!.pMapping) then TryNextMethod(); fi;
+    if not PMAPPING_OF_SC_FAMILY(fam) then TryNextMethod(); fi;
     while n>0 do
         x := PTHPOWERIMAGE_PPI_VEC(fam!.fullSCAlgebra,fam!.zerocoeff,Characteristic(fam),fam!.basisVectors,fam!.pMapping,ExtRepOfObj(x),x);
         n := n-1;
@@ -1220,7 +1259,7 @@ InstallMethod( PthPowerImages,
     end );
 
 
-############################################################################
+#############################################################################
 ##
 #M  CartanSubalgebra( <L> )
 ##
@@ -1237,7 +1276,7 @@ InstallMethod( PthPowerImages,
 ##  $F$ of cardinality greater than the dimension of <L> we can proceed as
 ##  follows.
 ##  Let $a$ be a non nilpotent element of <L> and $K$ the corresponding
-##  Engel subalgebra.  Furthermore, let $b$ be a non nilpotent element of $K$.
+##  Engel subalgebra. Furthermore, let $b$ be a non nilpotent element of $K$.
 ##  Then there is an element $c \in F$ such that $a + c ( b - a )$ has an
 ##  Engel subalgebra strictly contained in $K$
 ##  (see Humphreys, proof of Lemma A, p 79).
@@ -1379,7 +1418,7 @@ InstallMethod( CartanSubalgebra,
     end );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  AdjointAssociativeAlgebra( <L>, <K> )
 ##
@@ -1526,7 +1565,7 @@ InstallMethod( AdjointAssociativeAlgebra,
     end );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  LieNilRadical( <L> )
 ##
@@ -1664,7 +1703,7 @@ InstallMethod( LieNilRadical,
     end );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  LieSolvableRadical( <L> )
 ##
@@ -1718,7 +1757,7 @@ InstallMethod( LieSolvableRadical,
     end );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  DirectSumDecomposition( <L> )
 ##
@@ -2220,9 +2259,9 @@ InstallMethod( DirectSumDecomposition,
 
 
 
-##############################################################################
+#############################################################################
 ##
-#M  IsSimpleAlgebra( <L> )  . . . . . . . . . . . . . . . .  for a Lie algebra
+#M  IsSimpleAlgebra( <L> )  . . . . . . . . . . . . . . . . for a Lie algebra
 ##
 ##  A test whether <L> is simple.
 ##  It works only over fields of characteristic 0.
@@ -2242,7 +2281,7 @@ InstallMethod( IsSimpleAlgebra,
     end );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  FindSl2( <L>, <x> )
 ##
@@ -2714,7 +2753,7 @@ InstallMethod( SemiSimpleType,
     end );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  NonNilpotentElement( <L> )
 ##
@@ -2831,7 +2870,7 @@ InstallMethod( NonNilpotentElement,
 
     end );
 
-############################################################################
+#############################################################################
 ##
 #M  PrintObj( <R> ) . . . . . . . . . . . . . . . . . . for a root system
 ##
@@ -2849,7 +2888,7 @@ InstallMethod( PrintObj,
 end );
 
 
-############################################################################
+#############################################################################
 ##
 #M  \.( <R>, <name> ) . . . . . . . record component access for a root system
 ##
@@ -2874,9 +2913,9 @@ InstallMethod( \.,
 end );
 
 
-##############################################################################
+#############################################################################
 ##
-#M  RootSystem( <L> ) . . . . . . . . . . . . . . . . . . .  for a Lie algebra
+#M  RootSystem( <L> ) . . . . . . . . . . . . . . . . . . . for a Lie algebra
 ##
 InstallMethod( RootSystem,
     "for a (semisimple) Lie algebra",
@@ -3116,7 +3155,7 @@ InstallMethod( RootSystem,
     end );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  CanonicalGenerators( <R> ) . . . . for a root system from a Lie algebra
 ##
@@ -3287,6 +3326,7 @@ InstallGlobalFunction( DescriptionOfNormalizedUEAElement,
     function( T, listofpairs )
 
     local normalized,        # ordered list of normalized coeff./monom. pairs
+          mons, coeffs,      # sorted normalized monomials, their coeffs.
           indices,           # list that stores at position $i$ up to what
                              # position the $i$-th monomial is known to be
                              # normalized
@@ -3300,10 +3340,10 @@ InstallGlobalFunction( DescriptionOfNormalizedUEAElement,
           tail,              # trailing part of the monomial under work
           index,             # new value of `indices[i]'
           Tcoeffs,           # one entry in `T'
-          lennorm,           # length of `normalized' at the moment
           zero;              # zero coefficient
 
-    normalized := [];
+    mons:= [];
+    coeffs:= [];
 
     while not IsEmpty( listofpairs ) do
 
@@ -3414,30 +3454,15 @@ InstallGlobalFunction( DescriptionOfNormalizedUEAElement,
 
         od;
 
-        # If the monomial is normalized then move it to `normalized'.
+        # If the monomial is normalized then merge it into `mons'.
         if len - 2 <= j then
 
-          # Find the correct position in `normalized',
-          # and insert the monomial.
-          lennorm:= Length( normalized );
-          k:= 2;
-          while k <= lennorm do
-            if listofpairs[ 2i-1 ] < normalized[ k-1 ] then
-              for l in [ lennorm, lennorm-1 .. k-1 ] do
-                normalized[l+2]:= normalized[l];
-              od;
-              normalized[ k-1 ]:= listofpairs[ 2i-1 ];
-              normalized[  k  ]:= scalar;
-              break;
-            elif listofpairs[ 2i-1 ] = normalized[ k-1 ] then
-              normalized[k]:= normalized[k] + scalar;
-              break;
-            fi;
-            k:= k+2;
-          od;
-          if lennorm < k then
-            normalized[ lennorm+1 ]:= listofpairs[ 2i-1 ];
-            normalized[ lennorm+2 ]:= scalar;
+          k:= PositionSorted( mons, listofpairs[ 2i-1 ] );
+          if k <= Length( mons ) and mons[k] = listofpairs[ 2i-1 ] then
+            coeffs[k]:= coeffs[k] + scalar;
+          else
+            Add( mons, listofpairs[ 2i-1 ], k );
+            Add( coeffs, scalar, k );
           fi;
 
           # Remove the monomial from `listofpairs'.
@@ -3450,16 +3475,16 @@ InstallGlobalFunction( DescriptionOfNormalizedUEAElement,
 
     od;
 
-    # Remove monomials with multiplicity zero;
-    if not IsEmpty( normalized ) then
-      zero:= Zero( normalized[2] );
-      for i in [ 2, 4 .. Length( normalized ) ] do
-        if normalized[i] = zero then
-          Unbind( normalized[ i-1 ] );
-          Unbind( normalized[  i  ] );
+    # Interleave, dropping monomials with multiplicity zero.
+    normalized:= [];
+    if not IsEmpty( coeffs ) then
+      zero:= Zero( coeffs[1] );
+      for i in [ 1 .. Length( mons ) ] do
+        if coeffs[i] <> zero then
+          Add( normalized, mons[i] );
+          Add( normalized, coeffs[i] );
         fi;
       od;
-      normalized:= Compacted( normalized );
     fi;
 
     # Return the normal form.
@@ -4008,7 +4033,7 @@ InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
      end );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  ImageElm( <h>, <x> )
 #M  ImagesRepresentative( <h>, <x> )
@@ -4054,7 +4079,7 @@ InstallMethod( ImagesRepresentative,
     [ IsFptoSCAMorphism, IsElementOfFpAlgebra ], 0,
         FptoSCAMorphismImageElm );
 
-###########################################################################
+#############################################################################
 ##
 #M   PreImagesRepresentativeNC( f, x )
 #M   PreImagesRepresentative( f, x )
@@ -4171,7 +4196,7 @@ InstallMethod( Dimension,
 end);
 
 
-##############################################################################
+#############################################################################
 ##
 #M  IsFiniteDimensional( <FpL> )
 ##
@@ -4191,7 +4216,7 @@ InstallMethod( IsFiniteDimensional,
       fi;
 end);
 
-##############################################################################
+#############################################################################
 ##
 ##     FpLieAlgebraEnumeration( <arg> )                   Juergen Wisliceny
 ##                                                        Willem de Graaf
@@ -4351,7 +4376,7 @@ local ReductionModuloTable,   #
 
 
 
-########################################################################
+#############################################################################
 
    CollectPolynomial:= function( r )
 
@@ -4679,7 +4704,7 @@ local ReductionModuloTable,   #
       return wts[p][q];
    end;
 
-##############################################################################
+#############################################################################
 #
 # The program starts. First the relations are transformed into internal format.
 # That is: represented as lists of lists etc., and left-normalized.
@@ -4777,7 +4802,7 @@ local ReductionModuloTable,   #
 
      while not table_init do
 
-#######################################################################
+#############################################################################
 # Initialize the table....
 # Meaning: fill in all possible commutators of generators using the
 # relations, make definitions for the commutators that cannot be decided
@@ -4914,7 +4939,7 @@ local ReductionModuloTable,   #
      od;
 
 
-##########################################################################
+#############################################################################
 #
 #  The table has been initialized, and the commutators of weight 2
 #  have been defined. Now the process of increasing the weight starts.
@@ -5170,7 +5195,7 @@ local ReductionModuloTable,   #
        if relation_found then break; fi;
        od;
 
-##########################################################################
+#############################################################################
 
        if relation_found then
 
@@ -5508,7 +5533,7 @@ end );
 
 
 
-##############################################################################
+#############################################################################
 ##
 #F  FpLieAlgebraByCartanMatrix( <C> )
 ##

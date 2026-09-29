@@ -45,7 +45,7 @@ end);
 
 #############################################################################
 ##
-#F  IsDocumentedWord( <word>[, false ] ) . . . . . . .  check documentation for
+#F  IsDocumentedWord( <word>[, false ] ) . . . . . .  check documentation for
 #F  <word> in a search string
 ##
 ##  Returns 'true' if <word> appears as word in some search string of the help
@@ -789,7 +789,7 @@ end);
 
 #############################################################################
 ##
-#F  HELP_PRINT_MATCH( <match> ) . . . . . . the core function which finally
+#F  HELP_PRINT_MATCH( <match> ) . . . . . . . the core function which finally
 ##  gets the data for displaying the help and displays it
 ##
 ##  <match> is [book, entrynr]
@@ -830,7 +830,7 @@ end);
 
 #############################################################################
 ##
-#F  HELP_SHOW_PREV_CHAPTER( <book> ) . . . . . . . . show chapter introduction
+#F  HELP_SHOW_PREV_CHAPTER( <book> ) . . . . . . .  show chapter introduction
 ##
 InstallGlobalFunction(HELP_SHOW_PREV_CHAPTER, function( arg )
   local   info,  match;

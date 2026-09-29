@@ -1071,7 +1071,7 @@ end);
 
 #############################################################################
 ##
-#F  TrialQuotientRPF(<f>,<g>,<b>)  . . . . . . f/g if coeffbounds are given by b
+#F  TrialQuotientRPF(<f>,<g>,<b>) . . . . . f/g if coeffbounds are given by b
 ##
 InstallGlobalFunction(TrialQuotientRPF,function(f,g,b)
 local  fc,gc,a,m, n, i, k, c, q, val, brci,fam;
@@ -1911,7 +1911,7 @@ end);
 
 #############################################################################
 ##
-#F  SymAdic( <x>, <b> ) . . . . . . . . . . symmetric <b>-adic expansion of <x>
+#F  SymAdic( <x>, <b> ) . . . . . . . . . symmetric <b>-adic expansion of <x>
 #F  (<b> and <x> integers)
 ##
 BindGlobal( "SymAdic", function(x,b)
