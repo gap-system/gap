@@ -686,64 +686,52 @@ DeclareOperation( "StandardBasisVector",
 ##  <#GAPDoc Label="Vector">
 ##  <ManSection>
 ##  <Heading>Vector</Heading>
-##  <Oper Name="Vector" Arg='filt,R,list'
-##   Label="for filter, base domain, and list"/>
-##  <Oper Name="Vector" Arg='filt,R,v'
-##   Label="for filter, base domain, and vector object"/>
-##  <Oper Name="Vector" Arg='R,list'
-##   Label="for base domain and list"/>
-##  <Oper Name="Vector" Arg='R,v'
-##   Label="for base domain and vector object"/>
-##  <Oper Name="Vector" Arg='list,v'
+##  <Oper Name="Vector" Arg='list,example_vecobj'
 ##   Label="for a list and a vector object"/>
-##  <Oper Name="Vector" Arg='v1,v2'
+##  <Oper Name="Vector" Arg='vecobj,example_vecobj'
 ##   Label="for two vector objects"/>
+##  <Oper Name="Vector" Arg='[filt,]R,list'
+##   Label="for filter, base domain, and list"/>
+##  <Oper Name="Vector" Arg='[filt,]R,vecobj'
+##   Label="for filter, base domain, and vector object"/>
 ##  <Oper Name="Vector" Arg='list'
 ##   Label="for a list"/>
 ##
 ##  <Returns>a vector object</Returns>
 ##  <Description>
-##  If a filter <A>filt</A> is given as the first argument then
-##  a vector object is returned that has
-##  <Ref Attr="ConstructingFilter" Label="for a vector object"/>
-##  value <A>filt</A>, is defined over the base domain <A>R</A>,
-##  and has the entries given by the list <A>list</A> or the vector object
-##  <A>v</A>, respectively.
-##  <P/>
-##  If a semiring <A>R</A> is given as the first argument then
-##  a vector object is returned whose
-##  <Ref Attr="ConstructingFilter" Label="for a vector object"/>
-##  value is guessed from <A>R</A>, again with base domain <A>R</A>
-##  and entries given by the last argument.
-##  <P/>
-##  In the remaining cases with two arguments,
-##  the first argument is a list or a vector object
-##  that defines the entries of the result,
-##  and the second argument is a vector object whose
+##  If a vector object <A>example_vecobj</A> is given as the second argument,
+##  then a vector object is returned whose entries are defined by those of
+##  the first argument (a list <A>list</A> or another vector object
+##  <A>vecobj</A>) and whose
 ##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> and
-##  <Ref Attr="BaseDomain" Label="for a vector object"/> are taken for the
-##  result.
+##  <Ref Attr="BaseDomain" Label="for a vector object"/> are taken from
+##  <A>example_vecobj</A>.
 ##  <P/>
-##  If only a list <A>list</A> is given then both the
-##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> and the
-##  <Ref Attr="BaseDomain" Label="for a vector object"/> are guessed from
-##  this list.
+##  The variants without a given <A>example_vecobj</A> are intended only for
+##  situations where no such example object is available.
+##  In these cases, the entries of the result are described by the given
+##  list <A>list</A> or vector object <A>vecobj</A>.
+##  The <Ref Attr="BaseDomain" Label="for a vector object"/> of the result
+##  is either the given semiring <A>R</A>, or it is guessed from <A>list</A>.
+##  The <Ref Attr="ConstructingFilter" Label="for a vector object"/>
+##  value of the result is either the given filter <A>filt</A>,
+##  or it is guessed from <A>R</A> or <A>list</A>.
 ##  <P/>
-##  The variants without an example vector object are intended only for
-##  situations where no such example is available.
-##  If a vector object <A>v</A> of the intended kind is known then use
-##  <C>Vector( </C><A>list</A><C>, </C><A>v</A><C> )</C> instead of
-##  <C>Vector( BaseDomain( </C><A>v</A><C> ), </C><A>list</A><C> )</C>,
+##  Note that for a known vector object <A>v</A> of the intended kind,
+##  <C>Vector( </C><A>list</A><C>, </C><A>v</A><C> )</C> is preferable to
+##  <C>Vector( BaseDomain( </C><A>v</A><C> ), </C><A>list</A><C> )</C>
 ##  because the latter ignores the
 ##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> value of
 ##  <A>v</A>, and the guessed value may differ from it,
 ##  see the example below.
 ##  <P/>
-##  The variant <C>Vector( </C><A>v1</A><C>, </C><A>v2</A><C> )</C>
-##  is supported also for the case that <A>v2</A> is a row vector but not
-##  a vector object.
+##  The variant
+##  <C>Vector( </C><A>vecobj</A><C>, </C><A>example_vecobj</A><C> )</C>
+##  is supported also for the case that <A>example_vecobj</A> is a row
+##  vector but not a vector object.
 ##  In this situation, the result is a row vector that is equal to
-##  <A>v1</A> and whose internal representation fits to that of <A>v2</A>.
+##  <A>vecobj</A> and whose internal representation fits to that of
+##  <A>example_vecobj</A>.
 ##  <P/>
 ##  If the global option <C>check</C> is set to <K>false</K> then
 ##  <Ref Oper="Vector" Label="for filter, base domain, and list"/>
@@ -752,7 +740,7 @@ DeclareOperation( "StandardBasisVector",
 ##  If the <Ref Attr="ConstructingFilter" Label="for a vector object"/>
 ##  value of the result implies <Ref Filt="IsCopyable"/> then the result is
 ##  mutable if and only if the argument that determines the entries of the
-##  result (<A>list</A>, <A>v</A>, <A>v1</A>) is mutable.
+##  result (<A>list</A> or <A>vecobj</A>) is mutable.
 ##  <P/>
 ##  In the case of a mutable result, it is <E>not</E> guaranteed that
 ##  the given list of entries is copied.
@@ -1353,54 +1341,41 @@ DeclareOperation( "CompanionMatrix",
 ##  <#GAPDoc Label="MatObj_Matrix">
 ##  <ManSection>
 ##  <Heading>Matrix</Heading>
-##  <Oper Name="Matrix" Arg='[filt,]R,list[,ncols]' Label="for filter, base domain, list, ncols"/>
-##  <Oper Name="Matrix" Arg='[filt,]R,matobj' Label="for filter, base domain, and matrix object"/>
 ##  <Oper Name="Matrix" Arg='list[,ncols],example_matobj' Label="for a list, ncols, and a matrix object"/>
 ##  <Oper Name="Matrix" Arg='matobj,example_matobj' Label="for two matrix objects"/>
+##  <Oper Name="Matrix" Arg='[filt,]R,list[,ncols]' Label="for filter, base domain, list, ncols"/>
+##  <Oper Name="Matrix" Arg='[filt,]R,matobj' Label="for filter, base domain, and matrix object"/>
 ##  <Oper Name="Matrix" Arg='list[,ncols]' Label="for a list and ncols"/>
 ##
 ##  <Returns>a matrix object</Returns>
 ##  <Description>
-##  If a filter <A>filt</A> is given as the first argument then
-##  a matrix object is returned that has
-##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/>
-##  value <A>filt</A>, is defined over the base domain <A>R</A>,
-##  and has the entries given by the list <A>list</A> or the matrix object
-##  <A>matobj</A>, respectively.
+##  If a matrix object <A>example_matobj</A> is given as the last argument,
+##  then a matrix object is returned whose entries are defined by those of
+##  the first argument (a list <A>list</A>, together with <A>ncols</A> if
+##  applicable, or another matrix object <A>matobj</A>) and whose
+##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/> and
+##  <Ref Attr="BaseDomain" Label="for a matrix object"/> are taken from
+##  <A>example_matobj</A>.
 ##  Here <A>list</A> can be either a list of plain lists that describe the
 ##  entries of the rows, or a flat list of the entries in row major order,
 ##  where <A>ncols</A> defines the number of columns.
 ##  <P/>
-##  If a semiring <A>R</A> is given as the first argument then
-##  a matrix object is returned whose
-##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/>
-##  value is guessed from <A>R</A>, again with base domain <A>R</A>
-##  and entries given by the last argument.
+##  The variants without a given <A>example_matobj</A> are intended only for
+##  situations where no such example object is available.
+##  In these cases, the entries of the result are described by the given
+##  list <A>list</A> (and <A>ncols</A>) or matrix object <A>matobj</A>.
+##  The <Ref Attr="BaseDomain" Label="for a matrix object"/> of the result
+##  is either the given semiring <A>R</A>, or it is guessed from <A>list</A>.
+##  The <Ref Attr="ConstructingFilter" Label="for a matrix object"/>
+##  value of the result is either the given filter <A>filt</A>,
+##  or it is guessed from <A>R</A> or <A>list</A>.
 ##  <P/>
-##  In those remaining cases where the last argument is a matrix object,
-##  the first argument is a list or a matrix object
-##  that defines (together with <A>ncols</A> if applicable) the entries of
-##  the result, and the
-##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/> and
-##  <Ref Attr="BaseDomain" Label="for a matrix object"/> of the last argument
-##  are taken for the result.
-##  <P/>
-##  Finally, if only a list <A>list</A> and perhaps <A>ncols</A> is given
-##  then both the
-##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/> and the
-##  <Ref Attr="BaseDomain" Label="for a matrix object"/> are guessed from
-##  the list.
-##  <P/>
-##  The variants without an example matrix object are intended only for
-##  situations where no such example is available.
-##  If a matrix object <A>example_matobj</A> of the intended kind is known
-##  then use
-##  <C>Matrix( </C><A>list</A><C>, </C><A>example_matobj</A><C> )</C>
-##  instead of
-##  <C>Matrix( BaseDomain( </C><A>example_matobj</A><C> ), </C><A>list</A><C> )</C>,
+##  Note that for a known matrix object <A>M</A> of the intended kind,
+##  <C>Matrix( </C><A>list</A><C>, </C><A>M</A><C> )</C> is preferable to
+##  <C>Matrix( BaseDomain( </C><A>M</A><C> ), </C><A>list</A><C> )</C>
 ##  because the latter ignores the
 ##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/> value of
-##  <A>example_matobj</A>, and the guessed value may differ from it,
+##  <A>M</A>, and the guessed value may differ from it,
 ##  see the example below.
 ##  <P/>
 ##  If the global option <C>check</C> is set to <K>false</K> then
