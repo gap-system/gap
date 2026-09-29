@@ -1,4 +1,4 @@
-#@local R, v, l, c, a, b, m, v, w, pa, pv, s, G, hom
+#@local R, v, l, c, a, b, m, w, pa, pv, s, G, hom
 gap> START_TEST( "matobjnz.tst" );
 
 # compare zmodnz vectors with lists, non-prime modulus
