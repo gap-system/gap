@@ -592,26 +592,26 @@ InstallMethod( AdjointMatrix,
           j, i, l,      # loop variables
           cij,          # structure constants vector
           k,            # one position in structure constants vector
-          row;          # one row of `M'
+          nz;           # positions of nonzero coefficients of `x'
 
     x:= Coefficients( B, x );
     n:= Length( BasisVectors( B ) );
     T:= StructureConstantsTable( B );
     zerovector:= [ 1 .. n ] * Last(T);
-    M:= [];
+    M:= List( [ 1 .. n ], k -> ShallowCopy( zerovector ) );
+    # for basis vectors, most coefficients are zero
+    nz:= Filtered( [ 1 .. n ], i -> not IsZero( x[i] ) );
     for j in [ 1 .. n ] do
-      row:= ShallowCopy( zerovector );
-      for i in [ 1 .. n ] do
+      for i in nz do
         cij:= T[i][j];
         for l in [ 1 .. Length( cij[1] ) ] do
           k:= cij[1][l];
-          row[k]:= row[k] + x[i] * cij[2][l];
+          M[k][j]:= M[k][j] + x[i] * cij[2][l];
         od;
       od;
-      M[j]:= row;
     od;
 
-    return TransposedMat( M );
+    return MakeImmutable( M );
     end );
 
 #T general function for arbitrary algebras? (right/left multiplication)
@@ -647,7 +647,9 @@ InstallMethod( RightDerivations,
           n,           # dimension of 'L'
           eqno,offset,
           A,
-          i, j, k, m,
+          i, j, k, m, l,
+          cij, ckj, cik, # structure constants vectors
+          c,
           M;             # the Lie algebra of derivations
 
     if not IsAlgebra( UnderlyingLeftModule( B ) ) then
@@ -681,17 +683,28 @@ InstallMethod( RightDerivations,
     eqno:= 0;
     for i in [ 1 .. n ] do
       for j in [ offset*i+1 .. n ] do
-        for m in [ 1 .. n ] do
-          eqno:= eqno+1;
-          for k in [ 1 .. n ] do
-            A[ (k-1)*n+m ][eqno]:= A[ (k-1)*n+m ][eqno] +
-                                        SCTableEntry( T,i,j,k );
-            A[ (i-1)*n+k ][eqno]:= A[ (i-1)*n+k ][eqno] -
-                                        SCTableEntry( T,k,j,m );
-            A[ (j-1)*n+k ][eqno]:= A[ (j-1)*n+k ][eqno] -
-                                        SCTableEntry( T,i,k,m );
+        # the equation for $(i,j,m)$ has number `eqno + m'
+        cij:= T[i][j];
+        for l in [ 1 .. Length( cij[1] ) ] do
+          k:= cij[1][l];
+          c:= cij[2][l];
+          for m in [ 1 .. n ] do
+            A[ (k-1)*n+m ][eqno+m]:= A[ (k-1)*n+m ][eqno+m] + c;
           od;
         od;
+        for k in [ 1 .. n ] do
+          ckj:= T[k][j];
+          for l in [ 1 .. Length( ckj[1] ) ] do
+            m:= ckj[1][l];
+            A[ (i-1)*n+k ][eqno+m]:= A[ (i-1)*n+k ][eqno+m] - ckj[2][l];
+          od;
+          cik:= T[i][k];
+          for l in [ 1 .. Length( cik[1] ) ] do
+            m:= cik[1][l];
+            A[ (j-1)*n+k ][eqno+m]:= A[ (j-1)*n+k ][eqno+m] - cik[2][l];
+          od;
+        od;
+        eqno:= eqno+n;
       od;
     od;
 
@@ -745,7 +758,9 @@ InstallMethod( LeftDerivations,
           n,           # dimension of 'L'
           eqno,offset,
           A,
-          i, j, k, m,
+          i, j, k, m, l,
+          cij, ckj, cik, # structure constants vectors
+          c,
           M;             # the Lie algebra of derivations
 
     if not IsAlgebra( UnderlyingLeftModule( B ) ) then
@@ -779,17 +794,28 @@ InstallMethod( LeftDerivations,
     eqno:= 0;
     for i in [ 1 .. n ] do
       for j in [ offset*i+1 .. n ] do
-        for m in [ 1 .. n ] do
-          eqno:= eqno+1;
-          for k in [ 1 .. n ] do
-            A[ (m-1)*n+k ][eqno]:= A[ (m-1)*n+k ][eqno] +
-                                        SCTableEntry( T,i,j,k );
-            A[ (k-1)*n+i ][eqno]:= A[ (k-1)*n+i ][eqno] -
-                                        SCTableEntry( T,k,j,m );
-            A[ (k-1)*n+j ][eqno]:= A[ (k-1)*n+j ][eqno] -
-                                        SCTableEntry( T,i,k,m );
+        # the equation for $(i,j,m)$ has number `eqno + m'
+        cij:= T[i][j];
+        for l in [ 1 .. Length( cij[1] ) ] do
+          k:= cij[1][l];
+          c:= cij[2][l];
+          for m in [ 1 .. n ] do
+            A[ (m-1)*n+k ][eqno+m]:= A[ (m-1)*n+k ][eqno+m] + c;
           od;
         od;
+        for k in [ 1 .. n ] do
+          ckj:= T[k][j];
+          for l in [ 1 .. Length( ckj[1] ) ] do
+            m:= ckj[1][l];
+            A[ (k-1)*n+i ][eqno+m]:= A[ (k-1)*n+i ][eqno+m] - ckj[2][l];
+          od;
+          cik:= T[i][k];
+          for l in [ 1 .. Length( cik[1] ) ] do
+            m:= cik[1][l];
+            A[ (k-1)*n+j ][eqno+m]:= A[ (k-1)*n+j ][eqno+m] - cik[2][l];
+          od;
+        od;
+        eqno:= eqno+n;
       od;
     od;
 
