@@ -12,7 +12,7 @@
 ##  representation.
 ##
 ##  Currently,  there are four  representations for objects with the external
-##  representation as list of generators  numbers and exponents (so not  only
+##  representation as list of generator  numbers and exponents (so not  only
 ##  for  associative  words but  perhaps  also for   elements  in a  finitely
 ##  presented group).
 ##
@@ -24,7 +24,7 @@
 ##  internal data.
 ##
 ##  The    result of an arithmetic    operation  with  objects   of the  same
-##  representation  will be also of that  representation if this is possible.
+##  representation  will also be of that  representation if this is possible.
 ##  The  result  of  an  arithmetic   operation  with  objects  of  different
 ##  representations  will be the bigger  one of the two  if this is possible.
 ##  Otherwise `ObjByExtRep' will choose the smallest possible representation.
@@ -106,8 +106,8 @@ BindGlobal( "InfBits_AssocWord", function( Type, list )
 end );
 
 
-# code for printing words in factored form. This pattern searching clearly
-# is improvable
+# code for printing words in factored form. This pattern searching is clearly
+# improvable
 BindGlobal("FindSubstringPowers",function(l,n)
 local new,t,i,step,lstep,z,zz,j,a,k,good,bad,lim,plim;
   new:=0;
@@ -208,21 +208,17 @@ end);
 PRINTWORDPOWERS:=true;
 
 DeclareGlobalName("DoNSAW");
-BindGlobal( "DoNSAW", function(l,names,tseed)
-local a,n,t,
+BindGlobal( "DoNSAW", function(l,names,tseed,n)
+local a,t,
       word,
       exp,
       i,j,
       str;
 
-  n:=Length(names);
   if (PRINTWORDPOWERS=true
    or (IsInt(PRINTWORDPOWERS) and Length(l)<PRINTWORDPOWERS)) and
      ValueOption("printnopowers")<>true then
-    if Length(l)>0 and n=infinity then
-      n:=2*(Maximum(List(l,AbsInt))+1);
-    fi;
-    a:=FindSubstringPowers(l,n+Length(tseed)); # tseed numbers are used already
+    a:=FindSubstringPowers(l,n+Length(tseed)); # tseed numbers are already used
   else
     a:=[l,[]];
   fi;
@@ -252,7 +248,7 @@ local a,n,t,
       else
         # decode longer word -- it will occur as power, so use ()
         Add(str,'(');
-        Append(str,DoNSAW(t,names,Filtered(a[2],x->x[1]=0)));
+        Append(str,DoNSAW(t,names,Filtered(a[2],x->x[1]=0),n));
         Add(str,')');
       fi;
     elif word[i]<0 then
@@ -282,13 +278,48 @@ local a,n,t,
 end );
 
 BindGlobal("NiceStringAssocWord",function(elm)
-local names,word;
+local names,word,n,tseed,e,i,g,x,pow,pos;
   names:= FamilyObj( elm )!.names;
-  word:= LetterRepAssocWord( elm );
+  n:=Length(names);
+  tseed:=[];
+  if IsSyllableAssocWordRep(elm) then
+    # Syllables with large exponents become the tokens FindSubstringPowers
+    # would create from their letters anyway, so exponents need not be
+    # small integers.
+    e:=ExtRepOfObj(elm);
+    if n=infinity and Length(e)>0 then
+      n:=2*(Maximum(e{[1,3..Length(e)-1]})+1);
+    fi;
+    word:=[];
+    for i in [1,3..Length(e)-1] do
+      g:=e[i];
+      x:=e[i+1];
+      if x<0 then
+        g:=-g;
+        x:=-x;
+      fi;
+      if x>9 then # same threshold as in FindSubstringPowers
+        pow:=[0,g,x];
+        pos:=Position(tseed,pow);
+        if pos=fail then
+          Add(tseed,pow);
+          pos:=Length(tseed);
+        fi;
+        Add(word,n+pos);
+      else
+        Append(word,ListWithIdenticalEntries(x,g));
+      fi;
+    od;
+  else
+    word:= LetterRepAssocWord( elm );
+    if n=infinity and Length(word)>0 then
+      n:=2*(Maximum(List(word,AbsInt))+1);
+    fi;
+  fi;
   if Length(word)=0 then
     return "<identity ...>";
   fi;
-  word:=DoNSAW(word,names,[]);
+  word:=DoNSAW(word,names,tseed,n);
   return word;
 end);
 
@@ -743,7 +774,7 @@ InstallOtherMethod( Length,
 ##
 BindGlobal( "InfBits_ExtRepOfObj", elm->elm![1] );
 InstallMethod( ExtRepOfObj,
-    "for a inf. bits assoc. word",
+    "for an inf. bits assoc. word",
     true,
     [ IsInfBitsAssocWord ], 0,
     InfBits_ExtRepOfObj );
@@ -759,7 +790,7 @@ BindGlobal( "InfBits_Less", function( u, v )
     local   lu, lv,      # length of u/v as a list
             len,         # difference in length of u/v as words
             i,           # loop variable
-            lexico;      # flag for the lexicoghraphic ordering of u and v
+            lexico;      # flag for the lexicographic ordering of u and v
 
     u := u![1]; lu := Length(u);
     v := v![1]; lv := Length(v);
@@ -988,7 +1019,7 @@ InstallOtherMethod( ObjByExtRep,
 ##  does the administrative work in the construction of free semigroups,
 ##  free monoids, and free groups.
 ##
-##  <F> is the family of objects, <names> is a list of generators names,
+##  <F> is the family of objects, <names> is a list of generator names,
 ##  and <req> is the required category for the elements, that is,
 ##  `IsAssocWord', `IsAssocWordWithOne', or `IsAssocWordWithInverse'.
 ##
@@ -1152,7 +1183,7 @@ InstallMethod( Position,
     local digits, pos, i;
 
     # Check whether `obj' is in the initial segment, and if not,
-    # whether `obj' matches the names in the rest of the list..
+    # whether `obj' matches the names in the rest of the list.
     pos:= Position( list![2], obj );
     if pos <> fail then
       return pos;

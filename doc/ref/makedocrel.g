@@ -4,6 +4,9 @@
 
 Read( "makedocreldata.g" );
 
+# create/update the (gitignored) file user_pref_list.xml
+UpdateXMLForUserPreferences();
+
 SetGapDocLaTeXOptions("nocolor", rec(Maintitlesize :=
 "\\fontsize{36}{38}\\selectfont"));
 

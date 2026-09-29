@@ -45,7 +45,7 @@ end);
 
 #############################################################################
 ##
-#F  IsDocumentedWord( <word>[, false ] ) . . . . . . .  check documentation for
+#F  IsDocumentedWord( <word>[, false ] ) . . . . . .  check documentation for
 #F  <word> in a search string
 ##
 ##  Returns 'true' if <word> appears as word in some search string of the help
@@ -125,7 +125,7 @@ BindGlobal( "TRANSATL", MakeImmutable(
 ##  substring "Size" or "size", since it's not possible to detect whether
 ##  "size" is a part of another word or a word itself (e.g. both spellings
 ##  "emphasize" and  "emphasise" may be used). However, this only creates
-##  a tiny and really neglectible overhead (try e.g. `??SizesCentralisers'
+##  a tiny and really negligible overhead (try e.g. `??SizesCentralisers'
 ##  or `??Centralizers, Normalizers and Intersections'); however it ensures
 ##  that help searches may be successful even if they use inconsistent
 ##  spelling. In practice, we expect that the majority of help searches
@@ -738,9 +738,9 @@ end);
 
 #############################################################################
 ##
-#F  HELP_SHOW_BOOKS( ignored... ) . . . . . . . . . . .  show available books
+#F  HELP_SHOW_BOOKS() . . . . . . . . . . . . . . . . .  show available books
 ##
-InstallGlobalFunction(HELP_SHOW_BOOKS, function( arg )
+InstallGlobalFunction(HELP_SHOW_BOOKS, function()
   local books;
 
   books := ["             Table of currently available help books",
@@ -789,7 +789,7 @@ end);
 
 #############################################################################
 ##
-#F  HELP_PRINT_MATCH( <match> ) . . . . . . the core function which finally
+#F  HELP_PRINT_MATCH( <match> ) . . . . . . . the core function which finally
 ##  gets the data for displaying the help and displays it
 ##
 ##  <match> is [book, entrynr]
@@ -830,7 +830,7 @@ end);
 
 #############################################################################
 ##
-#F  HELP_SHOW_PREV_CHAPTER( <book> ) . . . . . . . . show chapter introduction
+#F  HELP_SHOW_PREV_CHAPTER( <book> ) . . . . . . .  show chapter introduction
 ##
 InstallGlobalFunction(HELP_SHOW_PREV_CHAPTER, function( arg )
   local   info,  match;

@@ -104,7 +104,7 @@ static inline int GAP_Error_Postjmp_(int JumpRet)
 
 #define GAP_Error_Setjmp()                                                   \
     (GAP_unlikely(GAP_Error_Prejmp_(__FILE__, __LINE__)) ||                  \
-     GAP_Error_Postjmp_(_setjmp(*GAP_GetReadJmpError())))
+     GAP_Error_Postjmp_(GAP_SETJMP(*GAP_GetReadJmpError())))
 
 
 // Code which uses the GAP API exposed by this header file should sandwich
@@ -552,7 +552,7 @@ Obj GAP_MakeString(const char * string);
 // C string of given length (in bytes).
 Obj GAP_MakeStringWithLen(const char * string, UInt len);
 
-// Returns a immutable GAP string containing a copy of the given NULL
+// Returns an immutable GAP string containing a copy of the given NULL
 // terminated C string.
 Obj GAP_MakeImmString(const char * string);
 

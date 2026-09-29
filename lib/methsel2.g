@@ -252,8 +252,7 @@ end;
           context := GetCurrentLVars(),
           tracebackContext := ParentLVars(GetCurrentLVars()),
           mayReturnVoid := false,
-          mayReturnObj := false,
-          lateMessage := "type 'quit;' to quit to outer loop"
+          lateMessage := "you can enter 'quit;' to quit to outer loop"
       ),
       [ no_method_found ]);
 end;

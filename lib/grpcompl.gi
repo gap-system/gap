@@ -87,7 +87,7 @@ local G,N,K,s, h, q, fpi, factorpres, com, comgens, cen, ocrels, fpcgs, ncom,
   # construct a presentation
   h:=NaturalHomomorphismByNormalSubgroup(G,N);
 
-  # AH still: Try to find a more simple presentation if available.
+  # AH still: Try to find a simpler presentation if available.
 
   if Source(h)=G then
     q:=ImagesSource(h);
@@ -100,11 +100,11 @@ local G,N,K,s, h, q, fpi, factorpres, com, comgens, cen, ocrels, fpcgs, ncom,
   factorpres:=[FreeGeneratorsOfFpGroup(Range(fpi)),
                RelatorsOfFpGroup(Range(fpi)),
                List(GeneratorsOfGroup(Range(fpi)),
-                    i->PreImagesRepresentative(fpi,i))];
-  Assert(1,ForAll(factorpres[3],i->Image(h,PreImagesRepresentative(h,i))=i));
+                    i->PreImagesRepresentativeNC(fpi,i))];
+  Assert(1,ForAll(factorpres[3],i->Image(h,PreImagesRepresentativeNC(h,i))=i));
   # initialize
   com:=[G];
-  comgens:=[List(factorpres[3],i->PreImagesRepresentative(h,i))];
+  comgens:=[List(factorpres[3],i->PreImagesRepresentativeNC(h,i))];
   cen:=[s[1]];
   ocrels:=false;
 

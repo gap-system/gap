@@ -9,7 +9,7 @@
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 ##  This file contains declarations for elements of rings, given as Z-modules
-##  with structure constants for multiplication. Is is based on algsc.gd
+##  with structure constants for multiplication. It is based on algsc.gd
 ##
 
 #############################################################################
@@ -47,6 +47,14 @@ DeclareSynonym("IsSubringSCRing",IsRing and IsSCRingObjCollection);
 ##  it can be either a string <A>name</A>
 ##  (then <A>name</A><C>1</C>, <A>name</A><C>2</C> etc. are chosen)
 ##  or a list of strings which are then chosen.
+##  <Example><![CDATA[
+##  gap> T:=EmptySCTable( 1, 0 );;
+##  gap> SetEntrySCTable( T, 1, 1, [ 1, 1 ] );
+##  gap> R:=RingByStructureConstants([9], T);   # Z/9Z
+##  <ring with 1 generator>
+##  gap> Elements(R);
+##  [ 0*r.1, r.1, 2*r.1, 3*r.1, 4*r.1, 5*r.1, 6*r.1, 7*r.1, -r.1 ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -58,10 +66,10 @@ DeclareGlobalFunction( "RingByStructureConstants" );
 #F  StandardGeneratorsSubringSCRing( <S> )
 ##
 ##  for a subring <S> of an SC ring <R> this command returns a list of length 3.
-##  The first entry are generators for <S> as addive group, given with
+##  The first entries are generators for <S> as additive group, given with
 ##  respect to the additive group basis for <R> and being in hermite normal
 ##  form. The second entries are pivot positions for these generators. The third
-##  entry are the generators as actual ring elements.
+##  entries are the generators as actual ring elements.
 DeclareAttribute("StandardGeneratorsSubringSCRing",IsSubringSCRing);
 
 #############################################################################

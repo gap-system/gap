@@ -174,8 +174,31 @@ DeclareOperation( "ExtensionNC", [ CanEasilyComputePcgs, IsObject, IsVector ] );
 ##  <Oper Name="Extensions" Arg='G, M'/>
 ##
 ##  <Description>
-##  returns all extensions of <A>G</A> by the <A>G</A>-module <A>M</A>
+##  For a group <M>G</M> in the filter <Ref Filt="CanEasilyComputePcgs"/>
+##  and a <A>G</A>-module <A>M</A>,
+##  <Ref Oper="Extensions"/> returns all extensions of <A>G</A> by <A>M</A>
 ##  up to equivalence as pc groups.
+##  <P/>
+##  Mapping <C>Pcgs( <A>G</A> )</C> to the <C>generators</C> list of <A>M</A>
+##  must define a group homomorphism.
+##  If one is not sure about this correspondence,
+##  one can use the variant that takes a homomorphism as the second argument,
+##  see <Ref Oper="Extensions" Label="for group and map"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> G := SmallGroup( 4, 2 );;
+##  gap> mats := List( Pcgs( G ), x -> IdentityMat( 1, GF(2) ) );;
+##  gap> M := GModuleByMats( mats, GF(2) );;
+##  gap> Extensions( G, M );
+##  [ <pc group of size 8 with 3 generators>,
+##    <pc group of size 8 with 3 generators>,
+##    <pc group of size 8 with 3 generators>,
+##    <pc group of size 8 with 3 generators>,
+##    <pc group of size 8 with 3 generators>,
+##    <pc group of size 8 with 3 generators>,
+##    <pc group of size 8 with 3 generators>,
+##    <pc group of size 8 with 3 generators> ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

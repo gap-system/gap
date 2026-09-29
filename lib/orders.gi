@@ -27,7 +27,7 @@ InstallMethod( OrderingsFamily,
 end);
 
 
-######################################################################
+#############################################################################
 ##
 #M  ViewObj( <ord> )
 ##
@@ -39,12 +39,12 @@ InstallMethod( ViewObj,
   end);
 
 
-######################################################################
+#############################################################################
 ##
 ##  Creating orderings
 ##
 
-######################################################################
+#############################################################################
 ##
 #F  CreateOrderingByLtFunction( <fam>, <fun>, <list> )
 ##
@@ -76,7 +76,7 @@ function( fam, fun, list)
 end);
 
 
-######################################################################
+#############################################################################
 ##
 #F  CreateOrderingByLteqFunction( <fam>, <fun>, <list> )
 ##
@@ -108,7 +108,7 @@ function( fam, fun, list)
 end);
 
 
-######################################################################
+#############################################################################
 ##
 #M  OrderingByLessThanFunctionNC( <fam>, <fun> )
 ##
@@ -129,7 +129,7 @@ InstallOtherMethod( OrderingByLessThanFunctionNC,
   end);
 
 
-######################################################################
+#############################################################################
 ##
 #M  OrderingByLessThanOrEqualFunctionNC( <fam>, <fun> )
 ##
@@ -264,7 +264,7 @@ InstallMethod( IsIncomparableUnder,
 end);
 
 
-######################################################################
+#############################################################################
 ##
 ##  Orderings on families of associative words
 ##
@@ -1338,7 +1338,7 @@ InstallMethod(WreathProductOrdering,
           m,  #current position in scan of u (from right)
           n,  #current position in scan of v (from right)
        ug, vg,  #Current generators of u, v
-   ug_lev, vg_lev,  #levels of urrent generators of u, v
+   ug_lev, vg_lev,  #levels of current generators of u, v
      sl_lev,  #level at which one of the words  u,v  is
         #smaller in the shortlex ordering
                      sl,  #sl=1 or 2 if u or v, resp., is

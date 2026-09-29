@@ -575,7 +575,7 @@ InstallMethod( LogFFE,
 
 #############################################################################
 ##
-#M  RootFFE( <z>, <k> )  . . . . . . . . . . . . . . . . . . for `IsZmodpZObj'
+#M  RootFFE( <z>, <k> )  . . . . . . . . . . . . . . . . .  for `IsZmodpZObj'
 ##
 InstallOtherMethod(RootFFE,"for modulus rep, using RootMod",true,
   [IsPosInt,IsZmodpZObj and IsModulusRep,IsPosInt],
@@ -619,7 +619,7 @@ InstallMethod(IntFFE,
 
 #############################################################################
 ##
-#M  IntFFESymm( <obj> )  . . . . . . . . . . . . . . . . . . . for `IsZmodnZObj'
+#M  IntFFESymm( <obj> ) . . . . . . . . . . . . . . . . . . for `IsZmodnZObj'
 ##
 InstallOtherMethod(IntFFESymm,"Z/nZ (ModulusRep)",
   [IsZmodnZObj and IsModulusRep],
@@ -636,7 +636,7 @@ end);
 
 #############################################################################
 ##
-#M  Z(p) ... return a primitive root
+#M  Z(p) . . . . . . . . . . . . . . . . . . . . . .  return a primitive root
 ##
 InstallMethod(ZOp,
         [IsPosInt],
@@ -893,7 +893,7 @@ InstallMethod( String,
 
 #############################################################################
 ##
-#M  AsSSortedList( <R> ) . . . . . . . . . . . .  set of elements of Z mod n Z
+#M  AsSSortedList( <R> ) . . . . . . . . . . . . set of elements of Z mod n Z
 #M  AsList( <R> ) . . . . . . . . . . . . . . .  set of elements of Z mod n Z
 ##
 InstallMethod( AsList,

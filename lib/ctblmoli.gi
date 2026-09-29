@@ -214,7 +214,7 @@ InstallGlobalFunction( MolienSeries, function( arg )
           orders,       # representative orders of `tbl'
           classes,      # list of classes of `tbl' that are not yet used
           sub,          # classes that belong to one cyclic subgroup
-          i,            # represenative of `sub'
+          i,            # representative of `sub'
           n,            # element order of class `i'
           summand,      #
           numer,        # numerator in summands corresp. to `i'-th class

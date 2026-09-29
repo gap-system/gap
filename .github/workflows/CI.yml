@@ -47,7 +47,7 @@ jobs:
         test-suites:
           [
             # base test: fast first test
-            "testinstall",
+            "testinstall-bare",
 
             "teststandard",
 
@@ -123,10 +123,11 @@ jobs:
             test-suites: "testbuildsys testmockpkg testinstall"
             extra: "NO_COVERAGE=1 ABI=32 BUILDDIR=out-of-tree CONFIGFLAGS=\"\""
 
-          # test Julia integration
+          # test Julia integration; this also runs testmockpkg, to verify
+          # packages can still be compiled
           - os: ubuntu-22.04
             shell: bash
-            test-suites: "testinstall"
+            test-suites: "testmockpkg testinstall"
             extra: "JULIA=yes CONFIGFLAGS=\"--enable-debug\""
 
           - os: windows-2022
@@ -141,10 +142,10 @@ jobs:
       TEST_SUITES: ${{ matrix.test-suites }}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: "Set up Python"
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "3.11"
 
@@ -276,7 +277,7 @@ jobs:
       - name: "Gather coverage data"
         run: ${{ matrix.extra }} dev/ci-gather-coverage.sh
       - name: "Upload coverage data to Codecov"
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -288,7 +289,7 @@ jobs:
 
     steps:
       - name: "Send Codecov notifications"
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           run_command: send-notifications
@@ -341,7 +342,7 @@ jobs:
       - name: Install cross compile dependencies
         run: sudo apt-get install -q -y libgmp-dev:s390x libreadline-dev:s390x zlib1g-dev:s390x
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - run: ./autogen.sh
 
@@ -407,7 +408,7 @@ jobs:
     env:
       AUTOCONF_VERSION: 2.71
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Download required GAP packages
         run: |

@@ -23,8 +23,8 @@
 **
 *F  IsAlpha( <ch> ) . . . . . . . . . . . . .  is a character a normal letter
 **
-**  'IsAlpha' returns 1 if its character argument is a character from the
-**  range 'a..zA..Z' and 0 otherwise.
+**  'IsAlpha' returns TRUE if its character argument is a character from the
+**  range 'a..zA..Z' and FALSE otherwise.
 */
 #define IsAlpha(ch) (isalpha((unsigned int)ch))
 
@@ -33,8 +33,8 @@
 **
 *F  IsDigit( <ch> ) . . . . . . . . . . . . . . . . .  is a character a digit
 **
-**  'IsDigit' returns 1 if its character argument is a digit from  the  range
-**  '0..9' and 0 otherwise.
+**  'IsDigit' returns TRUE if its character argument is a digit from the
+**  range '0..9' and FALSE otherwise.
 */
 #define IsDigit(ch) (isdigit((unsigned int)ch))
 
@@ -43,8 +43,9 @@
 **
 *F  IsIdent( <ch> ) . . . . . . . .  is a character valid in a GAP identifier
 **
-**  'IsIdent' returns 1 if its character argument can be used unquoted inside
-**  a GAP identifier, i.e., is in the range 'a..zA..Z0-9_@', and 0 otherwise.
+**  'IsIdent' returns TRUE if its character argument can be used unquoted
+**  inside a GAP identifier, i.e., is in the range 'a..zA..Z0-9_@', and
+**  FALSE otherwise.
 */
 EXPORT_INLINE BOOL IsIdent(char ch)
 {

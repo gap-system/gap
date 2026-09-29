@@ -178,7 +178,7 @@ DeclareOperation(
 ##  <Oper Name="AsInducedPcgs" Arg='parent, pcs'/>
 ##
 ##  <Description>
-##  Obsolete function, potentially erraneous. DO NOT USE!
+##  Obsolete function, potentially erroneous. DO NOT USE!
 ##  returns an induced pcgs with <A>parent</A> as parent pcgs and to the
 ##  sequence of elements <A>pcs</A>.
 ##  </Description>
@@ -445,7 +445,7 @@ DeclareGlobalFunction("CorrespondingGeneratorsByModuloPcgs");
 ##  <Func Name="NORMALIZE_IGS" Arg='pcgs, list'/>
 ##
 ##  <Description>
-##  Obsolete function, potentially erraneous. DO NOT USE!
+##  Obsolete function, potentially erroneous. DO NOT USE!
 ##  </Description>
 ##  </ManSection>
 ##

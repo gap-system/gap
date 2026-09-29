@@ -22,7 +22,7 @@ gap> G := Group([ [ [ Z(2)^0, 0*Z(2), 0*Z(2) ],
 gap> List(HallSubgroup(G, [2,3]), StructureDescription);
 [ "S4", "S4" ]
 
-#
+#@if IsPackageMarkedForLoading( "perfgrp", "" )
 gap> G:=PerfectGroup(IsFpGroup,60,1);
 A5
 gap> IsFpGroup(G);
@@ -32,6 +32,7 @@ gap> Size(H);
 12
 gap> GeneratorsOfGroup(H);
 [ b, a*b^-1*a*b*a^-1 ]
+#@fi
 
 #
 gap> STOP_TEST("HallSubgroup.tst");

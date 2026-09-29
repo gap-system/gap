@@ -240,7 +240,7 @@ leave the <C>Editor</C> and <C>EditorOptions</C> preferences empty."
     local str, sp;
     if IsBound(GAPInfo.KernelInfo.ENVIRONMENT.EDITOR) then
       str := GAPInfo.KernelInfo.ENVIRONMENT.EDITOR;
-      sp := SplitStringInternal(str, "", " \n\t\r");
+      sp := SplitStringInternal(str, "", CHARS_WHITESPACE);
       if Length(sp) > 0 then
         return [ sp[1], sp{[2..Length(sp)]} ];
       fi;
@@ -393,25 +393,11 @@ InstallGlobalFunction(RemoveDirectoryRecursively,
     return Dowork(dirname);
   end );
 
-InstallGlobalFunction( HexSHA256,
-function(str)
-    local s, res;
+BindGlobal( "GAP_SHA256_HexOfWords",
+function(words)
+    local res;
 
-    if IsString(str) then
-        str := CopyToStringRep(str);
-    elif IsInputStream(str) then
-        str := ReadAll(str);
-        # TODO: instead o reading the complete stream at once (which might be
-        # huge), it would be better to read it in chunks, say 16kb at a time.
-        # Alas, our streams API currently offers no way to do that.
-    else
-        ErrorNoReturn("<str> has to be a string or an input stream");
-    fi;
-
-    s := GAP_SHA256_INIT();
-    GAP_SHA256_UPDATE(s, str);
-    res := GAP_SHA256_FINAL(s);
-    res := Sum([0..7], i -> res[8-i]*2^(32*i));;
+    res := Sum([0..7], i -> words[8-i]*2^(32*i));
     res := LowercaseString(HexStringInt(res));
     # HexStringInt drops leading zero digits, but a SHA256 digest is always
     # 256 bits = 64 hex digits, so left-pad with '0' if the top byte(s) were 0.
@@ -419,4 +405,75 @@ function(str)
         res := Concatenation(ListWithIdenticalEntries(64 - Length(res), '0'), res);
     fi;
     return res;
+end);
+
+InstallGlobalFunction( SHA256State, GAP_SHA256_INIT );
+
+InstallMethod( PrintObj, "for a SHA256 state", [ IsSHA256State ],
+function(state)
+    Print("<SHA256 state>");
+end);
+
+InstallGlobalFunction( UpdateSHA256,
+function(state, string)
+    if not IsSHA256State(state) then
+        ErrorNoReturn("<state> must be a SHA256 state");
+    elif not IsString(string) then
+        ErrorNoReturn("<string> must be a string");
+    fi;
+
+    # CopyToStringRep: the kernel converts its argument to a string in place,
+    # which would retype a list of characters belonging to the caller.
+    GAP_SHA256_UPDATE(state, CopyToStringRep(string));
+end);
+
+InstallGlobalFunction( UpdateSHA256File,
+function(state, filename, decompress)
+    if not IsSHA256State(state) then
+        ErrorNoReturn("<state> must be a SHA256 state");
+    elif not IsString(filename) then
+        ErrorNoReturn("<filename> must be a string");
+    elif not decompress in [ true, false ] then
+        ErrorNoReturn("<decompress> must be 'true' or 'false'");
+    fi;
+
+    return GAP_SHA256_UPDATE_FILE(state, UserHomeExpand(filename), decompress);
+end);
+
+InstallGlobalFunction( HexSHA256,
+function(str)
+    local s, chunk;
+
+    if IsSHA256State(str) then
+        return GAP_SHA256_HexOfWords(GAP_SHA256_DIGEST(str));
+    fi;
+
+    s := GAP_SHA256_INIT();
+    if IsString(str) then
+        GAP_SHA256_UPDATE(s, CopyToStringRep(str));
+    elif IsInputStream(str) then
+        # read in chunks: the stream may deliver more than fits in memory
+        repeat
+            chunk := ReadAll(str, 65536);
+            if IsString(chunk) and Length(chunk) > 0 then
+                GAP_SHA256_UPDATE(s, CopyToStringRep(chunk));
+            fi;
+        until not IsString(chunk) or Length(chunk) = 0;
+    else
+        ErrorNoReturn("<str> has to be a string, an input stream, or a ",
+                      "SHA256 state");
+    fi;
+
+    return GAP_SHA256_HexOfWords(GAP_SHA256_DIGEST(s));
+end);
+
+InstallGlobalFunction( HexSHA256File,
+function(filename, decompress)
+    local s;
+
+    s := SHA256State();
+    if UpdateSHA256File(s, filename, decompress) = fail then
+        return fail;
+    fi;
+    return HexSHA256(s);
 end);

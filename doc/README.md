@@ -13,6 +13,10 @@ documented [here](https://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc/doc/chap
 
 There is also a document describing [**Changes from Earlier Versions**](../CHANGES.md).
 
+In addition, the directory `doc/dev` contains the (incomplete) **GAP Development
+Manual**, which is built together with the main manuals but is not included in
+GAP releases; see [its README](dev/README.md).
+
 The official GAP distribution includes all documentation, so there is no need to
 build it after GAP installation. However, if you need to build the development
 version of main GAP manuals from this repository, you need to perform the following

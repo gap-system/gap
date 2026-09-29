@@ -5,7 +5,7 @@
 #  convert.pl [-csti] [-f <frontpage>] [-n <pkgname>] <doc-dir> [<html-dir>]
 #
 # Requirements: Perl (might need to edit the first line of this file)
-#               TtH is not strictlty necessary but very desirable to treat
+#               TtH is not strictly necessary but very desirable to treat
 #               formulas.
 #
 #  Caveats:

@@ -112,9 +112,9 @@ fail
 gap> CURRENT_STATEMENT_LOCATION(GetCurrentLVars());
 fail
 gap> PRINT_CURRENT_STATEMENT("*errout*", GetCurrentLVars(), fail, 1, 1);
+fail
 gap> f:=function() local l; l:=GetCurrentLVars(); PRINT_CURRENT_STATEMENT("*errout*", l, fail, 1, 1); Print("\n"); end;; f();
 PRINT_CURRENT_STATEMENT( "*errout*", l, fail, 1, 1 );
-   @ stream:1
 
 #
 gap> CALL_WITH_CATCH(fail,fail);

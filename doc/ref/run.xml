@@ -511,7 +511,7 @@ Note that by default, the user specific &GAP; root directory
 is the first &GAP; root directory.
 So you can put your <F>gap.ini</F> and <F>gaprc</F> files into this directory.
 <P/>
-This mechanism substitutes the much less flexible reading of a users
+This mechanism substitutes the much less flexible reading of a user's
 <F>.gaprc</F> file in versions of &GAP; up to 4.4.
 For compatibility this <F>.gaprc</F> file is still read if the directory
 <C>GAPInfo.UserGapRoot</C> does not exist, see <Ref Sect="obsolete-gaprc"/>
@@ -644,6 +644,7 @@ gap> quit;
 <Ref Func="SaveWorkspace"/> can only be used at the main <C>gap></C> prompt.
 It cannot be included in the body of a loop or function,
 or called from a break loop.
+It is available only if the <C>GASMAN</C> garbage collector is used.
 </Description>
 </ManSection>
 

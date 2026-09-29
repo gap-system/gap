@@ -30,7 +30,7 @@
 ##
 DeclareSynonymAttr( "IsSemigroup", IsMagma and IsAssociative );
 
-##############################################################################
+#############################################################################
 ##
 #O  InversesOfSemigroupElement( <S>, <x> )
 ##
@@ -498,7 +498,7 @@ DeclareProperty( "IsZeroSimpleSemigroup", IsSemigroup );
 InstallTrueMethod( IsSemigroup, IsZeroSimpleSemigroup );
 
 
-############################################################################
+#############################################################################
 ##
 #A  ANonReesCongruenceOfSemigroup( <S> )
 ##
@@ -514,7 +514,7 @@ InstallTrueMethod( IsSemigroup, IsZeroSimpleSemigroup );
 DeclareAttribute("ANonReesCongruenceOfSemigroup",IsSemigroup);
 
 
-############################################################################
+#############################################################################
 ##
 #P  IsReesCongruenceSemigroup( <S> )
 ##
@@ -678,7 +678,7 @@ DeclareOperation("DisplaySemigroup", [IsSemigroup]);
 
 DeclareAttribute("NilpotencyDegree", IsSemigroup);
 
-##############################################################################
+#############################################################################
 ##
 #O IsSubsemigroup( <S>, <T> )
 ##

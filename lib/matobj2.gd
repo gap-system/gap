@@ -605,6 +605,77 @@ DeclareOperation( "ZeroVector", [ IsInt, IsVecOrMatObj ] );
 
 #############################################################################
 ##
+#O  StandardBasisVector( <filt>, <R>, <len>, <i> )
+#O  StandardBasisVector( <R>, <len>, <i> )
+#O  StandardBasisVector( <len>, <v>, <i> )
+#O  StandardBasisVector( <len>, <M>, <i> )
+##
+##  <#GAPDoc Label="StandardBasisVector">
+##  <ManSection>
+##  <Oper Name="StandardBasisVector" Arg="filt,R,len,i"
+##   Label="for filter, base domain, length, and position"/>
+##  <Oper Name="StandardBasisVector" Arg="R,len,i"
+##   Label="for base domain, length, and position"/>
+##  <Oper Name="StandardBasisVector" Arg="len,v,i"
+##   Label="for length and vector object"/>
+##  <Oper Name="StandardBasisVector" Arg="len,M,i"
+##   Label="for length and matrix object"/>
+##
+##  <Returns>a vector object</Returns>
+##  <Description>
+##  For a filter <A>filt</A>, a semiring <A>R</A>, and positive integers
+##  <A>len</A> and <A>i</A>,
+##  this operation returns a new vector object of length <A>len</A> over
+##  <A>R</A> in the representation <A>filt</A>,
+##  containing zeros at the positions different from <A>i</A>
+##  and containing the identity at position <A>i</A>.
+##  <P/>
+##  If only <A>R</A>, <A>len</A>, and <A>i</A> are given,
+##  then &GAP; guesses a suitable representation.
+##  <P/>
+##  If a vector object <A>v</A> is given,
+##  this operation returns a new standard basis vector of length <A>len</A>
+##  in the same representation as <A>v</A>.
+##  <P/>
+##  For a matrix object <A>M</A> and a positive integer <A>len</A>,
+##  this operation returns a new standard basis vector of length
+##  <A>len</A> in the representation given by the
+##  <Ref Attr="CompatibleVectorFilter" Label="for a matrix object"/> value
+##  of <A>M</A>, provided that such a representation exists.
+##  <P/>
+##  If the <Ref Attr="ConstructingFilter" Label="for a vector object"/>
+##  value of the result implies <Ref Filt="IsCopyable"/> then the result is
+##  mutable.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> v:= StandardBasisVector( IsZmodnZVectorRep, Integers mod 6, 5, 3 );
+##  <vector mod 6: [ 0, 0, 1, 0, 0 ]>
+##  gap> StandardBasisVector( 4, v, 1 );
+##  <vector mod 6: [ 1, 0, 0, 0 ]>
+##  gap> v:= StandardBasisVector( IsPlistRep, GF(2), 5, 3 );
+##  [ 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2), 0*Z(2) ]
+##  gap> StandardBasisVector( 4, v, 1 );
+##  [ Z(2)^0, 0*Z(2), 0*Z(2), 0*Z(2) ]
+##  gap> v:= StandardBasisVector( Integers, 5, 3 );
+##  <plist vector over Integers of length 5>
+##  gap> StandardBasisVector( 4, v, 1 );
+##  <plist vector over Integers of length 4>
+##  gap> StandardBasisVector( 3, IdentityMatrix( GF(4), 2 ), 1 );
+##  [ Z(2)^0, 0*Z(2), 0*Z(2) ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "StandardBasisVector",
+    [ IsOperation, IsSemiring, IsPosInt, IsPosInt ] );
+DeclareOperation( "StandardBasisVector", [ IsSemiring, IsPosInt, IsPosInt ] );
+DeclareOperation( "StandardBasisVector",
+    [ IsPosInt, IsVecOrMatObj, IsPosInt ] );
+
+
+#############################################################################
+##
 #O  Vector( <filt>, <R>, <list> )
 #O  Vector( <filt>, <R>, <v> )
 #O  Vector( <R>, <list> )
@@ -615,54 +686,52 @@ DeclareOperation( "ZeroVector", [ IsInt, IsVecOrMatObj ] );
 ##  <#GAPDoc Label="Vector">
 ##  <ManSection>
 ##  <Heading>Vector</Heading>
-##  <Oper Name="Vector" Arg='filt,R,list'
-##   Label="for filter, base domain, and list"/>
-##  <Oper Name="Vector" Arg='filt,R,v'
-##   Label="for filter, base domain, and vector object"/>
-##  <Oper Name="Vector" Arg='R,list'
-##   Label="for base domain and list"/>
-##  <Oper Name="Vector" Arg='R,v'
-##   Label="for base domain and vector object"/>
-##  <Oper Name="Vector" Arg='list,v'
+##  <Oper Name="Vector" Arg='list,example_vecobj'
 ##   Label="for a list and a vector object"/>
-##  <Oper Name="Vector" Arg='v1,v2'
+##  <Oper Name="Vector" Arg='vecobj,example_vecobj'
 ##   Label="for two vector objects"/>
+##  <Oper Name="Vector" Arg='[filt,]R,list'
+##   Label="for filter, base domain, and list"/>
+##  <Oper Name="Vector" Arg='[filt,]R,vecobj'
+##   Label="for filter, base domain, and vector object"/>
 ##  <Oper Name="Vector" Arg='list'
 ##   Label="for a list"/>
 ##
 ##  <Returns>a vector object</Returns>
 ##  <Description>
-##  If a filter <A>filt</A> is given as the first argument then
-##  a vector object is returned that has
-##  <Ref Attr="ConstructingFilter" Label="for a vector object"/>
-##  value <A>filt</A>, is defined over the base domain <A>R</A>,
-##  and has the entries given by the list <A>list</A> or the vector object
-##  <A>v</A>, respectively.
-##  <P/>
-##  If a semiring <A>R</A> is given as the first argument then
-##  a vector object is returned whose
-##  <Ref Attr="ConstructingFilter" Label="for a vector object"/>
-##  value is guessed from <A>R</A>, again with base domain <A>R</A>
-##  and entries given by the last argument.
-##  <P/>
-##  In the remaining cases with two arguments,
-##  the first argument is a list or a vector object
-##  that defines the entries of the result,
-##  and the second argument is a vector object whose
+##  If a vector object <A>example_vecobj</A> is given as the second argument,
+##  then a vector object is returned whose entries are defined by those of
+##  the first argument (a list <A>list</A> or another vector object
+##  <A>vecobj</A>) and whose
 ##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> and
-##  <Ref Attr="BaseDomain" Label="for a vector object"/> are taken for the
-##  result.
+##  <Ref Attr="BaseDomain" Label="for a vector object"/> are taken from
+##  <A>example_vecobj</A>.
 ##  <P/>
-##  If only a list <A>list</A> is given then both the
-##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> and the
-##  <Ref Attr="BaseDomain" Label="for a vector object"/> are guessed from
-##  this list.
+##  The variants without a given <A>example_vecobj</A> are intended only for
+##  situations where no such example object is available.
+##  In these cases, the entries of the result are described by the given
+##  list <A>list</A> or vector object <A>vecobj</A>.
+##  The <Ref Attr="BaseDomain" Label="for a vector object"/> of the result
+##  is either the given semiring <A>R</A>, or it is guessed from <A>list</A>.
+##  The <Ref Attr="ConstructingFilter" Label="for a vector object"/>
+##  value of the result is either the given filter <A>filt</A>,
+##  or it is guessed from <A>R</A> or <A>list</A>.
 ##  <P/>
-##  The variant <C>Vector( </C><A>v1</A><C>, </C><A>v2</A><C> )</C>
-##  is supported also for the case that <A>v2</A> is a row vector but not
-##  a vector object.
+##  Note that for a known vector object <A>v</A> of the intended kind,
+##  <C>Vector( </C><A>list</A><C>, </C><A>v</A><C> )</C> is preferable to
+##  <C>Vector( BaseDomain( </C><A>v</A><C> ), </C><A>list</A><C> )</C>
+##  because the latter ignores the
+##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> value of
+##  <A>v</A>, and the guessed value may differ from it,
+##  see the example below.
+##  <P/>
+##  The variant
+##  <C>Vector( </C><A>vecobj</A><C>, </C><A>example_vecobj</A><C> )</C>
+##  is supported also for the case that <A>example_vecobj</A> is a row
+##  vector but not a vector object.
 ##  In this situation, the result is a row vector that is equal to
-##  <A>v1</A> and whose internal representation fits to that of <A>v2</A>.
+##  <A>vecobj</A> and whose internal representation fits to that of
+##  <A>example_vecobj</A>.
 ##  <P/>
 ##  If the global option <C>check</C> is set to <K>false</K> then
 ##  <Ref Oper="Vector" Label="for filter, base domain, and list"/>
@@ -671,7 +740,7 @@ DeclareOperation( "ZeroVector", [ IsInt, IsVecOrMatObj ] );
 ##  If the <Ref Attr="ConstructingFilter" Label="for a vector object"/>
 ##  value of the result implies <Ref Filt="IsCopyable"/> then the result is
 ##  mutable if and only if the argument that determines the entries of the
-##  result (<A>list</A>, <A>v</A>, <A>v1</A>) is mutable.
+##  result (<A>list</A> or <A>vecobj</A>) is mutable.
 ##  <P/>
 ##  In the case of a mutable result, it is <E>not</E> guaranteed that
 ##  the given list of entries is copied.
@@ -679,6 +748,16 @@ DeclareOperation( "ZeroVector", [ IsInt, IsVecOrMatObj ] );
 ##  Default methods for
 ##  <Ref Oper="Vector" Label="for filter, base domain, and list"/>
 ##  delegate to <Ref Oper="NewVector"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> R:= Integers mod 8;;
+##  gap> v:= Vector( IsZmodnZVectorRep, R, [ 1, 2, 3 ] );
+##  <vector mod 8: [ 1, 2, 3 ]>
+##  gap> Vector( [ 4, 5, 6 ], v );
+##  <vector mod 8: [ 4, 5, 6 ]>
+##  gap> Vector( BaseDomain( v ), [ 4, 5, 6 ] * One( R ) );
+##  <plist vector over (Integers mod 8) of length 3>
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -833,7 +912,7 @@ DeclareOperation( "ChangedBaseDomain", [ IsVecOrMatObj, IsSemiring ] );
 #DeclareOperation( "ChangedBaseDomain", [ IsMatrixOrMatrixObj, IsSemiring ] );
 
 
-############################################################################
+#############################################################################
 ##
 #O  Randomize( [Rs, ]v )
 #O  Randomize( [Rs, ]M )
@@ -1262,43 +1341,42 @@ DeclareOperation( "CompanionMatrix",
 ##  <#GAPDoc Label="MatObj_Matrix">
 ##  <ManSection>
 ##  <Heading>Matrix</Heading>
-##  <Oper Name="Matrix" Arg='[filt,]R,list[,ncols]' Label="for filter, base domain, list, ncols"/>
-##  <Oper Name="Matrix" Arg='[filt,]R,matobj' Label="for filter, base domain, and matrix object"/>
 ##  <Oper Name="Matrix" Arg='list[,ncols],example_matobj' Label="for a list, ncols, and a matrix object"/>
 ##  <Oper Name="Matrix" Arg='matobj,example_matobj' Label="for two matrix objects"/>
+##  <Oper Name="Matrix" Arg='[filt,]R,list[,ncols]' Label="for filter, base domain, list, ncols"/>
+##  <Oper Name="Matrix" Arg='[filt,]R,matobj' Label="for filter, base domain, and matrix object"/>
 ##  <Oper Name="Matrix" Arg='list[,ncols]' Label="for a list and ncols"/>
 ##
 ##  <Returns>a matrix object</Returns>
 ##  <Description>
-##  If a filter <A>filt</A> is given as the first argument then
-##  a matrix object is returned that has
-##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/>
-##  value <A>filt</A>, is defined over the base domain <A>R</A>,
-##  and has the entries given by the list <A>list</A> or the matrix object
-##  <A>matobj</A>, respectively.
+##  If a matrix object <A>example_matobj</A> is given as the last argument,
+##  then a matrix object is returned whose entries are defined by those of
+##  the first argument (a list <A>list</A>, together with <A>ncols</A> if
+##  applicable, or another matrix object <A>matobj</A>) and whose
+##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/> and
+##  <Ref Attr="BaseDomain" Label="for a matrix object"/> are taken from
+##  <A>example_matobj</A>.
 ##  Here <A>list</A> can be either a list of plain lists that describe the
 ##  entries of the rows, or a flat list of the entries in row major order,
 ##  where <A>ncols</A> defines the number of columns.
 ##  <P/>
-##  If a semiring <A>R</A> is given as the first argument then
-##  a matrix object is returned whose
-##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/>
-##  value is guessed from <A>R</A>, again with base domain <A>R</A>
-##  and entries given by the last argument.
+##  The variants without a given <A>example_matobj</A> are intended only for
+##  situations where no such example object is available.
+##  In these cases, the entries of the result are described by the given
+##  list <A>list</A> (and <A>ncols</A>) or matrix object <A>matobj</A>.
+##  The <Ref Attr="BaseDomain" Label="for a matrix object"/> of the result
+##  is either the given semiring <A>R</A>, or it is guessed from <A>list</A>.
+##  The <Ref Attr="ConstructingFilter" Label="for a matrix object"/>
+##  value of the result is either the given filter <A>filt</A>,
+##  or it is guessed from <A>R</A> or <A>list</A>.
 ##  <P/>
-##  In those remaining cases where the last argument is a matrix object,
-##  the first argument is a list or a matrix object
-##  that defines (together with <A>ncols</A> if applicable) the entries of
-##  the result, and the
-##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/> and
-##  <Ref Attr="BaseDomain" Label="for a matrix object"/> of the last argument
-##  are taken for the result.
-##  <P/>
-##  Finally, if only a list <A>list</A> and perhaps <A>ncols</A> is given
-##  then both the
-##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/> and the
-##  <Ref Attr="BaseDomain" Label="for a vector object"/> are guessed from
-##  the list.
+##  Note that for a known matrix object <A>M</A> of the intended kind,
+##  <C>Matrix( </C><A>list</A><C>, </C><A>M</A><C> )</C> is preferable to
+##  <C>Matrix( BaseDomain( </C><A>M</A><C> ), </C><A>list</A><C> )</C>
+##  because the latter ignores the
+##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/> value of
+##  <A>M</A>, and the guessed value may differ from it,
+##  see the example below.
 ##  <P/>
 ##  If the global option <C>check</C> is set to <K>false</K> then
 ##  <Ref Oper="Matrix" Label="for filter, base domain, list, ncols"/>
@@ -1317,6 +1395,16 @@ DeclareOperation( "CompanionMatrix",
 ##  Default methods for
 ##  <Ref Oper="Matrix" Label="for filter, base domain, list, ncols"/>
 ##  delegate to <Ref Oper="NewMatrix"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> R:= Integers mod 8;;
+##  gap> M:= Matrix( IsZmodnZMatrixRep, R, [ [ 1, 2 ], [ 3, 4 ] ] );
+##  <matrix mod 8: [ [ 1, 2 ], [ 3, 4 ] ]>
+##  gap> Matrix( [ [ 5, 6 ], [ 7, 0 ] ], M );
+##  <matrix mod 8: [ [ 5, 6 ], [ 7, 0 ] ]>
+##  gap> Matrix( BaseDomain( M ), [ [ 5, 6 ], [ 7, 0 ] ] * One( R ) );
+##  <2x2-matrix over (Integers mod 8)>
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1334,7 +1422,7 @@ DeclareOperation( "Matrix", [ IsList, IsInt ] );
 DeclareOperation( "Matrix", [ IsList ]);
 
 
-############################################################################
+#############################################################################
 ##
 #A  CompatibleVector( <M> )
 ##
@@ -1360,7 +1448,7 @@ DeclareOperation( "Matrix", [ IsList ]);
 DeclareOperation( "CompatibleVector", [ IsMatrixOrMatrixObj ] );
 
 
-############################################################################
+#############################################################################
 ##
 #A  RowsOfMatrix( <M> )
 ##
@@ -1409,7 +1497,7 @@ DeclareGlobalFunction( "DefaultMatrixRepForBaseDomain" );
 ##
 
 
-############################################################################
+#############################################################################
 ##
 #O  <M>[ <pos> ]<v>
 ##
@@ -1433,7 +1521,7 @@ DeclareGlobalFunction( "DefaultMatrixRepForBaseDomain" );
 DeclareOperation( "[]", [ IsRowListMatrix, IsPosInt ] );
 
 
-############################################################################
+#############################################################################
 ##
 #O  <M>[ <pos> ]:= <v>
 ##
@@ -1720,9 +1808,9 @@ DeclareProperty( "IsEmptyMatrix", IsMatrixOrMatrixObj );
 ##  matrix object implementation, but the ``row access'' will force one to
 ##  provide one.)
 
-############################################################################
+#############################################################################
 # In the following sense matrices behave like lists:
-############################################################################
+#############################################################################
 
 DeclareOperation( "[]", [IsMatrixOrMatrixObj,IsPosInt] );  # <mat>, <pos>
 # This is guaranteed to return a vector object that has the property
@@ -1733,7 +1821,7 @@ DeclareOperation( "[]", [IsMatrixOrMatrixObj,IsPosInt] );  # <mat>, <pos>
 # for matrices which are not row-lists. Efficient code will have to use MatElm and
 # SetMatElm instead.
 
-# TODO:   ... resp. it will use use M[i,j]
+# TODO:   ... resp. it will use M[i,j]
 # TODO: provide a default method which creates a proxy object for the given row
 # and translates accesses to it to corresponding MatElm / SetMatElm calls;
 #  creating such a proxy object prints an InfoWarning;
@@ -1833,11 +1921,11 @@ DeclareOperation( "[]", [ IsMatrixOrMatrixObj, IsPosInt, IsPosInt ] );
 DeclareOperation( "[]:=", [ IsMatrixOrMatrixObj, IsPosInt, IsPosInt, IsObject ] );
 
 
-############################################################################
+#############################################################################
 # Elementary matrix operations
-############################################################################
+#############################################################################
 #
-############################################################################
+#############################################################################
 ##
 ##  <#GAPDoc Label="MultMatrixRow">
 ##  <ManSection>
@@ -1861,7 +1949,7 @@ DeclareOperation( "[]:=", [ IsMatrixOrMatrixObj, IsPosInt, IsPosInt, IsObject ] 
 DeclareOperation( "MultMatrixRowLeft", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsObject ] );
 DeclareSynonym( "MultMatrixRow", MultMatrixRowLeft);
 
-############################################################################
+#############################################################################
 ##
 ##  <#GAPDoc Label="MultMatrixRowRight">
 ##  <ManSection>
@@ -1879,7 +1967,7 @@ DeclareSynonym( "MultMatrixRow", MultMatrixRowLeft);
 ##
 DeclareOperation( "MultMatrixRowRight", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsObject ]);
 
-############################################################################
+#############################################################################
 ##
 ##  <#GAPDoc Label="MultMatrixColumn">
 ##  <ManSection>
@@ -1903,7 +1991,7 @@ DeclareOperation( "MultMatrixRowRight", [ IsMatrixOrMatrixObj and IsMutable, IsI
 DeclareOperation( "MultMatrixColumnRight", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsObject ] );
 DeclareSynonym( "MultMatrixColumn",  MultMatrixColumnRight);
 
-############################################################################
+#############################################################################
 ##
 ##  <#GAPDoc Label="MultMatrixColumnLeft">
 ##  <ManSection>
@@ -1921,7 +2009,7 @@ DeclareSynonym( "MultMatrixColumn",  MultMatrixColumnRight);
 ##
 DeclareOperation( "MultMatrixColumnLeft", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsObject ] );
 
-############################################################################
+#############################################################################
 ##
 ##  <#GAPDoc Label="AddMatrixRows">
 ##  <ManSection>
@@ -1945,7 +2033,7 @@ DeclareOperation( "MultMatrixColumnLeft", [ IsMatrixOrMatrixObj and IsMutable, I
 DeclareOperation( "AddMatrixRowsLeft", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
 DeclareSynonym( "AddMatrixRows", AddMatrixRowsLeft);
 
-############################################################################
+#############################################################################
 ##
 ##  <#GAPDoc Label="AddMatrixRowsRight">
 ##  <ManSection>
@@ -1963,7 +2051,7 @@ DeclareSynonym( "AddMatrixRows", AddMatrixRowsLeft);
 ##
 DeclareOperation( "AddMatrixRowsRight", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
 
-############################################################################
+#############################################################################
 ##
 ##  <#GAPDoc Label="AddMatrixColumns">
 ##  <ManSection>
@@ -1987,7 +2075,7 @@ DeclareOperation( "AddMatrixRowsRight", [ IsMatrixOrMatrixObj and IsMutable, IsI
 DeclareOperation( "AddMatrixColumnsRight", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
 DeclareSynonym( "AddMatrixColumns", AddMatrixColumnsRight);
 
-############################################################################
+#############################################################################
 ##
 ##  <#GAPDoc Label="AddMatrixColumnsLeft">
 ##  <ManSection>
@@ -2005,7 +2093,7 @@ DeclareSynonym( "AddMatrixColumns", AddMatrixColumnsRight);
 ##
 DeclareOperation( "AddMatrixColumnsLeft", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
 
-############################################################################
+#############################################################################
 ##
 ##  <#GAPDoc Label="PositionNonZeroInRow">
 ##  <ManSection>
@@ -2026,7 +2114,7 @@ DeclareOperation( "AddMatrixColumnsLeft", [ IsMatrixOrMatrixObj and IsMutable, I
 DeclareOperation( "PositionNonZeroInRow", [ IsMatrixOrMatrixObj, IsPosInt ] );
 DeclareOperation( "PositionNonZeroInRow", [ IsMatrixOrMatrixObj, IsPosInt, IsInt ] );
 
-############################################################################
+#############################################################################
 ##
 ##  <#GAPDoc Label="SwapMatrixRows">
 ##  <ManSection>
@@ -2043,7 +2131,7 @@ DeclareOperation( "PositionNonZeroInRow", [ IsMatrixOrMatrixObj, IsPosInt, IsInt
 ##
 DeclareOperationKernel( "SwapMatrixRows", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt ], SWAP_MAT_ROWS );
 
-############################################################################
+#############################################################################
 ##
 ##  <#GAPDoc Label="SwapMatrixColumns">
 ##  <ManSection>
@@ -2060,7 +2148,7 @@ DeclareOperationKernel( "SwapMatrixRows", [ IsMatrixOrMatrixObj and IsMutable, I
 ##
 DeclareOperationKernel( "SwapMatrixColumns", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt ], SWAP_MAT_COLS );
 
-############################################################################
+#############################################################################
 ##
 ##  <#GAPDoc Label="AddMatrix">
 ##  <ManSection>
@@ -2097,7 +2185,7 @@ DeclareOperationKernel( "SwapMatrixColumns", [ IsMatrixOrMatrixObj and IsMutable
 DeclareOperation( "AddMatrix", [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj ] );
 DeclareOperation( "AddMatrix", [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj, IsScalar ] );
 
-############################################################################
+#############################################################################
 ##
 ##  <#GAPDoc Label="MultMatrix">
 ##  <ManSection>

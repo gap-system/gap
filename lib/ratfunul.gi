@@ -603,7 +603,7 @@ end);
 ##
 #M  <unilau> / <unilau> (if possible)
 ##
-##  While w rely for ordinary rat. fun. on a*Inverse(b) we do not want this
+##  While we rely for ordinary rat. fun. on a*Inverse(b) we do not want this
 ##  for laurent polynomials, as the inverse would have to be represented as
 ##  a rational function, not a laurent polynomial.
 InstallMethod(\/,"upol/upol",true,

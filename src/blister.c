@@ -733,10 +733,12 @@ static void PlainBlist(Obj list)
     Int                 len;            // length of <list>
     UInt                i;              // loop variable
 
-    // resize the list and retype it, in this order
+    // grow first: the grow can collect, and the bit blocks must not yet be
+    // scanned as list entries
     len = LEN_BLIST(list);
+    if (SIZE_OBJ(list) < (len + 1) * sizeof(Obj))
+        ResizeBag(list, (len + 1) * sizeof(Obj));
     RetypeBagSM( list, T_PLIST );
-    GROW_PLIST( list, (UInt)len );
     SET_LEN_PLIST( list, len );
 
     // replace the bits by 'True' or 'False' as the case may be
@@ -840,8 +842,14 @@ void ConvBlist (
 */
 UInt COUNT_TRUES_BLOCK(UInt block)
 {
-#if USE_POPCNT && defined(HAVE___BUILTIN_POPCOUNTL)
+// pick the __builtin_popcount* variant matching UInt in size; in
+// particular 'unsigned long' is only 32 bit on LLP64 systems (Windows)
+#if USE_POPCNT && SIZEOF_VOID_P == SIZEOF_INT && defined(HAVE___BUILTIN_POPCOUNT)
+    return __builtin_popcount(block);
+#elif USE_POPCNT && SIZEOF_VOID_P == SIZEOF_LONG && defined(HAVE___BUILTIN_POPCOUNTL)
     return __builtin_popcountl(block);
+#elif USE_POPCNT && SIZEOF_VOID_P == SIZEOF_LONG_LONG && defined(HAVE___BUILTIN_POPCOUNTLL)
+    return __builtin_popcountll(block);
 #else
 #ifdef SYS_IS_64_BIT
     block =

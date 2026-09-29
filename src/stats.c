@@ -392,7 +392,7 @@ static ALWAYS_INLINE ExecStatus ExecForHelper(Stat stat, UInt nr)
 #if !defined(HAVE_SIGNAL)
             // test for an interrupt
             if ( HaveInterrupt() ) {
-                ErrorReturnVoid("user interrupt", 0, 0, "you can 'return;'");
+                ErrorReturnVoid("user interrupt", 0, 0, 0);
             }
 #endif
 
@@ -435,7 +435,7 @@ static ALWAYS_INLINE ExecStatus ExecForHelper(Stat stat, UInt nr)
 #if !defined(HAVE_SIGNAL)
             // test for an interrupt
             if ( HaveInterrupt() ) {
-                ErrorReturnVoid("user interrupt", 0, 0, "you can 'return;'");
+                ErrorReturnVoid("user interrupt", 0, 0, 0);
             }
 #endif
 
@@ -530,7 +530,7 @@ static ALWAYS_INLINE ExecStatus ExecForRangeHelper(Stat stat, UInt nr)
 #if !defined(HAVE_SIGNAL)
         // test for an interrupt
         if ( HaveInterrupt() ) {
-            ErrorReturnVoid("user interrupt", 0, 0, "you can 'return;'");
+            ErrorReturnVoid("user interrupt", 0, 0, 0);
         }
 #endif
 
@@ -666,7 +666,7 @@ static ALWAYS_INLINE ExecStatus ExecWhileHelper(Stat stat, UInt nr)
 #if !defined(HAVE_SIGNAL)
         // test for an interrupt
         if ( HaveInterrupt() ) {
-            ErrorReturnVoid("user interrupt", 0, 0, "you can 'return;'");
+            ErrorReturnVoid("user interrupt", 0, 0, 0);
         }
 #endif
 
@@ -737,7 +737,7 @@ static ALWAYS_INLINE ExecStatus ExecRepeatHelper(Stat stat, UInt nr)
 #if !defined(HAVE_SIGNAL)
         // test for an interrupt
         if ( HaveInterrupt() ) {
-            ErrorReturnVoid("user interrupt", 0, 0, "you can 'return;'");
+            ErrorReturnVoid("user interrupt", 0, 0, 0);
         }
 #endif
 
@@ -952,7 +952,7 @@ static ExecStatus ExecReturnObj(Stat stat)
 #if !defined(HAVE_SIGNAL)
     // test for an interrupt
     if ( HaveInterrupt() ) {
-        ErrorReturnVoid("user interrupt", 0, 0, "you can 'return;'");
+        ErrorReturnVoid("user interrupt", 0, 0, 0);
     }
 #endif
 
@@ -980,7 +980,7 @@ static ExecStatus ExecReturnVoid(Stat stat)
 #if !defined(HAVE_SIGNAL)
     // test for an interrupt
     if ( HaveInterrupt() ) {
-        ErrorReturnVoid("user interrupt", 0, 0, "you can 'return;'");
+        ErrorReturnVoid("user interrupt", 0, 0, 0);
     }
 #endif
 
@@ -1027,7 +1027,7 @@ UInt TakeInterrupt( void )
 {
   if (HaveInterrupt()) {
       UnInterruptExecStat();
-      ErrorReturnVoid("user interrupt", 0, 0, "you can 'return;'");
+      ErrorReturnVoid("user interrupt", 0, 0, 0);
       return 1;
   }
   return 0;
@@ -1067,12 +1067,12 @@ static ExecStatus ExecIntrStat(Stat stat)
         if (printError) {
             ErrorReturnVoid("reached the pre-set memory limit\n"
                             "(change it with the -o command line option)",
-                            0, 0, "you can 'return;'");
+                            0, 0, 0);
         }
     }
     else
 #endif
-      ErrorReturnVoid( "user interrupt", 0, 0, "you can 'return;'" );
+        ErrorReturnVoid("user interrupt", 0, 0, 0);
 #endif
 
     // continue at the interrupted statement

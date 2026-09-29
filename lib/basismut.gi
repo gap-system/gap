@@ -30,7 +30,7 @@ InstallMethod( ShallowCopy,
 ##
 #M  NrBasisVectors( <MB> )  . . . . . . . . . . . . . . . for a mutable basis
 ##
-##  The default method constructs the basis vctors, and returns the length of
+##  The default method constructs the basis vectors, and returns the length of
 ##  this list.
 ##
 ##  (Better methods for special representations avoid to construct the basis

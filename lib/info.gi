@@ -45,11 +45,7 @@
 DeclareRepresentation("IsInfoClassListRep", IsAtomicPositionalObjectRep);
 
 # A list of all created InfoClassListReps
-INFO_CLASSES := [];
-
-# InfoData is unused, but we keep it for now, to avoid warnings in GAPDoc.
-# TODO: remove InfoData
-InfoData := rec();
+BIND_GLOBAL( "INFO_CLASSES", [] );
 
 if IsHPCGAP then
     ShareInternalObj(INFO_CLASSES);

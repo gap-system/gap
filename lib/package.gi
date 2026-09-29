@@ -136,7 +136,7 @@ InstallGlobalFunction( RECORDS_FILE, function( name )
       if pos <> fail then
         r:= r{ [ 1 .. pos-1 ] };
       fi;
-      Append( recs, SplitString( r, "", " \n\t\r" ) );
+      Append( recs, SplitString( r, "", CHARS_WHITESPACE ) );
     od;
     return List( recs, LowercaseString );
     end );
@@ -1396,15 +1396,8 @@ InstallGlobalFunction( RereadPackage, function( arg )
 ##
 #F  LoadPackageDocumentation( <info> )
 ##
-##  In versions before 4.5, a second argument was required.
-##  For the sake of backwards compatibility, we do not forbid a second
-##  argument, but we ignore it.
-##  (In later versions, we may forbid the second argument.)
-##
-InstallGlobalFunction( LoadPackageDocumentation, function( arg )
-    local info, short, pkgdoc, long, sixfile;
-
-    info:= arg[1];
+InstallGlobalFunction( LoadPackageDocumentation, function( info )
+    local short, pkgdoc, long, sixfile;
 
     # Load all books for the package.
     for pkgdoc in info.PackageDoc do
@@ -2227,8 +2220,8 @@ InstallGlobalFunction( DeclareAutoreadableVariables,
 ##
 InstallGlobalFunction( ValidatePackageInfo, function( info )
     local record, pkgdir, i, IsStringList, IsRecordList, IsProperBool, IsURL,
-          IsFilename, IsFilenameList, result, TestOption, TestMandat, subrec,
-          list, CheckDateValidity;
+          IsGitHubUsername, IsFilename, IsFilenameList, result, TestOption,
+          TestMandat, subrec, list, CheckDateValidity;
 
     if IsString( info ) then
       if IsReadableFile( info ) then
@@ -2265,6 +2258,19 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
           ( x[1] <> '/' and IsReadableFile( Concatenation( pkgdir, x ) ) ) );
     IsFilenameList:= x -> IsList( x ) and ForAll( x, IsFilename );
     IsURL := x -> ForAny(["http://","https://","ftp://"], s -> StartsWith(x,s));
+    IsGitHubUsername := function( x )
+      local len;
+      if not IsString( x ) then
+        return false;
+      fi;
+      len := Length( x );
+      return 0 < len and len <= 39
+          and x[1] <> '-' and x[len] <> '-'
+          and ForAll( x, c -> IsAlphaChar( c ) or IsDigitChar( c )
+                             or c = '-' )
+          and not ForAny( [ 1 .. len - 1 ],
+                          i -> x[i] = '-' and x[i+1] = '-' );
+    end;
 
     result:= true;
 
@@ -2381,6 +2387,8 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
         TestOption( subrec, "PostalAddress", IsString, "a string" );
         TestOption( subrec, "Place", IsString, "a string" );
         TestOption( subrec, "Institution", IsString, "a string" );
+        TestOption( subrec, "GitHubUsername", IsGitHubUsername,
+            "a string containing a valid GitHub username" );
       od;
     fi;
 
@@ -2755,7 +2763,7 @@ Unicode:= "dummy";
 Encode:= "dummy";
 
 InstallGlobalFunction( BibEntry, function( arg )
-    local key, pkgname, pkginfo, GAP, ps, val, entry, author;
+    local key, pkgname, pkginfo, GAP, ps, monthyear, entry, author;
 
     key:= false;
     if   Length( arg ) = 1 and IsString( arg[1] ) then
@@ -2807,6 +2815,23 @@ InstallGlobalFunction( BibEntry, function( arg )
       return Encode( uni, "UTF-8" );
     end;
 
+    # <month> and <year> elements for a date yyyy-mm-dd or dd/mm/yyyy
+    monthyear:= function( date )
+      local val;
+
+      val:= SplitString( date, "-" );
+      if Length( val ) <> 3 then
+        val:= Reversed( SplitString( date, "/" ) );
+      fi;
+      if Length( val ) <> 3 then
+        return "";
+      elif Int( val[2] ) in [ 1 .. 12 ] then
+        val[2]:= NameMonth[ Int( val[2] ) ];
+      fi;
+      return Concatenation( "  <month>", val[2], "</month>\n",
+                            "  <year>", val[1], "</year>\n" );
+    end;
+
     # According to <Cite Key="La85"/>,
     # the supported fields of a Bib&TeX; entry of <C>@misc</C> type are
     # the following.
@@ -2850,18 +2875,6 @@ InstallGlobalFunction( BibEntry, function( arg )
     # the <C>edition</C> component is not supported in the base styles.
 
     if GAP then
-      val:= SplitString( GAPInfo.Date, "-" );
-      if Length( val ) = 3 then
-        if Int( val[2] ) in [ 1 .. 12 ] then
-          val:= Concatenation( "  <month>", NameMonth[ Int( val[2] ) ],
-                               "</month>\n  <year>", val[1], "</year>\n" );
-        else
-          val:= Concatenation( "  <month>", val[2],
-                               "</month>\n  <year>", val[1], "</year>\n" );
-        fi;
-      else
-        val:= "";
-      fi;
       entry:= Concatenation(
         "<entry id=\"", key, "\"><misc>\n",
         "  <title><C>GAP</C> &ndash;",
@@ -2869,7 +2882,7 @@ InstallGlobalFunction( BibEntry, function( arg )
         "         and <C>P</C>rogramming,",
         " <C>V</C>ersion ", GAPInfo.Version, "</title>\n",
         "  <howpublished><URL>https://www.gap-system.org</URL></howpublished>\n",
-        val,
+        monthyear( GAPInfo.Date ),
         "  <key>GAP</key>\n",
         "  <keywords>groups; *; gap; manual</keywords>\n",
         "  <other type=\"organization\">The GAP <C>G</C>roup</other>\n",
@@ -2906,18 +2919,8 @@ InstallGlobalFunction( BibEntry, function( arg )
           "  <howpublished><URL>", pkginfo.PackageWWWHome,
           "</URL></howpublished>\n" ) );
       fi;
-      if IsBound( pkginfo.Date ) and IsDenseList( pkginfo.Date )
-                                 and Length( pkginfo.Date ) = 10 then
-        if Int( pkginfo.Date{ [ 4, 5 ] } ) in [ 1 .. 12 ] then
-          Append( entry, Concatenation(
-            "  <month>", NameMonth[ Int( pkginfo.Date{ [ 4, 5 ] } ) ],
-            "</month>\n",
-            "  <year>", pkginfo.Date{ [ 7 .. 10 ] }, "</year>\n" ) );
-        else
-          Append( entry, Concatenation(
-            "  <month>", pkginfo.Date{ [ 4, 5 ] }, "</month>\n",
-            "  <year>", pkginfo.Date{ [ 7 .. 10 ] }, "</year>\n" ) );
-        fi;
+      if IsBound( pkginfo.Date ) and IsString( pkginfo.Date ) then
+        Append( entry, monthyear( pkginfo.Date ) );
       fi;
       Append( entry, "  <note>" );
 #     Append( entry, "<Package>GAP</Package> package</note>\n" );
@@ -3348,12 +3351,13 @@ InstallGlobalFunction( PackageVariablesInfo, function( pkgname, version )
       fi;
       num:= NumberArgumentsFunction( func );
       nam:= NamesLocalVariablesFunction( func );
-      if num = -1 then
-        str:= "arg";
-      elif nam = fail then
+      if nam = fail then
         str:= "...";
       else
-        str:= JoinStringsWithSeparator( nam{ [ 1 .. num ] }, ", " );
+        str:= JoinStringsWithSeparator( nam{ [ 1 .. AbsInt(num) ] }, ", " );
+        if num < 0 then
+          Append( str, "..." );
+        fi;
       fi;
       return Concatenation( "( ", str, " )" );
     end;
@@ -3498,7 +3502,7 @@ Unbind( NamesUserGVars );
 ##
 InstallGlobalFunction( ShowPackageVariables, function( arg )
     local version, arec, pkgname, info, show, documented, undocumented,
-          private, result, len, format, entry, first, subentry, str;
+          private, result, len, entry, first, subentry, str;
 
     # Get and check the arguments.
     version:= "";
@@ -3540,11 +3544,6 @@ InstallGlobalFunction( ShowPackageVariables, function( arg )
     # Render the relevant data.
     result:= "";
     len:= SizeScreen()[1] - 2;
-    if IsBoundGlobal( "FormatParagraph" ) then
-      format:= ValueGlobal( "FormatParagraph" );
-    else
-      format:= function( arg ) return Concatenation( arg[1], "\n" ); end;
-    fi;
     for entry in info do
       if entry[1] in show then
         first:= true;
@@ -3564,7 +3563,7 @@ InstallGlobalFunction( ShowPackageVariables, function( arg )
             Append( result, "\n" );
             if Length( subentry[1] ) = 4 and not IsEmpty( subentry[1][4] ) then
               Append( result,
-                      format( subentry[1][4], len, "left", [ "    ", "" ] ) );
+                      _FormatParagraph( subentry[1][4], len, "    ", "" ) );
             fi;
           fi;
         od;

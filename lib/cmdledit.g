@@ -78,7 +78,7 @@ when searching backwards in history."
 
 
 if GAPInfo.CommandLineOptions.E then
-############################################################################
+#############################################################################
 ##       readline interface functions
 GAPInfo.UseReadline := true;
 
@@ -711,7 +711,7 @@ GAPInfo.CommandLineEditFunctions.Functions.(INT_CHAR('R') mod 32) :=
                    GAPInfo.CommandLineEditFunctions.Functions.HistorySubstring;
 BindKeysToGAPHandler("\022");
 
-############################################################################
+#############################################################################
 ##
 #F  SaveCommandLineHistory( [<fname>], [append] )
 #F  ReadCommandLineHistory( [<fname>] )
@@ -960,7 +960,7 @@ GAPInfo.CommandLineEditFunctions.Functions.Completion := function(l)
   wordplace := [pos+1, l[4]-1];
   word := l[3]{[wordplace[1]..wordplace[2]]};
   # see if we are in the case of a component name
-  while pos > 0 and l[3][pos] in " \n\t\r" do
+  while pos > 0 and l[3][pos] in CHARS_WHITESPACE do
     pos := pos-1;
   od;
   idbnd := IDENTS_BOUND_GVARS();
@@ -1081,7 +1081,7 @@ InstallReadlineMacro := function(name, fun)
   cfm.(pos) := fun;
   cfm.Names[pos] := name;
 end;
-# A sequence to invoce macro name ('ESC num C-x C-g'  sets GAPMacroNumber in
+# A sequence to invoke macro name ('ESC num C-x C-g'  sets GAPMacroNumber in
 # kernel and then any key that calls handled-by-GAP will do it)
 # We assume that 'C-xC-g' and <TAB> are not overwritten.
 InvocationReadlineMacro := function(name)

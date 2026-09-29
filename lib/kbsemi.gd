@@ -13,7 +13,7 @@
 
 
 
-############################################################################
+#############################################################################
 ##
 #I  InfoKnuthBendix
 ##
@@ -21,7 +21,7 @@
 DeclareInfoClass("InfoKnuthBendix");
 
 
-############################################################################
+#############################################################################
 ##
 #C  IsKnuthBendixRewritingSystem(<obj>)
 ##
@@ -51,7 +51,7 @@ DeclareCategory("IsKnuthBendixRewritingSystem", IsRewritingSystem);
 DeclareOperation("KnuthBendixRewritingSystem",[IsFamily,IsOrdering]);
 
 
-############################################################################
+#############################################################################
 ##
 #F  CreateKnuthBendixRewritingSystem(<S>,<lt>)
 ##
@@ -65,7 +65,7 @@ DeclareOperation("KnuthBendixRewritingSystem",[IsFamily,IsOrdering]);
 DeclareGlobalFunction("CreateKnuthBendixRewritingSystem");
 
 
-############################################################################
+#############################################################################
 ##
 #F  MakeKnuthBendixRewritingSystemConfluent(<RWS>)
 ##
@@ -103,7 +103,7 @@ BindGlobal("GAPKB_REW",rec(name:="GAP library Knuth-Bendix"));
 KB_REW:=GAPKB_REW;
 
 
-############################################################################
+#############################################################################
 ##
 #F  ReduceWordUsingRewritingSystem(<RWS>,<w>)
 ##
@@ -133,7 +133,7 @@ DeclareGlobalFunction("ReduceWordUsingRewritingSystem");
 DeclareAttribute( "TzRules", IsKnuthBendixRewritingSystem );
 
 # utility functions for identifying applicable rules through a DAG
-############################################################################
+#############################################################################
 ##
 #F  EmptyKBDAG(<genids>)
 ##
@@ -142,23 +142,23 @@ DeclareAttribute( "TzRules", IsKnuthBendixRewritingSystem );
 ## a DAG.
 DeclareGlobalFunction("EmptyKBDAG");
 
-############################################################################
+#############################################################################
 ##
 #F  AddRuleKBDAG(<dag>,<left>,<index>)
 ##
 ##  Adds rule with given left side to the DAG at given index position
 DeclareGlobalFunction("AddRuleKBDAG");
 
-############################################################################
+#############################################################################
 ##
 #F  DeleteRuleKBDAG(<dag>,<left>,<index>)
 ##
-## removes a rule with given left side (sgtored at position <index> from the
+## removes a rule with given left side (stored at position <index> from the
 ## DAG. Index numbers of all rules with higher index number will be shifted
 ##  one down.
 DeclareGlobalFunction("DeleteRuleKBDAG");
 
-############################################################################
+#############################################################################
 ##
 #F  RuleAtPosKBDAG(<dag>,<w>,<p>)
 ##

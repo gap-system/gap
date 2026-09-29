@@ -694,7 +694,7 @@ end);
 
 #############################################################################
 ##
-#M  SSortedList( <list> )  . . . . . . . . . . . set of the elements of a list
+#M  SSortedList( <list> ) . . . . . . . . . . . set of the elements of a list
 ##
 InstallMethod( SSortedList, "for a plist",
     [ IsList and IsPlistRep ],
@@ -735,7 +735,7 @@ InstallMethod( SSortedList,
 ##  which stores the underlying list in the component `list'
 ##  and the current position in the component `pos'.
 ##
-##  It may happen that the underlying list is a enumerator of a domain
+##  It may happen that the underlying list is an enumerator of a domain
 ##  whose size cannot be computed easily.
 ##  In such cases, the methods for `IsDoneIterator' and `NextIterator'
 ##  shall avoid calling `Length' for the enumerator.
@@ -2245,7 +2245,7 @@ InstallMethod( ReversedOp,
 
 #############################################################################
 ##
-#M  Shuffle( <list> ) . . . . . . . . . . . . . . . . permute entries randomly
+#M  Shuffle( <list> ) . . . . . . . . . . . . . . .  permute entries randomly
 InstallMethod(Shuffle, [IsDenseList and IsMutable], function(l)
   local len, j, tmp, i;
   len := Length(l);

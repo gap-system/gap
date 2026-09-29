@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   test:
-    name: Julia ${{ matrix.julia-version }} - GAP.jl ${{ matrix.gapjl-version }} - ${{ matrix.os }}
+    name: Julia ${{ matrix.julia-version }} - GAP.jl ${{ matrix.gapjl-version }} - ${{ matrix.os }}${{ matrix.validate-marking && ' - VALIDATE_MARKING' || '' }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 40
     continue-on-error: ${{ matrix.julia-version == 'nightly' }}
@@ -33,6 +33,8 @@ jobs:
           - 'nightly'
         os:
           - ubuntu-latest
+        validate-marking:
+          - false
         include:
           # Add a few macOS jobs (the number we can run in parallel is limited)
           - gapjl-version: 'latest-release'
@@ -41,10 +43,17 @@ jobs:
           - gapjl-version: 'master'
             julia-version: '1'
             os: macOS-latest
+          # build the Julia GC integration with VALIDATE_MARKING, to detect
+          # invalid references during GC marking
+          # (see https://github.com/oscar-system/GAP.jl/issues/1364)
+          - gapjl-version: 'master'
+            julia-version: '1'
+            os: ubuntu-latest
+            validate-marking: true
 
     steps:
       - name: Checkout GAP
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: 'GAPROOT'
       - name: "Set up Julia"
@@ -64,20 +73,60 @@ jobs:
           open(ENV["GITHUB_ENV"], "a") do io
               println(io, "GAPJLPATH=$path")
           end
-      - name: "Install dependencies (for macOS)"
-        if: runner.os == 'macOS'
+      - name: "Check libgap soname compatibility"
+        # a released GAP.jl is tied to the libgap soname of its GAP_jll; if this
+        # checkout changed the kernel major version, the test cannot work
+        id: soname
+        if: matrix.gapjl-version == 'latest-release'
         run: |
-          brew install autoconf zlib # gmp pkg-config
+          jll=$(julia --project=$GAPJLPATH -e 'using Pkg; Pkg.instantiate(); using GAP_jll; print(basename(GAP_jll.libgap_path))')
+          expected=$(echo "$jll" | grep -oE '[0-9]+' | head -1)
+          actual=$(sed -n 's/^m4_define(\[kernel_major_version\], \[\([0-9]*\)\])$/\1/p' GAPROOT/configure.ac)
+          echo "GAP_jll ships $jll, this checkout has kernel major version $actual"
+          if [ "$expected" != "$actual" ]; then
+            echo "::warning::libgap soname mismatch (GAP_jll: $expected, GAP: $actual), skipping tests"
+            echo "skip=true" >> $GITHUB_OUTPUT
+          fi
+      - name: "Install dependencies (for macOS)"
+        if: runner.os == 'macOS' && steps.soname.outputs.skip != 'true'
+        run: |
+          # - autoconf, gmp, zlib are needed by GAP's build system
+          # - coreutils provides nproc
+          # - force use of Homebrew gcc to build GAP for proper stacktrace support
+          #   Homebrew installs versioned binaries such as gcc-14 and g++-14,
+          #   while later scripts expect unversioned gcc and g++ in PATH.
+          brew install autoconf gmp zlib gcc@14 coreutils
+
+          # ensure gcc and g++ are available under those names (on macOS,
+          # these names are aliases for clang / clang++ out of the box)
+          shimdir="${HOME}/bin"
+          mkdir -p "${shimdir}"
+          ln -sf "$(brew --prefix)/bin/gcc-14" "${shimdir}/gcc"
+          ln -sf "$(brew --prefix)/bin/g++-14" "${shimdir}/g++"
+          echo "${shimdir}" >> "${GITHUB_PATH}"
       - name: "Build GAP"
+        if: steps.soname.outputs.skip != 'true'
         run: |
           mv GAPROOT /tmp/GAPROOT
           cd /tmp/GAPROOT
+          patchdir=$GAPJLPATH/.github/workflows/GAP_patches/master
+          if [ -d $patchdir ]; then
+            # HACK: delete julia_gc-rescan.patch manually for now, until it
+            # is gone from the GAP.jl repo
+            rm -f $patchdir/julia_gc-rescan.patch
+            for f in $patchdir/*.patch; do
+              echo "Applying patch ${f}"
+              patch -p1 -d . < ${f}
+            done
+          fi
           ./autogen.sh
           ./configure --enable-Werror
           make -j`nproc`
       - name: "Override bundled GAP"
+        if: steps.soname.outputs.skip != 'true'
         run: |
-          julia --project=$GAPJLPATH $GAPJLPATH/etc/setup_override_dir.jl /tmp/GAPROOT /tmp/gap_jll_override --enable-Werror
+          julia --project=$GAPJLPATH $GAPJLPATH/etc/setup_override_dir.jl /tmp/GAPROOT /tmp/gap_jll_override --enable-Werror ${{ matrix.validate-marking && '--validate-marking' || '' }}
       - name: "Run tests"
+        if: steps.soname.outputs.skip != 'true'
         run: |
           julia --project=$GAPJLPATH $GAPJLPATH/etc/run_with_override.jl /tmp/gap_jll_override --depwarn=error -e "using Pkg; Pkg.test(\"GAP\")"

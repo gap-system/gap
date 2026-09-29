@@ -235,7 +235,7 @@ Measure := function(gens,pt,op,n)
   computebandwidth := 1.0/timeperop;
   Print(computebandwidth,"\n");
 
-  # Now hash lookup bandwith:
+  # Now hash lookup bandwidth:
   Print("Measuring lookup bandwidth... \c");
   ht := HTCreate(pt,rec( hashlen := NextPrimeInt(2*k*n) ));
   # Store things in the hash:

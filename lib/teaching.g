@@ -9,8 +9,8 @@
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 ##  This  file contains routines that are primarily of interest in a teaching
-##  context. It is made part of the general system to ensure it will be
-##  always installed with GAP.
+##  context. It is made part of the general system to ensure it will always
+##  be installed with GAP.
 ##
 
 #############################################################################
@@ -291,7 +291,7 @@ end);
 ##  <Description>
 ##  This function creates check digit test functions such as
 ##  <Ref Func="CheckDigitISBN"/> for check digit schemes that use the inner
-##  products with a fixed vector modulo a number. The scheme creates will use
+##  products with a fixed vector modulo a number. The scheme created will use
 ##  strings of <A>l</A> digits (including the check digits), the check consists
 ##  of taking the standard product of the vector of digits with the fixed vector
 ##  <A>f</A> modulo <A>m</A>; the result needs to be 0.
@@ -382,7 +382,7 @@ DeclareGlobalFunction("CheckDigitTestFunction");
 ##  message using  the scheme <M>A=11</M>, <M>B=12</M> and so on (and
 ##  converting lower case to upper case).
 ##  If a list of characters is given in <A>table</A>,
-##  it is used instead for encoding).
+##  it is used instead for encoding.
 ##  <Example><![CDATA[
 ##  gap> l:=NumbersString("Twas brillig and the slithy toves",1000000);
 ##  [ 303311, 291012, 281922, 221917, 101124, 141030, 181510, 292219,
@@ -408,7 +408,7 @@ DeclareGlobalFunction("NumbersString");
 ##  and returns a
 ##  message string, using  the scheme <M>A=11</M>, <M>B=12</M> and so on.
 ##  If a list of characters is given in <A>table</A>,
-##  it is used instead for decoding).
+##  it is used instead for decoding.
 ##  <Example><![CDATA[
 ##  gap> StringNumbers(l,1000000);
 ##  "TWAS BRILLIG AND THE SLITHY TOVES"
@@ -436,7 +436,7 @@ DeclareGlobalFunction("StringNumbers");
 ##  Calling <Ref Func="SetNameObject"/> for the same object <A>o</A> with
 ##  <A>s</A> set to <Ref Var="fail"/>
 ##  deletes the special viewing setup.
-##  Since use of this features potentially slows down the whole print
+##  Since use of this feature potentially slows down the whole print
 ##  process, this function should be used sparingly.
 ##  <Example><![CDATA[
 ##  gap> SetNameObject(3,"three");

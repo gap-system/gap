@@ -22,6 +22,7 @@ Persons := [
     LastName := "Author",
     WWWHome := "https://mockpkg.gap-system.org/~author",
     Email := "a.author@mockpkg.gap-system.org",
+    GitHubUsername := "active-author",
   ),
   rec(
     IsAuthor := true,

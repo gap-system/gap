@@ -645,7 +645,7 @@ end );
 
 #############################################################################
 ##
-#F  FindRegularNormalCSPG()  . . . . . . . . . . find a proper normal subgroup
+#F  FindRegularNormalCSPG() . . . . . . . . . . find a proper normal subgroup
 ##
 ##  given perfect, primitive G with regular minimal normal
 ##  subgroup(s), the routine returns one
@@ -1173,7 +1173,7 @@ InstallGlobalFunction( PullbackKernelCSPG,
        fi;
        for g in gens do
            for j in [1..i-1] do
-               g := PreImagesRepresentative(homlist[i-j],g);
+               g := PreImagesRepresentativeNC(homlist[i-j],g);
            od;
            Add(normals[index],g);
            Add(factors[index],());
@@ -1193,7 +1193,7 @@ InstallGlobalFunction( PullbackCSPG, function(p,homlist)
     # compute a preimage of the permutation p in the input group
     lenhomlist := Length(homlist);
     for i in [1..lenhomlist] do
-        p := PreImagesRepresentative(homlist[lenhomlist+1-i],p);
+        p := PreImagesRepresentativeNC(homlist[lenhomlist+1-i],p);
     od;
     return p;
 end );
@@ -1320,7 +1320,7 @@ end );
 ##
 #F  RandomElmAsWord( <chain> )  . . . . . . .  random element written as word
 ##
-##  given an stabilizer chain <chain> for the group $G$, returns a uniformly
+##  given a stabilizer chain <chain> for the group $G$, returns a uniformly
 ##  distributed random element of $G$,
 ##  as a word in the strong generators
 ##
@@ -1522,7 +1522,7 @@ InstallMethod( PCoreOp,
             for g in GeneratorsOfGroup( KernelOfMultiplicativeGeneralMapping(
                                             homlist[i] ) ) do
                 for j in [1..i-1] do
-                    g := PreImagesRepresentative(homlist[i-j],g);
+                    g := PreImagesRepresentativeNC(homlist[i-j],g);
                 od;
                 Add(pgenlist,g);
             od;
@@ -1747,7 +1747,7 @@ InstallMethod( SolvableRadical,
             for g in GeneratorsOfGroup( KernelOfMultiplicativeGeneralMapping(
                                             homlist[i] ) ) do
                 for j in [1..i-1] do
-                    g := PreImagesRepresentative(homlist[i-j],g);
+                    g := PreImagesRepresentativeNC(homlist[i-j],g);
                 od;
                 Add(solvable,g);
             od;

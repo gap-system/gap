@@ -8,7 +8,7 @@
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
-##  This  file contains rotines that enable simplified display and turn on
+##  This  file contains routines that enable simplified display and turn on
 ##  some naive routines, which are primarily of interest in a teaching
 ##  context. It is made part of the general system to ensure it will be
 ##  always installed with GAP.

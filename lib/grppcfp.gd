@@ -64,10 +64,10 @@ DeclareGlobalFunction( "PcGroupFpGroupNC" );
 ##  <Func Name="InitEpimorphismSQ" Arg='hom'/>
 ##
 ##  <Description>
-##  If <A>F</A> is a finitiely presented group, this operation returns the SQ
+##  If <A>F</A> is a finitely presented group, this operation returns the SQ
 ##  epimorphism system corresponding to the largest abelian quotient of
 ##  <A>F</A>.
-##  If <A>hom</A> is a epimorphism from a finitely presented group to a pc
+##  If <A>hom</A> is an epimorphism from a finitely presented group to a pc
 ##  group, it returns the system corresponding to this epimorphism.
 ##  No argument checking is performed.
 ##  </Description>

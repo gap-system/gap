@@ -424,13 +424,11 @@ local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads,
   SetRange(hom,R);
   SetImagesSource(hom,R);
   SetMappingGeneratorsImages(hom,[acts,permimg]);
-#  p:=RUN_IN_GGMBI; # no niceomorphism translation here
-#  RUN_IN_GGMBI:=true;
+#  # no niceomorphism translation here
 #  SetAsGroupGeneralMappingByImages ( hom, GroupHomomorphismByImagesNC
-#            ( G, R, acts, permimg ) );
+#            ( G, R, acts, permimg : Run_In_GGMBI:= true ) );
 #
 #  SetFilterObj( hom, IsActionHomomorphismByBase );
-#  RUN_IN_GGMBI:=p;
   if act=OnRight or act=OnPoints then
     # only store for action on right. projective action needs is own call to
     # `LinearActionBase' as this will set other needed parameters.
@@ -623,7 +621,7 @@ local gens,s,dom,mon,no;
   # call the recursive function to do the work
   gens:= SCMinSmaGens( no, s, [], One( no ), true ).gens;
   SetMinimalStabChain(G,s);
-  return List(gens,i->PreImagesRepresentative(mon,i));
+  return List(gens,i->PreImagesRepresentativeNC(mon,i));
 end);
 
 #############################################################################
@@ -660,7 +658,7 @@ local s,dom,mon, img;
                                       i->Position(HomeEnumerator(dom),i))));
   # call the recursive function to do the work
   s:= LargestElementStabChain( s, One( img ) );
-  return PreImagesRepresentative(mon,s);
+  return PreImagesRepresentativeNC(mon,s);
 end);
 
 #############################################################################
@@ -699,7 +697,7 @@ local mon,dom,S,o,oimgs,p,i,g;
     od;
 
     # change by corresponding matrix element
-    e:=PreImagesRepresentative(mon,g)*e;
+    e:=PreImagesRepresentativeNC(mon,g)*e;
 
     S:=S.stabilizer;
   od;
@@ -1202,9 +1200,10 @@ InstallMethod( ImagesRepresentative,
 
 #############################################################################
 ##
-#M  PreImagesRepresentative( <iso>, <mat> )  . . .  for a blow up isomorphism
+#M  PreImagesRepresentativeNC( <iso>, <mat> ) . . . for a blow up isomorphism
+#M  PreImagesRepresentative( <iso>, <mat> ) . . . . for a blow up isomorphism
 ##
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
     "for a blow up isomorphism, and a matrix in the range",
     FamRangeEqFamElm,
     [ IsBlowUpIsomorphism, IsMatrix ],
@@ -1255,6 +1254,19 @@ InstallMethod( PreImagesRepresentative,
     od;
 
     return preim;
+    end );
+
+InstallMethod( PreImagesRepresentative,
+    "for a blow up isomorphism, and a matrix in the range",
+    FamRangeEqFamElm,
+    [ IsBlowUpIsomorphism, IsMatrix ],
+    function( iso, mat )
+    if not ( mat in Range(iso) ) then
+        Error( "<mat> is not in the range of mapping <iso>" );
+    elif not ( mat in Image(iso) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentativeNC( iso, mat );
     end );
 
 
@@ -1341,7 +1353,12 @@ InstallMethod( ConjugateGroup, "<G>, <g>", IsCollsElms,
     if HasIsSubgroupSL( G ) then
       SetIsSubgroupSL( H, IsSubgroupSL( G ) );
     fi;
-    F:= FieldOfMatrixList( [ g ] );
+
+    F:= DefaultScalarDomainOfMatrixList( [ g ] );
+    if not IsField( F ) then
+      return H;
+    fi;
+
     if HasInvariantBilinearForm( G ) then
       if not IsBound( ginv ) then
         ginv := g^-1;

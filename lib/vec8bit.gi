@@ -623,7 +623,7 @@ function(F,v)
   fi;
     # otherwise we must be a bit more clever
   if 0 = DegreeOverPrimeField(F) mod LogInt(q,Characteristic(F)) then
-    return true;    # degrees ovber prime field OK
+    return true;    # degrees over prime field OK
   fi;
   TryNextMethod(); # the vector still might be written over a too-large
   # field, so we can't say `no'.
@@ -985,7 +985,7 @@ InstallMethodWithRandomSource( Randomize,
     for i in [1..Length(v)] do v[i] := Random(rs,l); od;
     return v;
   end );
-InstallMethod( MutableCopyMatrix, "for an 8bit matrix",
+InstallOtherMethod( MutableCopyMatrix, "for an 8bit matrix",
   [ Is8BitMatrixRep ],
   function( m )
     local mm;

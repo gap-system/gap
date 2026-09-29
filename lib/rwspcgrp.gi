@@ -1012,7 +1012,7 @@ function( efam, gens, rels, conflicts )
     for rel  in rels  do
         n := NumberSyllables(rel);
 
-        # a word with only one or two syllabel is a power
+        # a word with only one or two syllables is a power
         if n = 1 or n = 2  then
             Add( powlst, rel );
 

@@ -84,7 +84,9 @@ end );
 # Find element in G to conjugate B into A
 # call with G,A,B;
 InstallGlobalFunction(DoConjugateInto,function(g,a,b,onlyone)
-local cla,clb,i,j,k,bd,r,rep,b2,dc,
+# For the orbit matching below, dc stores candidate data, while clu groups
+# completed results whose final B-orbit partitions are A-conjugate.
+local cla,clb,i,j,k,bd,r,rep,b2,dc,clu,
   gens,conjugate;
 
   Info(InfoCoset,2,"call DoConjugateInto ",Size(g)," ",Size(a)," ",Size(b));
@@ -171,16 +173,53 @@ local cla,clb,i,j,k,bd,r,rep,b2,dc,
         od;
         if Length(dc)>0 then g:=Stabilizer(g,cla,OnTuplesSets);fi;
         rep:=[];
-        for i in dc do
-          r:=DoConjugateInto(g,a,b^i[2],onlyone);
+        for i in [1..Length(dc)] do
+          r:=DoConjugateInto(g,a,b^dc[i][2],onlyone);
           if onlyone then
-            if r<>fail then return i[2]*r;fi;
+            if r<>fail then return dc[i][2]*r;fi;
           else
-            if r<>fail then Append(rep,List(r,x->i[2]*x));fi;
+            if r<>fail then
+              Append(rep,List(r,x->dc[i][2]*x));
+            fi;
           fi;
         od;
         if onlyone then return fail; #otherwise would have found and stopped
-        else return rep;fi;
+        else
+          # Recursive conjugation can change a candidate's orbit partition,
+          # so cluster the completed results by their final partitions.
+          clu:=[];
+          for i in [1..Length(rep)] do
+            b2:=OnSetsSets(Set(clb),rep[i]);
+            j:=First([1..Length(clu)],x->RepresentativeAction(a,
+              OnSetsSets(Set(clb),rep[clu[x][1]]),b2,OnSetsSets)<>fail);
+            if j=fail then
+              Add(clu,[i]);
+            else
+              Add(clu[j],i);
+            fi;
+          od;
+
+          r:=rep;
+          rep:=[];
+          for i in clu do
+            if Length(i)=1 then
+              Add(rep,r[i[1]]);
+            else
+              Info(InfoCoset,2,"Testing ",i," for conjugacy");
+              bd:=[];
+              for j in i do
+                k:=b^r[j];
+                if not ForAny(bd,x->RepresentativeAction(a,x,k)<>fail) then
+                  Add(rep,r[j]);
+                  Add(bd,k);
+                else
+                  Info(InfoCoset,2,"Eliminated conjugate");
+                fi;
+              od;
+            fi;
+          od;
+          return rep;
+        fi;
       fi;
     else
       # orbits are fixed. Make sure b is so
@@ -199,7 +238,7 @@ local cla,clb,i,j,k,bd,r,rep,b2,dc,
     r:=SmallerDegreePermutationRepresentation(b:cheap);
     k:=Image(r,b);
     gens:=MorFindGeneratingSystem(k,MorMaxFusClasses(MorRatClasses(k)));
-    gens:=List(gens,x->PreImagesRepresentative(r,x));
+    gens:=List(gens,x->PreImagesRepresentativeNC(r,x));
   else
     gens:=MorFindGeneratingSystem(b,MorMaxFusClasses(MorRatClasses(b)));
   fi;
@@ -1064,7 +1103,7 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
     Assert(2,Size(a2)*Size(tra)=Size(b));
     SetKernelOfMultiplicativeGeneralMapping(r,a2);
 
-    dcs:=List(dcs,x->[PreImagesRepresentative(quot,x[1]),Size(a1)*x[2],
+    dcs:=List(dcs,x->[PreImagesRepresentativeNC(quot,x[1]),Size(a1)*x[2],
       PreImage(r,x[3])]);
     r:=List(dcs,x->x[1]);
     stabs:=List(dcs,x->x[3]);
@@ -1297,7 +1336,7 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
         cnt:=cnt-1;
 
         # compute orbit and stabilizers for the next step
-        # own Orbitalgorithm and stabilizer computation
+        # own orbit algorithm and stabilizer computation
 
         #while blist[posi] do posi:=posi+1;od;
         posi:=Position(blist,false,posi);

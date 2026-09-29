@@ -782,7 +782,7 @@ gap> l3;
 ]]></Example>
 
 Atomic statements must observe region ordering. That means that the highest precedence level of a region locked by an
-atomic statement must be less than the lowest precedene level of a region that is locked by the same thread at the time
+atomic statement must be less than the lowest precedence level of a region that is locked by the same thread at the time
 the atomic statement is executed.
     </Subsection>
   </Section>

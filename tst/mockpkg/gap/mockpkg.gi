@@ -13,3 +13,7 @@ InstallMethod( mockpkg_Operation, [ IsGroup, IsPosInt ], { G, n } -> n );
 InstallMethod( mockpkg_Attribute, [ IsSolvableGroup ], G -> G );
 
 InstallMethod( mockpkg_Property, [ IsNilpotentGroup ], IsAbelian );
+
+BindGlobal( "mockpkg_Vararg", function(first, rest...)
+    return Concatenation([first], rest);
+end );

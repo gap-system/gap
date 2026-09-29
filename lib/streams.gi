@@ -507,7 +507,7 @@ end );
 
 #############################################################################
 ##
-#R  IsInputTextFileRep  . . . . .  representation of a input text file stream
+#R  IsInputTextFileRep . . . . .  representation of an input text file stream
 ##
 DeclareRepresentation(
     "IsInputTextFileRep",
@@ -517,7 +517,7 @@ DeclareRepresentation(
 
 #############################################################################
 ##
-#V  InputTextFileType . . . . . . . . . . .  type of a input text file stream
+#V  InputTextFileType . . . . . . . . . . . type of an input text file stream
 ##
 InputTextFileType := NewType(
     StreamsFamily,
@@ -526,7 +526,7 @@ InputTextFileType := NewType(
 
 #############################################################################
 ##
-#V  InputTextFileStillOpen  . . . . . . . . . . . . . . .  list of open files
+#V  InputTextFileStillOpen . . . . . . . . . . . . . . . . list of open files
 ##
 if IsHPCGAP then
   InputTextFileStillOpen := ShareSpecialObj([]);
@@ -537,7 +537,7 @@ fi;
 
 #############################################################################
 ##
-#M  InputTextFile( <str> )  . . . . . . . . . create a input text file stream
+#M  InputTextFile( <str> ) . . . . . . . . . create an input text file stream
 ##
 InstallMethod( InputTextFile,
     "input text stream from file",
@@ -560,7 +560,7 @@ end );
 
 #############################################################################
 ##
-#M  CloseStream( <input-text-file> )  . . . . . . . . . . . . . .  close file
+#M  CloseStream( <input-text-file> ) . . . . . . . . . . . . . . . close file
 ##
 InstallMethod( CloseStream,
     "input text file",
@@ -1308,19 +1308,21 @@ InstallGlobalFunction( InputFromUser,
 InstallGlobalFunction( OpenExternal, function(filename)
     local file;
     if ARCH_IS_MAC_OS_X() then
-      Exec(Concatenation("open \"",filename,"\""));
+      RunProcess("open", filename);
     elif ARCH_IS_WINDOWS() then
-      Exec(Concatenation("cmd /c start \"",filename,"\""));
+      # the empty string is the window title argument of `start`, without
+      # which `start` would mistake the filename for a title
+      RunProcess("cmd.exe", "/c", "start", "", filename);
     elif ARCH_IS_WSL() then
       # If users pass a URL, make sure if does not get mangled.
       if ForAny(["https://", "http://"], {pre} -> StartsWith(filename, pre)) then
         file := filename;
       else
-        file := Concatenation("$(wslpath -a -w \"",filename,"\")");
+        file := Chomp( RunProcess("wslpath", "-a", "-w", filename).output );
       fi;
-      Exec(Concatenation("explorer.exe \"", file, "\""));
+      RunProcess("explorer.exe", file);
     else
-      Exec(Concatenation("xdg-open \"",filename,"\""));
+      RunProcess("xdg-open", filename);
     fi;
 end );
 
@@ -1367,6 +1369,9 @@ InstallGlobalFunction( InputOutputLocalProcess,
         Error("Can't handle new rep for directories");
     fi;
     dirname := cdir![1];
+    if not IsPlistRep(argts) then
+        argts := PlainListCopy(argts);
+    fi;
     ptynum := CREATE_PTY_IOSTREAM( dirname, exec, argts);
     if ptynum = fail then
         return fail;
@@ -1460,6 +1465,9 @@ end);
 ##
 #M  ReadAllLine( <iostream>[, <nofail>][, <IsAllLine>] ) . .  read whole line
 ##
+# this method serves pty based iostreams, which only exist on systems that
+# also have UNIXSelect
+if IsBound( UNIXSelect ) then
 InstallMethod( ReadAllLine, "iostream,boolean,function",
         [ IsInputOutputStreamByPtyRep and IsInputOutputStream, IsBool, IsFunction ],
     function(iostream, nofail, IsAllLine)
@@ -1481,6 +1489,7 @@ InstallMethod( ReadAllLine, "iostream,boolean,function",
     fi;
     return line;
 end);
+fi;
 
 InstallMethod( ReadAllLine, "iostream,boolean,function",
         [ IsInputOutputStream, IsBool, IsFunction ],
@@ -1742,7 +1751,7 @@ BindGlobal( "OnCharReadHookOutFds", [] );
 
 #############################################################################
 ##
-#V  OnCharReadHookOutStreams . . . . . . . . . . streams with writing handlers
+#V  OnCharReadHookOutStreams . . . . . . . . .  streams with writing handlers
 ##
 ##  'OnCharReadHookOutStreams' contains a list of streams for which writing
 ##  handlers are installed.

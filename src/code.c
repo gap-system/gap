@@ -57,6 +57,7 @@ DECL_MODULE_STATE Int CountExpr;
 
 static ModuleStateOffset CodeStateOffset = -1;
 
+// for debugging from GDB / lldb, we mark this as extern inline
 extern inline struct CodeModuleState * CShelper(void)
 {
     return (struct CodeModuleState *)StateSlotsAtOffset(CodeStateOffset);
@@ -181,6 +182,7 @@ void SET_FILENAME_BODY(Obj body, Obj val)
     GAP_ASSERT(IS_STRING_REP(val));
     MakeImmutable(val);
     BODY_HEADER(body)->filename_or_id = val;
+    CHANGED_BAG(body);
 }
 
 // gapnameid
@@ -209,6 +211,7 @@ void SET_LOCATION_BODY(Obj body, Obj val)
     GAP_ASSERT(IS_STRING_REP(val));
     MakeImmutable(val);
     BODY_HEADER(body)->startline_or_location = val;
+    CHANGED_BAG(body);
 }
 
 // startline
@@ -792,12 +795,10 @@ void CodeFuncExprBegin(CodeState * cs,
 #ifdef HPCGAP
     if (nams) MakeBagPublic(nams);
 #endif
-    CHANGED_BAG( fexp );
 
     // give it a body
     body = NewBag( T_BODY, 1024*sizeof(Stat) );
     SET_BODY_FUNC( fexp, body );
-    CHANGED_BAG( fexp );
 
     // record where we are reading from
     if (gapnameid)
@@ -807,7 +808,6 @@ void CodeFuncExprBegin(CodeState * cs,
 
     // give it an environment
     SET_ENVI_FUNC(fexp, cs->CodeLVars);
-    CHANGED_BAG(fexp);
     MakeHighVars(cs->CodeLVars);
 
     // switch to this function

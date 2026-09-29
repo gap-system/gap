@@ -42,7 +42,7 @@ Obj Elm0AList(Obj list, Int pos);
 Obj LengthAList(Obj list);
 
 
-/*****************************************************************************
+/****************************************************************************
 **
 *F  CompareAndSwapObj(<addr>, <old>, <new_>)
 **
@@ -66,7 +66,7 @@ EXPORT_INLINE int CompareAndSwapObj(Obj *addr, Obj old, Obj new_) {
 #endif
 }
 
-/*****************************************************************************
+/****************************************************************************
 **
 *F  ATOMIC_SET_ELM_PLIST(<list>, <index>, <value>)
 *F  ATOMIC_SET_ELM_PLIST_ONCE(<list>, <index>, <value>)
@@ -99,7 +99,7 @@ EXPORT_INLINE int CompareAndSwapObj(Obj *addr, Obj old, Obj new_) {
 **
 **  This construction ensures that while <obj> may be calculated more
 **  than once, all threads will share the same value; furthermore,
-**  reading an alreadu initialized value is generally very cheap,
+**  reading an already initialized value is generally very cheap,
 **  incurring the cost of a read, a read barrier, and a branch (which,
 **  after initialization, will generally predicted correctly by branch
 **  prediction logic).

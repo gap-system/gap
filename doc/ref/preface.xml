@@ -47,7 +47,7 @@ To get started a new user may first look at parts of the
 A lot of the functionality of the system and a number of
 contributed extensions are provided as <Q>&GAP; packages</Q>
 which are developed independently of the core part of &GAP; and can be loaded
-into a &GAP; session. Each package comes with a its own manual which is
+into a &GAP; session. Each package comes with its own manual which is
 also available through the &GAP; help system.
 <P/>
 This manual is divided into chapters, sections and subsections.

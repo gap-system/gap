@@ -727,7 +727,7 @@ InstallGlobalFunction(FactorsInt,function ( n )
           return Factors(n_orig);
         else
           Error( "sorry,  cannot factor ", tmp[2],
-            "\ntype 'return;' to try again with a larger number of trials in\n",
+            "\nyou can enter 'return;' to try again with a larger number of trials in\n",
             "FactorsRho (or use option 'RhoTrials')\n");
           if ValueOption("RhoTrials") <> fail then
             rt := 5 * ValueOption("RhoTrials");
@@ -1626,14 +1626,14 @@ InstallMethod( Root,
 
 #############################################################################
 ##
-#M  RoundCyc( <cyc> ) . . . . . . . . . . cyclotomic integer near to <cyc>
+#M  RoundCyc( <cyc> ) . . . . . . . . . . .  cyclotomic integer near to <cyc>
 ##
 InstallMethod( RoundCyc, "Integer", true, [ IsInt ], 0,  x->x );
 
 
 #############################################################################
 ##
-#M  RoundCycDown( <cyc> ) . . . . . . . . . . cyclotomic integer near to <cyc>
+#M  RoundCycDown( <cyc> ) . . . . . . . . .  cyclotomic integer near to <cyc>
 ##
 InstallMethod( RoundCycDown, "Integer", true, [ IsInt ], 0,  x->x );
 

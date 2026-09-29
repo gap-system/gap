@@ -240,6 +240,11 @@ end );
 InstallGlobalFunction( CodePcgs, function( pcgs )
     local code, indices, l, mi, i, base, nt, r, j, size;
 
+    # Check the argument.
+    if not ( IsPcgs( pcgs ) and IsPrimeOrdersPcgs( pcgs ) ) then
+      Error( "<pcgs> must be a pcgs in 'IsPrimeOrdersPcgs'" );
+    fi;
+
     # basic structures
     l := Length( pcgs );
     if l = 0 then

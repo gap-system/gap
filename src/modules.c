@@ -425,6 +425,7 @@ static Obj FuncLoadedModules(Obj self)
             CHANGED_BAG(list);
             str = MakeImmString(Modules[i].filename);
             SET_ELM_PLIST(list, 3 * i + 3, str);
+            CHANGED_BAG(list);
         }
         else if (IS_MODULE_STATIC(m->type)) {
             SET_ELM_PLIST(list, 3 * i + 1, ObjsChar[(Int)'s']);
@@ -434,6 +435,7 @@ static Obj FuncLoadedModules(Obj self)
             CHANGED_BAG(list);
             str = MakeImmString(Modules[i].filename);
             SET_ELM_PLIST(list, 3 * i + 3, str);
+            CHANGED_BAG(list);
         }
     }
     return list;
@@ -637,8 +639,6 @@ static void SetupFuncInfo(Obj func, const Char * cookie)
         SET_FILENAME_BODY(body_bag, filename);
         SET_LOCATION_BODY(body_bag, location);
         SET_BODY_FUNC(func, body_bag);
-        CHANGED_BAG(body_bag);
-        CHANGED_BAG(func);
     }
 }
 
@@ -903,9 +903,9 @@ void LoadModules(void)
             }
             else {
                 // and dynamic case
+#ifdef HAVE_DLOPEN
                 InitInfoFunc init;
 
-#ifdef HAVE_DLOPEN
                 const char * res = SyLoadModule(buf, &init);
                 if (init == 0) {
                     Panic("failed to load dynamic module %s, %s\n", buf, res);

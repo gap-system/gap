@@ -929,14 +929,15 @@ end);
 ##  <Log><![CDATA[
 ##  gap> SylowSubgroup( s4, 6 );
 ##  Error, SylowSubgroup: <p> must be a prime
+##  Stack trace:
 ##  *[1] <<compiled GAP function>>
 ##     @ GAPROOT/lib/oper1.g:964
 ##   [2] <<compiled GAP function "SylowSubgroup default method">>
 ##     @ GAPROOT/lib/oper1.g:1007
 ##  <function "SylowSubgroup default method">( <arguments> )
 ##   called from read-eval loop at *stdin*:3
-##  you can 'quit;' to quit to outer loop, or
-##  you can 'return;' to continue
+##  you can enter 'quit;' to quit to outer loop, or
+##  you can enter 'return;' to continue
 ##  brk> quit;
 ##  ]]></Log>
 ##  <P/>

@@ -129,7 +129,7 @@
 #include <setjmp.h>
 #include <string.h>
 
-#ifdef EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
 
@@ -765,7 +765,7 @@ static Int  DisableMarkBagValidation = 0;
 #endif
 
 
-// We define MarkBag as a inline function here so that
+// We define MarkBag as an inline function here so that
 // the compiler can optimize the marking functions using it in the
 // "current translation unit", i.e. inside gasman.c.
 // Other marking functions don't get to inline MarkBag calls anymore,
@@ -1957,7 +1957,7 @@ static NOINLINE void GenStackFuncBags(void)
     DisableMarkBagValidation = 1;
 #endif
 
-#ifdef EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
     emscripten_scan_stack(ScanRange);
     emscripten_scan_registers(ScanRange);
 // The standard scanning may not be required with
@@ -2009,7 +2009,7 @@ static UInt CollectBags_Mark(UInt FullBags)
     }
 
     // mark from the stack
-    _setjmp(RegsBags);
+    GAP_SETJMP(RegsBags);
 #if defined(SYS_IS_SPARC)
     SparcStackFuncBags();
 #endif
@@ -2026,7 +2026,7 @@ static UInt CollectBags_Mark(UInt FullBags)
         // For old bags, we invoke the marking function for bags with the
         // given TNUM.
         // Young bags normally are never put onto the changed list, because
-        // CHANGED_BAGS ignores young bags. However, it can happen if we
+        // CHANGED_BAG ignores young bags. However, it can happen if we
         // resize an old bag and it needs to be moved as a result, or if we
         // swap the masterpointers of an old and a young bag. In that case,
         // we must be careful to not collect the young bag (which was old
@@ -2566,7 +2566,7 @@ void CheckMasterPointers( void )
 //    we must make sure to mark the new bag2 as changed, too (and vice-versa).
 //
 // 2. Both bags are young. Then they typically will not be on the list of
-//    changed bags, as CHANGED_BAGS just skips them.
+//    changed bags, as CHANGED_BAG just skips them.
 //    However, while CHANGED_BAG will never put a young bag on the list of
 //    changed bags, young bags can still be put on the ChangedBags list in
 //    step 3, so we need to do something similar as in step 1.

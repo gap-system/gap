@@ -48,6 +48,33 @@
 #include <time.h>
 #include <unistd.h>
 
+#ifdef SYS_IS_MINGW
+#include <io.h>                         // for _mktemp
+#endif
+
+#ifndef HAVE_MKDTEMP
+// substitute for mkdtemp: _mktemp proposes an unused name and mkdir creates
+// it atomically, so if another process got there first, we try again
+static char * syMkdtemp(char * tmpl)
+{
+    enum { ATTEMPTS = 100 };
+    char candidate[GAP_PATH_MAX];
+
+    for (int i = 0; i < ATTEMPTS; i++) {
+        gap_strlcpy(candidate, tmpl, sizeof(candidate));
+        if (_mktemp(candidate) == NULL)
+            return NULL;
+        if (SyMkdir(candidate) == 0) {
+            gap_strlcpy(tmpl, candidate, strlen(tmpl) + 1);
+            return tmpl;
+        }
+        if (errno != EEXIST)
+            return NULL;
+    }
+    return NULL;
+}
+#endif
+
 #ifdef HAVE_SELECT
 // For FuncUNIXSelect
 #include <sys/time.h>
@@ -517,8 +544,7 @@ static Obj FuncLOG_TO(Obj self, Obj filename)
 {
     RequireStringRep(SELF_NAME, filename);
     if ( ! OpenLog( CONST_CSTR_STRING(filename) ) ) {
-        ErrorReturnVoid("LogTo: cannot log to %g", (Int)filename, 0,
-                        "you can 'return;'");
+        ErrorReturnVoid("LogTo: cannot log to %g", (Int)filename, 0, 0);
         return False;
     }
     return True;
@@ -533,8 +559,7 @@ static Obj FuncLOG_TO_STREAM(Obj self, Obj stream)
 {
     RequireOutputStream(SELF_NAME, stream);
     if ( ! OpenLogStream(stream) ) {
-        ErrorReturnVoid("LogTo: cannot log to stream", 0, 0,
-                        "you can 'return;'");
+        ErrorReturnVoid("LogTo: cannot log to stream", 0, 0, 0);
         return False;
     }
     return True;
@@ -578,8 +603,7 @@ static Obj FuncINPUT_LOG_TO(Obj self, Obj filename)
 {
     RequireStringRep(SELF_NAME, filename);
     if ( ! OpenInputLog( CONST_CSTR_STRING(filename) ) ) {
-        ErrorReturnVoid("InputLogTo: cannot log to %g", (Int)filename, 0,
-                        "you can 'return;'");
+        ErrorReturnVoid("InputLogTo: cannot log to %g", (Int)filename, 0, 0);
         return False;
     }
     return True;
@@ -594,8 +618,7 @@ static Obj FuncINPUT_LOG_TO_STREAM(Obj self, Obj stream)
 {
     RequireOutputStream(SELF_NAME, stream);
     if ( ! OpenInputLogStream(stream) ) {
-        ErrorReturnVoid("InputLogTo: cannot log to stream", 0, 0,
-                        "you can 'return;'");
+        ErrorReturnVoid("InputLogTo: cannot log to stream", 0, 0, 0);
         return False;
     }
     return True;
@@ -639,8 +662,7 @@ static Obj FuncOUTPUT_LOG_TO(Obj self, Obj filename)
 {
     RequireStringRep(SELF_NAME, filename);
     if ( ! OpenOutputLog( CONST_CSTR_STRING(filename) ) ) {
-        ErrorReturnVoid("OutputLogTo: cannot log to %g", (Int)filename, 0,
-                        "you can 'return;'");
+        ErrorReturnVoid("OutputLogTo: cannot log to %g", (Int)filename, 0, 0);
         return False;
     }
     return True;
@@ -655,8 +677,7 @@ static Obj FuncOUTPUT_LOG_TO_STREAM(Obj self, Obj stream)
 {
     RequireOutputStream(SELF_NAME, stream);
     if ( ! OpenOutputLogStream(stream) ) {
-        ErrorReturnVoid("OutputLogTo: cannot log to stream", 0, 0,
-                        "you can 'return;'");
+        ErrorReturnVoid("OutputLogTo: cannot log to stream", 0, 0, 0);
         return False;
     }
     return True;
@@ -994,7 +1015,7 @@ static Obj FuncREAD_GAP_ROOT(Obj self, Obj filename)
 static Obj FuncTmpName(Obj self)
 {
     char name[100] = "/tmp/gaptempfile.XXXXXX";
-#ifdef SYS_IS_CYGWIN32
+#ifdef SYS_IS_WINDOWS
     // If /tmp is missing, write into Window's temp directory
     DIR* dir = opendir("/tmp");
     if(dir) {
@@ -1024,7 +1045,7 @@ static Obj FuncTmpDirectory(Obj self)
         name = MakeString(env_tmpdir);
     }
     else {
-#ifdef SYS_IS_CYGWIN32
+#ifdef SYS_IS_WINDOWS
         // If /tmp is missing, write into Window's temp directory
         DIR* dir = opendir("/tmp");
         if(dir) {
@@ -1041,8 +1062,13 @@ static Obj FuncTmpDirectory(Obj self)
     const char * extra = "/gaptempdirXXXXXX";
     AppendCStr(name, extra, strlen(extra));
 
+#ifdef HAVE_MKDTEMP
     if (mkdtemp(CSTR_STRING(name)) == 0)
         return Fail;
+#else
+    if (syMkdtemp(CSTR_STRING(name)) == NULL)
+        return Fail;
+#endif
     return name;
 }
 
@@ -1137,7 +1163,11 @@ static Obj FuncGAP_realpath(Obj self, Obj path)
     RequireStringRep(SELF_NAME, path);
     char resolved_path[GAP_PATH_MAX];
 
+#ifdef SYS_IS_MINGW
+    if (NULL == _fullpath(resolved_path, CONST_CSTR_STRING(path), sizeof(resolved_path))) {
+#else
     if (NULL == realpath(CONST_CSTR_STRING(path), resolved_path)) {
+#endif
         SySetErrorNo();
         return Fail;
     }
@@ -1484,7 +1514,7 @@ static Obj FuncREAD_ALL_FILE(Obj self, Obj fid, Obj limit)
     len = 0;
     lstr = 0;
 
-#ifdef SYS_IS_CYGWIN32
+#ifdef SYS_IS_WINDOWS
  getmore:
 #endif
     while (ilim == -1 || len < ilim ) {
@@ -1525,7 +1555,7 @@ static Obj FuncREAD_ALL_FILE(Obj self, Obj fid, Obj limit)
 
     // fix the length of <str>
     len = GET_LEN_STRING(str);
-#ifdef SYS_IS_CYGWIN32
+#ifdef SYS_IS_WINDOWS
     // line end hackery
     UInt i = 0, j = 0;
     while (i < len) {

@@ -1,5 +1,323 @@
 # GAP - history of changes
 
+## GAP 4.16.1 (August 2026)
+
+The following gives an overview of the changes compared to the previous
+release. This list is not complete, many more internal or minor changes
+were made, but we tried to only list those changes which we think might
+affect some users directly.
+
+Note that for GAP 4.17.0, we plan to split the library of perfect groups
+off into a separate GAP package. To prepare this, the new GAP package is
+already part of the package distribution here, and it can be loaded in
+GAP 4.16.1 -- but it simply does nothing.
+
+### Fixed bugs that could lead to incorrect results
+
+- [#6515](https://github.com/gap-system/gap/pull/6515) Fix `IsSingleValued` and cokernel for mappings of pc groups
+- [#6513](https://github.com/gap-system/gap/pull/6513) Fix `IsSquareMatrix` to not return `true` for lists-of-lists that are not rectangular (so with rows of different length)
+- [#6492](https://github.com/gap-system/gap/pull/6492) Fix `ElementaryAbelianSeries` returning an invalid series after `AutomorphismGroup`
+- [#6491](https://github.com/gap-system/gap/pull/6491) Fix wrong group orders caused by leaked randomized stabilizer chain options in `CompatiblePairs`
+- [#6474](https://github.com/gap-system/gap/pull/6474) Fix `IsFinite` for characteristic zero matrix groups, it could incorrectly flag finite groups as being infinite
+- [#6454](https://github.com/gap-system/gap/pull/6454) Fix a bug in automorphism group computations/isomorphism tests, that might have missed morphisms in larger groups (and e.g. incorrectly marked two groups as nonisomorphic when they really are isomorphic)
+
+### Fixed bugs that could lead to unexpected errors
+
+- [#6482](https://github.com/gap-system/gap/pull/6482) Fix infinite recursion in `MaximalSubgroupClassReps` for A_n
+- [#6459](https://github.com/gap-system/gap/pull/6459) Fix `BaumClausenInfo` when the given pcgs does not describe a normal series of the group
+- [#6425](https://github.com/gap-system/gap/pull/6425) Fix an unexpected error when calling `ConjugateGroup` on matrix groups not defined over a field
+
+### Other fixed bugs
+
+- [#6477](https://github.com/gap-system/gap/pull/6477) Fix `TwoCohomologyGeneric` when there are no conditions on the tails, leading to either an unexpected error or even a wrong output
+
+### Other changes
+
+- [#6450](https://github.com/gap-system/gap/pull/6450) Clarify that perfect groups data is licensed under GPL 2.0 or later
+
+### Package distribution
+
+#### New packages redistributed with GAP
+
+- [**PerfGrp**](https://gap-packages.github.io/perfgrp/) 1.0.0: GAP Library of Finite Perfect Groups, by Alexander Hulpke, Derek F. Holt, Wilhelm Plesken, Volkmar Felsch
+
+#### Updated packages redistributed with GAP
+
+The GAP 4.16.1 distribution contains 173 packages, of which 80 have been
+updated since GAP 4.16.0. The full list of updated packages is given below:
+
+- [**AClib**](https://gap-packages.github.io/aclib/): 1.3.3 -> 1.4
+- [**Alnuth**](https://gap-packages.github.io/alnuth): 4.0.0 -> 4.0.2
+- [**AtlasRep**](https://www.math.rwth-aachen.de/~Thomas.Breuer/atlasrep): 2.1.11 -> 2.1.12
+- [**AutoDoc**](https://gap-packages.github.io/AutoDoc): 2026.05.11 -> 2026.06.30
+- [**Automata**](https://gap-packages.github.io/automata/): 1.16 -> 1.17
+- [**Browse**](https://www.math.rwth-aachen.de/~Browse): 1.8.22 -> 1.8.23
+- [**CAP**](https://homalg-project.github.io/pkg/CAP): 2026.05-08 -> 2026.07-04
+- [**CaratInterface**](https://www.math.uni-bielefeld.de/~gaehler/gap/packages.php): 2.3.9 -> 2.3.11
+- [**Circle**](https://gap-packages.github.io/circle): 1.6.6 -> 1.7.1
+- [**classicpres**](http://www.math.colostate.edu/~hulpke/classicpres): 1.22 -> 1.25
+- [**cohomolo**](https://gap-packages.github.io/cohomolo): 1.6.12 -> 1.7.0
+- [**CRISP**](https://github.com/bh11/crisp/): 1.4.8 -> 1.4.11
+- [**crypting**](https://gap-packages.github.io/crypting/): 0.10.6 -> 0.10.7
+- [**Cryst**](https://www.math.uni-bielefeld.de/~gaehler/gap/packages.php): 4.1.31 -> 4.1.32
+- [**CrystCat**](https://www.math.uni-bielefeld.de/~gaehler/gap/packages.php): 1.1.11 -> 1.1.13
+- [**Cubefree**](https://gap-packages.github.io/cubefree/): 1.21 -> 1.22
+- [**curlInterface**](https://gap-packages.github.io/curlInterface/): 2.4.3 -> 2.4.4
+- [**datastructures**](https://gap-packages.github.io/datastructures): 0.4.1 -> 0.4.3
+- [**DeepThought**](https://gap-packages.github.io/DeepThought/): 1.0.9 -> 1.0.10
+- [**Digraphs**](https://digraphs.github.io/Digraphs): 1.14.0 -> 1.15.0
+- [**ExamplesForHomalg**](https://homalg-project.github.io/pkg/ExamplesForHomalg): 2025.12-01 -> 2026.07-01
+- [**FactInt**](https://gap-packages.github.io/FactInt): 1.6.3 -> 1.7.0
+- [**fwtree**](https://gap-packages.github.io/fwtree/): 1.3 -> 1.4
+- [**Gauss**](https://homalg-project.github.io/pkg/Gauss): 2025.12-01 -> 2026.07-01
+- [**GaussForHomalg**](https://homalg-project.github.io/pkg/GaussForHomalg): 2026.04-01 -> 2026.07-01
+- [**GeneralizedMorphismsForCAP**](https://homalg-project.github.io/pkg/GeneralizedMorphismsForCAP): 2025.12-01 -> 2026.06-01
+- [**genss**](https://gap-packages.github.io/genss): 1.6.9 -> 1.6.10
+- [**GradedModules**](https://homalg-project.github.io/pkg/GradedModules): 2026.04-01 -> 2026.07-01
+- [**GradedRingForHomalg**](https://homalg-project.github.io/pkg/GradedRingForHomalg): 2026.04-01 -> 2026.07-01
+- [**groupoids**](https://gap-packages.github.io/groupoids/): 1.81 -> 1.83
+- [**GrpConst**](https://gap-packages.github.io/grpconst/): 2.6.5 -> 2.7.0
+- [**HAP**](https://gap-packages.github.io/hap): 1.75 -> 1.78
+- [**HAPcryst**](https://gap-packages.github.io/hapcryst/): 0.2.0 -> 0.2.1
+- [**hecke**](https://gap-packages.github.io/hecke/): 1.5.4 -> 1.6.0
+- [**HomalgToCAS**](https://homalg-project.github.io/pkg/HomalgToCAS): 2026.04-01 -> 2026.07-01
+- [**idrel**](https://gap-packages.github.io/idrel/): 2.49 -> 2.51
+- [**images**](https://gap-packages.github.io/images/): 1.3.3 -> 1.4.2
+- [**InduceReduce**](https://gap-packages.github.io/InduceReduce/): 1.3 -> 1.4
+- [**IO**](https://gap-packages.github.io/io): 4.9.3 -> 4.10.0
+- [**IO_ForHomalg**](https://homalg-project.github.io/pkg/IO_ForHomalg): 2025.12-01 -> 2026.07-01
+- [**IRREDSOL**](https://github.com/bh11/irredsol/): 1.4.4 -> 1.4.6
+- [**kbmag**](https://gap-packages.github.io/kbmag): 1.5.11 -> 1.6.0
+- [**LAGUNA**](https://gap-packages.github.io/laguna): 3.9.7 -> 3.10.1
+- [**LieAlgDB**](https://gap-packages.github.io/liealgdb/): 2.3.0 -> 2.3.1
+- [**LiePRing**](https://gap-packages.github.io/liepring/): 2.9.1 -> 2.9.3
+- [**LinearAlgebraForCAP**](https://homalg-project.github.io/pkg/LinearAlgebraForCAP): 2026.05-04 -> 2026.06-02
+- [**loops**](https://gap-packages.github.io/loops/): 3.4.4 -> 3.4.5
+- [**MajoranaAlgebras**](https://gap-packages.github.io/MajoranaAlgebras/): 1.5.2 -> 1.5.3
+- [**matgrp**](https://www.math.colostate.edu/~hulpke/matgrp): 0.73 -> 0.75
+- [**ModularGroup**](https://ag-weitze-schmithusen.github.io/ModularGroup): 2.0.2 -> 2.0.3
+- [**ModulePresentationsForCAP**](https://homalg-project.github.io/pkg/ModulePresentationsForCAP): 2026.04-01 -> 2026.06-01
+- [**MonoidalCategories**](https://homalg-project.github.io/pkg/MonoidalCategories): 2026.05-02 -> 2026.08-02
+- [**OpenMath**](https://gap-packages.github.io/openmath): 11.5.3 -> 11.5.5
+- [**Origami**](https://AG-Weitze-Schmithusen.github.io/Origami/): 2.0.3 -> 2.0.4
+- [**PackageMaker**](https://gap-packages.github.io/PackageMaker): 1.0.1 -> 1.0.2
+- [**PackageManager**](https://gap-packages.github.io/PackageManager/): 1.6.3 -> 1.6.4
+- [**permut**](https://gap-packages.github.io/permut/): 2.0.5 -> 2.0.7
+- [**PrimGrp**](https://gap-packages.github.io/primgrp/): 4.0.2 -> 4.0.3
+- [**profiling**](https://gap-packages.github.io/profiling/): 2.6.2 -> 2.6.3
+- [**RadiRoot**](https://gap-packages.github.io/radiroot/): 2.9 -> 2.10
+- [**RCWA**](https://gap-packages.github.io/rcwa/): 4.9.0 -> 4.10.0
+- [**RDS**](https://gap-packages.github.io/rds/): 1.9 -> 1.10
+- [**Repsn**](https://gap-packages.github.io/repsn/): 3.1.2 -> 3.1.3
+- [**SCO**](https://homalg-project.github.io/pkg/SCO): 2025.12-01 -> 2026.07-01
+- [**SCSCP**](https://gap-packages.github.io/scscp): 2.4.4 -> 2.5.0
+- [**SglPPow**](https://gap-packages.github.io/sglppow/): 2.4 -> 2.6
+- [**simpcomp**](https://simpcomp-team.github.io/simpcomp): 2.1.14 -> 2.1.15
+- [**smallantimagmas**](https://gap-packages.github.io/smallantimagmas): 0.5.1 -> 0.6.0
+- [**SmallClassNr**](https://stertooy.github.io/SmallClassNr): 1.5.1 -> 1.7.0
+- [**SmallGrp**](https://gap-packages.github.io/smallgrp/): 1.5.4 -> 1.7.0
+- [**SONATA**](https://gap-packages.github.io/sonata/): 2.9.7 -> 2.9.8
+- [**SOTGrps**](https://gap-packages.github.io/sotgrps/): 1.3 -> 1.4
+- [**SymbCompCC**](https://gap-packages.github.io/SymbCompCC/): 1.3.2 -> 1.4.0
+- [**TwistedConjugacy**](https://stertooy.github.io/TwistedConjugacy): 3.3.2 -> 3.4.1
+- [**Unipot**](https://gap-packages.github.io/unipot/): 1.6 -> 1.7
+- [**UnitLib**](https://gap-packages.github.io/unitlib): 5.0.0 -> 5.1.0
+- [**utils**](https://gap-packages.github.io/utils): 0.95 -> 0.98
+- [**walrus**](https://gap-packages.github.io/walrus): 0.9992 -> 0.9993
+- [**Wedderga**](https://gap-packages.github.io/wedderga): 4.11.3 -> 4.12.1
+- [**XMod**](https://gap-packages.github.io/xmod/): 2.98 -> 2.99
+
+## GAP 4.16.0 (June 2026)
+
+The following gives an overview of the changes compared to the previous
+release. This list is not complete, many more internal or minor changes
+were made, but we tried to only list those changes which we think might
+affect some users directly.
+
+### New features
+
+- [#6384](https://github.com/gap-system/gap/pull/6384) Add `EnumeratorOfPartitionsSet` enumerator
+- [#6322](https://github.com/gap-system/gap/pull/6322) Add `IsGenericMatrixRep` matrix object type
+- [#6311](https://github.com/gap-system/gap/pull/6311) Add `PositionNonZeroInRow` for matrices and matrix objects
+- [#6277](https://github.com/gap-system/gap/pull/6277) Add `DirectSumGModule`
+- [#6268](https://github.com/gap-system/gap/pull/6268) Add `IsSquareMat` and `IsAntisymmetricMat`
+- [#6262](https://github.com/gap-system/gap/pull/6262) Add `UserHomeShorten` as counterpart of `UserHomeExpand`
+- [#6261](https://github.com/gap-system/gap/pull/6261) Add `WhereDepth` user preference to control depth of initial stack trace in break loops
+- [#6259](https://github.com/gap-system/gap/pull/6259) Add `IsSymmetricMatrix` (and `IsSymmetricMat` as a synonym)
+- [#6232](https://github.com/gap-system/gap/pull/6232) Add `RandomMatrix`, `RandomInvertibleMatrix`; and fix a problem with a new feature for matrix groups
+- [#6213](https://github.com/gap-system/gap/pull/6213) Add `ConformalSymplecticGroup`
+- [#5980](https://github.com/gap-system/gap/pull/5980) Add `AddMatrix`, `MultMatrix` (plus explicit left/right side variants) for in-place modification of matrices
+- [#3357](https://github.com/gap-system/gap/pull/3357) Add `FoldLeft`, `FoldLeftX`; and `ForAllX`, `ForAnyX`, `FilteredX`, `NumberX`, `PerformX` to complement `ListX`, `SetX`, `SumX`, `ProductX`
+
+### Performance improvements
+
+- [#6398](https://github.com/gap-system/gap/pull/6398) Speed up conversion from integers to finite field elements
+- [#6329](https://github.com/gap-system/gap/pull/6329) Speed up `CopySubMatrix`, `CopySubVector`, `ExtractSubMatrix`, `ExtractSubVector` for plist matrices/vectors
+- [#6289](https://github.com/gap-system/gap/pull/6289) Make the meataxe faster by using `AddMatrix`, `AddVector`, `MultMatrix`, `MultVector`
+- [#6276](https://github.com/gap-system/gap/pull/6276) Faster high-level Meataxe functions for irreducible modules (e.g. `MTX.IsomorphismModules`, `MTX.Indecomposition`, `MTX.BasisModuleEndomorphisms`, `MTX.BasisModuleHomomorphisms`)
+- [#6267](https://github.com/gap-system/gap/pull/6267) Improve conjugation test for subgroups with different orders
+- [#6265](https://github.com/gap-system/gap/pull/6265) Speed up `IsSubset` for cyclotomic domains (such as `Integers`, `PositiveIntegers`, `GaussianRationals` etc.)
+- [#6114](https://github.com/gap-system/gap/pull/6114) Enhance support for very long transversals in a permutation group by forcing down huge index steps through an intermediate subgroup
+
+### Improved and extended functionality
+
+- [#6357](https://github.com/gap-system/gap/pull/6357) Update the GAP banner to reflect the new GAP logo
+- [#6338](https://github.com/gap-system/gap/pull/6338) Improve `CosetLeadersMatFFE` documentation
+- [#6334](https://github.com/gap-system/gap/pull/6334) Translating a range by adding an integer now produces another range (instead of a plain list) when possible
+- [#6320](https://github.com/gap-system/gap/pull/6320) Add a manual section on how to write code for matrix objects
+- [#6309](https://github.com/gap-system/gap/pull/6309) Allow `CopySubVector` on plain row vectors, fix `CopySubMatrix`
+- [#6292](https://github.com/gap-system/gap/pull/6292) Document new `PackageInfo.g` fields `Dependencies.TestPackages` and `Dependencies.NeededSystemPackages`, and teach `ValidatePackageInfo` about them
+- [#6280](https://github.com/gap-system/gap/pull/6280) Implement `MultVectorRight` for lists
+- [#6257](https://github.com/gap-system/gap/pull/6257) Improve break-loop stack traces to be more consistent, provide more information and to indicate the current environment selected via `DownEnv`/`UpEnv`
+- [#6211](https://github.com/gap-system/gap/pull/6211) Improve documentation for nice monomorphisms
+- [#6183](https://github.com/gap-system/gap/pull/6183) Transfer more properties (such as `IsNaturalSL`, `InvariantQuadraticForm` etc.) when conjugating matrix groups
+
+### Removed or obsolete functionality
+
+- [#6067](https://github.com/gap-system/gap/pull/6067) Deprecate `InstallValue` for anything but plain objects (i.e., plain GAP lists, records or strings) and warn if it is done anyway
+
+### Changes related to handling of packages
+
+- [#6191](https://github.com/gap-system/gap/pull/6191) Remove unused "PC STACK" variables for from the left collectors (this breaks compatibility with polycyclic version 2.16 and older; use 2.17 or newer instead)
+
+### Changes in the documentation
+
+- [#6410](https://github.com/gap-system/gap/pull/6410) Document `OrbitStabilizer` return value
+- [#6408](https://github.com/gap-system/gap/pull/6408) Document `SemiSimpleType` field restriction
+- [#6405](https://github.com/gap-system/gap/pull/6405) Clarify `IsomorphismPcGroup` docs
+- [#6370](https://github.com/gap-system/gap/pull/6370) Improve documentation of `OnTuplesSets`, `OnSetsDisjointSets`, `OnSetsTuples`
+- [#6361](https://github.com/gap-system/gap/pull/6361) Simplify the list of `Matrix` argument variants in the manual
+- [#6348](https://github.com/gap-system/gap/pull/6348) Clarify `CompatiblePairs` documentation
+- [#6337](https://github.com/gap-system/gap/pull/6337) Clarify `IrreducibleModules` description to say 'at most' dim
+- [#6260](https://github.com/gap-system/gap/pull/6260) Document `DirectProductElement`
+- [#6220](https://github.com/gap-system/gap/pull/6220) Correct the documentation of `NewFamily`
+- [#6198](https://github.com/gap-system/gap/pull/6198) Document setter for mutable attributes
+- [#6174](https://github.com/gap-system/gap/pull/6174) Document objects with memory
+- [#6171](https://github.com/gap-system/gap/pull/6171) Improve documentation of `InverseGeneralMapping`
+- [#6169](https://github.com/gap-system/gap/pull/6169) Fix the definition of `PClassPGroup`
+- [#6162](https://github.com/gap-system/gap/pull/6162) Only show authors in `Cite`, not maintainers
+
+### Fixed bugs that could lead to incorrect results
+
+- [#6382](https://github.com/gap-system/gap/pull/6382) Fix `Irr` for natural symmetric groups when the conjugacy classes are ordered differently in the group and its character table
+- [#6358](https://github.com/gap-system/gap/pull/6358) Fix `HexSHA256` to always return 64 hex digits and not drop leading zero digits
+- [#6341](https://github.com/gap-system/gap/pull/6341) Fix return value of `PartitionsGreatestLE(0, m)` and improve its documentation
+- [#6340](https://github.com/gap-system/gap/pull/6340) Fix `MinimalGeneratingSet` for pc groups which sometimes returned incorrect (non-minimal) results
+- [#6325](https://github.com/gap-system/gap/pull/6325) Fix garbled result produced by `CosetLeadersMatFFE`
+- [#6303](https://github.com/gap-system/gap/pull/6303) Fix `CopySubVector` for GF(2) vectors to not produce invalid results for certain inputs
+- [#6253](https://github.com/gap-system/gap/pull/6253) Fix `ShortestVectors` with `"positive"` argument returning a potentially incomplete list
+- [#6245](https://github.com/gap-system/gap/pull/6245) Fix `PreImagesRepresentative` for group homomorphisms with `OnLines` action
+- [#6206](https://github.com/gap-system/gap/pull/6206) Fix two bugs in `IsomorphismPermGroupForMatrixGroup`
+- [#6203](https://github.com/gap-system/gap/pull/6203) Fix `FieldOfMatrixGroup` for certain classical matrix groups in dimension up to 2, and fix related problems with their invariant forms
+- [#6170](https://github.com/gap-system/gap/pull/6170) Fix `IsomorphismPermGroup` for trivial f. p. (sub)group
+- [#6160](https://github.com/gap-system/gap/pull/6160) Fix a bug in `RepresentativesPerfectSubgroups` that could lead to the omission of subgroups
+
+### Fixed bugs that could lead to crashes
+
+- [#6326](https://github.com/gap-system/gap/pull/6326) Fix crash in `CosetLeadersMatFFE`
+
+### Fixed bugs that could lead to unexpected errors
+
+- [#6418](https://github.com/gap-system/gap/pull/6418) Fix `RingGeneralMappingByImages` for non-SCRing
+- [#6196](https://github.com/gap-system/gap/pull/6196) Fix an inconsistency problem in `IsFinite` for matrix groups over cycl. fields.
+- [#6159](https://github.com/gap-system/gap/pull/6159) Fix a potential error message about data types when computing extensions
+
+### Other fixed bugs
+
+- [#6355](https://github.com/gap-system/gap/pull/6355) Reset the options stack after an error also when the break loop is disabled (`-T` command line option)
+- [#6218](https://github.com/gap-system/gap/pull/6218) Change `CoverageLineByLine` to produce output compatible with that produced by the `--coverage` command line option
+
+### Other changes
+
+- [#6230](https://github.com/gap-system/gap/pull/6230) Make `RestrictedMapping` of a group homomorphism use the same `Range` as the original morphism
+
+### Package distribution
+
+#### New packages redistributed with GAP
+
+- [**ClassicalMaximals**](https://gap-packages.github.io/ClassicalMaximals/) 1.1: Maximal subgroups of classical groups, by Maximilian Hauck, Max Horn, Tristan Pfersdorff, Christian Seeger, Sergio Siccha
+- [**LocalNR**](https://gap-packages.github.io/LocalNR) 2.1.0: Package of local nearrings, by Iryna Raievska, Maryna Raievska, Yaroslav Sysak
+- [**ModularGroup**](https://ag-weitze-schmithusen.github.io/ModularGroup) 2.0.2: Finite-index subgroups of (P)SL(2,Integers), by Sebastian Engelhardt, Luca Leon Junk, Hannah Wagmann, Gabriela Weitze-Schmithüsen
+- [**nofoma**](https://gap-packages.github.io/nofoma) 1.0.1: Normal forms of matrices, by Meinolf Geck, Alia Bonnet
+- [**Origami**](https://AG-Weitze-Schmithusen.github.io/Origami/) 2.0.3: Computing Veech groups of origamis, by Leo Emmerich, Sebastian Engelhardt, Simon Ertl, Luca Leon Junk, Pascal Kattler, Alexander Rogovskyy, Pascal Schumann, Andrea Thevis, Hannah Wagmann, Gabriela Weitze-Schmithüsen
+- [**PackageMaker**](https://gap-packages.github.io/PackageMaker) 1.0.1: A GAP package for creating new GAP packages, by Max Horn
+
+#### Updated packages redistributed with GAP
+
+The GAP 4.16.0 distribution contains 172 packages, of which 69 have been
+updated since GAP 4.15.1. The full list of updated packages is given below:
+
+- [**4ti2Interface**](https://homalg-project.github.io/pkg/4ti2Interface): 2024.11-01 -> 2026.05-01
+- [**Alnuth**](https://gap-packages.github.io/alnuth): 3.2.1 -> 4.0.0
+- [**ANUPQ**](https://gap-packages.github.io/anupq/): 3.3.2 -> 3.3.3
+- [**AtlasRep**](https://www.math.rwth-aachen.de/~Thomas.Breuer/atlasrep): 2.1.9 -> 2.1.11
+- [**AutoDoc**](https://gap-packages.github.io/AutoDoc): 2025.10.16 -> 2026.05.11
+- [**AutPGrp**](https://gap-packages.github.io/autpgrp/): 1.11.1 -> 1.12.0
+- [**Browse**](https://www.math.rwth-aachen.de/~Browse): 1.8.21 -> 1.8.22
+- [**CAP**](https://homalg-project.github.io/pkg/CAP): 2025.09-04 -> 2026.05-08
+- [**CaratInterface**](https://www.math.uni-bielefeld.de/~gaehler/gap/packages.php): 2.3.7 -> 2.3.9
+- [**CddInterface**](https://homalg-project.github.io/CddInterface): 2025.06.24 -> 2026.03.02
+- [**Cryst**](https://www.math.uni-bielefeld.de/~gaehler/gap/packages.php): 4.1.30 -> 4.1.31
+- [**CrystCat**](https://www.math.uni-bielefeld.de/~gaehler/gap/packages.php): 1.1.10 -> 1.1.11
+- [**curlInterface**](https://gap-packages.github.io/curlInterface/): 2.4.2 -> 2.4.3
+- [**cvec**](https://gap-packages.github.io/cvec): 2.8.4 -> 2.8.5
+- [**datastructures**](https://gap-packages.github.io/datastructures): 0.4.0 -> 0.4.1
+- [**Digraphs**](https://digraphs.github.io/Digraphs): 1.13.1 -> 1.14.0
+- [**ExamplesForHomalg**](https://homalg-project.github.io/pkg/ExamplesForHomalg): 2023.10-01 -> 2025.12-01
+- [**ferret**](https://gap-packages.github.io/ferret/): 1.0.15 -> 1.0.16
+- [**float**](https://gap-packages.github.io/float/): 1.0.9 -> 1.0.10
+- [**FORMAT**](https://gap-packages.github.io/format/): 1.4.4 -> 1.4.5
+- [**Forms**](https://gap-packages.github.io/forms): 1.2.13 -> 1.3.0
+- [**FPLSA**](https://gap-packages.github.io/FPLSA): 1.2.7 -> 1.2.8
+- [**GAPDoc**](https://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc): 1.6.7 -> 1.6.10
+- [**Gauss**](https://homalg-project.github.io/pkg/Gauss): 2024.11-01 -> 2025.12-01
+- [**GaussForHomalg**](https://homalg-project.github.io/pkg/GaussForHomalg): 2024.08-01 -> 2026.04-01
+- [**GeneralizedMorphismsForCAP**](https://homalg-project.github.io/pkg/GeneralizedMorphismsForCAP): 2025.08-01 -> 2025.12-01
+- [**GradedModules**](https://homalg-project.github.io/pkg/GradedModules): 2024.12-01 -> 2026.04-01
+- [**GradedRingForHomalg**](https://homalg-project.github.io/pkg/GradedRingForHomalg): 2024.07-01 -> 2026.04-01
+- [**groupoids**](https://gap-packages.github.io/groupoids/): 1.79 -> 1.81
+- [**GUAVA**](https://gap-packages.github.io/guava): 3.20 -> 3.21
+- [**HAP**](https://gap-packages.github.io/hap): 1.70 -> 1.75
+- [**HAPcryst**](https://gap-packages.github.io/hapcryst/): 0.1.15 -> 0.2.0
+- [**HeLP**](https://gap-packages.github.io/HeLP): 4.0 -> 4.1
+- [**homalg**](https://homalg-project.github.io/pkg/homalg): 2024.01-01 -> 2025.12-01
+- [**HomalgToCAS**](https://homalg-project.github.io/pkg/HomalgToCAS): 2025.08-01 -> 2026.04-01
+- [**IBNP**](https://gap-packages.github.io/ibnp/): 0.17 -> 0.18
+- [**IO_ForHomalg**](https://homalg-project.github.io/pkg/IO_ForHomalg): 2023.02-04 -> 2025.12-01
+- [**json**](https://gap-packages.github.io/json/): 2.2.3 -> 2.4.0
+- [**LinearAlgebraForCAP**](https://homalg-project.github.io/pkg/LinearAlgebraForCAP): 2025.09-01 -> 2026.05-04
+- [**LocalizeRingForHomalg**](https://homalg-project.github.io/pkg/LocalizeRingForHomalg): 2023.10-01 -> 2026.05-01
+- [**lpres**](https://gap-packages.github.io/lpres): 1.1.1 -> 1.1.2
+- [**matgrp**](https://www.math.colostate.edu/~hulpke/matgrp): 0.72 -> 0.73
+- [**MatricesForHomalg**](https://homalg-project.github.io/pkg/MatricesForHomalg): 2025.09-01 -> 2026.04-01
+- [**ModIsom**](https://gap-packages.github.io/modisom/): 3.0.0 -> 3.1.0
+- [**ModulePresentationsForCAP**](https://homalg-project.github.io/pkg/ModulePresentationsForCAP): 2025.09-01 -> 2026.04-01
+- [**Modules**](https://homalg-project.github.io/pkg/Modules): 2024.12-01 -> 2026.04-01
+- [**MonoidalCategories**](https://homalg-project.github.io/pkg/MonoidalCategories): 2025.08-02 -> 2026.05-02
+- [**NConvex**](https://homalg-project.github.io/pkg/NConvex): 2024.12-01 -> 2025.12-02
+- [**NormalizInterface**](https://gap-packages.github.io/NormalizInterface): 1.4.1 -> 1.5.1
+- [**orb**](https://gap-packages.github.io/orb): 5.0.1 -> 5.1.0
+- [**Polycyclic**](https://gap-packages.github.io/polycyclic/): 2.17 -> 2.18
+- [**polymaking**](https://gap-packages.github.io/polymaking/): 0.8.7 -> 0.8.9
+- [**PrimGrp**](https://gap-packages.github.io/primgrp/): 4.0.1 -> 4.0.2
+- [**qpa**](https://gap-packages.github.io/qpa): 1.35 -> 1.37
+- [**RCWA**](https://gap-packages.github.io/rcwa/): 4.8.0 -> 4.9.0
+- [**recog**](https://gap-packages.github.io/recog): 1.4.4 -> 1.5.1
+- [**RingsForHomalg**](https://homalg-project.github.io/pkg/RingsForHomalg): 2024.11-02 -> 2026.05-01
+- [**SCO**](https://homalg-project.github.io/pkg/SCO): 2023.08-01 -> 2025.12-01
+- [**Semigroups**](https://semigroups.github.io/Semigroups): 5.5.4 -> 5.6.3
+- [**singular**](https://gap-packages.github.io/singular/): 2025.08.26 -> 2026.05.05
+- [**SmallClassNr**](https://stertooy.github.io/SmallClassNr): 1.4.2 -> 1.5.1
+- [**ToolsForHomalg**](https://homalg-project.github.io/pkg/ToolsForHomalg): 2025.05-01 -> 2026.04-01
+- [**TwistedConjugacy**](https://stertooy.github.io/TwistedConjugacy): 3.1.1 -> 3.3.2
+- [**typeset**](https://gap-packages.github.io/typeset/): 1.2.3 -> 1.2.4
+- [**utils**](https://gap-packages.github.io/utils): 0.92 -> 0.95
+- [**walrus**](https://gap-packages.github.io/walrus): 0.9991 -> 0.9992
+- [**Wedderga**](https://gap-packages.github.io/wedderga): 4.11.1 -> 4.11.3
+- [**XMod**](https://gap-packages.github.io/xmod/): 2.95 -> 2.98
+- [**ZeroMQInterface**](https://gap-packages.github.io/ZeroMQInterface/): 0.17 -> 0.18
+
+
 ## GAP 4.15.1 (October 2025)
 
 The following gives an overview of the changes compared to the previous
@@ -1751,7 +2069,7 @@ following five new packages:
   - **walrus** by Markus Pfeiffer, providing methods for proving
     hyperbolicity of finitely presented groups in polynomial time.
 
-  - **YangBaxter** by Leandro Vendramin and Alexander Konovalov, which
+  - **YangBaxter** by Leandro Vendramin and Olexandr Konovalov, which
     provides functionality to construct classical and skew braces, and
     also includes a database of classical and skew braces of small
     orders.
@@ -4261,7 +4579,7 @@ GAP 4.6.5 release:
     result, it is now much easier to install and use it with the current
     GAP release.
 
-  - **Wedderga** package by Osnel Broche Cristo, Allen Herman, Alexander
+  - **Wedderga** package by Osnel Broche Cristo, Allen Herman, Olexandr
     Konovalov, Aurora Olivieri, Gabriela Olteanu, Ángel del Río and
     Inneke Van Gelder has been extended to include functions for
     calculating local and global Schur indices of ordinary irreducible
@@ -4561,7 +4879,7 @@ release of GAP 4.5.4 are:
   - **AutoDoc** package by S. Gutsche, providing tools for automated
     generation of **GAPDoc** manuals.
 
-  - **Congruence** package by A. Konovalov, which provides functions to
+  - **Congruence** package by O. Konovalov, which provides functions to
     construct various canonical congruence subgroups in SL_2(ℤ), and
     also intersections of a finite number of such subgroups, implements
     the algorithm for generating Farey symbols for congruence subgroups
@@ -5164,7 +5482,7 @@ available. These include:
     and its packages from source provided by M. Neunhöffer.
 
   - The [GAP installer for Windows](https://www.gap-system.org/ukrgap/wininst/),
-    provided by Alexander Konovalov.
+    provided by Olexandr Konovalov.
 
 In the near future, we also hope to have a binary distribution for Mac
 OS X.
@@ -5392,7 +5710,7 @@ release of GAP 4.4.12 are:
     constructive recognition of groups (mostly intended for permutation
     groups, matrix groups and projective groups).
 
-  - **SCSCP** package by A. Konovalov and S. Linton, implementing the
+  - **SCSCP** package by O. Konovalov and S. Linton, implementing the
     Symbolic Computation Software Composability Protocol
     [**SCSCP**](http://www.symbolic-computation.org/scscp) for GAP, which
     provides interfaces to link a GAP instance with another copy of GAP or
@@ -5433,7 +5751,7 @@ GAP 4.4.12 release:
         statistical efficiency measures of a 1-(v,k,r) design, using
         exact algebraic computation.
 
-  - **Example** package by W. Nickel, G. Gamble and A. Konovalov has a
+  - **Example** package by W. Nickel, G. Gamble and O. Konovalov has a
     more detailed and up-to-date guidance on developing a GAP
     package.
 
@@ -5533,7 +5851,7 @@ GAP 4.4.12 release:
     **MPINU** library which is still supplied with the package (thanks
     to P. Smith for upgrading **ParGAP** build process).
 
-  - **OpenMath** package by M. Costantini, A. Konovalov, M. Nicosia and
+  - **OpenMath** package by M. Costantini, O. Konovalov, M. Nicosia and
     A. Solomon now supports much more OpenMath symbols to facilitate
     communication by the remote procedure call protocol implemented in
     the **SCSCP** package. Also, a third-party external library to
@@ -5613,7 +5931,7 @@ Finally, the following packages are withdrawn:
 
   - **IF** package by M. Costantini is unmaintained and no longer
     usable. More advanced functionality for interfaces to other computer
-    algebra systems is now available in the **SCSCP** package by A.
+    algebra systems is now available in the **SCSCP** package by O.
     Konovalov and S. Linton.
 
   - **Monoid** package by J. Mitchell is superseded by the **Citrus**
@@ -6125,7 +6443,7 @@ Finally, the following packages are withdrawn:
     vectors/matrices easier. Nothing of this should be visible.
 
   - Corrected some details in the documentation of the GAP language.
-    (Reported by Alexander Konovalov)
+    (Reported by Olexandr Konovalov)
 
   - Now `PositionSorted` is much faster on long mutable plain lists. (The
     former operation is substituted by a function and a new operation
@@ -6238,7 +6556,7 @@ Finally, the following packages are withdrawn:
 
   - Up to now, it was possible to create a group object from a semigroup
     of cyclotomics using `AsGroup`, although groups of cyclotomics are
-    not admissible. (Reported by Alexander Konovalov)
+    not admissible. (Reported by Olexandr Konovalov)
 
   - The documentation of `CharacteristicPolynomial(F,mat)` was ambiguous
     if `FieldOfMatrix(mat) <= F < DefaultFieldOfMatrix(mat)`. In
@@ -6609,7 +6927,7 @@ discuss until the next update how to improve this feature.
     Schmidt)
 
   - Some methods for computing the sum of ideals returned the first
-    summand instead of the sum. (Reported by Alexander Konovalov)
+    summand instead of the sum. (Reported by Olexandr Konovalov)
 
   - Wrong result in `Intersection` for pc groups.
 
@@ -6639,7 +6957,7 @@ discuss until the next update how to improve this feature.
   - A bug which caused `InducedPcgs` to return a pcgs which is not
     induced wrt. the parent pcgs of `pcgs`. This may cause
     unpredictable behaviour, e. g. when `SiftedPcElement` is used
-    subsequently. (Reported by Alexander Konovalov)
+    subsequently. (Reported by Olexandr Konovalov)
 
   - Fixed a bug in `SmallGroupsInformation(512)`.
 
@@ -7034,7 +7352,7 @@ The following new Packages have been accepted.
 
   - [**LAGUNA**: Computing with Lie Algebras and Units of Group
     Algebras.](https://www.gap-system.org/Packages/laguna.html) By V.
-    Bovdi, A. Konovalov, R. Rossmanith, C. Schneider.
+    Bovdi, O. Konovalov, R. Rossmanith, C. Schneider.
 
   - [**NQ**: The ANU Nilpotent Quotient
     Algorithm.](https://www.gap-system.org/Packages/nq.html) By W.

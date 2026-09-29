@@ -176,7 +176,7 @@ InstallGlobalFunction( ProjectiveCharDeg, function( G, z, q )
 
     # `N' is a normal subgroup such that `N/<z>' is a chief factor of `G'
     # of order `i' which is a power of `p'.
-    N:= PreImagesSet( h, N );
+    N:= PreImagesSetNC( h, N );
     i:= Size( N ) / oz;
     p:= Factors( i )[1];
 
@@ -184,7 +184,7 @@ InstallGlobalFunction( ProjectiveCharDeg, function( G, z, q )
 
       # `c' is a list of complement classes of `N' modulo `z'
       c:= List( ComplementClassesRepresentatives( ImagesSource( h ), ImagesSet( h, N ) ),
-                x -> PreImagesSet( h, x ) );
+                x -> PreImagesSetNC( h, x ) );
       r:= Centralizer( G, N );
       for L in c do
         if IsSubset( L, r ) then
@@ -563,7 +563,7 @@ InstallGlobalFunction( CoveringTriplesCharacters, function( G, z )
       N:= ChiefSeriesUnderAction( img, N );
       N:= N[ Length( N ) - 1 ];
     fi;
-    N:= PreImagesSet( h, N );
+    N:= PreImagesSetNC( h, N );
 
     if not IsAbelian( N ) then
       Info( InfoCharacterTable, 2,
@@ -582,9 +582,9 @@ InstallGlobalFunction( CoveringTriplesCharacters, function( G, z )
       h:= NaturalHomomorphismByNormalSubgroupNC( G, P );
       r:= List( CoveringTriplesCharacters( ImagesSource( h ),
                                            ImageElm( h, z ) ),
-                x -> [ PreImagesSet( h, x[1] ),
-                       PreImagesSet( h, x[2] ),
-                       PreImagesRepresentative( h, x[3] ) ] );
+                x -> [ PreImagesSetNC( h, x[1] ),
+                       PreImagesSetNC( h, x[2] ),
+                       PreImagesRepresentativeNC( h, x[3] ) ] );
 
       if p = i then
 
@@ -622,9 +622,9 @@ InstallGlobalFunction( CoveringTriplesCharacters, function( G, z )
             c:= Stabilizer( img, zn );
           fi;
           Append( r, List( CoveringTriplesCharacters( c, zn ),
-                           x -> [ PreImagesSet( h, x[1] ),
-                                  PreImagesSet( h, x[2] ),
-                                  PreImagesRepresentative( h, x[3] ) ] ) );
+                           x -> [ PreImagesSetNC( h, x[1] ),
+                                  PreImagesSetNC( h, x[2] ),
+                                  PreImagesRepresentativeNC( h, x[3] ) ] ) );
         od;
         return r;
 
@@ -663,9 +663,9 @@ InstallGlobalFunction( CoveringTriplesCharacters, function( G, z )
         img:= ImagesSource( h );
         Append( r,
             List( CoveringTriplesCharacters( img, ImageElm( h, z ) ),
-                  x -> [ PreImagesSet( h, x[1] ),
-                         PreImagesSet( h, x[2] ),
-                         PreImagesRepresentative( h, x[3] ) ] ) );
+                  x -> [ PreImagesSetNC( h, x[1] ),
+                         PreImagesSetNC( h, x[2] ),
+                         PreImagesRepresentativeNC( h, x[3] ) ] ) );
       fi;
     od;
     return r;
@@ -992,6 +992,7 @@ InstallMethod( BaumClausenInfo,
           invX,          # inverse of `X'
           D_gi,          #
           hom,           # homomorphism to adjust the composition series
+          ds,            # series in the image of `hom'
           orb,           #
           Forb,          #
           sigma, pi,     # permutations needed in the fusion case
@@ -1064,15 +1065,14 @@ InstallMethod( BaumClausenInfo,
       # a list of subgroups such that any composition series through
       # `ds' from `G' down to the residuum is a chief series.
       pcgs:= [];
+      ds:= List( ssr.ds, U -> ImagesSet( hom, U ) );
       for i in [ 2 .. Length( ssr.ds ) ] do
-        j:= NaturalHomomorphismByNormalSubgroupNC( ssr.ds[ i-1 ], ssr.ds[i] );
+        j:= NaturalHomomorphismByNormalSubgroupNC( ds[ i-1 ], ds[i] );
         Append( pcgs, List( SpecialPcgs( ImagesSource( j ) ),
-                            x -> PreImagesRepresentative( j, x ) ) );
+                            x -> PreImagesRepresentativeNC( j, x ) ) );
       od;
-      Append( pcgs, SpecialPcgs( Last(ssr.ds) ) );
+      Append( pcgs, SpecialPcgs( Last( ds ) ) );
       G:= ImagesSource( hom );
-      pcgs:= List( pcgs, x -> ImagesRepresentative( hom, x ) );
-      pcgs:= Filtered( pcgs, x -> Order( x ) <> 1 );
       pcgs:= PcgsByPcSequence( ElementsFamily( FamilyObj( G ) ), pcgs );
       cs:= PcSeries( pcgs );
       lg:= Length( pcgs );
@@ -1611,11 +1611,16 @@ InstallMethod( BaumClausenInfo,
               pos:= pilinear[i][ pos ];
             od;
 
-            # Compute $\pi = \sigma^{-1} (1,2,\ldots,p) \sigma$.
+            # Compute $\pi = \sigma^{-1} (1,2,\ldots,p) \sigma$,
+            # the permutation of the blocks of $D^{g_j}(g_i)$,
+            # see Phase 2, Case 2 in Section 3 of~\cite{BC94}.
+            # Permutations are multiplied from right to left there
+            # (see the product of monomial matrices in Section 4),
+            # thus $\pi( \sigma^{-1}(u) ) = \sigma^{-1}(u+1)$.
             pi:= [];
-            pi[ sigma[p] ]:= sigma[1];
+            pi[ Position( sigma, p ) ]:= Position( sigma, 1 );
             for u in [ 1 .. p-1 ] do
-              pi[ sigma[u] ]:= sigma[ u+1 ];
+              pi[ Position( sigma, u ) ]:= Position( sigma, u+1 );
             od;
 
             # Compute the values $c_{\pi^u(0)}$, for $0 \leq u \leq p-1$.
@@ -1786,11 +1791,12 @@ InstallMethod( BaumClausenInfo,
               pos:= pinonlin[i][ pos ];
             od;
 
-            # Compute $\pi = \sigma^{-1} (1,2,\ldots,p) \sigma$.
+            # Compute $\pi = \sigma^{-1} (1,2,\ldots,p) \sigma$
+            # as for the linear representations.
             pi:= [];
-            pi[ sigma[p] ]:= sigma[1];
+            pi[ Position( sigma, p ) ]:= Position( sigma, 1 );
             for u in [ 1 .. p-1 ] do
-              pi[ sigma[u] ]:= sigma[ u+1 ];
+              pi[ Position( sigma, u ) ]:= Position( sigma, u+1 );
             od;
 
             # Compute the positions of the constituents
@@ -1911,7 +1917,7 @@ InstallMethod( BaumClausenInfo,
       k:= Pcgs( kernel );
       pcgs:= PcgsByPcSequence( ElementsFamily( FamilyObj( kernel ) ),
                Concatenation( List( pcgs,
-                                    x -> PreImagesRepresentative( hom, x ) ),
+                                    x -> PreImagesRepresentativeNC( hom, x ) ),
                               k ) );
       k:= ListWithIdenticalEntries( Length( k ), 0 );
 

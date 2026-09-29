@@ -109,7 +109,7 @@ gap> b:=Stabilizer(sym,[[5,6,7],[8,9,10],[11,12],[13]],OnTuplesSets);;
 gap> Index(sym,b);
 3603600
 gap> Length(ContainedConjugates(sym,a,b));
-5
+3
 gap> TwoClosure(SymmetricGroup([3..6]));
 Sym( [ 3 .. 6 ] )
 gap> TwoClosure(AlternatingGroup(6));

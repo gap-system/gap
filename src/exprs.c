@@ -66,6 +66,7 @@ DECL_MODULE_STATE UInt OldPrintPrecedence;
 
 static ModuleStateOffset ExprsStateOffset = -1;
 
+// for debugging from GDB / lldb, we mark this as extern inline
 extern inline struct ExprsState * ExprsState(void)
 {
     return (struct ExprsState *)StateSlotsAtOffset(ExprsStateOffset);

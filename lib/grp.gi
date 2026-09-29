@@ -381,7 +381,7 @@ InstallMethod( IsPGroup,
 
 #############################################################################
 ##
-#M  IsPowerfulPGroup( <G> ) . . . . . . . . . . is a group a powerful p-group ?
+#M  IsPowerfulPGroup( <G> ) . . . . . . . . . is a group a powerful p-group ?
 ##
 InstallMethod( IsPowerfulPGroup,
     "use characterisation of powerful p-groups based on rank ",
@@ -515,12 +515,12 @@ local p, hom, reps, as, a, b, ap, bp, ab, ap_bp, ab_p, g, h, H, N;
   reps := ConjugacyClasses(Image(hom));
   reps := List(reps, Representative);
   reps := Filtered(reps, g -> not IsOne(g));
-  reps := List(reps, g -> PreImagesRepresentative(hom, g));
+  reps := List(reps, g -> PreImagesRepresentativeNC(hom, g));
 
   as := List(reps, a -> [a,a^p]);
 
   for b in Image(hom) do
-    b := PreImagesRepresentative(hom, b);
+    b := PreImagesRepresentativeNC(hom, b);
     bp := b^p;
     for a in as do
       ap := a[2]; a := a[1];
@@ -1104,7 +1104,7 @@ InstallMethod( CommutatorFactorGroup,
     end );
 
 
-############################################################################
+#############################################################################
 ##
 #M MaximalAbelianQuotient(<group>)
 ##
@@ -1227,8 +1227,10 @@ local cs,i,j,pre,post,c,new,rev;
         fi;
         i:=i+1;
       until Size(c)=Size(cs[post]);
+
+      # change cs only if pre<post
+      cs:=Concatenation(new,cs{[post+1..Length(cs)]});
     fi;
-    cs:=Concatenation(new,cs{[post+1..Length(cs)]});
   od;
   return cs;
 end);
@@ -1245,9 +1247,33 @@ end);
 ##
 
 
-##############################################################################
+#############################################################################
 ##
-#M  DerivedLength( <G> ) . . . . . . . . . . . . . . derived length of a group
+#M  ChiefLength( <G> ) . . . . . . . . . . . . . . .  chief length of a group
+##
+##  For small groups, computing the 'IsSupersolvableGroup' flag is more
+##  expensive than computing a chief series,
+##  but the flag helps if it is known.
+##
+InstallMethod( ChiefLength,
+    "generic method for groups",
+    [ IsGroup ],
+    G -> Length( ChiefSeries( G ) ) - 1 );
+
+InstallMethod( ChiefLength,
+    "for a supersolvable group",
+    [ IsGroup and IsSupersolvableGroup ],
+    function( G )
+    if Size( G ) = 1 then
+      return 0;
+    fi;
+    return Length( Factors( Size( G ) ) );
+    end );
+
+
+#############################################################################
+##
+#M  DerivedLength( <G> ) . . . . . . . . . . . . .  derived length of a group
 ##
 InstallMethod( DerivedLength,
     "generic method for groups",
@@ -1255,9 +1281,9 @@ InstallMethod( DerivedLength,
     G -> Length( DerivedSeriesOfGroup( G ) ) - 1 );
 
 
-##############################################################################
+#############################################################################
 ##
-#M  HirschLength( <G> ) . . . . .hirsch length of a polycyclic-by-finite group
+#M  HirschLength( <G> ) . . . . Hirsch length of a polycyclic-by-finite group
 ##
 InstallMethod( HirschLength,
     "generic method for finite groups",
@@ -1368,7 +1394,7 @@ InstallMethod( DerivedSubgroup,
     TrivialSubgroup );
 
 
-##########################################################################
+#############################################################################
 ##
 #M  DimensionsLoewyFactors( <G> )  . . . . . . dimension of the Loewy factors
 ##
@@ -1461,18 +1487,26 @@ InstallMethod( ElementaryAbelianSeries,
 #M  ElementaryAbelianSeries( <G> )  . .  elementary abelian series of a group
 ##
 BindGlobal( "DoEASLS", function( S )
-local   N,I,i,L;
+local   N,I,i,last,L;
 
   N:=ElementaryAbelianSeries(S);
   # remove spurious factors
   L:=[N[1]];
   I:=N[1];
   i:=2;
+  last:=1;
   repeat
     while i<Length(N) and HasElementaryAbelianFactorGroup(I,N[i+1])
       and (IsIdenticalObj(I,N[i]) or not N[i] in S) do
       i:=i+1;
     od;
+    if i=last then
+      # we did not advance, that is the factor N[i]/N[i+1] is not elementary
+      # abelian. Bail out instead of looping forever.
+      ErrorNoReturn("ElementaryAbelianSeries did not return an elementary ",
+                    "abelian series");
+    fi;
+    last:=i;
     I:=N[i];
     Add(L,I);
   until Size(I)=1;
@@ -1615,6 +1649,92 @@ local m;
     return m;
 end);
 
+InstallMethod( FrattiniSubgroup, "for Frattini-free groups",
+            [ IsGroup and IsFrattiniFree ], SUM_FLAGS,
+            TrivialSubgroup );
+
+
+#############################################################################
+##
+#M  IsFrattiniFree( <G> ) . . . . . . .  is the Frattini subgroup trivial ?
+##
+InstallMethod( IsFrattiniFree, "for groups with known Frattini subgroup",
+            [ IsGroup and HasFrattiniSubgroup ], SUM_FLAGS,
+            G -> IsTrivial( FrattiniSubgroup( G ) ) );
+
+InstallMethod( IsFrattiniFree, "for finite nilpotent groups",
+            [ IsGroup and IsFinite and IsNilpotentGroup ],
+function(G)
+    # A finite nilpotent group is the direct product of its Sylow subgroups,
+    # and for a finite p-group P we have Phi(P) = P'P^p. Hence Phi(G) is
+    # trivial if and only if all Sylow subgroups of G are elementary abelian,
+    # i.e., if and only if G is abelian of squarefree exponent.
+    return IsAbelian(G) and IsDuplicateFree(FactorsInt(Exponent(G)));
+end);
+
+InstallMethod( IsFrattiniFree, "generic method for finite groups",
+            [ IsGroup and IsFinite ],
+function(G)
+local n, F;
+    # A group of squarefree order is Frattini-free.
+    n := Size(G);
+    if IsDuplicateFree(FactorsInt(n)) then
+      return true;
+    fi;
+
+    # If N is normal in G then Phi(N) <= Phi(G). Applied to the nilpotent
+    # normal subgroup F = F(G) this shows that G can only be Frattini-free if
+    # F is abelian of squarefree exponent. Deciding this usually is much
+    # cheaper than computing Phi(G).
+    F := FittingSubgroup(G);
+    if not (IsAbelian(F) and IsDuplicateFree(FactorsInt(Exponent(F)))) then
+      return false;
+    fi;
+
+    # if G = F(G), i.e., if G is nilpotent, this criterion is also sufficient
+    if Size(F) = n then
+      return true;
+    fi;
+
+    return IsTrivial(FrattiniSubgroup(G));
+end);
+
+RedispatchOnCondition( IsFrattiniFree, true, [IsGroup], [IsFinite], 0);
+
+
+#############################################################################
+##
+#M  IsFittingFree( <G> )  . . . . . . . .  is the Fitting subgroup trivial ?
+##
+InstallMethod( IsFittingFree, "for groups with known Fitting subgroup",
+            [ IsGroup and HasFittingSubgroup ], SUM_FLAGS,
+            G -> IsTrivial( FittingSubgroup( G ) ) );
+
+InstallMethod( IsFittingFree, "for finite solvable groups",
+            [ IsGroup and IsFinite and IsSolvableGroup ],
+            # a nontrivial solvable group has a nontrivial Fitting subgroup
+            IsTrivial );
+
+InstallMethod( IsFittingFree, "for groups allowing the TF approach",
+            [ IsGroup and CanComputeFittingFree ],
+            # F(G) is trivial if and only if the solvable radical is, and the
+            # latter is directly available from the TF setup
+            G -> IsTrivial( SolvableRadical( G ) ) );
+
+InstallMethod( IsFittingFree, "generic method for finite groups",
+            [ IsGroup and IsFinite ],
+            G -> IsTrivial( FittingSubgroup( G ) ) );
+
+RedispatchOnCondition( IsFittingFree, true, [IsGroup], [IsFinite], 0);
+
+InstallMethod( FittingSubgroup, "for Fitting free groups",
+            [ IsGroup and IsFittingFree ], SUM_FLAGS,
+            TrivialSubgroup );
+
+InstallMethod( SolvableRadical, "for Fitting free groups",
+            [ IsGroup and IsFittingFree ], SUM_FLAGS,
+            TrivialSubgroup );
+
 
 #############################################################################
 ##
@@ -1711,7 +1831,7 @@ local a,m,i,l;
     Add(l,a);
   od;
 
-  # now we know list is untained, store
+  # now we know list is untainted, store
   return l;
 
 end);
@@ -1793,7 +1913,7 @@ local hom,gens;
   fi;
   hom:=IsomorphismPermGroup(G);
   gens:=IndependentGeneratorsOfAbelianGroup(Image(hom,G));
-  return List(gens,i->PreImagesRepresentative(hom,i));
+  return List(gens,i->PreImagesRepresentativeNC(hom,i));
 end);
 
 
@@ -2090,8 +2210,8 @@ InstallGlobalFunction( SupersolvableResiduumDefault, function( G )
               # dual space of the module, w.r.t. `pcgs'.
               mg:= List( gs, x -> TransposedMat( List( pcgs,
                      y -> one * ExponentsOfPcElement( pcgs, Image( ph,
-                          Image( dh, PreImagesRepresentative(
-                           dh, PreImagesRepresentative(ph,y) )^x ) ) )))^-1);
+                          Image( dh, PreImagesRepresentativeNC(
+                           dh, PreImagesRepresentativeNC(ph,y) )^x ) ) )))^-1);
 #T inverting is not necessary, or?
               mg:= Filtered( mg, x -> x <> idm );
 
@@ -2141,11 +2261,11 @@ InstallGlobalFunction( SupersolvableResiduumDefault, function( G )
 
                     # Construct a group element corresponding to
                     # the basis element of the submodule.
-                    Add( tmp2, PreImagesRepresentative( ph,
+                    Add( tmp2, PreImagesRepresentativeNC( ph,
                                    PcElementByExponentsNC( pcgs, v ) ) );
 
                   od;
-                  Add( ds, PreImagesSet( dh,
+                  Add( ds, PreImagesSetNC( dh,
                             SubgroupNC( df, Concatenation( tmp2, gen ) ) ) );
                 od;
                 Append( gen, tmp2 );
@@ -2154,14 +2274,14 @@ InstallGlobalFunction( SupersolvableResiduumDefault, function( G )
             else
 
               # cyclic case
-              Add( ds, PreImagesSet( dh,
+              Add( ds, PreImagesSetNC( dh,
                            SubgroupNC( df, AsSSortedList( gen ) ) ) );
 
             fi;
           od;
 
           # Generate the new candidate.
-          ssr:= PreImagesSet( dh, SubgroupNC( df, AsSSortedList( gen ) ) );
+          ssr:= PreImagesSetNC( dh, SubgroupNC( df, AsSSortedList( gen ) ) );
 
         fi;
 
@@ -3141,7 +3261,39 @@ end);
 #############################################################################
 ##
 #M  NormalClosure( <G>, <U> ) . . . . normal closure of a subgroup in a group
+#M  NormalClosureInParent( <U> )
+#M  NormalClosureOp( <G>, <U> )
+#M  NormalClosure( <G>, <list> )
 ##
+InstallMethod( NormalClosure,
+  "try to exploit the in-parent attribute NormalClosureInParent",
+  [ IsGroup, IsGroup ],
+  function( super, sub )
+  local value;
+
+  if HasParent( sub ) and IsIdenticalObj( super, Parent( sub ) ) then
+    value:= NormalClosureInParent( sub );
+  else
+    value:= NormalClosureOp( super, sub );
+    # Because of the following, this method is not created by 'InParentFOA'.
+    if HasParent( value ) and IsIdenticalObj( super, Parent( value ) ) then
+      SetIsNormalInParent( value, true );
+      SetNormalClosureInParent( value, value );
+    fi;
+  fi;
+  return value;
+  end );
+
+InstallMethod( NormalClosureInParent,
+  "method that calls the two-argument operation NormalClosureOp",
+  [ IsGroup and HasParent ],
+  D -> NormalClosureOp( Parent( D ), D ) );
+
+InstallMethod( NormalClosureInParent,
+  "method that uses the known IsNormalInParent",
+  [ IsGroup and HasParent and IsNormalInParent ], SUM_FLAGS,
+  IdFunc );
+
 InstallMethod( NormalClosureOp,
     "generic method for two groups",
     IsIdenticalObj, [ IsGroup, IsGroup ],
@@ -3533,7 +3685,7 @@ InstallMethod( SylowSubgroupOp,
     end );
 
 
-############################################################################
+#############################################################################
 ##
 #M  HallSubgroupOp (<grp>, <pi>)
 ##
@@ -3598,7 +3750,7 @@ InstallMethod( HallSubgroupOp,
 
     iso := IsomorphismPermGroup( G );
     H := HallSubgroup( ImagesSource( iso ), pi );
-    return PreImagesSet(iso, H);
+    return PreImagesSetNC(iso, H);
     end );
 
 
@@ -3714,7 +3866,7 @@ InstallGlobalFunction( NormalHallSubgroupsFromSylows, function( arg )
   fi;
 end);
 
-############################################################################
+#############################################################################
 ##
 #M  NormalHallSubgroups( <G> )
 ##
@@ -3727,7 +3879,7 @@ function( G )
 end);
 
 
-############################################################################
+#############################################################################
 ##
 #M  SylowComplementOp (<grp>, <p>)
 ##
@@ -4827,6 +4979,11 @@ InstallMethod( GroupWithGenerators,
     [ IsCollection ],
 function( gens )
 
+  if IsList( gens ) and IsEmpty( gens ) then
+    ErrorNoReturn("the identity element must be given as second argument ",
+                  "if the list of generators is empty");
+  fi;
+
   if IsGroup(gens) then
     Info( InfoPerformance, 1,
       "Calling `GroupWithGenerators' on a group usually is very inefficient.");
@@ -4862,6 +5019,24 @@ local fam;
   fam:= CollectionsFamily( FamilyObj( id ) );
 
   return MakeGroupyObj(fam, IsGroup, empty, id);
+end );
+
+InstallOtherMethod( GroupWithGenerators,"method for empty string and element",
+  [ IsStringRep, IsMultiplicativeElementWithInverse ],
+  function( empty, id )
+
+  if not IsEmpty( empty ) then
+    TryNextMethod();
+  fi;
+
+  return GroupWithGenerators( [], id );
+end );
+
+InstallOtherMethod( GroupWithGenerators,"method for empty list",
+  [ IsList and IsEmpty ],
+  function( empty )
+  ErrorNoReturn("the identity element must be given as second argument ",
+                "if the list of generators is empty");
 end );
 
 
@@ -4905,6 +5080,16 @@ InstallMethod( GroupByGenerators,
 InstallMethod( GroupByGenerators,
     "delegate to `GroupWithGenerators'",
     [ IsList and IsEmpty, IsMultiplicativeElementWithInverse ],
+    GroupWithGenerators );
+
+InstallOtherMethod( GroupByGenerators,
+    "delegate to `GroupWithGenerators'",
+    [ IsStringRep, IsMultiplicativeElementWithInverse ],
+    GroupWithGenerators );
+
+InstallOtherMethod( GroupByGenerators,
+    "delegate to `GroupWithGenerators'",
+    [ IsList and IsEmpty ],
     GroupWithGenerators );
 
 
@@ -4975,8 +5160,13 @@ InstallGlobalFunction( Group, function( arg )
                            and IsGeneratorsOfMagmaWithInverses( arg ) then
       return GroupByGenerators( arg );
 
+    elif Length( arg ) = 1 and IsList( arg[1] ) and IsEmpty( arg[1] ) then
+      ErrorNoReturn(
+          "Group(<gens>) with an empty list <gens> is not supported, ",
+          "use Group(<gens>,<id>) to specify the identity element <id>");
+
     # list of generators
-    elif Length( arg ) = 1 and IsList( arg[1] ) and not IsEmpty( arg[1] )
+    elif Length( arg ) = 1 and IsList( arg[1] )
                            and IsGeneratorsOfMagmaWithInverses( arg[1] ) then
       return GroupByGenerators( arg[1] );
 
@@ -5195,7 +5385,7 @@ local nrm;        # normal subgroups of <G>,result
 end);
 
 
-##############################################################################
+#############################################################################
 ##
 #F  MaximalNormalSubgroups(<G>)
 ##
@@ -5268,7 +5458,7 @@ InstallMethod( MaximalNormalSubgroups, "general method selection",
 end);
 
 
-##############################################################################
+#############################################################################
 ##
 #F  MinimalNormalSubgroups(<G>)
 ##
@@ -5282,7 +5472,7 @@ InstallMethod( MinimalNormalSubgroups,
     # force an IsNilpotent check
     # should have and IsSolvable check, as well,
     # but methods for solvable groups are only in CRISP
-    # which aggeressively checks for solvability, anyway
+    # which aggressively checks for solvability, anyway
     if (not HasIsNilpotentGroup(G) and IsNilpotentGroup(G)) then
       return MinimalNormalSubgroups( G );
     fi;
@@ -5337,7 +5527,7 @@ InstallMethod (MinimalNormalSubgroups,
       local hom;
       hom := NiceMonomorphism (grp);
       return List (MinimalNormalSubgroups (NiceObject (grp)),
-        N -> PreImagesSet (hom, N));
+        N -> PreImagesSetNC(hom, N));
    end);
 
 

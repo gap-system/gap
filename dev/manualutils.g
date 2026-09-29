@@ -181,7 +181,7 @@ PrintInfoAboutManualChapters:= function( pathtodoc, main, files, chapnrs )
                  ", line ", pos[2], "\n" );
         od;
       fi;
-    
+
       # Compute the subset of <C> elements whose contents are keywords,
       # and which should probably (but not necessarily!) be replaced by
       # the corresponding <K> elements.
@@ -197,7 +197,7 @@ PrintInfoAboutManualChapters:= function( pathtodoc, main, files, chapnrs )
                  ", line ", pos[2], "\n" );
         od;
       fi;
-    
+
     od;
 #T perhaps return all the computed information?
 end;
@@ -219,7 +219,7 @@ OverviewOfChaptersForProofreadingForm:= function( pathtodoc, main, files )
     str:= ComposedDocument( "GAPDoc", Directory( pathtodoc ),
                             main, files, true );
     xmltree:= ParseTreeXMLString( str[1], str[2] );
-    elms:= List( XMLElements( xmltree, "Chapter" ), 
+    elms:= List( XMLElements( xmltree, "Chapter" ),
                  x -> XMLElements( x, [ "Heading" ] )[1] );
     filecontents:= "";
 
@@ -299,7 +299,7 @@ ChainedExamples:= function( pathtodoc, main, files )
 end;
 
 # finds the following occurrences in the ref. manual:
-# 
+#
 # [ [ "</Example>\n<P/>\n<Example>", [ "./mloop.xml", 231 ] ],     # done
 #   [ "</Example>\n<P/>\n<Example>", [ "./streams.xml", 131 ] ],   # done
 #   [ "</Example>\n<P/>\n<Example>", [ "./word.xml", 117 ] ],      # done
@@ -321,9 +321,9 @@ end;
 #   [ "</Example>\n<P/>\n<Example>", [ "./algebra.xml", 331 ] ],   # done
 #   [ "</Example>\n<P/>\n<Example>", [ "./ctbl.xml", 1241 ] ],     # done
 #   [ "</Example>\n<P/>\n<Example>", [ "./ctbl.xml", 1275 ] ],     # done
-#   [ "</Example>\n<P/>\n<Log>", [ "./mloop.xml", 423 ] ], 
-#   [ "</Log>\n<P/>\n<Example>", [ "./lists.xml", 708 ] ], 
-#   [ "</Log>\n<P/>\n<Example>", [ "./grplib.xml", 673 ] ], 
+#   [ "</Example>\n<P/>\n<Log>", [ "./mloop.xml", 423 ] ],
+#   [ "</Log>\n<P/>\n<Example>", [ "./lists.xml", 708 ] ],
+#   [ "</Log>\n<P/>\n<Example>", [ "./grplib.xml", 673 ] ],
 #   [ "</Log>\n<P/>\n<Log>", [ "./../../lib/process.gd", 82 ] ],   # done
 #   [ "</Log>\n<P/>\n<Log>", [ "./../../lib/process.gd", 89 ] ] ]  # done
 

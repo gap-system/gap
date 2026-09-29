@@ -23,7 +23,7 @@ AttributeMethodByNiceMonomorphism( Pcgs,
     if npcgs = fail  then
         return fail;
     fi;
-    pcgs := List( npcgs, gen -> PreImagesRepresentative( nice, gen ) );
+    pcgs := List( npcgs, gen -> PreImagesRepresentativeNC( nice, gen ) );
     pcgs := PcgsByPcSequenceNC( ElementsFamily( FamilyObj( G ) ), pcgs );
     if HasIsPrimeOrdersPcgs( npcgs )  and  IsPrimeOrdersPcgs( npcgs )  then
         SetIsPrimeOrdersPcgs( pcgs, true );

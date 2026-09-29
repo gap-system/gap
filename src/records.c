@@ -64,7 +64,7 @@ static void NewRNamCallback(SymbolTable * symtab, UInt id, Obj name)
 */
 UInt RNamName(const Char * name)
 {
-    UInt len = strlen(name);
+    size_t len = strlen(name);
     if (len > 1023) {
         // Note: We can't pass 'name' here, as it might get moved by garbage collection
         ErrorQuit("Record names must consist of at most 1023 characters", 0, 0);
@@ -385,6 +385,7 @@ static Obj FuncALL_RNAMES(Obj self)
         name = NAME_RNAM( i );
         s = CopyToStringRep(name);
         SET_ELM_PLIST( copy, i, s );
+        CHANGED_BAG( copy );
     }
     SET_LEN_PLIST( copy, countRNam );
     return copy;

@@ -928,11 +928,12 @@ gap> Size( Image( hom, DerivedSubgroup(s4) ) );
 <Log><![CDATA[
 gap> PreImage( hom, (1,2,3) );
 Error, <map> must be an injective and surjective mapping
+Stack trace:
 *[1] ErrorNoReturn( "<map> must be an injective and surjective ", "mapping" );
    @ GAPROOT/lib/mapping.gi:262
 <function "PreImage">( <arguments> )
  called from read-eval loop at *stdin*:7
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 ]]></Log>
 <P/>

@@ -42,7 +42,7 @@ end);
 
 #############################################################################
 ##
-#M IrreducibleModules( <G>, <F>, <dim> ). . . .constituents of regular module
+#M IrreducibleModules( <G>, <F>, <dim> ) . . . constituents of regular module
 ##
 InstallMethod(IrreducibleModules,"generic method for groups and finite field",
     true, [ IsGroup, IsField and IsFinite, IsInt ], 0,
@@ -58,7 +58,7 @@ local modu, modus,gens,v,subs,sub,ser,i,j,a,si,dims,cf,mats,clos,bas,rad;
     elif IsAbelian(G) then
       if IsPrimeField(F) then
         if CanEasilyComputePcgs(G) then
-          # call `IrreducibleMethods` again;
+          # call `IrreducibleModules` again;
           # we assume that now another method is applicable
           return IrreducibleModules(G, F, 1);
         else
@@ -319,7 +319,8 @@ end);
 
 #############################################################################
 ##
-#M AbsolutelyIrreducibleModules( <G>, <F>, <dim> ). . . .constituents of regular module
+#M AbsolutelyIrreducibleModules( <G>, <F>, <dim> ) . . . . .  constituents of
+##                                                             regular module
 ##
 InstallMethod( AbsolutelyIrreducibleModules,
     "generic method for groups and finite field",

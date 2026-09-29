@@ -189,7 +189,10 @@ InstallSubsetMaintenance( IsHandledByNiceMonomorphism,
     IsHandledByNiceMonomorphism and IsGroup,
     IsGroup);
 
-RUN_IN_GGMBI:=false; # If somebody would call `GHBI' to make a
+# We recommend the (documented) global option `Run_In_GGMBI`
+# instead of the global variable `RUN_IN_GGMBI`,
+# but `RUN_IN_GGMBI` is still supported because GAP packages might use it.
+RUN_IN_GGMBI:=fail;  # If somebody would call `GHBI' to make a
                      # NiceMonomorphism, we would get an infinite recursion.
                      # This flag can be set to avoid GHBIs to be translated
                      # via the niceo. If it is set, the method which does
@@ -363,7 +366,7 @@ BindGlobal( "AttributeMethodByNiceMonomorphismList", function( oper, par )
       local nice;
       nice:= NiceMonomorphism( obj );
       return List( oper( NiceObject( obj ) ),
-                   x -> PreImagesRepresentative( nice, x ) );
+                   x -> PreImagesRepresentativeNC( nice, x ) );
     end );
 end );
 
@@ -398,7 +401,7 @@ BindGlobal( "AttributeMethodByNiceMonomorphismCollElm", function( oper, par )
       img := ImagesRepresentative( nice, obj2 : actioncanfail:= true );
       if img = fail or
          not ( img in ImagesSource( nice ) and
-               PreImagesRepresentative( nice, img ) = obj2 ) then
+               PreImagesRepresentativeNC( nice, img ) = obj2 ) then
         TryNextMethod();
       fi;
       return oper( NiceObject( obj1 ), img );
@@ -441,7 +444,7 @@ BindGlobal( "AttributeMethodByNiceMonomorphismElmColl",
       img := ImagesRepresentative( nice, obj1 : actioncanfail:= true );
       if img = fail or
          not (img in ImagesSource( nice ) and
-              PreImagesRepresentative( nice, img ) = obj1) then
+              PreImagesRepresentativeNC( nice, img ) = obj1) then
         TryNextMethod();
       fi;
       return oper( img, NiceObject( obj2 ) );
@@ -525,7 +528,7 @@ BindGlobal( "GroupMethodByNiceMonomorphismCollElm",
       img  := ImagesRepresentative( nice, obj2 : actioncanfail:= true );
       if img = fail or
          not (img in ImagesSource( nice ) and
-              PreImagesRepresentative( nice, img ) = obj2) then
+              PreImagesRepresentativeNC( nice, img ) = obj2) then
         TryNextMethod();
       fi;
       img1 := oper( NiceObject( obj1 ), img );
@@ -613,7 +616,7 @@ BindGlobal( "SubgroupMethodByNiceMonomorphismCollColl", function( oper, par )
       img:=ImagesSet( nice, obj2 );
       if img = fail or
          not ( IsSubset( ImagesSource( nice ), img ) and
-               PreImagesSet( nice, img ) = obj2 ) then
+               PreImagesSetNC( nice, img ) = obj2 ) then
         TryNextMethod();
       fi;
       img := oper( NiceObject( obj1 ), img );
@@ -637,7 +640,7 @@ BindGlobal( "SubgroupMethodByNiceMonomorphismCollElm", function( oper, par )
       img  := ImagesRepresentative( nice, obj2 : actioncanfail:= true );
       if img = fail or
          not ( img in ImagesSource( nice ) and
-               PreImagesRepresentative (nice , img ) = obj2 ) then
+               PreImagesRepresentativeNC( nice, img ) = obj2 ) then
         TryNextMethod();
       fi;
       img1 := oper( NiceObject( obj1 ), img );
@@ -764,7 +767,7 @@ BindGlobal( "GroupSeriesMethodByNiceMonomorphismCollElm",
       img  := ImagesRepresentative( nice, obj2 : actioncanfail:= true );
       if img = fail or
          not ( img in ImagesSource( nice ) and
-               PreImagesRepresentative( nice, img ) = obj2 ) then
+               PreImagesRepresentativeNC( nice, img ) = obj2 ) then
         TryNextMethod();
       fi;
       list := ShallowCopy( oper( NiceObject( obj1 ), img ) );

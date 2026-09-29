@@ -45,7 +45,7 @@
 ##  but is determined by the common base domain of the rows of the matrix.
 ##
 DeclareRepresentation( "Is8BitMatrixRep",
-        IsPositionalObjectRep and IsRowListMatrix
+        IsPositionalObjectRep and IsRowListMatrix and IsMatrix
     and IsCopyable
     and IsNoImmediateMethodsObject
     and HasNumberRows and HasNumberColumns

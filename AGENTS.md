@@ -4,11 +4,15 @@ This repository contains the core GAP system sources.
 
 ## AI disclosure
 
-Any use of AI tools for preparing code, documentation, tests, commit messages,
-pull requests, issue comments, or reviews for this repository must be
-disclosed. Include a brief note saying which AI tool was used and what kind of
-assistance it provided. Add the AI tool as a Git co-author on all commits
-created by that tool (e.g. via an `Co-authored-by: ` line).
+1. Sign off every commit you create with an `Assisted-by: <tool> (<model>)` trailer naming both the
+   tool and the model behind it, for example `Assisted-by: Claude Code (Opus 5)`. Name the model,
+   not just the harness - it is what tells a later reader what actually produced the work. Do not
+   use `Co-authored-by:` for tools, and do not list a tool as an author; this trailer replaces any
+   co-author trailer your harness adds by default.
+2. Agents can only open PRs or post comments once the human user gives them explicit permission.
+3. Any use of AI tools for preparing code, documentation, tests, commit messages, pull requests,
+   issue comments, or reviews for this repository must be disclosed. Include a brief note saying
+   which AI tool was used and what kind of assistance it provided.
 
 ## Repository layout
 
@@ -64,6 +68,19 @@ make bootstrap-pkg-minimal
 make bootstrap-pkg-full
 ```
 
+### Working in a git worktree
+
+A `git worktree` checkout has no `pkg` directory, so GAP started from it cannot
+find any packages -- including the ones it needs in order to start at all. Do
+not bootstrap a second package bundle for it; instead symlink the `pkg`
+directory of your main GAP checkout, for example:
+
+```sh
+ln -s /path/to/your/main/gap/pkg pkg
+```
+
+This is needed in addition to the usual `./configure && make`.
+
 ### Build the manual
 
 ```sh
@@ -114,16 +131,69 @@ the test plan unless it differs from the instructions in this file. If the
 change fixes one or more issues, add `Fixes #...` at the end of the commit
 message body, not in the title.
 
-Pull requests should follow the same style: a short summary up top, concise
-prose describing the change, issue references when applicable, and an explicit
-AI-disclosure note if AI tools were used.
+Pull request descriptions should follow the same style: a short summary up top,
+concise prose describing the change, issue references when applicable, and an
+explicit AI-disclosure note if AI tools were used.
+
+A pull request *title*, however, is not a commit title: for pull requests
+labelled `release notes: use title` it is used verbatim as their release notes
+entry. Write it as a self-contained sentence describing the change from a user
+perspective, and in particular do not use the `component:` prefix there. See
+`CHANGES.md` for the expected style, for example "Add `IsSquareMat` and
+`IsAntisymmetricMat`" or "Speed up `IsSubset` for cyclotomic domains". Note
+that GitHub derives the title of a pull request from the commit title if the
+branch contains a single commit, so in that case the commit title should
+already be written this way.
 
 Pull requests should normally target `master`. Changes intended only for the
 current stable release series may target `stable-4.X` when appropriate.
 
+## Pull request labels
+
+The script `dev/releases/release_notes.py` generates the release notes from the
+merged pull requests and their labels, so every pull request should be labelled:
+
+- exactly one `release notes: ...` label, stating what should happen with it:
+  `use title` if its title can be used as the release notes entry as-is,
+  `not needed` for changes irrelevant to users, `to be added` if an entry is
+  needed but the title does not suffice, and additionally `highlight` for
+  changes prominent enough to be listed at the very top;
+- a `kind: ...` label, such as `kind: new feature`, `kind: enhancement` or one
+  of the `kind: bug...` labels;
+- one or more `topic: ...` labels naming the affected part of GAP, such as
+  `topic: library`, `topic: kernel`, `topic: documentation` or
+  `topic: performance`.
+
+The `prioritylist` in `dev/releases/release_notes.py` maps labels to release
+notes sections; a pull request is listed only in the section belonging to the
+first matching label, so consult that list to see which label wins. Labels are
+matched by their exact name, so take them from there or from `gh label list`
+rather than guessing.
 
 ## Changelog
 
 This project keeps a changelog in `CHANGES.md` but that is automatically
 updated by scripts, based on pull request titles. So you don't need to
 update it.
+
+## Prose: say it once, then stop
+
+**Be terse.** This applies to comments, commit messages, documentation, and
+anything a reader of the site sees. It is the note most often needed.
+
+The failure mode is not being wrong, it is being long: three sentences where
+one would do, a restatement of what the code plainly says, a second example
+that adds nothing, a clause defending a decision nobody questioned.
+
+- Say why, not what. `# the list is sorted` earns its place; a paragraph
+  narrating a loop does not.
+- One example, not three. One reason, not every reason.
+- Do not explain a thing twice in one file, and do not repeat in a comment
+  what the identifier already says.
+- Numbers and specifics beat adjectives. "160 orders" is worth more than
+  "relatively few orders".
+- Cut throat-clearing: no "it is worth noting that", "the point here is",
+  "deliberately", "the whole point of".
+
+Existing comments in this repository are longer than this in places. That is
+history, not a licence.

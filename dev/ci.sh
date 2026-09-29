@@ -421,6 +421,10 @@ GAPInput
 
     ;;
 
+  testinstall-bare)
+    $GAP $(gap_cover_arg) --bare $SRCDIR/tst/testinstall.g
+    ;;
+
   *)
     if [[ ! -f  $SRCDIR/tst/${TEST_SUITE}.g ]]
     then

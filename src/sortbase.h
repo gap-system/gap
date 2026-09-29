@@ -164,11 +164,11 @@ static inline void PREFIXNAME(Sort3)(SORT_FUNC_ARGS, Int a, Int b, Int c) {
  * to be moved, and store the partition_point in the argument
  * partition_point
  */
-static inline Int PREFIXNAME(Partition)(SORT_FUNC_ARGS, Int start, Int end,
+static inline BOOL PREFIXNAME(Partition)(SORT_FUNC_ARGS, Int start, Int end,
                                         Int *partition_point) {
   Int left = start;
   Int right = end;
-  Int first_pass = 1;
+  BOOL first_pass = TRUE;
   SORT_CREATE_LOCAL(pivot);
 
   PREFIXNAME(Sort3)(SORT_ARGS, start, start / 2 + end / 2, end);
@@ -198,7 +198,7 @@ static inline Int PREFIXNAME(Partition)(SORT_FUNC_ARGS, Int start, Int end,
       *partition_point = left;
       return first_pass;
     }
-    first_pass = 0;
+    first_pass = FALSE;
 
     SWAP_INDICES(SORT_ARGS, left, right);
     left++;
@@ -275,7 +275,8 @@ static void PREFIXNAME(CheckBadPivot)(SORT_FUNC_ARGS, Int start, Int end, Int pi
 
 static void PREFIXNAME(QuickSort)(SORT_FUNC_ARGS, Int start, Int end, Int depth)
 {
-  Int pivot, first_pass;
+  Int pivot;
+  BOOL first_pass;
 
   if (end - start < 24) {
     PREFIXNAME(Insertion)(SORT_ARGS, start, end);

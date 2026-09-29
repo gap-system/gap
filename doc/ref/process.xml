@@ -23,6 +23,7 @@
 
 <#Include Label="Process">
 <#Include Label="Exec">
+<#Include Label="RunProcess">
 
 </Section>
 </Chapter>

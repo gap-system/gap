@@ -47,7 +47,7 @@ MakeImmutable(PRIMES_COMPACT_FIELDS);
 ##  <Ref Filt="IsDataObjectRep"/>, the entries are packed into bytes.
 ##
 DeclareRepresentation( "Is8BitVectorRep",
-        IsDataObjectRep and IsVectorObj
+        IsDataObjectRep and IsVectorObj and IsList
     and IsCopyable
     and IsNoImmediateMethodsObject
     and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain);

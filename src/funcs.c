@@ -50,6 +50,7 @@ struct FuncsModuleState {
 #ifdef HPCGAP
 };
 
+// for debugging from GDB / lldb, we mark this as extern inline
 extern inline struct FuncsModuleState *FuncsState(void)
 {
     return (struct FuncsModuleState *)StateSlotsAtOffset(FuncsStateOffset);
@@ -386,8 +387,7 @@ void RecursionDepthTrap( void )
     if (GetRecursionDepth() > 0) {
         recursionDepth = GetRecursionDepth();
         SetRecursionDepth(0);
-        ErrorReturnVoid("recursion depth trap (%d)", (Int)recursionDepth, 0,
-                        "you may 'return;'");
+        ErrorReturnVoid("recursion depth trap (%d)", (Int)recursionDepth, 0, 0);
         SetRecursionDepth(recursionDepth);
     }
 }

@@ -508,7 +508,7 @@ BindGlobal("BasicSpinRepSym", CallFuncList(function()
 end, [] ) );
 
 
-##########################################################################
+#############################################################################
 ##
 ##  Method Installations
 ##
@@ -654,9 +654,8 @@ function( sym )
     hom := GroupHomomorphismByImages( grp, sym, GeneratorsOfGroup( grp ), img );
     Assert( 3, KernelOfMultiplicativeGeneralMapping( hom ) = Center( grp ) );
   else
-    dom := RUN_IN_GGMBI; RUN_IN_GGMBI := true;
-    hom := GroupHomomorphismByImagesNC( grp, sym, GeneratorsOfGroup( grp ), img );
-    RUN_IN_GGMBI := dom;
+    hom := GroupHomomorphismByImagesNC( grp, sym, GeneratorsOfGroup( grp ), img
+                                        : Run_In_GGMBI:= true );
     SetKernelOfMultiplicativeGeneralMapping( hom, Center( grp ) );
   fi;
   return hom;
@@ -680,15 +679,14 @@ function( alt )
     hom := GroupHomomorphismByImages( grp, alt, GeneratorsOfGroup( grp ), img );
     Assert( 3, KernelOfMultiplicativeGeneralMapping( hom ) = Center( grp ) );
   else
-    dom := RUN_IN_GGMBI; RUN_IN_GGMBI := true;
-    hom := GroupHomomorphismByImagesNC( grp, alt, GeneratorsOfGroup( grp ), img );
-    RUN_IN_GGMBI := dom;
+    hom := GroupHomomorphismByImagesNC( grp, alt, GeneratorsOfGroup( grp ), img
+                                        : Run_In_GGMBI:= true );
     SetKernelOfMultiplicativeGeneralMapping( hom, Center( grp ) );
   fi;
   return hom;
 end );
 
-###########################################################################
+#############################################################################
 ##
 ##   Special cases just handled explicitly
 ##

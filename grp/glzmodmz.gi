@@ -379,7 +379,7 @@ local oper,n,R,o,nrit,
           if fp <>fail then
             # extend presentation
             bas:=Basis(sub,bas);
-            RUN_IN_GGMBI:=true;
+            PushOptions( rec( Run_In_GGMBI:= true ) );
             hom:=GroupGeneralMappingByImagesNC(g,fp,gens,GeneratorsOfGroup(fp));
             hom:=LiftFactorFpHom(hom,g,SubgroupNC(g,basm),rec(
                   pcgs:=basm,
@@ -392,7 +392,7 @@ local oper,n,R,o,nrit,
                     return List(Coefficients(bas,e),Int);
                   end
                   ));
-            RUN_IN_GGMBI:=false;
+            PopOptions();
             #simplify Image to avoid explosion of generator number
             fp:=Range(hom);
             if true then
@@ -412,11 +412,9 @@ local oper,n,R,o,nrit,
               k:=TzPreImagesNewGens(e);
               k:=List(k,x->j[1][Position(OldGeneratorsOfPresentation(e),x)]);
 
-              RUN_IN_GGMBI:=true;
               hom:=GroupHomomorphismByImagesNC(g,fp,
                     k,
-                    GeneratorsOfGroup(fp));
-              RUN_IN_GGMBI:=false;
+                    GeneratorsOfGroup(fp) : Run_In_GGMBI:= true );
             fi;
 
             SetIsomorphismFpGroup(g,hom);

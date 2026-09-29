@@ -21,6 +21,12 @@
 #include <crt_externs.h>
 #define environ (*_NSGetEnviron())
 
+#elif defined(SYS_IS_MINGW)
+
+// mingw declares _environ in stdlib.h
+#include <stdlib.h>
+#define environ _environ
+
 #elif !defined(environ)
 
 extern char ** environ;

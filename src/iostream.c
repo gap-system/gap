@@ -30,6 +30,7 @@
 #include "io.h"
 #include "lists.h"
 #include "modules.h"
+#include "plist.h"
 #include "stringobj.h"
 #include "sysenv.h"
 #include "sysfiles.h"
@@ -39,7 +40,8 @@
 
 #include "config.h"
 
-#ifndef GAP_DISABLE_SUBPROCESS_CODE
+// the POSIX implementation, on top of fork and pseudo terminals
+#if !defined(GAP_DISABLE_SUBPROCESS_CODE) && !defined(SYS_IS_MINGW)
 
 #include <errno.h>
 #include <fcntl.h>
@@ -858,13 +860,14 @@ static Obj FuncCREATE_PTY_IOSTREAM(Obj self, Obj dir, Obj prog, Obj args)
     Char * argv[MAX_ARGS + 2];
     UInt   i, len;
     Int    pty;
-    len = LEN_LIST(args);
+    RequirePlainList(SELF_NAME, args);
+    len = LEN_PLIST(args);
     if (len > MAX_ARGS)
         ErrorQuit("Too many arguments", 0, 0);
     ConvString(dir);
     ConvString(prog);
     for (i = 1; i <= len; i++) {
-        allargs[i] = ELM_LIST(args, i);
+        allargs[i] = ELM_PLIST(args, i);
         ConvString(allargs[i]);
     }
     // From here we cannot afford to have a garbage collection
@@ -1098,13 +1101,13 @@ FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
     RequireStringRep(SELF_NAME, prg);
     Int iin = GetSmallInt(SELF_NAME, in);
     Int iout = GetSmallInt(SELF_NAME, out);
-    RequireSmallList(SELF_NAME, args);
+    RequirePlainList(SELF_NAME, args);
 
     // create an argument array
-    for (i = 1; i <= LEN_LIST(args); i++) {
+    for (i = 1; i <= LEN_PLIST(args); i++) {
         if (i == 1023)
             break;
-        tmp = ELM_LIST(args, i);
+        tmp = ELM_PLIST(args, i);
         RequireStringRep(SELF_NAME, tmp);
         ExecArgs[i] = tmp;
     }
@@ -1125,7 +1128,7 @@ FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
     return res == 255 ? Fail : INTOBJ_INT(res);
 }
 
-#else // !defined(GAP_DISABLE_SUBPROCESS_CODE)
+#else // !defined(GAP_DISABLE_SUBPROCESS_CODE) && !defined(SYS_IS_MINGW)
 
 int CheckChildStatusChanged(int childPID, int status)
 {
@@ -1180,6 +1183,16 @@ static Obj FuncFD_OF_IOSTREAM(Obj self, Obj stream)
 static Obj
 FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
 {
+    // validate the arguments exactly as the real implementation does
+    RequireStringRep(SELF_NAME, dir);
+    RequireStringRep(SELF_NAME, prg);
+    GetSmallInt(SELF_NAME, in);
+    GetSmallInt(SELF_NAME, out);
+    RequirePlainList(SELF_NAME, args);
+    for (Int i = 1; i <= LEN_PLIST(args); i++) {
+        Obj tmp = ELM_PLIST(args, i);
+        RequireStringRep(SELF_NAME, tmp);
+    }
     return Fail;
 }
 
@@ -1223,7 +1236,7 @@ static StructGVarFunc GVarFuncs[] = {
 */
 static Int InitKernel(StructInitInfo * module)
 {
-#ifndef GAP_DISABLE_SUBPROCESS_CODE
+#if !defined(GAP_DISABLE_SUBPROCESS_CODE) && !defined(SYS_IS_MINGW)
     UInt i;
     PtyIOStreams[0].childPID = -1;
     for (i = 1; i < MAX_PTYS; i++) {

@@ -515,7 +515,7 @@ function(cong)
 end);
 
 
-############################################################################
+#############################################################################
 ##
 #O  HomomorphismTransformationSemigroup(<S>,<r>)
 #A  IsomorphismTransformationSemigroup(<S>)

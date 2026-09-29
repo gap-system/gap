@@ -255,9 +255,10 @@ UInt SyWindow;
 void SyExit(UInt ret)
 {
 #ifdef USE_JULIA_GC
-    jl_atexit_hook(ret);
-#endif
+    jl_exit((int)ret);
+#else
     exit((int)ret);
+#endif
 }
 
 
@@ -573,9 +574,9 @@ static void InitSysOpts(void)
 #endif // defined(SYS_IS_64_BIT)
 
 #ifdef SYS_IS_64_BIT
-    SyAllocPool = 4096L*1024*1024;   // Note this is in bytes!
+    SyAllocPool = (UInt)4096*1024*1024;   // Note this is in bytes!
 #else
-    SyAllocPool = 1536L*1024*1024;   // Note this is in bytes!
+    SyAllocPool = (UInt)1536*1024*1024;   // Note this is in bytes!
 #endif // defined(SYS_IS_64_BIT)
     SyStorOverrun = SY_STOR_OVERRUN_CLEAR;
     SyStorKill = 0;
@@ -659,7 +660,7 @@ static void InitDotGapPath(void)
     if (home == 0)
         return;
 
-#if defined(__CYGWIN__)
+#ifdef SYS_IS_WINDOWS
     strxcpy(DotGapPath, home, sizeof(DotGapPath));
     strxcat(DotGapPath, "/_gap;", sizeof(DotGapPath));
 #else

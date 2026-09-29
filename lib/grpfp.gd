@@ -90,9 +90,9 @@ fi;
 ##   [5] CosetTableInWholeGroup( H )
 ##     @ GAPROOT/lib/grpfp.gi:1733
 ##  ...  at *stdin*:3
-##  type 'return;' if you want to continue with a new limit of 8192000 cosets,
-##  type 'quit;' if you want to quit the coset enumeration,
-##  type 'maxlimit := 0; return;' in order to continue without a limit
+##  you can enter 'return;' to continue with a new limit of 8192000 cosets,
+##  you can enter 'quit;' to abort the coset enumeration,
+##  you can enter 'maxlimit := 0; return;' in order to continue without a limit
 ##  brk> quit;
 ##  ]]></Log>
 ##  <P/>
@@ -412,7 +412,7 @@ DeclareAttribute( "FpElementNFFunction",IsElementOfFpGroupFamily);
 # ##
 # ##  <Description>
 # ##  If <A>fam</A> is the elements family of a finitely presented group this
-# ##  attribute returns a list [<A>iso</A>,<A>k</A>,<A>id</A>] where <A>iso</A> is a isomorphism to an
+# ##  attribute returns a list [<A>iso</A>,<A>k</A>,<A>id</A>] where <A>iso</A> is an isomorphism to an
 # ##  fp monoid, <A>k</A> a confluent rewriting system for the image of <A>iso</A> and
 # ##  <A>id</A> the element in the free monoid corresponding to the image of the
 # ##  identity element under <A>iso</A>.
@@ -805,7 +805,7 @@ DeclareGlobalFunction("DefiningQuotientHomomorphism");
 DeclareAttribute("AsSubgroupOfWholeGroupByQuotient", IsSubgroupFpGroup);
 
 
-############################################################################
+#############################################################################
 ##
 #O  LowIndexSubgroupsFpGroupIterator( <G>[, <H>], <index>[, <excluded>] )
 #O  LowIndexSubgroupsFpGroup( <G>[, <H>], <index>[, <excluded>] )
@@ -926,7 +926,7 @@ DeclareOperation("LowIndexSubgroupsFpGroup",
   [IsSubgroupFpGroup,IsSubgroupFpGroup,IsPosInt]);
 
 
-############################################################################
+#############################################################################
 ##
 #F  MostFrequentGeneratorFpGroup( <G> )
 ##
@@ -973,7 +973,7 @@ DeclareAttribute( "FreeGeneratorsOfFpGroup",
 DeclareOperation( "FreeGeneratorsOfWholeGroup",
      [IsSubgroupFpGroup]  );
 
-############################################################################
+#############################################################################
 ##
 #A  RelatorsOfFpGroup(<G>)
 ##
@@ -1055,7 +1055,7 @@ DeclareAttribute("FreeGroupOfFpGroup",IsSubgroupFpGroup and IsGroupOfFamily);
 DeclareAttribute("IndicesInvolutaryGenerators",
   IsSubgroupFpGroup and IsGroupOfFamily);
 
-############################################################################
+#############################################################################
 ##
 #F  RelatorRepresentatives(<rels>)
 ##

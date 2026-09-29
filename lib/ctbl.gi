@@ -807,6 +807,36 @@ AttributeMethodByNiceMonomorphism( CharacterDegrees, [ IsGroup ] );
 
 #############################################################################
 ##
+#F  ChiefLength( <tbl> )  . . . . . . . . . . . . . . . for a character table
+##
+InstallMethod( ChiefLength,
+    "for a character table",
+    [ IsCharacterTable ],
+    function( tbl )
+    local n, prev, N;
+
+    if Size( tbl ) = 1 then
+      return 0;
+    elif IsPrimePowerInt( Size( tbl ) ) or IsAbelian( tbl ) then
+      # Avoid computing all normal subgroups in obvious cases.
+      return Length( Factors( Size( tbl ) ) );
+    fi;
+
+    n:= -1;
+    prev:= [];
+    for N in ClassPositionsOfNormalSubgroups( tbl ) do
+      # The list is sorted according to increasing number of classes.
+      if IsSubset( N, prev ) then
+        prev:= N;
+        n:= n + 1;
+      fi;
+    od;
+    return n;
+    end );
+
+
+#############################################################################
+##
 #F  CommutatorLength( <tbl> ) . . . . . . . . . . . . . for a character table
 ##
 InstallMethod( CommutatorLength,
@@ -1235,7 +1265,7 @@ InstallMethod( OrdinaryCharacterTable,
     end );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  AbelianInvariants( <tbl> )  . . . . . . . for an ordinary character table
 ##
@@ -7065,7 +7095,7 @@ InstallMethod( CharacterTableWithSortedClasses,
     new:= ConvertToLibraryCharacterTableNC(
                  rec( UnderlyingCharacteristic := 0 ) );
 
-    # Set supported attributes that do not need adjustion.
+    # Set supported attributes that do not need adjustment.
     for i in [ 3, 6 .. Length( SupportedCharacterTableInfo ) ] do
       if Tester( SupportedCharacterTableInfo[ i-2 ] )( tbl )
          and not ( "class" in SupportedCharacterTableInfo[i] ) then
@@ -7281,13 +7311,13 @@ InstallGlobalFunction( SortedCharacterTable, function( arg )
 end );
 
 
-############################################################################
+#############################################################################
 ##
 ##  12. Storing Normal Subgroup Information
 ##
 
 
-##############################################################################
+#############################################################################
 ##
 #M  NormalSubgroupClassesInfo( <tbl> )
 ##
@@ -7299,7 +7329,7 @@ InstallMethod( NormalSubgroupClassesInfo,
                 nsgfactors := [] ) );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  ClassPositionsOfNormalSubgroup( <tbl>, <N> )
 ##
@@ -7352,7 +7382,7 @@ InstallGlobalFunction( ClassPositionsOfNormalSubgroup, function( tbl, N )
 end );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  NormalSubgroupClasses( <tbl>, <classes> )
 ##
@@ -7431,7 +7461,7 @@ InstallGlobalFunction( NormalSubgroupClasses, function( tbl, classes )
 end );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  FactorGroupNormalSubgroupClasses( <tbl>, <classes> )
 ##
@@ -7459,7 +7489,7 @@ InstallGlobalFunction( FactorGroupNormalSubgroupClasses,
 end );
 
 
-############################################################################
+#############################################################################
 ##
 ##  13. Auxiliary Stuff
 ##
@@ -7477,7 +7507,7 @@ end );
 #T           sizes,      # sizes of normal subgroups
 #T           max,        # one maximal subgroup
 #T           maxes,      # list of maximal contained normal subgroups
-#T           actsize,    # actuel size of normal subgroups
+#T           actsize,    # actual size of normal subgroups
 #T           actmaxes,
 #T           latt;       # the lattice record
 #T

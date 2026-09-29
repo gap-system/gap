@@ -129,7 +129,7 @@ end );
 ##  'Dt_Sort2' sorts the pairs of integers in the formula vector <vector>
 ##  representing the binomial coefficients such that
 ##  <vector>[5] < <vector>[7] < .. < vector[m-1],  where m is the length
-##  of <vector>.  This is done for a easier comparison of formula vectors.
+##  of <vector>.  This is done for an easier comparison of formula vectors.
 ##
 BindGlobal( "Dt_Sort2", function(vector)
     local  i,list1,list2;
@@ -446,7 +446,7 @@ end );
 
 
 
-###########################################################################
+#############################################################################
 ##
 #F  Calcrepsn(<n>, <avec>, <pr>, <max>)
 ##
@@ -666,7 +666,7 @@ end );
 
 #############################################################################
 ##
-#F  Calcreps2( <pr> ) . . . . . . . . . . compute the Deep-Thought-polynomials
+#F  Calcreps2( <pr> ) . . . . . . . . .  compute the Deep-Thought-polynomials
 ##
 ##  'Calcreps2' returns the polynomials which have to be evaluated when
 ##  computing word*g_n^(y_n) for all <dtbound> <= n <= m where m is the

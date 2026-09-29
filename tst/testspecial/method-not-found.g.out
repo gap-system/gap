@@ -7,7 +7,7 @@ Stack trace:
    @ *stdin*:3
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:3
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> return;
 'return' cannot be used in this read-eval-print loop
 brk> QUIT;

@@ -2074,7 +2074,7 @@ InstallGlobalFunction( CentralStepRatClPGroup,
                          h ^ operator ) ) * N!.subspace.projection );
             opr:=function( k, l )
                 return
-                #AH, jun3 2001: without the pcgs filtereing we might get
+                #AH, jun3 2001: without the pcgs filtering we might get
                 # extra kernel elements. I have no idea how this was
                 # originally avoided. This is rather a workaround than a fix
                 # -- the whole code should be rewritten cleanly.

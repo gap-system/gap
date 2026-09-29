@@ -766,7 +766,7 @@ DeclareGlobalFunction( "RationalFunctionByExtRepNC" );
 ##  univariate rational function but will rely on the coefficients being
 ##  shifted properly. Unless this is
 ##  guaranteed for the parameters,
-##  <Ref Func="UnivariateLaurentPolynomialByCoefficients"/> should be used.
+##  <Ref Oper="LaurentPolynomialByCoefficients"/> should be used.
 ##  No cancellation is performed.
 ##  <P/>
 ##  The variant <Ref Func="UnivariateRationalFunctionByExtRepNC"/> does not
@@ -1787,7 +1787,7 @@ DeclareCategory( "IsUnivariatePolynomialsFamily", IsFamily );
 ##  The basic operations for rational functions  which are univariate Laurent
 ##  polynomials are:
 ##
-##    `UnivariateLaurentPolynomialByCoefficients'
+##    `LaurentPolynomialByCoefficients'
 ##    `CoefficientsOfUnivariateLaurentPolynomial'
 ##    `IndeterminateNumberOfUnivariateLaurentPolynomial'
 ##

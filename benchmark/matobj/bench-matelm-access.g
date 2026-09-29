@@ -136,17 +136,23 @@ RunMatTest := function(desc, m)
     TestWritingMatrix(m);
 end;
 
-m:=IdentityMat(10);;
-RunMatTest("integer matrix", m);
+m:=IdentityMat(10,GF(257));;    # plain list of plain lists
+RunMatTest("GF(257) plist-of-plist matrix", m);
 
-m:=IdentityMat(10,GF(2));;
+m:=IdentityMatrix(GF(257), 10); # IsPlistMatrixRep
+RunMatTest("GF(257) IsPlistMatrixRep", m);
+
+m:=IdentityMatrix(GF(257), 10); # IsGenericMatrixRep
+RunMatTest("GF(257) IsGenericMatrixRep", m);
+
+m:=IdentityMat(10,GF(2));;      # plain list of IsGF2VectorRep
 RunMatTest("GF(2) rowlist", m);
 
-m:=IdentityMat(10,GF(2));; ConvertToMatrixRep(m);;
+m:=IdentityMatrix(GF(2), 10);   # IsGF2MatrixRep
 RunMatTest("GF(2) compressed matrix", m);
 
-m:=IdentityMat(10,GF(7));;
+m:=IdentityMat(10,GF(7));;      # plain list of Is8BitVectorRep
 RunMatTest("GF(7) rowlist", m);
 
-m:=IdentityMat(10,GF(7));; ConvertToMatrixRep(m);;
+m:=IdentityMatrix(GF(7), 10);   # Is8BitMatrixRep
 RunMatTest("GF(7) compressed matrix", m);

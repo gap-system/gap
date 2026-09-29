@@ -83,7 +83,7 @@ local ac,bc,mc,i,j,pc,ci,f,fam;
   f:=false;
   for i in ac do
     if f then
-      # only do it 2nd time (here to avoin doing once too often)
+      # only do it 2nd time (here to avoid doing once too often)
       bc:=ShiftedCoeffs(bc,1);
       ReduceCoeffsMod(bc,mc,p);
       ShrinkRowVector(bc);
@@ -1009,7 +1009,7 @@ local pol,n,nalpha,d,dis,rb,bound,a,i,j,k,l,w,bin,lm,bea,polc,ro,rbpow;
   # we want an upper bound of the root, RootInt will give a lower
   # bound. So we compute the root of w-1 (in case w is a perfect square)
   # and add 1. As we nowhere selected a specific galois representative,
-  # this bound (which is rational!) will bound all conjugactes as well.
+  # this bound (which is rational!) will bound all conjugates as well.
   lm:=(RootInt(Int(w)-1,2)+1);
   for k in [1..DegreeOfLaurentPolynomial(pol)] do
 
@@ -1071,7 +1071,7 @@ end);
 
 #############################################################################
 ##
-#F  TrialQuotientRPF(<f>,<g>,<b>)  . . . . . . f/g if coeffbounds are given by b
+#F  TrialQuotientRPF(<f>,<g>,<b>) . . . . . f/g if coeffbounds are given by b
 ##
 InstallGlobalFunction(TrialQuotientRPF,function(f,g,b)
 local  fc,gc,a,m, n, i, k, c, q, val, brci,fam;
@@ -1911,7 +1911,7 @@ end);
 
 #############################################################################
 ##
-#F  SymAdic( <x>, <b> ) . . . . . . . . . . symmetric <b>-adic expansion of <x>
+#F  SymAdic( <x>, <b> ) . . . . . . . . . symmetric <b>-adic expansion of <x>
 #F  (<b> and <x> integers)
 ##
 BindGlobal( "SymAdic", function(x,b)

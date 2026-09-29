@@ -280,7 +280,7 @@ DeclareCategory( "IsHandledByNiceBasis", IsFreeLeftModule, 3 );
 DeclareAttribute( "Dimension", IsFreeLeftModule );
 
 
-############################################################################
+#############################################################################
 ##
 #A  GeneratorsOfLeftOperatorAdditiveGroup( <D> )
 ##
@@ -299,7 +299,7 @@ DeclareAttribute( "GeneratorsOfLeftOperatorAdditiveGroup",
     IsLeftOperatorAdditiveGroup );
 
 
-############################################################################
+#############################################################################
 ##
 #A  GeneratorsOfLeftModule( <M> )
 ##

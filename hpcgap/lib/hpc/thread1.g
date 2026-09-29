@@ -8,7 +8,7 @@
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
-##  This file provides the necessary thread initialization code code needed
+##  This file provides the necessary thread initialization code needed
 ##  early in GAP's initialization process. The rest can be found in thread.g.
 ##
 

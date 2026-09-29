@@ -228,7 +228,7 @@ InstallGlobalFunction( DecodeTree, function ( T )
         # if not, display a serious warning.
         Print( "\n", "#I  **********  WARNING:  the tree decoding is",
             " incomplete !  **********\n\n",
-            "#I  hence the isomporphism type of the presented group may",
+            "#I  hence the isomorphism type of the presented group may",
             " have changed,\n",
             "#I  you should continue by first calling the `DecodeTree'",
             " command again,\n",
@@ -464,7 +464,7 @@ end );
 InstallGlobalFunction( PresentationRegularPermutationGroupNC, function ( G )
     local   cosets,       # right cosets of G by its trivial subgroup H
             F,            # given free group
-            P,            # presentation to be consructed
+            P,            # presentation to be constructed
             ng1,          # position number of identity element in G
             idword,       # identity element of F
             table,        # columns in the table for gens
@@ -706,7 +706,7 @@ InstallGlobalFunction( PresentationViaCosetTable, function ( arg )
     local   G,          # given group
             F,          # given or constructed free group
             fgens,      # generators of F
-            words,      # words (in the generators of F) defing H
+            words,      # words (in the generators of F) defining H
             twords,     # tidied up list of words
             H,          # subgroup
             elts,       # elements of G or H
@@ -2759,7 +2759,7 @@ end);
 #M  TzMostFrequentPairs( <Tietze record>, <n> ) . . . .  occurrences of pairs
 ##
 ##  `TzMostFrequentPairs'  returns a list  describing the  n  most frequently
-##  occurruing relator subwords of the form  g1 * g2,  where  g1  and  g2 are
+##  occurring relator subwords of the form  g1 * g2,  where  g1  and  g2 are
 ##  different generators or their inverses.
 ##
 InstallGlobalFunction( TzMostFrequentPairs, function ( T, nmax )

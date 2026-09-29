@@ -3865,7 +3865,8 @@ Obj OnSetsTrans(Obj set, Obj f)
     const UInt4 * ptf4;
     UInt    deg;
     Obj *   ptres, tmp, res;
-    UInt    i, isint, k;
+    UInt    i, k;
+    BOOL    isInt;
 
     // copy the list into a mutable plist, which we will then modify in place
     res = PLAIN_LIST_COPY(set);
@@ -3876,7 +3877,7 @@ Obj OnSetsTrans(Obj set, Obj f)
         ptf2 = CONST_ADDR_TRANS2(f);
         deg = DEG_TRANS2(f);
         // loop over the entries of the tuple
-        isint = 1;
+        isInt = TRUE;
         for (i = 1; i <= len; i++, ptres++) {
             tmp = *ptres;
             if (IS_POS_INTOBJ(tmp)) {
@@ -3886,7 +3887,7 @@ Obj OnSetsTrans(Obj set, Obj f)
                 }
             }
             else {
-                isint = 0;
+                isInt = FALSE;
                 tmp = POW(tmp, f);
                 ptres = ADDR_OBJ(res) + i;
                 ptf2 = CONST_ADDR_TRANS2(f);
@@ -3900,7 +3901,7 @@ Obj OnSetsTrans(Obj set, Obj f)
         deg = DEG_TRANS4(f);
 
         // loop over the entries of the tuple
-        isint = 1;
+        isInt = TRUE;
         for (i = 1; i <= len; i++, ptres++) {
             tmp = *ptres;
             if (IS_POS_INTOBJ(tmp)) {
@@ -3910,7 +3911,7 @@ Obj OnSetsTrans(Obj set, Obj f)
                 }
             }
             else {
-                isint = 0;
+                isInt = FALSE;
                 tmp = POW(tmp, f);
                 ptres = ADDR_OBJ(res) + i;
                 ptf4 = CONST_ADDR_TRANS4(f);
@@ -3921,7 +3922,7 @@ Obj OnSetsTrans(Obj set, Obj f)
     }
 
     // sort the result and remove dups
-    if (isint) {
+    if (isInt) {
         SortPlistByRawObj(res);
         REMOVE_DUPS_PLIST_INTOBJ(res);
         RetypeBagSM(res, T_PLIST_CYC_SSORT);
@@ -4121,7 +4122,8 @@ static StructGVarFilt GVarFilts[] = {
 
 };
 
-/******************************************************************************
+/****************************************************************************
+**
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs[] = {
@@ -4183,7 +4185,8 @@ static StructGVarFunc GVarFuncs[] = {
 };
 
 
-/******************************************************************************
+/****************************************************************************
+**
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel(StructInitInfo * module)
@@ -4271,7 +4274,8 @@ static Int InitKernel(StructInitInfo * module)
     return 0;
 }
 
-/******************************************************************************
+/****************************************************************************
+**
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary(StructInitInfo * module)
@@ -4285,9 +4289,8 @@ static Int InitLibrary(StructInitInfo * module)
     // code which would not otherwise be accessible, since no other
     // transformation created in this file is a T_TRANS4 unless its internal
     // degree is > 65536. Such transformation can be created by packages with
-    // a
-    // kernel module, and so we introduce the next transformation for testing
-    // purposes.
+    // a kernel module, and so we introduce the next transformation for
+    // testing purposes.
     Obj ID_TRANS4 = NEW_TRANS4(0);
     AssReadOnlyGVar(GVarName("ID_TRANS4"), ID_TRANS4);
 

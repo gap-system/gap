@@ -52,12 +52,7 @@ function( S, R, gens, imgs )
   fi;
 
   # Make the general mapping.
-  map:= Objectify( TypeOfDefaultGeneralMapping( S, R,
-                            IsSPGeneralMapping
-                        and IsRingGeneralMapping
-                        and IsSCRingGeneralMappingByImagesDefaultRep ),
-                    rec(
-                        ) );
+  map:= Objectify( TypeOfDefaultGeneralMapping( S, R, filter ), rec( ) );
 
     SetMappingGeneratorsImages(map,[Immutable(gens),Immutable(imgs)]);
     # return the general mapping
@@ -444,15 +439,30 @@ end );
 
 #############################################################################
 ##
-#M  PreImagesRepresentative( <map>, <elm> ) . . . . . .  for ring g.m.b.i.
+#M  PreImagesRepresentativeNC( <map>, <elm> ) . . . . . .  for ring g.m.b.i.
+#M  PreImagesRepresentative( <map>, <elm> ) . . . . . . .  for ring g.m.b.i.
 ##
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
     "for ring g.m.b.i., and element",
     FamRangeEqFamElm,
     [ IsRingGeneralMapping and IsRingGeneralMappingByImagesDefaultRep,
       IsObject ],
 function( map, elm )
   return ImagesRepresentative(InverseGeneralMapping(map),elm);
+end );
+
+InstallMethod( PreImagesRepresentative,
+    "for ring g.m.b.i., and element",
+    FamRangeEqFamElm,
+    [ IsRingGeneralMapping and IsRingGeneralMappingByImagesDefaultRep,
+      IsObject ],
+function( map, elm )
+    if not ( elm in Range( map ) ) then
+        Error( "<elm> is not in the range of <map>" );
+    elif not ( elm in Image( map ) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentativeNC( map, elm );
 end );
 
 BindGlobal("IsomorphismSCRing",function(R)
@@ -593,7 +603,7 @@ function( R, I )
   # SNF gives R*M*C=D, so $R^-1*D*C^-1*(x,y)^T=0$, implying that D are
   # relations that hold amongst C^-1*(x,y). Thus:
   # The rows of C^-1 express the new generators in terms of the old, i.e.
-  # are base chance new-> old as row vectors.
+  # are base change new-> old as row vectors.
   # the rows of C convert old->new
   # Thus the rows of C give coefficients for images of old generators
 

@@ -747,7 +747,7 @@ local   v,  R,  U,  x,  O,  n,  g,  q,  o,  bas;
        [IndeterminateNumberOfLaurentPolynomial(f)]);
   U := FFPUpperBoundOrder( R, f );
 
-  # run through the irrducibles and compute their order
+  # run through the irreducibles and compute their order
   x := IndeterminateOfUnivariateRationalFunction(f);
   O := [];
   n := 1;

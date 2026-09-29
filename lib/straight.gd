@@ -752,8 +752,8 @@ DeclareGlobalFunction( "SLPReversedRenumbered" );
 ##  In both cases the resulting slp
 ##  does only what is necessary. Obviously, the slp must have a line with
 ##  enough expressions (lists) for the supplied <A>k</A> as its last line.
-##  <A>slp</A> is either an slp or a pair where the first entry are the lines
-##  of the slp and the second is the number of inputs.
+##  <A>slp</A> is either an slp or a pair where the first entry is the list
+##  of lines of the slp and the second is the number of inputs.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -770,8 +770,8 @@ DeclareGlobalFunction( "RestrictOutputsOfSLP" );
 ##  <Description>
 ##  Returns a new slp that calculates only the value of slot <A>k</A>
 ##  at the end of <A>slp</A> doing only what is necessary.
-##  slp is either an slp or a pair where the first entry are the lines
-##  of the slp and the second is the number of inputs.
+##  slp is either an slp or a pair where the first entry is the list
+##  of lines of the slp and the second is the number of inputs.
 ##  Note that this assumes a general SLP with possible overwriting.
 ##  If you know that your SLP does not overwrite slots, please use
 ##  <Ref Func="IntermediateResultOfSLPWithoutOverwrite"/>,

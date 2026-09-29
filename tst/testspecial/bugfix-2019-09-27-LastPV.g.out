@@ -7,7 +7,7 @@ gap> old_OnBreak:=OnBreak;;
 gap> OnBreak:=fail;; # prevent backtrace with line numbers that keep chaning
 gap> View([[badgroup]]); # <- trigger break loop
 Error, Rational operations: <divisor> must not be zero
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 [ [ 
 gap> OnBreak:=old_OnBreak;;

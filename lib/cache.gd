@@ -149,7 +149,7 @@ end);
 ##
 #F  GET_FROM_SORTED_CACHE(<cache>, <key>, <maker>)
 ##
-##  Lookup the the given `key` inside `cache`, and return it. If the key is
+##  Lookup the given `key` inside `cache`, and return it. If the key is
 ##  not yet in the cache, call the 0-argument function `maker`, store its
 ##  return value under `key`, and return that value.
 ##

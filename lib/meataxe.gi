@@ -105,7 +105,7 @@ InstallGlobalFunction(InducedGModule, function(g, h, m)
        ghom:=GroupHomomorphismByImages(h,GL(hdim,F),gensh,mats);
    fi;
 
-   # set up transveral
+   # set up transversal
    r:=RightTransversal(g, h);
    index:=Length(r);
 
@@ -166,7 +166,7 @@ InstallGlobalFunction(PermutationGModule, function(g, F)
    return GModuleByMats(List(gens,g->PermutationMat(g,deg,F)),F);
 end);
 
-###############################################################################
+#############################################################################
 ##
 #F  TensorProductGModule( module1, module2 )  . . tensor product of two G-modules
 ##
@@ -185,7 +185,7 @@ InstallGlobalFunction(TensorProductGModule, function(module1, module2)
    return GModuleByMats(gens, SMTX.Field(module1));
 end);
 
-###############################################################################
+#############################################################################
 ##
 #F  DirectSumGModule( module1, module2 )  . . direct sum of two G-modules
 ##
@@ -201,12 +201,12 @@ InstallGlobalFunction(DirectSumGModule, function(module1, module2)
                         SMTX.Field(module1));
 end);
 
-###############################################################################
+#############################################################################
 ##
 #F  WedgeGModule( module ) . . . . . wedge product of a G-module
 ##
 ## WedgeGModule calculates the wedge product of a G-module.
-## That is the action on antisymmetrix tensors.
+## That is the action on antisymmetric tensors.
 ##
 InstallGlobalFunction(WedgeGModule, function(module)
    local mats, mat, newmat, row, F, gens, dim, nmats, i, j, k, m, n, x;
@@ -335,7 +335,7 @@ SMTX.SetDegreeFieldExt:=SMTX.Setter("degreeFieldExt");
 
 #############################################################################
 ##
-#F  SMTX.OrthogonalVector( subbasis ) single vector othogonal to a submodule,
+#F  SMTX.OrthogonalVector( subbasis ) single vector orthogonal to a submodule,
 ##  N.B. subbasis is assumed to consist of normed vectors,
 ##  submodule is assumed proper.
 ##
@@ -786,7 +786,7 @@ end;
 ## where smodule is the submodule and qmodule the quotient module.
 ## The matrices of nmodule have the form  A  0  where  A  and  B  are the
 ##                                        C  B
-## corresponding matrices of smodule and qmodule resepctively.
+## corresponding matrices of smodule and qmodule respectively.
 ## If sub is not the basis of a submodule then fail is returned.
 SMTX.InducedAction:=function(module, sub, typ...)
 local ans,erg;
@@ -1391,7 +1391,7 @@ local matrices, M, mat,  N, newgenlist, coefflist,
 
       Info(InfoMeatAxe,4,"Evaluated characteristic polynomial. Time = ",
            Runtime()-rt0,".");
-      # That is necessary in case p is defined over a smaller field that F.
+      # That is necessary in case p is defined over a smaller field than F.
       oldpol:=pol;
       # Now we extract the irreducible factors of pol starting with those
       # of low degree
@@ -1885,7 +1885,7 @@ SMTX.FieldGenCentMat:=function(module)
   return SMTX.FGCentMat(module);
 end;
 
-###############################################################################
+#############################################################################
 ##
 #F  SMTX.CollectedFactors( module ) . . find composition factors of a module
 ##
@@ -2019,7 +2019,7 @@ SMTX.CompositionFactors:=function(module)
   fi;
 end;
 
-###############################################################################
+#############################################################################
 ##
 #F  SMTX.Distinguish( cf, i )  distinguish a composition factor of a module
 ##
@@ -2094,7 +2094,7 @@ SMTX.Distinguish:=function(cf, i)
       # First evaluate on cf[i][1].
       M:=ImmutableMatrix(F,Sum([1..ngens], k ->  el[2][k] * matsi[k]));
       p:=CharacteristicPolynomialMatrixNC(F,M,1);
-      # That is necessary in case p is defined over a smaller field that F.
+      # That is necessary in case p is defined over a smaller field than F.
       oldp:=p;
       # extract irreducible factors
       deg:=0;
@@ -2165,7 +2165,7 @@ SMTX.Distinguish:=function(cf, i)
 
 end;
 
-###############################################################################
+#############################################################################
 ##
 #F  SMTX.MinimalSubGModule( module, cf, i ) . .  find minimal submodule
 ##                                     containing a given composition factor.
@@ -2351,7 +2351,7 @@ end;
 
 #############################################################################
 ##
-#F  SMTX.Homomorphisms( module1, module2) . . . . homomorphisms from an irreducible
+#F  SMTX.Homomorphisms( module1, module2) . homomorphisms from an irreducible
 ##                         . . . GModule to an arbitrary GModule
 ##
 ## It is assumed that module1 is a module that has been proved irreducible
@@ -2432,7 +2432,7 @@ SMTX.Homomorphisms:= function(module1, module2)
    # When we find a vector that norms to zero in m1bas, then the image of this
    # under a homomorphism must be zero. This leads to a linear relation
    # amongst some vectors in imbas. We store up such relations, echelonizing as
-   # we go. At the end, if we have numrels subch independent relations, then
+   # we go. At the end, if we have numrels such independent relations, then
    # there will be imlen - numrels independent homomorphisms from module1 to module2,
    # which we can then calculate.
 
@@ -2677,7 +2677,7 @@ end;
 
 #############################################################################
 ##
-#F  SMTX.Homomorphism(module1,module2,mat) . . . define a module homorphism
+#F  SMTX.Homomorphism(module1,module2,mat) . . . define a module homomorphism
 ##
 ##  module1 and module2 should be meataxe modules of dimensions m and n
 ##  over the same algebra, and mat an mXn matrix over the field of
@@ -2699,7 +2699,7 @@ SMTX.Homomorphism:=function(module1, module2, mat)
   if Length(mat) <> dim1 or Length(mat[1]) <> dim2 then
     Error("matrix has wrong size for a homomorphism");
   fi;
-  # Check if it is a homorphism
+  # Check if it is a homomorphism
   mat:=ImmutableMatrix(F,mat);
   for i in [1..ng] do
     for j in [1..dim1] do
@@ -2985,7 +2985,7 @@ local gens;
   return module.Dual;
 end;
 
-###############################################################################
+#############################################################################
 ##
 #F  DualGModule( module ) . . . . . dual of a G-module
 ##
@@ -3114,7 +3114,7 @@ end;
 ##
 #F  BasisInOrbit( module ) . . . .
 ##
-## Find a basis of the irrecucible GModule module that is contained in
+## Find a basis of the irreducible GModule module that is contained in
 ## an orbit of the action of G.
 ## The code is similar to that of SpinnedBasis.
 SMTX.BasisInOrbit:=function(module)

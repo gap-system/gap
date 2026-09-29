@@ -160,7 +160,7 @@ rec( comment := "quasiprimitive character", isMonomial := false )
 gap> IsMonomial( chi );
 false
 
-#
+#@if IsPackageMarkedForLoading( "perfgrp", "" )
 gap> irr:= Irr( AlternatingGroup( 5 ) );;
 gap> chi:= First( irr, x -> x[1] = 5 );;
 gap> TestMonomialQuick( chi );
@@ -169,8 +169,11 @@ gap> TestMonomial( chi ).comment;
 "induced from 'character'"
 gap> IsMonomial( chi );
 true
+#@fi
 gap> TestMonomialUseLattice_Orig:= TestMonomialUseLattice;;
 gap> TestMonomialUseLattice:= 20;;
+#@if IsPackageMarkedForLoading( "perfgrp", "" )
+gap> irr:= Irr( AlternatingGroup( 5 ) );;
 gap> chi:= First( irr, x -> x[1] = 4 );;
 gap> TestMonomialQuick( chi );
 rec( comment := "no decision by cheap tests", isMonomial := "?" )
@@ -180,6 +183,7 @@ gap> TestMonomial( chi, true ).comment;
 "lattice checked"
 gap> IsMonomial( chi );
 false
+#@fi
 
 #@if IsPackageMarkedForLoading( "smallgrp", "" )
 gap> irr:= Irr( SmallGroup( 96, 204 ) );;

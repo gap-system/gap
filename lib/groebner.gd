@@ -346,7 +346,7 @@ DeclareGlobalFunction("MonomialGrevlexOrdering");
 ##  Two monomials are compared first by the exponent vectors for the
 ##  variables listed in <A>elim</A> (a lexicographic comparison with respect
 ##  to the ordering indicated in <A>elim</A>).
-##  If these submonomial are equal, the submonomials given by the other
+##  If these submonomials are equal, the submonomials given by the other
 ##  variables are compared by a graded lexicographic ordering
 ##  (with respect to the variable order given in <A>rest</A>,
 ##  if called with two parameters).
@@ -428,7 +428,7 @@ DeclareGlobalFunction("PolynomialReduction");
 ##  <Func Name="PolynomialReducedRemainder" Arg='poly,gens,order'/>
 ##
 ##  <Description>
-##  this operation does the same way as
+##  this operation works the same way as
 ##  <Ref Func="PolynomialReduction"/> but does not keep track of the actual quotients
 ##  and returns only the remainder (it is therefore slightly faster).
 ##  </Description>

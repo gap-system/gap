@@ -325,7 +325,7 @@ TEST.transformFunctions.removenl := function(a)
 end;
 TEST.transformFunctions.removewhitespace := function(a)
   a := ReplacedString(ShallowCopy(a), "\\\n", "");
-  RemoveCharacters(a, " \n\t\r");
+  RemoveCharacters(a, CHARS_WHITESPACE);
   return a;
 end;
 
@@ -614,7 +614,7 @@ DeclareGlobalName("TextAttr"); # from GAPDoc
 DeclareGlobalName("DefaultReportDiffColors"); # initialized in Test() or by the user
 BindGlobal("DefaultReportDiff", function(inp, expout, found, fnam, line, time)
   if UserPreference("UseColorsInTerminal") = true
-     and IsBound( GAPInfo.PackagesLoaded.gapdoc ) then
+     and IsBound( DefaultReportDiffColors ) then
     Print(DefaultReportDiffColors.message);
     Print("########> Diff in ");
     if IsStream(fnam) then

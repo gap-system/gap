@@ -205,7 +205,7 @@ InstallMonomialOrdering(MonomialLexOrdering,
             has:=true;
             if a[ap+1]>b[i+1] then
 
-              # a exponent is bigger
+              # an exponent is bigger
               ret:=false; # unless a smaller (larger pos) variable found
             elif a[ap+1]<b[i+1] then
               # b exponent is bigger
@@ -222,7 +222,7 @@ InstallMonomialOrdering(MonomialLexOrdering,
         # b has no variable as large as am. thus a is bigger
         return false;
       elif ret<>fail then
-        # b has no larger variable than am  buty has am. Use the comparison
+        # b has no larger variable than am but has am. Use the comparison
         return ret;
       fi;
       min:=am; # will increase until no variable in a left
@@ -350,7 +350,7 @@ InstallMonomialOrdering(MonomialGrlexOrdering,
             has:=true;
             if a[ap+1]>b[i+1] then
 
-              # a exponent is bigger
+              # an exponent is bigger
               ret:=false; # unless a smaller (larger pos) variable found
             elif a[ap+1]<b[i+1] then
               # b exponent is bigger
@@ -367,7 +367,7 @@ InstallMonomialOrdering(MonomialGrlexOrdering,
         # b has no variable as large as am. thus a is bigger
         return false;
       elif ret<>fail then
-        # b has no larger variable than am  buty has am. Use the comparison
+        # b has no larger variable than am but has am. Use the comparison
         return ret;
       fi;
       min:=am; # will increase until no variable in a left
@@ -664,7 +664,7 @@ local fam,quot,elist,lmp,lmo,lmc,x,y,z,mon,mon2,qmon,noreduce,
             #divides and there is remainder
             Append(qmon,[mon[pos],di]);
           elif di<0 then
-            noreduce:=true; # exponent to small
+            noreduce:=true; # exponent too small
           fi;
           pos:=pos+2;
           z:=z+2;
@@ -762,7 +762,7 @@ local fam, elist, lmp, lmo, lmc, ep, rem, noreduce, x, mon, y, mon2,
             #divides and there is remainder
             Append(qmon,[mon[pos],di]);
           elif di<0 then
-            noreduce:=true; # exponent to small
+            noreduce:=true; # exponent too small
           fi;
           pos:=pos+2;
           z:=z+2;
@@ -851,7 +851,7 @@ local fam,quot,elist,lmp,lmo,lmc,x,y,z,mon,mon2,qmon,noreduce,
             #divides and there is remainder
             Append(qmon,[mon[pos],di]);
           elif di<0 then
-            noreduce:=true; # exponent to small
+            noreduce:=true; # exponent too small
           fi;
           pos:=pos+2;
           z:=z+2;

@@ -1265,7 +1265,7 @@ syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg,bp;
     w:=AutomorphismGroup(b);
     opg:=NaturalHomomorphismByNormalSubgroupNC(w,
           InnerAutomorphismsAutomorphismGroup(w));
-    ll:=List(AsSSortedList(Image(opg)),x->PreImagesRepresentative(opg,x));
+    ll:=List(AsSSortedList(Image(opg)),x->PreImagesRepresentativeNC(opg,x));
     ll:=Filtered(ll,IsConjugatorAutomorphism);
     ll:=List(ll,ConjugatorInnerAutomorphism);
     pg:=b;
@@ -2074,7 +2074,7 @@ local a,b,x,i;
 end);
 
 # maximal subgroups routine.
-# precomputed data up to degree 50 (so it will be quick is most cases).
+# precomputed data up to degree 50 (so it will be quick in most cases).
 # (As there is no independent check for the primitive groups of degree >50,
 # we rather do not refer to them, but only use them in a calculation.)
 BindGlobal("SNMAXPRIMS", MakeImmutable([[],[],[],[],[],[2],[],[5],[],[7],[],[4],

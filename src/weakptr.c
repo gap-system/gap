@@ -152,12 +152,12 @@ static inline void SET_ELM_WPOBJ(Obj list, UInt pos, Obj val)
     }
     if (!IS_BAG_REF(ptr[pos])) {
         ptr[pos] = (Bag)jl_gc_new_weakref((jl_value_t *)val);
-        jl_gc_wb_back(BAG_HEADER(list));
+        jl_gc_wb_object(BAG_HEADER(list));
     }
     else {
         jl_weakref_t * wref = (jl_weakref_t *)(ptr[pos]);
         wref->value = (jl_value_t *)val;
-        jl_gc_wb(wref, BAG_HEADER(val));
+        jl_gc_wb_object(wref);
     }
 #endif
 }
@@ -279,7 +279,7 @@ static Obj FuncWeakPointerObj(Obj self, Obj list)
 
 static Int LengthWPObj(Obj wp)
 {
-  Int changed = 0;
+  BOOL changed = FALSE;
   Int len = STORED_LEN_WPOBJ(wp);
 #ifdef HPCGAP
   if (!CheckExclusiveWriteAccess(wp))
@@ -291,7 +291,7 @@ static Int LengthWPObj(Obj wp)
     elm = ELM_WPOBJ(wp, len);
     if (elm)
         break;
-    changed = 1;
+    changed = TRUE;
     len--;
   }
   if (changed)

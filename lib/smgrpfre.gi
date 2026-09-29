@@ -306,7 +306,7 @@ InstallMethod( Size,
 
 
     #
-    # I suspect this methos subsumes the one above SL
+    # I suspect this method subsumes the one above SL
     #
     InstallImmediateMethod(Size, IsSemigroup and IsAssocWordCollection
             and HasGeneratorsOfMagma, 0, function(s)

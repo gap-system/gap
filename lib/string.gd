@@ -174,7 +174,7 @@ DeclareGlobalFunction( "DayDMY" );
 
 #############################################################################
 ##
-#F  SecondsDMYhms( <DMYhms> ) . . . . . convert day-month-year-hms into seconds
+#F  SecondsDMYhms( <DMYhms> ) . . . . convert day-month-year-hms into seconds
 ##
 ##  <#GAPDoc Label="SecondsDMYhms">
 ##  <ManSection>
@@ -196,7 +196,7 @@ DeclareGlobalFunction( "SecondsDMYhms" );
 
 #############################################################################
 ##
-#F  DMYhmsSeconds( <secs> ) . . . . . . . . . . . . . inverse of SecondsDMYhms
+#F  DMYhmsSeconds( <secs> ) . . . . . . . . . . . .  inverse of SecondsDMYhms
 ##
 ##  <#GAPDoc Label="DMYhmsSeconds">
 ##  <ManSection>
@@ -285,7 +285,7 @@ DeclareGlobalFunction( "StringDate" );
 
 #############################################################################
 ##
-#F  HMSMSec( <msec> )  . . . . . . . .  convert seconds into hour-min-sec-mill
+#F  HMSMSec( <msec> )  . . . . . . . . convert seconds into hour-min-sec-mill
 ##
 ##  <#GAPDoc Label="HMSMSec">
 ##  <ManSection>
@@ -367,7 +367,7 @@ DeclareGlobalFunction( "StringTime" );
 DeclareGlobalFunction( "StringPP" );
 
 
-############################################################################
+#############################################################################
 ##
 #F  WordAlp( <alpha>, <nr> ) . . . . . .  <nr>-th word over alphabet <alpha>
 ##
@@ -437,7 +437,7 @@ DeclareGlobalFunction( "LowercaseChar" );
 ##  <Func Name="UppercaseString" Arg='string'/>
 ##
 ##  <Description>
-##  Returns a uppercase version of the string <A>string</A>,
+##  Returns an uppercase version of the string <A>string</A>,
 ##  that is, a string in which each lowercase alphabet character is replaced
 ##  by the corresponding uppercase character.
 ##  <Example><![CDATA[
@@ -494,12 +494,16 @@ DeclareGlobalFunction( "UppercaseChar" );
 ##  <P/>
 ##  A separator at the end of a string is interpreted as a terminator; in
 ##  this case, the separator does not produce a trailing empty string.
+##  More precisely, the last substring is dropped if it is empty, so the
+##  empty string yields an empty list.
 ##  Also see&nbsp;<Ref Func="Chomp"/>.
 ##  <Example><![CDATA[
 ##  gap> SplitString( "substr1:substr2::substr4", ":" );
 ##  [ "substr1", "substr2", "", "substr4" ]
 ##  gap> SplitString( "a;b;c;d;", ";" );
 ##  [ "a", "b", "c", "d" ]
+##  gap> SplitString( "", ";" );
+##  [  ]
 ##  gap> SplitString( "/home//user//dir/", "", "/" );
 ##  [ "home", "user", "dir" ]
 ##  ]]></Example>
@@ -522,7 +526,7 @@ DeclareGlobalFunction( "RemoveCharacters" );
 
 #############################################################################
 ##
-#F  NormalizedWhitespace( <str> ) .  copy of string with normalized whitespace
+#F  NormalizedWhitespace( <str> ) . copy of string with normalized whitespace
 ##
 ##  <#GAPDoc Label="NormalizedWhitespace">
 ##  <ManSection>
@@ -837,8 +841,8 @@ BindGlobal("BHINT", MakeImmutable("\>\<"));
 
 #############################################################################
 ##
-#F StringOfMemoryAmount( <m> )    returns an appropriate human-readable string
-##                        representation of <m> bytes
+#F StringOfMemoryAmount( <m> ) . returns an appropriate human-readable string
+##                               representation of <m> bytes
 ##
 ##
 ##  <#GAPDoc Label="StringOfMemoryAmount">

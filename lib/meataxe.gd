@@ -51,7 +51,7 @@ DeclareGlobalFunction("NaturalGModule");
 ## The corresponding permutation module is output.
 DeclareGlobalFunction("PermutationGModule");
 
-###############################################################################
+#############################################################################
 ##
 #F  TensorProductGModule ( m1, m2 )  . . tensor product of two G-modules
 ##
@@ -62,7 +62,7 @@ DeclareGlobalFunction("PermutationGModule");
 ##
 DeclareGlobalFunction("TensorProductGModule");
 
-###############################################################################
+#############################################################################
 ##
 #F  DirectSumGModule ( m1, m2 )  . . direct sum of two G-modules
 ##
@@ -73,16 +73,16 @@ DeclareGlobalFunction("TensorProductGModule");
 ##
 DeclareGlobalFunction("DirectSumGModule");
 
-###############################################################################
+#############################################################################
 ##
 #F  WedgeGModule ( module ) . . . . . wedge product of a G-module
 ##
 ## WedgeGModule calculates the wedge product of a G-module.
-## That is the action on antisymmetrix tensors.
+## That is the action on antisymmetric tensors.
 ##
 DeclareGlobalFunction("WedgeGModule");
 
-###############################################################################
+#############################################################################
 ##
 #F  DualGModule ( module ) . . . . . dual of a G-module
 ##
@@ -91,7 +91,7 @@ DeclareGlobalFunction("WedgeGModule");
 ##
 DeclareGlobalFunction("DualGModule");
 
-###############################################################################
+#############################################################################
 ##
 #F TestModulesFitTogether(m1,m2)
 ##

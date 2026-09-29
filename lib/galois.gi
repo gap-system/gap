@@ -13,7 +13,7 @@
 
 #############################################################################
 ##
-#F  ParityPol(<f>) . . . . . . . . . . . . . . . . . . parity of a
+#F  ParityPol(<f>) . . . . . . . . . . . . . . . . . . parity of a polynomial
 ##
 InstallGlobalFunction(ParityPol,function(ring,f)
 local d;
@@ -304,7 +304,7 @@ end);
 
 #############################################################################
 ##
-##  Tschirnhausen(<pol>[,<trans>][,true]) . . . . . Tschirnhausen-Transformation
+##  Tschirnhausen(<pol>[,<trans>][,true]) . . .  Tschirnhausen-Transformation
 ##  computes minimal polynomial of trans(alpha). If no <trans> is given, it
 ##  is taken by random. An added true will also return the <trans> polynomial.
 ##
@@ -393,12 +393,12 @@ local i,p,r,x,d;
     IndeterminateNumberOfUnivariateRationalFunction(f));
   # remember, which resolvent types already failed (most likely for
   # smaller sums), so we won't have to use them twice!
-  # e.g.: if 2-Sum is double, then 3-Sum will vbe double most likely!
+  # e.g.: if 2-Sum is double, then 3-Sum will be double most likely!
   if not IsBound(f!.failedResolvents) then
     f!.failedResolvents:=[];
   fi;
   if Value(f,-x)=f then
-    # then for every root there is a negative one, causing trobles with sums
+    # then for every root there is a negative one, causing troubles with sums
     f!.failedResolvents:=Union(f!.failedResolvents,[0,1,2]);
   fi;
   i:=0;

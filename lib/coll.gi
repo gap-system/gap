@@ -849,7 +849,7 @@ InstallOtherMethod( Iterator,
 
 #############################################################################
 ##
-#M  List( <iter> ) . . . . . . return list of remaining objects in an iterator
+#M  List( <iter> ) . . . . .  return list of remaining objects in an iterator
 ##
 ##  Does not change the iterator.
 ##
@@ -1749,7 +1749,7 @@ InstallEarlyMethod( FoldLeft,
 
 #############################################################################
 ##
-#M  FoldLeft( <C>, <func> )  . . . . . . . . for a list/collection, and a function
+#M  FoldLeft( <C>, <func> ) . . . . . . for a list/collection, and a function
 ##
 InstallMethod( FoldLeft,
     "for a list/collection, and a function",
@@ -1770,7 +1770,7 @@ InstallMethod( FoldLeft,
 
 #############################################################################
 ##
-#M  FoldLeft( <C>, <func>, <init> )  . . for a list/coll., a func., and init. val.
+#M  FoldLeft( <C>, <func>, <init> ) . . for list/coll., func., and init. val.
 ##
 InstallMethod( FoldLeft,
     "for a list/collection, and a function, and an initial value",

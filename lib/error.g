@@ -135,7 +135,8 @@ BIND_GLOBAL("PRETTY_PRINT_VARS", function(context)
 end);
 
 BIND_GLOBAL("WHERE", function(depth, context, activecontext, showlocals)
-    local bottom, lastcontext, f, level, totaldepth, countcontext;
+    local bottom, lastcontext, f, level, totaldepth, countcontext,
+          prefixwidth, location;
     if depth <= 0 then
         return;
     fi;
@@ -144,6 +145,7 @@ BIND_GLOBAL("WHERE", function(depth, context, activecontext, showlocals)
         PrintTo(ERROR_OUTPUT, "called from read-eval loop ");
         return;
     fi;
+    PrintTo(ERROR_OUTPUT, "Stack trace:\n");
     lastcontext := context;
     totaldepth := 0;
     countcontext := context;
@@ -151,14 +153,20 @@ BIND_GLOBAL("WHERE", function(depth, context, activecontext, showlocals)
         totaldepth := totaldepth + 1;
         countcontext := ParentLVars(countcontext);
     od;
+    prefixwidth := Length(String(totaldepth));
     level := 1;
     while depth > 0  and context <> bottom do
-        PRINT_CURRENT_STATEMENT(
+        location := PRINT_CURRENT_STATEMENT(
             ERROR_OUTPUT,
             context,
             activecontext,
             level,
-            totaldepth);
+            prefixwidth);
+        if location <> fail then
+            PrintTo(ERROR_OUTPUT, "\n",
+                    ListWithIdenticalEntries(prefixwidth+2, ' '),
+                    "@ ", location[1], ":", location[2]);
+        fi;
         if showlocals then
             PRETTY_PRINT_VARS(context);
         else
@@ -228,7 +236,7 @@ end);
 #
 Unbind(ErrorInner);
 BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
-    local   context, tracebackContext, mayReturnVoid, mayReturnObj,
+    local   context, tracebackContext, mayReturnVoid,
             lateMessage, x, prompt, res, errorLVars, errorTracebackLVars,
             kernelErrorLVars, justQuit, printEarlyMessage,
             printEarlyTraceback, printAutomaticTraceback, lastErrorStream;
@@ -260,17 +268,6 @@ BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
         fi;
     else
         mayReturnVoid := false;
-    fi;
-
-    if IsBound(options.mayReturnObj) then
-        mayReturnObj := options.mayReturnObj;
-        if not mayReturnObj in [false, true] then
-            PrintTo(ERROR_OUTPUT, "ErrorInner: option mayReturnObj must be true or false\n");
-            LEAVE_ALL_NAMESPACES();
-            JUMP_TO_CATCH(1);
-        fi;
-    else
-        mayReturnObj := false;
     fi;
 
     if IsBound(options.tracebackContext) then
@@ -312,9 +309,6 @@ BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
 
     printAutomaticTraceback := function()
         if IsBound(OnBreak) and IsFunction(OnBreak) then
-            if OnBreak = Where or OnBreak = WhereWithVars then
-                PrintTo(ERROR_OUTPUT, "Stack trace:\n");
-            fi;
             OnBreak();
         fi;
     end;
@@ -410,7 +404,7 @@ BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
         prompt := "brk> ";
     fi;
     if not justQuit then
-        res := SHELL(context,mayReturnVoid,mayReturnObj,true,prompt,false);
+        res := SHELL(context,mayReturnVoid,false,true,prompt,false);
     else
         res := fail;
     fi;
@@ -455,8 +449,7 @@ BIND_GLOBAL("ErrorNoReturn", function(arg)
         rec(
             context := ParentLVars(GetCurrentLVars()),
             mayReturnVoid := false,
-            mayReturnObj := false,
-            lateMessage := "type 'quit;' to quit to outer loop",
+            lateMessage := "you can enter 'quit;' to quit to outer loop",
         ),
         arg);
 end);

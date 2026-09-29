@@ -18,13 +18,15 @@ Stack trace:
    @ *stdin*:11
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:13
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> Where();
+Stack trace:
 *[1] l[[ 1 .. 3 ]] := 1;
    @ *stdin*:11
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> WhereWithVars();
+Stack trace:
 *[1] l[[ 1 .. 3 ]] := 1;
    @ *stdin*:11
   arguments: <none>
@@ -43,13 +45,15 @@ Stack trace:
    @ *stdin*:15
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:16
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> Where();
+Stack trace:
 *[1] 1 / 0
    @ *stdin*:15
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> WhereWithVars();
+Stack trace:
 *[1] 1 / 0
    @ *stdin*:15
   arguments: <none>
@@ -69,8 +73,9 @@ fi;
    @ *stdin*:18
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:19
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> Where();
+Stack trace:
 *[1] if x then
     return 1;
 fi;
@@ -78,6 +83,7 @@ fi;
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> WhereWithVars();
+Stack trace:
 *[1] if x then
     return 1;
 fi;
@@ -100,8 +106,9 @@ fi;
    @ *stdin*:21
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:22
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> Where();
+Stack trace:
 *[1] if 1 then
     return 1;
 fi;
@@ -109,6 +116,7 @@ fi;
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> WhereWithVars();
+Stack trace:
 *[1] if 1 then
     return 1;
 fi;
@@ -132,8 +140,9 @@ fi;
    @ *stdin*:24
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:25
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> Where();
+Stack trace:
 *[1] if 1 < 0 then
     return 1;
 elif 1 then
@@ -143,6 +152,7 @@ fi;
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> WhereWithVars();
+Stack trace:
 *[1] if 1 < 0 then
     return 1;
 elif 1 then
@@ -166,8 +176,9 @@ od;
    @ *stdin*:27
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:28
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> Where();
+Stack trace:
 *[1] while 1 do
     return 1;
 od;
@@ -175,6 +186,7 @@ od;
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> WhereWithVars();
+Stack trace:
 *[1] while 1 do
     return 1;
 od;
@@ -198,9 +210,10 @@ od;
    @ *stdin*:30
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:31
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> Where();
+Stack trace:
 *[1] Error( "You cannot loop over the integer ", n, " did you mean the range [1..", n, "]" );
    @ GAPROOT/lib/integer.gi:LINE
  [2] for i in 1 do
@@ -210,6 +223,7 @@ od;
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> WhereWithVars();
+Stack trace:
 *[1] Error( "You cannot loop over the integer ", n, " did you mean the range [1..", n, "]" );
    @ GAPROOT/lib/integer.gi:LINE
   arguments:
@@ -238,8 +252,9 @@ od;
    @ *stdin*:33
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:34
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> Where();
+Stack trace:
 *[1] for i in true do
     return 1;
 od;
@@ -247,6 +262,7 @@ od;
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> WhereWithVars();
+Stack trace:
 *[1] for i in true do
     return 1;
 od;
@@ -269,8 +285,9 @@ od;
    @ *stdin*:35
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:36
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> Where();
+Stack trace:
 *[1] for i in true do
     return 1;
 od;
@@ -278,6 +295,7 @@ od;
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> WhereWithVars();
+Stack trace:
 *[1] for i in true do
     return 1;
 od;
@@ -302,8 +320,9 @@ od;
    @ *stdin*:37
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:38
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> Where();
+Stack trace:
 *[1] for i in true do
     return 1;
 od;
@@ -311,6 +330,7 @@ od;
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> WhereWithVars();
+Stack trace:
 *[1] for i in true do
     return 1;
 od;
@@ -335,8 +355,9 @@ od;
    @ *stdin*:39
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:40
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> Where();
+Stack trace:
 *[1] for i in true do
     return 1;
 od;
@@ -344,6 +365,7 @@ od;
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> WhereWithVars();
+Stack trace:
 *[1] for i in true do
     return 1;
 od;
@@ -367,8 +389,9 @@ until 1;
    @ *stdin*:41
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:42
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> Where();
+Stack trace:
 *[1] repeat
     x := 1;
 until 1;
@@ -376,6 +399,7 @@ until 1;
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> WhereWithVars();
+Stack trace:
 *[1] repeat
     x := 1;
 until 1;
@@ -396,13 +420,15 @@ Stack trace:
    @ *stdin*:44
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:45
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> Where();
+Stack trace:
 *[1] Assert( 0, 1 );
    @ *stdin*:44
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> WhereWithVars();
+Stack trace:
 *[1] Assert( 0, 1 );
    @ *stdin*:44
   arguments: <none>
@@ -421,13 +447,15 @@ Stack trace:
    @ *stdin*:47
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:48
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> Where();
+Stack trace:
 *[1] Assert( 0, 1, "hello" );
    @ *stdin*:47
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> WhereWithVars();
+Stack trace:
 *[1] Assert( 0, 1, "hello" );
    @ *stdin*:47
   arguments: <none>
@@ -455,8 +483,9 @@ Stack trace:
    @ *stdin*:55
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:56
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> Where();
+Stack trace:
 *[1] return m[i][j];
    @ GAPROOT/lib/matrix.gi:LINE
  [2] ELM_LIST( m, row, col )
@@ -466,6 +495,7 @@ brk> Where();
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> WhereWithVars();
+Stack trace:
 *[1] return m[i][j];
    @ GAPROOT/lib/matrix.gi:LINE
   arguments:
@@ -501,5 +531,5 @@ Stack trace:
    @ GAPROOT/lib/oper1.g:LINE
 <function "InstallMethod">( <arguments> )
  called from read-eval loop at *stdin*:61
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> QUIT;

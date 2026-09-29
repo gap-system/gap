@@ -197,7 +197,7 @@ end);
 
 #############################################################################
 ##
-#F  SecHMSM( <hmsm> ) . . . . . . convert hour-min-sec-milli into milliseconds
+#F  SecHMSM( <hmsm> ) . . . . .  convert hour-min-sec-milli into milliseconds
 ##
 InstallGlobalFunction(SecHMSM , function ( hmsm )
     return [3600000, 60000, 1000, 1] * hmsm;
@@ -261,7 +261,7 @@ InstallGlobalFunction(StringPP, function( n )
 end);
 
 
-############################################################################
+#############################################################################
 ##
 #F  WordAlp( <alpha>, <nr> )  . . . . . .  <nr>-th word over alphabet <alpha>
 ##
@@ -601,7 +601,7 @@ end );
 
 #############################################################################
 ##
-#F  NormalizedWhitespace( <str> ) . . . . . . . copy of string with normalized
+#F  NormalizedWhitespace( <str> ) . . . . . .  copy of string with normalized
 #F  white space
 ##
 ##  doesn't work in place like the kernel function `NormalizeWhitespace'

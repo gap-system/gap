@@ -195,7 +195,7 @@ DeclareSynonym("IsMagmaIdeal", IsLeftMagmaIdeal and IsRightMagmaIdeal);
 ##
 ##  `MagmaIdeal' returns the magma containing the elements in the homogeneous
 ##  list <gens> and closed under left  and right multiplication by elements
-##  of the parent magma <D> in which it emeds.
+##  of the parent magma <D> in which it embeds.
 ##
 ##
 DeclareGlobalFunction( "MagmaIdeal" );

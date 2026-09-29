@@ -42,9 +42,8 @@ error as in the following example occurs and a break loop is entered:
 gap> IsNormal(2,2);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `IsNormal' on 2 arguments
-Stack trace:
 called from read-eval loop at *stdin*:1
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk>
 ]]></Log>
 <P/>
@@ -445,6 +444,10 @@ hour/minute format.
 that has passed since some fixed, but unspecified time in the past.
 
 This function is appropriate for doing wallclock time measurements.
+Only differences between two of its values are meaningful: despite the
+name, the values are not counted from 1-Jan-1970, and on most systems not
+from any particular date at all.  To find out what the current date and
+time are, use <Ref Func="CurrentSecondsSinceEpoch"/> instead.
 
 The actual resolution depends on the system that &GAP; is run on.
 Information about the used timers can be obtained by calling
@@ -918,30 +921,37 @@ gap> dive(100);
 gap> OnBreak:= function() Where(2); end;; # shorter traceback
 gap> dive(6000);
 Error, recursion depth trap (5000)
+Stack trace:
 *[1] dive( depth - 1 );
    @ *stdin*:1
  [2] dive( depth - 1 );
    @ *stdin*:1
 ...  at *stdin*:4
-you may 'return;'
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> return;
 gap> dive(11000);
 Error, recursion depth trap (5000)
+Stack trace:
 *[1] dive( depth - 1 );
    @ *stdin*:1
  [2] dive( depth - 1 );
    @ *stdin*:1
 ...  at *stdin*:5
-you may 'return;'
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> return;
 Error, recursion depth trap (10000)
+Stack trace:
 *[1] dive( depth - 1 );
    @ *stdin*:1
  [2] dive( depth - 1 );
    @ *stdin*:1
 ...  at *stdin*:5
-you may 'return;'
-brk> return;gap>
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
+brk> return;
+gap>
 ]]></Log>
 <P/>
 
@@ -976,20 +986,24 @@ gap> dive(100);
 Depth 100
 gap> dive(2500);
 Error, recursion depth trap (1000)
+Stack trace:
 *[1] dive( depth - 1 );
    @ *stdin*:4
  [2] dive( depth - 1 );
    @ *stdin*:4
 ...  at *stdin*:12
-you may 'return;'
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> return;
 Error, recursion depth trap (2000)
+Stack trace:
 *[1] dive( depth - 1 );
    @ *stdin*:4
  [2] dive( depth - 1 );
    @ *stdin*:4
 ...  at *stdin*:12
-you may 'return;'
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> GetRecursionDepth();
 0
 brk> return;

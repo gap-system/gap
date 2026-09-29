@@ -569,8 +569,8 @@ InstallGlobalFunction( AbsAndIrredModules, function( G, F, dim )
     m     := Length( pcgs );
 
     if m = 0 and (dim = 0 or Dimension( F ) <= dim) then
-        return [rec( irred  := TrivialModule( 0, F ),
-                     absirr := TrivialModule( 0, F ))];
+        return [pcgs, [rec( irred  := TrivialModule( 0, F ),
+                            absirr := TrivialModule( 0, F ))]];
     elif m = 0 then return [pcgs,[]]; fi;
 
     # the first step is separated - too many problems with empty lists

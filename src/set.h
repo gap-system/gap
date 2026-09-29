@@ -7,7 +7,7 @@
 **
 **  SPDX-License-Identifier: GPL-2.0-or-later
 **
-**  This file declaress the functions which mainly deal with proper sets.
+**  This file declares the functions which mainly deal with proper sets.
 **
 **  A *proper set* is a list that has no holes, no duplicates, and is sorted.
 **  For the full definition  of sets see chapter "Sets" in the {\GAP} Manual.

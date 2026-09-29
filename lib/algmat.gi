@@ -862,7 +862,7 @@ InstallMethod( IsUnit,
 ##  for arbitrary associative algebras the task is reduced to the
 ##  Gaussian matrix algebra case.
 ##
-##  The implementation of the characterisitc p>0 part is by Craig Struble.
+##  The implementation of the characteristic p>0 part is by Craig Struble.
 ##
 InstallMethod( RadicalOfAlgebra,
     "for associative Gaussian matrix algebra",

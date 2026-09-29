@@ -154,7 +154,7 @@ Compare( SumIntegers, 1, 10^9, 10^6); # 24.2 on 32 cores, 31.2 on 64 cores
 Compare( SumEulerByDefinition, 1, 10^4, 10^2); # 7.1 on 8 cores, 12.5 on 16, 19.5 on 32, 30.1 on 64
 Compare( SumEulerByDefinition, 1, 10^5, 10^2); # 7.62 on 8 cores, 13.3 on 16, 25.2 on 32 cores, 38x on 64 cores
 Compare( SummatoryLiouvilleFunction, 1, 10^7, 10^4); # 6.8 on 8 cores, 20x on 64 cores
-Compare( SummatoryLiouvilleFunction, 1, 10^7, 10^5); # 18x on 64 cores (24x speedup with with SCSCP on 64 cores)
+Compare( SummatoryLiouvilleFunction, 1, 10^7, 10^5); # 18x on 64 cores (24x speedup with SCSCP on 64 cores)
 Compare( SummatoryLiouvilleFunction, 1, 10^6, 10^3); # 6.1 on 8 cores, 16x on 64 cores
 Compare( SumEulerByFormula, 1, 10^7, 10^4); # 6.3 on 8 cores, 26x on 64 cores
 Compare( SumNrPrimeFactors, 1, 10^6, 10^3); # 28x on 64 cores

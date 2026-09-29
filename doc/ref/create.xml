@@ -999,6 +999,11 @@ eventually be defined, and that thus no syntax warnings pertaining to its use
 should be printed.
 <P/>
 
+It is allowed to call <Ref Func="DeclareGlobalName"/> several times with
+the same variable name, and it is also no problem to call this function
+after a value has been assigned to the variable.
+<P/>
+
 We recommend using <Ref Func="DeclareGlobalName"/> instead of <Ref
 Func="DeclareGlobalVariable"/> or <Ref Func="DeclareGlobalFunction"/>
 whenever possible.

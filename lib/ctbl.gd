@@ -1083,6 +1083,7 @@ DeclareAttributeSuppCT( "OrdinaryCharacterTable", IsGroup, [] );
 #############################################################################
 ##
 #A  AbelianInvariants( <tbl> )
+#A  ChiefLength( <tbl> )
 #A  CommutatorLength( <tbl> )
 #A  Exponent( <tbl> )
 #P  IsAbelian( <tbl> )
@@ -1105,6 +1106,7 @@ DeclareAttributeSuppCT( "OrdinaryCharacterTable", IsGroup, [] );
 ##  <ManSection>
 ##  <Heading>Group Operations Applicable to Character Tables</Heading>
 ##  <Attr Name="AbelianInvariants" Arg='tbl' Label="for a character table"/>
+##  <Attr Name="ChiefLength" Arg='tbl' Label="for a character table"/>
 ##  <Attr Name="CommutatorLength" Arg='tbl' Label="for a character table"/>
 ##  <Attr Name="Exponent" Arg='tbl' Label="for a character table"/>
 ##  <Prop Name="IsAbelian" Arg='tbl' Label="for a character table"/>
@@ -1139,6 +1141,8 @@ DeclareAttributeSuppCT( "OrdinaryCharacterTable", IsGroup, [] );
 ##  >               CharacterTable( SL( 2, 5 ) ) ];;
 ##  gap> List( tables, AbelianInvariants );
 ##  [ [ 3 ], [ 2 ], [  ], [  ] ]
+##  gap> List( tables, ChiefLength );
+##  [ 1, 3, 1, 2 ]
 ##  gap> List( tables, CommutatorLength );
 ##  [ 1, 1, 1, 1 ]
 ##  gap> List( tables, Exponent );
@@ -1192,6 +1196,7 @@ DeclareAttributeSuppCT( "OrdinaryCharacterTable", IsGroup, [] );
 ##  <#/GAPDoc>
 ##
 DeclareAttributeSuppCT( "AbelianInvariants", IsNearlyCharacterTable, [] );
+DeclareAttributeSuppCT( "ChiefLength", IsNearlyCharacterTable, [] );
 DeclareAttributeSuppCT( "CommutatorLength", IsNearlyCharacterTable, [] );
 DeclareAttributeSuppCT( "Exponent", IsNearlyCharacterTable, [] );
 DeclarePropertySuppCT( "IsAbelian", IsNearlyCharacterTable );
@@ -4297,7 +4302,7 @@ DeclareOperation( "SortedCharacters",
 ##  w.r.t.&nbsp;increasing class length, element order, or both.
 ##  <A>classes</A> and <A>orders</A> must be Booleans.
 ##  If <A>orders</A> is <K>true</K> then classes of element of smaller order
-##  precede classes of elements of larger order after peruting with
+##  precede classes of elements of larger order after permuting with
 ##  <M>\pi</M>.
 ##  If both <A>classes</A> and <A>orders</A> are <K>true</K> then
 ##  additionally classes of elements of the same order are sorted
@@ -4510,7 +4515,7 @@ DeclareAttributeSuppCT( "ClassPermutation", IsNearlyCharacterTable,
 ##
 
 
-##############################################################################
+#############################################################################
 ##
 #A  NormalSubgroupClassesInfo( <tbl> )
 ##
@@ -4576,7 +4581,7 @@ DeclareAttributeSuppCT( "ClassPermutation", IsNearlyCharacterTable,
 DeclareAttribute( "NormalSubgroupClassesInfo", IsOrdinaryTable, "mutable" );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  ClassPositionsOfNormalSubgroup( <tbl>, <N> )
 ##
@@ -4595,7 +4600,7 @@ DeclareAttribute( "NormalSubgroupClassesInfo", IsOrdinaryTable, "mutable" );
 DeclareGlobalFunction( "ClassPositionsOfNormalSubgroup" );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  NormalSubgroupClasses( <tbl>, <classes> )
 ##
@@ -4621,7 +4626,7 @@ DeclareGlobalFunction( "ClassPositionsOfNormalSubgroup" );
 DeclareGlobalFunction( "NormalSubgroupClasses" );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  FactorGroupNormalSubgroupClasses( <tbl>, <classes> )
 ##

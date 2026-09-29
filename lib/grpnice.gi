@@ -212,7 +212,7 @@ function( elm, G )
     nice := NiceMonomorphism( G );
     img  := ImagesRepresentative( nice, elm:actioncanfail:=true );
     return img<>fail and img in NiceObject( G )
-       and PreImagesRepresentative( nice, img ) = elm;
+       and PreImagesRepresentativeNC( nice, img ) = elm;
 end );
 
 
@@ -284,7 +284,7 @@ function( obj1, obj2 )
     img  := ImagesRepresentative( nice, obj2:actioncanfail:=true );
     if img = fail or
       not (img in ImagesSource(nice) and
-        PreImagesRepresentative(nice,img)=obj2) then
+        PreImagesRepresentativeNC(nice,img)=obj2) then
         TryNextMethod();
     fi;
     no:=NiceObject(obj1);
@@ -344,7 +344,7 @@ local mon,cl,clg,c,i;
   cl:=ConjugacyClasses(NiceObject(g));
   clg:=[];
   for i in cl do
-    c:=ConjugacyClass(g,PreImagesRepresentative(mon,Representative(i)));
+    c:=ConjugacyClass(g,PreImagesRepresentativeNC(mon,Representative(i)));
     c!.niceClass:=i;
     if HasStabilizerOfExternalSet(i) then
       SetStabilizerOfExternalSet(c,PreImages(mon,StabilizerOfExternalSet(i)));
@@ -363,9 +363,25 @@ GroupMethodByNiceMonomorphismCollColl( CoreOp,
     [ IsGroup, IsGroup ] );
 
 
-##############################################################################
+#############################################################################
 ##
-#M  DerivedLength( <G> ) . . . . . . . . . . . . . . derived length of a group
+#M  ChiefLength( <G> ) . . . . . . . . .  length of a chief series of a group
+##
+AttributeMethodByNiceMonomorphism( ChiefLength,
+    [ IsGroup ] );
+
+
+#############################################################################
+##
+#M  CommutatorLength( <G> )  . . . . . . . . . . commutator length of a group
+##
+AttributeMethodByNiceMonomorphism( CommutatorLength,
+    [ IsGroup ] );
+
+
+#############################################################################
+##
+#M  DerivedLength( <G> ) . . . . . . . . . . . . .  derived length of a group
 ##
 AttributeMethodByNiceMonomorphism( DerivedLength,
     [ IsGroup ] );
@@ -767,7 +783,7 @@ SubgroupMethodByNiceMonomorphism( SolvableRadical,
 InstallMethodWithRandomSource( Random,
     "for a random source and a group handled by nice monomorphism",
     [ IsRandomSource, IsGroup and IsHandledByNiceMonomorphism ], 0,
-    {rs, G} -> PreImagesRepresentative( NiceMonomorphism( G ),
+    {rs, G} -> PreImagesRepresentativeNC( NiceMonomorphism( G ),
                                   Random( rs, NiceObject( G ) ) ) );
 
 
@@ -783,7 +799,7 @@ local mon,cl,clg,c,i;
    cl:=RationalClasses(NiceObject(g));
    clg:=[];
    for i in cl do
-     c:=RationalClass(g,PreImagesRepresentative(mon,Representative(i)));
+     c:=RationalClass(g,PreImagesRepresentativeNC(mon,Representative(i)));
      if HasStabilizerOfExternalSet(i) then
        SetStabilizerOfExternalSet(c,PreImages(mon,StabilizerOfExternalSet(i)));
      fi;
@@ -806,7 +822,7 @@ function(g,u)
 local mon,rt;
    mon:=NiceMonomorphism(g);
    rt:=RightTransversal(ImagesSet(mon,g),ImagesSet(mon,u));
-   rt:=List(rt,i->RightCoset(u,PreImagesRepresentative(mon,i)));
+   rt:=List(rt,i->RightCoset(u,PreImagesRepresentativeNC(mon,i)));
    return rt;
 end);
 
@@ -878,7 +894,7 @@ local hom,rep;
   rep:= RepresentativeAction( NiceObject( G ),
             ImageElm( hom, a ), ImageElm( hom, b ), OnPoints );
   if rep<>fail then
-    rep:=PreImagesRepresentative(hom,rep);
+    rep:=PreImagesRepresentativeNC(hom,rep);
   fi;
   return rep;
 end);
@@ -921,22 +937,28 @@ end );
 
 #############################################################################
 ##
-#M  GroupGeneralMappingByImagesNC( <G>, <H>, <gens>, <imgs> ) . . . . make GHBI
+#M  GroupGeneralMappingByImagesNC( <G>, <H>, <gens>, <imgs> ) . . . make GHBI
 ##
 InstallMethod( GroupGeneralMappingByImagesNC,
    "from a group handled by a niceomorphism",true,
     [ IsGroup and IsHandledByNiceMonomorphism, IsGroup, IsList, IsList ], 0,
 function( G, H, gens, imgs )
-local nice,geni,map2,tmp;
-  if RUN_IN_GGMBI=true then
+local nice,geni,map2;
+  if ValueOption( "Run_In_GGMBI" ) = true then
+    TryNextMethod();
+  elif RUN_IN_GGMBI = true then
+    # Code was called that does not know about the global option.
+    # Make it work but print a warning.
+    Info( InfoWarning, 1,
+          "use the global option 'Run_In_GGMBI' not the global variable ",
+          "'RUN_IN_GGMBI', see '?Run_In_GGMBI'" );
     TryNextMethod();
   fi;
-  tmp := RUN_IN_GGMBI;
-  RUN_IN_GGMBI:=true;
+  PushOptions( rec( Run_In_GGMBI:= true ) );
   nice:=RestrictedNiceMonomorphism(G);
   geni:=List(gens,i->ImageElm(nice,i));
   map2:=GroupGeneralMappingByImagesNC(NiceObject(G),H,geni,imgs);
-  RUN_IN_GGMBI:=tmp;
+  PopOptions();
   return CompositionMapping(map2,nice);
 end );
 
@@ -956,36 +978,51 @@ InstallMethod( AsGroupGeneralMappingByImages,
   [IsGroupGeneralMapping and IsNiceMonomorphism],
   {} -> RankFilter( IsHandledByNiceMonomorphism ),
 function(hom)
-local h, tmp;
-  # we actually want to use the next method with `RUN_IN_GGMBI' set to
+  # we actually want to use the next method with `Run_In_GGMBI' set to
   # `true'. Therefore we redispatch, but will skip this method the second
   # time.
-  if RUN_IN_GGMBI=true then
+  if ValueOption( "Run_In_GGMBI" ) = true then
+    TryNextMethod();
+  elif RUN_IN_GGMBI = true then
+    # Code was called that does not know about the global option.
+    # Make it work but print a warning.
+    Info( InfoWarning, 1,
+          "use the global option 'Run_In_GGMBI' not the global variable ",
+          "'RUN_IN_GGMBI', see '?Run_In_GGMBI'" );
     TryNextMethod();
   fi;
-  tmp := RUN_IN_GGMBI;
-  RUN_IN_GGMBI:=true;
-  h:=AsGroupGeneralMappingByImages(hom);
-  RUN_IN_GGMBI:=tmp;
-  return h;
+  return AsGroupGeneralMappingByImages( hom : Run_In_GGMBI:= true );
 end);
 
 #############################################################################
 ##
+#M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . . . . . . .  via images
 #M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . . .  via images
 ##
+InstallMethod( PreImagesRepresentativeNC, "for PBG-Niceo",
+    FamRangeEqFamElm,
+    [ IsPreimagesByAsGroupGeneralMappingByImages and IsNiceMonomorphism,
+      IsMultiplicativeElementWithInverse ], 0,
+function( hom, elm )
+local p;
+  # avoid the double dispatch for `AsGroupGeneralMappingByImages'
+  PushOptions( rec( Run_In_GGMBI:= true ) );
+  p:=PreImagesRepresentativeNC( AsGroupGeneralMappingByImages( hom ), elm );
+  PopOptions();
+  return p;
+end );
+
 InstallMethod( PreImagesRepresentative, "for PBG-Niceo",
     FamRangeEqFamElm,
     [ IsPreimagesByAsGroupGeneralMappingByImages and IsNiceMonomorphism,
       IsMultiplicativeElementWithInverse ], 0,
 function( hom, elm )
-local p, tmp;
-  # avoid the double dispatch for `AsGroupGeneralMappingByImages'
-  tmp := RUN_IN_GGMBI;
-   RUN_IN_GGMBI:=true;
-  p:=PreImagesRepresentative( AsGroupGeneralMappingByImages( hom ), elm );
-  RUN_IN_GGMBI:=tmp;
-  return p;
+  if not ( elm in Range(hom) ) then
+    Error( "<elm> is not in the range of mapping <hom>" );
+  elif not ( elm in Image(hom) ) then
+    return fail;
+  fi;
+  return PreImagesRepresentativeNC( hom, elm );
 end );
 
 #############################################################################
@@ -1078,7 +1115,7 @@ InstallMethod( \[\],"enum-by-niceo", true,
 function( enum, pos )
 local img;
   img:=enum!.niceEnumerator[pos];
-  return PreImagesRepresentative(enum!.morphism,img);
+  return PreImagesRepresentativeNC(enum!.morphism,img);
 end);
 
 

@@ -16,5 +16,13 @@ Error, <matobj> * <mat> is not defined
 gap> mat * matobj;
 Error, <mat> * <matobj> is not defined
 
+# Powering matrices works.
+gap> mat:= Matrix( Integers, [ [ 1, 1 ], [ 0, 1 ] ] );;
+gap> Unpack( mat^2 ) = Unpack( mat )^2;
+true
+gap> mat:= Matrix( Rationals, [ [ 1, 1 ], [ 0, 1 ] ] );;
+gap> Unpack( mat^2 ) = Unpack( mat )^2;
+true
+
 #
 gap> STOP_TEST( "arith.tst" );

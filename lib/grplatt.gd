@@ -8,7 +8,7 @@
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
-##  This  file  contains declarations for subgroup latices
+##  This  file  contains declarations for subgroup lattices
 ##
 
 
@@ -436,7 +436,7 @@ DeclareGlobalFunction("TomDataSubgroupsAlmostSimple");
 ##  obtained as <A>lim</A>-fold iterated maximal subgroups.
 ##
 ##  If a function <A>cond</A> is given, only subgroups for which this
-##  function returns true (also for their intermediate overgroups) is
+##  function returns true (also for their intermediate overgroups) are
 ##  returned. If also a function <A>dosub</A> is given, maximal subgroups
 ##  are only attempted if this function returns true (this is separated for
 ##  performance reasons).

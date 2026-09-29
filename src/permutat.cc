@@ -113,13 +113,12 @@ DECL_MODULE_STATE Obj TmpPerm;
 #endif
 
 
-static UInt1 * UseTmpPerm(UInt size)
+static void UseTmpPerm(UInt size)
 {
     if (TmpPerm == (Obj)0)
         TmpPerm  = NewBag(T_PERM4, size);
     else if (SIZE_BAG(TmpPerm) < size)
         ResizeBag(TmpPerm, size);
-    return (UInt1 *)(ADDR_OBJ(TmpPerm) + 1);
 }
 
 template <typename T>
@@ -1035,7 +1034,7 @@ static inline Obj PermList(Obj list)
     GAP_ASSERT(IS_PLIST(list));
     degPerm = LEN_PLIST( list );
 
-    /* make sure that the global buffer bag is large enough for checkin*/
+    /* make sure that the global buffer bag is large enough for checking */
     UseTmpPerm(SIZEBAG_PERM<T>(degPerm));
 
     // allocate the bag for the permutation and get pointer
@@ -1703,7 +1702,7 @@ static inline Obj SMALLEST_GENERATOR_PERM(Obj perm)
             // we must raise the cycle into a power = pow mod gcd
             x = INT_INTOBJ( ModInt( pow, INTOBJ_INT( gcd ) ) );
 
-            /* find the smallest element in the cycle at such a positio*/
+            /* find the smallest element in the cycle at such a position */
             min = DEG_PERM<T>(perm)-1;
             n = 0;
             for ( q = p, l = 0; l < len; l++ ) {
@@ -1948,7 +1947,7 @@ FuncSPLIT_PARTITION(Obj self, Obj Ppoints, Obj Qnum, Obj jval, Obj g, Obj lst)
   }
 }
 
-/*****************************************************************************
+/****************************************************************************
 **
 *F  FuncDISTANCE_PERMS( <perm1>, <perm2> )
 **

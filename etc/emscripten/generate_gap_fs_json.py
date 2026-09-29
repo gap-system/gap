@@ -1,18 +1,11 @@
-import sys
+#!/usr/bin/env python3
+"""Read a list of file paths from stdin (one per line) and write them as a
+JSON array to gap-fs.json in the current directory."""
+
 import json
-import os
+import sys
 
-def main():
-    paths = [line.strip() for line in sys.stdin if line.strip()]
-
-    try:
-        with open('gap-fs.json', 'w', encoding='utf-8') as f:
-            json.dump(paths, f, separators=(',', ':'))
-            
-        print(f"Successfully wrote {len(paths)} files to gap-fs.json", file=sys.stderr)
-    except Exception as e:
-        print(f"Failed to write gap-fs.json: {e}", file=sys.stderr)
-        sys.exit(1)
-
-if __name__ == "__main__":
-    main()
+paths = [line.strip() for line in sys.stdin if line.strip()]
+with open("gap-fs.json", "w", encoding="utf-8") as f:
+    json.dump(paths, f, separators=(",", ":"))
+print(f"wrote {len(paths)} files to gap-fs.json", file=sys.stderr)

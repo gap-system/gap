@@ -17,6 +17,7 @@ gap> n:=Group((10,12)(14,15),(10,11)(13,15),(10,12,11),(11,12),
 > (1,3)(7,8)(10,12)(13,15,14)(16,17));;
 gap> Length(ComplementClassesRepresentatives(g,n));
 2
+#@if IsPackageMarkedForLoading( "perfgrp", "" )
 gap> g:=PerfectGroup(IsPermGroup,120,1);;
 gap> n:=Filtered(NormalSubgroups(g),i->IsElementaryAbelian(i) and Size(i)>1)[1];;
 gap> ocr:=OneCocycles(g,n);;
@@ -46,6 +47,7 @@ gap> List(com,Size);
 [ 60, 60, 60, 60 ]
 gap> List(com,i->Number(com,j->RepresentativeAction(g,i,j)<>fail));
 [ 1, 1, 1, 1 ]
+#@fi
 
 # that's all, folks
 gap> STOP_TEST("onecohom.tst");

@@ -70,7 +70,7 @@ InstallMethod( ObjByExtRep,
     end );
 
 
-############################################################################
+#############################################################################
 ##
 #M  MappedExpression( <expr>, <gens1>, <gens2> )
 ##
@@ -136,7 +136,7 @@ BindGlobal( "MappedExpressionForElementOfFreeAssociativeAlgebra",
       mapped:= MappedWord( expr[1] );
     fi;
 
-    # Avoid to multiply explicitly with 1 in order to avoid deep trees.
+    # Avoid multiplying explicitly with 1 in order to avoid deep trees.
     if expr[2] <> one then
       mapped:= expr[2] * mapped;
     fi;
@@ -375,7 +375,7 @@ InstallMethod( FreeGeneratorsOfFpAlgebra,
     end );
 
 
-############################################################################
+#############################################################################
 ##
 #M  RelatorsOfFpAlgebra( <A> )
 ##
@@ -705,7 +705,7 @@ InstallHandlingByNiceBasis( "IsFpAlgebraElementsSpace", rec(
       if hom = fail then
         TryNextMethod();
       fi;
-      return PreImagesRepresentative( hom, r );
+      return PreImagesRepresentativeNC( hom, r );
       end ) );
 
 

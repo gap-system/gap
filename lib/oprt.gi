@@ -1157,7 +1157,7 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,r,
         getrep, # function to get representative
         actsinv,# inverses of acts
         stopat, # index at which increasal stopped
-        notinc, # nr of steps in whiuch we did not increase
+        notinc, # nr of steps in which we did not increase
         stabsub,# stabilizer seed
         doml,   # maximal orbit length
         dict,   # dictionary
@@ -1788,8 +1788,7 @@ local   list,  ps,  p,  i,  gen,  img,  pos,  imgs,  hom,orb,ran,xset;
   imgs := List( list, PermList );
   xset := ExternalSet( G, D{orb}, gens, acts, act);
   SetBaseOfGroup( xset, start );
-  p:=RUN_IN_GGMBI; # no niceomorphism translation here
-  RUN_IN_GGMBI:=true;
+  PushOptions( rec( Run_In_GGMBI:= true ) ); # no niceomorphism translation here
   hom := ActionHomomorphism(xset,"surjective" );
     ran:= Group( imgs, () );  # `imgs' has been created with `PermList'
   SetRange(hom,ran);
@@ -1801,7 +1800,7 @@ local   list,  ps,  p,  i,  gen,  img,  pos,  imgs,  hom,orb,ran,xset;
   # this to get images quickly, using a stabilizer chain in the permutation
   # group
   SetFilterObj( hom, IsActionHomomorphismByBase );
-  RUN_IN_GGMBI:=p;
+  PopOptions();
   return hom;
 end );
 
@@ -1919,8 +1918,7 @@ local dict,p,i,img,imgs,hom,permimg,orb,imgn,ran,D,xset;
     fi;
   fi;
 
-  p:=RUN_IN_GGMBI; # no niceomorphism translation here
-  RUN_IN_GGMBI:=true;
+  PushOptions( rec( Run_In_GGMBI:= true ) ); # no niceomorphism translation here
   hom := ActionHomomorphism( xset,"surjective" );
   SetRange(hom,ran);
   SetImagesSource(hom,ran);
@@ -1931,7 +1929,7 @@ local dict,p,i,img,imgs,hom,permimg,orb,imgn,ran,D,xset;
   if HasBaseOfGroup(xset) then
     SetFilterObj( hom, IsActionHomomorphismByBase );
   fi;
-  RUN_IN_GGMBI:=p;
+  PopOptions();
 
   return hom;
 end);
@@ -2071,6 +2069,11 @@ end );
 InstallGlobalFunction( Permutation, function( arg )
     local   g,  D,  gens,  acts,  act,  xset,  hom;
 
+    # test arguments
+    if Length( arg ) < 2 or Length( arg ) > 5 then
+      Error("usage: Permutation(<g>,<Omega>[,<gens>,<acts>][,<act>])");
+    fi;
+
     # Get the arguments.
     g := arg[ 1 ];
     if Length( arg ) = 2  and  IsExternalSet( arg[ 2 ] )  then
@@ -2167,6 +2170,11 @@ end );
 InstallGlobalFunction( PermutationCycle, function( arg )
     local   g,  D,  pnt,  gens,  acts,  act,  xset,  hom;
 
+    # test arguments
+    if Length( arg ) < 3 or Length( arg ) > 6 then
+      Error("usage: PermutationCycle(<g>,<Omega>,<pnt>[,<gens>,<acts>][,<act>])");
+    fi;
+
     # Get the arguments.
     g := arg[ 1 ];
     if Length( arg ) = 3  and  IsExternalSet( arg[ 2 ] )  then
@@ -2239,6 +2247,11 @@ end );
 InstallGlobalFunction( Cycle, function( arg )
     local   g,  D,  pnt,  gens,  acts,  act,  xset,  hom,  p;
 
+    # test arguments
+    if Length( arg ) < 2 or Length( arg ) > 6 then
+      Error("usage: Cycle(<g>,<Omega>,<pnt>[,<gens>,<acts>][,<act>])");
+    fi;
+
     # Get the arguments.
     g := arg[ 1 ];
     if Length( arg ) = 3  and  IsExternalSet( arg[ 2 ] )  then
@@ -2277,8 +2290,9 @@ InstallGlobalFunction( Cycle, function( arg )
     fi;
 
     if IsBound( gens )  and  not IsIdenticalObj( gens, acts )  then
-        hom := ActionHomomorphismAttr( ExternalOrbitOp
-               ( GroupByGenerators( gens ), D, pnt, gens, acts, act ) );
+        hom := ActionHomomorphismAttr( ExternalSetByFilterConstructor
+                       ( IsExternalSet,
+                         GroupByGenerators( gens ), D, gens, acts, act ) );
         return D{ CycleOp( ImagesRepresentative( hom, g ),
                        PositionCanonical( D, pnt ), OnPoints ) };
     elif IsBound( D )  then
@@ -2327,6 +2341,11 @@ end );
 ##
 InstallGlobalFunction( Cycles, function( arg )
     local   g,  D,  gens,  acts,  act,  xset,  hom;
+
+    # test arguments
+    if Length( arg ) < 2 or Length( arg ) > 5 then
+      Error("usage: Cycles(<g>,<Omega>[,<gens>,<acts>][,<act>])");
+    fi;
 
     # Get the arguments.
     g := arg[ 1 ];
@@ -2535,8 +2554,9 @@ InstallGlobalFunction( CycleLength, function( arg )
     local   g,  D,  pnt,  gens,  acts,  act,  xset,  hom,  p;
 
     # test arguments
-    if Length(arg)<2 or not IsMultiplicativeElementWithInverse(arg[1]) then
-      Error("usage: CycleLength(<g>,<D>,<pnt>[,<act>])");
+    if Length(arg)<2 or Length(arg)>6
+       or not IsMultiplicativeElementWithInverse(arg[1]) then
+      Error("usage: CycleLength(<g>,<Omega>,<pnt>[,<gens>,<acts>][,<act>])");
     fi;
 
     # Get the arguments.
@@ -2570,7 +2590,8 @@ InstallGlobalFunction( CycleLength, function( arg )
         gens := arg[ p + 1 ];
         acts := arg[ p + 2 ];
         if not IsIdenticalObj( gens, acts )  then
-          xset:=ExternalOrbitOp(GroupByGenerators(gens),D,pnt,gens,acts,act);
+          xset:= ExternalSetByFilterConstructor( IsExternalSet,
+                     GroupByGenerators( gens ), D, gens, acts, act );
         fi;
       fi;
     fi;
@@ -2607,8 +2628,9 @@ InstallGlobalFunction( CycleLengths, function( arg )
     local   g,  D,  gens,  acts,  act,  xset,  hom;
 
     # test arguments
-    if Length(arg)<2 or not IsMultiplicativeElementWithInverse(arg[1]) then
-      Error("usage: CycleLengths(<g>,<D>[,<act>])");
+    if Length(arg)<2 or Length(arg)>5
+       or not IsMultiplicativeElementWithInverse(arg[1]) then
+      Error("usage: CycleLengths(<g>,<Omega>[,<gens>,<acts>][,<act>])");
     fi;
 
     # Get the arguments.
@@ -2920,7 +2942,7 @@ local   G,  D,  d,  e,  gens,  acts,  act,  xset,  hom,  p,  rep;
       rep := RepresentativeActionOp( ImagesSource( hom ), d, e,
                       OnPoints );
       if rep <> fail  then
-        rep := PreImagesRepresentative( hom, rep );
+        rep := PreImagesRepresentativeNC( hom, rep );
       fi;
       return rep;
     elif IsBound( D )  then
@@ -3374,12 +3396,13 @@ end );
 
 #############################################################################
 ##
+#M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . . . . . .  build matrix
 #M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . .  build matrix
 ##
-InstallMethod( PreImagesRepresentative,"IsLinearActionHomomorphism",
+InstallMethod( PreImagesRepresentativeNC,"IsLinearActionHomomorphism",
   FamRangeEqFamElm, [ IsLinearActionHomomorphism, IsPerm ], 0,
 function( hom, elm )
-  local   V, G, Grep, xset,lab,f;
+  local   V, G, Grep, filt, R, xset,lab,f;
 
   # is this method applicable? Test whether the domain contains a vector
   # space basis (respectively just get this basis).
@@ -3388,31 +3411,50 @@ function( hom, elm )
     TryNextMethod();
   fi;
 
-  # PreImagesRepresentative does not test membership
+  # PreImagesRepresentativeNC does not test membership
   #if not elm in Image( hom )  then return fail; fi;
   xset:=UnderlyingExternalSet(hom);
   V := HomeEnumerator(xset);
   G:= Source( hom );
   Grep:= Representative( G );
+  filt:= ConstructingFilter( Grep );
   f:=DefaultFieldOfMatrixGroup(G);
-
+  if HasBaseDomain( Grep ) then
+    R:= BaseDomain( Grep );
+  else
+    R:= f;
+  fi;
+#TODO: Here `BaseDomain( G )` should be used, once it is implemented.
   if not IsBound(hom!.linActBasisPositions) then
     hom!.linActBasisPositions:=List(lab,i->PositionCanonical(V,i));
   fi;
   if not IsBound(hom!.linActInverse) then
-    lab:=ImmutableMatrix(f, Matrix( lab, Grep ));
+    # Create a matrix whose `BaseDomain` is the same as that of the group.
+    lab:=ImmutableMatrix(f, Matrix( filt, R, lab ));
     hom!.linActInverse:=Inverse(lab);
   fi;
 
   elm:=OnTuples(hom!.linActBasisPositions,elm); # image points
   elm:=V{elm}; # the corresponding vectors
-  elm:=ImmutableMatrix(f, Matrix( elm, Grep ));
+  elm:=ImmutableMatrix(f, Matrix( filt, R, elm ));
 
   return hom!.linActInverse*elm;
 end );
 
+InstallMethod( PreImagesRepresentative,"IsLinearActionHomomorphism",
+  FamRangeEqFamElm, [ IsLinearActionHomomorphism, IsPerm ], 0,
+function( hom, elm )
+  if not ( elm in Range( hom ) ) then
+    Error( "<elm> is not in the range of mapping <hom>" );
+  elif not ( elm in Image( hom ) ) then
+    return fail;
+  fi;
+  return PreImagesRepresentativeNC( hom, elm );
+end );
+
 #############################################################################
 ##
+#M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . . . . . .  build matrix
 #M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . .  build matrix
 ##
 ##  The idea is as follows.
@@ -3434,10 +3476,10 @@ end );
 ##  matrix group contains all scalar matrices, or we know that the preimage
 ##  has determinant $1$ and taking the root in question is unique.
 ##
-InstallMethod( PreImagesRepresentative,"IsProjectiveActionHomomorphism",
+InstallMethod( PreImagesRepresentativeNC,"IsProjectiveActionHomomorphism",
   FamRangeEqFamElm, [ IsProjectiveActionHomomorphism, IsPerm ], 0,
 function( hom, elm )
-  local   V,  G, Grep, mat, xset,lab,dim,sol,i;
+  local   V,  G, Grep, filt, R, mat, xset,lab,dim,sol,i;
 
   # is this method applicable? Test whether field
   # finite, that the domain contains a vector
@@ -3450,18 +3492,24 @@ function( hom, elm )
     TryNextMethod();
   fi;
 
-  # PreImagesRepresentative does not test membership
+  # PreImagesRepresentativeNC does not test membership
   #if not elm in Image( hom )  then return fail; fi;
   xset:=UnderlyingExternalSet(hom);
   V := HomeEnumerator(xset);
   G:= Source( hom );
   Grep:= Representative( G );
+  filt:= ConstructingFilter( Grep );
+  if HasBaseDomain( Grep ) then
+    R:= BaseDomain( Grep );
+  else
+    R:= DefaultFieldOfMatrixGroup(G);
+  fi;
   dim:=DimensionOfMatrixGroup(G);
 
   elm:=OnTuples(hom!.projActBasisPositions,elm); # image points
   elm:=V{elm}; # the corresponding vectors
 
-  mat:= Matrix( List( elm{ [ 1 .. dim ] }, ShallowCopy ), Grep );
+  mat:= Matrix( filt, R, List( elm{ [ 1 .. dim ] }, ShallowCopy ) );
   sol:=SolutionMat(mat,elm[dim+1]);
   for i in [1..dim] do
     MultMatrixRow( mat, i, sol[i] );
@@ -3480,6 +3528,17 @@ function( hom, elm )
   return MakeImmutable( mat );
 end);
 
+InstallMethod( PreImagesRepresentative,"IsProjectiveActionHomomorphism",
+  FamRangeEqFamElm, [ IsProjectiveActionHomomorphism, IsPerm ], 0,
+function( hom, elm )
+    if not ( elm in Range( hom ) ) then
+        Error( "<elm> is not in the range of mapping <hom>" );
+    elif not ( elm in Image( hom ) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentativeNC( hom, elm );
+end);
+
 #############################################################################
 ##
 #A  LinearActionBasis(<hom>)
@@ -3487,7 +3546,7 @@ end);
 InstallMethod(LinearActionBasis,"find basis in domain",true,
   [IsLinearActionHomomorphism],0,
 function(hom)
-local xset, base, M, D, b, t, i, r, pos, v;
+local xset, base, M, filt, R, D, b, t, i, r, pos, v;
   xset:=UnderlyingExternalSet(hom);
   if Size(xset)=0 then
     return fail;
@@ -3497,8 +3556,13 @@ local xset, base, M, D, b, t, i, r, pos, v;
     base:= BaseOfGroup(xset);
     if IsMatrix( base ) then
       M:= base;
-    elif ForAll( base, IsVectorObj ) then
-      M:= Matrix( BaseOfGroup( xset ), One( ActingDomain( xset ) ) );
+    elif ForAll( base, IsVectorObj and HasBaseDomain ) then
+      # All entries of 'base' have the same 'BaseDomain'.
+      filt:= ConstructingFilter( Representative( ActingDomain( xset ) ) );
+      R:= BaseDomain( base[1] );
+      M:= Matrix( filt, R, base );
+    else
+      Error( "unsupported 'BaseOfGroup' value for <xset>" );
     fi;
     if RankMat( M ) = NrCols( M ) then
       # this implies injectivity
@@ -3561,7 +3625,7 @@ end);
 InstallOtherMethod(LinearActionBasis,"projective with extra vector",true,
   [IsProjectiveActionHomomorphism],0,
 function(hom)
-local xset,G,Grep,D,b,t,i,r,binv,pos,dets,roots,dim,f,v;
+local xset,G,Grep,filt,R,D,b,t,i,r,binv,pos,dets,roots,dim,f,v;
   xset:=UnderlyingExternalSet(hom);
   if Size(xset)=0 then
     return fail;
@@ -3570,9 +3634,14 @@ local xset,G,Grep,D,b,t,i,r,binv,pos,dets,roots,dim,f,v;
   # will the determinants suffice to get suitable scalars?
   G:= Source(hom);
   Grep:= Representative( G );
+  filt:= ConstructingFilter( Grep );
   dim:=DimensionOfMatrixGroup(G);
   f:=DefaultFieldOfMatrixGroup(G);
-
+  if HasBaseDomain( Grep ) then
+    R:= BaseDomain( Grep );
+  else
+    R:= f;
+  fi;
   roots:=Set(RootsOfUPol(f,X(f)^dim-1));
   D:=List(GeneratorsOfGroup(G),DeterminantMat);
 
@@ -3621,7 +3690,7 @@ local xset,G,Grep,D,b,t,i,r,binv,pos,dets,roots,dim,f,v;
   fi;
 
   # try to find a vector that has nonzero coefficients for all b
-  binv:= Inverse( ImmutableMatrix( f, Matrix( b, Grep ) ) );
+  binv:= Inverse( ImmutableMatrix( f, Matrix( filt, R, b ) ) );
   while i<=Length(D) do
     if ForAll( Unpack( D[i] * binv ), x -> not IsZero(x) ) then
 #TODO: get rid of 'Unpack'?

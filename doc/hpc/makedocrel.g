@@ -2,16 +2,7 @@
 ##  mkindex, dvips
 ##
 
-GAPInfo.ManualDataHPC:= rec(
-  pathtodoc:= ".",
-  main:= "main.xml",
-  bookname:= "hpc",
-  pathtoroot:= "../..",
-
-  files:= [
-  ],
- );;
-
+Read( "makedocreldata.g" );
 
 SetGapDocLaTeXOptions("nocolor", rec(Maintitlesize :=
 "\\fontsize{36}{38}\\selectfont"));

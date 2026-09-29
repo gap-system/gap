@@ -50,7 +50,7 @@ InstallMethod( ViewString, "for macfloats", [ IsIEEE754FloatRep ],
 
 #############################################################################
 ##
-#M  Int( x ) . . . . . . . . . . . . . . . . . . . . . . . . . . . for macfloats
+#M  Int( x ) . . . . . . . . . . . . . . . . . . . . . . . . .  for macfloats
 ##
 InstallMethod( Int, "for macfloats", true, [ IsIEEE754FloatRep ], 0, INTFLOOR_MACFLOAT );
 

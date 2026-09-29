@@ -127,7 +127,7 @@ static inline void WRITE_SLOT(Obj container, int slot, Obj elm)
 static void PrintObjSet(Obj set)
 {
   UInt i, size = CONST_ADDR_WORD(set)[OBJSET_SIZE];
-  Int comma = 0;
+  BOOL comma = FALSE;
   Pr("OBJ_SET([ ", 0, 0);
   for (i=0; i < size; i++) {
     Obj obj = READ_SLOT(set, i);
@@ -135,7 +135,7 @@ static void PrintObjSet(Obj set)
       if (comma) {
         Pr(", ", 0, 0);
       } else {
-        comma = 1;
+        comma = TRUE;
       }
       PrintObj(obj);
     }
@@ -146,7 +146,7 @@ static void PrintObjSet(Obj set)
 static void PrintObjMap(Obj map)
 {
   UInt i, size = CONST_ADDR_WORD(map)[OBJSET_SIZE];
-  Int comma = 0;
+  BOOL comma = FALSE;
   Pr("OBJ_MAP([ ", 0, 0);
   for (i=0; i < size; i++) {
     Obj obj = READ_SLOT(map, i * 2);
@@ -154,7 +154,7 @@ static void PrintObjMap(Obj map)
       if (comma) {
         Pr(", ", 0, 0);
       } else {
-        comma = 1;
+        comma = TRUE;
       }
       PrintObj(obj);
       Pr(", ", 0, 0);

@@ -773,7 +773,7 @@ end);
 InstallMethod(IsGroupHClass, "for Green's H-class", true,
     [IsGreensHClass], 0, h->ForAny(h, IsIdempotent));
 
-############################################################################
+#############################################################################
 ##
 #M  GroupHClassOfGreensDClass( <Dclass> )
 ##
@@ -1299,7 +1299,7 @@ end);
 ########
 ########
 
-InstallMethod(PreImagesRepresentative,  "for semigroup homomorphism by images",
+InstallMethod(PreImagesRepresentativeNC, "for semigroup homomorphism by images",
               FamRangeEqFamElm,
               [IsSemigroupHomomorphism and IsSemigroupHomomorphismByImagesRep, IsMultiplicativeElement],
 function(hom, x)

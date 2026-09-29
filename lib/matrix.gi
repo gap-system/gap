@@ -120,7 +120,7 @@ InstallGlobalFunction(PrintArray,function( array )
 end);
 
 
-##########################################################################
+#############################################################################
 ##
 #M  Display( <mat> )
 ##
@@ -254,7 +254,14 @@ InstallMethod( IsLowerTriangularMatrix,
 ##
 InstallMethod( IsSquareMatrix,
     "for a matrix",
-    [ IsMatrixOrMatrixObj ],
+    [ IsMatrix ],
+    function( mat )
+    return IsRectangularTable( mat ) and NrRows( mat ) = NrCols( mat );
+    end );
+
+InstallMethod( IsSquareMatrix,
+    "for a matrix object",
+    [ IsMatrixObj ],
     function( mat )
     return NrRows( mat ) = NrCols( mat );
     end );
@@ -567,7 +574,7 @@ BindGlobal( "Matrix_CharacteristicPolynomialSameField",
 end );
 
 
-##########################################################################
+#############################################################################
 ##
 #F  Matrix_MinimalPolynomialSameField( <fld>, <mat>, <ind> )
 ##
@@ -642,7 +649,7 @@ BindGlobal( "Matrix_MinimalPolynomialSameField", function( fld, mat, ind )
 end );
 
 
-##########################################################################
+#############################################################################
 ##
 #M  Display( <ffe-mat> )
 ##
@@ -733,7 +740,7 @@ function( m )
 end );
 
 
-##########################################################################
+#############################################################################
 ##
 #M  Display( <ZmodnZ-mat> )
 ##
@@ -805,7 +812,7 @@ InstallMethod( CharacteristicPolynomial, "spinning over field",
         fi;
         return false;
     end,
-    [ IsField, IsField, IsOrdinaryMatrix, IsPosInt ],
+    [ IsField, IsField, IsMatrixOrMatrixObj, IsPosInt ],
     function( F, E, mat, inum )
         local B;
 
@@ -824,7 +831,7 @@ InstallMethod( CharacteristicPolynomial, "spinning over field",
 
 InstallMethod( CharacteristicPolynomialMatrixNC, "spinning over field",
     IsElmsCollsX,
-    [ IsField, IsOrdinaryMatrix, IsPosInt ],
+    [ IsField, IsMatrixOrMatrixObj, IsPosInt ],
   Matrix_CharacteristicPolynomialSameField);
 
 InstallOtherMethod( CharacteristicPolynomial,
@@ -868,7 +875,7 @@ InstallOtherMethod( CharacteristicPolynomialMatrixNC,
 InstallMethod( MinimalPolynomial,
     "spinning over field",
     IsElmsCollsX,
-    [ IsField, IsOrdinaryMatrix, IsPosInt ],
+    [ IsField, IsMatrixOrMatrixObj, IsPosInt ],
 function( F, mat,inum )
     local fld, B;
 
@@ -905,7 +912,7 @@ end);
 
 InstallMethod( MinimalPolynomialMatrixNC, "spinning over field",
     IsElmsCollsX,
-    [ IsField, IsOrdinaryMatrix, IsPosInt ],
+    [ IsField, IsMatrixOrMatrixObj, IsPosInt ],
   Matrix_MinimalPolynomialSameField);
 
 InstallOtherMethod( MinimalPolynomial,
@@ -1456,6 +1463,15 @@ InstallMethod( RowsOfMatrix,
     [ IsMatrix and IsPlistRep ],
     Immutable );
 
+# The following should be better than the generic method for
+# matrix objects for 'IsMatrixOrMatrixObj',
+# which first 'Unpack's the matrix and then
+# creates new vector objects from the rows of the result.
+InstallMethod( RowsOfMatrix,
+    "generic method for a matrix that is a list",
+    [ IsMatrix ],
+    PlainListCopy );
+
 InstallMethod( NumberRows,
     "generic method for a (perhaps empty) matrix",
     [ IsMatrix ],
@@ -1588,7 +1604,7 @@ end);
 ##
 InstallMethod( DeterminantMatDestructive,
     "fraction-free method",
-    [ IsOrdinaryMatrix and IsMutable],
+    [ IsMatrixOrMatrixObj and IsMutable],
     function ( mat )
     local   det, sgn, row, zero, m, i, j, k, mult, row2, piv;
 
@@ -1659,7 +1675,7 @@ end);
 ##  through here also.
 ##
 InstallMethod( DeterminantMatDestructive,"non fraction free",
-    [ IsOrdinaryMatrix and IsFFECollColl and IsMutable],
+    [ IsMatrixOrMatrixObj and IsFFECollColl and IsMutable],
 function( mat )
     local   m,  zero,  det,  sgn,  k,  j,  row,  l, row2, x;
 
@@ -1734,7 +1750,7 @@ InstallMethod( DeterminantMat,
     end );
 
 InstallMethod( DeterminantMatDestructive,"nonprime residue rings",
-    [ IsOrdinaryMatrix and
+    [ IsMatrixOrMatrixObj and
     CategoryCollections(CategoryCollections(IsZmodnZObjNonprime)) and IsMutable],
   DeterminantMatDivFree);
 
@@ -1770,7 +1786,7 @@ InstallMethod( DeterminantMatDestructive,"nonprime residue rings",
 ##
 InstallMethod( DeterminantMatDivFree,
     "Division-free method",
-    [ IsMatrix ],
+    [ IsMatrixOrMatrixObj ],
     function ( M )
         local u,v,w,i,   ## indices
               a,b,c,x,y, ## temp indices
@@ -1834,7 +1850,7 @@ InstallMethod( DeterminantMatDivFree,
                     for w in [u+1..n] do
 #T for b in [ n-u, n-u-1 .. 1 ] do
 
-                        ## translate indices to lower triangluar coordinates
+                        ## translate indices to lower triangular coordinates
                         ##
                         a := n-u+1; b := n-w+1; c := n-v+1;
 #T move a to for u ...
@@ -2326,7 +2342,7 @@ end );
 ##
 InstallMethod( NullspaceMat,
     "generic method for ordinary matrices",
-    [ IsOrdinaryMatrix ],
+    [ IsMatrixOrMatrixObj ],
     mat -> SemiEchelonMatTransformation(mat).relations );
 
 InstallOtherMethod(NullspaceMat,"matrix objects",[IsMatrixObj],
@@ -2347,7 +2363,7 @@ end);
 
 InstallMethod( NullspaceMatDestructive,
     "generic method for ordinary matrices",
-    [ IsOrdinaryMatrix  and IsMutable],
+    [ IsMatrixOrMatrixObj  and IsMutable],
     mat -> SemiEchelonMatTransformationDestructive(mat).relations );
 
 InstallOtherMethod( TriangulizedNullspaceMat,
@@ -2372,7 +2388,7 @@ end );
 
 InstallMethod( TriangulizedNullspaceMatNT,
     "generic method",
-    [ IsOrdinaryMatrix ],
+    [ IsMatrixOrMatrixObj ],
     function( mat )
     local   nullspace, n, empty, i, k, row, zero, one;#
 
@@ -2416,7 +2432,7 @@ InstallMethod( TriangulizedNullspaceMatNT,
 end );
 
 #InstallMethod(TriangulizedNullspaceMat,"generic method",
-#    [IsOrdinaryMatrix],
+#    [IsMatrixOrMatrixObj],
 #    function ( mat )
 #    # triangulize the transposed of the matrix
 #    return TriangulizedNullspaceMatNT(
@@ -2424,7 +2440,7 @@ end );
 #end );
 
 #InstallMethod(TriangulizedNullspaceMatDestructive,"generic method",
-#    [IsOrdinaryMatrix],
+#    [IsMatrixOrMatrixObj],
 #    function ( mat )
 #    # triangulize the transposed of the matrix
 #    return TriangulizedNullspaceMatNT(
@@ -2536,7 +2552,7 @@ InstallOtherMethod( ProjectiveOrder,
 ##
 InstallOtherMethod( RankMatDestructive,
     "generic method for mutable matrices",
-    [ IsMatrix and IsMutable ],
+    [ IsMatrixOrMatrixObj and IsMutable ],
     function( mat )
     mat:= SemiEchelonMatDestructive( mat );
     if mat <> fail then
@@ -2547,7 +2563,7 @@ InstallOtherMethod( RankMatDestructive,
 
 InstallOtherMethod( RankMat,
     "generic method for matrices",
-    [ IsMatrix ],
+    [ IsMatrixOrMatrixObj ],
     mat -> RankMatDestructive( MutableCopyMatrix( mat ) ) );
 
 
@@ -2884,7 +2900,7 @@ function(mat)
 end);
 
 
-############################################################################
+#############################################################################
 ##
 
 #M  IsMonomialMatrix( <mat> )
@@ -2917,7 +2933,7 @@ InstallMethod( IsMonomialMatrix,
 end );
 
 
-##########################################################################
+#############################################################################
 ##
 #M  InverseMatMod( <cyc-mat>, <integer> )
 ##
@@ -3156,7 +3172,7 @@ end );
 #                   vec );
 #end );
 
-############################################################################
+#############################################################################
 ##
 #M  SumIntersectionMat( <M1>, <M2> )  . .  sum and intersection of two spaces
 ##
@@ -3475,7 +3491,7 @@ InstallGlobalFunction( BaseFixedSpace, function( matrices )
 end );
 
 
-##########################################################################
+#############################################################################
 ##
 #F  BaseSteinitzVectors( <bas>, <mat> )
 ##
@@ -3951,7 +3967,7 @@ InstallGlobalFunction( ReflectionMat, function( arg )
 end );
 
 
-#########################################################################
+#############################################################################
 ##
 #M  RandomInvertibleMatrix( [<filt>, ][<rs>, ]<R>, <m> )
 #M  RandomInvertibleMatrix( [<rs>, ]<m>, <M> )
@@ -4016,11 +4032,11 @@ InstallMethod( RandomInvertibleMatrix,
     end );
 
 
-#########################################################################
+#############################################################################
 ##
 #F  RandomInvertibleMat( [rs ,] <m> [, <R>] ) . . . make a random invertible matrix
 ##
-##  'RandomInvertibleMat' returns a invertible   random matrix with  <m> rows
+##  'RandomInvertibleMat' returns an invertible   random matrix with  <m> rows
 ##  and columns  with elements  taken from  the  ring <R>, which defaults  to
 ##  'Integers'.
 ##
@@ -4065,7 +4081,7 @@ InstallGlobalFunction( RandomInvertibleMat, function ( arg )
 end );
 
 
-#########################################################################
+#############################################################################
 ##
 #M  RandomMatrix( [<filt>, ][<rs>, ]<R>, <m>, <n> )
 #M  RandomMatrix( [<rs>, ]<m>, <n>, <M> )
@@ -4259,7 +4275,7 @@ InstallGlobalFunction( SimultaneousEigenvalues,
             eispa,   # eigenspaces of the matrices
             eigen,   # exponents of simultaneous eigenvalues
             I,       # identity matrix
-            w,       # ksi^w is candidate for a eigenvalue
+            w,       # ksi^w is candidate for an eigenvalue
             null,    # basis of nullspace
             i, Split;
 
@@ -4755,10 +4771,40 @@ end);
 # (a companion matrix), could still be improved, maybe with kernel functions
 # for compact matrices (FL)
 BindGlobal("POW_MAT_INT", function(mat, n)
-  local d, addb, trafo, value, t, ti, mm, pol, ind;
+  local d, k, limit, f, addb, trafo, value, t, ti, mm, pol, ind;
   d := NrRows(mat);
-  # finding a better break even point probably also depends on q
-  if n < 2^QuoInt(3*d,4) or not IsField(DefaultFieldOfMatrix(mat)) then
+  # Decide between repeated squaring (POW_OBJ_INT, about Log2(n) matrix
+  # multiplications) and the method below, which has a considerable fixed
+  # overhead (base change, characteristic polynomial, about d matrix
+  # multiplications) but afterwards only needs about Log2(n) polynomial
+  # multiplications modulo the characteristic polynomial, which are much
+  # cheaper than matrix multiplications when d is large.
+  # The break even points below were determined experimentally, on the basis
+  # that both costs grow linearly in Log2(n) for a fixed matrix; see the
+  # discussion in https://github.com/gap-system/gap/pull/6293 for details.
+  # They depend on the representation: for compressed matrices over small
+  # finite fields multiplication is very fast compared to the (partially
+  # interpreted) overhead of the method below, and for compressed matrices
+  # over GF(2) it is so fast that the overhead only pays off for huge
+  # exponents.
+  k := LogInt(n, 2);
+  if IsGF2MatrixRep(mat) then
+    limit := 64;
+  elif Is8BitMatrixRep(mat) then
+    limit := 8 + QuoInt(768, d);
+  else
+    # everything else, e.g. plain lists of plain lists, matrix objects, and
+    # matrices over rings of characteristic 0; here polynomial
+    # multiplications are not that much cheaper than matrix multiplications,
+    # in particular for small d
+    limit := Maximum(64, QuoInt(8192, d));
+  fi;
+  if k < limit then
+    return POW_OBJ_INT(mat, n);
+  fi;
+  # the method below requires the entries to lie in a field
+  f := DefaultFieldOfMatrix(mat);
+  if f = fail or not IsField(f) then
     return POW_OBJ_INT(mat, n);
   fi;
   # helper function to build up a semi-echelon basis
@@ -4787,17 +4833,36 @@ BindGlobal("POW_MAT_INT", function(mat, n)
       return false;
     fi;
   end;
-  # this returns a base change matrix such that t*m*t^-1 is block triangular
-  # with companion matrices along the diagonal
-  # (could/should? be improved to return t^-1, t*m*t^-1 and the
-  # characteristic polynomial of m at the same time)
+  # This computes a base change matrix t such that mm := t*m*t^-1 is block
+  # triangular with companion matrices along the diagonal, and returns the
+  # triple [ t, t^-1, mm ].
+  #
+  # The rows v_1, ..., v_d of t are obtained by spinning up standard basis
+  # vectors, so that within one such Krylov chain we have v_{i+1} = v_i*m.
+  # Now the i-th row of mm is the coordinate vector of v_i*m with respect to
+  # v_1, ..., v_d, hence it is the standard basis vector e_{i+1} for every i
+  # inside a chain, and only at the end of a chain is there anything to
+  # compute -- and the image needed there is exactly the vector on which the
+  # spinning stopped. So rather than multiplying out t*m*t^-1, which costs
+  # two matrix multiplications, we assemble mm from what the spinning has
+  # produced anyway, using one vector-matrix product per chain.
   trafo := function(m)
-    local id, b, t, r, a;
-    id := m^0;
+    local d, b, t, r, a, ends, images, i, ti, mm, j;
+    d := NrRows(m);
     b := rec(vectors := [], pivots := [], heads := []);
     t := [];
+    ends := [];
+    images := [];
+    # Spin up standard basis vectors, created one at a time as they are
+    # needed, until they span the whole space. Stopping as soon as that
+    # happens matters: any further vector would still be reduced against the
+    # complete basis, which for a cyclic matrix amounts to as much work again
+    # as the spinning itself.
     # maybe better start with a random vector?
-    for a in id do
+    i := 0;
+    while Length(t) < d do
+      i := i + 1;
+      a := StandardBasisVector(d, m, i);
       r := addb(b,a);
       if r = true then
         repeat
@@ -4805,10 +4870,20 @@ BindGlobal("POW_MAT_INT", function(mat, n)
           a := a*m;
           r := addb(b,a);
         until r <> true;
+        # a is the image of the last vector of this chain, and is a linear
+        # combination of the vectors collected so far
+        Add(ends, Length(t));
+        Add(images, a);
       fi;
     od;
     t := Matrix(t, m);
-    return t;
+    ti := t^-1;
+    # all rows but those ending a chain are standard basis vectors
+    mm := List([2..d], k -> StandardBasisVector(d, m, k));
+    for j in [1..Length(ends)] do
+      mm[ends[j]] := images[j] * ti;
+    od;
+    return [ t, ti, Matrix(mm, m) ];
   end;
   # compared to standard method, we avoid some zero or identity matrices
   # and we multiply with mat from left to take advantage of sparseness of mat
@@ -4845,8 +4920,9 @@ BindGlobal("POW_MAT_INT", function(mat, n)
     return val;
   end;
   t := trafo(mat);
-  ti := t^-1;
-  mm := t * mat * ti;
+  ti := t[2];
+  mm := t[3];
+  t := t[1];
   pol := CharacteristicPolynomial(mm);
   ind := IndeterminateOfUnivariateRationalFunction(pol);
   pol := PowerMod(ind, n, pol);

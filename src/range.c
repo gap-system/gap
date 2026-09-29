@@ -606,13 +606,15 @@ static void PlainRange(Obj list)
     inc     = GET_INC_RANGE( list );
 
     // change the type of the list, and allocate enough space
+    // grow first: the grow can collect
+    if (SIZE_OBJ(list) < (lenList + 1) * sizeof(Obj))
+        ResizeBag(list, (lenList + 1) * sizeof(Obj));
     if (lenList == 0)
         RetypeBagSM(list, T_PLIST_EMPTY);
     else if (inc > 0)
         RetypeBagSM(list, T_PLIST_CYC_SSORT);
     else
         RetypeBagSM(list, T_PLIST_CYC_NSORT);
-    GROW_PLIST( list, lenList );
     SET_LEN_PLIST( list, lenList );
 
     // enter the values in <list>

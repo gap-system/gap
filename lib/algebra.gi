@@ -3427,7 +3427,7 @@ InstallAccessToGenerators( IsMagmaRingModuloRelations and IsRingWithOne,
 #M  CentralIdempotentsOfAlgebra( <A> )
 ##
 ##   Let A be an associative algebra with one. We construct a maximal
-##   system of orthogonal primitive idemoptents in the centre of A.
+##   system of orthogonal primitive idempotents in the centre of A.
 ##   First we let B be the centre of A and Q the
 ##   the semisimple commutative associative algebra A/Rad(A).
 ##   We calculate a complete set of orthogonal idempotents in `Q'
@@ -3647,7 +3647,7 @@ InstallMethod( CentralIdempotentsOfAlgebra,
 
       until k>Length(ideals);
 
-      id:= List( ids, e -> PreImagesRepresentative( hom, e ) );
+      id:= List( ids, e -> PreImagesRepresentativeNC( hom, e ) );
 
       # Now we lift the idempotents to the big algebra `A'. The
       # first idempotent is lifted as follows:
@@ -3683,7 +3683,7 @@ InstallMethod( CentralIdempotentsOfAlgebra,
 end );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  IsSimpleAlgebra( <A> )  . . . . . . . . . . . .for an associative algebra
 ##
@@ -3706,7 +3706,7 @@ InstallMethod( IsSimpleAlgebra,
     end );
 
 
-###############################################################################
+#############################################################################
 ##
 #M  LeviMalcevDecomposition( <L> )
 ##
@@ -3928,7 +3928,7 @@ InstallMethod( LeviMalcevDecomposition,
     end );
 
 
-############################################################################
+#############################################################################
 ##
 #M  DirectSumDecomposition( <A> )   ........direct sum decomposition of <A>
 ##

@@ -1,3 +1,4 @@
+#@local f,r,l
 #
 # Tests for the GAP coder logic.
 #
@@ -7,6 +8,29 @@
 # The files coder.tst and interpreter.tst closely mirror each other.
 #
 gap> START_TEST("coder.tst");
+
+#
+# non boolean expression as condition
+#
+gap> function() if 1 then fi; end();
+Error, <expr> must be 'true' or 'false' (not the integer 1)
+
+#
+# return is allowed in functions
+#
+gap> function() return; end();
+gap> function() return 1; end();
+1
+
+#
+# help system
+#
+gap> function() ?qwert_asdf end;
+Syntax error: '?' cannot be used in this context in stream:1
+function() ?qwert_asdf end;
+           ^^^^^^^^^^^^^^^^
+Syntax error: while parsing a function: statement or 'end' expected in stream:\
+2
 
 #
 # function call with options
@@ -26,71 +50,47 @@ gap> ({}-> f(1 : ("a") := 23 ) )();
 #
 # records
 #
-gap> function()
->   local r;
->   r := rec(a:=1);
->   Display(r);
->   r.a := 1;
->   Display(r.a);
->   Display(IsBound(r.a));
->   Unbind(r.a);
->   return r;
-> end();
-rec(
-  a := 1 )
+gap> r := ({}-> rec(a:=1) )();
+rec( a := 1 )
+
+#
+gap> function() r.a := 1; end();
+gap> ({}-> r.a )();
 1
+gap> ({}-> IsBound(r.a) )();
 true
+gap> function() Unbind(r.a); end();
+gap> ({}-> r )();
 rec(  )
 
 #
-gap> function()
->   local r;
->   r := rec(a:=1);
->   Display(r);
->   r!.a := 1;
->   Display(r!.a);
->   Display(IsBound(r!.a));
->   Unbind(r!.a);
->   return r;
-> end();
-rec(
-  a := 1 )
+gap> function() r!.a := 1; end();
+gap> ({}-> r!.a )();
 1
+gap> ({}-> IsBound(r!.a) )();
 true
+gap> function() Unbind(r!.a); end();
+gap> ({}-> r )();
 rec(  )
 
 #
-gap> function()
->   local r;
->   r := rec(("a"):=1);
->   Display(r);
->   r.("a") := 1;
->   Display(r.("a"));
->   Display(IsBound(r.("a")));
->   Unbind(r.("a"));
->   return r;
-> end();
-rec(
-  a := 1 )
+gap> function() r.("a") := 1; end();
+gap> ({}-> r.("a") )();
 1
+gap> ({}-> IsBound(r.("a")) )();
 true
+gap> function() Unbind(r.("a")); end();
+gap> ({}-> r )();
 rec(  )
 
 #
-gap> function()
->   local r;
->   r := rec(("a"):=1);
->   Display(r);
->   r!.("a") := 1;
->   Display(r!.("a"));
->   Display(IsBound(r!.("a")));
->   Unbind(r!.("a"));
->   return r;
-> end();
-rec(
-  a := 1 )
+gap> function() r!.("a") := 1; end();
+gap> ({}-> r!.("a") )();
 1
+gap> ({}-> IsBound(r!.("a")) )();
 true
+gap> function() Unbind(r!.("a")); end();
+gap> ({}-> r )();
 rec(  )
 
 # test special case in CodeRecExprBeginElmExpr
@@ -110,32 +110,26 @@ rec( 42 := 3, 43 := 4, x := 1, y := 2 )
 gap> r := Objectify(NewType(NewFamily("MockFamily"), IsComponentObjectRep), rec());;
 
 #
-gap> function()
->   r!.a := 1;
->   Display(r!.a);
->   Display(IsBound(r!.a));
->   Unbind(r!.a);
->   Display(IsBound(r!.a));
-> end();
+gap> function() r!.a := 1; end();
+gap> ({}-> r!.a )();
 1
+gap> ({}-> IsBound(r!.a) )();
 true
-false
+gap> function() Unbind(r!.a); end();
 
 #
-gap> function()
->   r!.("a") := 1;
->   Display(r!.("a"));
->   Display(IsBound(r!.("a")));
->   Unbind(r!.("a"));
->   Display(IsBound(r!.("a")));
-> end();
+gap> function() r!.("a") := 1; end();
+gap> ({}-> r!.("a") )();
 1
+gap> ({}-> IsBound(r!.("a")) )();
 true
-false
+gap> function() Unbind(r!.("a")); end();
 
 #
 # lists
 #
+gap> l := ({}-> [1,2,3] )();
+[ 1, 2, 3 ]
 gap> function()
 >   local l;
 >   l:=[1,2,3];
@@ -222,17 +216,6 @@ Error, PosObj Assignment: <position> must be a positive small integer (not the\
 gap> l := Objectify(NewType(NewFamily("MockFamily"), IsPositionalObjectRep),[]);;
 
 #
-gap> l![1] := 42;
-42
-gap> l![1];
-42
-gap> IsBound(l![1]);
-true
-gap> Unbind(l![1]);
-gap> IsBound(l![1]);
-false
-
-#
 gap> function()
 >   l![1] := 42;
 >   Display(l![1]);
@@ -262,17 +245,6 @@ Error, PosObj Assignment: <position> must be a positive small integer (not the\
 # atomic posobj (HPC-GAP)
 #
 gap> l := Objectify(NewType(NewFamily("MockFamily"), IsAtomicPositionalObjectRep),[23]);;
-
-#
-gap> l![1] := 42;
-42
-gap> l![1];
-42
-gap> IsBound(l![1]);
-true
-gap> Unbind(l![1]);
-gap> IsBound(l![1]);
-false
 
 #
 gap> function()

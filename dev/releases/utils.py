@@ -12,6 +12,7 @@ import hashlib
 import os
 import re
 import shutil
+import stat
 import subprocess
 import sys
 from typing import Iterator, NoReturn
@@ -72,6 +73,29 @@ def working_directory(path: str) -> Iterator[None]:
     os.chdir(path)
     yield
     os.chdir(prev_cwd)
+
+
+def normalize_archive_permissions(root: str) -> None:
+    """Apply the archive permission policy recursively below ``root``.
+
+    This mirrors ``chmod -R g-w,o-w,g+r,o+r`` for regular files and also makes
+    directories searchable by group and others. File executable bits are
+    normalized from the owner's executable bit, so scripts remain executable
+    without making ordinary data files executable. Symlinks are left untouched.
+    """
+    for dirpath, dirnames, filenames in os.walk(root):
+        for name in [dirpath, *dirnames, *filenames]:
+            path = os.path.join(dirpath, name) if name != dirpath else dirpath
+            if os.path.islink(path):
+                continue
+            mode = stat.S_IMODE(os.stat(path).st_mode)
+            mode |= stat.S_IRGRP | stat.S_IROTH
+            mode &= ~(stat.S_IWGRP | stat.S_IWOTH)
+            if os.path.isdir(path) or mode & stat.S_IXUSR:
+                mode |= stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
+            else:
+                mode &= ~(stat.S_IXGRP | stat.S_IXOTH)
+            os.chmod(path, mode)
 
 
 # compute the sha256 checksum of a file

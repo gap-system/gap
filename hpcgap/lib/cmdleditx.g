@@ -14,7 +14,7 @@
 ##  compiling with libreadline.
 ##
 
-############################################################################
+#############################################################################
 ##
 #F  LineEditKeyHandler( <l> )
 ##
@@ -91,7 +91,7 @@ BindGlobal("LineEditKeyHandler", function(l)
   od;
 end);
 
-############################################################################
+#############################################################################
 ##
 #V  CommandLineHistory
 #V  MaxCommandLineHistory
@@ -226,7 +226,7 @@ atomic CommandLineRegion do
 od;
 Unbind(tmpclh);
 
-############################################################################
+#############################################################################
 ##
 #F  SaveCommandLineHistory( [<fname>] )
 #F  ReadCommandLineHistory( [<fname>] )
@@ -350,7 +350,7 @@ atomic CommandLineRegion do
   LineEditKeyHandlers[33] := LineEditDelPrompt;
 od;
 
-############################################################################
+#############################################################################
 ##       readline interface functions
 
 if not IsBound(GAPInfo.History) then

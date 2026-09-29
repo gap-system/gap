@@ -26,12 +26,12 @@ DeclareInfoClass("InfoHomClass");
 ##
 #F  ConjugacyClassesSubwreath(<F>,<M>,<n>,<autT>,<T>,<Lloc>,<comp>,<emb>,<proj>)
 ##
-##  This function computes the classes of a subwreath groiup. The interface
+##  This function computes the classes of a subwreath group. The interface
 ##  is quite technical because the subwreath decomposition is passed already
 ##  with it: <F> is the factor group, <FM> the normal subgroup in it (direct
-##  product of the <n> groups isomorphic <T>). <T> is one of these and
+##  product of the <n> groups isomorphic to <T>). <T> is one of these and
 ##  <autT> the action of <FM> on the first component, the components are
-##  given in <comp>, <emb> and <proj> are embeddings and projectios for the
+##  given in <comp>, <emb> and <proj> are embeddings and projections for the
 ##  direct product.
 DeclareGlobalFunction("ConjugacyClassesSubwreath");
 

@@ -429,7 +429,7 @@ arbitrary finite groups.
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="2-Cohomology and Extensions">
-<Heading><M>2</M>-Cohomology and Extensions</Heading>
+<Heading><M>2</M>-Cohomology and Extensions for Pc Groups</Heading>
 
 One of the most interesting applications of pc groups is the possibility
 to compute with extensions of these groups by elementary abelian groups;
