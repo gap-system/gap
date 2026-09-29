@@ -494,12 +494,16 @@ DeclareGlobalFunction( "UppercaseChar" );
 ##  <P/>
 ##  A separator at the end of a string is interpreted as a terminator; in
 ##  this case, the separator does not produce a trailing empty string.
+##  More precisely, the last substring is dropped if it is empty, so the
+##  empty string yields an empty list.
 ##  Also see&nbsp;<Ref Func="Chomp"/>.
 ##  <Example><![CDATA[
 ##  gap> SplitString( "substr1:substr2::substr4", ":" );
 ##  [ "substr1", "substr2", "", "substr4" ]
 ##  gap> SplitString( "a;b;c;d;", ";" );
 ##  [ "a", "b", "c", "d" ]
+##  gap> SplitString( "", ";" );
+##  [  ]
 ##  gap> SplitString( "/home//user//dir/", "", "/" );
 ##  [ "home", "user", "dir" ]
 ##  ]]></Example>

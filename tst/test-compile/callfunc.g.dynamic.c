@@ -618,7 +618,6 @@ static Obj  HdlrFunc8 (
  SET_ENDLINE_BODY(t_5, 49);
  SET_FILENAME_BODY(t_5, FileName);
  SET_BODY_FUNC(t_4, t_5);
- CHANGED_BAG(t_4);
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
   CALL_3ARGS( t_1, t_2, t_3, t_4 );
  }
@@ -754,7 +753,6 @@ static Obj  HdlrFunc8 (
  SET_ENDLINE_BODY(t_3, 64);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
- CHANGED_BAG(t_2);
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -776,7 +774,6 @@ static Obj  HdlrFunc8 (
  SET_ENDLINE_BODY(t_3, 65);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
- CHANGED_BAG(t_2);
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -798,7 +795,6 @@ static Obj  HdlrFunc8 (
  SET_ENDLINE_BODY(t_3, 66);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
- CHANGED_BAG(t_2);
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -820,7 +816,6 @@ static Obj  HdlrFunc8 (
  SET_ENDLINE_BODY(t_3, 68);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
- CHANGED_BAG(t_2);
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -842,7 +837,6 @@ static Obj  HdlrFunc8 (
  SET_ENDLINE_BODY(t_3, 69);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
- CHANGED_BAG(t_2);
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -864,7 +858,6 @@ static Obj  HdlrFunc8 (
  SET_ENDLINE_BODY(t_3, 70);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
- CHANGED_BAG(t_2);
  t_3 = NEW_PLIST( T_PLIST, 0 );
  SET_LEN_PLIST( t_3, 0 );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -902,7 +895,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 5);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG(t_1);
  AssGVar( G_p0, t_1 );
  
  /* p1 := function ( f )
@@ -917,7 +909,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 10);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG(t_1);
  AssGVar( G_p1, t_1 );
  
  /* p7 := function ( f )
@@ -932,7 +923,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 15);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG(t_1);
  AssGVar( G_p7, t_1 );
  
  /* f0 := function ( f )
@@ -947,7 +937,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 21);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG(t_1);
  AssGVar( G_f0, t_1 );
  
  /* f1 := function ( f )
@@ -962,7 +951,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 26);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG(t_1);
  AssGVar( G_f1, t_1 );
  
  /* f7 := function ( f )
@@ -977,7 +965,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 31);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG(t_1);
  AssGVar( G_f7, t_1 );
  
  /* runtest := function (  )
@@ -1037,7 +1024,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 72);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG(t_1);
  AssGVar( G_runtest, t_1 );
  
  /* return; */
@@ -1176,7 +1162,6 @@ static Int InitLibrary ( StructInitInfo * module )
  SET_ENVI_FUNC( func1, STATE(CurrLVars) );
  body1 = NewFunctionBody();
  SET_BODY_FUNC( func1, body1 );
- CHANGED_BAG( func1 );
  CALL_0ARGS( func1 );
  
  return 0;

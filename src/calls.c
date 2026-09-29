@@ -64,6 +64,7 @@ void SET_NAME_FUNC(Obj func, Obj name)
 {
     GAP_ASSERT(name == 0 || IS_STRING_REP(name));
     FUNC(func)->name = name;
+    CHANGED_BAG(func);
 }
 
 Obj NAMI_FUNC(Obj func, Int i)
@@ -889,7 +890,6 @@ Obj NewFunctionT (
 #ifdef HPCGAP
     if (nams) MakeBagPublic(nams);
 #endif
-    CHANGED_BAG(func);
 
     // enter the profiling bag
     prof = NEW_PLIST( T_PLIST, LEN_PROF );
@@ -900,7 +900,6 @@ Obj NewFunctionT (
     SET_STOR_WITH_PROF( prof, 0 );
     SET_STOR_WOUT_PROF( prof, 0 );
     SET_PROF_FUNC(func, prof);
-    CHANGED_BAG(func);
 
     // return the function bag
     return func;
@@ -1249,7 +1248,6 @@ static Obj AttrNAME_FUNC(Obj self, Obj func)
         if ( name == 0 ) {
             name = MakeImmString("unknown");
             SET_NAME_FUNC(func, name);
-            CHANGED_BAG(func);
         }
         return name;
     }
@@ -1264,7 +1262,6 @@ static Obj FuncSET_NAME_FUNC(Obj self, Obj func, Obj name)
 
   if (TNUM_OBJ(func) == T_FUNCTION ) {
     SET_NAME_FUNC(func, ImmutableString(name));
-    CHANGED_BAG(func);
   } else
     DoOperation2Args(SET_NAME_FUNC_Oper, func, name);
   return (Obj) 0;
@@ -1430,7 +1427,6 @@ static Obj FuncPROFILE_FUNC(Obj self, Obj func)
         SET_HDLR_FUNC(func,6, DoProf6args);
         SET_HDLR_FUNC(func,7, DoProfXargs);
         SET_PROF_FUNC(func,   copy);
-        CHANGED_BAG(func);
     }
 
     return (Obj)0;
@@ -1514,7 +1510,6 @@ static Obj FuncUNPROFILE_FUNC(Obj self, Obj func)
         for (Int i = 0; i <= 7; i++)
             SET_HDLR_FUNC(func, i, HDLR_FUNC(prof, i));
         SET_PROF_FUNC(func, PROF_FUNC(prof));
-        CHANGED_BAG(func);
     }
 
     return (Obj)0;

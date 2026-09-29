@@ -1130,8 +1130,6 @@ static CVar CompFuncExpr(Expr expr)
     Emit( "SET_ENDLINE_BODY(%c, %d);\n", tmp, GET_ENDLINE_BODY(BODY_FUNC(fexp)));
     Emit( "SET_FILENAME_BODY(%c, FileName);\n",tmp);
     Emit( "SET_BODY_FUNC(%c, %c);\n", func, tmp );
-    // the function may already be old by now, the body is young
-    Emit( "CHANGED_BAG(%c);\n", func );
     FreeTemp( TEMP_CVAR( tmp ) );
 
     // we know that the result is a function
@@ -5055,8 +5053,6 @@ static void CompFunc(Obj func)
         NTEMP_INFO(info) = 0;
 
         SET_INFO_FEXP(func, info);
-        CHANGED_BAG(func);
-
     }
 
     // switch to this function (so that 'CONST_ADDR_STAT' and 'CONST_ADDR_EXPR' work)
@@ -5327,7 +5323,6 @@ Int CompileFunc(Obj filename, Obj func, Obj name, Int crc, Obj magic2)
     Emit( "SET_ENVI_FUNC( func1, STATE(CurrLVars) );\n" );
     Emit( "body1 = NewFunctionBody();\n" );
     Emit( "SET_BODY_FUNC( func1, body1 );\n" );
-    Emit( "CHANGED_BAG( func1 );\n");
     Emit( "CALL_0ARGS( func1 );\n" );
     Emit( "\n" );
     Emit( "return 0;\n" );

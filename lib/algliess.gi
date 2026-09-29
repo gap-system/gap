@@ -1627,9 +1627,5 @@ InstallGlobalFunction( SimpleLieAlgebra, function( type, n, F )
              "\"F\", \"G\", \"H\", \"K\", \"M\", \"S\", \"W\" " );
     fi;
 
-    # store the pth power images in the family (LB)
-    if IsRestrictedLieAlgebra(A) then
-        FamilyObj(Representative(A))!.pMapping := PthPowerImages(Basis(A));
-    fi;
     return A;
 end );

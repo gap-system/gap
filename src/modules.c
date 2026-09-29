@@ -639,8 +639,6 @@ static void SetupFuncInfo(Obj func, const Char * cookie)
         SET_FILENAME_BODY(body_bag, filename);
         SET_LOCATION_BODY(body_bag, location);
         SET_BODY_FUNC(func, body_bag);
-        CHANGED_BAG(body_bag);
-        CHANGED_BAG(func);
     }
 }
 
