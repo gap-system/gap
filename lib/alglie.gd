@@ -526,7 +526,7 @@ DeclareAttribute( "LieSolvableRadical", IsAlgebra and IsLieAlgebra );
 ##  <Lie algebra of dimension 102 over Rationals>
 ##  gap> lev:= LeviMalcevDecomposition(K);;
 ##  gap> SemiSimpleType( lev[1] );
-##  "B3 A1"
+##  "A1 B3"
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

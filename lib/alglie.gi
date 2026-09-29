@@ -1764,6 +1764,7 @@ InstallMethod( DirectSumDecomposition,
           centralizer,      # The centralizer of `adL' in the matrix algebra.
           Rad,              # The radical of `centralizer'.
           M,mat,            # Matrices.
+          V,                # A matrix of coefficient rows.
           facs,             # A list of factors of a polynomial.
           f,                # Polynomial.
           contained,        # Boolean variable.
@@ -1805,9 +1806,48 @@ InstallMethod( DirectSumDecomposition,
       BH:= Basis( H );
       BL:= Basis( L );
 
+      # If `H' splits, each generalized common eigenspace of `H' for a
+      # nonzero weight lies in one simple ideal, since the roots of one
+      # simple ideal vanish on the Cartan subalgebras of the others.
+      # `B' holds pairs of a reduced echelon matrix of coefficient rows
+      # and the weight of `H' on its row space.
+
+      B:= [ [ IdentityMat( n, F ), [ ] ] ];
+      for x in BasisVectors( BH ) do
+        M:= TransposedMat( AdjointMatrix( BL, x ) );
+        b:= [ ];
+        for bb in B do
+          set:= List( bb[1], PositionNonZero );
+          mat:= List( bb[1] * M, v -> v{ set } );
+          facs:= Collected( Factors( PolynomialRing( F ),
+                                     MinimalPolynomial( F, mat ) ) );
+          if ForAny( facs, f -> DegreeOfLaurentPolynomial( f[1] ) > 1 ) then
+            b:= fail;
+            break;
+          fi;
+          for f in facs do
+            # generalized eigenspace for the root c of the linear factor
+            cf:= CoefficientsOfUnivariatePolynomial( f[1] );
+            V:= NullspaceMat( Value( f[1]^f[2], mat ) ) * bb[1];
+            Add( b, [ TriangulizedMat( V ),
+                      Concatenation( bb[2], [ -cf[1]/cf[2] ] ) ] );
+          od;
+        od;
+        B:= b;
+        if B = fail then
+          break;
+        fi;
+      od;
+
+      if B <> fail then
+        B:= List( Filtered( B, x -> not IsZero( x[2] ) ),
+                  x -> List( x[1], v -> LinearCombination( BL, v ) ) );
+      fi;
+
       m:= (( n - Dimension(H) ) * ( n - Dimension(H) + 2 )) / 8;
 
-      if 2*m < Size(F) and ( not Characteristic( F ) in [2,3] ) then
+      if B = fail and 2*m < Size(F)
+         and ( not Characteristic( F ) in [2,3] ) then
 
         set:= [ -m .. m ];
 
@@ -1831,7 +1871,7 @@ InstallMethod( DirectSumDecomposition,
 
         B:= Filtered( B, x -> not ( x[1] in H ) );
 
-      else
+      elif B = fail then
 
        # Here `L' is a semisimple Lie algebra over a small field or a field
        # of characteristic 2 or 3. This means that
