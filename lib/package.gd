@@ -806,8 +806,24 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 ##  <K>true</K> or <K>false</K>;
 ##  in the latter case, the effect is that no package banner is printed.
 ##  <P/>
+##  <Index Key="OnlyNeeded" Subkey="option"><C>OnlyNeeded</C></Index>
+##  If the global option <C>OnlyNeeded</C> is given, as in
+##  <C>LoadPackage("sonata" : OnlyNeeded)</C>, then the suggested packages
+##  of <A>name</A> and, recursively, of its dependencies are not loaded.
+##  This is meant for checking that a package works without its suggested
+##  packages, see Section&nbsp;<Ref Sect="Package dependencies"/>.
+##  <P/>
 ##  After a package has been loaded, all its code becomes
 ##  available to use with the rest of the &GAP; library.
+##  <P/>
+##  Load all packages you need at the start of a session, before doing any
+##  computations.
+##  Loading a package can install new methods and thus change which methods
+##  get selected, so results can depend on whether they were computed before
+##  or after the package was loaded.
+##  For the same reason, code should not call <Ref Func="LoadPackage"/>
+##  inside its functions,
+##  see Section&nbsp;<Ref Sect="Package dependencies"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
