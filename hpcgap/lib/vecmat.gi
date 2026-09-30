@@ -2584,13 +2584,13 @@ InstallTagBasedMethod( NewMatrix,
     # If applicable then replace a flat list 'l' by a nested list
     # of lists of length 'rl'.
     len:= Length( l );
-    if len > 0 and not IsList( l[1] ) then
+    if len > 0 and not IsList( l[1] ) and not IsVectorObj( l[1] ) then
       if len mod rl <> 0 then
         Error( "NewMatrix: Length of <l> is not a multiple of <rl>" );
       fi;
       m := List([0, rl .. len-rl], i -> l{[i+1..i+rl]});
     else
-      m := List(l,ShallowCopy);
+      m := List( l, VectorAsList );
     fi;
     if ConvertToMatrixRep( m, 2 ) = fail then
       Error( "cannot convert <m> to 'IsGF2MatrixRep'" );
