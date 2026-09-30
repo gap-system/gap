@@ -1803,6 +1803,7 @@ InstallMethod( DirectSumDecomposition,
           centralizer,      # The centralizer of `adL' in the matrix algebra.
           Rad,              # The radical of `centralizer'.
           M,mat,            # Matrices.
+          V,                # A matrix of coefficient rows.
           facs,             # A list of factors of a polynomial.
           f,                # Polynomial.
           contained,        # Boolean variable.
@@ -1844,9 +1845,87 @@ InstallMethod( DirectSumDecomposition,
       BH:= Basis( H );
       BL:= Basis( L );
 
+      # If `H' splits, each generalized common eigenspace of `H' for a
+      # nonzero weight lies in one simple ideal, since the roots of one
+      # simple ideal vanish on the Cartan subalgebras of the others.
+      # `B' holds pairs of a reduced echelon matrix of coefficient rows
+      # and the weight of `H' on its row space.
+
+      B:= [ [ IdentityMat( n, F ), [ ] ] ];
+      for x in BasisVectors( BH ) do
+        M:= TransposedMat( AdjointMatrix( BL, x ) );
+        b:= [ ];
+        for bb in B do
+          set:= List( bb[1], PositionNonZero );
+          mat:= List( bb[1] * M, v -> v{ set } );
+          facs:= Collected( Factors( PolynomialRing( F ),
+                                     MinimalPolynomial( F, mat ) ) );
+          if ForAny( facs, f -> DegreeOfLaurentPolynomial( f[1] ) > 1 ) then
+            b:= fail;
+            break;
+          fi;
+          for f in facs do
+            # generalized eigenspace for the root c of the linear factor
+            cf:= CoefficientsOfUnivariatePolynomial( f[1] );
+            V:= NullspaceMat( Value( f[1]^f[2], mat ) ) * bb[1];
+            Add( b, [ TriangulizedMat( V ),
+                      Concatenation( bb[2], [ -cf[1]/cf[2] ] ) ] );
+          od;
+        od;
+        B:= b;
+        if B = fail then
+          break;
+        fi;
+      od;
+
+      if B <> fail then
+        B:= Filtered( B, x -> not IsZero( x[2] ) );
+        vv:= List( B, x -> x[2] );
+        B:= List( B, x -> List( x[1], v -> LinearCombination( BL, v ) ) );
+
+        # An ideal consists of the pieces connected by nonzero products,
+        # together with the products of pieces of opposite weights.
+
+        ideals:= [ ];
+        set:= [ 1 .. Length( B ) ];
+        while set <> [ ] do
+          id:= [ set[1] ];
+          comlist:= [ set[1] ];
+          set:= set{ [ 2 .. Length( set ) ] };
+          while comlist <> [ ] do
+            k:= Remove( comlist );
+            b:= Filtered( set, i -> ForAny( B[k],
+                              u -> ForAny( B[i], v -> not IsZero( u*v ) ) ) );
+            Append( id, b );
+            Append( comlist, b );
+            set:= Difference( set, b );
+          od;
+
+          bb:= Concatenation( B{ id } );
+          sp:= MutableBasis( F, bb );
+          for i in id do
+            j:= Position( vv, -vv[i] );
+            if j <> fail then
+              for x in ListX( B[i], B[j], \* ) do
+                if CloseMutableBasis( sp, x ) then
+                  Add( bb, x );
+                fi;
+              od;
+            fi;
+          od;
+          Add( ideals, bb );
+        od;
+
+        if Sum( ideals, Length ) = n then
+          return List( ideals, I -> IdealNC( L, I, "basis" ) );
+        fi;
+        B:= fail;
+      fi;
+
       m:= (( n - Dimension(H) ) * ( n - Dimension(H) + 2 )) / 8;
 
-      if 2*m < Size(F) and ( not Characteristic( F ) in [2,3] ) then
+      if B = fail and 2*m < Size(F)
+         and ( not Characteristic( F ) in [2,3] ) then
 
         set:= [ -m .. m ];
 
@@ -1870,7 +1949,7 @@ InstallMethod( DirectSumDecomposition,
 
         B:= Filtered( B, x -> not ( x[1] in H ) );
 
-      else
+      elif B = fail then
 
        # Here `L' is a semisimple Lie algebra over a small field or a field
        # of characteristic 2 or 3. This means that
@@ -2355,14 +2434,14 @@ InstallMethod( SemiSimpleType,
           R,             # Root system.
           basR,          # Basis of `R'.
           posR,          # List of the positive roots.
+          posS,          # Set of the positive roots.
           fundR,         # A fundamental system.
-          r,r1,r2,rt,    # Roots.
+          r,rt,          # Roots.
           Rvecs,         # List of root vectors.
           basH,          # List of basis vectors of a Cartan subalg. of `I'
           sp,            # Vector space.
           h,             # Element of a Cartan subalgebra of `I'.
           cf,            # Coefficient.
-          issum,         # Boolean.
           CM,            # Cartan Matrix.
           endpts;        # The endpoints of the Dynkin diagram of `I'.
 
@@ -2467,53 +2546,43 @@ InstallMethod( SemiSimpleType,
 # `mp' will be a list of minimum polynomials of basis elements of the
 # Cartan subalgebra.
 
-      mp:= List( BasisVectors( BK ){[1..rk]},
-                 x -> CharacteristicPolynomial( F, F, AdjointMatrix( BK, x ) ) );
+      adH:= List( BasisVectors( BK ){[1..rk]}, x -> AdjointMatrix( BK, x ) );
+      mp:= List( adH, x -> CharacteristicPolynomial( F, F, x ) );
       mp:= List( mp, x -> x/Gcd( Derivative( x ), x ) );
       d:= d * Product( List( mp, p ->
                    CoefficientsOfLaurentPolynomial(p)[1][1] ) );
-      p:= 5;
-      s:=7;
 
-      # We determine a prime `p>5' not dividing `d' and an integer `s'
+      # We determine a prime `p>=5' not dividing `d' and an integer `s'
       # such that the minimum polynomials of the basis elements
       # of the Cartan subalgebra will split into linear factors
       # over the field of `p^s' elements,
       # and such that `p^s<=2^16'
       # (the maximum size of a finite field in GAP).
 
+      p:= 3;
+      s:= 17;
       while p^s > 65536 do
-
-        while d mod p = 0 do
-          p:= NextPrimeInt( p );
-        od;
-
-        F:= GF( p );
-
-        S1:= EmptySCTable( Dimension( K ), Zero( F ), "antisymmetric" );
-        for i in [1..Dimension(K)] do
-          for j in [1..Dimension(K)] do
-            S1[i][j]:= [S[i][j][1], One( F )*List( S[i][j][2], x -> x mod p)];
-          od;
-        od;
-
-        K:= LieAlgebraByStructureConstants( F, S1 );
-        BK:= Basis( K );
-        mp:= List( BasisVectors( BK ){[1..rk]},
-                 x -> CharacteristicPolynomial( F, F, AdjointMatrix( BK, x ) ) );
-        s:= Lcm( Flat( List( mp, p -> List( Factors( p ),
-                           DegreeOfLaurentPolynomial ) )));
-
-        if p=65521 then p:= 1; fi;
-
+        p:= NextPrimeInt( p );
+        if 65521 < p then
+          Info( InfoAlgebra, 1,
+                  "We cannot find a small modular splitting field for <L>" );
+          return fail;
+        fi;
+        if d mod p <> 0 then
+          F:= GF( p );
+          mp:= List( adH,
+                   x -> CharacteristicPolynomial( F, F, One( F ) * (x mod p) ) );
+          s:= Lcm( Flat( List( mp, p -> List( Factors( p ),
+                             DegreeOfLaurentPolynomial ) )));
+        fi;
       od;
 
-      if p = 1 then
-        Info( InfoAlgebra, 1,
-                "We cannot find a small modular splitting field for <L>" );
-
-        return fail;
-      fi;
+      S1:= EmptySCTable( Dimension( K ), Zero( F ), "antisymmetric" );
+      for i in [1..Dimension(K)] do
+        for j in [1..Dimension(K)] do
+          S1[i][j]:= [S[i][j][1], One( F )*List( S[i][j][2], x -> x mod p)];
+        od;
+      od;
 
     else
 
@@ -2648,22 +2717,9 @@ InstallMethod( SemiSimpleType,
           # A positive root is a fundamental root if it is not
           # the sum of two other positive roots.
 
-          fundR:= [ ];
-          for r in posR do
-            issum:= false;
-            for r1 in posR do
-              for r2 in posR do
-                if r = r1+r2 then
-                  issum:= true;
-                  break;
-                fi;
-              od;
-              if issum then break; fi;
-            od;
-            if not issum then
-              Add( fundR, r );
-            fi;
-          od;
+          posS:= Set( posR );
+          fundR:= Filtered( posR,
+                            r -> ForAll( posR, r1 -> not r - r1 in posS ) );
 
           # `CM' will be the matrix of Cartan integers
           # of the fundamental roots.
@@ -2886,7 +2942,7 @@ InstallMethod( RootSystem,
           h,          # An element of `H'
           posR,       # A list of the positive roots
           fundR,      # A list of the fundamental roots
-          issum,      # A boolean
+          posS,       # The set of the positive roots
           CartInt,    # The function that calculates the Cartan integer of
                       # two roots
           C,          # The Cartan matrix
@@ -2978,17 +3034,9 @@ InstallMethod( RootSystem,
     S:= [];
     zero:= Zero( F );
     for i in [ 1 .. Length(B) ] do
-      a:= [ ];
-      ind:= 0;
-      cf:= zero;
-      while cf = zero do
-        ind:= ind+1;
-        cf:= Coefficients( BL, B[i][1] )[ ind ];
-      od;
-      for j in [1..Length(basH)] do
-        Add( a, Coefficients( BL, basH[j]*B[i][1] )[ind] / cf );
-      od;
-      Add( S, a );
+      cf:= Coefficients( BL, B[i][1] );
+      ind:= PositionNonZero( cf );
+      Add( S, List( basH, h -> Coefficients( BL, h*B[i][1] )[ind] / cf[ind] ) );
     od;
 
     Rvecs:= List( B, x -> x[1] );
@@ -3039,20 +3087,8 @@ InstallMethod( RootSystem,
     # positive roots.
     # We calculate the set of simple roots `fundR'.
 
-    fundR:= [ ];
-    for a in posR do
-      issum:= false;
-      for i in [1..Length(posR)] do
-        for j in [i+1..Length(posR)] do
-          if a = posR[i]+posR[j] then
-            issum:=true;
-          fi;
-        od;
-      od;
-      if not issum then
-        Add( fundR, a );
-      fi;
-    od;
+    posS:= Set( posR );
+    fundR:= Filtered( posR, a -> ForAll( posR, b -> not a - b in posS ) );
 
     # Now we calculate the Cartan matrix `C' of the root system.
 
@@ -3082,9 +3118,9 @@ InstallMethod( RootSystem,
     noPosR:= Length( Rvecs )/2;
     y:= Rvecs{[1+noPosR..Length(C)+noPosR]};
     for i in [1..Length(x)] do
-        V:= VectorSpace( LeftActingDomain(L), [ x[i] ] );
-        B:= Basis( V, [x[i]] );
-        y[i]:= y[i]*2/Coefficients( B, (x[i]*y[i])*x[i] )[1];
+        cf:= Coefficients( BL, x[i] );
+        ind:= PositionNonZero( cf );
+        y[i]:= y[i]*2*cf[ind]/Coefficients( BL, (x[i]*y[i])*x[i] )[ind];
     od;
 
     h:= List([1..Length(C)], j -> x[j]*y[j] );
@@ -3105,8 +3141,9 @@ InstallMethod( RootSystem,
 
     posR:= [ ];
     for i in [1..noPosR] do
-        B:= Basis( VectorSpace( F, [ Rvecs[i] ] ), [ Rvecs[i] ] );
-        posR[i]:= List( h, hj ->  Coefficients( B, hj*Rvecs[i] )[1] );
+        cf:= Coefficients( BL, Rvecs[i] );
+        ind:= PositionNonZero( cf );
+        posR[i]:= List( h, hj -> Coefficients( BL, hj*Rvecs[i] )[ind] / cf[ind] );
     od;
 
     SetPositiveRoots( R, posR );
@@ -3128,16 +3165,17 @@ InstallMethod( CanonicalGenerators,
     [ IsRootSystemFromLieAlgebra ], 0,
     function( R )
 
-    local   L, rank,  x,  y,  i,  V,  b,  c;
+    local   L, rank,  x,  y,  i,  B,  k,  c;
 
     L:= UnderlyingLieAlgebra( R );
+    B:= Basis( L );
     rank:= Length( CartanMatrix( R ) );
     x:= PositiveRootVectors( R ){[1..rank]};
     y:= NegativeRootVectors( R ){[1..rank]};
     for i in [1..Length(x)] do
-        V:= VectorSpace( LeftActingDomain(L), [ x[i] ] );
-        b:= Basis( V, [x[i]] );
-        c:= Coefficients( b, (x[i]*y[i])*x[i] )[1];
+        c:= Coefficients( B, x[i] );
+        k:= PositionNonZero( c );
+        c:= Coefficients( B, (x[i]*y[i])*x[i] )[k] / c[k];
         y[i]:= y[i]*2/c;
     od;
 
@@ -3156,7 +3194,7 @@ InstallMethod( ChevalleyBasis,
 
     local   R,  n,  cg,  b1p,  b1m,  b2p,  b2m,  k,  r,  i,  r1,  pos,
             b1,  b2,  f,  cfs,  bHa,  posRV,  negRV,  x,  y,  ha,  cf,
-            F,  T,  K,  B, BK;
+            F,  T,  K,  B, BK,  j;
 
     # We first calculate an automorphism `f' of `L' such that
     # F(L_{\alpha}) = L_{-\alpha}, and f(H)=H, and f acts as multiplication
@@ -3206,8 +3244,9 @@ InstallMethod( ChevalleyBasis,
         x:= PositiveRootVectors( R )[i];
         y:= -Image( f, x );
         ha:= x*y;
-        cf:= Coefficients( Basis( VectorSpace( LeftActingDomain(L),
-                     [x] ), [x] ), ha*x )[1];
+        cf:= Coefficients( Basis( L ), x );
+        j:= PositionNonZero( cf );
+        cf:= Coefficients( Basis( L ), ha*x )[j] / cf[j];
         if i <= Length( CartanMatrix( R ) ) then Add( bHa, (2/cf)*ha ); fi;
         Add( cfs, Sqrt( 2/cf ) );
         posRV[i]:= x; negRV[i]:= y;

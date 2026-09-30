@@ -2515,6 +2515,7 @@ InstallMethod( LatticeGeneratorsInUEA,
         function( L )
 
     local   R,  n,  roots,  fam,  gens,  i, Rvecs, bL, H, vars, P, m, F, j, k,
+            cfs, pos,
             B; # Chevalley basis.
 
     # For every root and every canonical Cartan element, there is a generator.
@@ -2546,12 +2547,14 @@ InstallMethod( LatticeGeneratorsInUEA,
     # a*y_{\alpha_i+\alpha_j}'.
 
     m:= NullMat( 2*n, 2*n );
+    cfs:= List( Rvecs, x -> Coefficients( Basis( L ), x ) );
+    pos:= List( cfs, PositionNonZero );
     for i in [1..2*n] do
         for j in [i+1..2*n] do
             k:= Position( roots, roots[i]+roots[j] );
             if k <> fail then
-                m[i][j]:= Coefficients( Basis( VectorSpace( F, [ Rvecs[k] ]),
-                                      [ Rvecs[k] ] ), Rvecs[i]*Rvecs[j])[1];
+                m[i][j]:= Coefficients( Basis( L ), Rvecs[i]*Rvecs[j] )[pos[k]]
+                          / cfs[k][pos[k]];
                 m[j][i]:= -m[i][j];
             fi;
         od;
