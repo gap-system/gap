@@ -1587,11 +1587,11 @@ static void SaveFunction(Obj func)
   const FuncBag * header = CONST_FUNC(func);
   for (UInt i = 0; i < ARRAY_SIZE(header->handlers); i++)
     SaveHandler(header->handlers[i]);
+  SaveUInt((UInt)header->nargs);
+  SaveUInt(header->nloc);
   SaveSubObj(header->name);
-  SaveSubObj(header->nargs);
   SaveSubObj(header->namesOfArgsAndLocals);
   SaveSubObj(header->prof);
-  SaveSubObj(header->nloc);
   SaveSubObj(header->body);
   SaveSubObj(header->envi);
   if (IS_OPERATION(func))
@@ -1608,11 +1608,11 @@ static void LoadFunction(Obj func)
   FuncBag * header = FUNC(func);
   for (UInt i = 0; i < ARRAY_SIZE(header->handlers); i++)
     header->handlers[i] = LoadHandler();
+  header->nargs = (Int)LoadUInt();
+  header->nloc = LoadUInt();
   header->name = LoadSubObj();
-  header->nargs = LoadSubObj();
   header->namesOfArgsAndLocals = LoadSubObj();
   header->prof = LoadSubObj();
-  header->nloc = LoadSubObj();
   header->body = LoadSubObj();
   header->envi = LoadSubObj();
   if (IS_OPERATION(func))
@@ -1629,10 +1629,10 @@ static void LoadFunction(Obj func)
 */
 static void MarkFunctionSubBags(Obj func, void * ref)
 {
-    // the first eight slots are pointers to C functions, so we need
-    // to skip those for marking
-    UInt size = SIZE_BAG(func) / sizeof(Obj) - 8;
-    const Bag * data = CONST_PTR_BAG(func) + 8;
+    // the first eight slots are pointers to C functions, followed by two
+    // raw integers; we need to skip those for marking
+    UInt size = SIZE_BAG(func) / sizeof(Obj) - 10;
+    const Bag * data = CONST_PTR_BAG(func) + 10;
     MarkArrayOfBags(data, size, ref);
 }
 
