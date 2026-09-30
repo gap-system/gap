@@ -1,4 +1,5 @@
-#@local g,t,lin,G,attr
+#@local g,t,lin,G,attr,cclreps,pi,permG,permt,n,sortt
+
 gap> START_TEST("ctbl.tst");
 
 # Reset the counter of automatically assigned identifiers,
@@ -464,9 +465,18 @@ gap> IrrDixonSchneider( G );;  Irr( G );;
 gap> InfoText( OrdinaryCharacterTable( G ) );
 "origin: Dixon's Algorithm"
 
+# prepare a group whose character table has different class orderings
+gap> G:= SymmetricGroup( 5 );;
+gap> cclreps:= List( ConjugacyClasses( G ), Representative );;
+gap> pi:= (1,5,4);;
+gap> permG:= SymmetricGroup( 5 );;
+gap> SetConjugacyClasses( permG, List( Permuted( cclreps, pi ),
+>                                      x -> ConjugacyClass( permG, x ) ) );;
+
 # group attributes for character tables
 gap> for G in [ TrivialGroup(), CyclicGroup( 5 ), DihedralGroup( 12 ),
->               SymmetricGroup( 4 ), AlternatingGroup( 6 ), SL( 2, 5 ) ] do
+>               SymmetricGroup( 4 ), AlternatingGroup( 6 ), SL( 2, 5 ),
+>               permG ] do
 >      t:= CharacterTable( G );
 >      for attr in [
 >                    AbelianInvariants,
@@ -485,6 +495,7 @@ gap> for G in [ TrivialGroup(), CyclicGroup( 5 ), DihedralGroup( 12 ),
 >                    IsSimple,
 >                    IsSporadicSimple,
 >                    IsSupersolvable,
+>                    LinearCharacters,
 >                    NrConjugacyClasses,
 >                    Size,
 >                  ] do
@@ -497,6 +508,21 @@ gap> for G in [ TrivialGroup(), CyclicGroup( 5 ), DihedralGroup( 12 ),
 >        Error( "difference for '", IsomorphismTypeInfoFiniteSimpleGroup, "'" );
 >      fi;
 >    od;
+
+# a character table with 'UnderlyingGroup' and 'ClassPermutation'
+gap> G:= SymmetricGroup( 5 );;
+gap> cclreps:= List( ConjugacyClasses( G ), Representative );;
+gap> pi:= (1,5,4);;
+gap> permG:= SymmetricGroup( 5 );;
+gap> SetConjugacyClasses( permG, List( Permuted( cclreps, pi ),
+>                                      x -> ConjugacyClass( permG, x ) ) );;
+gap> permt:= CharacterTable( permG );;
+gap> n:= NrConjugacyClasses( permt );;
+gap> sortt:= CharacterTableWithSortedClasses( permt,
+>                PermList( Concatenation( [ 1, n ], [ 2 .. n-1 ] ) ) );;
+gap> lin:= LinearCharacters( sortt );;
+gap> ScalarProduct( lin[1], lin[2] );
+0
 
 ##
 gap> STOP_TEST( "ctbl.tst" );
