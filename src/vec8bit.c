@@ -2832,7 +2832,7 @@ static Obj FuncELMS_VEC8BIT(Obj self, Obj list, Obj poss)
     len2 = LEN_VEC8BIT(list);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
     res = NewWordSizedBag(T_DATOBJ, SIZE_VEC8BIT(len, elts));
-    SetTypeDatObj(res, TYPE_DATOBJ(list));
+    SetTypeDatObj(res, TypeVec8Bit(FIELD_VEC8BIT(list), 1));
     SET_FIELD_VEC8BIT(res, FIELD_VEC8BIT(list));
     SET_LEN_VEC8BIT(res, len);
     gettab = GETELT_FIELDINFO_8BIT(info);
@@ -2914,7 +2914,7 @@ static Obj FuncELMS_VEC8BIT_RANGE(Obj self, Obj list, Obj range)
                   "high or too low",
                   0, 0);
     res = NewWordSizedBag(T_DATOBJ, SIZE_VEC8BIT(len, elts));
-    SetTypeDatObj(res, TYPE_DATOBJ(list));
+    SetTypeDatObj(res, TypeVec8Bit(FIELD_VEC8BIT(list), 1));
     SET_FIELD_VEC8BIT(res, FIELD_VEC8BIT(list));
     SET_LEN_VEC8BIT(res, len);
     gettab = GETELT_FIELDINFO_8BIT(info);
