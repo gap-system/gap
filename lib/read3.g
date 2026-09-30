@@ -109,6 +109,7 @@ ReadLib( "matobj2.gd"  );
 ReadLib( "matobjplist.gd" );
 ReadLib( "matobjgeneric.gd" );
 ReadLib( "matobjnz.gd" );
+ReadLib( "matobjminimal.gd" );
 
 # files dealing with rewriting systems
 ReadLib( "rws.gd"      );
