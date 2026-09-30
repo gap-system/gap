@@ -185,6 +185,9 @@ request for that entry:
 - Fix a crash in `Bar` {kind: bug: crash}
 ```
 
+Conversely, entries with identical text are merged into one, so a follow-up
+pull request can share the entry of an earlier one by using its exact title.
+
 ## Changelog
 
 This project keeps a changelog in `CHANGES.md` but that is automatically

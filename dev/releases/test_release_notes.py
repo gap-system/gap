@@ -333,3 +333,27 @@ def test_body_problem():
     )
     body = "## Text for release notes\n\n- Fix `Foo` {kind: bug}\n- Fix `Bar`\n"
     assert release_notes.body_problem(make_pr(1, "", labels, body)) == ""
+
+
+def test_release_notes_section_merges_identical_entries(monkeypatch):
+    monkeypatch.setattr(release_notes, "package_updates", lambda out, version: None)
+    body = (
+        "## Text for release notes\n\n"
+        "- Speed up `Bar` {topic: performance}\n"
+        "- Fix `Foo` {kind: bug}\n"
+        "- Fix `Foo` {kind: bug}\n"
+    )
+    prs = [
+        make_pr(3, "Fix `Foo`", ["release notes: use title", "kind: bug"]),
+        make_pr(2, "Speed up `Bar`", ["release notes: use title", "kind: bug"]),
+        make_pr(1, "ignored", ["release notes: use body"], body),
+    ]
+    section = release_notes.release_notes_section(prs, "4.14.0")
+    assert section.endswith("""### Performance improvements
+
+- [#1](https://github.com/gap-system/gap/pull/1), [#2](https://github.com/gap-system/gap/pull/2) Speed up `Bar`
+
+### Other fixed bugs
+
+- [#1](https://github.com/gap-system/gap/pull/1), [#3](https://github.com/gap-system/gap/pull/3) Fix `Foo`
+""")

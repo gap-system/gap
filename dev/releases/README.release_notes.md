@@ -48,6 +48,10 @@ and how, is determined by their *labels*:
   Only pull requests with one of these two labels end up in the generated
   release notes.
 
+- Conversely, entries with identical text are merged into one that links all
+  their pull requests and is sorted by all their labels. So a follow-up pull
+  request can share the entry of an earlier one by using the exact same title.
+
 - Pull requests with the label `release notes: highlight` are listed first, in a
   "Highlights" section.
 

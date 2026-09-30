@@ -310,11 +310,13 @@ def get_pr_list(date: str, extra: str) -> List[Dict[str, Any]]:
     return sorted(prs, key=lambda pr: pr["number"], reverse=True)
 
 
-def pr_to_md(pr: Dict[str, Any]) -> str:
-    """Returns markdown string for the PR entry"""
-    k = pr["number"]
-    title = pr["title"]
-    return f"- [#{k}](https://github.com/gap-system/gap/pull/{k}) {title}\n"
+def entry_to_md(entry: Dict[str, Any]) -> str:
+    """Returns markdown string for an entry from `merge_entries`"""
+    links = ", ".join(
+        f"[#{k}](https://github.com/gap-system/gap/pull/{k})"
+        for k in sorted(entry["numbers"])
+    )
+    return f"- {links} {entry['title']}\n"
 
 
 def has_label(pr: Dict[str, Any], label: str) -> bool:
@@ -400,6 +402,20 @@ def body_problem(pr: Dict[str, Any]) -> str:
     return ""
 
 
+def merge_entries(entries: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Merges entries with identical text into one listing all their PRs and
+    carrying all their labels, so that several PRs can share an entry."""
+
+    merged: Dict[str, Dict[str, Any]] = {}
+    for entry in entries:
+        m = merged.setdefault(
+            entry["title"], {"title": entry["title"], "numbers": set(), "labels": []}
+        )
+        m["numbers"].add(entry["number"])
+        m["labels"] += entry["labels"]
+    return list(merged.values())
+
+
 def release_notes_section(prs: List[Dict[str, Any]], new_version: str) -> str:
     """Returns the CHANGES.md section for the given release."""
 
@@ -407,7 +423,7 @@ def release_notes_section(prs: List[Dict[str, Any]], new_version: str) -> str:
     year = datetime.now().year
 
     out = io.StringIO()
-    entries = [entry for pr in prs for entry in release_notes_entries(pr)]
+    entries = merge_entries([e for pr in prs for e in release_notes_entries(pr)])
     out.write(f"""## GAP {new_version} ({month} {year})
 
 The following gives an overview of the changes compared to the previous
@@ -424,7 +440,7 @@ affect some users directly.
             continue
         out.write("### " + headline + "\n\n")
         for entry in matches:
-            out.write(pr_to_md(entry))
+            out.write(entry_to_md(entry))
             entries.remove(entry)
         out.write("\n")
 
@@ -434,7 +450,7 @@ affect some users directly.
     if len(entries) > 0:
         out.write("### Other changes\n\n")
         for entry in entries:
-            out.write(pr_to_md(entry))
+            out.write(entry_to_md(entry))
         out.write("\n")
 
     package_updates(out, new_version)
