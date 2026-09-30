@@ -2914,6 +2914,20 @@ Int SyIsExistingFile ( const Char * name )
 
 /****************************************************************************
 **
+*F  SyRealpath( <path>, <buf> ) . . . . . . . . . absolute canonical path
+*/
+Char * SyRealpath(const Char * path, Char * buf)
+{
+#ifdef SYS_IS_MINGW
+    return _fullpath(buf, path, GAP_PATH_MAX);
+#else
+    return realpath(path, buf);
+#endif
+}
+
+
+/****************************************************************************
+**
 *F  SyIsReadableFile( <name> )  . . . . . . . . . . . is file <name> readable
 **
 **  'SyIsReadableFile'   returns 0  if the   file  <name> is   readable and
