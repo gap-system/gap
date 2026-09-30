@@ -435,7 +435,7 @@ end );
 
 #############################################################################
 ##
-#F  Matrix_OrderPolynomialInner( <fld>, <mat>, <vec>, <spannedspace> )
+#F  Matrix_OrderPolynomialInner( <fld>, <mat>, <vec>, <spannedspace>[, <krylov>] )
 ##
 ##  Returns the coefficients of the order polynomial of <mat> at <vec>
 ##  modulo <spannedspace>. No conversions are attempted on <mat> or
@@ -448,14 +448,24 @@ end );
 ##  The result, and any vectors added to <spannedspace> are compressed
 ##  and immutable
 ##
+##  If a list <krylov> is given, <vec>, <vec>*<mat>, <vec>*<mat>^2, ... are
+##  appended to it, up to and including the first one lying in the span of
+##  its predecessors and <spannedspace>: e+1 vectors for an order polynomial
+##  of degree e.
+##
 #N  In characteristic zero, or for structured sparse matrices, the naive
 #N  Gaussian elimination here may not be optimal
 ##
 #N  Shift to using ClearRow once we have kernel methods that give a
 #N  performance benefit
 ##
-BindGlobal( "Matrix_OrderPolynomialInner", function( fld, mat, vec, vecs)
+BindGlobal( "Matrix_OrderPolynomialInner", function( fld, mat, vec, vecs, krylov... )
     local d, w, p, one, zero, zeroes, piv,  pols, x;
+    if Length(krylov) = 0 then
+        krylov := fail;
+    else
+        krylov := krylov[1];
+    fi;
     Info(InfoMatrix,2,"Order Polynomial Inner on ",NrRows(mat),
          " x ",NrCols(mat)," matrix over ",fld," with ",
          Number(vecs)," basis vectors already given");
@@ -471,6 +481,9 @@ BindGlobal( "Matrix_OrderPolynomialInner", function( fld, mat, vec, vecs)
     # when we succeed, we know the order polynomial
 
     repeat
+        if krylov <> fail then
+            Add(krylov, vec);
+        fi;
         w := ShallowCopy(vec);
         p := ShallowCopy(zeroes);
         Add(p,one);
@@ -4767,17 +4780,110 @@ end);
 ##    return Value(pol, mat);
 ##  end);
 ##
+# helper function for POW_MAT_INT: spin <vec> under <m>, add the resulting
+# Krylov chain to the state <st>, and return the coefficients of its order
+# polynomial modulo what <st> already spans.
+#
+# st.vecs is the semi-echelon basis used by Matrix_OrderPolynomialInner,
+# st.t the chains, st.images[i] = st.t[i]*m for each i ending a chain, and
+# st.cp the product of the order polynomials -- the characteristic polynomial
+# of <m>, once the chains span everything.
+BindGlobal("POW_MAT_INT_SPIN", function(f, m, st, vec)
+  local krylov, op, e;
+  krylov := [];
+  op := Matrix_OrderPolynomialInner(f, m, vec, st.vecs, krylov);
+  e := Length(op) - 1;
+  if 0 < e then
+    Append(st.t, krylov{[1..e]});
+    st.images[Length(st.t)] := krylov[e+1];
+    st.cp := ProductCoeffs(st.cp, op);
+  fi;
+  return op;
+end);
+
+# helper function for POW_MAT_INT: complete the spinning begun in <st> and
+# return [ t, t^-1, mm ], where t is a base change matrix such that
+# mm := t*m*t^-1 is block triangular with companion matrices along the
+# diagonal.
+#
+# The rows v_1, ..., v_d of t are the spun Krylov chains, so that within one
+# chain we have v_{i+1} = v_i*m. Now the i-th row of mm is the coordinate
+# vector of v_i*m with respect to v_1, ..., v_d, hence it is the standard
+# basis vector e_{i+1} for all i inside a chain, and only at the end of a
+# chain is there anything to compute. So instead of multiplying out t*m*t^-1,
+# which costs two matrix multiplications, we assemble mm from the images the
+# spinning has produced anyway, using one vector-matrix product per chain.
+BindGlobal("POW_MAT_INT_TRAFO", function(f, m, st)
+  local d, i, t, ti, mm;
+  d := NrRows(m);
+  # Spin up standard basis vectors, created one at a time as they are needed,
+  # until they span the whole space. Stopping there matters: once the basis is
+  # complete, every further vector would still be reduced against all of it,
+  # which for a cyclic matrix is as much work again as the spinning itself.
+  i := 0;
+  while Length(st.t) < d do
+    i := i + 1;
+    POW_MAT_INT_SPIN(f, m, st, StandardBasisVector(d, m, i));
+  od;
+  Assert(2, Length(st.cp) = d+1);
+  t := Matrix(st.t, m);
+  ti := t^-1;
+  mm := List([2..d], k -> StandardBasisVector(d, m, k));
+  for i in PositionsBound(st.images) do
+    mm[i] := st.images[i] * ti;
+  od;
+  mm := Matrix(mm, m);
+  return [ t, ti, mm ];
+end);
+
+# helper function for POW_MAT_INT: evaluate the polynomial with coefficient
+# list <c> at <mat>, by Horner's rule with <mat> on the left to take
+# advantage of its sparseness.
+BindGlobal("POW_MAT_INT_VALUE", function(c, mat)
+  local i, val, j;
+  i := Length(c);
+  if i = 0 then
+    return ZeroMutable(mat);
+  elif i = 1 then
+    return c[1] * OneMutable(mat);
+  fi;
+  val := MutableCopyMatrix(c[i] * mat);
+  i := i-1;
+  for j in [1..NrRows(mat)] do
+    val[j,j] := val[j,j]+c[i];
+  od;
+  while 1 < i  do
+    val := mat * val;
+    i := i - 1;
+    for j in [1..NrRows(mat)] do
+      val[j,j] := val[j,j]+c[i];
+    od;
+  od;
+  return val;
+end);
+
+# helper function for POW_MAT_INT: a random vector in the row space of <mat>.
+BindGlobal("POW_MAT_INT_RANDOMVEC", function(f, mat)
+  local vec, i;
+  vec := ZeroVector(NrCols(mat), mat);
+  for i in [1..Length(vec)] do
+    vec[i] := Random(f);
+  od;
+  MakeImmutable(vec);
+  return vec;
+end);
+
 # next iteration, conjugate matrix such that it is often very sparse
 # (a companion matrix), could still be improved, maybe with kernel functions
 # for compact matrices (FL)
 BindGlobal("POW_MAT_INT", function(mat, n)
-  local d, k, limit, f, addb, trafo, value, t, ti, mm, pol, ind;
+  local d, k, limit, f, st, op, e, x, t, ti, mm, pol;
   d := NrRows(mat);
   # Decide between repeated squaring (POW_OBJ_INT, about Log2(n) matrix
   # multiplications) and the method below, which has a considerable fixed
   # overhead (base change, characteristic polynomial, about d matrix
   # multiplications) but afterwards only needs about Log2(n) polynomial
-  # multiplications modulo the characteristic polynomial, which are much
+  # multiplications modulo an annihilating polynomial, which are much
   # cheaper than matrix multiplications when d is large.
   # The break even points below were determined experimentally, on the basis
   # that both costs grow linearly in Log2(n) for a fixed matrix; see the
@@ -4807,127 +4913,45 @@ BindGlobal("POW_MAT_INT", function(mat, n)
   if f = fail or not IsField(f) then
     return POW_OBJ_INT(mat, n);
   fi;
-  # helper function to build up a semi-echelon basis
-  addb := function(seb, v)
-    local rows, pivots, len, vv, c, pos, i;
-    rows := seb.vectors;
-    pivots := seb.pivots;
-    len := Length(rows);
-    vv := ShallowCopy(v);
-    for i in [1..len] do
-      c := vv[pivots[i]];
-      if not IsZero(c) then
-        AddRowVector(vv, rows[i], -c);
-      fi;
-    od;
-    pos := PositionNonZero(vv);
-    if pos <= Length(vv) then
-      if not IsOne(vv[pos]) then
-        vv := vv/vv[pos];
-      fi;
-      Add(rows, vv);
-      Add(pivots, pos);
-      seb.heads[pos] := len + 1;
-      return true;
-    else
-      return false;
-    fi;
-  end;
-  # This computes a base change matrix t such that mm := t*m*t^-1 is block
-  # triangular with companion matrices along the diagonal, and returns the
-  # triple [ t, t^-1, mm ].
+
+  # Reduce x^n modulo a polynomial annihilating mat, then evaluate at mat.
+  # The Krylov chains of the base change provide two candidates. The product
+  # of their order polynomials is the characteristic polynomial. The order
+  # polynomial of the first chain divides the minimal polynomial, and for a
+  # random start vector often equals it; a fixed one fails systematically,
+  # e.g. the all ones vector for permutation matrices. If it has degree e,
+  # checking that it annihilates mat costs e-1 matrix multiplications and
+  # saves d-e in the evaluation, so it is worth trying when 2*e <= d.
   #
-  # The rows v_1, ..., v_d of t are obtained by spinning up standard basis
-  # vectors, so that within one such Krylov chain we have v_{i+1} = v_i*m.
-  # Now the i-th row of mm is the coordinate vector of v_i*m with respect to
-  # v_1, ..., v_d, hence it is the standard basis vector e_{i+1} for every i
-  # inside a chain, and only at the end of a chain is there anything to
-  # compute -- and the image needed there is exactly the vector on which the
-  # spinning stopped. So rather than multiplying out t*m*t^-1, which costs
-  # two matrix multiplications, we assemble mm from what the spinning has
-  # produced anyway, using one vector-matrix product per chain.
-  trafo := function(m)
-    local d, b, t, r, a, ends, images, i, ti, mm, j;
-    d := NrRows(m);
-    b := rec(vectors := [], pivots := [], heads := []);
-    t := [];
-    ends := [];
-    images := [];
-    # Spin up standard basis vectors, created one at a time as they are
-    # needed, until they span the whole space. Stopping as soon as that
-    # happens matters: any further vector would still be reduced against the
-    # complete basis, which for a cyclic matrix amounts to as much work again
-    # as the spinning itself.
-    # maybe better start with a random vector?
-    i := 0;
-    while Length(t) < d do
-      i := i + 1;
-      a := StandardBasisVector(d, m, i);
-      r := addb(b,a);
-      if r = true then
-        repeat
-          Add(t, a);
-          a := a*m;
-          r := addb(b,a);
-        until r <> true;
-        # a is the image of the last vector of this chain, and is a linear
-        # combination of the vectors collected so far
-        Add(ends, Length(t));
-        Add(images, a);
-      fi;
-    od;
-    t := Matrix(t, m);
-    ti := t^-1;
-    # all rows but those ending a chain are standard basis vectors
-    mm := List([2..d], k -> StandardBasisVector(d, m, k));
-    for j in [1..Length(ends)] do
-      mm[ends[j]] := images[j] * ti;
-    od;
-    return [ t, ti, Matrix(mm, m) ];
-  end;
-  # compared to standard method, we avoid some zero or identity matrices
-  # and we multiply with mat from left to take advantage of sparseness of mat
-  value := function(pol, mat)
-    local f, c, i, val, j;
-    f := CoefficientsOfLaurentPolynomial(pol);
-    c := f[1];
-    i := Length(c);
-    if i = 0 then
-      return 0*mat;
-    fi;
-    if i = 1 then
-      val := POW_OBJ_INT(mat, f[2]);
-      return c[1] * val;
-    fi;
-    val := c[i] * mat;
-    if not IsMutable(val[1]) then
-      val := MutableCopyMatrix(val);
-    fi;
-    i := i-1;
-    for j in [1..NrRows(mat)] do
-      val[j,j] := val[j,j]+c[i];
-    od;
-    while 1 < i  do
-      val := mat * val;
-      i := i - 1;
-      for j in [1..NrRows(mat)] do
-        val[j,j] := val[j,j]+c[i];
-      od;
-    od;
-    if 0 <> f[2]  then
-      val := val * POW_OBJ_INT(mat, f[2]);
-    fi;
-    return val;
-  end;
-  t := trafo(mat);
+  # Compressed coefficient lists keep the polynomial arithmetic fast.
+  st := rec(vecs := [], t := [], images := [],
+            cp := ImmutableVector(f, [ One(f) ]));
+  op := POW_MAT_INT_SPIN(f, mat, st, POW_MAT_INT_RANDOMVEC(f, mat));
+  e := Length(op) - 1;
+  x := ImmutableVector(f, [ Zero(f), One(f) ]);
+
+  # Checking and evaluating at the dense mat costs 2*e multiplications, at
+  # its sparse conjugate mm far less, but completing the base change to mm
+  # costs about as much as 2*limit dense multiplications (measured).
+  if IsGF2MatrixRep(mat) then
+    limit := 60;
+  else
+    limit := 6;
+  fi;
+  if 0 < e and e <= limit and IsZero(POW_MAT_INT_VALUE(op, mat)) then
+    return POW_MAT_INT_VALUE(PowerModCoeffs(x, n, op), mat);
+  fi;
+
+  t := POW_MAT_INT_TRAFO(f, mat, st);
   ti := t[2];
   mm := t[3];
   t := t[1];
-  pol := CharacteristicPolynomial(mm);
-  ind := IndeterminateOfUnivariateRationalFunction(pol);
-  pol := PowerMod(ind, n, pol);
-  mm := value(pol, mm);
-  return ti * mm * t;
+  if 0 < e and 2*e <= d and IsZero(POW_MAT_INT_VALUE(op, mm)) then
+    pol := op;
+  else
+    pol := st.cp;
+  fi;
+  return ti * POW_MAT_INT_VALUE(PowerModCoeffs(x, n, pol), mm) * t;
 end);
 
 InstallMethod( \^,
