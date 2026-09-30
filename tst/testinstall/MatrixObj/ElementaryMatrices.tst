@@ -229,4 +229,14 @@ gap> mat := [ [ 1, 2 ], [ 3, 4 ] ];;
 gap> MultMatrix(mat, -2);
 gap> mat;
 [ [ -2, -4 ], [ -6, -8 ] ]
+
+#
+gap> for F in [ Integers mod 6, GF(257), GF( NextPrimeInt( 2^16 ) ) ] do
+>      mat := NewMatrix(IsZmodnZMatrixRep, F, 3,
+>                       [ [ 2, 4, 5 ], [ 1, 3, 4 ], [ 5, 2, 0 ] ] * One(F) );
+>      TestElementaryTransforms( mat, 5 * One(F) );
+>      TestElementaryTransforms( mat, -1 );
+>    od;
+
+#
 gap> STOP_TEST("ElementaryMatrices.tst");
