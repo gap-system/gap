@@ -13,7 +13,8 @@
 
 ##  We take advantage of knowing conjugacy class representatives
 ##  as words in generators.
-InstallMethod(LinearCharacters, ["CanEasilyComputePcgs"], function(G)
+InstallMethod(LinearCharacters, ["CanEasilyComputePcgs", "IsZeroCyc"],
+  function(G, zero)
   local pcgs, hom, Gab, abinv, exp, e, Ee, genexp,
         clexps, tab, irgens, a, lin, c, res, j, i, sz, chi;
   if Size(G) = 1 then
@@ -37,10 +38,10 @@ InstallMethod(LinearCharacters, ["CanEasilyComputePcgs"], function(G)
   IndependentGeneratorsOfAbelianGroup(Gab);
   genexp := List(pcgs, x-> IndependentGeneratorExponents(Gab, x^hom));
   # exponent vectors of class representatives of G
-  clexps := List(ConjugacyClasses(G),
+  tab := CharacterTable(G);
+  clexps := List(ConjugacyClasses(tab),
                  c-> ExponentsOfPcElement(pcgs, Representative(c)));
   # irgens are the dual generators of G/G'
-  tab := CharacterTable(G);
   irgens := [];
   for i in [1..Length(abinv)] do
     a := exp/abinv[i];
