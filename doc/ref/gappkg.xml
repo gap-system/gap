@@ -20,14 +20,12 @@ for all packages.)
 All  &GAP;  users   who  develop  new  code  are   invited  to  share
 the  results  of their  efforts  with  other  &GAP; users  by  making
 the  code  and its  documentation  available  in  form of  a  package.
-Guidance on how  to do  this is  available from  the &GAP; website
-(<URL>https://www.gap-system.org</URL>)
-and in the &GAP; package <Package>Example</Package>
-(see <URL>https://www.gap-system.org/Packages/example.html</URL>).
-<P/>
-The &GAP; development team will assist in making any new package
-suitable for distribution with &GAP;.
-It is also possible to submit a package to a formal refereeing process.
+The &GAP; package <Package>Example</Package>
+(see <URL>https://github.com/gap-packages/example</URL>)
+shows how to do this.
+How to get a package distributed with &GAP;, and what it must provide
+for that, is described on the &GAP; website at
+<URL>https://www.gap-system.org/packages/authors/submit/</URL>.
 <P/>
 In this chapter we first describe how to use existing packages,
 and then provide guidelines for writing a &GAP; package.
@@ -449,20 +447,10 @@ First, it is a convenient possibility to load additional functionality into
 a package is a way to make your code available to other &GAP; users.
 <P/>
 
-Moreover, the &GAP; Group may provide some help with redistributing your
-package via the &GAP; website after checking if the
-package provides some new or improved functionality which looks interesting
-for other users, if it contains reasonable documentation, and if it seems
-to work smoothly with the &GAP; library and other distributed packages. In
-this case the package can take part in the &GAP; distribution update
-mechanism and becomes a <E>deposited</E> package.
-<P/>
-
-Furthermore, package authors are encouraged to check if the package would
-be appropriate for the refereeing process and <E>submit</E> it. If the
-refereeing has been successful, the package becomes an <E>accepted</E> package.
-Check out <URL>https://www.gap-system.org/Packages/Authors/authors.html</URL>
-on the &GAP; website for more details.
+Packages that meet the requirements listed at
+<URL>https://www.gap-system.org/packages/authors/submit/</URL>
+can be distributed with &GAP;. New versions of such a package are then
+picked up automatically, see Section&nbsp;<Ref Sect="Releasing a GAP Package"/>.
 <P/>
 
 Below we start with a description how the directory structure of a
@@ -2132,7 +2120,7 @@ you to consider the GPL license for your packages, but you might wish to be more
 restrictive (for instance forbidding redistribution for profit) or less
 restrictive (allowing your software to be incorporated into commercial
 software). See <Q>Choosing a License for the Distribution of Your Package</Q>
-from <URL>https://www.gap-system.org/Packages/Authors/authors.html</URL> and also
+at <URL>https://www.gap-system.org/packages/authors/</URL> and also
 <URL>https://choosealicense.com/</URL> for further details.
 <P/>
 
@@ -2210,8 +2198,19 @@ the core system and all currently redistributed packages, will change
 file timestamps, so one should not rely on them anywhere in the package.
 <P/>
 
-For packages hosted on GitHub publishing package release and establishing its
-website can be very efficiently automated using two tools:
+For a package distributed with &GAP;, a release consists of publishing
+the new <F>PackageInfo.g</F> at the URL given by <C>PackageInfoURL</C>
+in the previous version, together with the archives and <F>README</F>
+it refers to. These URLs are checked every hour, and the new version
+is then included in the next &GAP; release. Its version number must be
+larger than the previous one (see <Ref Sect="Version Numbers"/>), and its
+archive must have a new file name.
+<P/>
+
+For packages hosted on GitHub, releases and the package website can be
+automated with the <C>release-pkg</C> and <C>update-gh-pages</C>
+GitHub actions from <URL>https://github.com/gap-actions</URL>, as the
+<Package>Example</Package> package does, or with
 ReleaseTools (<URL>https://github.com/gap-system/ReleaseTools</URL>) and
 GitHubPagesForGAP (<URL>https://github.com/gap-system/GitHubPagesForGAP</URL>).
 
@@ -2230,28 +2229,8 @@ and a copy of the package's <F>PackageInfo.g</F> file.
 The responsibility to maintain this homepage is with the package
 authors/maintainers.
 <P/>
-If you tell the &GAP; Group about your package
-(say, by mail to <Email>support@gap-system.org</Email>)
-we may consider either
-<List>
-<Item>
-adding a link to your package homepage from the &GAP; website
-(thus, the package will be an <E>undeposited contribution</E>);
-</Item>
-<Item>
-or redistributing the current version of your package as a part of
-the &GAP; distribution (this, the package will be <E>deposited</E>),
-also ;
-</Item>
-</List>
-Please also consider submitting your package to the &GAP; package refereeing
-process (see <URL>https://www.gap-system.org/Contacts/submit.html</URL> for
-further information).
-<P/>
-For packages hosted on GitHub publishing package release and establishing its
-website can be very efficiently automated using two tools:
-GitHubPagesForGAP (<URL>https://github.com/gap-system/GitHubPagesForGAP</URL>)
-and ReleaseTools (<URL>https://github.com/gap-system/ReleaseTools</URL>).
+To have your package distributed with &GAP;, see
+<URL>https://www.gap-system.org/packages/authors/submit/</URL>.
 
 </Section>
 
@@ -2317,7 +2296,7 @@ rather than printing messages directly.
 <Heading>Package release checklists</Heading>
 
 The following checklists should be useful to package authors and maintainers, as
-well as to everyone involved in the depositing and refereeing of &GAP; packages.
+well as to everyone reviewing package submissions.
 
 <Subsection Label="Checklist for releasing a new package">
 <Heading>Checklist for releasing a new package</Heading>
