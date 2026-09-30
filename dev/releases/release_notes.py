@@ -41,7 +41,7 @@ import re
 import subprocess
 import sys
 from datetime import datetime
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import requests
 from utils import (
@@ -55,6 +55,19 @@ from utils import (
 # heading of a release section in CHANGES.md, e.g. "## GAP 4.13.1 (June 2024)"
 # or "## GAP 4.13.1-beta1 (May 2024)"
 RELEASE_HEADING = re.compile(r"^## GAP (\d+)\.(\d+)\.(\d+)(-\S+)? ", re.MULTILINE)
+
+USE_TITLE = "release notes: use title"
+USE_BODY = "release notes: use body"
+TO_BE_ADDED = "release notes: to be added"
+
+# heading of the PR body section holding the entries for a PR labelled USE_BODY;
+# "## Release notes" is the form used by OSCAR
+BODY_HEADING = re.compile(
+    r"^##\s+(?:Text for )?release notes\s*$", re.IGNORECASE | re.MULTILINE
+)
+BODY_ITEM = re.compile(r"[-*]\s+(.*)")
+# labels for a single entry, e.g. "- Speed up `Foo` {topic: performance}"
+ENTRY_LABELS = re.compile(r"\s*\{([^{}]*)\}\s*$")
 
 
 def usage(name: str) -> None:
@@ -282,7 +295,7 @@ def get_pr_list(date: str, extra: str) -> List[Dict[str, Any]]:
             "--search",
             query,
             "--json",
-            "number,title,closedAt,labels,mergedAt,author",
+            "number,title,body,closedAt,labels,mergedAt,author",
             "--limit",
             str(PR_LIMIT),
         ],
@@ -316,6 +329,77 @@ def is_dependabot_pr(pr: Dict[str, Any]) -> bool:
     return author.get("is_bot", False) and has_label(pr, "dependencies")
 
 
+def body_entries(pr: Dict[str, Any]) -> List[Tuple[str, Optional[List[str]]]]:
+    """Returns the items listed in the release notes section of the body of
+    `pr`, as pairs (text, labels); labels is None if the item gives none."""
+
+    body = pr.get("body") or ""
+    m = BODY_HEADING.search(body)
+    if not m:
+        return []
+
+    items: List[str] = []
+    in_item = False
+    for line in body[m.end() :].splitlines():
+        if line.startswith("#"):
+            break
+        item = BODY_ITEM.match(line)
+        if item:
+            items.append(item.group(1).strip())
+            in_item = True
+        elif not line.strip():
+            in_item = False
+        elif in_item:
+            # a wrapped item
+            items[-1] += " " + line.strip()
+
+    entries: List[Tuple[str, Optional[List[str]]]] = []
+    for text in items:
+        labels = ENTRY_LABELS.search(text)
+        if not labels:
+            entries.append((text, None))
+            continue
+        names = [x.strip() for x in labels.group(1).split(",") if x.strip()]
+        entries.append((text[: labels.start()], names))
+    return entries
+
+
+def release_notes_entries(pr: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Returns the release notes entries of `pr`, each shaped like a PR whose
+    title is the text of the entry. The labels given for a body entry replace
+    those of the PR, so that its entries can go into different sections."""
+
+    if has_label(pr, USE_BODY):
+        return [
+            {
+                **pr,
+                "title": text,
+                "labels": (
+                    pr["labels"] if labels is None else [{"name": x} for x in labels]
+                ),
+            }
+            for text, labels in body_entries(pr)
+        ]
+    if has_label(pr, USE_TITLE):
+        return [pr]
+    return []
+
+
+def body_problem(pr: Dict[str, Any]) -> str:
+    """Returns what is wrong with the body entries of `pr`, or "" if nothing."""
+
+    entries = body_entries(pr)
+    if not entries:
+        return "no entries"
+    known = {label for label, _ in prioritylist}
+    unknown = sorted(
+        {x for _, labels in entries for x in labels or [] if x not in known}
+    )
+    if unknown:
+        return "labels not in prioritylist: " + ", ".join(unknown)
+    return ""
+
+
 def release_notes_section(prs: List[Dict[str, Any]], new_version: str) -> str:
     """Returns the CHANGES.md section for the given release."""
 
@@ -323,7 +407,7 @@ def release_notes_section(prs: List[Dict[str, Any]], new_version: str) -> str:
     year = datetime.now().year
 
     out = io.StringIO()
-    prs_with_use_title = [pr for pr in prs if has_label(pr, "release notes: use title")]
+    entries = [entry for pr in prs for entry in release_notes_entries(pr)]
     out.write(f"""## GAP {new_version} ({month} {year})
 
 The following gives an overview of the changes compared to the previous
@@ -334,23 +418,23 @@ affect some users directly.
 """)
 
     for label, headline in prioritylist:
-        matches = [pr for pr in prs_with_use_title if has_label(pr, label)]
-        print(f"PRs with label '{label}': ", len(matches))
+        matches = [entry for entry in entries if has_label(entry, label)]
+        print(f"Entries with label '{label}': ", len(matches))
         if len(matches) == 0:
             continue
         out.write("### " + headline + "\n\n")
-        for pr in matches:
-            out.write(pr_to_md(pr))
-            prs_with_use_title.remove(pr)
+        for entry in matches:
+            out.write(pr_to_md(entry))
+            entries.remove(entry)
         out.write("\n")
 
-    # The remaining PRs have no "kind" or "topic" label from the priority list
+    # The remaining entries have no "kind" or "topic" label from the priority list
     # (may have other "kind" or "topic" label outside the priority list).
     # Check their list in the release notes, and adjust labels if appropriate.
-    if len(prs_with_use_title) > 0:
+    if len(entries) > 0:
         out.write("### Other changes\n\n")
-        for pr in prs_with_use_title:
-            out.write(pr_to_md(pr))
+        for entry in entries:
+            out.write(pr_to_md(entry))
         out.write("\n")
 
     package_updates(out, new_version)
@@ -409,20 +493,25 @@ def pr_to_line(pr: Dict[str, Any]) -> str:
 def report_unsorted_prs(prs: List[Dict[str, Any]]) -> None:
     """Report PRs which need manual attention on stderr."""
 
-    to_be_added = [pr for pr in prs if has_label(pr, "release notes: to be added")]
+    to_be_added = [pr for pr in prs if has_label(pr, TO_BE_ADDED)]
     uncategorized = [
         pr
         for pr in prs
-        if not has_label(pr, "release notes: to be added")
-        and not has_label(pr, "release notes: use title")
+        if not any(has_label(pr, x) for x in (TO_BE_ADDED, USE_TITLE, USE_BODY))
+    ]
+    bad_body = [
+        (pr, problem)
+        for pr in prs
+        if has_label(pr, USE_BODY) and (problem := body_problem(pr))
     ]
 
     if to_be_added:
-        warning(f'{len(to_be_added)} PRs labelled "release notes: to be added":')
+        warning(f'{len(to_be_added)} PRs labelled "{TO_BE_ADDED}":')
         for pr in to_be_added:
             print(pr_to_line(pr), file=sys.stderr)
         warning(
-            'Check their title and labels, then relabel to "release notes: use title".'
+            f'Check their title and labels, then relabel to "{USE_TITLE}"; or list '
+            f'their entries under "## Text for release notes" and relabel to "{USE_BODY}".'
         )
 
     if uncategorized:
@@ -433,7 +522,12 @@ def report_unsorted_prs(prs: List[Dict[str, Any]]) -> None:
             'Apply the same steps as above, or label them "release notes: not needed".'
         )
 
-    if not to_be_added and not uncategorized:
+    if bad_body:
+        warning(f'{len(bad_body)} PRs labelled "{USE_BODY}" need their body fixed:')
+        for pr, problem in bad_body:
+            print(f"{pr_to_line(pr)}  ({problem})", file=sys.stderr)
+
+    if not to_be_added and not uncategorized and not bad_body:
         notice("All PRs are categorized")
 
 
