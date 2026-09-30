@@ -836,6 +836,7 @@ InstallMethod( Irr,
 InstallMethod( Irr,
     "for a supersolvable group with known `IrrConlon'",
     [ IsGroup and IsSupersolvableGroup and HasIrrConlon, IsZeroCyc ],
+    SUM_FLAGS, # above all methods that actually compute something
     function( G, zero )
     local irr, tbl;
     irr:= IrrConlon( G );
@@ -866,6 +867,7 @@ InstallMethod( Irr,
 InstallMethod( Irr,
     "for a supersolvable group with known `IrrBaumClausen'",
     [ IsGroup and IsSupersolvableGroup and HasIrrBaumClausen, IsZeroCyc ],
+    SUM_FLAGS, # above all methods that actually compute something
     function( G, zero )
     local irr, tbl;
     irr:= IrrBaumClausen( G );

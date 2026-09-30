@@ -917,7 +917,7 @@ InstallMethod( Irr,
 ##
 InstallMethod( Irr,
     "partial method for a group, and zero",
-    [ IsGroup, IsZeroCyc ], SUM_FLAGS,
+    [ IsGroup, IsZeroCyc ], 2*SUM_FLAGS, # above all other methods
     function( G, zero )
     local tbl;
     tbl:= OrdinaryCharacterTable( G );
