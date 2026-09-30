@@ -259,6 +259,23 @@ end);
 
 #############################################################################
 ##
+#V  MATGRP_TIETZE_LETTER_COST
+#V  MATGRP_TIETZE_LETTER_LIMIT
+##
+##  'IsFinite' below Tietze-reduces a presentation before evaluating its
+##  relators.  MATGRP_TIETZE_LETTER_COST is the cost of one 'TzSearch' round
+##  per letter of the presentation, measured in coefficient operations, and
+##  says how far reducing is worthwhile.  A Tietze presentation needs about 8
+##  bytes per letter, an order of magnitude more than the relators it is built
+##  from, so MATGRP_TIETZE_LETTER_LIMIT caps the size of the presentations we
+##  copy at all.
+##
+BindGlobal( "MATGRP_TIETZE_LETTER_COST", 100 );
+BindGlobal( "MATGRP_TIETZE_LETTER_LIMIT", 10^7 );
+
+
+#############################################################################
+##
 #M  IsFinite( G ) . . . . . . . . . . .  IsFinite for cyclotomic matrix group
 ##
 InstallMethod( IsFinite,
@@ -266,7 +283,8 @@ InstallMethod( IsFinite,
     [ IsCyclotomicMatrixGroup ],
 function( G )
     # The code below is based on the algorithm described in [DFO13]
-    local badPrimes, n, g, FindPrimesInMatDenominators, p, e, H, phi, gens, rels, nice, inv, Hnice;
+    local badPrimes, n, g, FindPrimesInMatDenominators, p, e, H, phi, P, total,
+          F, gens, rels, nice, inv, Hnice;
 
     if HasNiceMonomorphism( G ) then
       # Assume that the computation is easier in the image.
@@ -310,14 +328,41 @@ function( G )
         return false;
     fi;
 
+    # TODO: use matrix group recognition once it is available.  Passing
+    # through a permutation representation of <H> is a detour: recognition
+    # works on the finite field matrix group directly, and is meant to return
+    # an efficient presentation as a single straight line program with one
+    # output per relator, which would make the reduction below unnecessary.
     Hnice := NiceMonomorphism(H);
     H := GroupWithGenerators( List( GeneratorsOfGroup( H ), x -> x^Hnice ) );
 
     # evaluate relators
     phi := IsomorphismFpGroupByGeneratorsNC(H, GeneratorsOfGroup( H ) : method := "fast");
 
-    gens := GeneratorsOfGroup(FreeGroupOfFpGroup(Range(phi)));
-    rels := RelatorsOfFpGroup(Range(phi));
+    gens := FreeGeneratorsOfFpGroup( Range( phi ) );
+    rels := RelatorsOfFpGroup( Range( phi ) );
+
+    # The 'method := "fast"' option above is quick but yields a highly
+    # redundant presentation.  Evaluating one letter of a relator in <G> costs
+    # an n x n matrix product, i.e. O(n^3) coefficient operations, while one
+    # 'TzSearch' round costs roughly MATGRP_TIETZE_LETTER_COST of them per
+    # letter of the whole presentation.  So keep reducing while a round
+    # removes enough letters to pay for itself.
+    if Sum( rels, Length ) <= MATGRP_TIETZE_LETTER_LIMIT then
+        # the generators are protected: their images in <G> must stay known
+        P := PresentationFpGroup( Range( phi ), 0 );
+        TzOptions( P ).protected := Length( gens );
+        repeat
+            total := P!.tietze[TZ_TOTAL];
+            TzSearch( P );
+        until (total - P!.tietze[TZ_TOTAL]) * n^3
+               <= total * MATGRP_TIETZE_LETTER_COST;
+
+        F := FpGroupPresentation( P );
+        gens := FreeGeneratorsOfFpGroup( F );
+        rels := RelatorsOfFpGroup( F );
+    fi;
+
     if not ForAll(rels, r -> IsOne(MappedWord(r, gens, GeneratorsOfGroup(G)))) then
         return false;
     elif HasNiceMonomorphism( G ) or HasNiceObject( G ) then
