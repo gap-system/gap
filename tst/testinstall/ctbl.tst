@@ -1,4 +1,4 @@
-#@local g,t,lin,G,attr,cclreps,pi,permG,permt,n,sortt
+#@local g,t,lin,G,attr,cclreps,grps,pi,permG,permt,n,sortt
 
 gap> START_TEST("ctbl.tst");
 
@@ -465,18 +465,27 @@ gap> IrrDixonSchneider( G );;  Irr( G );;
 gap> InfoText( OrdinaryCharacterTable( G ) );
 "origin: Dixon's Algorithm"
 
-# prepare a group whose character table has different class orderings
-gap> G:= SymmetricGroup( 5 );;
-gap> cclreps:= List( ConjugacyClasses( G ), Representative );;
+# deal with groups whose character tables have different class orderings
+gap> grps:= [];;
 gap> pi:= (1,5,4);;
-gap> permG:= SymmetricGroup( 5 );;
-gap> SetConjugacyClasses( permG, List( Permuted( cclreps, pi ),
->                                      x -> ConjugacyClass( permG, x ) ) );;
+gap> for n in [ 4, 5 ] do
+>      G:= SymmetricGroup( n );
+>      cclreps:= List( ConjugacyClasses( G ), Representative );
+>      permG:= SymmetricGroup( n );
+>      Add( grps, permG );
+>      SetConjugacyClasses( permG, List( Permuted( cclreps, pi ),
+>                                        x -> ConjugacyClass( permG, x ) ) );
+>      IsSolvable( permG );  CanEasilyComputePcgs( G );
+>      lin:= LinearCharacters( permG );
+>      Print( ScalarProduct( lin[1], lin[2] ), "\n" );
+>    od;
+0
+0
 
 # group attributes for character tables
-gap> for G in [ TrivialGroup(), CyclicGroup( 5 ), DihedralGroup( 12 ),
->               SymmetricGroup( 4 ), AlternatingGroup( 6 ), SL( 2, 5 ),
->               permG ] do
+gap> Append( grps, [ TrivialGroup(), CyclicGroup( 5 ), DihedralGroup( 12 ),
+>        SymmetricGroup( 4 ), AlternatingGroup( 6 ), SL( 2, 5 ) ] );
+gap> for G in grps do
 >      t:= CharacterTable( G );
 >      for attr in [
 >                    AbelianInvariants,
