@@ -713,11 +713,10 @@ library modules or external programs which is explained in
 <Mark><F>tst</F></Mark>
 <Item>
 It is highly recommended that a package should have test files, which then
-should go in the <F>tst</F> directory. For a deposited package, a test file
+should go in the <F>tst</F> directory. A test file
 with a basic test of the package (for example, to check that it works as
-expected and/or that the manual examples are correct) may be specified in the
-<F>PackageInfo.g</F> to be included in the &GAP; standard test suite
-and run as a part of the &GAP; release preparation.
+expected and/or that the manual examples are correct) should be specified by
+the component <C>TestFile</C> in <F>PackageInfo.g</F>.
 More specific and time consuming tests are not supposed to be a part of the
 &GAP; standard test suite but may be placed in the <F>tst</F> directory
 with further instructions on how to run them.
@@ -927,7 +926,8 @@ fields are missing:
 <Log><![CDATA[
 gap> ValidatePackageInfo("PackageInfo.g");
 #E  component `Subtitle' must be bound to a string
-#E  component `Date' must be bound to a string of the form `dd/mm/yyyy'
+#E  component `Date' must be bound to a string of the form yyyy-mm-dd or dd/mm/yyyy that represents a date since 1999
+#E  component `License' must be bound to a nonempty string containing an SPDX ID
 #E  component `ArchiveURL' must be bound to a string started with http://, https:// or ftp://
 #E  component `ArchiveFormats' must be bound to a string
 #E  component `README_URL' must be bound to a string started with http://, https:// or ftp://
@@ -1220,12 +1220,14 @@ decides that loading the package in this situation makes no sense,
 then the missing component is <E>needed</E>.
 <P/>
 
-On the other hand, if <Ref Func="LoadPackage"/> is called
-inside functions of the package then there is no such problem, provided
-that these functions are called only after the package has been loaded,
-so it is not necessary to specify the other package as suggested. The same
-applies to test files and manual examples, which may be simply extended
-by calls to <Ref Func="LoadPackage"/>.
+Do not call <Ref Func="LoadPackage"/> inside functions of the package
+either. Loading a package can install new methods and thus change which
+methods get selected, so objects created before the call may then behave
+differently from those created after it. Declare the other package as
+needed or suggested instead, and use <Ref Func="IsPackageMarkedForLoading"/>
+to check whether a suggested package is available.
+Test files and manual examples may call <Ref Func="LoadPackage"/> at their
+start.
 <P/>
 
 <Index Key="OnlyNeeded" Subkey="option"><C>OnlyNeeded</C></Index>
@@ -1913,42 +1915,33 @@ should be organised into test files similarly to those in the <F>tst</F>
 directory of the &GAP; distribution as documented in
 <Ref Sect="Test Files"/>.
 <P/>
-For a deposited package, a test file with a basic test of the package
-(for example, to check that it works as expected and/or that the manual
-examples are correct) may be specified in the component <C>TestFile</C>
-in the <F>PackageInfo.g</F> to be included in the &GAP; standard test suite.
-This file can either consist of calls of <Ref Func="TestDirectory"/> or
-<Ref Func="Test"/> (in this case, it is common to call it <F>testall.g</F>)
-or be itself a test file having an extension <F>.tst</F> and supposed to be
-read via <Ref Func="Test"/>. It is assumed that the
-latter case occurs if and only if the file contains the substring<P/>
-&nbsp;<C>"gap> START_TEST("</C>
-<P/>
-<Alt Only="LaTeX">\noindent</Alt>
-(with exactly one space after the &GAP; prompt).
-<P/>
-For deposited packages, these tests are run by the &GAP; Group regularly,
-as a part of the standard &GAP; test suite. For the efficient testing it
-is important that the test specified in the <F>PackageInfo.g</F> file
-does not display any output (e.g. no test progress indicators) except
-reporting discrepancies if such occur and the completion report as
-in the example below:
-<Log><![CDATA[
-gap> Test("tst/testall.tst");
-Example package: testall.tst
-true
-]]></Log>
+The component <C>TestFile</C> in <F>PackageInfo.g</F> names a file with a
+basic test of the package, for example checking that it works as expected
+and that the manual examples are correct.
+<Ref Func="TestPackage"/> runs this test, and the &GAP; developers run it
+regularly for all packages distributed with &GAP;.
+How the file is run depends on its name:
+<List>
+<Item>
+  If the name ends in <F>.tst</F>, the file is run with <Ref Func="Test"/>,
+  and <Ref Func="TestPackage"/> returns whether the test passed.
+</Item>
+<Item>
+  Otherwise the file is read as &GAP; code, and must exit &GAP; with a
+  status telling whether the tests passed, as described below.
+  If it returns instead, <Ref Func="TestPackage"/> returns <K>fail</K>.
+  Such a file is commonly called <F>testall.g</F>.
+</Item>
+</List>
+The test should not display any output (e.g. no test progress indicators)
+except reporting discrepancies and the completion report.
 Tests which produce extended output and/or require substantial runtime
-are not supposed to be a part of the &GAP; standard test suite but may
-be placed in the <F>tst</F> directory of the packages with further
-instructions on how to run them elsewhere.
+should not be part of this test, but may be placed in the <F>tst</F>
+directory of the package with instructions on how to run them.
 <P/>
-Because of different approaches to testing, used by different packages,
-it is not always easy to identify whether an automated test passed or failed.
-Presently, automated detection works fine if a package uses a single
-<F>.tst</F> file or uses <Ref Func="TestDirectory"/> with the <C>exitGAP</C>
-option set to <K>true</K> to run a collection of tests and then exits &GAP;
-in a way that allows an automated test setup to determine whether the test passed or failed:
+To run a collection of test files and then exit &GAP; with a suitable
+status, call <Ref Func="TestDirectory"/> with the <C>exitGAP</C> option
+set to <K>true</K>:
 <Log><![CDATA[
 TestDirectory(DirectoriesPackageLibrary("packagename", "tst"), rec(exitGAP := true));
 ]]></Log>
@@ -1958,6 +1951,16 @@ passed (<K>true</K>) or failed (<K>false</K> or <K>fail</K>). For example,
 if the test result is stored in a variable <C>testresult</C> then you can do this:
 <Log><![CDATA[
 ForceQuitGap(testresult);
+]]></Log>
+The tests should pass both when all other packages are loaded and when only
+the needed packages are, see <Ref Subsect="Testing GAP package loading"/>.
+With your package in a directory <F>DIR</F>, the following commands check
+this; each exits with status 0 if the tests passed.
+<Log><![CDATA[
+gap -q --packagedirs DIR -c 'LoadAllPackages();
+  if TestPackage("packagename") = true then QuitGap(0); fi; QuitGap(1);'
+gap -q -A --packagedirs DIR -c 'LoadPackage("packagename" : OnlyNeeded);
+  if TestPackage("packagename") = true then QuitGap(0); fi; QuitGap(1);'
 ]]></Log>
 </Subsection>
 
@@ -2041,8 +2044,6 @@ gap> Read( Filename( DirectoriesLibrary( "tst" ), "testinstall.g" ) );
 You will get a large number of lines with output about the progress of
 the tests, for example:
 <Log><![CDATA[
-You should start GAP4 using `gap -A -x 80 -r'.
-
 Architecture: SOMETHING-SOMETHING-gcc-default64
 
 testing: ..../gap-4.X.Y/tst/testinstall/alghom.tst
@@ -2060,12 +2061,8 @@ total     62829 ms (24136 ms GC) and 8.61GB allocated
 ]]></Log>
 <P/>
 
-(optionally, you may start &GAP; with the command line options which you
-will see in the test output, to run it in a more conservative settings).
-<P/>
-
 The more thorough test is <F>teststandard.g</F> which exercises more of &GAP;'s
-capabilities, also including all test files from <F>teststandard.g</F>.
+capabilities, also including all test files from <F>testinstall.g</F>.
 It runs quite a bit longer, maybe 10-20 minutes, and produces
 an output similar to the testinstall.g test.
 To run it, also start a new &GAP; session and then call
@@ -2147,7 +2144,7 @@ more explicit by making the exact reference to the GPL license, for example:
 <E>
 <Package>packagename</Package> is free software; you can redistribute it
 and/or modify it under the terms of the
-<URL Text="GNU General Public License">https://www.fsf.org/licenses/gpl.html</URL>
+<URL Text="GNU General Public License">https://www.gnu.org/licenses/old-licenses/gpl-2.0.html</URL>
 as published by the Free Software Foundation; either version 2 of the License,
 or (at your option) any later version.
 </E>
@@ -2377,10 +2374,6 @@ well as to everyone involved in the depositing and refereeing of &GAP; packages.
         as specified in the <F>PackageInfo.g</F> file;
     </Item>
     <Item>
-        has the same version, release date and package authors
-        details as stated in the <F>PackageInfo.g</F> file;
-    </Item>
-    <Item>
         is searchable using the &GAP; help system in all formats
         (text, HTML and PDF);
     </Item>
@@ -2463,7 +2456,7 @@ has correct list of needed and suggested packages
 <Item>
 Revise licensing information:
 check that the package states clearly under which conditions it is distributed
-and includes a <F>LICENSING</F> file with the text of a license
+and includes a <F>LICENSE</F> file with the text of a license
 (see Section <Ref Label="Selecting a license for a GAP Package"/>).
 </Item>
 
@@ -2480,7 +2473,7 @@ the package documentation by picking up the changes in documenting tools.
 Check if the package still relies on some obsolete variables
 (see Chapter <Ref Chap="Replaced and Removed Command Names"/>)
 and replace their usage by the new commands. To perform such check, start &GAP;
-with `-O` command line option to disable loading obsoletes, and then load
+with the <C>-O</C> command line option to disable loading obsoletes, and then load
 your package.
 </Item>
 
