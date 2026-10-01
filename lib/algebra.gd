@@ -619,12 +619,13 @@ DeclareOperation( "DirectSumOfAlgebras", [ IsDenseList ] );
 ##  they are stored in the fields <A>embeddings</A> and <A>projections</A>.
 ##  <P/>
 ##  <Example><![CDATA[
+##  gap> c3 := Group( (1,2,3) );; SetName( c3, "c3" );
 ##  gap> A3 := GroupRing( Rationals, c3 );; SetName( A3, "A3" );
-##  gap> c5 := Group( (5,6,7,8,9) );; SetName( c5, "c5" );      
+##  gap> c5 := Group( (5,6,7,8,9) );; SetName( c5, "c5" );
 ##  gap> A5 := GroupRing( Rationals, c5 );; SetName( A5, "A5" );
-##  gap> A35 := DirectSumOfAlgebras( A3, A5 );; 
-##  gap> DirectSumInfo( A35 ); 
-##  rec( algebras := [ A3, A5 ], embeddings := [  ], first := [ 1, 4, 9 ], 
+##  gap> A35 := DirectSumOfAlgebras( A3, A5 );;
+##  gap> DirectSumInfo( A35 );
+##  rec( algebras := [ A3, A5 ], embeddings := [  ], first := [ 1, 4, 9 ],
 ##    projections := [  ], type := "basis vectors" )
 ##  ]]></Example>
 ##  </Description>
@@ -673,21 +674,21 @@ DeclareOperation( "DirectSumOfAlgebras", [ IsDenseList ] );
 ##  homomorphism mapping <M>A</M> onto <M>A_i</M>.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> pro1 := Projection( A35, 1 );         
-##  [ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8 ] -> 
-##  [ (1)*(), (1)*(1,2,3), (1)*(1,3,2), <zero> of ..., <zero> of ..., 
+##  gap> pro1 := Projection( A35, 1 );
+##  [ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8 ] ->
+##  [ (1)*(), (1)*(1,2,3), (1)*(1,3,2), <zero> of ..., <zero> of ...,
 ##    <zero> of ..., <zero> of ..., <zero> of ... ]
-##  gap> DirectSumInfo( A35 );                 
-##  rec( algebras := [ A3, A5 ], 
-##    embeddings := 
-##      [ , 
-##        [ (1)*(), (1)*(5,6,7,8,9), (1)*(5,7,9,6,8), (1)*(5,8,6,9,7), 
-##            (1)*(5,9,8,7,6) ] -> [ v.4, v.5, v.6, v.7, v.8 ] ], 
-##    first := [ 1, 4, 9 ], onelist := [ (1)*(), (1)*() ], 
-##    projections := 
-##      [ [ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8 ] -> 
-##          [ (1)*(), (1)*(1,2,3), (1)*(1,3,2), <zero> of ..., <zero> of ..., 
-##            <zero> of ..., <zero> of ..., <zero> of ... ] ], 
+##  gap> DirectSumInfo( A35 );
+##  rec( algebras := [ A3, A5 ],
+##    embeddings :=
+##      [ ,
+##        [ (1)*(), (1)*(5,6,7,8,9), (1)*(5,7,9,6,8), (1)*(5,8,6,9,7),
+##            (1)*(5,9,8,7,6) ] -> [ v.4, v.5, v.6, v.7, v.8 ] ],
+##    first := [ 1, 4, 9 ], onelist := [ (1)*(), (1)*() ],
+##    projections :=
+##      [ [ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8 ] ->
+##          [ (1)*(), (1)*(1,2,3), (1)*(1,3,2), <zero> of ..., <zero> of ...,
+##            <zero> of ..., <zero> of ..., <zero> of ... ] ],
 ##    type := "basis vectors" )
 ##  ]]></Example>
 ##  </Description>
