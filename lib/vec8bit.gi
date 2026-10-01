@@ -1123,13 +1123,19 @@ InstallTagBasedMethod( NewMatrix,
     # If applicable then replace a flat list 'l' by a nested list
     # of lists of length 'rl'.
     len:= Length( l );
-    if len > 0 and not IsList( l[1] ) then
+    if len > 0 and not IsList( l[1] ) and not IsVectorObj( l[1] ) then
       if len mod rl <> 0 then
         Error( "NewMatrix: Length of <l> is not a multiple of <rl>" );
       fi;
       m := List([0, rl .. len-rl], i -> l{[i+1..i+rl]});
     else
-      m := List(l,ShallowCopy);
+      # rows, given as lists or as vector objects that need not be lists
+      m := List( l, function( row )
+                      if IsList( row ) then
+                        return ShallowCopy( row );
+                      fi;
+                      return Unpack( row );
+                    end );
     fi;
     if ConvertToMatrixRep( m, Size( f ) ) = fail then
       Error( "cannot convert <m> to 'Is8BitMatrixRep'" );

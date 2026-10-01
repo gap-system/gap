@@ -1648,8 +1648,10 @@ local sf, rep, ind, ind2, row, i,big,l,nr;
   ind2:=[]; # rows to rebuild
   for i in [1..nr] do
     if not rep(matrix[i]) then
+      # a vector object that is not a list cannot be converted in place
       if big or IsLockedRepresentationVector(matrix[i])
-        or (IsMutable(matrix[i]) and not change) then
+        or (IsMutable(matrix[i]) and not change)
+        or not IsList(matrix[i]) then
         Add(ind2,i);
       else
         # wrong rep, but can be converted
@@ -1693,7 +1695,11 @@ local sf, rep, ind, ind2, row, i,big,l,nr;
     fi;
   else
     for i in ind2 do
-      row := ShallowCopy(matrix[i]);
+      if IsList(matrix[i]) then
+        row := ShallowCopy(matrix[i]);
+      else
+        row := Unpack(matrix[i]);
+      fi;
       ConvertToVectorRepNC(row, sf);
       matrix[i] := row;
     od;
@@ -2582,13 +2588,19 @@ InstallTagBasedMethod( NewMatrix,
     # If applicable then replace a flat list 'l' by a nested list
     # of lists of length 'rl'.
     len:= Length( l );
-    if len > 0 and not IsList( l[1] ) then
+    if len > 0 and not IsList( l[1] ) and not IsVectorObj( l[1] ) then
       if len mod rl <> 0 then
         Error( "NewMatrix: Length of <l> is not a multiple of <rl>" );
       fi;
       m := List([0, rl .. len-rl], i -> l{[i+1..i+rl]});
     else
-      m := List(l,ShallowCopy);
+      # rows, given as lists or as vector objects that need not be lists
+      m := List( l, function( row )
+                      if IsList( row ) then
+                        return ShallowCopy( row );
+                      fi;
+                      return Unpack( row );
+                    end );
     fi;
     if ConvertToMatrixRep( m, 2 ) = fail then
       Error( "cannot convert <m> to 'IsGF2MatrixRep'" );

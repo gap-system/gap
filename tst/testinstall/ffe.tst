@@ -1,5 +1,5 @@
 #@local Rochambeau,e,F,f1,f2,f3,p,pol,qs,r,x,bigPrime,z,odds,evens
-#@local r1,r2,r3,sf1,sf2,sf3,q,q2,Fp,fields,C,coeffs,B
+#@local r1,r2,r3,sf1,sf2,sf3,q,q2,Fp,fields,C,coeffs,B,g1,g2
 gap> START_TEST("ffe.tst");
 
 #
@@ -510,6 +510,15 @@ gap> Rochambeau:=function(F)
 > end;;
 gap> qs:=[2,3,4,5,7,8,9,11,13,16,17,19,25,27,32,64,81,125,128,243,256];;
 gap> ForAll(qs,x->Rochambeau(GF(x))=0);
+true
+
+#
+# GF(q) returns one object for q until the next FlushCaches
+#
+gap> GF(4);; GF(4);;
+gap> FlushCaches();
+gap> g1:= GF(4);; GF(2);; GF(2);; g2:= GF(4);;
+gap> IsIdenticalObj( g1, g2 );
 true
 
 #

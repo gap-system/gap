@@ -1,4 +1,4 @@
-#@local e, v, w, M, v2, z
+#@local e, v, w, M, v2, z, en, q, l
 gap> START_TEST( "matobjplist.tst" );
 
 #
@@ -123,6 +123,40 @@ true
 gap> IsCyclotomicCollColl( M );
 false
 gap> IsFFECollColl( M );
+true
+
+#
+# SemiEchelonMat of a list of vector objects over a small field
+#
+gap> SemiEchelonMat( [ NewVector( IsPlistVectorRep, GF(9), [ Z(9), Z(9)^0 ] ),
+>                      NewVector( IsPlistVectorRep, GF(9), [ Z(9)^2, Z(9) ] ),
+>                      NewVector( IsPlistVectorRep, GF(9), [ Z(9)^0, Z(9) ] ) ] ).heads;
+[ 1, 2 ]
+
+#
+# ImmutableMatrix compresses rows that are vector objects
+#
+gap> for q in [ 2, 9, 257 ] do
+>      l:= [ NewVector( IsPlistVectorRep, GF(q), [ Z(q), 0*Z(q) ] ),
+>            NewVector( IsPlistVectorRep, GF(q), [ 0*Z(q), Z(q)^0 ] ) ];
+>      for M in [ ImmutableMatrix( GF(q), l ),
+>                 ImmutableMatrix( GF(q), List( l, Immutable ) ) ] do
+>        if M <> ImmutableMatrix( GF(q), List( l, Unpack ) ) or IsMutable( M )
+>           or ( q < 257 and not ( IsGF2MatrixRep( M ) or Is8BitMatrixRep( M ) ) )
+>        then
+>          Print( "wrong result for q = ", q, "\n" );
+>        fi;
+>      od;
+>    od;
+
+#
+# positions in the enumerator of a full row space over a finite field
+#
+gap> en:= Enumerator( GF(9)^3 );;
+gap> v:= NewVector( IsPlistVectorRep, GF(9), [ Z(9), 0*Z(9), Z(9)^0 ] );;
+gap> PositionCanonical( en, v ) = PositionCanonical( en, Unpack( v ) );
+true
+gap> en[ PositionCanonical( en, v ) ] = Unpack( v );
 true
 
 #
