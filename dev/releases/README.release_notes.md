@@ -32,23 +32,37 @@ and how, is determined by their *labels*:
 - Pull requests with the label `release notes: not needed` are **not** listed.
 
 - For pull requests with the label `release notes: use title`, the text for the
-  release notes is given by the title of the pull request. Only these pull
-  requests end up in the generated release notes.
+  release notes is given by the title of the pull request.
+
+- Pull requests with the label `release notes: use body` get one entry per item
+  of the list below the marker `## Text for release notes` in their body (see
+  `.github/pull_request_template.md`). An item may end with labels in braces,
+  which replace those of the pull request for this entry. So a pull request
+  fixing a bug and speeding up a function can say
+
+      ## Text for release notes
+
+      - Fix `Foo` for trivial groups {kind: bug: wrong result}
+      - Speed up `Bar` for large groups {topic: performance}
+
+  Only pull requests with one of these two labels end up in the generated
+  release notes.
+
+- Conversely, entries with identical text are merged into one that links all
+  their pull requests and is sorted by all their labels. So a follow-up pull
+  request can share the entry of an earlier one by using the exact same title.
 
 - Pull requests with the label `release notes: highlight` are listed first, in a
   "Highlights" section.
 
 - Pull requests labelled `release notes: to be added`, and those with none of the
-  above labels, are reported by the script but not included. For these, the text
-  for the release notes has to be taken from the pull request body, below the
-  marker `## Text for release notes` of the pull request template (see
-  `.github/pull_request_template.md`). The script does not do this; such pull
-  requests have to be handled by hand -- usually by rewording the title and
-  applying `release notes: use title`.
+  above labels, are reported by the script but not included. Handle them by
+  rewording the title and applying `release notes: use title`, or by listing
+  their entries in the body and applying `release notes: use body`.
 
 - The above labels describe whether a pull request is relevant at all, and if yes
   then how it is treated. The script groups the pull requests based on labels in
-  a list called `prioritylist`. Each pull request gets assigned to the **first**
+  a list called `prioritylist`. Each entry gets assigned to the **first**
   group/subheading that corresponds to one of its labels. This list can be
   adjusted over time as needed. Note that any such ordering is always a
   compromise, there is no best way to do it.
@@ -83,10 +97,9 @@ The following is intended for those who create or review pull requests.
   surrounding function names). In this case, add the label
   `release notes: use title`.
 
-- Otherwise, make sure that the body of the pull request contains the relevant
-  text below the line `## Text for release notes`. Such a pull request has to be
-  turned into a release notes entry by hand, so prefer a good title whenever one
-  is possible.
+- Otherwise, e.g. if the pull request needs several entries, list them below
+  the line `## Text for release notes` in its body as described above, and add
+  the label `release notes: use body`.
 
 - Choose as many suitable (release notes relevant) labels as you want. Keep in
   mind that the pull request will appear just in the first applicable group of
@@ -116,7 +129,7 @@ a link to the pull request in GitHub) and the title of the pull request. Pull
 requests with related topics are grouped together under suitable subheadings,
 again based on their labels. These groups are ordered according to decreasing
 "severity". Of course it is not possible to define such a general linear
-ordering, but we want each pull request to appear **only once** in the release
+ordering, but we want each change to appear **only once** in the release
 notes, not in several groups according to several aspects it belongs to.
 
 Since the release of GAP 4.11.1, scripts in `dev/releases` can be used to

@@ -243,3 +243,117 @@ def test_is_dependabot_pr_detects_dependabot_author():
     }
 
     assert not release_notes.is_dependabot_pr(pr)
+
+
+def make_pr(number, title="", labels=(), body=""):
+    return {
+        "number": number,
+        "title": title,
+        "labels": [{"name": x} for x in labels],
+        "body": body,
+    }
+
+
+def entries_of(pr):
+    return [
+        (e["title"], [x["name"] for x in e["labels"]])
+        for e in release_notes.release_notes_entries(pr)
+    ]
+
+
+def test_release_notes_entries_use_title():
+    pr = make_pr(1, "Fix `Foo`", ["release notes: use title", "kind: bug"])
+    assert entries_of(pr) == [("Fix `Foo`", ["release notes: use title", "kind: bug"])]
+    assert entries_of(make_pr(1, "Fix `Foo`", ["kind: bug"])) == []
+
+
+def test_release_notes_entries_use_body():
+    body = (
+        "Summary\r\n\r\n## Text for release notes\r\n\r\n"
+        "- Fix `Foo` {kind: bug}\r\n"
+        "* Speed up `Bar` for\r\n"
+        "  large groups {topic: performance, release notes: highlight}\r\n"
+        "- Document `Baz`\r\n\r\n"
+        "Not an entry\r\n\r\n"
+        "## Further details\r\n\r\n- not an entry either\r\n"
+    )
+    pr = make_pr(7, "ignored", ["release notes: use body", "kind: bug"], body)
+    assert entries_of(pr) == [
+        ("Fix `Foo`", ["kind: bug"]),
+        (
+            "Speed up `Bar` for large groups",
+            ["topic: performance", "release notes: highlight"],
+        ),
+        ("Document `Baz`", ["release notes: use body", "kind: bug"]),
+    ]
+
+
+def test_release_notes_entries_accepts_oscar_heading():
+    pr = make_pr(7, "", ["release notes: use body"], "## Release Notes\n- Fix `Foo`\n")
+    assert entries_of(pr) == [("Fix `Foo`", ["release notes: use body"])]
+
+
+def test_release_notes_section_sorts_body_entries(monkeypatch):
+    monkeypatch.setattr(release_notes, "package_updates", lambda out, version: None)
+    body = (
+        "## Text for release notes\n\n"
+        "- Fix `Foo` {kind: bug}\n"
+        "- Speed up `Bar` {topic: performance}\n"
+    )
+    prs = [
+        make_pr(2, "Add `Qux`", ["release notes: use title", "kind: new feature"]),
+        make_pr(1, "ignored", ["release notes: use body"], body),
+    ]
+    section = release_notes.release_notes_section(prs, "4.14.0")
+    assert section.endswith("""### New features
+
+- [#2](https://github.com/gap-system/gap/pull/2) Add `Qux`
+
+### Performance improvements
+
+- [#1](https://github.com/gap-system/gap/pull/1) Speed up `Bar`
+
+### Other fixed bugs
+
+- [#1](https://github.com/gap-system/gap/pull/1) Fix `Foo`
+""")
+
+
+def test_body_problem():
+    labels = ["release notes: use body"]
+    assert release_notes.body_problem(make_pr(1, "", labels, "")) == "no entries"
+    body = "## Text for release notes\n\nsee title\n"
+    assert release_notes.body_problem(make_pr(1, "", labels, body)) == "no entries"
+    body = (
+        "## Text for release notes\n\n- Fix `Foo` {kind: bug, kind:bug}\n- Fix `Bar`\n"
+    )
+    assert (
+        release_notes.body_problem(make_pr(1, "", labels, body))
+        == "labels not in prioritylist: kind:bug"
+    )
+    body = "## Text for release notes\n\n- Fix `Foo` {kind: bug}\n- Fix `Bar`\n"
+    assert release_notes.body_problem(make_pr(1, "", labels, body)) == ""
+
+
+def test_release_notes_section_merges_identical_entries(monkeypatch):
+    monkeypatch.setattr(release_notes, "package_updates", lambda out, version: None)
+    body = (
+        "## Text for release notes\n\n"
+        "- Speed up `Bar` {topic: performance}\n"
+        "- Fix `Foo` {kind: bug}\n"
+        "- Fix `Foo` {kind: bug}\n"
+    )
+    prs = [
+        make_pr(3, "Fix `Foo`", ["release notes: use title", "kind: bug"]),
+        make_pr(2, "Speed up `Bar`", ["release notes: use title", "kind: bug"]),
+        make_pr(1, "ignored", ["release notes: use body"], body),
+    ]
+    section = release_notes.release_notes_section(prs, "4.14.0")
+    assert section.endswith("""### Performance improvements
+
+- [#1](https://github.com/gap-system/gap/pull/1), [#2](https://github.com/gap-system/gap/pull/2) Speed up `Bar`
+
+### Other fixed bugs
+
+- [#1](https://github.com/gap-system/gap/pull/1), [#3](https://github.com/gap-system/gap/pull/3) Fix `Foo`
+""")
