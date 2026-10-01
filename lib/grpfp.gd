@@ -403,24 +403,6 @@ DeclareGlobalFunction("SetReducedMultiplication");
 ##
 DeclareAttribute( "FpElementNFFunction",IsElementOfFpGroupFamily);
 
-# #############################################################################
-# ##
-# #A  FpElmKBRWS(<fam>)
-# ##
-# ##  <ManSection>
-# ##  <Attr Name="FpElmKBRWS" Arg='fam'/>
-# ##
-# ##  <Description>
-# ##  If <A>fam</A> is the elements family of a finitely presented group this
-# ##  attribute returns a list [<A>iso</A>,<A>k</A>,<A>id</A>] where <A>iso</A> is an isomorphism to an
-# ##  fp monoid, <A>k</A> a confluent rewriting system for the image of <A>iso</A> and
-# ##  <A>id</A> the element in the free monoid corresponding to the image of the
-# ##  identity element under <A>iso</A>.
-# ##  </Description>
-# ##  </ManSection>
-# ##
-#DeclareAttribute( "FpElmKBRWS",IsElementOfFpGroupFamily);
-
 
 #############################################################################
 ##
