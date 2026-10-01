@@ -1316,8 +1316,6 @@ end );
 ##
 ##  Construct an associative matrix FLMLOR.
 ##
-#T embeddings/projections should be provided!
-##
 InstallOtherMethod( DirectSumOfAlgebras,
     "for two associative matrix FLMLORs",
     IsIdenticalObj,
@@ -1423,8 +1421,6 @@ InstallOtherMethod( DirectSumOfAlgebras,
 #M  DirectSumOfAlgebras( <A1>, <A2> ) . . . . . .  for two matrix Lie FLMLORs
 ##
 ##  Construct a matrix Lie FLMLOR.
-##
-#T embeddings/projections should be provided!
 ##
 InstallOtherMethod( DirectSumOfAlgebras,
     "for two matrix Lie FLMLORs",
