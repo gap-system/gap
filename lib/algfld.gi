@@ -1058,6 +1058,17 @@ local l,f,i,j,k,gens;
   if Length(l)=0 then
     l:=[One(g)];
   fi;
+
+  # A matrix object that is not a list is defined over its base domain,
+  # so there is no need to look at its entries.
+  if ForAll(l,m->IsMatrixObj(m) and not IsMatrix(m)) then
+    f:=BaseDomain(l[1]);
+    if IsField(f) and ForAll(l,m->BaseDomain(m)=f) then
+      return f;
+    fi;
+    TryNextMethod();
+  fi;
+
   gens:=l[1][1];
   f:=DefaultFieldByGenerators(gens); # ist row
   # are all elts in this?

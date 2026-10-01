@@ -398,7 +398,7 @@ InstallGlobalFunction( ConjugacyClassesOfNaturalGroup,
 function( G, flag )
   local   mycartesian,  fill,  myval, pols,  nrpols,  pairs,
           types,  a,  a2,  pos,  i,  tup,  arr,  mat,  cen,  b,
-          c, cl, powerpol, one, n, q, cls, new, o, m, rep, gcd;
+          c, cl, powerpol, one, n, q, cls, new, o, m, rep, gcd, filt, field;
 
   # to handle single argument
   mycartesian := function(arg)
@@ -503,8 +503,12 @@ function( G, flag )
   fi;
 
   # now convert into actual matrices and compute centralizer order
+  # (in the representation used by <G>, so that the class representatives
+  # can be compared with the elements of <G>)
   cl := [];
-  one :=  One(GF(q));
+  field := GF(q);
+  one := One(field);
+  filt := ConstructingFilter( One(G) );
   for a in cls do
     mat := [];
     cen := 1;
@@ -526,21 +530,19 @@ function( G, flag )
           Add(mat, mat[1]^rep[i]);
         od;
         for m in mat do
-            new := ConjugacyClass( G, m );
+            new := ConjugacyClass( G, Matrix( filt, field, m ) );
             SetSize( new, (o*(q-1))/(cen*gcd) );
             Add( cl, new );
         od;
       fi;
     else
-      new := ConjugacyClass( G, mat );
+      new := ConjugacyClass( G, Matrix( filt, field, mat ) );
       SetSize( new, o/cen );
       Add(cl, new );
     fi;
   od;
   # obey general rule in GAP to put class of identity first
-  i := First([1..Length(cl)], c-> Representative(cl[c]) = One(G));
-#T note that One(G) is in Is8BitMatrixRep,
-#T but the class representatives are in IsPlistRep
+  i := First([1..Length(cl)], c-> IsOne(Representative(cl[c])));
   if i <> 1 then
     a := cl[i];
     cl[i] := cl[1];
