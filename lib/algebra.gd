@@ -567,8 +567,8 @@ DeclareOperation( "ProductSpace", [ IsFreeLeftModule, IsFreeLeftModule ] );
 ##   Label="for a list of algebras"/>
 ##
 ##  <Description>
-##  is the direct sum of the two algebras <A>A1</A> and <A>A2</A>
-##  respectively of the algebras in the list <A>list</A>.
+##  This is the direct sum of the two algebras <A>A1</A> and <A>A2</A>
+##  or of the algebras in the list <A>list</A>.
 ##  <P/>
 ##  If all involved algebras are associative algebras then the result is also
 ##  known to be associative.
@@ -607,13 +607,88 @@ DeclareOperation( "DirectSumOfAlgebras", [ IsDenseList ] );
 ##  an information record having fields <A>algebras</A>; <A>first</A>;
 ##  <A>type</A>; <A>embeddings</A> and <A>projections</A>.
 ##  <P/>
+##  In the example the dimensions of <A>A3</A> and <A>A5</A> are <M>3</M>
+##  and <M>5</M>, so field <A>first</A> has value <M>[1,1+3,1+3+5]</M>,
+##  showing where the basis vectors of each component start in the basis
+##  of <A>A35</A>.
+##  <P/>
+##  The field <A>type</A> is either <C>"basis vectors"</C> or
+##  <C>"generators"</C>, depending on how the algebras are formed.
+##  <P/>
+##  As embeddings and projections are created (see below)
+##  they are stored in the fields <A>embeddings</A> and <A>projections</A>.
+##  <P/>
 ##  <Example><![CDATA[
-##  gap> A2 := GroupRing( Rationals, Group( (1,2) ) );; SetName( A2, "A2" );
-##  gap> A3 := GroupRing( Rationals, Group( (3,4,5) ) );; SetName( A3, "A3" );
-##  gap> A23 := DirectSumOfAlgebras( A2, A3 );;                               
-##  gap> DirectSumInfo( A23 );                                                
-##  rec( algebras := [ A2, A3 ], embeddings := [  ], first := [ 1, 3, 6 ], 
+##  gap> A3 := GroupRing( Rationals, c3 );; SetName( A3, "A3" );
+##  gap> c5 := Group( (5,6,7,8,9) );; SetName( c5, "c5" );      
+##  gap> A5 := GroupRing( Rationals, c5 );; SetName( A5, "A5" );
+##  gap> A35 := DirectSumOfAlgebras( A3, A5 );; 
+##  gap> DirectSumInfo( A35 ); 
+##  rec( algebras := [ A3, A5 ], embeddings := [  ], first := [ 1, 4, 9 ], 
 ##    projections := [  ], type := "basis vectors" )
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+
+
+#############################################################################
+##
+#A  Embedding( <alg> <i> )
+##
+##  <#GAPDoc Label="Embedding:algebras">
+##  <ManSection>
+##  <Attr Name="Embedding" Arg='alg i'
+##    Label="for a direct sum of algebras and a positive integer"/>
+##
+##  <Description>
+##  If algebra <M>A</M> is the direct sum of algebras <M>[A_1,\ldots,A_k]</M>
+##  then <A>Embedding(A,i)</A> for <M>1 \leq i \leq k</M> returns an algebra
+##  homomorphism mapping <M>A_i</M> into <M>A</M>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> emb1 := Embedding( A35, 1 );
+##  [ (1)*(), (1)*(1,2,3), (1)*(1,3,2) ] -> [ v.1, v.2, v.3 ]
+##  gap> ec3 := Embedding( c3, A3 );;
+##  gap> ( (1,3,2)^ec3 )^emb1;
+##  v.3
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+
+
+#############################################################################
+##
+#A  Projection( <alg> <i> )
+##
+##  <#GAPDoc Label="Projection:algebras">
+##  <ManSection>
+##  <Attr Name="Projection" Arg='alg i'
+##    Label="for a direct sum of algebras and a positive integer"/>
+##
+##  <Description>
+##  If algebra <M>A</M> is the direct sum of algebras <M>[A_1,\ldots,A_k]</M>
+##  then <A>Projection(A,i)</A> for <M>1 \leq i \leq k</M> returns an algebra
+##  homomorphism mapping <M>A</M> onto <M>A_i</M>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> pro1 := Projection( A35, 1 );         
+##  [ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8 ] -> 
+##  [ (1)*(), (1)*(1,2,3), (1)*(1,3,2), <zero> of ..., <zero> of ..., 
+##    <zero> of ..., <zero> of ..., <zero> of ... ]
+##  gap> DirectSumInfo( A35 );                 
+##  rec( algebras := [ A3, A5 ], 
+##    embeddings := 
+##      [ , 
+##        [ (1)*(), (1)*(5,6,7,8,9), (1)*(5,7,9,6,8), (1)*(5,8,6,9,7), 
+##            (1)*(5,9,8,7,6) ] -> [ v.4, v.5, v.6, v.7, v.8 ] ], 
+##    first := [ 1, 4, 9 ], onelist := [ (1)*(), (1)*() ], 
+##    projections := 
+##      [ [ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8 ] -> 
+##          [ (1)*(), (1)*(1,2,3), (1)*(1,3,2), <zero> of ..., <zero> of ..., 
+##            <zero> of ..., <zero> of ..., <zero> of ... ] ], 
+##    type := "basis vectors" )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
