@@ -3303,7 +3303,7 @@ InstallMethod( Embedding, "algebra direct sum and integer",
     if not ( i < Length(first) ) then
         Error( "value of second parameter is too large" );
     fi;
-    info.onelist:=List(info.algebras,One);
+    ## info.onelist:=List(info.algebras,One);
     # compute embedding
     A := info.algebras[i];
     if ( type = "basis vectors" ) then
