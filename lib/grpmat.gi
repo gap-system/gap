@@ -202,7 +202,7 @@ BindGlobal("DoSparseLinearActionOnFaithfulSubset",
 function(G,act,sort)
 local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads,
       orb, delay, permimg, maxlim, starti, ll, ltwa, img, v, en, p, kill,
-      i, lo, imgs, xset, hom, R;
+      i, lo, imgs, xset, hom, R, extra, binv;
 
   field:=DefaultFieldOfMatrixGroup(G);
   acts:=GeneratorsOfGroup(G);
@@ -235,13 +235,32 @@ local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads,
   maxlim:=200000;
 
   starti:=1;
-  while Length(partbas)<dim or
-    (act=OnLines and not OnLines(Sum(base),One(G)) in orb) do
+  extra:=fail;
+  while Length(partbas)<dim or (act=OnLines and extra=fail) do
     Info(InfoGroup,2,"dim=",Length(partbas)," ",
          "|orb|=",Length(orb));
     if Length(partbas)=dim and act=OnLines then
-      Info(InfoGroup,2,"add sum for projective action");
+      # The base needs one more point whose coordinates w.r.t. the base
+      # vectors are all nonzero. Look for it among the points found so far
+      # before adding the orbit of the sum of the base vectors.
       img:=OnLines(Sum(base),One(G));
+      if img in orb then
+        extra:=img;
+      else
+        binv:=base;
+        if ForAny(binv,x->IsVectorObj(x) and not IsDataObjectRep(x)) then
+          binv:=Matrix(BaseDomain(binv[1]),binv);
+        fi;
+        binv:=Inverse(binv);
+        extra:=First(orb,function(v)
+          v:=v*binv;
+          return ForAll([1..dim],j->not IsZero(v[j]));
+        end);
+      fi;
+      if extra<>fail then
+        break;
+      fi;
+      Info(InfoGroup,2,"add sum for projective action");
     else
       if starti>Length(start) then
         Sort(delay);
@@ -393,12 +412,12 @@ local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads,
   fi;
   xset:=ExternalSet( G, orb, acts, acts, act);
 
-  # when acting projectively the sum of the base vectors must be part of the
-  # base -- that will guarantee that we can distinguish diagonal from scalar
-  # matrices.
+  # when acting projectively, a point with all coordinates nonzero must be
+  # part of the base -- that will guarantee that we can distinguish diagonal
+  # from scalar matrices.
   if act=OnLines then
     if Length(base)<=dim then
-      Add(base,OnLines(Sum(base),One(G)));
+      Add(base,extra);
     fi;
   fi;
 
