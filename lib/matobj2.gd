@@ -388,6 +388,45 @@ DeclareOperation( "Unpack", [ IsVecOrMatObj ] );
 
 #############################################################################
 ##
+#O  VectorAsList( <v> )
+##
+##  <#GAPDoc Label="VectorAsList">
+##  <ManSection>
+##  <Oper Name="VectorAsList" Arg="v"/>
+##
+##  <Returns>A list</Returns>
+##  <Description>
+##  Returns a new mutable list containing the entries of the row vector or
+##  vector object <A>v</A>.
+##  If <A>v</A> is a list, for example a plain list or a compressed vector
+##  (see <Ref Sect="Row Vectors over Finite Fields"/>),
+##  the result is <C>ShallowCopy( </C><A>v</A><C> )</C>
+##  and thus keeps the representation of <A>v</A>;
+##  otherwise it is <C>Unpack( </C><A>v</A><C> )</C>, a plain list.
+##  <P/>
+##  This is useful for code that needs the entries of a vector in a list,
+##  for example in order to convert them with
+##  <Ref Func="ConvertToVectorRep" Label="for a list (and a field)"/>,
+##  but should not unpack a compressed vector only to compress it again.
+##  <Example><![CDATA[
+##  gap> v:= [ Z(3), 0*Z(3) ];;  ConvertToVectorRep( v, 3 );;
+##  gap> l:= VectorAsList( v );;  Is8BitVectorRep( l );  IsMutable( l );
+##  true
+##  true
+##  gap> w:= Vector( IsPlistVectorRep, GF(3), [ Z(3), 0*Z(3) ] );;
+##  gap> l:= VectorAsList( w );;  IsPlistRep( l );  l = Unpack( w );
+##  true
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "VectorAsList", [ IsRowVectorOrVectorObj ] );
+
+
+#############################################################################
+##
 ##  <#GAPDoc Label="MatObj_ConcatenationOfVectors">
 ##  <ManSection>
 ##  <Heading>ConcatenationOfVectors</Heading>

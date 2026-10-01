@@ -82,6 +82,7 @@ More can be added as soon as there is need for them.
 
 <#Include Label="MatrixObjCompare">
 <#Include Label="Unpack">
+<#Include Label="VectorAsList">
 <#Include Label="ChangedBaseDomain">
 <#Include Label="Randomize">
 

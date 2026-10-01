@@ -802,6 +802,16 @@ InstallOtherMethod( Unpack,
   [ IsRowVector and IsPlistRep ],
   ShallowCopy );
 
+InstallMethod( VectorAsList,
+  "for a row vector or vector object",
+  [ IsRowVectorOrVectorObj ],
+  function( v )
+    if IsList( v ) then
+      return ShallowCopy( v );
+    fi;
+    return Unpack( v );
+  end );
+
 InstallMethod( \{\},
   "generic method for a vector object and a list",
   [ IsVectorObj, IsList ],
