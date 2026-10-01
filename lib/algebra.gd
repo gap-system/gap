@@ -595,6 +595,33 @@ DeclareOperation( "DirectSumOfAlgebras", [ IsDenseList ] );
 
 #############################################################################
 ##
+#A  DirectSumInfo( <alg> )
+##
+##  <#GAPDoc Label="DirectSumInfo:algebras">
+##  <ManSection>
+##  <Attr Name="DirectSumInfo" Arg='alg'
+##    Label="for a direct sum of algebras"/>
+##
+##  <Description>
+##  From &GAP; 4.17.0 a direct sum of algebras comes equipped with
+##  an information record having fields <A>algebras</A>; <A>first</A>;
+##  <A>type</A>; <A>embeddings</A> and <A>projections</A>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> A2 := GroupRing( Rationals, Group( (1,2) ) );; SetName( A2, "A2" );
+##  gap> A3 := GroupRing( Rationals, Group( (3,4,5) ) );; SetName( A3, "A3" );
+##  gap> A23 := DirectSumOfAlgebras( A2, A3 );;                               
+##  gap> DirectSumInfo( A23 );                                                
+##  rec( algebras := [ A2, A3 ], embeddings := [  ], first := [ 1, 3, 6 ], 
+##    projections := [  ], type := "basis vectors" )
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+
+
+#############################################################################
+##
 #F  FullMatrixAlgebraCentralizer( <F>, <lst> )
 ##
 ##  <#GAPDoc Label="FullMatrixAlgebraCentralizer">

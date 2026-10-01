@@ -3014,8 +3014,6 @@ InstallMethod( GeneratorsOfLeftOperatorRingWithOne,
 ##  Construct a s.c. algebra.
 ##  (There are special methods for the sum of appropriate matrix algebras.)
 ##
-#T embeddings/projections should be provided!
-##
 InstallOtherMethod( DirectSumOfAlgebras,
     "for two algebras",
     [ IsAlgebra, IsAlgebra ],
@@ -3334,7 +3332,7 @@ end );
 InstallMethod( Projection, "algebra direct sum and integer",
     [ IsAlgebra and HasDirectSumInfo, IsPosInt ],
     function( D, i )
-    local infoD, type, first, oneA, len, A, genA, genD, imgs, j, k, map, N;
+    local infoD, type, first, zA, len, A, genA, genD, imgs, j, k, map, N;
 
     # check
     infoD := DirectSumInfo( D );
@@ -3349,7 +3347,7 @@ InstallMethod( Projection, "algebra direct sum and integer",
     fi;
     # compute projection
     A    := infoD.algebras[i];
-    oneA := One( A ); 
+    zA := Zero( A );
     if ( type = "basis vectors" ) then
         genA := BasisVectors( Basis( A ) );
         genD := BasisVectors( Basis( D ) );
@@ -3359,7 +3357,7 @@ InstallMethod( Projection, "algebra direct sum and integer",
     else
         Error( "unknown type" );
     fi;
-    imgs := ListWithIdenticalEntries( first[len]-1, oneA );
+    imgs := ListWithIdenticalEntries( first[len]-1, zA );
     j := first[i] - 1;
     for k in [first[i]..first[i+1]-1] do
         imgs[k] := genA[k-j];
