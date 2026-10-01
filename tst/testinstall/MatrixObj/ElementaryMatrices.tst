@@ -68,6 +68,19 @@ gap> TestElementaryTransforms( mat, -1 );
 gap> TestWholeMatrixTransforms( mat, -1 );
 
 #
+gap> mat := NewMatrix(IsPlistMatrixRep, GF(9), 3,
+>                     Z(9) * [ [ 1, 0, 1 ], [ 1, 1, 0 ], [ 0, 1, 1 ] ] );;
+gap> TestElementaryTransforms( mat, Z(9)^3 );
+gap> TestElementaryTransforms( mat, 2 );
+
+# non-commutative base domain, to distinguish left from right
+gap> Q := QuaternionAlgebra( Rationals );;
+gap> b := BasisVectors( Basis( Q ) );;
+gap> mat := NewMatrix(IsPlistMatrixRep, Q, 2,
+>                     [ [ b[1], b[2] ], [ b[3], b[2] + b[4] ] ] );;
+gap> TestElementaryTransforms( mat, b[3] + 2 * b[2] );
+
+#
 gap> mat := NewMatrix(IsGenericMatrixRep, Integers, 3,
 >                     [ [ 2, 4, 5 ], [ 7, 11, -4 ], [ -3, 20, 0 ] ] );;
 gap> IsGenericMatrixRep(mat);
