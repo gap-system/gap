@@ -148,12 +148,12 @@ InstallOtherMethod( DegreeFFE,
 ##
 InstallOtherMethod( DegreeFFE,
     "for a vector object of FFEs",
-    [ IsVectorObj and IsFFECollection ],
+    [ IsFFEVectorObj ],
     v -> DegreeOverPrimeField( BaseDomain( v ) ) );
 
 InstallOtherMethod( DegreeFFE,
     "for a matrix object of FFEs",
-    [ IsMatrixObj and IsFFECollColl ],
+    [ IsFFEMatrixObj ],
     M -> DegreeOverPrimeField( BaseDomain( M ) ) );
 
 

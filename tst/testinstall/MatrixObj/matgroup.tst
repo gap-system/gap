@@ -10,7 +10,7 @@ gap> gens:= [ Matrix( IsPlistMatrixRep, F, [ [ Z(4), 0*Z(4) ], [ 0*Z(4), Z(4)^0 
 gap> ForAll( gens, IsMatrixObj ) and ForAny( gens, IsMatrix ) = false;
 true
 gap> G:= Group( gens );;
-gap> IsMatrixGroup( G );  IsFFEMatrixGroup( G );
+gap> IsMatrixGroup( G );  IsFiniteFieldMatrixGroup( G );
 true
 true
 

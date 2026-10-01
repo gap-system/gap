@@ -53,9 +53,11 @@ BindGlobal( "MakeIsPlistVectorRep",
         filter := filter and CanEasilyCompareElements;
       fi;
       if IsIntegers(basedomain) then
-        filter := filter and IsIntVector;
+        filter := filter and IsIntVector and IsCyclotomicVectorObj;
       elif IsFFECollection(basedomain) then
-        filter := filter and IsFFEVector;
+        filter := filter and IsFFEVectorObj;
+      elif IsCyclotomicCollection(basedomain) then
+        filter := filter and IsCyclotomicVectorObj;
       fi;
       types := [
           NewType( fam, filter ),
@@ -123,6 +125,13 @@ BindGlobal( "MakeIsPlistMatrixRep",
       filter := IsPlistMatrixRep;
       if CanEasilyCompareElementsFamily( efam ) then
         filter := filter and CanEasilyCompareElements;
+      fi;
+      # 'IsFFECollection' and 'IsCyclotomicCollection' are determined by
+      # 'fam', hence caching the resulting types in 'fam' is safe.
+      if IsFFECollection( basedomain ) then
+        filter := filter and IsFFEMatrixObj;
+      elif IsCyclotomicCollection( basedomain ) then
+        filter := filter and IsCyclotomicMatrixObj;
       fi;
       fam!.PlistMatrixRepTypes := [
           NewType( fam, filter ),

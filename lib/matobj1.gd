@@ -263,6 +263,173 @@ DeclareCategory( "IsMatrixObj", IsMatrixOrMatrixObj );
 DeclareCategory( "IsRowListMatrix", IsMatrixObj );
 
 
+
+#############################################################################
+##
+#C  IsFFERowVectorOrVectorObj( <obj> )
+#C  IsCyclotomicRowVectorOrVectorObj( <obj> )
+##
+##  <#GAPDoc Label="IsFFERowVectorOrVectorObj">
+##  <ManSection>
+##  <Heading>IsFFERowVectorOrVectorObj and friends</Heading>
+##  <Filt Name="IsFFERowVectorOrVectorObj" Arg='obj' Type="Category"/>
+##  <Filt Name="IsFFEVector" Arg='obj' Type="Category"/>
+##  <Filt Name="IsFFEVectorObj" Arg='obj' Type="Category"/>
+##  <Filt Name="IsCyclotomicRowVectorOrVectorObj" Arg='obj' Type="Category"/>
+##  <Filt Name="IsCyclotomicVector" Arg='obj' Type="Category"/>
+##  <Filt Name="IsCyclotomicVectorObj" Arg='obj' Type="Category"/>
+##
+##  <Description>
+##  <Ref Filt="IsFFERowVectorOrVectorObj"/> is the category of those row
+##  vectors and vector objects whose entries are finite field elements
+##  (see <Ref Filt="IsFFE"/>), and
+##  <Ref Filt="IsCyclotomicRowVectorOrVectorObj"/> is the analogue for
+##  cyclotomics (see <Ref Filt="IsCyclotomic"/>).
+##  <Ref Filt="IsFFEVector"/> and <Ref Filt="IsFFEVectorObj"/> are the
+##  restrictions of the former to <Ref Filt="IsRowVector"/> and
+##  <Ref Filt="IsVectorObj"/>, respectively, and likewise for the cyclotomic
+##  variants.
+##  <P/>
+##  For row vectors these categories follow from the family.
+##  For vector objects they are set by the constructors, based on the base
+##  domain, so they do not presuppose that a vector object is a collection
+##  of its entries.
+##  <Example><![CDATA[
+##  gap> v:= NewVector( IsPlistVectorRep, GF(4), [ Z(4), 0*Z(4) ] );;
+##  gap> IsFFEVectorObj( v );  IsCyclotomicVectorObj( v );
+##  true
+##  false
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareCategory( "IsFFERowVectorOrVectorObj", IsRowVectorOrVectorObj );
+DeclareSynonym( "IsFFEVector", IsFFERowVectorOrVectorObj and IsRowVector );
+DeclareSynonym( "IsFFEVectorObj", IsFFERowVectorOrVectorObj and IsVectorObj );
+
+DeclareCategory( "IsCyclotomicRowVectorOrVectorObj", IsRowVectorOrVectorObj );
+DeclareSynonym( "IsCyclotomicVector", IsCyclotomicRowVectorOrVectorObj and IsRowVector );
+DeclareSynonym( "IsCyclotomicVectorObj", IsCyclotomicRowVectorOrVectorObj and IsVectorObj );
+
+# For row vectors the entry type is determined by the family.
+InstallTrueMethod( IsFFERowVectorOrVectorObj, IsFFECollection and IsRowVector );
+InstallTrueMethod( IsCyclotomicRowVectorOrVectorObj,
+    IsCyclotomicCollection and IsRowVector );
+
+# A filter to speed up some methods for vectors over the integers.
+# TODO: replace this legacy filter by something along the lines of
+# 'IsFFEVectorObj' above, e.g. an 'IsIntegerVectorObj'.
+DeclareFilter( "IsIntVector" );
+
+
+#############################################################################
+##
+#C  IsFFEMatrixOrMatrixObj( <obj> )
+#C  IsCyclotomicMatrixOrMatrixObj( <obj> )
+##
+##  <#GAPDoc Label="IsFFEMatrixOrMatrixObj">
+##  <ManSection>
+##  <Heading>IsFFEMatrixOrMatrixObj and IsCyclotomicMatrixOrMatrixObj</Heading>
+##  <Filt Name="IsFFEMatrixOrMatrixObj" Arg='obj' Type="Category"/>
+##  <Filt Name="IsFFEMatrix" Arg='obj' Type="Category"/>
+##  <Filt Name="IsFFEMatrixObj" Arg='obj' Type="Category"/>
+##  <Filt Name="IsCyclotomicMatrixOrMatrixObj" Arg='obj' Type="Category"/>
+##  <Filt Name="IsCyclotomicMatrix" Arg='obj' Type="Category"/>
+##  <Filt Name="IsCyclotomicMatrixObj" Arg='obj' Type="Category"/>
+##
+##  <Description>
+##  <Ref Filt="IsFFEMatrixOrMatrixObj"/> is the category of those objects in
+##  <Ref Filt="IsMatrixOrMatrixObj"/> whose entries are finite field elements
+##  (see <Ref Filt="IsFFE"/>), and <Ref Filt="IsCyclotomicMatrixOrMatrixObj"/>
+##  is the analogue for cyclotomics (see <Ref Filt="IsCyclotomic"/>).
+##  <Ref Filt="IsFFEMatrix"/> and <Ref Filt="IsFFEMatrixObj"/> are the
+##  restrictions of the former to <Ref Filt="IsMatrix"/> and
+##  <Ref Filt="IsMatrixObj"/>, respectively, and likewise for the cyclotomic
+##  variants.
+##  <P/>
+##  For matrices in <Ref Filt="IsMatrix"/> these categories follow from the
+##  family, so they replace the idiom
+##  <C>IsMatrix and IsFFECollColl</C>.
+##  For matrix objects they are set by the constructors, based on the base
+##  domain; this does not presuppose that a matrix object is a collection of
+##  its entries.
+##  <Example><![CDATA[
+##  gap> m:= [ [ Z(4), 0*Z(4) ], [ 0*Z(4), Z(4)^2 ] ];;
+##  gap> IsFFEMatrix( m );  IsFFEMatrixObj( m );
+##  true
+##  false
+##  gap> m:= Matrix( IsPlistMatrixRep, GF(4), m );;
+##  gap> IsFFEMatrix( m );  IsFFEMatrixObj( m );
+##  false
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareCategory( "IsFFEMatrixOrMatrixObj", IsMatrixOrMatrixObj );
+DeclareSynonym( "IsFFEMatrix", IsFFEMatrixOrMatrixObj and IsMatrix );
+DeclareSynonym( "IsFFEMatrixObj", IsFFEMatrixOrMatrixObj and IsMatrixObj );
+
+DeclareCategory( "IsCyclotomicMatrixOrMatrixObj", IsMatrixOrMatrixObj );
+DeclareSynonym( "IsCyclotomicMatrix", IsCyclotomicMatrixOrMatrixObj and IsMatrix );
+DeclareSynonym( "IsCyclotomicMatrixObj", IsCyclotomicMatrixOrMatrixObj and IsMatrixObj );
+
+# For matrices in 'IsMatrix' the entry type is determined by the family.
+InstallTrueMethod( IsFFEMatrixOrMatrixObj, IsFFECollColl and IsMatrix );
+InstallTrueMethod( IsCyclotomicMatrixOrMatrixObj, IsCyclotomicCollColl and IsMatrix );
+
+
+#############################################################################
+##
+#C  IsFiniteFieldMatrixOrMatrixObj( <obj> )
+#C  IsFiniteFieldRowVectorOrVectorObj( <obj> )
+##
+##  <#GAPDoc Label="IsFiniteFieldMatrixOrMatrixObj">
+##  <ManSection>
+##  <Heading>IsFiniteFieldMatrixOrMatrixObj and friends</Heading>
+##  <Filt Name="IsFiniteFieldMatrixOrMatrixObj" Arg='obj' Type="Category"/>
+##  <Filt Name="IsFiniteFieldMatrix" Arg='obj' Type="Category"/>
+##  <Filt Name="IsFiniteFieldMatrixObj" Arg='obj' Type="Category"/>
+##  <Filt Name="IsFiniteFieldRowVectorOrVectorObj" Arg='obj' Type="Category"/>
+##  <Filt Name="IsFiniteFieldVector" Arg='obj' Type="Category"/>
+##  <Filt Name="IsFiniteFieldVectorObj" Arg='obj' Type="Category"/>
+##
+##  <Description>
+##  The categories of matrices, matrix objects, row vectors and vector
+##  objects over a finite field.  <Ref Filt="IsFiniteFieldMatrix"/> and
+##  <Ref Filt="IsFiniteFieldMatrixObj"/> are the restrictions of
+##  <Ref Filt="IsFiniteFieldMatrixOrMatrixObj"/> to
+##  <Ref Filt="IsMatrix"/> and <Ref Filt="IsMatrixObj"/>, respectively,
+##  and likewise on the vector side.
+##  <P/>
+##  Unlike <Ref Filt="IsFFEMatrixOrMatrixObj"/>, these categories do not
+##  prescribe how the field elements are represented:
+##  <Ref Filt="IsFFEMatrixOrMatrixObj"/> implies
+##  <Ref Filt="IsFiniteFieldMatrixOrMatrixObj"/>, and an implementation of
+##  matrices over a finite field whose elements are not in
+##  <Ref Filt="IsFFE"/> --such as the fields provided by the
+##  <Package>StandardFF</Package> package-- can imply it as well.
+##  Algorithms that only need a finite field to work over should use these
+##  categories rather than <Ref Filt="IsFFEMatrixOrMatrixObj"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareCategory( "IsFiniteFieldRowVectorOrVectorObj", IsRowVectorOrVectorObj );
+DeclareSynonym( "IsFiniteFieldVector", IsFiniteFieldRowVectorOrVectorObj and IsRowVector );
+DeclareSynonym( "IsFiniteFieldVectorObj", IsFiniteFieldRowVectorOrVectorObj and IsVectorObj );
+
+DeclareCategory( "IsFiniteFieldMatrixOrMatrixObj", IsMatrixOrMatrixObj );
+DeclareSynonym( "IsFiniteFieldMatrix", IsFiniteFieldMatrixOrMatrixObj and IsMatrix );
+DeclareSynonym( "IsFiniteFieldMatrixObj", IsFiniteFieldMatrixOrMatrixObj and IsMatrixObj );
+
+InstallTrueMethod( IsFiniteFieldRowVectorOrVectorObj, IsFFERowVectorOrVectorObj );
+InstallTrueMethod( IsFiniteFieldMatrixOrMatrixObj, IsFFEMatrixOrMatrixObj );
+
+
+
 #############################################################################
 ##
 #A  BaseDomain( <vector> )

@@ -4910,11 +4910,26 @@ end );
 # list, is it indeed a group (or only magma)?
 InstallGlobalFunction(MakeGroupyType,
 function(fam,filt,gens,id,isgroup)
+local mats;
 
   filt:=filt and HasIsEmpty;  # having HasIsEmpty but not IsEmpty indicates "non-empty"
   if IsFinite(gens) then
     if isgroup then
       filt:=filt and IsFinitelyGeneratedGroup;
+
+      # A matrix object need not be a collection of its entries, so for a
+      # group of matrix objects 'IsMatrixGroup' does not follow from the
+      # family the way it does for a group of matrices in 'IsMatrix'.
+      mats:=gens;
+      if Length(mats)=0 and not IsBool(id) then
+        mats:=[id];
+      fi;
+      if Length(mats)>0 and IsMatrixObj(mats[1]) then
+        filt:=filt and IsMatrixGroup;
+        if IsFiniteFieldMatrixObj(mats[1]) then
+          filt:=filt and IsFiniteFieldMatrixGroup;
+        fi;
+      fi;
     fi;
 
     if Length(gens)>0 and CanEasilyCompareElements(gens) then

@@ -14,19 +14,30 @@
 
 #############################################################################
 ##
-#C  IsFFEMatrixGroup( <G> )
+#C  IsFiniteFieldMatrixGroup( <G> )
 ##
-##  <#GAPDoc Label="IsFFEMatrixGroup">
+##  <#GAPDoc Label="IsFiniteFieldMatrixGroup">
 ##  <ManSection>
+##  <Filt Name="IsFiniteFieldMatrixGroup" Arg='G' Type='Category'/>
 ##  <Filt Name="IsFFEMatrixGroup" Arg='G' Type='Category'/>
 ##
 ##  <Description>
-##  tests whether all matrices in <A>G</A> have finite field element entries.
+##  The category of matrix groups over a finite field.
+##  <P/>
+##  It holds for a group of matrices or matrix objects in
+##  <Ref Filt="IsFiniteFieldMatrixOrMatrixObj"/>, which in particular covers
+##  matrices with entries in <Ref Filt="IsFFE"/>.
+##  <P/>
+##  <Ref Filt="IsFFEMatrixGroup"/> is a deprecated synonym; it used to be
+##  restricted to entries in <Ref Filt="IsFFE"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareSynonym( "IsFFEMatrixGroup", IsFFECollCollColl and IsMatrixGroup );
+DeclareCategory( "IsFiniteFieldMatrixGroup", IsMatrixGroup );
+DeclareSynonym( "IsFFEMatrixGroup", IsFiniteFieldMatrixGroup );
+
+InstallTrueMethod( IsFiniteFieldMatrixGroup, IsFFECollCollColl and IsMatrixGroup );
 
 
 #############################################################################
