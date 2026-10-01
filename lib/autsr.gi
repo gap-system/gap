@@ -840,6 +840,8 @@ local
   fp,     # helper: fingerprint of a group (id, or size / class data /
           # abelian invariants)
   # -- data --
+  cl,     # the conjugacy classes of G, computed when first needed
+  cd,     # the element orders and lengths of the classes in cl
   n,      # the list of normal subgroups to be classified
   pat,    # the fingerprint of each normal subgroup
   pools,  # the resulting classes (pools) of normal subgroups (return value)
@@ -855,12 +857,19 @@ local
       and ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
       return IdGroup(x);
     fi;
+    # The classes of G contained in x are invariant under automorphisms
+    # of G, and much cheaper than the classes of each x.
+    if cl=fail then
+      cl:=ConjugacyClasses(G);
+      cd:=List(cl,y->[Order(Representative(y)),Size(y)]);
+    fi;
     l:=[Size(x)];
-    Add(l,Collected(List(ConjugacyClasses(x),
-      y->[Order(Representative(y)),Size(y)])));
+    Add(l,Collected(cd{Filtered([1..Length(cl)],
+      i->Representative(cl[i]) in x)}));
     Add(l,AbelianInvariants(x));
     return l;
   end;
+  cl:=fail;
   n:=ValueOption("directs");
   if n<>fail then
     # avoid large number of normals in direct product
