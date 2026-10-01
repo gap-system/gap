@@ -1930,11 +1930,12 @@ static Obj SwapMatRows;
 
 static Obj FuncSWAP_MAT_ROWS(Obj self, Obj mat, Obj row1, Obj row2)
 {
-    if (IS_POS_INTOBJ(row1) && IS_POS_INTOBJ(row2) && IS_PLIST(mat)) {
+    if (IS_POS_INTOBJ(row1) && IS_POS_INTOBJ(row2) && IS_PLIST(mat) &&
+        IS_MUTABLE_OBJ(mat)) {
         Int r1 = INT_INTOBJ(row1);
         Int r2 = INT_INTOBJ(row2);
         Obj row1list = r1 <= LEN_PLIST(mat) ? ELM_PLIST(mat, r1) : 0;
-        Obj row2list = r1 <= LEN_PLIST(mat) ? ELM_PLIST(mat, r2) : 0;
+        Obj row2list = r2 <= LEN_PLIST(mat) ? ELM_PLIST(mat, r2) : 0;
         if (!row1list)
             ErrorMayQuit("Matrix Element: <mat>[%d] must have an assigned value",
                          (Int)r1, 0);
