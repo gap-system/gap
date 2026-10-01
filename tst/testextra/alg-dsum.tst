@@ -42,12 +42,12 @@ gap> ImageElm( emb5, g );
 v.3
 gap> pro6 := Projection( A56, 2 );
 [ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8, v.9, v.10, v.11 ] -> 
-[ (1)*(), (1)*(), (1)*(), (1)*(), (1)*(), (1)*(), (1)*(2,3), (1)*(1,2), 
-  (1)*(1,2,3), (1)*(1,3,2), (1)*(1,3) ]
+[ <zero> of ..., <zero> of ..., <zero> of ..., <zero> of ..., <zero> of ..., 
+  (1)*(), (1)*(2,3), (1)*(1,2), (1)*(1,2,3), (1)*(1,3,2), (1)*(1,3) ]
 gap> bas56 := BasisVectors( Basis( A56 ) );
 [ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8, v.9, v.10, v.11 ]
-gap> ## ImageElm( pro6, bas56[9] );
-
+gap> ImageElm( pro6, bas56[9] );
+(1)*(1,2,3)
 gap> # direct sums of type "generators"
 gap> m1 := [ [0,1,0,0], [0,0,1,0], [0,0,0,1], [1,0,0,0] ];;
 gap> A1 := Algebra( Rationals, [m1] );;
@@ -92,8 +92,12 @@ gap> ImageElm( emb1, m1^3 );
   [ 0, 0, 1, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0 ], 
   [ 0, 0, 0, 0, 0, 0, 0 ] ]
 gap> pro2 := Projection( A12, 2 );;
-gap> ## Print( "pro2 maps  = ", m2*m4, " to: ", ImageElm( pro2, m2*m4 ), "\n" );
-
+gap> m0 := GeneratorsOfAlgebra( A12 )[2];
+[ [ 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 1, 1 ], [ 0, 0, 0, 0, 0, 0, 1 ], 
+  [ 0, 0, 0, 0, 0, 0, 0 ] ]
+gap> ImageElm( pro2, m0 );
+[ [ 0, 1, 1 ], [ 0, 0, 1 ], [ 0, 0, 0 ] ]
 gap> # mix the two types together
 gap> A5612 := DirectSumOfAlgebras( A56, A12 );;
 gap> info5612 := DirectSumInfo( A5612 );
@@ -103,5 +107,24 @@ gap> A1256 := DirectSumOfAlgebras( A12, A56 );;
 gap> info1256 := DirectSumInfo( A1256 );
 rec( algebras := [ A5, A6, A1, A2 ], embeddings := [  ], 
   first := [ 1, 6, 12, 16, 25 ], projections := [  ], type := "basis vectors" )
+
+gap> ## Lie algebra example
+gap> L := FullMatrixLieAlgebra( Rationals, 2 );
+<Lie algebra over Rationals, with 3 generators>
+gap> SetName( L, "L" );
+gap> L2 := DirectSumOfAlgebras( L, L );
+<Lie algebra over Rationals, with 6 generators>
+gap> DirectSumInfo(L2);
+rec( algebras := [ L, L ], embeddings := [  ], first := [ 1, 4, 7 ], 
+  projections := [  ], type := "generators" )
+gap> Embedding( L2, 1 );                       
+[ LieObject( [ [ 1, 0 ], [ 0, 0 ] ] ), LieObject( [ [ 0, 1 ], [ 0, 0 ] ] ), 
+  LieObject( [ [ 0, 0 ], [ 1, 0 ] ] ) ] -> 
+[ LieObject( [ [ 1, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] 
+     ] ), 
+  LieObject( [ [ 0, 1, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] 
+     ] ), 
+  LieObject( [ [ 0, 0, 0, 0 ], [ 1, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] 
+     ] ) ]
 
 gap> STOP_TEST("alg-dsum.tst");
