@@ -350,6 +350,11 @@ InstallOtherMethod( \*,
     return Vector( res, v );
   end );
 
+InstallMethod( \<,
+  [ "IsGenericMatrixRep", "IsGenericMatrixRep" ],
+  { a, b } -> LT_LIST_LIST_DEFAULT( a![GEN_MAT_REP_ROWS_POS],
+                                    b![GEN_MAT_REP_ROWS_POS] ) );
+
 InstallMethod( ChangedBaseDomain,
   [ "IsGenericMatrixRep", "IsRing" ],
   function( M, r )
