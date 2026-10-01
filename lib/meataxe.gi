@@ -22,7 +22,13 @@ local l,f,dim,m;
   if Length(l)>0 and Characteristic(l[1])<>Characteristic(f) then
       Error("matrices and field do not fit together");
   fi;
-  l:=List(l,i->ImmutableMatrix(f,i));
+  # the MeatAxe computes with matrices that are lists of rows
+  l:=List(l,function(i)
+    if IsMatrixObj(i) and not IsMatrix(i) then
+      i:=Unpack(i);
+    fi;
+    return ImmutableMatrix(f,i);
+  end);
 
   if ForAny(l,i->NrRows(i)<>NrCols(i)) or
     Length(Set(l,NrRows))>1 then
