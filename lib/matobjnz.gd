@@ -27,6 +27,9 @@
 ##  This ring is the base domain
 ##  (see <Ref Attr="BaseDomain" Label="for a vector object"/>)
 ##  of <A>obj</A>.
+##  Prime fields with at most <M>256</M> elements are not admissible;
+##  use <Ref Filt="IsGF2VectorRep"/> or <Ref Filt="Is8BitVectorRep"/>
+##  for them.
 ##  <P/>
 ##  <Ref Filt="IsZmodnZVectorRep"/> implies <Ref Filt="IsCopyable"/>,
 ##  thus matrix objects in this representation can be mutable.
@@ -64,6 +67,9 @@ DeclareRepresentation( "IsZmodnZVectorRep",
 ##  This ring is the base domain
 ##  (see <Ref Attr="BaseDomain" Label="for a vector object"/>)
 ##  of <A>obj</A>.
+##  Prime fields with at most <M>256</M> elements are not admissible;
+##  use <Ref Filt="IsGF2MatrixRep"/> or <Ref Filt="Is8BitMatrixRep"/>
+##  for them.
 ##  <P/>
 ##  <Ref Filt="IsZmodnZMatrixRep"/> implies <Ref Filt="IsCopyable"/>,
 ##  thus matrix objects in this representation can be mutable.

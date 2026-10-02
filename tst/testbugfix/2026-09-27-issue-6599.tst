@@ -4,12 +4,12 @@
 #@local R, z, v, w, one, zm, u
 gap> START_TEST( "2026-09-27-issue-6599.tst" );
 
-# the example from the issue
-gap> z := Vector( IsZmodnZVectorRep, Integers mod 7, [ 0, 0 ] );;
+# the example from the issue, with modulus 257 instead of 7
+gap> z := Vector( IsZmodnZVectorRep, Integers mod 257, [ 0, 0 ] );;
 gap> MakeImmutable( z );;
 gap> IsZero( z );
 true
-gap> IsZero( Vector( [ ZmodpZObj( 3, 7 ) ], z ) );
+gap> IsZero( Vector( [ ZmodpZObj( 3, 257 ) ], z ) );
 false
 
 # vectors

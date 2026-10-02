@@ -65,6 +65,26 @@ InstallMethod( CompatibleVectorFilter, "zmodnz",
   [ IsZmodnZMatrixRep ],
   M -> IsZmodnZVectorRep );
 
+# Entries are handed out as 'ZmodnZObj( <fam>, <i> )', which are not
+# internal FFEs and thus cannot be stored in compressed vectors, the
+# natural representation for GF(p) with p in PRIMES_COMPACT_FIELDS.
+BindGlobal( "ZMODNZ_CHECK_BASEDOMAIN", function( filter, basedomain )
+    local alt;
+    if IsZmodnZObjNonprimeCollection( basedomain ) then
+      return;
+    elif not ( IsFinite( basedomain ) and IsPrimeField( basedomain ) ) then
+      Error( "<basedomain> must be Integers mod <n> for some <n>" );
+    elif Size( basedomain ) in PRIMES_COMPACT_FIELDS then
+      if IsIdenticalObj( filter, IsZmodnZVectorRep ) then
+        alt:= DefaultVectorRepForBaseDomain( basedomain );
+      else
+        alt:= DefaultMatrixRepForBaseDomain( basedomain );
+      fi;
+      Error( NameFunction( filter ), ": for GF(p) with p <= 256 use ",
+             NameFunction( alt ) );
+    fi;
+end );
+
 #############################################################################
 # Vectors
 #############################################################################
@@ -74,9 +94,8 @@ InstallTagBasedMethod( NewVector,
   function( filter, basedomain, l )
     local check, v;
     check:= ValueOption( "check" ) <> false;
-    if check and not ( IsZmodnZObjNonprimeCollection( basedomain ) or
-        ( IsFinite( basedomain ) and IsPrimeField( basedomain ) ) ) then
-      Error( "<basedomain> must be Integers mod <n> for some <n>" );
+    if check then
+      ZMODNZ_CHECK_BASEDOMAIN( filter, basedomain );
     fi;
     # force list of integers
     if FamilyObj(basedomain)=FamilyObj(l) then
@@ -96,9 +115,8 @@ InstallTagBasedMethod( NewZeroVector,
   function( filter, basedomain, l )
     local check, v;
     check:= ValueOption( "check" ) <> false;
-    if check and not ( IsZmodnZObjNonprimeCollection( basedomain ) or
-        ( IsFinite( basedomain ) and IsPrimeField( basedomain ) ) ) then
-      Error( "<basedomain> must be Integers mod <n> for some <n>" );
+    if check then
+      ZMODNZ_CHECK_BASEDOMAIN( filter, basedomain );
     fi;
     # represent list as integers
     v := [basedomain,0*[1..l]];
@@ -617,9 +635,8 @@ InstallTagBasedMethod( NewMatrix,
     local check, nd, filterVectors, m, e, i;
 
     check:= ValueOption( "check" ) <> false;
-    if check and not ( IsZmodnZObjNonprimeCollection( basedomain ) or
-        ( IsFinite( basedomain ) and IsPrimeField( basedomain ) ) ) then
-      Error( "<basedomain> must be Integers mod <n> for some <n>" );
+    if check then
+      ZMODNZ_CHECK_BASEDOMAIN( filter, basedomain );
     fi;
 
     # If applicable then replace a flat list 'l' by a nested list
@@ -656,9 +673,8 @@ InstallTagBasedMethod( NewZeroMatrix,
     local check, m,i,e,filter2;
 
     check:= ValueOption( "check" ) <> false;
-    if check and not ( IsZmodnZObjNonprimeCollection( basedomain ) or
-        ( IsFinite( basedomain ) and IsPrimeField( basedomain ) ) ) then
-      Error( "<basedomain> must be Integers mod <n> for some <n>" );
+    if check then
+      ZMODNZ_CHECK_BASEDOMAIN( filter, basedomain );
     fi;
 
     filter2 := IsZmodnZVectorRep;
