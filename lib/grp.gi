@@ -4944,7 +4944,7 @@ end);
 
 InstallGlobalFunction(MakeGroupyObj,
 function(fam,filt,gens,id,attr...)
-  local isgroup, typ;
+  local isgroup, typ, x;
   Assert(0, IsList(attr));
   Assert(0, IsEvenInt(Length(attr)));
 
@@ -4963,6 +4963,19 @@ function(fam,filt,gens,id,attr...)
 
   if isgroup and IS_IMPLIED_BY(IsTrivial, typ) then
     Append(attr, [ Size, 1 ]);
+  fi;
+
+  # a group of matrix objects is defined over their common base domain,
+  # see 'CheckMatrixGroupGenerators'
+  if isgroup then
+    if Length(gens) > 0 then
+      x:= gens[1];
+    else
+      x:= id;
+    fi;
+    if IsMatrixObj(x) and not IsList(x) then
+      Append(attr, [ BaseDomain, BaseDomain(x) ]);
+    fi;
   fi;
 
   return CallFuncList(ObjectifyWithAttributes, Concatenation([rec(), typ], attr));

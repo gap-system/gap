@@ -56,6 +56,7 @@ local gens,mat,G;
   fi;
   gens:=List(gens,Immutable);
   G:= GroupByGenerators( gens, IdentityMat( n, 1 ) );
+  SetBaseDomain(G,ints);
   Setter(IsNaturalGLnZ)(G,true);
   SetName(G,Concatenation("GL(",String(n),",Integers)"));
   if n>1 then
@@ -90,6 +91,7 @@ local gens,mat,G;
   fi;
   gens:=List(gens,Immutable);
   G:= GroupByGenerators( gens, IdentityMat( n, 1 ) );
+  SetBaseDomain(G,ints);
   Setter(IsNaturalSLnZ)(G,true);
   SetName(G,Concatenation("SL(",String(n),",Integers)"));
   if n>1 then
