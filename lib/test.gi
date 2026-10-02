@@ -880,6 +880,10 @@ end);
 ##  Each of these files is then run through <Ref Func="Test" />, and the results
 ##  printed, and <K>true</K> returned if all tests passed.
 ##  <P/>
+##  Files and directories listed in the <C>testfiles</C> component of a
+##  package extension that is not loaded are skipped,
+##  see Section <Ref Sect="Extensions Provided by a Package"/>.
+##  <P/>
 ##  If the optional argument <Arg>optrec</Arg> is given it must be a record.
 ##  Note that the <C>rewriteToFile</C> option is especially useful for
 ##  generating test files.
@@ -926,7 +930,7 @@ InstallGlobalFunction( "TestDirectory", function(arg)
            showProgress, suppressStatusMessage, exitGAP, c, files,
            filetimes, filemems, recurseFiles, f, i, startTime,
            startMem, testResult, time, mem, startGcTime, gctime,
-           totalGcTime, filegctimes;
+           totalGcTime, filegctimes, skip, IsSkipped;
 
   testTotalFailures := 0;
   testFailedFiles := 0;
@@ -975,6 +979,26 @@ InstallGlobalFunction( "TestDirectory", function(arg)
   filemems := [];
   filegctimes := [];
 
+  if opts.showProgress then
+    Print( "Architecture: ", GAPInfo.Architecture, "\n\n" );
+  fi;
+
+  # test files of package extensions whose needed packages are not loaded
+  skip := TestFilesOfPendingPackageExtensions();
+  IsSkipped := function(path)
+    local realpath, pos;
+    if IsEmpty(skip) then return false; fi;
+    realpath := GAP_realpath(path);
+    pos := PositionProperty(skip, x -> x[1] = realpath);
+    if pos = fail then return false; fi;
+    if opts.showProgress then
+      Print("skipping: ", TEST_NICE_FILENAME(path), " (needs ",
+            JoinStringsWithSeparator(List(skip[pos][2], l -> l[1]), ", "),
+            ")\n");
+    fi;
+    return true;
+  end;
+
   recurseFiles := function(dirs, prefix)
     local dircontents, testfiles, t, testrecs, shortName, recursedirs, d, subdirs;
     if Length(dirs) = 0 then return; fi;
@@ -987,7 +1011,7 @@ InstallGlobalFunction( "TestDirectory", function(arg)
       if shortName[1] = '/' then
         shortName := shortName{[2..Length(shortName)]};
       fi;
-      if not shortName in opts.exclude then
+      if not shortName in opts.exclude and not IsSkipped(Filename(dirs, t)) then
         Add(testrecs, rec(name := Filename(dirs, t), shortName := shortName));
       fi;
     od;
@@ -999,6 +1023,7 @@ InstallGlobalFunction( "TestDirectory", function(arg)
     for d in recursedirs do
       subdirs := List(dirs, x -> Directory(Filename(x, d)));
       subdirs := Filtered(subdirs, IsDirectoryPath);
+      subdirs := Filtered(subdirs, x -> not IsSkipped(Filename(x, "")));
       recurseFiles(subdirs, Concatenation(prefix,d,"/"));
     od;
   end;
@@ -1009,16 +1034,12 @@ InstallGlobalFunction( "TestDirectory", function(arg)
       recurseFiles(List(f, Directory), "");
     elif IsDirectoryPath(f) then
       recurseFiles( [ Directory(f) ], "" );
-    else
+    elif not IsSkipped(f) then
       Add(files, rec(name := f, shortName := f));
     fi;
   od;
 
   SortBy(files, f -> [f.shortName, f.name]);
-
-  if opts.showProgress then
-    Print( "Architecture: ", GAPInfo.Architecture, "\n\n" );
-  fi;
 
   for i in [1..Length(files)] do
     if opts.showProgress then
