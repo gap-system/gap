@@ -3014,31 +3014,52 @@ InstallMethod( GeneratorsOfLeftOperatorRingWithOne,
 ##  Construct a s.c. algebra.
 ##  (There are special methods for the sum of appropriate matrix algebras.)
 ##
-#T embeddings/projections should be provided!
-##
 InstallOtherMethod( DirectSumOfAlgebras,
     "for two algebras",
     [ IsAlgebra, IsAlgebra ],
     function( A1, A2 )
-    local n,     # The dimension of the resulting algebra.
+    local n1,    # The dimension of A1.
+          n2,    # The dimension of A2.
+          n,     # The dimension of the resulting algebra.
           i,j,   # Loop variables.
           T,     # The table of structure constants of the direct sum.
-          scT,   #
-          n1,    # The dimension of A1.
-          n2,    # The dimension of A2.
-          ll,    # A list of structure constants.
+          scT,ll,# A list of structure constants.
           L,     # result.
-          sym,   # if both products are (anti)symmetric, then the result
-                 # will have the same property.
+          sym,   # if both products are (anti)symmetric,
+                 # then the result will have the same property.
           R1,R2, # Root systems of A1,A2.
           f1,f2, # Embeddings of A1,A2 in L.
           R,     # Root system of L.
           RV,    # List of various things.
           r,
-          pos;   # List of positions.
+          pos,   # List of positions.
+          info1, # direct sum info for A1 if it exists.
+          info2, # direct sum info for A2 if it exists.
+          alg,   # list of component algebras.
+          first; # positions where bases start in the full basis
 
     if LeftActingDomain( A1 ) <> LeftActingDomain( A2 ) then
       Error( "<A1> and <A2> must be written over the same field" );
+    fi;
+
+    # this method constructs a direct sum of type "basis vectors"
+    # if it should so happen that one of A1,A2 is already a direct sum
+    # of type "generators" then we reconstruct it using "basis vectors"
+    if HasDirectSumInfo( A1 ) and DirectSumInfo( A1 ).type = "generators" then
+      info1 := DirectSumInfo( A1 );
+      L := A2;
+      for i in [1..Length( info1.algebras )] do
+          L := DirectSumOfAlgebras( L, info1.algebras[i] );
+      od;
+      return L;
+    fi;
+    if HasDirectSumInfo( A2 ) and DirectSumInfo( A2 ).type = "generators" then
+      info2 := DirectSumInfo( A2 );
+      L := A1;
+      for i in [1..Length( info2.algebras )] do
+          L := DirectSumOfAlgebras( L, info2.algebras[i] );
+      od;
+      return L;
     fi;
 
     n1:= Dimension( A1 );
@@ -3064,7 +3085,6 @@ InstallOtherMethod( DirectSumOfAlgebras,
       od;
     od;
 
-
     # Set the (anti)symmetric flag
     if scT[n2 + 1] = sym  then
         T[n + 1] := sym;
@@ -3074,8 +3094,37 @@ InstallOtherMethod( DirectSumOfAlgebras,
         T[n + 1] := 1;
     fi;
 
-
     L:= AlgebraByStructureConstants( LeftActingDomain( A1 ), T );
+
+    # if one of A1,A2 is already a direct sum then make adjustments
+    if HasDirectSumInfo( A1 ) then
+      info1 := DirectSumInfo( A1 );
+      i := Length( info1.first );
+      if HasDirectSumInfo( A2 ) then
+        info2 := DirectSumInfo( A2 );
+        alg := Concatenation( info1.algebras, info2.algebras );
+        first := ShallowCopy( info1.first ){[1..i-1]};
+        j := info1.first[i];
+        first := Concatenation( first, info2.first + j );
+      else
+        alg := Concatenation( info1.algebras, [A2] );
+        first := ShallowCopy( info1.first );
+        Add( first, first[i] + n2 );
+      fi;
+    elif HasDirectSumInfo( A2 ) then
+      info2 := DirectSumInfo( A2 );
+      alg := Concatenation( [A1], info2.algebras );
+      first := ShallowCopy( info2.first );
+      first := Concatenation( [0], first + n1 );
+    else
+      alg := [A1,A2];
+      first := [0,n1,n1+n2];
+    fi;
+    SetDirectSumInfo( L, rec( algebras := alg,
+                              first := first,
+                              type := "basis vectors",
+                              embeddings := [],
+                              projections := [] ) );
 
     # Maintain useful information.
     if     HasIsLieAlgebra( A1 ) and HasIsLieAlgebra( A2 )
@@ -3202,7 +3251,7 @@ InstallMethod( DirectSumOfAlgebras,
     "for list of algebras",
     [ IsDenseList ],
     function( list )
-    local R, A, i;
+    local R, A, i, dim, first;
 
     if IsEmpty( list ) then
       Error( "<list> must be nonempty" );
@@ -3216,13 +3265,113 @@ InstallMethod( DirectSumOfAlgebras,
     od;
 
     A:= list[1];
+    first:= [ 0, Dimension( A ) ];
     for i in [ 2 .. Length( list ) ] do
+      dim:= Dimension( list[i] );
+      Add( first, first[i] + dim );
       A:= DirectSumOfAlgebras( A, list[i] );
     od;
-
+    SetDirectSumInfo( A, rec( algebras := list,
+                              first := first,
+                              type := "basis vectors",
+                              embeddings := [],
+                              projections := [] ) );
     return A;
     end );
 
+
+#############################################################################
+##
+#A Embedding
+##
+InstallMethod( Embedding, "algebra direct sum and integer",
+    [ IsAlgebra and HasDirectSumInfo, IsPosInt ],
+    function( D, i )
+    local info, type, first, A, imgs, map, gens;
+
+    # check
+    info := DirectSumInfo( D );
+    if IsBound( info.embeddings[i] ) then
+        return info.embeddings[i];
+    fi;
+    type := info.type;
+    first := info.first;
+    if not ( i < Length(first) ) then
+        Error( "value of second parameter is too large" );
+    fi;
+    ## info.onelist:=List(info.algebras,One);
+    # compute embedding
+    A := info.algebras[i];
+    if ( type = "basis vectors" ) then
+        gens := BasisVectors( Basis( A ) );
+        imgs := BasisVectors( Basis( D ) ){[first[i]+1 .. first[i+1]]};
+    elif ( type = "generators" ) then
+        gens := GeneratorsOfAlgebra( A );
+        imgs := GeneratorsOfAlgebra( D ){[first[i]+1 .. first[i+1]]};
+    else
+        Error( "unknown type" );
+    fi;
+    map := AlgebraHomomorphismByImages( A, D, gens, imgs );
+    SetIsInjective( map, true );
+    SetIsTotal( map, true );
+    SetIsSingleValued( map, true );
+
+    # store information
+    info.embeddings[i] := map;
+    return map;
+end );
+
+#############################################################################
+##
+#A  Projection
+##
+InstallMethod( Projection, "algebra direct sum and integer",
+    [ IsAlgebra and HasDirectSumInfo, IsPosInt ],
+    function( D, i )
+    local infoD, type, first, zA, len, A, genA, genD, imgs, j, k, map, N;
+
+    # check
+    infoD := DirectSumInfo( D );
+    if IsBound( infoD.projections[i] ) then
+        return infoD.projections[i];
+    fi;
+    type := infoD.type;
+    first := infoD.first;
+    len := Length( first );
+    if not ( i < len ) then
+        Error( "value of second parameter is too large" );
+    fi;
+    # compute projection
+    A := infoD.algebras[i];
+    zA := Zero( A );
+    if ( type = "basis vectors" ) then
+        genA := BasisVectors( Basis( A ) );
+        genD := BasisVectors( Basis( D ) );
+    elif ( type = "generators" ) then
+        genA := GeneratorsOfAlgebra( A );
+        genD := GeneratorsOfAlgebra( D );
+    else
+        Error( "unknown type" );
+    fi;
+    imgs := ListWithIdenticalEntries( first[len]-1, zA );
+    j := first[i];
+    for k in [first[i]+1..first[i+1]] do
+        imgs[k] := genA[k-j];
+    od;
+    map := AlgebraGeneralMappingByImages( D, A, genD, imgs );
+    if not IsTotal( map ) and IsSurjective( map ) then
+        Error( "map is not total and surjective" );
+    fi;
+
+    N := Subalgebra( D, genD{Concatenation( [1..first[i]],
+                               [first[i+1]+1..first[len]] )} );
+##    SetIsSurjective( map, true );
+    SetKernelOfMultiplicativeGeneralMapping( map, N );
+
+    # store information
+    infoD.projections[i] := map;
+    return map;
+end );
 
 #############################################################################
 ##

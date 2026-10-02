@@ -1316,8 +1316,6 @@ end );
 ##
 ##  Construct an associative matrix FLMLOR.
 ##
-#T embeddings/projections should be provided!
-##
 InstallOtherMethod( DirectSumOfAlgebras,
     "for two associative matrix FLMLORs",
     IsIdenticalObj,
@@ -1326,13 +1324,20 @@ InstallOtherMethod( DirectSumOfAlgebras,
     function( A1, A2 )
 
     local b1,   # Basis vectors of `A1'.
+          d1,   # Dimension of `A1'.
           b2,   # Basis vectors of `A2'.
+          d2,   # Dimension of `A2'.
+          type, # basis vectors or generators.
           p1,   # Length of the matrices of `b1'.
           p2,   # Length of the matrices of `b2'.
           B,    # A basis of `A1 \oplus A2'.
-          i,    # Loop variable.
+          i,j,  # Loop variables.
           Q,    # A matrix.
-          A;    # result
+          A,    # result
+          info1, # direct sum info for A1 if it exists.
+          info2, # direct sum info for A2 if it exists.
+          alg,   # list of component algebras.
+          first; # positions where bases start in the full basis.
 
     if LeftActingDomain( A1 ) <> LeftActingDomain( A2 ) then
       Error( "<A1> and <A2> must be written over the same domain" );
@@ -1344,11 +1349,15 @@ InstallOtherMethod( DirectSumOfAlgebras,
     if HasBasis( A1 ) and HasBasis( A2 ) then
       b1:= BasisVectors( Basis( A1 ) );
       b2:= BasisVectors( Basis( A2 ) );
+      type:= "basis vectors";
     else
       b1:= GeneratorsOfAlgebra( A1 );
       b2:= GeneratorsOfAlgebra( A2 );
+      type:= "generators";
     fi;
 
+    d1:= Length( b1 );
+    d2:= Length( b2 );
     p1:= DimensionOfVectors( A1 )[1];
     p2:= DimensionOfVectors( A2 )[1];
 
@@ -1372,6 +1381,36 @@ InstallOtherMethod( DirectSumOfAlgebras,
     SetIsAssociative( A, true );
 #T nec. ?
 
+    # if one of A1,A2 is already a direct sum then make adjustments
+    if HasDirectSumInfo( A1 ) then
+      info1 := DirectSumInfo( A1 );
+      i := Length( info1.first );
+      if HasDirectSumInfo( A2 ) then
+        info2 := DirectSumInfo( A2 );
+        alg := Concatenation( info1.algebras, info2.algebras );
+        first := ShallowCopy( info1.first ){[1..i-1]};
+        j := info1.first[i];
+        first := Concatenation( first, info2.first + j );
+      else
+        alg := Concatenation( info1.algebras, [A2] );
+        first := ShallowCopy( info1.first );
+        Add( first, first[i] + d2 );
+      fi;
+    elif HasDirectSumInfo( A2 ) then
+      info2 := DirectSumInfo( A2 );
+      alg := Concatenation( [A1], info2.algebras );
+      first := ShallowCopy( info2.first );
+      first := Concatenation( [0], first + d1 );
+    else
+      alg := [A1,A2];
+      first := [0,d1,d1+d2];
+    fi;
+    SetDirectSumInfo( A, rec( algebras := alg,
+                              first := first,
+                              type := type,
+                              embeddings := [],
+                              projections := [] ) );
+
     return A;
     end );
 
@@ -1382,8 +1421,6 @@ InstallOtherMethod( DirectSumOfAlgebras,
 ##
 ##  Construct a matrix Lie FLMLOR.
 ##
-#T embeddings/projections should be provided!
-##
 InstallOtherMethod( DirectSumOfAlgebras,
     "for two matrix Lie FLMLORs",
     IsIdenticalObj,
@@ -1391,14 +1428,21 @@ InstallOtherMethod( DirectSumOfAlgebras,
       IsMatrixFLMLOR and IsLieAlgebra ], 0,
     function( A1, A2 )
 
-    local b1,   # Basis vectors of `A1'.
-          b2,   # Basis vectors of `A2'.
-          p1,   # Length of the matrices of `b1'.
-          p2,   # Length of the matrices of `b2'.
-          B,    # A basis of `A1 \oplus A2'.
-          i,    # Loop variable.
-          Q,    # A matrix.
-          A;    # result
+    local b1,    # Basis vectors of `A1'.
+          d1,    # Dimension of `A1'.
+          b2,    # Basis vectors of `A2'.
+          d2,    # Dimension of `A2'.
+          type,  # basis vectors or generators.
+          p1,    # Length of the matrices of `b1'.
+          p2,    # Length of the matrices of `b2'.
+          B,     # A basis of `A1 \oplus A2'.
+          i,j,   # Loop variables.
+          Q,     # A matrix.
+          A,     # result
+          info1, # direct sum info for A1 if it exists.
+          info2, # direct sum info for A2 if it exists.
+          alg,   # list of component algebras.
+          first; # positions where bases start in the full basis.
 
     if LeftActingDomain( A1 ) <> LeftActingDomain( A2 ) then
       Error( "<A1> and <A2> must be written over the same domain" );
@@ -1410,11 +1454,15 @@ InstallOtherMethod( DirectSumOfAlgebras,
     if HasBasis( A1 ) and HasBasis( A2 ) then
       b1:= BasisVectors( Basis( A1 ) );
       b2:= BasisVectors( Basis( A2 ) );
+      type:= "basis vectors";
     else
       b1:= GeneratorsOfAlgebra( A1 );
       b2:= GeneratorsOfAlgebra( A2 );
+      type:= "generators";
     fi;
 
+    d1:= Length( b1 );
+    d2:= Length( b2 );
     p1:= DimensionOfVectors( A1 )[1];
     p2:= DimensionOfVectors( A2 )[1];
 
@@ -1436,6 +1484,36 @@ InstallOtherMethod( DirectSumOfAlgebras,
     fi;
     SetIsLieAlgebra( A, true );
 
+    # if one of A1,A2 is already a direct sum then make adjustments
+    if HasDirectSumInfo( A1 ) then
+      info1 := DirectSumInfo( A1 );
+      i := Length( info1.first );
+      if HasDirectSumInfo( A2 ) then
+        info2 := DirectSumInfo( A2 );
+        alg := Concatenation( info1.algebras, info2.algebras );
+        first := ShallowCopy( info1.first ){[1..i-1]};
+        j := info1.first[i];
+        first := Concatenation( first, info2.first + j );
+      else
+        alg := Concatenation( info1.algebras, [A2] );
+        first := ShallowCopy( info1.first );
+        Add( first, first[i] + d2 );
+      fi;
+    elif HasDirectSumInfo( A2 ) then
+      info2 := DirectSumInfo( A2 );
+      alg := Concatenation( [A1], info2.algebras );
+      first := ShallowCopy( info2.first );
+      first := Concatenation( [0], first + d1 );
+    else
+      alg := [A1,A2];
+      first := [0,d1,d1+d2];
+    fi;
+
+    SetDirectSumInfo( A, rec( algebras := alg,
+                              first := first,
+                              type := type,
+                              embeddings := [],
+                              projections := [] ) );
     return A;
     end );
 

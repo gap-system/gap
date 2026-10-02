@@ -190,6 +190,9 @@ true
 <#Include Label="MutableBasisOfNonassociativeAlgebra">
 <#Include Label="MutableBasisOfIdealInNonassociativeAlgebra">
 <#Include Label="DirectSumOfAlgebras">
+<#Include Label="DirectSumInfo:algebras">
+<#Include Label="Embedding:algebras">
+<#Include Label="Projection:algebras">
 <#Include Label="FullMatrixAlgebraCentralizer">
 <#Include Label="RadicalOfAlgebra">
 <#Include Label="CentralIdempotentsOfAlgebra">
