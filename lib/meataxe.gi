@@ -1837,10 +1837,10 @@ SMTX.FieldGenCentMat:=function(module)
       Error("GModule is not irreducible.");
     fi;
 
-    # enforce absirred knowledge as well.
-    #if not SMTX.IsAbsolutelyIrreducible(module) then
-    #  Error("GModule is not absolutely irreducible.");
-    #fi;
+    # enforce knowledge of absolute irreducibility as well.
+    if not SMTX.IsAbsolutelyIrreducible(module) then
+      Error("GModule is not absolutely irreducible.");
+    fi;
 
     if SMTX.CentMat(module)=fail then
       Error("No CentMat component!");
