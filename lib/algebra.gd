@@ -686,7 +686,7 @@ DeclareOperation( "DirectSumOfAlgebras", [ IsDenseList ] );
 ##    projections :=
 ##      [ , [ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8 ] ->
 ##          [ <zero> of ..., <zero> of ..., <zero> of ..., (1)*(),
-##            (1)*(5,6,7,8,9), (1)*(5,7,9,6,8), (1)*(5,8,6,9,7), (1)*(5,9,8,7,6) 
+##            (1)*(5,6,7,8,9), (1)*(5,7,9,6,8), (1)*(5,8,6,9,7), (1)*(5,9,8,7,6)
 ##           ] ], type := "basis vectors" )
 ##  ]]></Example>
 ##  </Description>

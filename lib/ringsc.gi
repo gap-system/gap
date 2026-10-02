@@ -1248,7 +1248,7 @@ end );
 InstallMethod( Projection, "ring direct sum and integer",
     [ IsRing and HasDirectSumInfo, IsPosInt ],
     function( D, i )
-    local infoD, type, first, zR, len, R, genR, genD, imgs, j, k, map, N;
+    local infoD, first, zR, len, R, genR, genD, imgs, j, k, map;
 
     infoD := DirectSumInfo( D );
     if IsBound( infoD.projections[i] ) then
