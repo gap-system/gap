@@ -3083,7 +3083,6 @@ InstallOtherMethod( DirectSumOfAlgebras,
       od;
     od;
 
-
     # Set the (anti)symmetric flag
     if scT[n2 + 1] = sym  then
         T[n + 1] := sym;
@@ -3103,7 +3102,7 @@ InstallOtherMethod( DirectSumOfAlgebras,
         info2 := DirectSumInfo( A2 );
         alg := Concatenation( info1.algebras, info2.algebras );
         first := ShallowCopy( info1.first ){[1..i-1]};
-        j := info1.first[i] - 1;
+        j := info1.first[i];
         first := Concatenation( first, info2.first + j );
       else
         alg := Concatenation( info1.algebras, [A2] );
@@ -3114,14 +3113,11 @@ InstallOtherMethod( DirectSumOfAlgebras,
       info2 := DirectSumInfo( A2 );
       alg := Concatenation( [A1], info2.algebras );
       first := ShallowCopy( info2.first );
-      first := Concatenation( [1], first + n1 );
+      first := Concatenation( [0], first + n1 );
     else
       alg := [A1,A2];
-      first := [1,n1+1,n1+n2+1];
+      first := [0,n1,n1+n2];
     fi;
-
-
-
     SetDirectSumInfo( L, rec( algebras := alg,
                               first := first,
                               type := "basis vectors",
@@ -3267,7 +3263,7 @@ InstallMethod( DirectSumOfAlgebras,
     od;
 
     A:= list[1];
-    first:= [ 1, Dimension( A ) + 1 ];
+    first:= [ 0, Dimension( A ) ];
     for i in [ 2 .. Length( list ) ] do
       dim:= Dimension( list[i] );
       Add( first, first[i] + dim );
@@ -3306,10 +3302,10 @@ InstallMethod( Embedding, "algebra direct sum and integer",
     A := info.algebras[i];
     if ( type = "basis vectors" ) then
         gens := BasisVectors( Basis( A ) );
-        imgs := BasisVectors( Basis( D ) ){[first[i] .. first[i+1]-1]};
+        imgs := BasisVectors( Basis( D ) ){[first[i]+1 .. first[i+1]]};
     elif ( type = "generators" ) then
         gens := GeneratorsOfAlgebra( A );
-        imgs := GeneratorsOfAlgebra( D ){[first[i] .. first[i+1]-1]};
+        imgs := GeneratorsOfAlgebra( D ){[first[i]+1 .. first[i+1]]};
     else
         Error( "unknown type" );
     fi;
@@ -3344,7 +3340,7 @@ InstallMethod( Projection, "algebra direct sum and integer",
         Error( "value of second parameter is too large" );
     fi;
     # compute projection
-    A    := infoD.algebras[i];
+    A := infoD.algebras[i];
     zA := Zero( A );
     if ( type = "basis vectors" ) then
         genA := BasisVectors( Basis( A ) );
@@ -3356,8 +3352,8 @@ InstallMethod( Projection, "algebra direct sum and integer",
         Error( "unknown type" );
     fi;
     imgs := ListWithIdenticalEntries( first[len]-1, zA );
-    j := first[i] - 1;
-    for k in [first[i]..first[i+1]-1] do
+    j := first[i];
+    for k in [first[i]+1..first[i+1]] do
         imgs[k] := genA[k-j];
     od;
     map := AlgebraGeneralMappingByImages( D, A, genD, imgs );
@@ -3365,8 +3361,8 @@ InstallMethod( Projection, "algebra direct sum and integer",
         Error( "map is not total and surjective" );
     fi;
 
-    N := Subalgebra( D, genD{Concatenation( [1..first[i]-1],
-                               [first[i+1]..first[len]-1] )} );
+    N := Subalgebra( D, genD{Concatenation( [1..first[i]],
+                               [first[i+1]+1..first[len]] )} );
 ##    SetIsSurjective( map, true );
     SetKernelOfMultiplicativeGeneralMapping( map, N );
 
