@@ -1389,7 +1389,7 @@ InstallOtherMethod( DirectSumOfAlgebras,
         info2 := DirectSumInfo( A2 );
         alg := Concatenation( info1.algebras, info2.algebras );
         first := ShallowCopy( info1.first ){[1..i-1]};
-        j := info1.first[i] - 1;
+        j := info1.first[i];
         first := Concatenation( first, info2.first + j );
       else
         alg := Concatenation( info1.algebras, [A2] );
@@ -1400,12 +1400,11 @@ InstallOtherMethod( DirectSumOfAlgebras,
       info2 := DirectSumInfo( A2 );
       alg := Concatenation( [A1], info2.algebras );
       first := ShallowCopy( info2.first );
-      first := Concatenation( [1], first + d1 );
+      first := Concatenation( [0], first + d1 );
     else
       alg := [A1,A2];
-      first := [1,d1+1,d1+d2+1];
+      first := [0,d1,d1+d2];
     fi;
-
     SetDirectSumInfo( A, rec( algebras := alg,
                               first := first,
                               type := type,
@@ -1493,7 +1492,7 @@ InstallOtherMethod( DirectSumOfAlgebras,
         info2 := DirectSumInfo( A2 );
         alg := Concatenation( info1.algebras, info2.algebras );
         first := ShallowCopy( info1.first ){[1..i-1]};
-        j := info1.first[i] - 1;
+        j := info1.first[i];
         first := Concatenation( first, info2.first + j );
       else
         alg := Concatenation( info1.algebras, [A2] );
@@ -1504,10 +1503,10 @@ InstallOtherMethod( DirectSumOfAlgebras,
       info2 := DirectSumInfo( A2 );
       alg := Concatenation( [A1], info2.algebras );
       first := ShallowCopy( info2.first );
-      first := Concatenation( [1], first + d1 );
+      first := Concatenation( [0], first + d1 );
     else
       alg := [A1,A2];
-      first := [1,d1+1,d1+d2+1];
+      first := [0,d1,d1+d2];
     fi;
 
     SetDirectSumInfo( A, rec( algebras := alg,
