@@ -28,11 +28,18 @@ extern "C++" {
 #endif
 
 // Precise mode: the Julia GC without the conservative stack scan, selected by
-// configure --enable-precise-gc. Only then do the rooting macros push frames. With the scan on, the frames would be
-// redundant, and an unpatched Julia (JuliaLang/julia#62889) crashes on the
-// immediates they hold. The GC analyzer always sees the frames.
+// configure --enable-precise-gc. Only then do the rooting macros push frames.
+// With the scan on, the frames would be redundant, and Julia before 1.14
+// (JuliaLang/julia#62889) crashes on the immediates they hold. The GC
+// analyzer always sees the frames.
 #if defined(DISABLE_STACK_SCAN) || defined(__clang_gcanalyzer__)
 #define GAP_GC_PRECISE 1
+#endif
+
+#ifdef DISABLE_STACK_SCAN
+#if JULIA_VERSION_MAJOR == 1 && JULIA_VERSION_MINOR < 14
+#error "--enable-precise-gc needs Julia 1.14 or later"
+#endif
 #endif
 
 #ifdef GAP_MEM_CHECK
