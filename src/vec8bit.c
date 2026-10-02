@@ -2910,7 +2910,7 @@ static Obj FuncELMS_VEC8BIT(Obj self, Obj list, Obj poss) GAP_GC_CANSAFEPOINT
     Obj           info;
     UInt          elts;
     UInt          len;
-    Obj           res;
+    Obj           res = 0;
     UInt          i;
     UInt          elt;
     const UInt1 * gettab;
@@ -2927,8 +2927,10 @@ static Obj FuncELMS_VEC8BIT(Obj self, Obj list, Obj poss) GAP_GC_CANSAFEPOINT
     info = GetFieldInfo8Bit(FIELD_VEC8BIT(list));
     len2 = LEN_VEC8BIT(list);
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
+    GAP_GC_PUSH1(&res);
     res = NewWordSizedBag(T_DATOBJ, SIZE_VEC8BIT(len, elts));
     SetTypeDatObj(res, TypeVec8Bit(FIELD_VEC8BIT(list), 1));
+    GAP_GC_POP();
     SET_FIELD_VEC8BIT(res, FIELD_VEC8BIT(list));
     SET_LEN_VEC8BIT(res, len);
     gettab = GETELT_FIELDINFO_8BIT(info);
@@ -2981,7 +2983,7 @@ static Obj FuncELMS_VEC8BIT_RANGE(Obj self, Obj list, Obj range)
     UInt          lenl;
     UInt          low;
     Int           inc;
-    Obj           res;
+    Obj           res = 0;
     UInt          i;
     UInt          elt;
     const UInt1 * gettab;
@@ -3010,8 +3012,10 @@ static Obj FuncELMS_VEC8BIT_RANGE(Obj self, Obj list, Obj range)
         ErrorQuit("ELMS_VEC8BIT_RANGE: Range includes indices which are too "
                   "high or too low",
                   0, 0);
+    GAP_GC_PUSH1(&res);
     res = NewWordSizedBag(T_DATOBJ, SIZE_VEC8BIT(len, elts));
     SetTypeDatObj(res, TypeVec8Bit(FIELD_VEC8BIT(list), 1));
+    GAP_GC_POP();
     SET_FIELD_VEC8BIT(res, FIELD_VEC8BIT(list));
     SET_LEN_VEC8BIT(res, len);
     gettab = GETELT_FIELDINFO_8BIT(info);
