@@ -168,6 +168,49 @@ DeclareAttribute(
 
 #############################################################################
 ##
+#A  BaseDomain( <matgrp> )
+##
+##  <#GAPDoc Label="BaseDomainOfMatrixGroup">
+##  <ManSection>
+##  <Attr Name="BaseDomain" Arg='matgrp' Label="for a matrix group"/>
+##
+##  <Description>
+##  is the ring <M>R</M> over which the matrix group <A>matgrp</A> is
+##  defined, that is, <A>matgrp</A> is a subgroup of the group of
+##  invertible matrices over <M>R</M>.
+##  <P/>
+##  For groups of matrix objects that are not lists
+##  (see <Ref Filt="IsMatrixObj"/>), it is always available and equals
+##  their common <Ref Attr="BaseDomain" Label="for a matrix object"/> value.
+##  For groups of list matrices, it is available only if set by a
+##  constructor of classical groups, such as
+##  <Ref Func="GL" Label="for dimension and a ring"/>,
+##  or inherited from a supergroup, for example by <Ref Func="Subgroup"/>;
+##  <Ref Func="Group" Label="for several generators"/> does not set it.
+##  <P/>
+##  <Ref Attr="FieldOfMatrixGroup"/> is the smallest field containing
+##  the matrix entries, which may be smaller than <M>R</M>;
+##  <Ref Attr="DefaultFieldOfMatrixGroup"/> is some field containing them.
+##  <Example><![CDATA[
+##  gap> G:= GL( 2, 9 );;  H:= TrivialSubgroup( G );;
+##  gap> BaseDomain( H );  FieldOfMatrixGroup( H );
+##  GF(3^2)
+##  GF(3)
+##  gap> HasBaseDomain( Group( One( G ) ) );
+##  false
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute( "BaseDomain", IsMatrixGroup );
+
+InstallSubsetMaintenance( BaseDomain,
+    IsMatrixGroup and HasBaseDomain, IsMatrixGroup );
+
+
+#############################################################################
+##
 #A  TransposedMatrixGroup( <matgrp> ) . . . . . . transpose of a matrix group
 ##
 ##  <#GAPDoc Label="TransposedMatrixGroup">

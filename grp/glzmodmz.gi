@@ -63,6 +63,7 @@ InstallMethod( SpecialLinearGroupCons,
          T := IdentityMat(d,R); T[1][2] := One(R); Add(gens,T);
     fi;
     G := GroupByGenerators(gens);
+    SetBaseDomain(G,R);
     SetName(G,Concatenation("SL(",String(d),",Z/",String(m),"Z)"));
     SetIsNaturalSL(G,true);
     SetDimensionOfMatrixGroup(G,d);
@@ -97,6 +98,7 @@ InstallMethod( GeneralLinearGroupCons,
          od;
     fi;
     G := GroupByGenerators(gens);
+    SetBaseDomain(G,R);
     SetName(G,Concatenation("GL(",String(d),",Z/",String(m),"Z)"));
     SetIsNaturalGL(G,true);
     SetDimensionOfMatrixGroup(G,d);
@@ -450,6 +452,7 @@ InstallOtherMethod( SymplecticGroupCons,
 function ( filter, n, R )
 local g;
   g:=ConstructFormPreservingGroup(SP,n,R);
+  SetBaseDomain(g,R);
   SetName(g,Concatenation("Sp(",String(n),",Z/",String(Size(R)),"Z)"));
   return g;
 end);
@@ -472,6 +475,7 @@ local g;
     SetName(g,Concatenation("GO(",String(sign),",",String(n),
       ",Z/",String(Size(R)),"Z)"));
   fi;
+  SetBaseDomain(g,R);
   return g;
 end);
 
@@ -495,5 +499,6 @@ local g;
     SetName(g,Concatenation("SO(",String(sign),",",String(n),
       ",Z/",String(Size(R)),"Z)"));
   fi;
+  SetBaseDomain(g,R);
   return g;
 end);

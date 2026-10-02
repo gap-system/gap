@@ -119,6 +119,7 @@ InstallMethod( SymplecticGroupCons,
 
         # The first generator contains a primitive root of 'f'.
         SetFieldOfMatrixGroup( g, f );
+        SetBaseDomain( g, f );
 
         # add the size
         size := 1;
@@ -236,6 +237,7 @@ InstallMethod( GeneralUnitaryGroupCons,
 
      # 'mat1' contains a primitive root of 'f'.
      SetFieldOfMatrixGroup( g, f );
+     SetBaseDomain( g, f );
 
      # Add the size.
      size := q+1;
@@ -355,6 +357,7 @@ InstallMethod( SpecialUnitaryGroupCons,
        # 'mat1' contains a primitive root of 'f'.
        SetFieldOfMatrixGroup( g, f );
      fi;
+     SetBaseDomain( g, f );
 
      # Add the size.
      size := 1;
@@ -1450,6 +1453,7 @@ InstallMethod( GeneralOrthogonalGroupCons,
     elif e = -1 and q mod 2 = 1  then
         g := OpmOdd( -1, d, q );
     fi;
+    SetBaseDomain( g, GF(q) );
 
     # set name
     if e = +1  then i := "+";  else i := "";  fi;
@@ -1524,6 +1528,8 @@ InstallMethod( SpecialOrthogonalGroupCons,
         Assert( 1, Length( gens ) = 2 and IsOne( DeterminantMat( gens[1] ) ) );
         U:= GroupWithGenerators( [ gens[1], gens[1]^gens[2], gens[2]^2 ] );
       fi;
+
+      SetBaseDomain( U, GF(q) );
 
       # Set the group order.
       SetSize( U, Size( G ) / 2 );
@@ -1950,6 +1956,7 @@ InstallMethod( OmegaCons,
     else
       Error( "sign <e> must be -1, 0, +1" );
     fi;
+    SetBaseDomain( g, GF(q) );
 
     # set name
     if e = +1  then i := "+";  else i := "";  fi;

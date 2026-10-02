@@ -52,6 +52,7 @@ that represent a faithful action on vectors.
 <#Include Label="DimensionOfMatrixGroup">
 <#Include Label="DefaultFieldOfMatrixGroup">
 <#Include Label="FieldOfMatrixGroup">
+<#Include Label="BaseDomainOfMatrixGroup">
 <#Include Label="TransposedMatrixGroup">
 <#Include Label="IsFFEMatrixGroup">
 

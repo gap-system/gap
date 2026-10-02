@@ -77,6 +77,7 @@ local theta, m, f, bas, one, zero, x, h, r, gens, G, i;
   SetName(G,Concatenation("Ree(",String(q),")"));
   SetDimensionOfMatrixGroup(G,7);
   SetFieldOfMatrixGroup(G,f);   # 'h(PrimitiveRoot(f))' contains a prim. root
+  SetBaseDomain(G,f);
   SetIsFinite(G,true);
   SetSize(G,q^3*(q-1)*(q^3+1));
   SetIsSimpleGroup(G, q > 3);
