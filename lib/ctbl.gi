@@ -907,17 +907,20 @@ InstallMethod( Irr,
 
 #############################################################################
 ##
-#M  Irr( <G>, <0> )   . . . . . . . . . . . . . . . . .  for a group and zero
+#M  Irr( <G>, 0 )   . . . . . . . . . . . . . . . . . .  for a group and zero
 ##
-##  We compute the character table of <G> if it is not yet stored
-##  (which must be done anyhow), and then check whether the table already
-##  knows its irreducibles.
-##  This method is successful if the method for computing the table (head)
-##  automatically computes also the irreducibles.
+##  If the character table of <G> is already stored,
+##  check whether it knows its irreducibles.
+##
+##  (If <G> is a group for which 'OrdinaryCharacterTable( <G> )' computes
+##  not only the table head but also the irreducibles,
+##  then a special 'Irr( <G>, 0 )' method of high rank for this group
+##  may make sense.)
 ##
 InstallMethod( Irr,
     "partial method for a group, and zero",
-    [ IsGroup, IsZeroCyc ], 2*SUM_FLAGS, # above all other methods
+    [ IsGroup and HasOrdinaryCharacterTable, IsZeroCyc ],
+    QuoInt( SUM_FLAGS + GETTER_FLAGS, 2 ), # above all other methods
     function( G, zero )
     local tbl;
     tbl:= OrdinaryCharacterTable( G );
