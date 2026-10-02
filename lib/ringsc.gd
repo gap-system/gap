@@ -246,9 +246,9 @@ DeclareAttribute( "DirectSumInfo", IsRing, "mutable" );
 ##  homomorphism mapping <M>R_i</M> into <M>R</M>.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> emb1 := Embedding( R12, 1 );
+##  gap> emb1 := Embedding( R57, 1 );
 ##  [ a ] -> [ Aa ]
-##  gap> a := GeneratorsOfRing(R1)[1];;
+##  gap> a := GeneratorsOfRing( R5 )[1];;
 ##  gap> ImageElm( emb1, 3*a );
 ##  3*Aa
 ##  ]]></Example>
@@ -271,9 +271,9 @@ DeclareAttribute( "DirectSumInfo", IsRing, "mutable" );
 ##  homomorphism mapping <M>R</M> onto <M>R_i</M>.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> pro2 := Projection( R12, 2 );
+##  gap> pro2 := Projection( R57, 2 );
 ##  [ Aa, Ba ] -> [ 0*a, a ]
-##  gap> b := GeneratorsOfRing(R12)[2];;
+##  gap> b := GeneratorsOfRing( R57 )[2];;
 ##  gap> ImageElm( pro2, 4*b );
 ##  4*a
 ##  ]]></Example>
