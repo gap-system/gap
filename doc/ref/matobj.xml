@@ -392,7 +392,9 @@ The following conventions hold for such a group <C>G</C>.
 <Item>
   All elements of <C>G</C> have the same
   <Ref Attr="ConstructingFilter" Label="for a matrix object"/>
-  and the same <Ref Attr="BaseDomain" Label="for a matrix object"/>.
+  and the same <Ref Attr="BaseDomain" Label="for a matrix object"/>;
+  &GAP; signals an error if one tries to create a group from generators
+  that violate this, see <Ref Func="CheckMatrixGroupGenerators"/>.
   For a given matrix or matrix object <C>M</C>,
   a matrix object that can be multiplied with elements of <C>G</C>
   can be constructed as <C>Matrix( M, Representative( G ) )</C>,
@@ -401,6 +403,7 @@ The following conventions hold for such a group <C>G</C>.
 </List>
 
 <#Include Label="ConstructingFiltersForMatrixGroupElements">
+<#Include Label="CheckMatrixGroupGenerators">
 
 </Section>
 
