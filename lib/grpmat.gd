@@ -30,6 +30,16 @@ DeclareSynonym( "IsMatrixGroup", IsRingElementCollCollColl and IsGroup );
 
 #############################################################################
 ##
+#F  CheckMatrixGroupGenerators( <gens>, <id> )
+##
+##  Signals an error unless the matrices in <gens>, and <id> if it is not
+##  a boolean, are either all lists, or all matrix objects with the same
+##  representation and base domain.
+##
+DeclareGlobalFunction( "CheckMatrixGroupGenerators" );
+
+#############################################################################
+##
 #M  IsHandledByNiceMonomorphism( <mat-grp> )
 ##
 ##  For finite matrix groups, there is a default method for
