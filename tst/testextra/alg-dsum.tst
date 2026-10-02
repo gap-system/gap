@@ -99,6 +99,9 @@ gap> m0 := GeneratorsOfAlgebra( A12 )[2];
 gap> ImageElm( pro2, m0 );
 [ [ 0, 1, 1 ], [ 0, 0, 1 ], [ 0, 0, 0 ] ]
 gap> # mix the two types together
+gap> # A56 has type "basis vectors" and A12 has type "generators"
+gap> # so both A5612 and A1256 have type "basis vectors"
+gap> # and both are ordered [ A5, AS6, A12, A2 ] with the generators last.
 gap> A5612 := DirectSumOfAlgebras( A56, A12 );;
 gap> info5612 := DirectSumInfo( A5612 );
 rec( algebras := [ A5, A6, A1, A2 ], embeddings := [  ], 
