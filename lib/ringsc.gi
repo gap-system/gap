@@ -1215,7 +1215,7 @@ end );
 InstallMethod( Embedding, "ring direct sum and integer",
     [ IsRing and HasDirectSumInfo, IsPosInt ],
     function( D, i )
-    local info, type, first, R, imgs, map, gens;
+    local info, first, R, gens, imgs, map;
 
     # check
     info := DirectSumInfo( D );
