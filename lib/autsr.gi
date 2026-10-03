@@ -840,14 +840,20 @@ local
   fp,     # helper: fingerprint of a group (id, or size / class data /
           # abelian invariants)
   # -- data --
+  directs,# the groups in which the subgroups in n are normal: the value
+          # of the option directs, or [G]
+  cds,    # for each group in directs, the element orders and lengths of
+          # its classes, with the class representatives
   n,      # the list of normal subgroups to be classified
+  amb,    # for each subgroup in n, the position in directs of the group
+          # it is normal in
   pat,    # the fingerprint of each normal subgroup
   pools,  # the resulting classes (pools) of normal subgroups (return value)
   sel,    # indices of the subgroups sharing the current fingerprint
   # -- loop counter --
-  i;      # loop variable over the distinct fingerprints
+  i,k;    # loop variables
 
-  fp:=function(x)
+  fp:=function(x,k)
   local
     l;   # the fingerprint list being assembled (size, class data, abelian
          # invariants)
@@ -855,21 +861,37 @@ local
       and ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
       return IdGroup(x);
     fi;
+    # The classes of directs[k] contained in x are invariant under
+    # automorphisms of G (that permute the groups in directs), and are much
+    # cheaper than the classes of each x.
+    if not IsBound(cds[k]) then
+      cds[k]:=List(ConjugacyClasses(directs[k]),
+        y->[Order(Representative(y)),Size(y),Representative(y)]);
+    fi;
     l:=[Size(x)];
-    Add(l,Collected(List(ConjugacyClasses(x),
-      y->[Order(Representative(y)),Size(y)])));
+    Add(l,Collected(List(Filtered(cds[k],y->y[3] in x),y->y{[1,2]})));
     Add(l,AbelianInvariants(x));
     return l;
   end;
-  n:=ValueOption("directs");
-  if n<>fail then
+  directs:=ValueOption("directs");
+  if directs<>fail then
     # avoid large number of normals in direct product
-    n:=Concatenation(List(n,
-      x->Filtered(NormalSubgroups(x),y->Size(y)>1 and Size(y)<Size(x))));
+    n:=[];
+    amb:=[];
+    for k in [1..Length(directs)] do
+      for i in Filtered(NormalSubgroups(directs[k]),
+                        y->Size(y)>1 and Size(y)<Size(directs[k])) do
+        Add(n,i);
+        Add(amb,k);
+      od;
+    od;
   else
+    directs:=[G];
     n:=NormalSubgroups(G);
+    amb:=List(n,x->1);
   fi;
-  pat:=List(n,fp);
+  cds:=[];
+  pat:=List([1..Length(n)],i->fp(n[i],amb[i]));
   pools:=[];
   for i in Set(pat) do
     sel:=Filtered([1..Length(n)],x->pat[x]=i);
