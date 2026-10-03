@@ -561,22 +561,8 @@ The filename may optionally have an extension, e.g. <F>.txt</F> or <F>.md</F>.
 <Mark>
 <F>LICENSE</F></Mark>
 <Item>
-The file which explains conditions on which the package is distributed.
-<P/>
-We advise all package authors to make clear in the documentation of their
-package the basis on which it is being distributed to users. Technically,
-this is the terms of the license which you give the users to copy, modify
-and redistribute your software (of which you presumably own the copyright)
-for their purposes.
-<P/>
-&GAP; itself is distributed under the GNU General Public License version 2,
-a popular <Q>free software</Q> license which allows users to redistribute it
-freely under the same terms, and requires that any software which
-incorporates &GAP; (technically, any <Q>derived work</Q>) also be distributed
-under those terms. We would encourage you to consider the GPL for your
-packages, but you might wish to be more restrictive (for instance
-forbidding redistribution for profit) or less restrictive (allowing
-your software to be incorporated into commercial software).
+The file which explains conditions on which the package is distributed,
+see Section <Ref Sect="Selecting a license for a GAP Package"/>.
 <P/>
 The filename may optionally have an extension, e.g. <F>.txt</F> or <F>.md</F>.
 Some packages also use different filenames, like <F>COPYING</F>.
@@ -2111,17 +2097,19 @@ failures to package maintainers.
 <Section Label="Selecting a license for a GAP Package">
 <Heading>Selecting a license for a &GAP; Package</Heading>
 
-As it was mentioned in the description of the <F>LICENSE</F> file in
-Section <Ref Sect="Structure of a GAP Package"/>,
-it is advised to make clear in the documentation of the package the basis
-on which it is being distributed to users. &GAP; itself is distributed under
-the GNU Public License version 2 (version 2 or later). We would encourage
-you to consider the GPL license for your packages, but you might wish to be more
-restrictive (for instance forbidding redistribution for profit) or less
-restrictive (allowing your software to be incorporated into commercial
-software). See <Q>Choosing a License for the Distribution of Your Package</Q>
-at <URL>https://www.gap-system.org/packages/authors/</URL> and also
-<URL>https://choosealicense.com/</URL> for further details.
+Name the license under which the package is distributed in its
+documentation, include the license text in a <F>LICENSE</F> file, and give
+its SPDX identifier (see <URL>https://spdx.org/licenses/</URL>), for example
+<C>"GPL-2.0-or-later"</C>, in the <C>License</C> component of
+<F>PackageInfo.g</F>.
+<P/>
+&GAP; itself is distributed under the GNU General Public License, version 2
+or later. We encourage you to consider the GPL for your package; permissive
+licenses such as MIT or BSD, which also allow your code to be incorporated
+into commercial software, are possible too. A package distributed with &GAP;
+must have a license compatible with version 2 of the GPL, see
+<URL>https://www.gap-system.org/packages/authors/submit/</URL>.
+<URL>https://choosealicense.com/</URL> helps with choosing a license.
 <P/>
 
 In the past many &GAP; packages used the text
