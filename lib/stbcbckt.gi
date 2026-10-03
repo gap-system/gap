@@ -2005,20 +2005,89 @@ end );
 
 #############################################################################
 ##
-#F  STBBCKT_MovedByStabilizer( <F>, <pts> )
+#F  STBBCKT_MappingOfBase( <F>, <T>, <U> )
 ##
-##  Points moved by the pointwise stabilizer of <pts> in <F>.
+##  An element of <F> mapping the tuple <T> to the tuple <U>, or `fail'.
+##  The stabilizer chains of <F> with base <T> are cached.
 ##
-BindGlobal( "STBBCKT_MovedByStabilizer", function( F, pts )
-    local   S,  p;
+BindGlobal( "STBBCKT_MappingOfBase", function( F, T, U )
+    local   S,  f,  i,  p;
 
-    S := CopyStabChain( StabChainImmutable( F ) );
-    ChangeStabChain( S, pts, false );
-    for p  in pts  do
+    if not IsBound( F!.basechains )  or  F!.basechains[ 1 ] > 10000  then
+        F!.basechains := [ 0, NewDictionary( T, true ) ];
+    fi;
+    S := LookupDictionary( F!.basechains[ 2 ], T );
+    if S = fail  then
+        S := CopyStabChain( StabChainImmutable( F ) );
+        ChangeStabChain( S, T, false );
+        AddDictionary( F!.basechains[ 2 ], T, S );
+        F!.basechains[ 1 ] := F!.basechains[ 1 ] + 1;
+    fi;
+
+    f := S.identity;
+    for i  in [ 1 .. Length( T ) ]  do
+        p := U[ i ] / f;
+        if not IsInBasicOrbit( S, p )  then
+            return fail;
+        fi;
+        f := LeftQuotient( InverseRepresentative( S, p ), f );
         S := S.stabilizer;
     od;
-    return MovedPoints( S.generators );
+    return f;
 end );
+
+#############################################################################
+##
+#F  Refinements._BaseImage1( <idx>, <Tc>, <Uc> ) . . . . image of an element
+##
+##  The fixpoints in the cells <Tc> are a base T of E, those in <Uc> its
+##  image under some h in E. The image of h under conjugation is the
+##  element of <F> = `image.data[2]' mapping the fixpoints of the image
+##  partition in <Tc> to those in <Uc>. Stores it in `image.baseimg[<idx>]'.
+##
+BindGlobal( "STBBCKT_STRING_BASEIMG1", MakeImmutable( "_BaseImage1" ) );
+BindGlobal( "STBBCKT_STRING_BASEIMG2", MakeImmutable( "BaseImage2" ) );
+Refinements.(STBBCKT_STRING_BASEIMG1) :=
+function( rbase, image, idx, Tc, Uc )
+    local   P,  f;
+
+    P := image.partition;
+    f := STBBCKT_MappingOfBase( image.data[ 2 ],
+             List( Tc, c -> FixpointCellNo( P, c ) ),
+             List( Uc, c -> FixpointCellNo( P, c ) ) );
+    if f = fail  then
+        return false;
+    fi;
+    if not IsBound( image.baseimg )  then
+        image.baseimg := [  ];
+    fi;
+    image.baseimg[ idx ] := f;
+    return true;
+end;
+
+#############################################################################
+##
+#F  Refinements.BaseImage2( <idx>, <strat> )  . . . . . . images of fixpoints
+##
+##  Entries [c,y,k] in <strat> mean that the image under `image.baseimg[<idx>]'
+##  of the fixpoint in cell <c> is the image of <y>, to be isolated from
+##  cell <k>.
+##
+Refinements.(STBBCKT_STRING_BASEIMG2) :=
+function( rbase, image, idx, strat )
+    local   P,  f,  e,  img;
+
+    P := image.partition;
+    f := image.baseimg[ idx ];
+    for e  in strat  do
+        img := FixpointCellNo( P, e[ 1 ] ) ^ f;
+        if    IsolatePoint( P, img ) <> e[ 3 ]
+           or not ProcessFixpoint( image, e[ 2 ], img )  then
+            return false;
+        fi;
+    od;
+    return true;
+end;
 
 BindGlobal("STBCTEARNS",function(G,Omega)
   G:=Earns(G,Omega);
@@ -2041,7 +2110,12 @@ InstallGlobalFunction( RBaseGroupsBloxPermGroup, function( repr, G, Omega, E, di
            doneroot,   # roots of orbital graphs already considered
            doneprefix, # the same for further prefixes, see below
            blE,        # base length of <E>
-           movedbase,  # choose R-base points moved by stabilizer in <E>
+           fixstab,    # stabilizer chain of the stabilizer in <E> of all
+           fixseen,    # fixpoints, which are marked in <fixseen>
+           UpdateFixStab,
+           tchain,  T, # stabilizer chain of <E> whose base <T> are fixpoints
+           tgens,      # elements of <E> mapping <T> to fixpoints
+           BaseImages,
            tra,        # degree of transitivity of <E>
            cp,
            len,  i;
@@ -2106,7 +2180,149 @@ InstallGlobalFunction( RBaseGroupsBloxPermGroup, function( repr, G, Omega, E, di
     doneroot := [  ];
     doneprefix := [  ];
     blE := Length( BaseStabChain( StabChainMutable( E ) ) );
-    movedbase := true;
+    fixstab := CopyStabChain( StabChainImmutable( E ) );
+    fixseen := BlistList( [ 1 .. Maximum( Omega ) ], [  ] );
+    tchain := false;
+    tgens := [  ];
+
+    UpdateFixStab := function( P )
+        local   new,  p;
+
+        new := Filtered( Fixcells( P ), p -> not fixseen[ p ] );
+        for p  in new  do
+            fixseen[ p ] := true;
+        od;
+        if Length( fixstab.generators ) > 0  then
+            ChangeStabChain( fixstab, new, false );
+            for p  in new  do
+                fixstab := fixstab.stabilizer;
+            od;
+        fi;
+    end;
+
+    # Once the fixpoints contain a base <T> of <E>, an element h of <E>
+    # mapping <T> to fixpoints has a known image under conjugation, see
+    # `_BaseImage1'. So the image of x^h is known for each fixpoint x.
+    # Returns whether the R-base has become trivial.
+    BaseImages := function( P, rbase )
+        local   isfix,  complete,  close,  budget,  levels,  Tc,  i,  L,
+                z,  h,  orb,  found;
+
+        if tchain = false  then
+            tchain := CopyStabChain( StabChainImmutable( E ) );
+            ChangeStabChain( tchain, Fixcells( P ) );
+            T := BaseStabChain( tchain );
+        fi;
+        levels := ListStabChain( tchain );
+        Tc := List( T, t -> CellNoPoint( P, t ) );
+        isfix := p -> P.lengths[ CellNoPoint( P, p ) ] = 1;
+
+        # Only for speed: bound the number of steps of `complete'.
+        budget := 1000 + 20 * Length( Omega );
+
+        # an element l*h, l in the group of <L>, mapping the base points of
+        # <L> to fixpoints
+        complete := function( L, h )
+            local   z,  r;
+
+            if Length( L.generators ) = 0  then
+                return h;
+            fi;
+            for z  in L.orbit  do
+                if budget <= 0  then
+                    return fail;
+                elif isfix( z ^ h )  then
+                    budget := budget - 1;
+                    r := complete( L.stabilizer,
+                             LeftQuotient( InverseRepresentative( L, z ), h ) );
+                    if r <> fail  then
+                        return r;
+                    fi;
+                fi;
+            od;
+            return fail;
+        end;
+
+        # make the fixpoints invariant under <tgens>
+        close := function( )
+            local   changed,  idx,  h,  strat,  single,  x,  y,  c,  pnt;
+
+            repeat
+                changed := false;
+                for idx  in [ 1 .. Length( tgens ) ]  do
+                    h := tgens[ idx ].elm;
+                    strat := [  ];  single := [  ];
+                    for x  in Fixcells( P )  do
+                        y := x ^ h;
+                        c := CellNoPoint( P, y );
+                        if P.lengths[ c ] > 1  then
+                            Add( strat, [ CellNoPoint( P, x ), y,
+                                          IsolatePoint( P, y ) ] );
+                            ProcessFixpoint( rbase, y );
+                            if P.lengths[ c ] = 1  then
+                                Add( single, c );
+                            fi;
+                        fi;
+                    od;
+                    if Length( strat ) > 0  then
+                        changed := true;
+                        if not tgens[ idx ].used  then
+                            tgens[ idx ].used := true;
+                            AddRefinement( rbase, STBBCKT_STRING_BASEIMG1,
+                                [ idx, Tc,
+                                  List( T, t -> CellNoPoint( P, t ^ h ) ) ] );
+                        fi;
+                        AddRefinement( rbase, STBBCKT_STRING_BASEIMG2,
+                                [ idx, strat ] );
+                        for c  in single  do
+                            pnt := FixpointCellNo( P, c );
+                            ProcessFixpoint( rbase, pnt );
+                            AddRefinement( rbase, STBBCKT_STRING_PROCESSFIX,
+                                    [ pnt, c ] );
+                        od;
+                        if IsTrivialRBase( rbase )  then
+                            return;
+                        fi;
+                    fi;
+                od;
+            until not changed;
+        end;
+
+        close( );
+        repeat
+            found := false;
+            for i  in Reversed( [ 1 .. Length( T ) ] )  do
+                if IsTrivialRBase( rbase )  then
+                    return true;
+                fi;
+                L := levels[ i ];
+
+                # Elements found so far that fix the first i-1 base points
+                # give one coset representative for each point in <orb>.
+                orb := Orbit( Group( List( Filtered( tgens,
+                           g -> g.level >= i ), g -> g.elm ), () ), T[ i ] );
+                for z  in L.orbit  do
+                    if isfix( z )  and  not z in orb  then
+                        h := complete( L.stabilizer,
+                                 InverseRepresentative( L, z ) ^ -1 );
+                        if h <> fail  then
+                            Add( tgens, rec( elm := h, level := i,
+                                             used := false ) );
+                            found := true;
+                            close( );
+                            if IsTrivialRBase( rbase )  then
+                                return true;
+                            fi;
+                            orb := Orbit( Group( List( Filtered( tgens,
+                                       g -> g.level >= i ), g -> g.elm ),
+                                       () ), T[ i ] );
+                        fi;
+                    fi;
+                od;
+            od;
+        until not found  or  budget <= 0;
+        return IsTrivialRBase( rbase );
+    end;
 
     rbase.nextLevel := function( P, rbase )
         local   len,   Q, strat,  orb,  f,  fpt,  subs,  k,  i,
@@ -2115,13 +2331,13 @@ InstallGlobalFunction( RBaseGroupsBloxPermGroup, function( repr, G, Omega, E, di
 
         if reg <> fail  then
             NextLevelRegularGroups( P, rbase );
-        elif movedbase  then
+        else
 
             # Prefer points moved by the stabilizer in <E> of all fixpoints;
             # the suborbits of a point fixed by it give nothing new.
-            cand := STBBCKT_MovedByStabilizer( E, Fixcells( P ) );
+            UpdateFixStab( P );
+            cand := MovedPoints( fixstab.generators );
             if Length( cand ) = 0  then
-                movedbase := false;
                 NextRBasePoint( P, rbase, order );
             else
                 cand := Filtered( cand,
@@ -2133,8 +2349,6 @@ InstallGlobalFunction( RBaseGroupsBloxPermGroup, function( repr, G, Omega, E, di
                 fi;
                 NextRBasePoint( P, rbase, cand );
             fi;
-        else
-            NextRBasePoint( P, rbase, order );
         fi;
         len := Length( rbase.base );
         if len >= tra  then
@@ -2239,6 +2453,14 @@ InstallGlobalFunction( RBaseGroupsBloxPermGroup, function( repr, G, Omega, E, di
 
               f := FixcellPoint( P, doneroot );
             od;
+        fi;
+
+        if reg = fail  then
+            UpdateFixStab( P );
+            if Length( fixstab.generators ) = 0  and  BaseImages( P, rbase )
+               then
+                return;
+            fi;
         fi;
 
         # Once the R-base is longer than a base of <E>, the suborbits above
@@ -2751,6 +2973,7 @@ dom, et, ft, Pr, rbase, BF, Q, data,lc;
     found:=PartitionBacktrack( G, Pr, true, rbase, data, L, R );
     Unbind( E!.pointstabs );
     Unbind( F!.pointstabs );
+    Unbind( F!.basechains );
     if IsPerm(found) and map<>false then
       found:=PreImagesRepresentativeNC(map,found);
     fi;
@@ -2791,6 +3014,7 @@ local Pr, div, B, rbase, data, N;
   G!.suborbits:=[];
   E!.suborbits:=[];
   Unbind( E!.pointstabs );
+  Unbind( E!.basechains );
 
   # bring the stabilizer chains back into a decent form
   ReduceStabChain(StabChainMutable(G));
