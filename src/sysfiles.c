@@ -514,34 +514,52 @@ void syWinPut (
 
 /****************************************************************************
 **
-*F  SyWinCmd( <str>, <len> )  . . . . . . . . . . . . .  execute a window cmd
+*F  SyWinCmd( <str> ) . . . . . . . . . . . . . . . . .  execute a window cmd
 **
-**  'SyWinCmd' send   the  command <str> to  the   window  handler (<len>  is
-**  ignored).  In the string <str> '@' characters are duplicated, and control
-**  characters  are converted to  '@<chr>', e.g.,  <newline> is converted  to
-**  '@J'.  Then  'SyWinCmd' waits for  the window handlers answer and returns
-**  that string.
+**  'SyWinCmd' sends the command <str> to the window handler.  In the string
+**  <str> '@' characters are duplicated, and control characters are converted
+**  to '@<chr>', e.g., <newline> is converted to '@J'.  Then 'SyWinCmd' waits
+**  for the window handlers answer '@a<len>+<data>' and returns <data> with
+**  these conversions undone, as a string object.  <len> is the length of
+**  <data> as sent, least significant digit first.
 */
-static Char WinCmdBuffer[8000];
+static const Char * const WinCmdIllegalAnswer = "I1+S41+Illegal Answer";
 
-const Char * SyWinCmd (
-    const Char *        str,
-    UInt                len )
+// read exactly <len> bytes from the window handler, FALSE on EOF or error
+static BOOL syWinRead(UChar * buf, UInt len)
+{
+    Int ret;    // return value of 'SyRead'
+
+    while (0 < len) {
+        ret = SyRead(0, buf, len);
+        if (ret == -1 && (errno == EAGAIN || errno == EINTR))
+            continue;
+        if (ret <= 0)
+            return FALSE;
+        buf += ret;
+        len -= ret;
+    }
+    return TRUE;
+}
+
+Obj SyWinCmd(const Char * str)
 {
     Char                buf [130];      // temporary buffer
     const Char *        s;              // pointer into the string
-    const Char *        bb;             // pointer into the temporary
     Char *              b;              // pointer into the temporary
-    UInt                i;              // loop variable
-#ifdef SYS_IS_CYGWIN32
-    UInt                len1;           // temporary storage for len
-#endif
+    UInt                len;            // length of the command / answer
+    UInt                place;          // power of ten of the current digit
+    UChar               c;              // byte of the answer
+    Obj                 answer;         // the answer
+    const UChar *       src;            // pointer into the escaped answer
+    const UChar *       end;            // end of the escaped answer
+    UChar *             dst;            // pointer into the un-escaped answer
 
     // if not running under a window handler, don't do nothing
     if ( ! SyWindow )
-        return "I1+S52+No Window Handler Present";
+        return MakeString("I1+S52+No Window Handler Present");
 
-    // compute the length of the (expanded) string (and ignore argument)
+    // compute the length of the (expanded) string
     len = 0;
     for ( s = str; *s != '\0'; s++ )
         len += 1 + (*s == '@' || (CTR('A') <= *s && *s <= CTR('Z')));
@@ -559,59 +577,44 @@ const Char * SyWinCmd (
     syWinPut( 1, "", str );
 
     // read the length of the answer
-    b = WinCmdBuffer;
-    i = 3;
-    while ( 0 < i ) {
-        len = read( 0, b, i );
-        i  -= len;
-        b  += len;
+    if (!syWinRead(&c, 1) || c != '@' || !syWinRead(&c, 1) || c != 'a')
+        return MakeString(WinCmdIllegalAnswer);
+    len = 0;
+    for (place = 1; syWinRead(&c, 1) && IsDigit(c); place *= 10) {
+        if (INT_INTOBJ_MAX / 10 < place)
+            return MakeString(WinCmdIllegalAnswer);
+        len += (c - '0') * place;
     }
-    if ( WinCmdBuffer[0] != '@' || WinCmdBuffer[1] != 'a' )
-        return "I1+S41+Illegal Answer";
-    b = WinCmdBuffer+2;
-    for ( i=1,len=0; '0' <= *b && *b <= '9';  i *= 10 ) {
-        len += (*b-'0')*i;
-        while ( read( 0, b, 1 ) != 1 )  ;
-    }
+    if (c != '+')
+        return MakeString(WinCmdIllegalAnswer);
 
     // read the arguments of the answer
-    b = WinCmdBuffer;
-    i = len;
-#ifdef SYS_IS_CYGWIN32
-    len1 = len;
-    while ( 0 < i ) {
-        len = read( 0, b, i );
-        b += len;
-        i  -= len;
-        s  += len;
-    }
-    len = len1;
-#else
-    while ( 0 < i ) {
-        len = read( 0, b, i );
-        i  -= len;
-        s  += len;
-    }
-#endif
+    answer = NEW_STRING(len);
+    if (!syWinRead(CHARS_STRING(answer), len))
+        return MakeString(WinCmdIllegalAnswer);
 
-    // shrink '@@' into '@'
-    for ( bb = b = WinCmdBuffer;  0 < len;  len-- ) {
-        if ( *bb == '@' ) {
-            bb++;
-            if ( *bb == '@' )
-                *b++ = '@';
-            else if ( 'A' <= *bb && *bb <= 'Z' )
-                *b++ = CTR(*bb);
-            bb++;
+    // shrink '@@' into '@' and '@<chr>' into a control character; an escape
+    // is two bytes of input but one of output
+    src = dst = CHARS_STRING(answer);
+    end = src + len;
+    while (src < end) {
+        c = *src++;
+        if (c != '@') {
+            *dst++ = c;
+            continue;
         }
-        else {
-            *b++ = *bb++;
-        }
+        if (src == end)
+            break;
+        c = *src++;
+        if (c == '@')
+            *dst++ = '@';
+        else if ('A' <= c && c <= 'Z')
+            *dst++ = CTR(c);
     }
-    *b = 0;
+    *dst = '\0';
+    SET_LEN_STRING(answer, dst - CHARS_STRING(answer));
 
-    // return the string
-    return WinCmdBuffer;
+    return answer;
 }
 
 
