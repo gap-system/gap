@@ -28,6 +28,10 @@ You should have received a copy of the GNU General Public License along with &GA
 the file <F>LICENSE</F> in the root directory of the &GAP; distribution or see
 <URL>https://www.gnu.org/licenses/gpl.html</URL>.
 <P/>
+Each package distributed with &GAP; has its own license, which need not
+be the license of &GAP;. It is stated as an SPDX identifier in the
+<C>License</C> field of the <F>PackageInfo.g</F> file of the package.
+<P/>
 If you publish a mathematical result that was partly obtained using
 &GAP;, please cite &GAP;, just as you would cite another paper that you
 used (see below for a sample citation).
@@ -39,12 +43,17 @@ Specifically, please refer to
       Version &VERSIONNUMBER;; &RELEASEYEAR; (https://www.gap-system.org)
 </Listing>
 <P/>
+&GAP; uses GNU Readline (<URL>https://www.gnu.org/software/readline/</URL>)
+if it is available when &GAP; is built. Readline is licensed under version 3
+or later of the GNU General Public License, so a &GAP; executable linked
+with it may only be redistributed under version 3 or later, not under
+version 2.
+<P/>
 &GAP; for Windows is packaged with several packages from
 <Package>Cygwin</Package> (<URL>https://cygwin.com</URL>).
 Files from <Package>Cygwin</Package> are provided under their respective
 licenses, which are included in the installation.
-The &GAP; for Windows executables that we distribute are themselves released
-under the terms of the GNU General Public License (GNU GPL);
-either version 2 of the License, or (at your option) any later version.
+The &GAP; for Windows executables that we distribute are linked with
+Readline, so the above applies to them.
 <P/>
 Please contact <Email>support@gap-system.org</Email> if you need further information.
