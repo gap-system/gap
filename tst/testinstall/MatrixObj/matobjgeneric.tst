@@ -1,4 +1,4 @@
-#@local e, v, v2, w, M, z, rows, a, b, c, d, p, ev, n, ai, inv, zm, zs, N, T, R
+#@local e, v, v2, w, M, z, rows, a, b, c, d, p, ev, n, ai, inv, zm, zs, N, T, R, mat
 gap> START_TEST( "matobjgeneric.tst" );
 
 #
@@ -185,6 +185,40 @@ gap> Unpack( M );
 gap> SwapMatrixRows( M, 1, 2 );;
 gap> Unpack( M );
 [ [ 54, 66, 78 ], [ 23, 28, 33 ] ]
+
+# elementary operations change neither the input list nor copies
+gap> rows:= [ [ Z(9), Z(3) ], [ Z(3)^0, 0*Z(3) ] ];;
+gap> M:= Matrix( IsGenericMatrixRep, GF(9), rows );;
+gap> N:= MutableCopyMatrix( M );;
+gap> T:= ShallowCopy( M );;
+gap> a:= ExtractSubMatrix( M, [ 1, 2 ], [ 1, 2 ] );;
+gap> b:= Unpack( M );;
+gap> AddMatrixRowsLeft( M, 1, 2, Z(9) );;
+gap> AddMatrixRowsRight( M, 2, 1, 2 );;
+gap> MultMatrixRowLeft( M, 2, Z(9)^3 );;
+gap> MultMatrixRowRight( M, 1, -1 );;
+gap> AddMatrixColumnsLeft( M, 2, 1, Z(9) );;
+gap> MultMatrixColumnRight( M, 1, Z(9)^2 );;
+gap> Unpack( M );
+[ [ Z(3^2)^3, Z(3^2)^7 ], [ Z(3^2)^7, Z(3^2) ] ]
+gap> rows = b and Unpack( N ) = b and Unpack( T ) = b and Unpack( a ) = b;
+true
+
+#
+gap> a:= ZeroMatrix( IsGenericMatrixRep, Integers, 2, 0 );;
+gap> AddMatrixRowsLeft( a, 1, 2, 1 );;
+gap> AddMatrixRowsRight( a, 1, 2, 1 );;
+gap> MultMatrixRowLeft( a, 1, 2 );;
+gap> MultMatrixRowRight( a, 2, 2 );;
+gap> Unpack( a );
+[ [  ], [  ] ]
+gap> AddMatrixRowsLeft( a, 1, 3, 1 );
+Error, List Element: <list>[3] must have an assigned value
+gap> MultMatrixColumnLeft( M, 3, Z(9) );
+Error, List Element: <list>[3] must have an assigned value
+gap> MultMatrixRowLeft( MakeImmutable( M ), 1, Z(9) );
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `MultMatrixRowLeft' on 3 arguments
 
 #
 # Test Inverse / InverseMutable
@@ -460,6 +494,24 @@ gap> IsCyclotomicCollColl( M );
 false
 gap> IsFFECollColl( M );
 true
+
+# a scalar outside the base domain is rejected before anything changes
+gap> mat:= Matrix( IsGenericMatrixRep, Integers, [ [ 1, 2 ], [ 3, 4 ] ] );;
+gap> MultMatrixRowLeft( mat, 1, [ [ 1 ] ] );
+Error, <scalar> must lie in the base domain of <mat>
+gap> AddMatrixRowsLeft( mat, 1, 2, 1/2 );
+Error, <scalar> must lie in the base domain of <mat>
+gap> AddMatrixColumnsRight( mat, 1, 2, 1/2 );
+Error, <scalar> must lie in the base domain of <mat>
+gap> MultMatrixColumnLeft( mat, 1, [ [ 1 ] ] );
+Error, <scalar> must lie in the base domain of <mat>
+gap> Unpack( mat );
+[ [ 1, 2 ], [ 3, 4 ] ]
+gap> mat:= Matrix( IsGenericMatrixRep, GF(9), Z(9) * [ [ 1, 0 ], [ 1, 1 ] ] );;
+gap> MultMatrixRowRight( mat, 1, Z(27) );
+Error, <scalar> must lie in the base domain of <mat>
+gap> AddMatrixRowsRight( mat, 1, 2, 2 );; Unpack( mat );
+[ [ 0*Z(3), Z(3^2)^5 ], [ Z(3^2), Z(3^2) ] ]
 
 #
 # ordering, which sets of generic matrices rely on
