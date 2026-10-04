@@ -30,12 +30,12 @@
 #define ARRAY_SIZE(arr)     ( sizeof(arr) / sizeof((arr)[0]) )
 
 
-EXPORT_INLINE BOOL AlwaysYes(Obj obj)
+EXPORT_INLINE BOOL AlwaysYes(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     return TRUE;
 }
 
-EXPORT_INLINE BOOL AlwaysNo(Obj obj)
+EXPORT_INLINE BOOL AlwaysNo(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     return FALSE;
 }

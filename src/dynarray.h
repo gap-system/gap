@@ -40,7 +40,7 @@ typedef struct {
     ELEM_TYPE * items;
 } Array;
 
-static inline Array * FN(Make)(Int cap)
+static inline Array * FN(Make)(Int cap) GAP_GC_NOTSAFEPOINT
 {
     Array * arr;
     GAP_ASSERT(cap >= 0);
@@ -53,13 +53,13 @@ static inline Array * FN(Make)(Int cap)
     return arr;
 }
 
-static inline void FN(Delete)(Array * arr)
+static inline void FN(Delete)(Array * arr) GAP_GC_NOTSAFEPOINT
 {
     DEALLOC(arr->items);
     DEALLOC(arr);
 }
 
-static inline void FN(ExpandTo)(Array * arr, Int minlen)
+static inline void FN(ExpandTo)(Array * arr, Int minlen) GAP_GC_NOTSAFEPOINT
 {
     Int cap = arr->cap;
     GAP_ASSERT(minlen >= 0);
@@ -76,7 +76,7 @@ static inline void FN(ExpandTo)(Array * arr, Int minlen)
     arr->cap = cap;
 }
 
-static inline void FN(Shrink)(Array * arr)
+static inline void FN(Shrink)(Array * arr) GAP_GC_NOTSAFEPOINT
 {
     if (arr->cap > arr->len) {
         ELEM_TYPE * items = ALLOC(ELEM_TYPE, arr->len);
@@ -87,7 +87,7 @@ static inline void FN(Shrink)(Array * arr)
     }
 }
 
-static inline Array * FN(Clone)(Array * arr)
+static inline Array * FN(Clone)(Array * arr) GAP_GC_NOTSAFEPOINT
 {
     Array * clone = FN(Make)(arr->len);
     clone->len = arr->len;
@@ -95,38 +95,39 @@ static inline Array * FN(Clone)(Array * arr)
     return clone;
 }
 
-static inline void FN(SetLen)(Array * arr, Int len)
+static inline void FN(SetLen)(Array * arr, Int len) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(len <= arr->len);
     if (len < arr->len)
         arr->len = len;
 }
 
-static inline Int FN(Len)(Array * arr)
+static inline Int FN(Len)(Array * arr) GAP_GC_NOTSAFEPOINT
 {
     return arr->len;
 }
 
-static inline ELEM_TYPE FN(Get)(Array * arr, Int i)
+static inline ELEM_TYPE FN(Get)(Array * arr, Int i) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(i >= 0 && i < arr->len);
     return arr->items[i];
 }
 
 static inline void FN(Put)(Array * arr, Int i, ELEM_TYPE item)
+    GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(i >= 0 && i < arr->len);
     arr->items[i] = item;
 }
 
-static inline void FN(Add)(Array * arr, ELEM_TYPE item)
+static inline void FN(Add)(Array * arr, ELEM_TYPE item) GAP_GC_NOTSAFEPOINT
 {
     FN(ExpandTo)(arr, arr->len + 1);
     arr->items[arr->len++] = item;
 }
 
 #ifdef COMPARE
-static inline void FN(Sort)(Array * arr)
+static inline void FN(Sort)(Array * arr) GAP_GC_NOTSAFEPOINT
 {
     Int len = arr->len;
     if (len <= 1)

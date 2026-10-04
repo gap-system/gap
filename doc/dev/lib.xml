@@ -60,6 +60,15 @@ small test files to try to isolate the problem. <C>MemCheck</C> will be shown in
 the line starting <C>Configuration:</C> when &GAP; is started.
 <P/>
 
+The argument of <C>GASMAN_MEM_CHECK</C> is a sampling period: <C>GASMAN_MEM_CHECK(n)</C>
+runs the checks at every <C>n</C>th bag allocation, and <C>GASMAN_MEM_CHECK(0)</C> turns
+them off again. A period of 1 is the most thorough setting, and the one the paragraph
+above describes. A larger period costs precision -- a bug then shows up as a crash
+somewhere after its cause rather than at it, and may need several runs to appear at
+all -- but is what makes it practical to run whole test files, rather than the few
+lines a period of 1 allows.
+<P/>
+
 Known bugs: &GAP; will crash if <C>IO_fork</C> from the IO package is called while
 memory checking is enabled.
 <P/>

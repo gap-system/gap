@@ -63,8 +63,8 @@
 **
 **  'TypePRec' is the function in 'TypeObjFuncs' for plain records.
 */
-static Obj TYPE_PREC_MUTABLE;
-static Obj TYPE_PREC_IMMUTABLE;
+static Obj TYPE_PREC_MUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_PREC_IMMUTABLE GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypePRec(Obj prec)
 {
@@ -92,7 +92,7 @@ Obj NEW_PREC(UInt len)
 **
 **  Returns 0 if nothing changed and 1 if enlarged.
 */
-static Int GrowPRec(Obj rec, UInt need)
+static Int GrowPRec(Obj rec, UInt need) GAP_GC_CANSAFEPOINT
 {
     UInt                newsize, want, good;
 
@@ -155,7 +155,7 @@ void CopyPRecord(TraversalState * traversal, Obj copy, Obj original)
 **
 **  'CleanPRec' is the function in 'CleanObjFuncs' for records.
 */
-static Obj CopyPRec(Obj rec, Int mut)
+static Obj CopyPRec(Obj rec, Int mut) GAP_GC_CANSAFEPOINT
 {
     Obj                 copy;           // copy, result
     Obj                 tmp;            // temporary variable
@@ -165,6 +165,7 @@ static Obj CopyPRec(Obj rec, Int mut)
 
     // make a copy
     copy = NewBag(T_PREC, SIZE_OBJ(rec));
+    GAP_GC_PUSH1(&copy);
     if (!mut)
         MakeImmutableNoRecurse(copy);
     memcpy(ADDR_OBJ(copy), CONST_ADDR_OBJ(rec), SIZE_OBJ(rec));
@@ -182,6 +183,7 @@ static Obj CopyPRec(Obj rec, Int mut)
         SET_ELM_PREC(copy, i, tmp);
         CHANGED_BAG(copy);
     }
+    GAP_GC_POP();
 
     // return the copy
     return copy;
@@ -205,7 +207,7 @@ static void CleanPRec(Obj rec)
 *F  MakeImmutablePRec( <rec> )
 */
 
-static void MakeImmutablePRec(Obj rec)
+static void MakeImmutablePRec(Obj rec) GAP_GC_CANSAFEPOINT
 {
     // change the tnum first, to avoid infinite recursion for objects that
     // contain themselves
@@ -374,10 +376,8 @@ void UnbPRec (
 **  'AssPRec' assigns the value <val> to the record component with the record
 **  name <rnam> in the plain record <rec>.
 */
-void AssPRec (
-    Obj                 rec,
-    UInt                rnam,
-    Obj                 val )
+void AssPRec(Obj rec, UInt rnam,
+             Obj val GAP_GC_ROOTED_BY_ARG_INDEXED(0, 1) GAP_GC_MAYBE_UNROOTED)
 {
     UInt                len;            // length of <rec>
 
@@ -386,6 +386,8 @@ void AssPRec (
         ErrorMayQuit("Record Assignment: <rec> must be a mutable record", 0,
                      0);
     }
+
+    GAP_GC_PUSH1(&val);
 
     // get the length of the record
     len = LEN_PREC( rec );
@@ -408,6 +410,8 @@ void AssPRec (
     // assign the value to the component
     SET_ELM_PREC( rec, i, val );
     CHANGED_BAG( rec );
+
+    GAP_GC_POP();
 }
 
 /****************************************************************************
@@ -416,7 +420,7 @@ void AssPRec (
 **
 **  'PrintRec' prints the plain record <rec>.
 */
-static void PrintPRec(Obj rec)
+static void PrintPRec(Obj rec) GAP_GC_CANSAFEPOINT
 {
     DoOperation1Args( PrintObjOper, rec );
 }
@@ -526,7 +530,7 @@ void SortPRecRNam(Obj rec)
 **  'RecNames'  returns a list containing the  names of the components of the
 **  record <rec> as strings.
 */
-static Obj InnerRecNames(Obj rec)
+static Obj InnerRecNames(Obj rec) GAP_GC_CANSAFEPOINT
 {
     Obj                 list;           // list of record names, result
     UInt                rnam;           // one name of record
@@ -537,6 +541,7 @@ static Obj InnerRecNames(Obj rec)
 
     // allocate the list
     list = NEW_PLIST( T_PLIST, LEN_PREC(rec) );
+    GAP_GC_PUSH1(&list);
     SET_LEN_PLIST( list, LEN_PREC(rec) );
 
     // loop over the components
@@ -548,12 +553,13 @@ static Obj InnerRecNames(Obj rec)
         SET_ELM_PLIST( list, i, string );
         CHANGED_BAG( list );
     }
+    GAP_GC_POP();
 
     // return the list
     return list;
 }
 
-static Obj FuncREC_NAMES(Obj self, Obj rec)
+static Obj FuncREC_NAMES(Obj self, Obj rec) GAP_GC_CANSAFEPOINT
 {
     if (IS_PREC(rec)) {
         return InnerRecNames(rec);
@@ -573,7 +579,7 @@ static Obj FuncREC_NAMES(Obj self, Obj rec)
 *F  FuncREC_NAMES_COMOBJ( <self>, <rec> ) . . . record names of a record object
 */
 // same as FuncREC_NAMES except for different argument check
-static Obj FuncREC_NAMES_COMOBJ(Obj self, Obj rec)
+static Obj FuncREC_NAMES_COMOBJ(Obj self, Obj rec) GAP_GC_CANSAFEPOINT
 {
     switch (TNUM_OBJ(rec)) {
       case T_COMOBJ:
@@ -595,7 +601,7 @@ static Obj FuncREC_NAMES_COMOBJ(Obj self, Obj rec)
 **  'EqPRec' returns '1'  if the two  operands <left> and <right> are equal
 **  and '0' otherwise.  At least one operand must be a plain record.
 */
-static Int EqPRec(Obj left, Obj right)
+static Int EqPRec(Obj left, Obj right) GAP_GC_CANSAFEPOINT
 {
     UInt                i;              // loop variable
 
@@ -641,7 +647,7 @@ static Int EqPRec(Obj left, Obj right)
 **  <right>, and '0'  otherwise.  At least  one operand  must be a  plain
 **  record.
 */
-static Int LtPRec(Obj left, Obj right)
+static Int LtPRec(Obj left, Obj right) GAP_GC_CANSAFEPOINT
 {
     UInt                i;              // loop variable
     Int                 res;            // result of comparison
@@ -737,7 +743,7 @@ static void LoadPRec(Obj prec)
 **  'MarkPRecSubBags' is the marking function for bags of type 'T_PREC' or
 **  'T_COMOBJ'.
 */
-void MarkPRecSubBags(Obj bag, void * ref)
+void MarkPRecSubBags(Obj bag, void * ref) GAP_GC_NOTSAFEPOINT
 {
     const Bag * data = CONST_PTR_BAG(bag);
     const UInt count = SIZE_BAG(bag) / sizeof(Bag);
@@ -866,7 +872,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
