@@ -367,28 +367,111 @@ InstallMethod( ChangedBaseDomain,
   end );
 
 
+# The elementary operations work in place on the row lists, which are never
+# shared with other objects.  The rows are plain lists, which accept any
+# scalar, so check it before changing anything.
+BindGlobal( "GEN_MAT_SCALAR",
+  function( mat, scalar )
+    if IsInt( scalar ) then
+      return scalar * One( mat![GEN_MAT_REP_BASEDOMAIN_POS] );
+    elif ValueOption( "check" ) <> false and
+         not scalar in mat![GEN_MAT_REP_BASEDOMAIN_POS] then
+      Error( "<scalar> must lie in the base domain of <mat>" );
+    fi;
+    return scalar;
+  end );
+
 InstallMethod( MultMatrixRowLeft,
   [ "IsGenericMatrixRep and IsMutable", "IsInt", "IsObject" ],
   function( mat, row, scalar )
-    MultMatrixRowLeft(mat![GEN_MAT_REP_ROWS_POS], row, scalar);
+    MultVectorLeft( mat![GEN_MAT_REP_ROWS_POS][row],
+                    GEN_MAT_SCALAR( mat, scalar ) );
   end );
 
 InstallMethod( MultMatrixRowRight,
   [ "IsGenericMatrixRep and IsMutable", "IsInt", "IsObject" ],
   function( mat, row, scalar )
-    MultMatrixRowRight(mat![GEN_MAT_REP_ROWS_POS], row, scalar);
+    MultVectorRight( mat![GEN_MAT_REP_ROWS_POS][row],
+                     GEN_MAT_SCALAR( mat, scalar ) );
   end );
 
+# The list methods for 'AddRowVector' multiply from the left, and they
+# require <scalar> to lie in the family of the entries.
 InstallMethod( AddMatrixRowsLeft,
   [ "IsGenericMatrixRep and IsMutable", "IsInt", "IsInt", "IsObject" ],
   function( mat, row1, row2, scalar )
-    AddMatrixRowsLeft( mat![GEN_MAT_REP_ROWS_POS], row1, row2, scalar );
+    local dst, src, efam;
+    scalar := GEN_MAT_SCALAR( mat, scalar );
+    dst := mat![GEN_MAT_REP_ROWS_POS][row1];
+    src := mat![GEN_MAT_REP_ROWS_POS][row2];
+    efam := ElementsFamily( FamilyObj( mat![GEN_MAT_REP_BASEDOMAIN_POS] ) );
+    if Length( dst ) = 0 then
+      return;
+    elif IsIdenticalObj( FamilyObj( scalar ), efam ) then
+      AddRowVector( dst, src, scalar );
+    else
+      ADD_ROW_VECTOR_3( dst, src, scalar );
+    fi;
   end );
 
 InstallMethod( AddMatrixRowsRight,
   [ "IsGenericMatrixRep and IsMutable", "IsInt", "IsInt", "IsObject" ],
   function( mat, row1, row2, scalar )
-    AddMatrixRowsRight( mat![GEN_MAT_REP_ROWS_POS], row1, row2, scalar );
+    local dst, src, bd, efam, i;
+    scalar := GEN_MAT_SCALAR( mat, scalar );
+    dst := mat![GEN_MAT_REP_ROWS_POS][row1];
+    src := mat![GEN_MAT_REP_ROWS_POS][row2];
+    bd := mat![GEN_MAT_REP_BASEDOMAIN_POS];
+    efam := ElementsFamily( FamilyObj( bd ) );
+    if Length( dst ) = 0 then
+      return;
+    elif IsIdenticalObj( FamilyObj( scalar ), efam ) and IsCommutative( bd ) then
+      AddRowVector( dst, src, scalar );
+    else
+      for i in [ 1 .. Length( dst ) ] do
+        dst[i] := dst[i] + src[i] * scalar;
+      od;
+    fi;
+  end );
+
+InstallMethod( MultMatrixColumnLeft,
+  [ "IsGenericMatrixRep and IsMutable", "IsInt", "IsObject" ],
+  function( mat, col, scalar )
+    local row;
+    scalar := GEN_MAT_SCALAR( mat, scalar );
+    for row in mat![GEN_MAT_REP_ROWS_POS] do
+      row[col] := scalar * row[col];
+    od;
+  end );
+
+InstallMethod( MultMatrixColumnRight,
+  [ "IsGenericMatrixRep and IsMutable", "IsInt", "IsObject" ],
+  function( mat, col, scalar )
+    local row;
+    scalar := GEN_MAT_SCALAR( mat, scalar );
+    for row in mat![GEN_MAT_REP_ROWS_POS] do
+      row[col] := row[col] * scalar;
+    od;
+  end );
+
+InstallMethod( AddMatrixColumnsLeft,
+  [ "IsGenericMatrixRep and IsMutable", "IsInt", "IsInt", "IsObject" ],
+  function( mat, col1, col2, scalar )
+    local row;
+    scalar := GEN_MAT_SCALAR( mat, scalar );
+    for row in mat![GEN_MAT_REP_ROWS_POS] do
+      row[col1] := row[col1] + scalar * row[col2];
+    od;
+  end );
+
+InstallMethod( AddMatrixColumnsRight,
+  [ "IsGenericMatrixRep and IsMutable", "IsInt", "IsInt", "IsObject" ],
+  function( mat, col1, col2, scalar )
+    local row;
+    scalar := GEN_MAT_SCALAR( mat, scalar );
+    for row in mat![GEN_MAT_REP_ROWS_POS] do
+      row[col1] := row[col1] + row[col2] * scalar;
+    od;
   end );
 
 InstallMethod( PositionNonZeroInRow,
