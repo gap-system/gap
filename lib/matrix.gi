@@ -1330,7 +1330,7 @@ InstallMethod( IsOne,
 ##
 InstallMethod( BaseMatDestructive,
     "generic method for matrices",
-    [ IsMatrix ],
+    [ IsMatrix and IsMutable ],
     mat -> SemiEchelonMatDestructive( mat ).vectors );
 
 InstallMethod( BaseMat,
@@ -2900,7 +2900,7 @@ InstallOtherMethod( TransposedMat,
 ##
 InstallMethod( TransposedMatDestructive,
     "generic method for matrices",
-    [ IsMatrix ],
+    [ IsMatrix and IsMutable ],
     MutableTransposedMatDestructive );
 
 InstallOtherMethod(TransposedMatDestructive,
