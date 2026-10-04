@@ -155,6 +155,15 @@ end );
 MakeThreadLocal("FULLGLNICOCACHE"); # avoid recreating same homom. repeatedly
 BindGlobal( "FULLGLNICOCACHE", [] );
 
+# the cached mappings refer to field objects that 'FlushCaches' replaces
+InstallMethod( FlushCaches, [],
+    function()
+      while not IsEmpty( FULLGLNICOCACHE ) do
+        Remove( FULLGLNICOCACHE );
+      od;
+      TryNextMethod();
+    end );
+
 
 #############################################################################
 ##
@@ -179,9 +188,13 @@ InstallGlobalFunction( NicomorphismFFMatGroupOnFullSpace, function( grp )
     fi;
     dim:= DimensionOfMatrixGroup( grp );
 
-    #check cache
+    # Check the cache.  The stored homomorphism embeds objects over the
+    # stored field, so a field that is merely equal to <field> will not do:
+    # 'FlushCaches' makes 'GF( q )' return a new object, and mixing the two
+    # is rejected by representations that compare base domains by identity.
     nice:= First( FULLGLNICOCACHE,
-                  x -> x[1] = field and x[2] = dim and x[3] = filt );
+                  x -> IsIdenticalObj( x[1], field ) and x[2] = dim
+                       and x[3] = filt );
 
     if nice<>fail then return nice[4];fi;
 
