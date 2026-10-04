@@ -2535,12 +2535,16 @@ InstallMethodWithRandomSource( Randomize,
 
 InstallMethod( Unpack, "for a gf2 matrix",
   [IsGF2MatrixRep],
-  function( m )
-    return List(m, PlainListCopy);
-  end );
+  m -> List( m, Unpack ) );
 InstallMethod( Unpack, "for a gf2 vector",
   [IsGF2VectorRep],
-  PlainListCopy );
+  function( v )
+    # converting a copy in the kernel is much faster than 'PlainListCopy',
+    # which fetches the entries one by one
+    v:= ShallowCopy( v );
+    PLAIN_GF2VEC( v );
+    return v;
+  end );
 
 InstallOtherMethod( KroneckerProduct, "for two gf2 matrices",
   [IsGF2MatrixRep and IsMatrix, IsGF2MatrixRep and IsMatrix],
