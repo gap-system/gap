@@ -1,10 +1,11 @@
 #############################################################################
 ##
-##  Tests for RunProcess
+##  Tests for RunProcess and Exec
 ##
 gap> START_TEST("process.tst");
 
-#@if ARCH_IS_UNIX()
+# needs POSIX tools, on native Windows those of MSYS2
+#@if ARCH_IS_UNIX() or PositionSublist(GAPInfo.Architecture, "mingw") <> fail
 
 # the exit code is reported rather than raised as an error
 gap> RunProcess("true").status;
@@ -24,10 +25,6 @@ gap> RunProcess("printf", "[%s]", "a b", "c'd", "e*f").output;
 # integers are accepted and converted
 gap> RunProcess("printf", "[%s]", 42, -7).output;
 "[42][-7]"
-
-# an absolute path is used as-is
-gap> RunProcess("/bin/echo", "hi").output;
-"hi\n"
 
 # input defaults to nothing at all
 gap> RunProcess("cat").output;
@@ -70,6 +67,20 @@ Error, <cmd> must not be empty
 # a record in a non-final position is treated as an argument, and rejected
 gap> RunProcess("echo", rec(), "x");
 Error, arguments must be strings or integers
+
+# Exec passes quoted arguments through to the program
+gap> dir := DirectoryTemporary();;
+gap> FileString(Filename(dir, "a b"), "x");
+1
+gap> Exec(Concatenation("cp \"", Filename(dir, "a b"), "\" \"", Filename(dir, "c d"), "\""));
+gap> StringFile(Filename(dir, "c d"));
+"x"
+#@fi
+
+# an absolute path is used as-is
+#@if ARCH_IS_UNIX()
+gap> RunProcess("/bin/echo", "hi").output;
+"hi\n"
 #@fi
 
 #
