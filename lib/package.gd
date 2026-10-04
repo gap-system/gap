@@ -901,6 +901,20 @@ DeclareGlobalFunction( "LoadAllPackages" );
 
 #############################################################################
 ##
+#F  TestFilesOfPendingPackageExtensions()
+##
+##  returns the sorted list of pairs <C>[ path, needed ]</C> where
+##  <C>path</C> is the absolute path of a file or directory listed in the
+##  <C>testfiles</C> component of a not yet loaded extension of a loaded
+##  package, and <C>needed</C> is the <C>needed</C> component of this
+##  extension.
+##  <Ref Func="TestDirectory"/> skips these paths.
+##
+DeclareGlobalFunction( "TestFilesOfPendingPackageExtensions" );
+
+
+#############################################################################
+##
 #F  SetPackagePath( <pkgname>, <pkgpath> )
 ##
 ##  <#GAPDoc Label="SetPackagePath">
