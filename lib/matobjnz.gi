@@ -1009,6 +1009,131 @@ InstallMethod( SetMatElm, "for a zmodnz matrix, two positions, and an object",
 
 
 #############################################################################
+# Elementary row and column operations:
+#############################################################################
+
+# The elementary operations compute with the integer entry lists, reduce
+# each changed list once, and check only the scalar, which 'ZNZMATSCALAR'
+# returns as an integer in [0..n-1].  The row operations call the kernel
+# functions directly when that is safe, since method selection for
+# 'AddRowVector' costs 5% of the time.
+BindGlobal( "ZNZMATSCALAR", function( m, s )
+  if IsInt( s ) then
+    return s mod Size( m![BDPOS] );
+  elif ValueOption( "check" ) <> false and not s in m![BDPOS] then
+    Error( "<s> must be an integer or in the base domain of <m>" );
+  fi;
+  return Int( s );
+end );
+
+InstallMethod( MultMatrixRowLeft, "for a zmodnz matrix, a row, and a scalar",
+  [ IsZmodnZMatrixRep and IsMutable, IsInt, IsObject ],
+function( m, row, s )
+local l, n, i;
+  s := ZNZMATSCALAR( m, s );
+  l := m![ROWSPOS][row]![ELSPOS];
+  if IsPlistRep( l ) and IsMutable( l ) then
+    MULT_VECTOR_2_FAST( l, s );
+  else
+    MultVectorLeft( l, s );
+  fi;
+  n := Size( m![BDPOS] );
+  for i in [ 1 .. Length( l ) ] do
+    if l[i] >= n then l[i] := l[i] mod n; fi;
+  od;
+end );
+
+InstallMethod( AddMatrixRowsLeft,
+  "for a zmodnz matrix, two rows, and a scalar",
+  [ IsZmodnZMatrixRep and IsMutable, IsInt, IsInt, IsObject ],
+function( m, row1, row2, s )
+local dst, src, n, i;
+  s := ZNZMATSCALAR( m, s );
+  dst := m![ROWSPOS][row1]![ELSPOS];
+  src := m![ROWSPOS][row2]![ELSPOS];
+  if s = 0 then
+    return;
+  elif IsPlistRep( dst ) and IsPlistRep( src ) and IsMutable( dst ) then
+    ADD_ROW_VECTOR_3_FAST( dst, src, s );
+  else
+    AddRowVector( dst, src, s );
+  fi;
+  n := Size( m![BDPOS] );
+  for i in [ 1 .. Length( dst ) ] do
+    if dst[i] >= n then dst[i] := dst[i] mod n; fi;
+  od;
+end );
+
+InstallMethod( MultMatrixColumnLeft,
+  "for a zmodnz matrix, a column, and a scalar",
+  [ IsZmodnZMatrixRep and IsMutable, IsInt, IsObject ],
+function( m, col, s )
+local n, row, l;
+  s := ZNZMATSCALAR( m, s );
+  n := Size( m![BDPOS] );
+  for row in m![ROWSPOS] do
+    l := row![ELSPOS];
+    l[col] := ( s * l[col] ) mod n;
+  od;
+end );
+
+InstallMethod( AddMatrixColumnsLeft,
+  "for a zmodnz matrix, two columns, and a scalar",
+  [ IsZmodnZMatrixRep and IsMutable, IsInt, IsInt, IsObject ],
+function( m, col1, col2, s )
+local n, row, l;
+  s := ZNZMATSCALAR( m, s );
+  n := Size( m![BDPOS] );
+  for row in m![ROWSPOS] do
+    l := row![ELSPOS];
+    l[col1] := ( l[col1] + s * l[col2] ) mod n;
+  od;
+end );
+
+# Z/nZ is commutative.
+InstallMethod( MultMatrixRowRight, "for a zmodnz matrix, a row, and a scalar",
+  [ IsZmodnZMatrixRep and IsMutable, IsInt, IsObject ],
+  MultMatrixRowLeft );
+
+InstallMethod( AddMatrixRowsRight,
+  "for a zmodnz matrix, two rows, and a scalar",
+  [ IsZmodnZMatrixRep and IsMutable, IsInt, IsInt, IsObject ],
+  AddMatrixRowsLeft );
+
+InstallMethod( MultMatrixColumnRight,
+  "for a zmodnz matrix, a column, and a scalar",
+  [ IsZmodnZMatrixRep and IsMutable, IsInt, IsObject ],
+  MultMatrixColumnLeft );
+
+InstallMethod( AddMatrixColumnsRight,
+  "for a zmodnz matrix, two columns, and a scalar",
+  [ IsZmodnZMatrixRep and IsMutable, IsInt, IsInt, IsObject ],
+  AddMatrixColumnsLeft );
+
+InstallMethod( SwapMatrixRows, "for a zmodnz matrix and two rows",
+  [ IsZmodnZMatrixRep and IsMutable, IsInt, IsInt ],
+function( m, row1, row2 )
+local rows, tmp;
+  rows := m![ROWSPOS];
+  tmp := rows[row1];
+  rows[row1] := rows[row2];
+  rows[row2] := tmp;
+end );
+
+InstallMethod( SwapMatrixColumns, "for a zmodnz matrix and two columns",
+  [ IsZmodnZMatrixRep and IsMutable, IsInt, IsInt ],
+function( m, col1, col2 )
+local row, l, tmp;
+  for row in m![ROWSPOS] do
+    l := row![ELSPOS];
+    tmp := l[col1];
+    l[col1] := l[col2];
+    l[col2] := tmp;
+  od;
+end );
+
+
+#############################################################################
 # Arithmetical operations:
 #############################################################################
 
