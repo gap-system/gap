@@ -2582,16 +2582,14 @@ InstallOtherMethod( RankMat,
 
 #############################################################################
 ##
-#M  SemiEchelonMat( <mat> )
+#F  SemiEchelonRowsDestructive( <rows>, <nrows>, <ncols>, <zero> )
 ##
-InstallOtherMethod( SemiEchelonMatDestructive,
-    "generic method for matrices",
-    [ IsMatrixOrMatrixObj and IsMutable ],
-    function( mat )
-    local zero,      # zero of the field of <mat>
-          nrows,     # number of rows in <mat>
-          ncols,     # number of columns in <mat>
-          vectors,   # list of basis vectors
+##  does the work for 'SemiEchelonMatDestructive', on the first <nrows>
+##  entries of <rows>, which are mutable vectors of length <ncols> and may
+##  be changed.
+##
+BindGlobal( "SemiEchelonRowsDestructive", function( mat, nrows, ncols, zero )
+    local vectors,   # list of basis vectors
           heads,     # list of pivot positions in `vectors'
           i,         # loop over rows
           j,         # loop over columns
@@ -2599,11 +2597,6 @@ InstallOtherMethod( SemiEchelonMatDestructive,
           nzheads,   # list of non-zero heads
           row,       # the row of current interest
           inv;       # inverse of a matrix entry
-
-    nrows:= NrRows( mat );
-    ncols:= NrCols( mat );
-
-    zero:= ZeroOfBaseDomain( mat );
 
     heads:= ListWithIdenticalEntries( ncols, 0 );
     nzheads := [];
@@ -2639,7 +2632,19 @@ InstallOtherMethod( SemiEchelonMatDestructive,
 
     return rec( heads   := heads,
                 vectors := vectors );
-    end );
+end );
+
+
+#############################################################################
+##
+#M  SemiEchelonMat( <mat> )
+##
+InstallOtherMethod( SemiEchelonMatDestructive,
+    "generic method for matrices",
+    [ IsMatrixOrMatrixObj and IsMutable ],
+    mat -> SemiEchelonRowsDestructive( mat, NrRows( mat ), NrCols( mat ),
+               ZeroOfBaseDomain( mat ) ) );
+
 
 InstallMethod( SemiEchelonMat,
     "generic method for matrices",
@@ -2660,21 +2665,15 @@ InstallOtherMethod( SemiEchelonMat,
     "generic method for list of vector objects",
     [ IsList ],
     function( mat )
-    local copymat, v, vc, f;
+    local copymat;
     # filter for vector objects, not compressed FF vectors
     if not (ForAll(mat,x->IsVectorObj(x) and not IsDataObjectRep(x))
       and Length(mat)>0) then
       TryNextMethod();
     fi;
-    copymat := [];
-    if Length(mat)>0 then
-      f := BaseDomain(mat[1]);
-      for v in mat do
-          vc := ShallowCopy(v);
-          Add(copymat, vc);
-      od;
-    fi;
-    return SemiEchelonMatDestructive(Matrix(f, copymat ));
+    copymat := List( mat, ShallowCopy );
+    return SemiEchelonRowsDestructive( copymat, Length( copymat ),
+               Length( copymat[1] ), ZeroOfBaseDomain( copymat[1] ) );
 end );
 
 
