@@ -559,6 +559,21 @@ static Obj FuncSizeScreen(Obj self, Obj args)
 
 /****************************************************************************
 **
+*F  WindowCmdError( <msg> ) . . . . . . . . . .  report a window system error
+**
+**  Report <msg> the way an answer from the window handler starting with the
+**  integer 1 is reported, i.e. as 'Error( "window system: ", <msg> )'.
+*/
+static Obj WindowCmdError(const Char * msg)
+{
+  return CALL_XARGS( Error,
+                     NewPlistFromArgs( MakeImmString( "window system: " ),
+                                       MakeImmString( msg ) ) );
+}
+
+
+/****************************************************************************
+**
 *F  FuncWindowCmd( <self>, <args> ) . . . . . . . .  execute a window command
 */
 static Obj WindowCmdString;
@@ -568,10 +583,11 @@ static Obj FuncWindowCmd(Obj self, Obj args)
   Obj             tmp;
   Obj               list;
   Int             len;
-  Int             n,  m;
+  Int             m;
   Int             i;
+  Int             kind;
+  UInt            slen;
   Char *          ptr;
-  const Char *    inptr;
   const Char *    qtr;
 
   RequireSmallList(SELF_NAME, args);
@@ -638,36 +654,36 @@ static Obj FuncWindowCmd(Obj self, Obj args)
     }
   *ptr = 0;
 
-  // now call the window front end with the argument string
+  // send the command to the window front end
   qtr = CONST_CSTR_STRING(WindowCmdString);
-  inptr = SyWinCmd( qtr, strlen(qtr) );
-  len = strlen(inptr);
+  if ( ! SyWindow )
+      return WindowCmdError( "No Window Handler Present" );
+  SyWinSendCmd( qtr );
 
-  // now convert result back into a list
+  // read the '@a<len>+' answer header
+  if ( ! SyWinBeginAnswer() )
+      return WindowCmdError( "Illegal Answer" );
+
+  // read the answer entries into a new list, allocating each string at its
+  // known length and reading it straight into the bag
   list = NEW_PLIST( T_PLIST, 11 );
   i = 1;
-  while ( 0 < len ) {
-    if ( *inptr == 'I' ) {
-      inptr++;
-      for ( n=0,m=1; '0' <= *inptr && *inptr <= '9'; inptr++,m *= 10,len-- )
-        n += (*inptr-'0') * m;
-      if ( *inptr++ == '-' )
-        n *= -1;
-      len -= 2;
-      AssPlist( list, i, INTOBJ_INT(n) );
+  while ( 0 <= (kind = SyWinReadEntryKind()) ) {
+    if ( kind == 'I' ) {
+      AssPlist( list, i, INTOBJ_INT( SyWinReadInt() ) );
     }
-    else if ( *inptr == 'S' ) {
-      inptr++;
-      for ( n=0,m=1;  '0' <= *inptr && *inptr <= '9';  inptr++,m *= 10,len-- )
-        n += (*inptr-'0') * m;
-      inptr++; // ignore the '+'
-      tmp = MakeImmStringWithLen(inptr, n);
-      inptr += n;
-      len -= n+2;
+    else if ( kind == 'S' ) {
+      slen = SyWinReadStrLen();
+      tmp  = NEW_STRING( slen );
+      // 'SyWinReadStr' only reads from the input, so it cannot trigger a
+      // garbage collection that would move the bag under 'CHARS_STRING'
+      SyWinReadStr( CHARS_STRING(tmp), slen );
+      MakeImmutableNoRecurse( tmp );
       AssPlist( list, i, tmp );
     }
     else {
-      ErrorQuit( "unknown return value '%s'", (Int)inptr, 0 );
+      SyWinEndAnswer();      // drain the rest, keeping the stream in sync
+      ErrorQuit( "WindowCmd: unknown entry kind '%c' in answer", kind, 0 );
     }
     i++;
   }
