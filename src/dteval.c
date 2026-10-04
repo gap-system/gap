@@ -776,6 +776,22 @@ static void ReduceWord(Obj x, Obj pcp)
 }
 
 
+/****************************************************************************
+**
+*F  ReducedCopy( <x>, <pcp> )
+**
+**  The DT functions below return one argument unchanged when the other one
+**  is trivial. Arguments need not be in normal form, so reduce a copy.
+*/
+
+static Obj ReducedCopy(Obj x, Obj pcp)
+{
+    Obj res = SHALLOW_COPY_OBJ(x);
+    ReduceWord(res, pcp);
+    return res;
+}
+
+
 
 /****************************************************************************
 **
@@ -794,9 +810,9 @@ static Obj FuncDTMultiply(Obj self, Obj x, Obj y, Obj pcp)
     Obj res;
 
     if  ( LEN_PLIST(x) == 0 )
-        return y;
+        return ReducedCopy(y, pcp);
     if  ( LEN_PLIST(y) == 0 )
-        return x;
+        return ReducedCopy(x, pcp);
     res = Multiplyboundred(x, y, 1, LEN_PLIST(y), pcp);
     ReduceWord(res, pcp);
     return res;
@@ -844,7 +860,7 @@ static Obj FuncDTSolution(Obj self, Obj x, Obj y, Obj pcp)
     Obj     res;
 
     if  ( LEN_PLIST(x) == 0 )
-        return y;
+        return ReducedCopy(y, pcp);
     res = Solutionred(x, y, pcp);
     ReduceWord(res, pcp);
     return res;
@@ -892,7 +908,7 @@ static Obj FuncDTConjugate(Obj self, Obj x, Obj y, Obj pcp)
     Obj   res;
 
     if  ( LEN_PLIST(y) == 0 )
-        return x;
+        return ReducedCopy(x, pcp);
     res = Conjugatered(x, y, pcp);
     ReduceWord(res, pcp);
     return res;
@@ -917,7 +933,7 @@ static Obj FuncDTQuotient(Obj self, Obj x, Obj y, Obj pcp)
     Obj     help, res;
 
     if  ( LEN_PLIST(y) == 0 )
-        return x;
+        return ReducedCopy(x, pcp);
     help = NEW_PLIST( T_PLIST, 0 );
     res = Solutionred(y, help, pcp);
     res = Multiplyboundred(x, res, 1, LEN_PLIST(res), pcp);
