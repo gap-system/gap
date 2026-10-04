@@ -932,8 +932,7 @@ static void UpdateThreadRecord(Obj record, Obj tlrecord)
     else {
       TLS(tlRecords) = NEW_PLIST(T_PLIST, 1);
       SET_LEN_PLIST(TLS(tlRecords), 1);
-      SET_ELM_PLIST(TLS(tlRecords), 1, record);
-      CHANGED_BAG(TLS(tlRecords));
+      SET_ELM_PLIST_WB(TLS(tlRecords), 1, record);
     }
   }
 }

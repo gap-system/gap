@@ -655,28 +655,24 @@ static Obj FuncMAKE_BITFIELDS(Obj self, Obj widths)
                              2, dataValArgs, DoFieldSetter);
         SET_MASK_BITFIELD_FUNC(s, mask);
         SET_OFFFSET_BITFIELD_FUNC(s, starts[i - 1]);
-        SET_ELM_PLIST(setters, i, s);
-        CHANGED_BAG(setters);
+        SET_ELM_PLIST_WB(setters, i, s);
         Obj g = NewFunctionT(T_FUNCTION, sizeof(BitfieldFuncBag), nameGetter,
                              1, dataArgs, DoFieldGetter);
         SET_MASK_BITFIELD_FUNC(g, mask);
         SET_OFFFSET_BITFIELD_FUNC(g, starts[i - 1]);
-        SET_ELM_PLIST(getters, i, g);
-        CHANGED_BAG(getters);
+        SET_ELM_PLIST_WB(getters, i, g);
         if (starts[i] - starts[i - 1] == 1) {
             s = NewFunctionT(T_FUNCTION, sizeof(BitfieldFuncBag), nameBSetter,
                              2, dataValArgs, DoBooleanFieldSetter);
             SET_MASK_BITFIELD_FUNC(s, mask);
             SET_OFFFSET_BITFIELD_FUNC(s, starts[i - 1]);
-            SET_ELM_PLIST(bsetters, i, s);
-            CHANGED_BAG(bsetters);
+            SET_ELM_PLIST_WB(bsetters, i, s);
             bslen = i;
             g = NewFunctionT(T_FUNCTION, sizeof(BitfieldFuncBag), nameBGetter,
                              1, dataArgs, DoBooleanFieldGetter);
             SET_MASK_BITFIELD_FUNC(g, mask);
             SET_OFFFSET_BITFIELD_FUNC(g, starts[i - 1]);
-            SET_ELM_PLIST(bgetters, i, g);
-            CHANGED_BAG(bgetters);
+            SET_ELM_PLIST_WB(bgetters, i, g);
         }
     }
 

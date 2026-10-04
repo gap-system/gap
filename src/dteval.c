@@ -67,14 +67,12 @@ static void MultGen(Obj xk, UInt gen, Obj power, Obj dtpols)
     {
         /* if f_{<gen>1},...,f_{<gen>n} are trivial we only have to add
         ** <power> to <xk>[ <gen> ].                                     */
-        SET_ELM_PLIST(xk, gen, sum);
-        CHANGED_BAG(xk);
+        SET_ELM_PLIST_WB(xk, gen, sum);
         return;
     }
     copy = ShallowCopyPlist(xk);
     // first add <power> to <xk>[ gen> ].
-    SET_ELM_PLIST(xk, gen, sum);
-    CHANGED_BAG(xk);
+    SET_ELM_PLIST_WB(xk, gen, sum);
     sum = ElmPRec( ELM_PLIST(dtpols, gen), evlist );
     sum1 = ElmPRec( ELM_PLIST(dtpols, gen), evlistvec);
     len = LEN_PLIST(sum);
@@ -97,9 +95,8 @@ static void MultGen(Obj xk, UInt gen, Obj power, Obj dtpols)
                 prod = ProdInt( ord, ELM_PLIST(  help, j+1 ) );
                 sum2 = SumInt(ELM_PLIST( xk, CELM( help,j ) ),
                               prod);
-                SET_ELM_PLIST(xk, CELM( help, j ),
-                              sum2 );
-                CHANGED_BAG(xk);
+                SET_ELM_PLIST_WB(xk, CELM( help, j ),
+                                 sum2 );
             }
         }
     }
@@ -520,8 +517,7 @@ static Obj Multiplyboundred(Obj x, Obj y, UInt anf, UInt end, Obj pcp)
              ( c=ELM_PLIST( orders, help )) != 0 )
         {
             mod = ModInt( ELM_PLIST(res, i), c );
-            SET_ELM_PLIST( res, i, mod);
-            CHANGED_BAG(res);
+            SET_ELM_PLIST_WB( res, i, mod);
         }
     return res;
 }
@@ -552,8 +548,7 @@ static Obj Powerred(Obj x, Obj n, Obj pcp)
              ( c=ELM_PLIST( orders, help )) != 0 )
         {
             mod = ModInt( ELM_PLIST(res, i), c );
-            SET_ELM_PLIST( res, i, mod);
-            CHANGED_BAG(res);
+            SET_ELM_PLIST_WB( res, i, mod);
         }
     return res;
 }
@@ -584,8 +579,7 @@ static Obj Solutionred(Obj x, Obj y, Obj pcp)
              ( c=ELM_PLIST( orders, help )) != 0 )
         {
             mod = ModInt( ELM_PLIST(res, i), c );
-            SET_ELM_PLIST( res, i, mod);
-            CHANGED_BAG(res);
+            SET_ELM_PLIST_WB( res, i, mod);
         }
     return res;
 }
@@ -616,8 +610,7 @@ static Obj Commutatorred(Obj x, Obj y, Obj pcp)
              ( c=ELM_PLIST( orders, help )) != 0 )
         {
             mod = ModInt( ELM_PLIST(res, i), c );
-            SET_ELM_PLIST( res, i, mod);
-            CHANGED_BAG(res);
+            SET_ELM_PLIST_WB( res, i, mod);
         }
     return res;
 }
@@ -648,8 +641,7 @@ static Obj Conjugatered(Obj x, Obj y, Obj pcp)
              ( c=ELM_PLIST( orders, help )) != 0 )
         {
             mod = ModInt( ELM_PLIST(res, i), c );
-            SET_ELM_PLIST( res, i, mod);
-            CHANGED_BAG(res);
+            SET_ELM_PLIST_WB( res, i, mod);
         }
     return res;
 }
@@ -741,8 +733,7 @@ static void ReduceWord(Obj x, Obj pcp)
             {
                 // reduce the exponent of the generator <gen>
                 mod = ModInt( quo, potenz );
-                SET_ELM_PLIST(x, i+1, mod);
-                CHANGED_BAG(x);
+                SET_ELM_PLIST_WB(x, i+1, mod);
                 if ( gen <= lenpow            &&
                      (prel = ELM_PLIST( powers, gen) )  != 0  )
                 {

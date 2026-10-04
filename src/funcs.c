@@ -130,8 +130,7 @@ static ALWAYS_INLINE Obj EvalOrExecCall(Int ignoreResult, UInt nr, Stat call, St
         SET_LEN_PLIST(args, realNr);
         for (UInt i = 1; i <= realNr; i++) {
             Obj argi = EVAL_EXPR(ARGI_CALL(call, i));
-            SET_ELM_PLIST(args, i, argi);
-            CHANGED_BAG(args);
+            SET_ELM_PLIST_WB(args, i, argi);
         }
     }
 

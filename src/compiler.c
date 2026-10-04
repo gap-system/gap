@@ -746,6 +746,15 @@ static void Emit(const char * fmt, ...)
 
 }
 
+static void EmitSetElmPlist(CVar list, UInt idx, CVar argi)
+{
+    if (HasInfoCVar( argi, W_INT_SMALL ) ) {
+        Emit( "SET_ELM_PLIST( %c, %d, %c );\n", list, idx, argi );
+    }
+    else {
+        Emit( "SET_ELM_PLIST_WB( %c, %d, %c );\n", list, idx, argi );
+    }
+}
 
 /****************************************************************************
 **
@@ -1037,10 +1046,7 @@ static CVar CompFunccallXArgs(Expr expr)
     Emit( "SET_LEN_PLIST( %c, %d );\n", argl, narg );
     for ( i = 1; i <= narg; i++ ) {
         argi = CompExpr( ARGI_CALL( expr, i ) );
-        Emit( "SET_ELM_PLIST( %c, %d, %c );\n", argl, i, argi );
-        if ( ! HasInfoCVar( argi, W_INT_SMALL ) ) {
-            Emit( "CHANGED_BAG( %c );\n", argl );
-        }
+        EmitSetElmPlist( argl, i, argi );
         if ( IS_TEMP_CVAR( argi ) )  FreeTemp( TEMP_CVAR( argi ) );
     }
 
@@ -2357,14 +2363,12 @@ static CVar CompPermExpr(Expr expr)
         csize = SIZE_EXPR(cycle)/sizeof(Expr);
         Emit( "%c = NEW_PLIST( T_PLIST, %d );\n", lcyc, csize );
         Emit( "SET_LEN_PLIST( %c, %d );\n", lcyc, csize );
-        Emit( "SET_ELM_PLIST( %c, %d, %c );\n", lprm, i, lcyc );
-        Emit( "CHANGED_BAG( %c );\n", lprm );
+        EmitSetElmPlist( lprm, i, lcyc );
 
         // loop over the entries of the cycle
         for ( j = 1;  j <= csize;  j++ ) {
             val = CompExpr(READ_EXPR(cycle, j - 1));
-            Emit( "SET_ELM_PLIST( %c, %d, %c );\n", lcyc, j, val );
-            Emit( "CHANGED_BAG( %c );\n", lcyc );
+            EmitSetElmPlist( lcyc, j, val );
             if ( IS_TEMP_CVAR(val) )  FreeTemp( TEMP_CVAR(val) );
         }
     }
@@ -2481,8 +2485,7 @@ static void CompListExpr2(CVar list, Expr expr)
         // special case if subexpression is a list expression
         else if (TNUM_EXPR(READ_EXPR(expr, i - 1)) == EXPR_LIST) {
             sub = CompListExpr1(READ_EXPR(expr, i - 1));
-            Emit( "SET_ELM_PLIST( %c, %d, %c );\n", list, i, sub );
-            Emit( "CHANGED_BAG( %c );\n", list );
+            EmitSetElmPlist( list, i, sub );
             CompListExpr2(sub, READ_EXPR(expr, i - 1));
             if ( IS_TEMP_CVAR( sub ) )  FreeTemp( TEMP_CVAR( sub ) );
         }
@@ -2490,8 +2493,7 @@ static void CompListExpr2(CVar list, Expr expr)
         // special case if subexpression is a record expression
         else if (TNUM_EXPR(READ_EXPR(expr, i - 1)) == EXPR_REC) {
             sub = CompRecExpr1(READ_EXPR(expr, i - 1));
-            Emit( "SET_ELM_PLIST( %c, %d, %c );\n", list, i, sub );
-            Emit( "CHANGED_BAG( %c );\n", list );
+            EmitSetElmPlist( list, i, sub );
             CompRecExpr2(sub, READ_EXPR(expr, i - 1));
             if ( IS_TEMP_CVAR( sub ) )  FreeTemp( TEMP_CVAR( sub ) );
         }
@@ -2499,10 +2501,7 @@ static void CompListExpr2(CVar list, Expr expr)
         // general case
         else {
             sub = CompExpr(READ_EXPR(expr, i - 1));
-            Emit( "SET_ELM_PLIST( %c, %d, %c );\n", list, i, sub );
-            if ( ! HasInfoCVar( sub, W_INT_SMALL ) ) {
-                Emit( "CHANGED_BAG( %c );\n", list );
-            }
+            EmitSetElmPlist( list, i, sub );
             if ( IS_TEMP_CVAR( sub ) )  FreeTemp( TEMP_CVAR( sub ) );
         }
 
@@ -3613,10 +3612,7 @@ static void CompProccallXArgs(Stat stat)
     Emit( "SET_LEN_PLIST( %c, %d );\n", argl, narg );
     for ( i = 1; i <= narg; i++ ) {
         argi = CompExpr( ARGI_CALL( stat, i ) );
-        Emit( "SET_ELM_PLIST( %c, %d, %c );\n", argl, i, argi );
-        if ( ! HasInfoCVar( argi, W_INT_SMALL ) ) {
-            Emit( "CHANGED_BAG( %c );\n", argl );
-        }
+        EmitSetElmPlist( argl, i, argi );
         if ( IS_TEMP_CVAR( argi ) )  FreeTemp( TEMP_CVAR( argi ) );
     }
 
@@ -4932,8 +4928,7 @@ static void CompInfo(Stat stat)
     Emit( "SET_LEN_PLIST( %c, %d );\n", lst, narg );
     for ( i = 1;  i <= narg;  i++ ) {
         tmp = CompExpr( ARGI_INFO( stat, i+2 ) );
-        Emit( "SET_ELM_PLIST( %c, %d, %c );\n", lst, i, tmp );
-        Emit( "CHANGED_BAG(%c);\n", lst );
+        EmitSetElmPlist( lst, i, tmp );
         if ( IS_TEMP_CVAR( tmp ) )  FreeTemp( TEMP_CVAR( tmp ) );
     }
     Emit( "InfoDoPrint( %c, %c, %c );\n", sel, lev, lst );

@@ -999,8 +999,7 @@ static void AssString(Obj list, Int pos, Obj val)
     }
 
     // now perform the assignment and return the assigned value
-    SET_ELM_PLIST( list, pos, val );
-    CHANGED_BAG( list );
+    SET_ELM_PLIST_WB( list, pos, val );
   }
   else {
     CLEAR_FILTS_LIST(list);

@@ -933,8 +933,7 @@ static Obj FuncKERNEL_TRANS(Obj self, Obj f, Obj n)
         j = INT_INTOBJ(ELM_PLIST(KER_TRANS(f), i + 1));
         if (pttmp[j - 1] == 0) {
             nr++;
-            SET_ELM_PLIST(ker, j, NEW_PLIST(T_PLIST_CYC_SSORT, 1));
-            CHANGED_BAG(ker);
+            SET_ELM_PLIST_WB(ker, j, NEW_PLIST(T_PLIST_CYC_SSORT, 1));
             pttmp = AddrTmpTrans();
         }
         AssPlist(ELM_PLIST(ker, j), (Int)++pttmp[j - 1], INTOBJ_INT(i + 1));

@@ -3033,8 +3033,7 @@ void IntrAssListLevel(IntrState * intr, Int narg, UInt level)
     for (i = narg; i > 0; i--) {
         // get and check the position
         pos = PopObj(intr);
-        SET_ELM_PLIST(ixs, i, pos);
-        CHANGED_BAG(ixs);
+        SET_ELM_PLIST_WB(ixs, i, pos);
     }
     SET_LEN_PLIST(ixs, narg);
 
@@ -3223,8 +3222,7 @@ void IntrElmListLevel(IntrState * intr, Int narg, UInt level)
     ixs = NEW_PLIST(T_PLIST, narg);
     for (i = narg; i > 0; i--) {
         pos = PopObj(intr);
-        SET_ELM_PLIST(ixs, i, pos);
-        CHANGED_BAG(ixs);
+        SET_ELM_PLIST_WB(ixs, i, pos);
     }
     SET_LEN_PLIST(ixs, narg);
 

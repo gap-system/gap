@@ -917,8 +917,7 @@ static Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
         for (i = 1; i <= rank; i++) {
             j = INT_INTOBJ(ELM_PLIST(dom, i));
             if (CONST_ADDR_PPERM4(TmpPPerm)[j - 1] == 0) {
-                SET_ELM_PLIST(out, ++nr, NEW_PLIST(T_PLIST_CYC, 30));
-                CHANGED_BAG(out);
+                SET_ELM_PLIST_WB(out, ++nr, NEW_PLIST(T_PLIST_CYC, 30));
                 len = 0;
                 k = j;
                 do {
@@ -936,8 +935,7 @@ static Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
         for (i = 1; i <= rank; i++) {
             j = INT_INTOBJ(ELM_PLIST(dom, i));
             if (CONST_ADDR_PPERM4(TmpPPerm)[j - 1] == 1) {
-                SET_ELM_PLIST(out, ++nr, NEW_PLIST(T_PLIST_CYC, 30));
-                CHANGED_BAG(out);
+                SET_ELM_PLIST_WB(out, ++nr, NEW_PLIST(T_PLIST_CYC, 30));
                 len = 0;
                 k = j;
                 do {
@@ -959,8 +957,7 @@ static Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
         for (i = 1; i <= rank; i++) {
             j = INT_INTOBJ(ELM_PLIST(dom, i));
             if (CONST_ADDR_PPERM4(TmpPPerm)[j - 1] == 0) {
-                SET_ELM_PLIST(out, ++nr, NEW_PLIST(T_PLIST_CYC, 30));
-                CHANGED_BAG(out);
+                SET_ELM_PLIST_WB(out, ++nr, NEW_PLIST(T_PLIST_CYC, 30));
                 len = 0;
                 k = j;
                 do {
@@ -978,8 +975,7 @@ static Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
         for (i = 1; i <= rank; i++) {
             j = INT_INTOBJ(ELM_PLIST(dom, i));
             if (CONST_ADDR_PPERM4(TmpPPerm)[j - 1] == 1) {
-                SET_ELM_PLIST(out, ++nr, NEW_PLIST(T_PLIST_CYC, 30));
-                CHANGED_BAG(out);
+                SET_ELM_PLIST_WB(out, ++nr, NEW_PLIST(T_PLIST_CYC, 30));
                 len = 0;
                 k = j;
                 do {
