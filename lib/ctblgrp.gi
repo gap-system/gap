@@ -2330,6 +2330,7 @@ InstallMethod( Irr,
 InstallMethod( Irr,
     "for a group with known `IrrDixonSchneider'",
     [ IsGroup and HasIrrDixonSchneider, IsZeroCyc ],
+    SUM_FLAGS, # above all methods that actually compute something
     function( G, zero )
     local irr, tbl;
     irr:= IrrDixonSchneider( G );
