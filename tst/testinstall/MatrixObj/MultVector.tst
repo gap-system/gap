@@ -79,6 +79,22 @@ gap> MultVectorLeft(n, -1);
 gap> Unpack(n);
 [ -2, -4, 0 ]
 
+# IsPlistVectorRep: only the scalar is checked
+gap> vp := NewVector( IsPlistVectorRep, GF(5), [ Z(5), 0*Z(5) ] );;
+gap> MultVectorLeft(vp, 2);
+gap> MultVectorRight(vp, -1);
+gap> Unpack(vp);
+[ Z(5)^0, 0*Z(5) ]
+gap> MultVectorLeft(vp, Z(25));
+Error, <s> must lie in the base domain of <v>
+gap> MultVectorRight(vp, 1/2);
+Error, <s> must lie in the base domain of <v>
+gap> Unpack(vp);
+[ Z(5)^0, 0*Z(5) ]
+gap> MultVectorLeft(vp, Z(25) : check := false);
+gap> Unpack(vp);
+[ Z(5^2), 0*Z(5) ]
+
 # Quaternions: multiplication from left and right
 gap> Q := QuaternionAlgebra( Rationals );
 <algebra-with-one of dimension 4 over Rationals>

@@ -42,6 +42,25 @@ Error, the elements in <list> must lie in <basedomain>
 gap> NewZeroVector( IsPlistVectorRep, Integers, 0 );
 <plist vector over Integers of length 0>
 
+# AddRowVector checks only the scalar
+gap> v:= NewVector( IsPlistVectorRep, GF(5), [ Z(5), 0*Z(5), Z(5)^0 ] );;
+gap> w:= NewVector( IsPlistVectorRep, GF(5), [ Z(5)^0, Z(5), Z(5)^0 ] );;
+gap> AddRowVector( v, w, Z(5) );
+gap> AddRowVector( v, w, 2, 2, 3 );
+gap> Unpack( v );
+[ Z(5)^2, Z(5)^3, 0*Z(5) ]
+gap> AddRowVector( v, w, Z(25) );
+Error, <s> must lie in the base domain of <a>
+gap> AddRowVector( v, w, Z(25), 1, 3 );
+Error, <s> must lie in the base domain of <a>
+gap> Unpack( v );
+[ Z(5)^2, Z(5)^3, 0*Z(5) ]
+gap> AddRowVector( v, NewVector( IsPlistVectorRep, GF(25), Unpack( w ) ), 1 );
+Error, <a> and <b> are not compatible
+gap> AddRowVector( v, w, Z(25) : check := false );
+gap> Unpack( v ) = [ Z(5)^2, Z(5)^3, 0*Z(5) ] + Z(25) * Unpack( w );
+true
+
 #
 gap> NewMatrix( IsPlistMatrixRep, Integers, 2, [] );;
 gap> NewMatrix( IsPlistMatrixRep, Integers, 2, [ 1 ] );;

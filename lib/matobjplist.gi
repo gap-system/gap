@@ -437,17 +437,19 @@ InstallMethod( AddRowVector,
     ADD_ROW_VECTOR_2_FAST( a![ELSPOS], b![ELSPOS] );
   end );
 
+# Multiplying by an element of the base domain or by an integer keeps the
+# entries in the base domain, so checking the scalar suffices.
 InstallMethod( AddRowVector,
   [ "IsPlistVectorRep and IsMutable", "IsPlistVectorRep", "IsObject" ],
   function( a, b, s )
-    ADD_ROW_VECTOR_3( a![ELSPOS], b![ELSPOS], s );
     if ValueOption( "check" ) <> false then
       if not IsIdenticalObj( a![BDPOS], b![BDPOS] ) then
         Error( "<a> and <b> are not compatible" );
-      elif not IsSubset( a![BDPOS], a![ELSPOS] ) then
-        Error( "<a> is not defined over its base domain" );
+      elif not ( IsInt( s ) or s in a![BDPOS] ) then
+        Error( "<s> must lie in the base domain of <a>" );
       fi;
     fi;
+    ADD_ROW_VECTOR_3( a![ELSPOS], b![ELSPOS], s );
   end );
 
 # Better method for integer vectors:
@@ -471,14 +473,14 @@ InstallMethod( AddRowVector,
   [ "IsPlistVectorRep and IsMutable", "IsPlistVectorRep",
     "IsObject", "IsPosInt", "IsPosInt" ],
   function( a, b, s, from, to )
-    ADD_ROW_VECTOR_5( a![ELSPOS], b![ELSPOS], s, from, to );
     if ValueOption( "check" ) <> false then
       if not IsIdenticalObj( a![BDPOS], b![BDPOS] ) then
         Error( "<a> and <b> are not compatible" );
-      elif not IsSubset( a![BDPOS], a![ELSPOS] ) then
-        Error( "<a> is not defined over its base domain" );
+      elif not ( IsInt( s ) or s in a![BDPOS] ) then
+        Error( "<s> must lie in the base domain of <a>" );
       fi;
     fi;
+    ADD_ROW_VECTOR_5( a![ELSPOS], b![ELSPOS], s, from, to );
   end );
 
 # Better method for integer vectors:
@@ -500,19 +502,21 @@ InstallMethod( AddRowVector,
 InstallMethod( MultVectorLeft,
   [ "IsPlistVectorRep and IsMutable", "IsObject" ],
   function( v, s )
-    MULT_VECTOR_LEFT_2(v![ELSPOS],s);
-    if ValueOption( "check" ) <> false and not IsSubset( v![BDPOS], v![ELSPOS] ) then
-      Error( "<v> is not defined over its base domain" );
+    if ValueOption( "check" ) <> false and
+       not ( IsInt( s ) or s in v![BDPOS] ) then
+      Error( "<s> must lie in the base domain of <v>" );
     fi;
+    MULT_VECTOR_LEFT_2( v![ELSPOS], s );
   end );
 
 InstallMethod( MultVectorRight,
   [ "IsPlistVectorRep and IsMutable", "IsObject" ],
   function( v, s )
-    MULT_VECTOR_RIGHT_2(v![ELSPOS],s);
-    if ValueOption( "check" ) <> false and not IsSubset( v![BDPOS], v![ELSPOS] ) then
-      Error( "<v> is not defined over its base domain" );
+    if ValueOption( "check" ) <> false and
+       not ( IsInt( s ) or s in v![BDPOS] ) then
+      Error( "<s> must lie in the base domain of <v>" );
     fi;
+    MULT_VECTOR_RIGHT_2( v![ELSPOS], s );
   end );
 
 InstallOtherMethod( MultVectorLeft,
