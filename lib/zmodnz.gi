@@ -1205,6 +1205,6 @@ InstallMethod( DefaultFieldOfMatrixGroup,
 ##  Only primes up to 'MAXSIZE_GF_INTERNAL' have internal FFEs.
 ##
 InstallMethod( AsInternalFFE, [ IsZmodpZObjSmall and IsModulusRep ],
-    x -> x![1] * Z( Characteristic( x ) )^0 );
+    x -> x![1] * One( FamilyObj( x ) ) );
 
 InstallMethod( AsInternalFFE, [ IsZmodpZObjLarge ], ReturnFail );
