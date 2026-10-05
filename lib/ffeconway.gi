@@ -1452,6 +1452,13 @@ FFECONWAY.WriteOverSmallestCommonField := function(v)
             elif d > v[i]![2] then
                 v[i] := FFECONWAY.WriteOverLargerField(v[i],d);
             fi;
+        elif not IsInternalRep(v[i]) then
+            # e.g. 'IsZmodpZObjSmall'; the kernel only handles internal FFEs
+            x := AsInternalFFE(v[i]);
+            if x = fail then
+                return fail;
+            fi;
+            v[i] := x;
         fi;
     od;
     return p^d;
