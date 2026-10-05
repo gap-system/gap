@@ -1437,7 +1437,6 @@ static Obj PowCyc(Obj opL, Obj opR)
         n = LastNCyc;
         exp = (exp % n + n) % n;
         SET_ELM_PLIST( ResultCyc, exp + 1, INTOBJ_INT(1) );
-        CHANGED_BAG( ResultCyc );
         ConvertToBase( LastNCyc );
         pow = Cyclotomic( LastNCyc, 1 );
     }
@@ -1449,7 +1448,6 @@ static Obj PowCyc(Obj opL, Obj opR)
         i = CONST_EXPOS_CYC(opL,2)[1];
         exp = ((exp*(Int)i) % n + n) % n;
         SET_ELM_PLIST( ResultCyc, exp + 1, pow );
-        CHANGED_BAG( ResultCyc );
         ConvertToBase( n );
         pow = Cyclotomic( n, 1 );
     }

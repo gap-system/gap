@@ -68,13 +68,11 @@ static void MultGen(Obj xk, UInt gen, Obj power, Obj dtpols)
         /* if f_{<gen>1},...,f_{<gen>n} are trivial we only have to add
         ** <power> to <xk>[ <gen> ].                                     */
         SET_ELM_PLIST(xk, gen, sum);
-        CHANGED_BAG(xk);
         return;
     }
     copy = ShallowCopyPlist(xk);
     // first add <power> to <xk>[ gen> ].
     SET_ELM_PLIST(xk, gen, sum);
-    CHANGED_BAG(xk);
     sum = ElmPRec( ELM_PLIST(dtpols, gen), evlist );
     sum1 = ElmPRec( ELM_PLIST(dtpols, gen), evlistvec);
     len = LEN_PLIST(sum);
@@ -99,7 +97,6 @@ static void MultGen(Obj xk, UInt gen, Obj power, Obj dtpols)
                               prod);
                 SET_ELM_PLIST(xk, CELM( help, j ),
                               sum2 );
-                CHANGED_BAG(xk);
             }
         }
     }
@@ -216,7 +213,6 @@ static Obj Multiplybound(Obj x, Obj y, Int anf, Int end, Obj dtpols)
             {
                 SET_ELM_PLIST(res, i, ELM_PLIST(y, k) );
                 SET_ELM_PLIST(res, i+1, ELM_PLIST(y, k+1 ) );
-                CHANGED_BAG(res);
                 k+=2;
                 i+=2;
             }
@@ -225,7 +221,6 @@ static Obj Multiplybound(Obj x, Obj y, Int anf, Int end, Obj dtpols)
             {
                 SET_ELM_PLIST(res, i, ELM_PLIST(x, j) );
                 SET_ELM_PLIST(res, i+1, ELM_PLIST(x, j+1) );
-                CHANGED_BAG(res);
                 j+=2;
                 i+=2;
             }
@@ -301,7 +296,6 @@ static Obj Power(Obj x, Obj n, Obj dtpols)
             m = ProdInt( ELM_PLIST(x, i), n );
             SET_ELM_PLIST(res, i, m );
             SET_ELM_PLIST(res, i-1, ELM_PLIST(x, i-1) );
-            CHANGED_BAG( res );
         }
         return res;
     }
@@ -366,7 +360,6 @@ static Obj Solution(Obj x, Obj y, Obj dtpols)
                 m = DiffInt( ELM_PLIST(y, k+1), ELM_PLIST(x, j+1) );
                 SET_ELM_PLIST( res, i, ELM_PLIST(x, j) );
                 SET_ELM_PLIST( res, i+1, m );
-                CHANGED_BAG( res );
                 i+=2; j+=2; k+=2;
             }
             else if ( CELM(x, j) < CELM(y, k) )
@@ -374,14 +367,12 @@ static Obj Solution(Obj x, Obj y, Obj dtpols)
                 m = AInvInt( ELM_PLIST(x, j+1) );
                 SET_ELM_PLIST( res, i, ELM_PLIST(x, j) );
                 SET_ELM_PLIST( res, i+1, m );
-                CHANGED_BAG( res );
                 i+=2; j+=2;
             }
             else
             {
                 SET_ELM_PLIST( res, i, ELM_PLIST(y, k) );
                 SET_ELM_PLIST( res, i+1, ELM_PLIST(y, k+1) );
-                CHANGED_BAG( res );
                 i+=2; k+=2;
             }
         }
@@ -391,7 +382,6 @@ static Obj Solution(Obj x, Obj y, Obj dtpols)
                 m = AInvInt( ELM_PLIST( x, j+1 ) );
                 SET_ELM_PLIST( res, i, ELM_PLIST(x, j) );
                 SET_ELM_PLIST( res, i+1, m );
-                CHANGED_BAG( res );
                 i+=2; j+=2;
             }
         else
@@ -399,7 +389,6 @@ static Obj Solution(Obj x, Obj y, Obj dtpols)
             {
                 SET_ELM_PLIST( res, i ,ELM_PLIST(y, k) );
                 SET_ELM_PLIST( res, i+1, ELM_PLIST(y, k+1) );
-                CHANGED_BAG( res );
                 i+=2; k+=2;
             }
         SET_LEN_PLIST( res, i-1 );
@@ -434,7 +423,6 @@ static Obj Solution(Obj x, Obj y, Obj dtpols)
                 m = DiffInt( ELM_PLIST(y, k+1), ELM_PLIST(xk, i) );
                 SET_ELM_PLIST(res, j, INTOBJ_INT(i) );
                 SET_ELM_PLIST(res, j+1, m);
-                CHANGED_BAG(res);
                 MultGen(xk, i, m, dtpols);
                 j+=2;
             }
@@ -445,7 +433,6 @@ static Obj Solution(Obj x, Obj y, Obj dtpols)
             m = AInvInt( ELM_PLIST(xk, i) );
             SET_ELM_PLIST( res, j, INTOBJ_INT(i) );
             SET_ELM_PLIST( res, j+1, m );
-            CHANGED_BAG(res);
             MultGen(xk, i, m, dtpols);
             j+=2;
         }
@@ -521,7 +508,6 @@ static Obj Multiplyboundred(Obj x, Obj y, UInt anf, UInt end, Obj pcp)
         {
             mod = ModInt( ELM_PLIST(res, i), c );
             SET_ELM_PLIST( res, i, mod);
-            CHANGED_BAG(res);
         }
     return res;
 }
@@ -553,7 +539,6 @@ static Obj Powerred(Obj x, Obj n, Obj pcp)
         {
             mod = ModInt( ELM_PLIST(res, i), c );
             SET_ELM_PLIST( res, i, mod);
-            CHANGED_BAG(res);
         }
     return res;
 }
@@ -585,7 +570,6 @@ static Obj Solutionred(Obj x, Obj y, Obj pcp)
         {
             mod = ModInt( ELM_PLIST(res, i), c );
             SET_ELM_PLIST( res, i, mod);
-            CHANGED_BAG(res);
         }
     return res;
 }
@@ -617,7 +601,6 @@ static Obj Commutatorred(Obj x, Obj y, Obj pcp)
         {
             mod = ModInt( ELM_PLIST(res, i), c );
             SET_ELM_PLIST( res, i, mod);
-            CHANGED_BAG(res);
         }
     return res;
 }
@@ -649,7 +632,6 @@ static Obj Conjugatered(Obj x, Obj y, Obj pcp)
         {
             mod = ModInt( ELM_PLIST(res, i), c );
             SET_ELM_PLIST( res, i, mod);
-            CHANGED_BAG(res);
         }
     return res;
 }
@@ -742,7 +724,6 @@ static void ReduceWord(Obj x, Obj pcp)
                 // reduce the exponent of the generator <gen>
                 mod = ModInt( quo, potenz );
                 SET_ELM_PLIST(x, i+1, mod);
-                CHANGED_BAG(x);
                 if ( gen <= lenpow            &&
                      (prel = ELM_PLIST( powers, gen) )  != 0  )
                 {
@@ -762,7 +743,6 @@ static void ReduceWord(Obj x, Obj pcp)
                     len = LEN_PLIST(help);
                     for (j=1; j<=len; j++)
                         SET_ELM_PLIST(x, j+i+1, ELM_PLIST(help, j) );
-                    CHANGED_BAG(x);
                     flag = i+len+1;
                     /*SET_LEN_PLIST(x, flag);*/
                 }

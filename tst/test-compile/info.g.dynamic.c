@@ -61,7 +61,6 @@ static Obj  HdlrFunc2 (
   SET_LEN_PLIST( t_2, 1 );
   t_3 = MakeString( "Do not print" );
   SET_ELM_PLIST( t_2, 1, t_3 );
-  CHANGED_BAG(t_2);
   InfoDoPrint( t_1, INTOBJ_INT(2), t_2 );
  }
  
@@ -74,7 +73,6 @@ static Obj  HdlrFunc2 (
   SET_LEN_PLIST( t_2, 1 );
   t_3 = MakeString( "print this A" );
   SET_ELM_PLIST( t_2, 1, t_3 );
-  CHANGED_BAG(t_2);
   InfoDoPrint( t_1, INTOBJ_INT(1), t_2 );
  }
  
@@ -118,7 +116,6 @@ static Obj  HdlrFunc2 (
   SET_LEN_PLIST( t_2, 1 );
   t_3 = MakeString( "Do not print" );
   SET_ELM_PLIST( t_2, 1, t_3 );
-  CHANGED_BAG(t_2);
   InfoDoPrint( t_1, INTOBJ_INT(3), t_2 );
  }
  
@@ -131,7 +128,6 @@ static Obj  HdlrFunc2 (
   SET_LEN_PLIST( t_2, 1 );
   t_3 = MakeString( "print this B" );
   SET_ELM_PLIST( t_2, 1, t_3 );
-  CHANGED_BAG(t_2);
   InfoDoPrint( t_1, INTOBJ_INT(2), t_2 );
  }
  
@@ -144,13 +140,10 @@ static Obj  HdlrFunc2 (
   SET_LEN_PLIST( t_2, 3 );
   t_3 = MakeString( "print " );
   SET_ELM_PLIST( t_2, 1, t_3 );
-  CHANGED_BAG(t_2);
   t_3 = MakeString( "this " );
   SET_ELM_PLIST( t_2, 2, t_3 );
-  CHANGED_BAG(t_2);
   t_3 = MakeString( "C" );
   SET_ELM_PLIST( t_2, 3, t_3 );
-  CHANGED_BAG(t_2);
   InfoDoPrint( t_1, INTOBJ_INT(1), t_2 );
  }
  

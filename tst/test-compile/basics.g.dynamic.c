@@ -523,12 +523,9 @@ static Obj  HdlrFunc3 (
  SET_LEN_PLIST( t_3, 7 );
  t_4 = MakeString( "x" );
  SET_ELM_PLIST( t_3, 1, t_4 );
- CHANGED_BAG( t_3 );
  t_4 = True;
  SET_ELM_PLIST( t_3, 2, t_4 );
- CHANGED_BAG( t_3 );
  SET_ELM_PLIST( t_3, 3, l_vararg__fun );
- CHANGED_BAG( t_3 );
  SET_ELM_PLIST( t_3, 4, INTOBJ_INT(4) );
  SET_ELM_PLIST( t_3, 5, INTOBJ_INT(5) );
  SET_ELM_PLIST( t_3, 6, INTOBJ_INT(6) );
@@ -687,12 +684,9 @@ static Obj  HdlrFunc3 (
  SET_LEN_PLIST( t_1, 7 );
  t_2 = MakeString( "x" );
  SET_ELM_PLIST( t_1, 1, t_2 );
- CHANGED_BAG( t_1 );
  t_2 = True;
  SET_ELM_PLIST( t_1, 2, t_2 );
- CHANGED_BAG( t_1 );
  SET_ELM_PLIST( t_1, 3, l_vararg__fun );
- CHANGED_BAG( t_1 );
  SET_ELM_PLIST( t_1, 4, INTOBJ_INT(4) );
  SET_ELM_PLIST( t_1, 5, INTOBJ_INT(5) );
  SET_ELM_PLIST( t_1, 6, INTOBJ_INT(6) );
@@ -1523,12 +1517,10 @@ static Obj  HdlrFunc9 (
  t_3 = NEW_PLIST( T_PLIST, 2 );
  SET_LEN_PLIST( t_3, 2 );
  SET_ELM_PLIST( t_2, 4, t_3 );
- CHANGED_BAG( t_2 );
  SET_ELM_PLIST( t_3, 1, INTOBJ_INT(4) );
  SET_ELM_PLIST( t_3, 2, INTOBJ_INT(5) );
  t_3 = NEW_PREC( 1 );
  SET_ELM_PLIST( t_2, 5, t_3 );
- CHANGED_BAG( t_2 );
  t_4 = (Obj)R_x;
  t_5 = NEW_PLIST( T_PLIST, 2 );
  SET_LEN_PLIST( t_5, 2 );
@@ -1536,7 +1528,6 @@ static Obj  HdlrFunc9 (
  SET_ELM_PLIST( t_5, 1, INTOBJ_INT(6) );
  t_6 = NEW_PREC( 0 );
  SET_ELM_PLIST( t_5, 2, t_6 );
- CHANGED_BAG( t_5 );
  SortPRecRNam( t_6 );
  SortPRecRNam( t_3 );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {

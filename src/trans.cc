@@ -934,7 +934,6 @@ static Obj FuncKERNEL_TRANS(Obj self, Obj f, Obj n)
         if (pttmp[j - 1] == 0) {
             nr++;
             SET_ELM_PLIST(ker, j, NEW_PLIST(T_PLIST_CYC_SSORT, 1));
-            CHANGED_BAG(ker);
             pttmp = AddrTmpTrans();
         }
         AssPlist(ELM_PLIST(ker, j), (Int)++pttmp[j - 1], INTOBJ_INT(i + 1));
@@ -946,7 +945,6 @@ static Obj FuncKERNEL_TRANS(Obj self, Obj f, Obj n)
         SET_ELM_PLIST(ker, ++nr, NEW_PLIST(T_PLIST_CYC_SSORT, 1));
         SET_LEN_PLIST(ELM_PLIST(ker, nr), 1);
         SET_ELM_PLIST(ELM_PLIST(ker, nr), 1, INTOBJ_INT(i + 1));
-        CHANGED_BAG(ker);
     }
     SET_LEN_PLIST(ker, (Int)nr);
     return ker;

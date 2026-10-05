@@ -117,13 +117,11 @@ Obj NAMI_FUNC(Obj func, Int i)
 static inline void SET_STOR_WITH_PROF(Obj prof, UInt8 n)
 {
     SET_ELM_PLIST(prof,4,ObjInt_Int8(n));
-    CHANGED_BAG(prof);
 }
 
 static inline void SET_STOR_WOUT_PROF(Obj prof, UInt8 n)
 {
     SET_ELM_PLIST(prof,5,ObjInt_Int8(n));
-    CHANGED_BAG(prof);
 }
 
 #define LEN_PROF                    5
@@ -941,7 +939,6 @@ Obj ArgStringToList(const Char *nams_c) {
         }
         tmp = MakeImmStringWithLen(nams_c + k, l - k);
         SET_ELM_PLIST( nams_o, i, tmp );
-        CHANGED_BAG( nams_o );
         k = l;
     }
 

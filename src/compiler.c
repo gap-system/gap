@@ -1038,9 +1038,6 @@ static CVar CompFunccallXArgs(Expr expr)
     for ( i = 1; i <= narg; i++ ) {
         argi = CompExpr( ARGI_CALL( expr, i ) );
         Emit( "SET_ELM_PLIST( %c, %d, %c );\n", argl, i, argi );
-        if ( ! HasInfoCVar( argi, W_INT_SMALL ) ) {
-            Emit( "CHANGED_BAG( %c );\n", argl );
-        }
         if ( IS_TEMP_CVAR( argi ) )  FreeTemp( TEMP_CVAR( argi ) );
     }
 
@@ -2358,13 +2355,11 @@ static CVar CompPermExpr(Expr expr)
         Emit( "%c = NEW_PLIST( T_PLIST, %d );\n", lcyc, csize );
         Emit( "SET_LEN_PLIST( %c, %d );\n", lcyc, csize );
         Emit( "SET_ELM_PLIST( %c, %d, %c );\n", lprm, i, lcyc );
-        Emit( "CHANGED_BAG( %c );\n", lprm );
 
         // loop over the entries of the cycle
         for ( j = 1;  j <= csize;  j++ ) {
             val = CompExpr(READ_EXPR(cycle, j - 1));
             Emit( "SET_ELM_PLIST( %c, %d, %c );\n", lcyc, j, val );
-            Emit( "CHANGED_BAG( %c );\n", lcyc );
             if ( IS_TEMP_CVAR(val) )  FreeTemp( TEMP_CVAR(val) );
         }
     }
@@ -2482,7 +2477,6 @@ static void CompListExpr2(CVar list, Expr expr)
         else if (TNUM_EXPR(READ_EXPR(expr, i - 1)) == EXPR_LIST) {
             sub = CompListExpr1(READ_EXPR(expr, i - 1));
             Emit( "SET_ELM_PLIST( %c, %d, %c );\n", list, i, sub );
-            Emit( "CHANGED_BAG( %c );\n", list );
             CompListExpr2(sub, READ_EXPR(expr, i - 1));
             if ( IS_TEMP_CVAR( sub ) )  FreeTemp( TEMP_CVAR( sub ) );
         }
@@ -2491,7 +2485,6 @@ static void CompListExpr2(CVar list, Expr expr)
         else if (TNUM_EXPR(READ_EXPR(expr, i - 1)) == EXPR_REC) {
             sub = CompRecExpr1(READ_EXPR(expr, i - 1));
             Emit( "SET_ELM_PLIST( %c, %d, %c );\n", list, i, sub );
-            Emit( "CHANGED_BAG( %c );\n", list );
             CompRecExpr2(sub, READ_EXPR(expr, i - 1));
             if ( IS_TEMP_CVAR( sub ) )  FreeTemp( TEMP_CVAR( sub ) );
         }
@@ -2500,9 +2493,6 @@ static void CompListExpr2(CVar list, Expr expr)
         else {
             sub = CompExpr(READ_EXPR(expr, i - 1));
             Emit( "SET_ELM_PLIST( %c, %d, %c );\n", list, i, sub );
-            if ( ! HasInfoCVar( sub, W_INT_SMALL ) ) {
-                Emit( "CHANGED_BAG( %c );\n", list );
-            }
             if ( IS_TEMP_CVAR( sub ) )  FreeTemp( TEMP_CVAR( sub ) );
         }
 
@@ -3614,9 +3604,6 @@ static void CompProccallXArgs(Stat stat)
     for ( i = 1; i <= narg; i++ ) {
         argi = CompExpr( ARGI_CALL( stat, i ) );
         Emit( "SET_ELM_PLIST( %c, %d, %c );\n", argl, i, argi );
-        if ( ! HasInfoCVar( argi, W_INT_SMALL ) ) {
-            Emit( "CHANGED_BAG( %c );\n", argl );
-        }
         if ( IS_TEMP_CVAR( argi ) )  FreeTemp( TEMP_CVAR( argi ) );
     }
 
@@ -4933,7 +4920,6 @@ static void CompInfo(Stat stat)
     for ( i = 1;  i <= narg;  i++ ) {
         tmp = CompExpr( ARGI_INFO( stat, i+2 ) );
         Emit( "SET_ELM_PLIST( %c, %d, %c );\n", lst, i, tmp );
-        Emit( "CHANGED_BAG(%c);\n", lst );
         if ( IS_TEMP_CVAR( tmp ) )  FreeTemp( TEMP_CVAR( tmp ) );
     }
     Emit( "InfoDoPrint( %c, %c, %c );\n", sel, lev, lst );

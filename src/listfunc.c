@@ -270,7 +270,6 @@ static Obj FuncAPPEND_LIST_INTR(Obj self, Obj list1, Obj list2)
         for ( i = 1; i <= len2; i++ ) {
             elm = ELMV0_LIST( list2, i );
             SET_ELM_PLIST( list1, i+len1, elm );
-            CHANGED_BAG( list1 );
         }
     }
 
@@ -482,8 +481,7 @@ static Obj FuncPOSITION_SORTED_BY(Obj self, Obj list, Obj val, Obj func)
 #define SORT_CREATE_TEMP_BUFFER(len)  NEW_PLIST( T_PLIST, len + 1000);
 #define SORT_ASS_BUF_TO_LOCAL(buffer, t, i) t = ELM_PLIST(buffer, i);
 #define SORT_ASS_LOCAL_TO_BUF(buffer, i, j) \
-  SET_ELM_PLIST(buffer, i, j); \
-  CHANGED_BAG(buffer);
+  SET_ELM_PLIST(buffer, i, j);
 
 
 #define SORT_FUNC_NAME SORT_LIST
@@ -507,8 +505,7 @@ static Obj FuncPOSITION_SORTED_BY(Obj self, Obj list, Obj val, Obj func)
 #define SORT_LEN_LIST() LEN_PLIST(list)
 #define SORT_ASS_LIST_TO_LOCAL(t, i) t = ELM_PLIST(list, i)
 #define SORT_ASS_LOCAL_TO_LIST(i, j)  \
-  SET_ELM_PLIST(list, i, j); \
-  CHANGED_BAG(list);
+  SET_ELM_PLIST(list, i, j);
 #define SORT_COMP(v, w) LT(v, w)
 #define SORT_FILTER_CHECKS() \
   RESET_FILT_LIST(list, FN_IS_NSORT);
@@ -563,8 +560,7 @@ static Obj FuncPOSITION_SORTED_BY(Obj self, Obj list, Obj val, Obj func)
 #define SORT_LEN_LIST() LEN_PLIST(list)
 #define SORT_ASS_LIST_TO_LOCAL(t, i) t = ELM_PLIST(list, i)
 #define SORT_ASS_LOCAL_TO_LIST(i, j) \
-  SET_ELM_PLIST(list, i, j); \
-  CHANGED_BAG(list);
+  SET_ELM_PLIST(list, i, j);
 #define SORT_COMP(v, w) CALL_2ARGS(func, v, w) == True
 // list is not necc. sorted wrt. \< (any longer)
 #define SORT_FILTER_CHECKS() \
@@ -602,8 +598,7 @@ static Obj FuncPOSITION_SORTED_BY(Obj self, Obj list, Obj val, Obj func)
   t##s = ELM_PLIST(buffer,  2*(i)-1); (void)(t##s)
 #define SORT_ASS_LOCAL_TO_BUF(buffer, i, j) \
   SET_ELM_PLIST(buffer, 2*(i), j); \
-  SET_ELM_PLIST(buffer, 2*(i)-1, j##s); \
-  CHANGED_BAG(buffer);
+  SET_ELM_PLIST(buffer, 2*(i)-1, j##s);
 
 
 
@@ -638,9 +633,7 @@ static Obj FuncPOSITION_SORTED_BY(Obj self, Obj list, Obj val, Obj func)
   t##s = ELM_PLIST(shadow, i);
 #define SORT_ASS_LOCAL_TO_LIST(i, t) \
   SET_ELM_PLIST(list, i, t); \
-  SET_ELM_PLIST(shadow, i, t##s); \
-  CHANGED_BAG(list); \
-  CHANGED_BAG(shadow);
+  SET_ELM_PLIST(shadow, i, t##s);
 #define SORT_COMP(v, w) LT( v, w )
     /* if list was ssorted, then it still will be,
        but, we don't know anything else any more */
@@ -682,9 +675,7 @@ static Obj FuncPOSITION_SORTED_BY(Obj self, Obj list, Obj val, Obj func)
   t##s = ELM_PLIST(shadow, i);
 #define SORT_ASS_LOCAL_TO_LIST(i, t) \
   SET_ELM_PLIST(list, i, t); \
-  SET_ELM_PLIST(shadow, i, t##s); \
-  CHANGED_BAG(list); \
-  CHANGED_BAG(shadow);
+  SET_ELM_PLIST(shadow, i, t##s);
 #define SORT_COMP(v, w) CALL_2ARGS( func, v, w ) == True
 // list is not necc. sorted wrt. \< (any longer)
 #define SORT_FILTER_CHECKS() \
@@ -968,10 +959,8 @@ static Obj FuncOnPairs(Obj self, Obj pair, Obj elm)
     // and enter the images of the points into the result bag
     tmp = POW( ELMV_LIST( pair, 1 ), elm );
     SET_ELM_PLIST( img, 1, tmp );
-    CHANGED_BAG( img );
     tmp = POW( ELMV_LIST( pair, 2 ), elm );
     SET_ELM_PLIST( img, 2, tmp );
-    CHANGED_BAG( img );
 
     return img;
 }
@@ -1029,7 +1018,6 @@ static Obj FuncOnTuples(Obj self, Obj tuple, Obj elm)
     for ( i = LEN_LIST(tuple); 1 <= i; i-- ) {
         tmp = POW( ELMV_LIST( tuple, i ), elm );
         SET_ELM_PLIST( img, i, tmp );
-        CHANGED_BAG( img );
     }
 
     return img;
@@ -1221,7 +1209,6 @@ static Obj FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH(Obj self, Obj digraph)
                     l = LEN_PLIST(comps);
                     SET_ELM_PLIST(comps, l+1, comp);
                     SET_LEN_PLIST(comps, l+1);
-                    CHANGED_BAG(comps);
                     fptr = (UInt *)ADDR_OBJ(frames)+(level-1)*4;
                   }
                 level--;
@@ -1456,7 +1443,7 @@ static Obj FuncLIST_WITH_IDENTICAL_ENTRIES(Obj self, Obj n, Obj obj)
         }
         list = NEW_PLIST(tnum, len);
         for (int i = 1; i <= len; i++) {
-            SET_ELM_PLIST(list, i, obj);
+            SET_ELM_PLIST_RAW(list, i, obj);
         }
         CHANGED_BAG(list);
         SET_LEN_PLIST(list, len);

@@ -392,7 +392,6 @@ Obj FromAtomicList(Obj list)
   MEMBAR_READ();
   for (i=1; i<=len; i++)
     SET_ELM_PLIST(result, i, data[i].obj);
-  CHANGED_BAG(result);
   return result;
 }
 
@@ -933,7 +932,6 @@ static void UpdateThreadRecord(Obj record, Obj tlrecord)
       TLS(tlRecords) = NEW_PLIST(T_PLIST, 1);
       SET_LEN_PLIST(TLS(tlRecords), 1);
       SET_ELM_PLIST(TLS(tlRecords), 1, record);
-      CHANGED_BAG(TLS(tlRecords));
     }
   }
 }

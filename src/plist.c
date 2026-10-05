@@ -1226,7 +1226,7 @@ static Obj ElmsPlist(Obj list, Obj poss)
             }
 
             // assign the element into <elms>
-            SET_ELM_PLIST( elms, i, elm );
+            SET_ELM_PLIST_RAW( elms, i, elm );
 
         }
 
@@ -1274,7 +1274,7 @@ static Obj ElmsPlist(Obj list, Obj poss)
             }
 
             // assign the element to <elms>
-            SET_ELM_PLIST( elms, i, elm );
+            SET_ELM_PLIST_RAW( elms, i, elm );
 
         }
 
@@ -1359,7 +1359,7 @@ static Obj ElmsPlistDense(Obj list, Obj poss)
             elm = ELM_PLIST( list, pos );
 
             // assign the element into <elms>
-            SET_ELM_PLIST( elms, i, elm );
+            SET_ELM_PLIST_RAW( elms, i, elm );
 
         }
 
@@ -1419,7 +1419,7 @@ static Obj ElmsPlistDense(Obj list, Obj poss)
             elm = ELM_PLIST( list, pos );
 
             // assign the element to <elms>
-            SET_ELM_PLIST( elms, i, elm );
+            SET_ELM_PLIST_RAW( elms, i, elm );
 
         }
 
@@ -1492,7 +1492,7 @@ void            AssPlist (
     }
 
     // now perform the assignment
-    SET_ELM_PLIST( list, pos, val );
+    SET_ELM_PLIST_RAW( list, pos, val );
     if ( IS_BAG_REF( val ) )
         CHANGED_BAG( list );
 }
@@ -1776,9 +1776,6 @@ static void AsssPlist(Obj list, Obj poss, Obj vals)
 
         }
 
-        // notify Gasman
-        CHANGED_BAG( list );
-
     }
 
     // special code for ranges
@@ -1812,9 +1809,6 @@ static void AsssPlist(Obj list, Obj poss, Obj vals)
             SET_ELM_PLIST( list, pos, val );
 
         }
-
-        // notify Gasman
-        CHANGED_BAG( list );
 
     }
 }
@@ -2323,7 +2317,7 @@ static void LoadPlist(Obj list)
   UInt i;
   SET_LEN_PLIST(list, LoadUInt());
   for (i = 1; i <= LEN_PLIST(list); i++)
-    SET_ELM_PLIST(list,i, LoadSubObj());
+    SET_ELM_PLIST_RAW(list, i, LoadSubObj());
 }
 #endif
 
