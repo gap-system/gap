@@ -1359,7 +1359,8 @@ each being a record with the following components.
 </Item>
 </List>
 
-At least one of <C>filename</C> and <C>testfiles</C> must be present.
+&GAP; ignores all other components,
+so a package can use components introduced by later &GAP; versions.
 &GAP; versions before 4.17 ignore <C>testfiles</C> and cannot load
 packages with extensions without <C>filename</C>;
 a package using either should therefore need &GAP; 4.17 or newer.
@@ -1950,7 +1951,7 @@ set to <K>true</K>:
 <Log><![CDATA[
 TestDirectory(DirectoriesPackageLibrary("packagename", "tst"), rec(exitGAP := true));
 ]]></Log>
-Test files that need suggested packages can be listed in the
+Test files that need additional packages can be listed in the
 <C>testfiles</C> component of a package extension,
 see Section <Ref Sect="Extensions Provided by a Package"/>;
 <Ref Func="TestDirectory"/> then skips them unless these packages are loaded.

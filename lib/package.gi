@@ -2534,13 +2534,12 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
                          ForAll( r.needed,
                              l -> IsList( l ) and Length( l ) = 2 and
                                   ForAll( l, IsString ) ) and
-                         ( IsBound( r.filename ) or IsBound( r.testfiles ) ) and
                          ( not IsBound( r.filename ) or
                            IsString( r.filename ) ) and
                          ( not IsBound( r.testfiles ) or
                            IsFilenameList( r.testfiles ) ) ),
-        Concatenation( "a list of records with components `needed' and ",
-                       "`filename' or `testfiles' or both" ) );
+        Concatenation( "a list of records with component `needed' and ",
+                       "optional components `filename' and `testfiles'" ) );
     TestOption( record, "AvailabilityTest", IsFunction, "a function" );
     TestOption( record, "BannerFunction", IsFunction, "a function" );
     TestOption( record, "BannerString", IsString, "a string" );

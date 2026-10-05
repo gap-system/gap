@@ -340,14 +340,17 @@ gap> info.Persons := [ rec(
 >   ) ];;
 gap> ValidatePackageInfo(info);
 true
-gap> info.Extensions := [ rec( needed := [ [ "GAPDoc", "1.0" ] ] ) ];;
+gap> info.Extensions := [ rec( needed := [ [ "GAPDoc", "1.0" ] ], unknown := 1 ) ];;
 gap> ValidatePackageInfo(info);
-#E  component `Extensions', if present, must be bound to a list of records wit\
-h components `needed' and `filename' or `testfiles' or both
-false
+true
 gap> info.Extensions[1].testfiles := [ "tst/foo.tst" ];;
 gap> ValidatePackageInfo(info);
 true
+gap> info.Extensions[1].filename := 1;;
+gap> ValidatePackageInfo(info);
+#E  component `Extensions', if present, must be bound to a list of records wit\
+h component `needed' and optional components `filename' and `testfiles'
+false
 gap> Unbind(info.Extensions);
 gap> info.Persons[1].GitHubUsername := 4784;;
 gap> ValidatePackageInfo(info);
