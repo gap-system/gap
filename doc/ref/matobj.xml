@@ -1,7 +1,11 @@
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!--   matobj.xml               GAP documentation        Max Neunhoeffer  -->
 <!--                                                                      -->
-<!--   Copyright (C) 2011 The GAP Group                                   -->
+<!--   Copyright of GAP belongs to its developers, whose names are too    -->
+<!--   numerous to list here. Please refer to the COPYRIGHT file for      -->
+<!--   details.                                                           -->
+<!--                                                                      -->
+<!--   SPDX-License-Identifier: GPL-2.0-or-later                          -->
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
 <Chapter Label="Vector and Matrix Objects">
