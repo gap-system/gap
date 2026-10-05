@@ -59,15 +59,38 @@ void syWinPut(Int fid, const Char * cmd, const Char * str);
 
 /****************************************************************************
 **
-*F  SyWinCmd( <str>, <len> )  . . . . . . . . . . . .  . execute a window cmd
+*F  SyWinSendCmd( <str> ) . . . . . . . send a window command, no answer read
 **
-**  'SyWinCmd' send   the  command <str> to  the   window  handler (<len>  is
-**  ignored).  In the string <str> '@' characters are duplicated, and control
-**  characters  are converted to  '@<chr>', e.g.,  <newline> is converted  to
-**  '@J'.  Then  'SyWinCmd' waits for  the window handlers answer and returns
-**  that string.
+**  'SyWinSendCmd' sends the command <str> to the window handler as
+**  '@w<len>+<str>', duplicating '@' characters and converting control
+**  characters to '@<chr>' as 'syWinPut' does.  The answer is read separately
+**  by 'SyWinBeginAnswer' and the entry readers below, so that the caller can
+**  allocate each result at its known size.  Like 'syWinPut', this is only
+**  meaningful when 'SyWindow' is set.
 */
-const Char * SyWinCmd(const Char * str, UInt len);
+void SyWinSendCmd(const Char * str);
+
+
+/****************************************************************************
+**
+*F  SyWinBeginAnswer() . . . . . . . . . .  read the '@a<len>+' answer header
+*F  SyWinReadEntryKind() . . . . . . . . . .  read the kind of the next entry
+*F  SyWinReadInt() . . . . . . . . . . . . . . . . . . . .  read an 'I' entry
+*F  SyWinReadStrLen() . . . . . . . . . . . . read the length of an 'S' entry
+*F  SyWinReadStr( <dst>, <n> )  . . . . read <n> un-escaped bytes of a string
+*F  SyWinEndAnswer() . . . . . . . . . discard any unread bytes of the answer
+**
+**  Read the answer to the last 'SyWinSendCmd' one entry at a time, so that a
+**  string can be allocated at its known length and read straight into the
+**  bag.  'SyWinBeginAnswer' returns 'FALSE' on a malformed header, and
+**  'SyWinReadEntryKind' returns -1 at the end of the answer.
+*/
+BOOL SyWinBeginAnswer(void);
+Int  SyWinReadEntryKind(void);
+Int  SyWinReadInt(void);
+UInt SyWinReadStrLen(void);
+void SyWinReadStr(UChar * dst, UInt n);
+void SyWinEndAnswer(void);
 
 
 /****************************************************************************
