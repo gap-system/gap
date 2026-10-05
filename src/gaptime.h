@@ -23,7 +23,7 @@
 **
 **  Should be as accurate as possible,  because it  is  used  for  profiling.
 */
-UInt SyTime(void);
+UInt SyTime(void) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

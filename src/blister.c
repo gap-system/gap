@@ -102,14 +102,14 @@
 
 // The following are imported from the GAP level, we have one type for
 // each blist TNUM.
-static Obj TYPE_BLIST_MUT;
-static Obj TYPE_BLIST_IMM;
-static Obj TYPE_BLIST_NSORT_MUT;
-static Obj TYPE_BLIST_NSORT_IMM;
-static Obj TYPE_BLIST_SSORT_MUT;
-static Obj TYPE_BLIST_SSORT_IMM;
-static Obj TYPE_BLIST_EMPTY_MUT;
-static Obj TYPE_BLIST_EMPTY_IMM;
+static Obj TYPE_BLIST_MUT GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_BLIST_IMM GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_BLIST_NSORT_MUT GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_BLIST_NSORT_IMM GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_BLIST_SSORT_MUT GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_BLIST_SSORT_IMM GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_BLIST_EMPTY_MUT GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_BLIST_EMPTY_IMM GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeBlist(Obj list)
 {
@@ -211,7 +211,7 @@ static void LoadBlist(Obj bl)
 **  'CopyBlist' is the function in 'CopyObjFuncs' for boolean lists.
 */
 
-static Obj DoCopyBlist(Obj list, Int mut)
+static Obj DoCopyBlist(Obj list, Int mut) GAP_GC_CANSAFEPOINT
 {
     Obj copy;
 
@@ -231,24 +231,26 @@ static Obj DoCopyBlist(Obj list, Int mut)
 
 #if !defined(USE_THREADSAFE_COPYING)
 
-static Obj CopyBlist(Obj list, Int mut)
+static Obj CopyBlist(Obj list, Int mut) GAP_GC_CANSAFEPOINT
 {
-    Obj copy;
+    Obj copy = 0;
 
     // immutable input is handled by COPY_OBJ
     GAP_ASSERT(IS_MUTABLE_OBJ(list));
 
+    GAP_GC_PUSH1(&copy);
     copy = DoCopyBlist(list, mut);
 
     // leave a forwarding pointer
     PrepareCopy(list, copy);
+    GAP_GC_POP();
     return copy;
 }
 
 #endif // !defined(USE_THREADSAFE_COPYING)
 
 
-static Obj ShallowCopyBlist(Obj list)
+static Obj ShallowCopyBlist(Obj list) GAP_GC_CANSAFEPOINT
 {
   return DoCopyBlist(list, 1);
 }
@@ -369,7 +371,7 @@ static Obj Elm0vBlist(Obj list, Int pos)
 **  'ElmBlist'   is  the  function  in    'ElmListFuncs'  for boolean  lists.
 **  'ElmvBlist' is the function in 'ElmvListFuncs' for boolean lists.
 */
-static Obj ElmBlist(Obj list, Int pos)
+static Obj ElmBlist(Obj list, Int pos) GAP_GC_CANSAFEPOINT
 {
 
     // check the position
@@ -410,9 +412,9 @@ static Obj ElmvBlist(Obj list, Int pos)
 **
 **  'ElmsBlist' is the function in 'ElmsListFuncs' for boolean lists.
 */
-static Obj ElmsBlist(Obj list, Obj poss)
+static Obj ElmsBlist(Obj list, Obj poss) GAP_GC_CANSAFEPOINT
 {
-    Obj                 elms;           // selected sublist, result
+    Obj                 elms = 0;       // selected sublist, result
     Int                 lenList;        // length of <list>
     Int                 lenPoss;        // length of <positions>
     Int                 pos;            // <position> as integer
@@ -420,6 +422,8 @@ static Obj ElmsBlist(Obj list, Obj poss)
     UInt                block;          // one block of <elms>
     UInt                bit;            // one bit of a block
     UInt                i;              // loop variable
+
+    GAP_GC_PUSH1(&elms);
 
     // general code
     if ( ! IS_RANGE(poss) ) {
@@ -515,6 +519,7 @@ static Obj ElmsBlist(Obj list, Obj poss)
             }
         }
     }
+    GAP_GC_POP();
     return elms;
 }
 
@@ -526,7 +531,7 @@ static Obj ElmsBlist(Obj list, Obj poss)
 **  This is to avoid unpacking of the boolean list to a plain list when <pos>
 **  is larger or equal to the length of <blist>.
 */
-static void UnbBlist(Obj blist, Int pos)
+static void UnbBlist(Obj blist, Int pos) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(IS_MUTABLE_OBJ(blist));
     const Int len = LEN_BLIST(blist);
@@ -728,7 +733,7 @@ static Obj PosBlist(Obj list, Obj val, Obj start)
 **
 **  'PlainBlist' is the function in 'PlainListFuncs' for boolean lists.
 */
-static void PlainBlist(Obj list)
+static void PlainBlist(Obj list) GAP_GC_CANSAFEPOINT
 {
     Int                 len;            // length of <list>
     UInt                i;              // loop variable
@@ -948,7 +953,7 @@ static BOOL IsBlist(Obj list)
 **  boolean lists into the compact representation of type 'T_BLIST' described
 **  above.
 */
-static BOOL IsBlistConv(Obj list)
+static BOOL IsBlistConv(Obj list) GAP_GC_CANSAFEPOINT
 {
     BOOL                isBlist;        // result of the test
     Int                 len;            // logical length of the list
@@ -1027,7 +1032,7 @@ static UInt SizeBlist(Obj blist)
 **  otherwise.  A value is a   boolean list if  it is  a lists without  holes
 **  containing only  'true' and 'false'.
 */
-static Obj IsBlistFilt;
+static Obj IsBlistFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_BLIST(Obj self, Obj val)
 {
@@ -1048,7 +1053,7 @@ static Obj FiltIS_BLIST(Obj self, Obj val)
 **  otherwise.  A value is a   boolean list if  it is  a lists without  holes
 **  containing only  'true' and 'false'.
 */
-static Obj FuncIS_BLIST_CONV(Obj self, Obj val)
+static Obj FuncIS_BLIST_CONV(Obj self, Obj val) GAP_GC_CANSAFEPOINT
 {
     // let 'IsBlistConv' do the work
     return IsBlistConv( val ) ? True : False;
@@ -1060,7 +1065,7 @@ static Obj FuncIS_BLIST_CONV(Obj self, Obj val)
 **
 *F  FiltIS_BLIST_REP( <self>, <obj> ) . . test if value is a boolean list rep
 */
-static Obj IsBlistRepFilt;
+static Obj IsBlistRepFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_BLIST_REP(Obj self, Obj obj)
 {
@@ -1074,7 +1079,7 @@ static Obj FiltIS_BLIST_REP(Obj self, Obj obj)
 **
 **  'FuncSIZE_BLIST' implements the internal function 'SizeBlist'
 */
-static Obj FuncSIZE_BLIST(Obj self, Obj blist)
+static Obj FuncSIZE_BLIST(Obj self, Obj blist) GAP_GC_CANSAFEPOINT
 {
     RequireBlist(SELF_NAME, blist);
     return INTOBJ_INT(SizeBlist(blist));
@@ -1098,17 +1103,21 @@ static Obj FuncSIZE_BLIST(Obj self, Obj blist)
 **  arbitrary list that has no holes.
 */
 
-static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub);
+static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub)
+    GAP_GC_CANSAFEPOINT;
 
-static Obj FuncBLIST_LIST(Obj self, Obj list, Obj sub)
+static Obj FuncBLIST_LIST(Obj self, Obj list, Obj sub) GAP_GC_CANSAFEPOINT
 {
     RequireSmallList(SELF_NAME, list);
     RequireSmallList(SELF_NAME, sub);
 
-    Obj blist = NEW_BLIST(LEN_LIST(list));
+    Obj blist = 0;
+    GAP_GC_PUSH1(&blist);
+    blist = NEW_BLIST(LEN_LIST(list));
 
     FuncUNITE_BLIST_LIST(self, list, blist, sub);
 
+    GAP_GC_POP();
     return blist;
 }
 
@@ -1127,9 +1136,9 @@ static Obj FuncBLIST_LIST(Obj self, Obj list, Obj sub)
 **  same as in <list>.
 **
 */
-static Obj FuncLIST_BLIST(Obj self, Obj list, Obj blist)
+static Obj FuncLIST_BLIST(Obj self, Obj list, Obj blist) GAP_GC_CANSAFEPOINT
 {
-    Obj                 sub;            // handle of the result
+    Obj                 sub = 0;        // handle of the result
     Int                 len;            // logical length of the list
     UInt                n;              // number of bits in blist
     UInt                nn;
@@ -1141,6 +1150,8 @@ static Obj FuncLIST_BLIST(Obj self, Obj list, Obj blist)
 
     // compute the number of 'true'-s
     n = SizeBlist(blist);
+
+    GAP_GC_PUSH1(&sub);
 
     // make the sublist (we now know its size exactly)
     sub = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(list), T_PLIST, n );
@@ -1158,6 +1169,7 @@ static Obj FuncLIST_BLIST(Obj self, Obj list, Obj blist)
     }
 
     // return the sublist
+    GAP_GC_POP();
     return sub;
 }
 
@@ -1169,7 +1181,7 @@ static Obj FuncLIST_BLIST(Obj self, Obj list, Obj blist)
 */
 static Obj FuncPositionNthTrueBlist(
 
-    Obj self, Obj blist, Obj Nth)
+    Obj self, Obj blist, Obj Nth) GAP_GC_CANSAFEPOINT
 {
     UInt                nrb;
     Int                 pos, i;
@@ -1217,6 +1229,7 @@ static Obj FuncPositionNthTrueBlist(
 **  is a subset of <blist1> if '<blist2>[<i>] >= <blist1>[<i>]' for all <i>.
 */
 static Obj FuncIS_SUB_BLIST(Obj self, Obj blist1, Obj blist2)
+    GAP_GC_CANSAFEPOINT
 {
     const UInt *        ptr1;           // pointer to the first argument
     const UInt *        ptr2;           // pointer to the second argument
@@ -1254,6 +1267,7 @@ static Obj FuncIS_SUB_BLIST(Obj self, Obj blist1, Obj blist2)
 **  assigning '<blist1>[<i>] := <blist1>[<i>] or <blist2>[<i>]' for all <i>.
 */
 static Obj FuncUNITE_BLIST(Obj self, Obj blist1, Obj blist2)
+    GAP_GC_CANSAFEPOINT
 {
     UInt *              ptr1;           // pointer to the first argument
     const UInt *        ptr2;           // pointer to the second argument
@@ -1296,6 +1310,7 @@ static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub)
     Int                 lenSub;         // logical length of sublist
     Int                 i, j, k, l;     // loop variables
     Int                 s, t;           // elements of a range
+    Obj                 elm = 0, prev = 0;
 
     RequireSmallList(SELF_NAME, list);
     RequireBlist(SELF_NAME, blist);
@@ -1310,6 +1325,8 @@ static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub)
     if (lenList == 0 || lenSub == 0) {
         return 0;
     }
+
+    GAP_GC_PUSH4(&list, &sub, &elm, &prev);
 
     // for a range as subset of a range, it is extremely easy
     if ( IS_RANGE(list) && IS_RANGE(sub) && GET_INC_RANGE( list ) == 1
@@ -1375,7 +1392,7 @@ static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub)
 
             // run over the elements of <sub> and search for the elements
             for (l = 1; l <= lenSub; l++) {
-                Obj elm = ELMV0_LIST(sub, l);
+                elm = ELMV0_LIST(sub, l);
                 if (elm != 0) {
 
                     // perform the binary search to find the position
@@ -1409,7 +1426,7 @@ static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub)
             block = 0;
             bit   = 1;
             for ( l = 1; l <= lenList; l++ ) {
-                Obj elm = ELM_LIST(list, l);
+                elm = ELM_LIST(list, l);
 
                 // test if <list>[<l>] is in <sub>
                 while (k <= lenSub && LT(ELM_PLIST(sub, k), elm))
@@ -1447,7 +1464,6 @@ static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub)
         k = 1;
         block = 0;
         bit   = 1;
-        Obj elm = 0, prev;
         for ( l = 1; l <= lenList; l++ ) {
             prev = elm;
             elm = ELM_LIST(list, l);
@@ -1486,6 +1502,7 @@ static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub)
     }
 
     // return
+    GAP_GC_POP();
     return 0;
 }
 
@@ -1503,6 +1520,7 @@ static Obj FuncUNITE_BLIST_LIST(Obj self, Obj list, Obj blist, Obj sub)
 **  assigning '<blist1>[<i>] := <blist1>[<i>] and <blist2>[<i>]' for all <i>.
 */
 static Obj FuncINTER_BLIST(Obj self, Obj blist1, Obj blist2)
+    GAP_GC_CANSAFEPOINT
 {
     UInt *              ptr1;           // pointer to the first argument
     const UInt *        ptr2;           // pointer to the second argument
@@ -1536,6 +1554,7 @@ static Obj FuncINTER_BLIST(Obj self, Obj blist1, Obj blist2)
 **  '<blist1>[<i>] := <blist1>[<i>] and not <blist2>[<i>]' for all <i>.
 */
 static Obj FuncSUBTR_BLIST(Obj self, Obj blist1, Obj blist2)
+    GAP_GC_CANSAFEPOINT
 {
     UInt *              ptr1;           // pointer to the first argument
     const UInt *        ptr2;           // pointer to the second argument
@@ -1569,7 +1588,7 @@ static Obj FuncSUBTR_BLIST(Obj self, Obj blist1, Obj blist2)
 **  The lists must have the same length.
 */
 
-static Obj FuncMEET_BLIST(Obj self, Obj blist1, Obj blist2)
+static Obj FuncMEET_BLIST(Obj self, Obj blist1, Obj blist2) GAP_GC_CANSAFEPOINT
 {
     const UInt *        ptr1;           // pointer to the first argument
     const UInt *        ptr2;           // pointer to the second argument
@@ -1600,7 +1619,7 @@ static Obj FuncMEET_BLIST(Obj self, Obj blist1, Obj blist2)
 **  and vice versa.
 */
 
-static Obj FuncFLIP_BLIST(Obj self, Obj blist)
+static Obj FuncFLIP_BLIST(Obj self, Obj blist) GAP_GC_CANSAFEPOINT
 {
     RequireBlist(SELF_NAME, blist);
     RequireMutable(SELF_NAME, blist, "boolean list");
@@ -1634,7 +1653,7 @@ static Obj FuncFLIP_BLIST(Obj self, Obj blist)
 **  'ClearAllBlist' changes every value in the blist <blist> to false.
 */
 
-static Obj FuncCLEAR_ALL_BLIST(Obj self, Obj blist)
+static Obj FuncCLEAR_ALL_BLIST(Obj self, Obj blist) GAP_GC_CANSAFEPOINT
 {
     RequireBlist(SELF_NAME, blist);
     RequireMutable(SELF_NAME, blist, "boolean list");
@@ -1662,7 +1681,7 @@ static Obj FuncCLEAR_ALL_BLIST(Obj self, Obj blist)
 **  'SetAllBlist' changes every value in the blist <blist> to true.
 */
 
-static Obj FuncSET_ALL_BLIST(Obj self, Obj blist)
+static Obj FuncSET_ALL_BLIST(Obj self, Obj blist) GAP_GC_CANSAFEPOINT
 {
     RequireBlist(SELF_NAME, blist);
     RequireMutable(SELF_NAME, blist, "boolean list");
@@ -2014,7 +2033,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFiltsFromTable( GVarFilts );

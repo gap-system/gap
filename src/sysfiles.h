@@ -25,7 +25,7 @@
 **
 **  This function returns 0 for missing or unreadable files.
 */
-Int4 SyGAPCRC(const Char * name);
+Int4 SyGAPCRC(const Char * name) GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
@@ -33,7 +33,7 @@ Int4 SyGAPCRC(const Char * name);
 **
 **  Get the release of the operating system kernel.
 */
-Obj SyGetOsRelease(void);
+Obj SyGetOsRelease(void) GAP_GC_CANSAFEPOINT;
 
 // When true, ignore if any new input from stdin. This is used to stop HPC-GAP
 // from reading stdin while forked subprocesses are running.
@@ -54,7 +54,7 @@ extern UInt FreezeStdin;
 **  '@'  characters are duplicated, and   control characters are converted to
 **  '@<chr>', e.g., <newline> is converted to '@J'.
 */
-void syWinPut(Int fid, const Char * cmd, const Char * str);
+void syWinPut(Int fid, const Char * cmd, const Char * str) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -67,7 +67,7 @@ void syWinPut(Int fid, const Char * cmd, const Char * str);
 **  '@J'.  Then  'SyWinCmd' waits for  the window handlers answer and returns
 **  that string.
 */
-const Char * SyWinCmd(const Char * str, UInt len);
+const Char * SyWinCmd(const Char * str, UInt len) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -76,7 +76,7 @@ const Char * SyWinCmd(const Char * str, UInt len);
 */
 
 
-UInt SySetBuffering(UInt fid);
+UInt SySetBuffering(UInt fid) GAP_GC_CANSAFEPOINT;
 
 void SyRedirectStderrToStdOut(void);
 
@@ -129,7 +129,8 @@ void SyBufSetEOF(Int fid);
 **  If <transparent_compress> is TRUE, files with names ending '.gz' will be
 **  automatically compressed/decompressed using gzip.
 */
-Int SyFopen(const Char * name, const Char * mode, BOOL transparent_compress);
+Int SyFopen(const Char * name, const Char * mode, BOOL transparent_compress)
+    GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -162,7 +163,7 @@ Int SyIsEndOfFile(Int fid);
 **
 */
 
-UInt syStartraw(Int fid);
+UInt syStartraw(Int fid) GAP_GC_CANSAFEPOINT;
 
 void syStopraw(Int fid);
 
@@ -224,7 +225,7 @@ void syStopraw(Int fid);
 **      <ctr>-_ undo a command.
 **      <esc>-T exchange two words.
 */
-Char * SyFgets(Char * line, UInt length, Int fid);
+Char * SyFgets(Char * line, UInt length, Int fid) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -233,7 +234,7 @@ Char * SyFgets(Char * line, UInt length, Int fid);
 **
 **  'SyFputs' is called to put the  <line>  to the file identified  by <fid>.
 */
-void SyFputs(const Char * line, Int fid);
+void SyFputs(const Char * line, Int fid) GAP_GC_CANSAFEPOINT;
 
 
 Int SyRead(Int fid, void * ptr, size_t len);
@@ -266,7 +267,7 @@ UInt SyIsIntr(void);
 **
 *F  SyEchoch( <ch>, <fid> ) . . . . . . . . . . . echo a char to <fid>, local
 */
-Int SyEchoch(Int ch, Int fid);
+Int SyEchoch(Int ch, Int fid) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -296,7 +297,7 @@ Int SyFseek(Int fid, Int pos);
 **  'SyGetch' reads a character from <fid>, which is switch to raw mode if it
 **  is *stdin* or *errin*.
 */
-Int SyGetch(Int fid);
+Int SyGetch(Int fid) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -446,7 +447,7 @@ void InitWindowSize(void);
 */
 Int HasAvailableBytes(UInt fid);
 
-Char * SyFgetsSemiBlock(Char * line, UInt length, Int fid);
+Char * SyFgetsSemiBlock(Char * line, UInt length, Int fid) GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
@@ -455,7 +456,7 @@ Char * SyFgetsSemiBlock(Char * line, UInt length, Int fid);
 **   - read file given by <fid> into a string
 */
 
-Obj SyReadStringFid(Int fid);
+Obj SyReadStringFid(Int fid) GAP_GC_CANSAFEPOINT;
 
 
 // A bug in memmove() provided by glibc 2.21 to 2.27 on 32-bit systems can lead

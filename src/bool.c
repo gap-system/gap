@@ -30,7 +30,7 @@
 **
 **   'True' is the value 'true'.
 */
-Obj True;
+Obj True GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
@@ -39,7 +39,7 @@ Obj True;
 **
 **  'False' is the value 'false'.
 */
-Obj False;
+Obj False GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
@@ -48,7 +48,7 @@ Obj False;
 **
 **  'Fail' is the value 'fail'.
 */
-Obj Fail;
+Obj Fail GAP_GC_GLOBALLY_ROOTED;
 
 /****************************************************************************
 **
@@ -58,7 +58,7 @@ Obj Fail;
 **  where the kernel cannot handle a null reference easily. This object is
 **  never exposed to GAP code and only used within the kernel.
 */
-Obj Undefined;
+Obj Undefined GAP_GC_GLOBALLY_ROOTED;
 
 
 
@@ -71,7 +71,7 @@ Obj Undefined;
 **
 **  'TypeBool' is the function in 'TypeObjFuncs' for boolean values.
 */
-static Obj TYPE_BOOL;
+static Obj TYPE_BOOL GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeBool(Obj val)
 {
@@ -142,7 +142,7 @@ static Int LtBool(Obj boolL, Obj boolR)
 **  'IsBool'  returns  'true'  if  <obj>  is   a boolean  value  and  'false'
 **  otherwise.
 */
-static Obj IsBoolFilt;
+static Obj IsBoolFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_BOOL(Obj self, Obj obj)
 {
@@ -380,9 +380,11 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
-    Obj             tmp;
+    Obj tmp = 0;
+
+    GAP_GC_PUSH1(&tmp);
 
     // init filters and functions
     InitGVarFiltsFromTable( GVarFilts );
@@ -418,6 +420,8 @@ static Int InitLibrary (
     SET_HDLR_FUNC( tmp, 2, ReturnFail2);
     SET_HDLR_FUNC( tmp, 3, ReturnFail3);
     AssReadOnlyGVar( GVarName( "RETURN_FAIL" ), tmp );
+
+    GAP_GC_POP();
 
     return 0;
 }

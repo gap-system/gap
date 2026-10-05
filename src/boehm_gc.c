@@ -42,7 +42,7 @@
 Int SyStorKill;
 
 // fill in the data "behind" bags
-struct OpaqueBag {
+struct GAP_GC_TRACKED_TYPE OpaqueBag {
     void * body;
 #ifdef HPCGAP
     void * region;
@@ -55,7 +55,7 @@ struct OpaqueBag {
 
 #ifndef WARD_ENABLED
 
-static inline Bag * DATA(BagHeader * bag)
+static inline Bag * DATA(BagHeader * bag) GAP_GC_NOTSAFEPOINT
 {
     return (Bag *)(((char *)bag) + sizeof(BagHeader));
 }
