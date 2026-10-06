@@ -1,7 +1,7 @@
 #
 # Tests for functions defined in src/objects.c
 #
-#@local x, t1c, t2c, t1p, t2p
+#@local x, y, t1c, t2c, t1p, t2p, tm
 gap> START_TEST("kernel/objects.tst");
 
 #
@@ -69,6 +69,17 @@ Error, PosObj Element: <PosObj>![2] must have an assigned value
 gap> x![4];
 Error, PosObj Element: <PosObj>![4] must have an assigned value
 
+# the type decides whether the resulting object is mutable
+gap> tm := NewType(NewFamily("MockFamily"), IsPositionalObjectRep and IsMutable);;
+gap> x := MakeImmutable([ 1 ]);;
+gap> SET_TYPE_POSOBJ(x, tm);;
+gap> IsMutable(x);
+true
+gap> x := MakeImmutable([ 1 ]);;
+gap> SET_TYPE_POSOBJ(x, t2p);;
+gap> IsMutable(x);
+false
+
 #
 # CLONE_OBJ
 #
@@ -90,6 +101,22 @@ Error, CLONE_OBJ() cannot overwrite public objects
 gap> CLONE_OBJ(x, x);
 gap> # TODO: overwriting an immutable object via CLONE_OBJ should probably
 gap> # not be allowed, but InstallValue relies on it...
+#@fi
+
+# the clone has the mutability of the source
+gap> x := [ 1 ];; y := MakeImmutable([ 2 ]);;
+gap> CLONE_OBJ(x, y);
+gap> x; IsMutable(x);
+[ 2 ]
+false
+#@if not IsHPCGAP
+gap> x := [ [ 1 ] ];;
+gap> CLONE_OBJ(y, x);
+gap> y; IsMutable(y); IsMutable(y[1]); IsIdenticalObj(x[1], y[1]);
+[ [ 1 ] ]
+true
+true
+false
 #@fi
 
 #

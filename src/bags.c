@@ -10,7 +10,11 @@
 
 #include "error.h"
 #include "gasman.h"
-#include "objects.h"    // HACK: for FIRST_IMM_MUT_TNUM; remove this later
+#include "objects.h"
+
+#ifdef HPCGAP
+#include "hpc/guards.h"
+#endif
 
 /****************************************************************************
 **
@@ -24,15 +28,29 @@ TNumInfoBags InfoBags[NUM_TYPES];
 UInt8 SizeAllBags;
 
 
+// An object which records its mutability in its type, such as a compressed
+// vector, needs the flag once it turns into a list or record.
+static void KeepMutability(Bag bag, UInt new_type)
+{
+    if (new_type < FIRST_IMM_MUT_TNUM || LAST_IMM_MUT_TNUM < new_type)
+        return;
+    if (!IS_MUTABLE_OBJ(bag))
+        SET_OBJ_FLAG(bag, OBJ_FLAG_IMMUTABLE);
+}
+
 // TODO: perhaps this should become RetypeObj ?
 void RetypeBagSM(Bag bag, UInt new_type)
 {
+    KeepMutability(bag, new_type);
     RetypeBag(bag, new_type);
 }
 
 #ifdef HPCGAP
 void RetypeBagSMIfWritable(Bag bag, UInt new_type)
 {
-    RetypeBagIfWritable(bag, new_type);
+    if (!CheckWriteAccess(bag))
+        return;
+    KeepMutability(bag, new_type);
+    RetypeBag(bag, new_type);
 }
 #endif

@@ -241,6 +241,8 @@ void SET_TYPE_OBJ(Obj obj, Obj type)
 #ifdef HPCGAP
         MEMBAR_WRITE();
 #endif
+        // from here on <type> decides whether <obj> is mutable
+        CLEAR_OBJ_FLAG(obj, OBJ_FLAG_IMMUTABLE);
         RetypeBag(obj, T_POSOBJ);
         SET_TYPE_POSOBJ(obj, type);
         CHANGED_BAG(obj);
@@ -1809,6 +1811,12 @@ static Obj FuncCLONE_OBJ(Obj self, Obj dst, Obj src)
     // The following is a no-op unless the region is public
     SET_PTR_BAG(dst, PTR_BAG(tmp));
 #endif
+
+    // the flag is not part of the bag contents copied above
+    if (TEST_OBJ_FLAG(src, OBJ_FLAG_IMMUTABLE))
+        SET_OBJ_FLAG(dst, OBJ_FLAG_IMMUTABLE);
+    else
+        CLEAR_OBJ_FLAG(dst, OBJ_FLAG_IMMUTABLE);
 
     return 0;
 }
