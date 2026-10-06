@@ -193,9 +193,7 @@ DeclareGlobalFunction("SmallRing");
 ##  (This somewhat strange syntax allows the method selection to choose
 ##  a reasonable method for special cases.)
 ##  <Example><![CDATA[
-##  gap> R5 := SmallRing( 5, 2 );; SetName( R5, "R5" );
-##  gap> R7 := SmallRing( 7, 2 );; SetName( R7, "R7" );
-##  gap> R57 := DirectSum( R5, R7 );
+##  gap> DirectSum(SmallRing(5,1),SmallRing(5,1));
 ##  <ring with 2 generators>
 ##  ]]></Example>
 ##  </Description>
@@ -204,79 +202,3 @@ DeclareGlobalFunction("SmallRing");
 ##
 DeclareGlobalFunction( "DirectSum" );
 DeclareOperation( "DirectSumOp", [ IsList, IsRing ] );
-
-#############################################################################
-##
-#A  DirectSumInfo( <R> )
-##
-##  <#GAPDoc Label="DirectSumInfo:rings">
-##  <ManSection>
-##  <Attr Name="DirectSumInfo" Arg='R'/>
-##
-##  <Description>
-##  A direct sum of rings comes equipped with an information record
-##  having fields <A>rings</A>; <A>first</A>;
-##  <A>embeddings</A> and <A>projections</A>.
-##  <P/>
-##  As embeddings and projections are created (see below)
-##  they are stored in the fields <A>embeddings</A> and <A>projections</A>.
-##  <P/>
-##  <Example><![CDATA[
-##  gap> DirectSumInfo( R57 );
-##  rec( embeddings := [  ], first := [ 0, 1, 2 ], projections := [  ],
-##    rings := [ R5, R7 ] )
-##  ]]></Example>
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-DeclareAttribute( "DirectSumInfo", IsRing, "mutable" );
-
-#############################################################################
-##
-#A  Embedding( <R> <i> )
-##
-##  <#GAPDoc Label="Embedding:rings">
-##  <ManSection>
-##  <Attr Name="Embedding" Arg='R i'
-##    Label="for a direct sum of rings and a positive integer"/>
-##
-##  <Description>
-##  If ring <M>R</M> is the direct sum of rings <M>[R_1,\ldots,R_k]</M>
-##  then <A>Embedding(R,i)</A> for <M>1 \leq i \leq k</M> returns a ring
-##  homomorphism mapping <M>R_i</M> into <M>R</M>.
-##  <P/>
-##  <Example><![CDATA[
-##  gap> emb1 := Embedding( R57, 1 );
-##  [ a ] -> [ Aa ]
-##  gap> a := GeneratorsOfRing( R5 )[1];;
-##  gap> ImageElm( emb1, 3*a );
-##  3*Aa
-##  ]]></Example>
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-
-#############################################################################
-##
-#A  Projection( <R> <i> )
-##
-##  <#GAPDoc Label="Projection:rings">
-##  <ManSection>
-##  <Attr Name="Projection" Arg='R i'
-##    Label="for a direct sum of rings and a positive integer"/>
-##
-##  <Description>
-##  If ring <M>R</M> is the direct sum of rings <M>[R_1,\ldots,R_k]</M>
-##  then <A>Projection(R,i)</A> for <M>1 \leq i \leq k</M> returns a ring
-##  homomorphism mapping <M>R</M> onto <M>R_i</M>.
-##  <P/>
-##  <Example><![CDATA[
-##  gap> pro2 := Projection( R57, 2 );
-##  [ Aa, Ba ] -> [ 0*a, a ]
-##  gap> b := GeneratorsOfRing( R57 )[2];;
-##  gap> ImageElm( pro2, 4*b );
-##  4*a
-##  ]]></Example>
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
