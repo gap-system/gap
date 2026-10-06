@@ -34,7 +34,9 @@ static void KeepMutability(Bag bag, UInt new_type)
 {
     if (new_type < FIRST_IMM_MUT_TNUM || LAST_IMM_MUT_TNUM < new_type)
         return;
-    if (!IS_MUTABLE_OBJ(bag))
+    if (IS_MUTABLE_OBJ(bag))
+        CLEAR_OBJ_FLAG(bag, OBJ_FLAG_IMMUTABLE);
+    else
         SET_OBJ_FLAG(bag, OBJ_FLAG_IMMUTABLE);
 }
 
