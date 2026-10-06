@@ -294,7 +294,9 @@ enum {
     OBJ_FLAG_TESTED  = (1 << 1),
 #endif
 
-    // OBJ_FLAG_IMMUTABLE is used to mark immutable objects.
+    // OBJ_FLAG_IMMUTABLE marks immutable objects with a tnum between
+    // FIRST_IMM_MUT_TNUM and LAST_IMM_MUT_TNUM. For any other object it
+    // has no meaning, see IS_MUTABLE_OBJ.
     OBJ_FLAG_IMMUTABLE = (1 << 2),
 };
 
@@ -509,10 +511,8 @@ EXPORT_INLINE BOOL IS_MUTABLE_OBJ(Obj obj)
     UInt tnum = TNUM_OBJ(obj);
     if (/*FIRST_CONSTANT_TNUM <= tnum &&*/ tnum <= LAST_CONSTANT_TNUM)
         return FALSE;
-    if (TEST_OBJ_FLAG(obj, OBJ_FLAG_IMMUTABLE))
-        return FALSE;
     if (tnum <= LAST_IMM_MUT_TNUM)
-        return TRUE;
+        return !TEST_OBJ_FLAG(obj, OBJ_FLAG_IMMUTABLE);
     return ((*IsMutableObjFuncs[tnum])(obj));
 }
 

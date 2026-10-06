@@ -827,8 +827,6 @@ void MakeImmutable( Obj obj )
 {
     if (IS_MUTABLE_OBJ( obj )) {
         (*(MakeImmutableObjFuncs[TNUM_OBJ(obj)]))(obj);
-        SET_OBJ_FLAG(obj, OBJ_FLAG_IMMUTABLE);
-        GAP_ASSERT(!IS_MUTABLE_OBJ(obj));
     }
 }
 

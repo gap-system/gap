@@ -79,6 +79,10 @@ gap> x := MakeImmutable([ 1 ]);;
 gap> SET_TYPE_POSOBJ(x, t2p);;
 gap> IsMutable(x);
 false
+gap> x := Objectify(tm, [ 1 ]);; MakeImmutable(x);; IsMutable(x);
+false
+gap> SetFilterObj(x, IsMutable);; IsMutable(x);
+true
 
 #
 # CLONE_OBJ
