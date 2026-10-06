@@ -918,6 +918,10 @@ BindGlobal("DoNormalClosurePermGroup",function ( G, U )
             chain := SCRRestoredRecord( chain );
         fi;
         result := chain.identity;
+    elif random = 1000 and chain.verified then
+        # ClosureGroup has verified the chain already
+        chain  := SCRRestoredRecord( chain );
+        result := chain.identity;
     elif random = 1000  then
         missing := chain.missing;
         correct := chain.correct;

@@ -1533,6 +1533,7 @@ InstallGlobalFunction( ClosureRandomPermGroup,
                        # contains those points of it which are not in
                        # constructed base
            cnt,        # iteration counter
+           verified,   # boolean; true if the result is known to be correct
            correct;     # boolean; true if a correct base is given
 
 # warning:  options.base should be compatible with BaseOfGroup(G)
@@ -1655,6 +1656,10 @@ InstallGlobalFunction( ClosureRandomPermGroup,
             fi;
         od;
 
+        # reaching options.limit proves the result correct only if G was
+        # correct; ClosureGroup computes the limit from the size of G
+        verified := IsBound(G.verified) and G.verified;
+
         cnt:=0;
         ready := false;
         while not ready do
@@ -1700,6 +1705,7 @@ InstallGlobalFunction( ClosureRandomPermGroup,
                   ready := false;
               elif correct or options.random = 0 or options.random = 1000 then
                   ready := true;
+                  verified := options.random = 1000;
               else
                   result := SCRStrongGenTest2(G,param);
                   if IsPerm(result) and IsOne(result) then
@@ -1730,6 +1736,7 @@ InstallGlobalFunction( ClosureRandomPermGroup,
              G.orbits := orbits;
              G.missing := missing;
              G.base := base;
+             G.verified := verified;
         fi;
 
     fi; # if Length(gens) > 0
