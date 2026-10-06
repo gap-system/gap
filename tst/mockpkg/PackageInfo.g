@@ -79,9 +79,16 @@ Dependencies := rec(
 
 Extensions := [
   # This extension will always be loaded.
-  rec( needed:= [ [ "GAPDoc", ">= 1.6.1" ] ], filename:= "gap/extension1.g" ),
+  rec( needed:= [ [ "GAPDoc", ">= 1.6.1" ] ], filename:= "gap/extension1.g",
+       testfiles:= [ "tst/extension1.tst" ] ),
   # This extension will never be loaded.
-  rec( needed:= [ [ "GAPDoc", "= 0.0.0" ] ], filename:= "gap/extension2.g" ),
+  rec( needed:= [ [ "GAPDoc", "= 0.0.0" ] ], filename:= "gap/extension2.g",
+       testfiles:= [ "tst/extension2.tst", "tst/extension2" ] ),
+  # This extension will always be loaded, and has no file to read.
+  rec( needed:= [ [ "GAPDoc", ">= 1.6.1" ] ],
+       testfiles:= [ "tst/extension3.tst" ] ),
+  # This extension will never be loaded; GAP ignores its unknown component.
+  rec( needed:= [ [ "GAPDoc", "= 0.0.0" ] ], unknown:= true ),
 ],
 
 AvailabilityTest := function()

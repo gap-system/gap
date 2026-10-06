@@ -3,7 +3,7 @@
 ##  Test the (undocumented!) deep thought collector code implemented by
 ##  src/dt.{c,h}, src/dteval.{c,h}, lib/dt.g, lib/rwsdt.gi, lib/rwspcclt.gd
 ##
-#@local g,UnitriangularPcGroup,G,H,iso,k,famG,collG,famH,collH,i,h
+#@local g,UnitriangularPcGroup,G,H,iso,k,famG,collG,famH,collH,i,h,f,c
 gap> START_TEST("dt.tst");
 
 # simple function to create a pc group isomorphic to an unitriangular group,
@@ -119,6 +119,27 @@ gap> Rules(collH);
   f2^-1*f10*f2*f10^-1, f3^-1*f10*f3*f10^-1, f4^-1*f10*f4*f10^-1, 
   f5^-1*f10*f5*f10^-1, f6^-1*f10*f6*f10^-1, f7^-1*f10*f7*f10^-1, 
   f8^-1*f10*f8*f10^-1, f9^-1*f10*f9*f10^-1 ]
+
+# DTMultiply, DTSolution, DTConjugate and DTQuotient must reduce their
+# result when one factor is the empty word
+gap> f := FreeGroup(2);;
+gap> c := DeepThoughtCollector(f, 2);;
+gap> SetPower(c, 1, f.2);
+gap> UpdatePolycyclicCollector(c);
+computing deep thought polynomials  ...
+done
+computing generator orders  ...
+done
+gap> DTMultiply([], [1, 3], c);
+[ 1, 1, 2, 1 ]
+gap> DTMultiply([1, 3], [], c);
+[ 1, 1, 2, 1 ]
+gap> DTSolution([], [1, 3], c);
+[ 1, 1, 2, 1 ]
+gap> DTConjugate([1, 3], [], c);
+[ 1, 1, 2, 1 ]
+gap> DTQuotient([1, 3], [], c);
+[ 1, 1, 2, 1 ]
 
 #
 gap> STOP_TEST("dt.tst");

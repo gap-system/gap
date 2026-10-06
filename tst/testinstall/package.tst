@@ -1,4 +1,4 @@
-#@local entry,equ,pair,sml,oldTermEncoding,pkginfo,info,mockpkgpath,old_warning_level,p,n,filename,IsDateFormatValid,loadinfo,eval_loadinfo
+#@local entry,realroot,equ,pair,sml,oldTermEncoding,pkginfo,info,mockpkgpath,old_warning_level,p,n,filename,IsDateFormatValid,loadinfo,eval_loadinfo
 gap> START_TEST("package.tst");
 
 # CompareVersionNumbers( <supplied>, <required>[, \"equal\"] )
@@ -340,6 +340,18 @@ gap> info.Persons := [ rec(
 >   ) ];;
 gap> ValidatePackageInfo(info);
 true
+gap> info.Extensions := [ rec( needed := [ [ "GAPDoc", "1.0" ] ], unknown := 1 ) ];;
+gap> ValidatePackageInfo(info);
+true
+gap> info.Extensions[1].testfiles := [ "tst/foo.tst" ];;
+gap> ValidatePackageInfo(info);
+true
+gap> info.Extensions[1].filename := 1;;
+gap> ValidatePackageInfo(info);
+#E  component `Extensions', if present, must be bound to a list of records wit\
+h component `needed' and optional components `filename' and `testfiles'
+false
+gap> Unbind(info.Extensions);
 gap> info.Persons[1].GitHubUsername := 4784;;
 gap> ValidatePackageInfo(info);
 #E  component `GitHubUsername', if present, must be bound to a string containi\
@@ -550,6 +562,14 @@ gap> LoadPackage("mockpkg", false);
 oops, should not print here
 true
 #@fi
+
+# test files of the never loaded extension
+gap> realroot := GAP_realpath(Filename(mockpkgpath, ""));;
+gap> List(Filtered(TestFilesOfPendingPackageExtensions(),
+>                  x -> StartsWith(x[1], realroot)),
+>         x -> [ x[1]{[Length(realroot) + 1 .. Length(x[1])]}, x[2] ]);
+[ [ "/tst/extension2", [ [ "GAPDoc", "= 0.0.0" ] ] ], 
+  [ "/tst/extension2.tst", [ [ "GAPDoc", "= 0.0.0" ] ] ] ]
 
 # Test the Cite() command (output changed with GAPDoc 1.6.6 and again with 1.6.7)
 #@if IsPackageMarkedForLoading( "gapdoc", "1.6.7" )

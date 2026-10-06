@@ -2881,10 +2881,10 @@ local r,        #radical
         j:=classrange[j];
       fi;
       # store fixed preimages of reps to avoid any impact of homomorphism.
-      if not IsBound(f!.classpreimgs) then
-        f!.classpreimgs:=[];
+      if not IsBound(G!.radfacclaspreimgs) then
+        G!.radfacclaspreimgs:=[];
       fi;
-      prereps:=f!.classpreimgs;
+      prereps:=G!.radfacclaspreimgs;
       if not IsBound(prereps[j]) then
         prereps[j]:=PreImagesRepresentativeNC(hom,Representative(cl[j]));
       fi;

@@ -1,8 +1,9 @@
 <!--
 %W  ctbl.xml                   GAP documentation               Thomas Breuer
 %W                                                          Alexander Hulpke
-%Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland
-%Y  Copyright (C) 2002 The GAP Group
+%Y  Copyright of GAP belongs to its developers, whose names are too
+%Y  numerous to list here. Please refer to the COPYRIGHT file for details.
+%Y  SPDX-License-Identifier: GPL-2.0-or-later
 
 The documentation in this chapter corresponds to the declarations in the
 library files ctbl.gd, ctblauto.gd, ctblgrp.gd, ctblothe.gd, ctblsolv.gd.

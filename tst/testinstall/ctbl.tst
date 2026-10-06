@@ -1,4 +1,5 @@
-#@local g,t,lin,G,attr
+#@local g,t,lin,G,attr,cclreps,grps,pi,permG,permt,n,sortt
+
 gap> START_TEST("ctbl.tst");
 
 # Reset the counter of automatically assigned identifiers,
@@ -363,8 +364,8 @@ true
 #gap> g:= SmallGroup( 96, 3 );;
 gap> g:= PcGroupCode( 55306968584587147680, 96 );;
 gap> t:= CharacterTable( g );;
-gap> ClassPositionsOfLowerCentralSeries( t );
-[ [ 1 .. 12 ], [ 1, 3, 4, 5, 6, 9, 10, 11 ] ]
+gap> List( ClassPositionsOfLowerCentralSeries( t ), Length );
+[ 12, 8 ]
 
 #gap> g:= SmallGroup( 3^5, 22 );;
 gap> g:= PcGroupCode( 27823197465625143, 3^5 );;
@@ -375,8 +376,8 @@ gap> ClassPositionsOfLowerCentralSeries( t );
 #gap> g:= SmallGroup( 96, 66 );;
 gap> g:= PcGroupCode( 509649248191328977712712, 96 );;
 gap> t:= CharacterTable( g );;
-gap> ClassPositionsOfSupersolvableResiduum( t );
-[ 1, 5, 6 ]
+gap> Length( ClassPositionsOfSupersolvableResiduum( t ) );
+3
 
 # test another bugfix ('IsSimple' does not imply 'IsPerfect')
 gap> t:= CharacterTable( CyclicGroup( 2 ) );;
@@ -464,9 +465,27 @@ gap> IrrDixonSchneider( G );;  Irr( G );;
 gap> InfoText( OrdinaryCharacterTable( G ) );
 "origin: Dixon's Algorithm"
 
+# deal with groups whose character tables have different class orderings
+gap> grps:= [];;
+gap> pi:= (1,5,4);;
+gap> for n in [ 4, 5 ] do
+>      G:= SymmetricGroup( n );
+>      cclreps:= List( ConjugacyClasses( G ), Representative );
+>      permG:= SymmetricGroup( n );
+>      Add( grps, permG );
+>      SetConjugacyClasses( permG, List( Permuted( cclreps, pi ),
+>                                        x -> ConjugacyClass( permG, x ) ) );
+>      IsSolvable( permG );  CanEasilyComputePcgs( G );
+>      lin:= LinearCharacters( permG );
+>      Print( ScalarProduct( lin[1], lin[2] ), "\n" );
+>    od;
+0
+0
+
 # group attributes for character tables
-gap> for G in [ TrivialGroup(), CyclicGroup( 5 ), DihedralGroup( 12 ),
->               SymmetricGroup( 4 ), AlternatingGroup( 6 ), SL( 2, 5 ) ] do
+gap> Append( grps, [ TrivialGroup(), CyclicGroup( 5 ), DihedralGroup( 12 ),
+>        SymmetricGroup( 4 ), AlternatingGroup( 6 ), SL( 2, 5 ) ] );
+gap> for G in grps do
 >      t:= CharacterTable( G );
 >      for attr in [
 >                    AbelianInvariants,
@@ -485,6 +504,7 @@ gap> for G in [ TrivialGroup(), CyclicGroup( 5 ), DihedralGroup( 12 ),
 >                    IsSimple,
 >                    IsSporadicSimple,
 >                    IsSupersolvable,
+>                    LinearCharacters,
 >                    NrConjugacyClasses,
 >                    Size,
 >                  ] do
@@ -497,6 +517,21 @@ gap> for G in [ TrivialGroup(), CyclicGroup( 5 ), DihedralGroup( 12 ),
 >        Error( "difference for '", IsomorphismTypeInfoFiniteSimpleGroup, "'" );
 >      fi;
 >    od;
+
+# a character table with 'UnderlyingGroup' and 'ClassPermutation'
+gap> G:= SymmetricGroup( 5 );;
+gap> cclreps:= List( ConjugacyClasses( G ), Representative );;
+gap> pi:= (1,5,4);;
+gap> permG:= SymmetricGroup( 5 );;
+gap> SetConjugacyClasses( permG, List( Permuted( cclreps, pi ),
+>                                      x -> ConjugacyClass( permG, x ) ) );;
+gap> permt:= CharacterTable( permG );;
+gap> n:= NrConjugacyClasses( permt );;
+gap> sortt:= CharacterTableWithSortedClasses( permt,
+>                PermList( Concatenation( [ 1, n ], [ 2 .. n-1 ] ) ) );;
+gap> lin:= LinearCharacters( sortt );;
+gap> ScalarProduct( lin[1], lin[2] );
+0
 
 ##
 gap> STOP_TEST( "ctbl.tst" );

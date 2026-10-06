@@ -323,7 +323,7 @@ DeclareAttribute( "BaseMat", IsMatrixOrMatrixObj );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "BaseMatDestructive", [ IsMatrixOrMatrixObj ] );
+DeclareOperation( "BaseMatDestructive", [ IsMatrixOrMatrixObj and IsMutable ] );
 
 #############################################################################
 ##
@@ -1147,9 +1147,9 @@ DeclareOperation( "MutableTransposedMatDestructive", [IsMatrixOrMatrixObj and Is
 ##  <Oper Name="TransposedMatDestructive" Arg='mat'/>
 ##
 ##  <Description>
-##  If <A>mat</A> is a mutable matrix, then the transposed
-##  is computed by swapping the entries in <A>mat</A>. In this way <A>mat</A> gets
-##  changed. In all other cases the transposed is computed by <Ref Attr="TransposedMat"/>.
+##  Returns the transposed of the fully mutable matrix <A>mat</A>,
+##  which is computed by swapping the entries in <A>mat</A>.
+##  In this way <A>mat</A> gets changed.
 ##  <Example><![CDATA[
 ##  gap> TransposedMat([[1,2,3],[4,5,6],[7,8,9]]);
 ##  [ [ 1, 4, 7 ], [ 2, 5, 8 ], [ 3, 6, 9 ] ]
@@ -1163,7 +1163,7 @@ DeclareOperation( "MutableTransposedMatDestructive", [IsMatrixOrMatrixObj and Is
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "TransposedMatDestructive", [ IsMatrixOrMatrixObj ] );
+DeclareOperation( "TransposedMatDestructive", [ IsMatrixOrMatrixObj and IsMutable ] );
 
 
 
