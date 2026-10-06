@@ -10,8 +10,114 @@
 
 #############################################################################
 #
-# Dense matrix objects backed by plain lists of plain row lists.
+# Dense matrix objects backed by a list of rows: a compressed matrix over
+# small finite fields, a plain list of plain row lists otherwise.
 #
+
+# The size of the field over which matrices over <basedomain> store their rows
+# as a compressed matrix, or 'fail' if they store plain lists.
+BindGlobal( "GEN_MAT_COMPRESSED_FIELD_SIZE",
+  function( basedomain )
+    local q;
+
+    # excludes e.g. the fields created by 'AlgebraicExtension'
+    if not IsFFECollection( basedomain ) then
+      return fail;
+    fi;
+
+    # Compressed matrices exist over the fields with at most 256 elements,
+    # and a semiring of 2 to 256 FFEs is such a field.
+    q := Size( basedomain );
+    if q = 1 or q > 256 then
+      return fail;
+    fi;
+    return q;
+  end );
+
+# Return <list> in the storage of a matrix over <basedomain> with <ncols>
+# columns: a compressed matrix over GF(q) if 'GEN_MAT_COMPRESSED_FIELD_SIZE'
+# returns q and the matrix is not empty (compressed matrices cannot be empty),
+# and a plain list of plain lists otherwise.
+# <list> is converted in place where possible.
+BindGlobal( "GEN_MAT_CANONICAL_ROWS",
+  function( basedomain, ncols, list )
+    local q, mut;
+
+    q := GEN_MAT_COMPRESSED_FIELD_SIZE( basedomain );
+    if q = fail then
+      # nothing compresses the rows of a plain list over such a domain
+      if IsPlistRep( list ) then
+        return list;
+      fi;
+    elif ncols > 0 and ( ( q = 2 and IsGF2MatrixRep( list ) )
+           or ( Is8BitMatrixRep( list ) and Q_VEC8BIT( list[1] ) = q ) ) then
+      return list;
+    elif ncols = 0 or Length( list ) = 0 then
+      if IsPlistRep( list ) and ForAll( list, IsPlistRep ) then
+        return list;
+      fi;
+      q := fail;
+    fi;
+
+    # The rows of a compressed matrix are locked, so unpack copies of them.
+    mut := IsMutable( list );
+    if q = fail or not IsPlistRep( list ) then
+      list := List( list, PlainListCopy );
+    fi;
+    if q <> fail and ( ForAny( list, row -> Length( row ) <> ncols )
+                       or ConvertToMatrixRepNC( list, q ) <> q ) then
+      Error( "the rows of <list> must have length <ncols> and entries in ",
+             "<basedomain>" );
+    fi;
+    if not mut then
+      MakeImmutable( list );
+    fi;
+    return list;
+  end );
+
+# The rows of the zero matrix with <nrows> rows and <ncols> columns,
+# compressed over GF(<q>).
+BindGlobal( "GEN_MAT_COMPRESSED_ZERO_ROWS",
+  function( q, nrows, ncols )
+    local list, i;
+
+    list := EmptyPlist( nrows );
+    if q = 2 then
+      for i in [ 1 .. nrows ] do
+        list[i] := ZERO_GF2VEC_2( ncols );
+      od;
+      CONV_GF2MAT( list );
+    else
+      for i in [ 1 .. nrows ] do
+        list[i] := ZERO_VEC8BIT_2( q, ncols );
+      od;
+      CONV_MAT8BIT( list, q );
+    fi;
+    return list;
+  end );
+
+# Whether the rows of <M> are stored as 'GEN_MAT_CANONICAL_ROWS' returns
+# them, and are as mutable as <M>.  The methods below rely on this.
+BindGlobal( "GEN_MAT_HAS_CANONICAL_ROWS",
+  function( M )
+    local rows, ncols, mut, q;
+
+    rows := M![GEN_MAT_REP_ROWS_POS];
+    ncols := M![GEN_MAT_REP_NCOLS_POS];
+    mut := IsMutable( M );
+    if IsMutable( rows ) <> mut or ForAny( rows, r -> IsMutable( r ) <> mut )
+       or ForAny( rows, r -> Length( r ) <> ncols ) then
+      return false;
+    fi;
+
+    q := GEN_MAT_COMPRESSED_FIELD_SIZE( M![GEN_MAT_REP_BASEDOMAIN_POS] );
+    if q = fail or ncols = 0 or Length( rows ) = 0 then
+      return IsPlistRep( rows ) and ForAll( rows, IsPlistRep );
+    elif q = 2 then
+      return IsGF2MatrixRep( rows );
+    fi;
+    return Is8BitMatrixRep( rows ) and Q_VEC8BIT( rows[1] ) = q;
+  end );
 
 BindGlobal( "MakeIsGenericMatrixRep",
   function( basedomain, ncols, list, check )
@@ -33,11 +139,6 @@ BindGlobal( "MakeIsGenericMatrixRep",
           NewType( fam, filter and IsMutable ),
       ];
     fi;
-    if IsMutable( list ) then
-      typ := fam!.GenericMatrixRepTypes[2];
-    else
-      typ := fam!.GenericMatrixRepTypes[1];
-    fi;
 
     if check and ValueOption( "check" ) <> false then
       Assert( 0, IsPlistRep( list ) );
@@ -50,6 +151,16 @@ BindGlobal( "MakeIsGenericMatrixRep",
           Error( "the elements in <list> must lie in <basedomain>" );
         fi;
       od;
+    fi;
+
+    # A plain list over a domain without FFEs is stored as it is.
+    if IsFFECollection( basedomain ) or not IsPlistRep( list ) then
+      list := GEN_MAT_CANONICAL_ROWS( basedomain, ncols, list );
+    fi;
+    if IsMutable( list ) then
+      typ := fam!.GenericMatrixRepTypes[2];
+    else
+      typ := fam!.GenericMatrixRepTypes[1];
     fi;
 
     return Objectify( typ, [ basedomain, ncols, list ] );
@@ -88,14 +199,34 @@ InstallTagBasedMethod( NewMatrix,
 InstallTagBasedMethod( NewZeroMatrix,
   IsGenericMatrixRep,
   function( filter, basedomain, rows, cols )
-    local list, row, i, z;
-    list := EmptyPlist( rows );
-    z := Zero( basedomain );
-    for i in [ 1 .. rows ] do
-      row := ListWithIdenticalEntries( cols, z );
-      list[i] := row;
-    od;
+    local list, row, i, z, q;
+    q := GEN_MAT_COMPRESSED_FIELD_SIZE( basedomain );
+    if q <> fail and rows > 0 and cols > 0 then
+      list := GEN_MAT_COMPRESSED_ZERO_ROWS( q, rows, cols );
+    else
+      list := EmptyPlist( rows );
+      z := Zero( basedomain );
+      for i in [ 1 .. rows ] do
+        row := ListWithIdenticalEntries( cols, z );
+        list[i] := row;
+      od;
+    fi;
     return MakeIsGenericMatrixRep( basedomain, cols, list, false );
+  end );
+
+
+# The default method checks each assignment of a diagonal entry.
+InstallTagBasedMethod( NewIdentityMatrix,
+  IsGenericMatrixRep,
+  function( filter, basedomain, dim )
+    local mat, rows, one, i;
+    mat := NewZeroMatrix( filter, basedomain, dim, dim );
+    rows := mat![GEN_MAT_REP_ROWS_POS];
+    one := One( basedomain );
+    for i in [ 1 .. dim ] do
+      rows[i,i] := one;
+    od;
+    return mat;
   end );
 
 
@@ -148,23 +279,52 @@ InstallMethod( SetMatElm,
 
 InstallMethod( Unpack,
   [ "IsGenericMatrixRep" ],
-  M -> List( M![GEN_MAT_REP_ROWS_POS], ShallowCopy ) );
+  function( M )
+    local rows;
+    rows := M![GEN_MAT_REP_ROWS_POS];
+    if IsPlistRep( rows ) then
+      return List( rows, ShallowCopy );
+    fi;
+    return Unpack( rows );
+  end );
+
+# A mutable copy of <rows> with mutable rows, in the same storage.
+# For compressed matrices, 'MutableCopyMatrix' is slower because it
+# inspects the copied rows.
+BindGlobal( "GEN_MAT_COPY_ROWS",
+  function( rows )
+    local copy;
+    copy := List( rows, ShallowCopy );
+    if IsPlistRep( rows ) then
+      return copy;
+    elif IsGF2MatrixRep( rows ) then
+      CONV_GF2MAT( copy );
+    else
+      CONV_MAT8BIT( copy, Q_VEC8BIT( rows[1] ) );
+    fi;
+    return copy;
+  end );
 
 InstallMethod( ShallowCopy,
   [ "IsGenericMatrixRep" ],
   M -> MakeIsGenericMatrixRep( BaseDomain(M), NrCols(M),
-           List( M![GEN_MAT_REP_ROWS_POS], ShallowCopy ), false ) );
+           GEN_MAT_COPY_ROWS( M![GEN_MAT_REP_ROWS_POS] ), false ) );
 
 InstallMethod( MutableCopyMatrix,
   [ "IsGenericMatrixRep" ],
   M -> MakeIsGenericMatrixRep( BaseDomain(M), NrCols(M),
-           List( M![GEN_MAT_REP_ROWS_POS], ShallowCopy ), false ) );
+           GEN_MAT_COPY_ROWS( M![GEN_MAT_REP_ROWS_POS] ), false ) );
 
 InstallMethod( ExtractSubMatrix,
   [ "IsGenericMatrixRep", "IsList", "IsList" ],
   function( M, rowspos, colspos )
     local list;
-    list := M![GEN_MAT_REP_ROWS_POS]{ rowspos }{ colspos };
+    list := M![GEN_MAT_REP_ROWS_POS];
+    if IsPlistRep( list ) then
+      list := list{ rowspos }{ colspos };
+    else
+      list := ExtractSubMatrix( list, rowspos, colspos );
+    fi;
     return MakeIsGenericMatrixRep( BaseDomain(M), Length( colspos ), list, false );
   end );
 
@@ -172,23 +332,31 @@ InstallMethod( CopySubMatrix,
   [ "IsGenericMatrixRep", "IsGenericMatrixRep and IsMutable",
     "IsList", "IsList", "IsList", "IsList" ],
   function( M, N, srcrows, dstrows, srccols, dstcols )
+    local src, dst;
     if ValueOption( "check" ) <> false and
        not IsIdenticalObj( BaseDomain(M), BaseDomain(N) ) then
       Error( "<M> and <N> are not compatible" );
     fi;
-    N![GEN_MAT_REP_ROWS_POS]{dstrows}{dstcols} := M![GEN_MAT_REP_ROWS_POS]{srcrows}{srccols};
+    src := M![GEN_MAT_REP_ROWS_POS];
+    dst := N![GEN_MAT_REP_ROWS_POS];
+    if IsPlistRep( src ) or IsPlistRep( dst ) then
+      dst{dstrows}{dstcols} := src{srcrows}{srccols};
+    elif Length( srcrows ) > 0 and Length( srccols ) > 0 then
+      # the methods for compressed matrices copy ranges of columns faster
+      CopySubMatrix( src, dst, srcrows, dstrows, srccols, dstcols );
+    fi;
   end );
 
 InstallMethod( TransposedMatMutable,
   [ "IsGenericMatrixRep" ],
   function( M )
     local list;
-    if NrRows(M) = 0 then
-      # the row list does not know the number of columns
-      list := List( [ 1 .. NrCols(M) ], i -> [] );
-    else
-      list := TransposedMatMutable(M![GEN_MAT_REP_ROWS_POS]);
+
+    # a list of rows does not know the number of columns of a 0 x n matrix
+    if NrRows( M ) = 0 or NrCols( M ) = 0 then
+      return ZeroMatrix( NrCols( M ), NrRows( M ), M );
     fi;
+    list := TransposedMatMutable(M![GEN_MAT_REP_ROWS_POS]);
     return MakeIsGenericMatrixRep( BaseDomain(M), NrRows(M), list, false );
   end );
 
@@ -242,6 +410,8 @@ InstallMethod( InverseMutable,
       ErrorNoReturn( "InverseMutable: matrix must be square" );
     elif NrRows( M ) = 0 then
       rows := [];
+    elif not IsPlistRep( M![GEN_MAT_REP_ROWS_POS] ) then
+      rows := InverseMutable( M![GEN_MAT_REP_ROWS_POS] );
     elif IsFinite( bd ) and IsField( bd ) then
       rows := INV_MAT_DEFAULT_MUTABLE( M![GEN_MAT_REP_ROWS_POS] );
     else
@@ -256,7 +426,7 @@ InstallMethod( InverseMutable,
 InstallMethod( \*,
   [ "IsGenericMatrixRep", "IsGenericMatrixRep" ],
   function( a, b )
-    local rowsA, colsA, rowsB, colsB, bd, list, i;
+    local rowsA, colsA, rowsB, colsB, bd, list;
 
     rowsA := NumberRows( a );
     colsA := NumberColumns( a );
@@ -272,26 +442,53 @@ InstallMethod( \*,
       fi;
     fi;
 
-    if rowsA = 0 then
-      list := [];
-    elif colsB = 0 then
-      list := List( [ 1 .. rowsA ], i -> [] );
-    elif colsA = 0 then  # colsA = rowsB
-      list := EmptyPlist( rowsA );
-      for i in [ 1 .. rowsA ] do
-        list[i] := ListWithIdenticalEntries( colsB, Zero( bd ) );
-      od;
-    else
-      list := a![GEN_MAT_REP_ROWS_POS] * b![GEN_MAT_REP_ROWS_POS];
+    if rowsA = 0 or colsA = 0 or colsB = 0 then  # colsA = rowsB
+      return ZeroMatrix( rowsA, colsB, a );
     fi;
+    list := a![GEN_MAT_REP_ROWS_POS] * b![GEN_MAT_REP_ROWS_POS];
     return MakeIsGenericMatrixRep( bd, colsB, list, false );
+  end );
+
+# The kernel multiplies a compressed matrix quickly only with a compressed
+# vector.  So compress the plain list <list> over GF(<q>), multiply it with
+# <rows> (from the left if <left> is 'true'), and unpack the product.
+# Return 'fail' if <list> cannot be compressed.
+BindGlobal( "GEN_MAT_PROD_COMPRESSED",
+  function( rows, list, q, left )
+    local res, mut;
+
+    list := CopyToVectorRep( list, q );
+    if list = fail then
+      return fail;
+    elif left then
+      res := list * rows;
+    else
+      res := rows * list;
+    fi;
+    mut := IsMutable( res );
+    res := Unpack( res );
+    if not mut then
+      MakeImmutable( res );
+    fi;
+    return res;
+  end );
+
+# Wrap the plain list <res>, a product of <v> with a matrix over the base
+# domain of <v>, like <v>.
+BindGlobal( "GEN_MAT_VECTOR_LIKE",
+  function( res, v )
+    if IsPlistVectorRep( v ) then
+      # 'Vector' would test again that the entries lie in the base domain
+      return MakeIsPlistVectorRep( BaseDomain( v ), res, false );
+    fi;
+    return Vector( res, v );
   end );
 
 InstallOtherMethod( \*,
   [ "IsGenericMatrixRep", "IsRowVectorOrVectorObj" ],
   {} -> RankFilter(IsPlistVectorRep),  # rank above method for [IsScalar, IsPlistVectorRep]
   function( M, v )
-    local rows, cols, bd, res;
+    local rows, cols, bd, res, list;
 
     rows := NumberRows( M );
     cols := NumberColumns( M );
@@ -312,13 +509,20 @@ InstallOtherMethod( \*,
 
     # "unpack" cheaply and then delegate to kernel implementation
     if IsPlistVectorRep(v) then
-      res := v![ELSPOS];
+      list := v![ELSPOS];
     elif IsList(v) then
-      res := v;
+      list := v;
     else
-      res := Unpack(v);
+      list := Unpack(v);
     fi;
-    res := M![GEN_MAT_REP_ROWS_POS] * res;
+    if IsPlistRep( list ) and not IsPlistRep( M![GEN_MAT_REP_ROWS_POS] ) then
+      res := GEN_MAT_PROD_COMPRESSED( M![GEN_MAT_REP_ROWS_POS], list,
+                                      Size( bd ), false );
+      if res <> fail then
+        return GEN_MAT_VECTOR_LIKE( res, v );
+      fi;
+    fi;
+    res := M![GEN_MAT_REP_ROWS_POS] * list;
     return Vector( res, v );
   end );
 
@@ -326,7 +530,7 @@ InstallOtherMethod( \*,
   [ "IsRowVectorOrVectorObj", "IsGenericMatrixRep" ],
   {} -> RankFilter(IsPlistVectorRep),  # rank above method for [IsPlistVectorRep, IsScalar]
   function( v, M )
-    local rows, cols, bd, res;
+    local rows, cols, bd, res, list;
 
     rows := NumberRows( M );
     cols := NumberColumns( M );
@@ -347,20 +551,105 @@ InstallOtherMethod( \*,
 
     # "unpack" cheaply and then delegate to kernel implementation
     if IsPlistVectorRep(v) then
-      res := v![ELSPOS];
+      list := v![ELSPOS];
     elif IsList(v) then
-      res := v;
+      list := v;
     else
-      res := Unpack(v);
+      list := Unpack(v);
     fi;
-    res := res * M![GEN_MAT_REP_ROWS_POS];
+    if IsPlistRep( list ) and not IsPlistRep( M![GEN_MAT_REP_ROWS_POS] ) then
+      res := GEN_MAT_PROD_COMPRESSED( M![GEN_MAT_REP_ROWS_POS], list,
+                                      Size( bd ), true );
+      if res <> fail then
+        return GEN_MAT_VECTOR_LIKE( res, v );
+      fi;
+    fi;
+    res := list * M![GEN_MAT_REP_ROWS_POS];
     return Vector( res, v );
   end );
 
+# For compressed rows and a scalar in the base domain, the kernel computes
+# 'op( rows, s )'.  Return the resulting matrix, or 'fail' in all other cases,
+# which are left to the generic methods.
+# (Integers do not lie in such a base domain; their multiples are sums of
+# matrices, formed by a default method.)
+BindGlobal( "GEN_MAT_COMPRESSED_SCALAR_OP",
+  function( M, s, op )
+    local bd, rows;
+
+    bd := M![GEN_MAT_REP_BASEDOMAIN_POS];
+    rows := M![GEN_MAT_REP_ROWS_POS];
+    if IsPlistRep( rows ) or not s in bd then
+      return fail;
+    fi;
+
+    # The result is mutable also if <M> is not, unlike in list arithmetic.
+    rows := op( rows, s );
+    if not IsMutable( rows ) then
+      rows := GEN_MAT_COPY_ROWS( rows );
+    fi;
+    return MakeIsGenericMatrixRep( bd, M![GEN_MAT_REP_NCOLS_POS], rows, false );
+  end );
+
+InstallMethod( \*,
+  [ "IsGenericMatrixRep", "IsScalar" ],
+  function( M, s )
+    local res;
+    res := GEN_MAT_COMPRESSED_SCALAR_OP( M, s, \* );
+    if res = fail then
+      TryNextMethod();
+    fi;
+    return res;
+  end );
+
+InstallMethod( \*,
+  [ "IsScalar", "IsGenericMatrixRep" ],
+  function( s, M )
+    local res;
+    res := GEN_MAT_COMPRESSED_SCALAR_OP( M, s, { rows, s } -> s * rows );
+    if res = fail then
+      TryNextMethod();
+    fi;
+    return res;
+  end );
+
+InstallMethod( \/,
+  [ "IsGenericMatrixRep", "IsScalar" ],
+  function( M, s )
+    local res;
+
+    # no default method divides by integers
+    if IsInt( s ) and not IsPlistRep( M![GEN_MAT_REP_ROWS_POS] ) then
+      s := s * OneOfBaseDomain( M );
+      if IsZero( s ) then
+        TryNextMethod();
+      fi;
+    fi;
+    res := GEN_MAT_COMPRESSED_SCALAR_OP( M, s, \/ );
+    if res = fail then
+      TryNextMethod();
+    fi;
+    return res;
+  end );
+
+InstallMethod( \=,
+  [ "IsGenericMatrixRep", "IsGenericMatrixRep" ],
+  { a, b } -> a![GEN_MAT_REP_BASEDOMAIN_POS] = b![GEN_MAT_REP_BASEDOMAIN_POS]
+              and a![GEN_MAT_REP_NCOLS_POS] = b![GEN_MAT_REP_NCOLS_POS]
+              and a![GEN_MAT_REP_ROWS_POS] = b![GEN_MAT_REP_ROWS_POS] );
+
 InstallMethod( \<,
   [ "IsGenericMatrixRep", "IsGenericMatrixRep" ],
-  { a, b } -> LT_LIST_LIST_DEFAULT( a![GEN_MAT_REP_ROWS_POS],
-                                    b![GEN_MAT_REP_ROWS_POS] ) );
+  function( a, b )
+    a := a![GEN_MAT_REP_ROWS_POS];
+    b := b![GEN_MAT_REP_ROWS_POS];
+    if IsPlistRep( a ) or IsPlistRep( b ) then
+      return LT_LIST_LIST_DEFAULT( a, b );
+    fi;
+
+    # the kernel compares two compressed matrices
+    return a < b;
+  end );
 
 InstallMethod( ChangedBaseDomain,
   [ "IsGenericMatrixRep", "IsRing" ],
@@ -373,10 +662,50 @@ InstallMethod( ChangedBaseDomain,
     return A;
   end );
 
+InstallMethod( KroneckerProduct,
+  [ "IsGenericMatrixRep", "IsGenericMatrixRep" ],
+  function( A, B )
+    local bd, rows;
+
+    bd := BaseDomain( A );
+    if not IsIdenticalObj( bd, BaseDomain( B ) )
+       or IsPlistRep( A![GEN_MAT_REP_ROWS_POS] )
+       or IsPlistRep( B![GEN_MAT_REP_ROWS_POS] ) then
+      TryNextMethod();
+    fi;
+
+    # as for the generic method, the result is immutable only if both are
+    rows := KroneckerProduct( A![GEN_MAT_REP_ROWS_POS],
+                              B![GEN_MAT_REP_ROWS_POS] );
+    if IsMutable( A ) or IsMutable( B ) then
+      if not IsMutable( rows ) then
+        rows := GEN_MAT_COPY_ROWS( rows );
+      fi;
+    else
+      MakeImmutable( rows );
+    fi;
+    return MakeIsGenericMatrixRep( bd, NrCols( A ) * NrCols( B ), rows, false );
+  end );
+
+InstallMethod( DeterminantMatrix,
+  [ "IsGenericMatrixRep" ],
+  function( M )
+    local rows;
+
+    rows := M![GEN_MAT_REP_ROWS_POS];
+    if IsPlistRep( rows ) or NrRows( M ) <> NrCols( M ) then
+      TryNextMethod();
+    fi;
+
+    # 'Unpack' would decompress the rows; the kernel computes the
+    # determinant of a plain list of compressed rows
+    return DeterminantMatDestructive( List( rows, ShallowCopy ) );
+  end );
+
 
 # The elementary operations work in place on the row lists, which are never
-# shared with other objects.  The rows are plain lists, which accept any
-# scalar, so check it before changing anything.
+# shared with other objects.  Plain rows accept any scalar, so check it
+# before changing anything.
 BindGlobal( "GEN_MAT_SCALAR",
   function( mat, scalar )
     if IsInt( scalar ) then
@@ -444,41 +773,29 @@ InstallMethod( AddMatrixRowsRight,
 InstallMethod( MultMatrixColumnLeft,
   [ "IsGenericMatrixRep and IsMutable", "IsInt", "IsObject" ],
   function( mat, col, scalar )
-    local row;
-    scalar := GEN_MAT_SCALAR( mat, scalar );
-    for row in mat![GEN_MAT_REP_ROWS_POS] do
-      row[col] := scalar * row[col];
-    od;
+    MultMatrixColumnLeft( mat![GEN_MAT_REP_ROWS_POS], col,
+                          GEN_MAT_SCALAR( mat, scalar ) );
   end );
 
 InstallMethod( MultMatrixColumnRight,
   [ "IsGenericMatrixRep and IsMutable", "IsInt", "IsObject" ],
   function( mat, col, scalar )
-    local row;
-    scalar := GEN_MAT_SCALAR( mat, scalar );
-    for row in mat![GEN_MAT_REP_ROWS_POS] do
-      row[col] := row[col] * scalar;
-    od;
+    MultMatrixColumnRight( mat![GEN_MAT_REP_ROWS_POS], col,
+                           GEN_MAT_SCALAR( mat, scalar ) );
   end );
 
 InstallMethod( AddMatrixColumnsLeft,
   [ "IsGenericMatrixRep and IsMutable", "IsInt", "IsInt", "IsObject" ],
   function( mat, col1, col2, scalar )
-    local row;
-    scalar := GEN_MAT_SCALAR( mat, scalar );
-    for row in mat![GEN_MAT_REP_ROWS_POS] do
-      row[col1] := row[col1] + scalar * row[col2];
-    od;
+    AddMatrixColumnsLeft( mat![GEN_MAT_REP_ROWS_POS], col1, col2,
+                          GEN_MAT_SCALAR( mat, scalar ) );
   end );
 
 InstallMethod( AddMatrixColumnsRight,
   [ "IsGenericMatrixRep and IsMutable", "IsInt", "IsInt", "IsObject" ],
   function( mat, col1, col2, scalar )
-    local row;
-    scalar := GEN_MAT_SCALAR( mat, scalar );
-    for row in mat![GEN_MAT_REP_ROWS_POS] do
-      row[col1] := row[col1] + row[col2] * scalar;
-    od;
+    AddMatrixColumnsRight( mat![GEN_MAT_REP_ROWS_POS], col1, col2,
+                           GEN_MAT_SCALAR( mat, scalar ) );
   end );
 
 InstallMethod( PositionNonZeroInRow,
@@ -536,20 +853,21 @@ InstallMethod( PrintObj, [ "IsGenericMatrixRep" ],
 
 InstallMethod( Display, [ "IsGenericMatrixRep" ],
   function( M )
-    local i;
+    local rows, i;
     Print( "<" );
     if not IsMutable( M ) then
       Print( "immutable " );
     fi;
     Print( NrRows(M), "x", NrCols(M),
            "-matrix over ", BaseDomain(M), ":\n" );
+    rows := Unpack( M );
     for i in [ 1 .. NrRows(M) ] do
       if i = 1 then
         Print( "[" );
       else
         Print( " " );
       fi;
-      Print( M![GEN_MAT_REP_ROWS_POS][i], "\n" );
+      Print( rows[i], "\n" );
     od;
     Print( "]>\n" );
   end );

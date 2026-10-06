@@ -10,7 +10,8 @@
 
 #############################################################################
 #
-# Dense matrix objects backed by plain lists of plain row lists.
+# Dense matrix objects backed by a list of rows: a compressed matrix over
+# small finite fields, a plain list of plain row lists otherwise.
 #
 
 #############################################################################
@@ -21,8 +22,11 @@
 ##
 ##  <Description>
 ##  An object <A>obj</A> in <Ref Filt="IsGenericMatrixRep"/> describes
-##  a matrix object (see <Ref Filt="IsMatrixObj"/>) whose entries are stored
-##  as a dense plain list of dense plain row lists.
+##  a matrix object (see <Ref Filt="IsMatrixObj"/>) with dense storage.
+##  How the entries are stored is an implementation detail;
+##  over finite fields with at most 256 elements, the compressed matrices
+##  from Section <Ref Sect="Matrices over Finite Fields"/> are used
+##  internally.
 ##  <P/>
 ##  Unlike <Ref Filt="IsPlistMatrixRep"/>, this representation is not a row
 ##  list matrix, so direct row access via <M>M[i]</M> is not supported.
@@ -52,4 +56,4 @@ DeclareRepresentation( "IsGenericMatrixRep",
 # Internal positions for IsGenericMatrixRep:
 BindConstant( "GEN_MAT_REP_BASEDOMAIN_POS", 1 ); # BaseDomain
 BindConstant( "GEN_MAT_REP_NCOLS_POS", 2 ); # number of columns (needed to represent 0 x m matrices)
-BindConstant( "GEN_MAT_REP_ROWS_POS", 3 ); # "rows" as a plist-of-plists
+BindConstant( "GEN_MAT_REP_ROWS_POS", 3 ); # rows: compressed matrix or plist-of-plists
