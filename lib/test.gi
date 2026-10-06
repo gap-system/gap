@@ -1001,6 +1001,7 @@ InstallGlobalFunction( "TestDirectory", function(arg)
 
   recurseFiles := function(dirs, prefix)
     local dircontents, testfiles, t, testrecs, shortName, recursedirs, d, subdirs;
+    dirs := Filtered(dirs, x -> not IsSkipped(Filename(x, "")));
     if Length(dirs) = 0 then return; fi;
     if prefix in opts.exclude then return; fi;
     dircontents := Union(List(dirs, DirectoryContents));
@@ -1023,7 +1024,6 @@ InstallGlobalFunction( "TestDirectory", function(arg)
     for d in recursedirs do
       subdirs := List(dirs, x -> Directory(Filename(x, d)));
       subdirs := Filtered(subdirs, IsDirectoryPath);
-      subdirs := Filtered(subdirs, x -> not IsSkipped(Filename(x, "")));
       recurseFiles(subdirs, Concatenation(prefix,d,"/"));
     od;
   end;
