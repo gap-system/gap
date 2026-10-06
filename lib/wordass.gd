@@ -201,8 +201,9 @@ DeclareCategory( "IsInfBitsFamily", IsSyllableWordsFamily );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareRepresentation( "IsSyllableAssocWordRep",
-                       IsAssocWord and IsPositionalObjectRep, [] );
+# No base representation: 8/16/32 bits words are data objects, inf. bits
+# words are positional objects.
+DeclareRepresentation( "IsSyllableAssocWordRep", IsAssocWord );
 
 #############################################################################
 ##
