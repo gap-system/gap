@@ -130,7 +130,6 @@ static inline void CHECK_FUNC(Obj obj)
    SET_LEN_PLIST( list, INT_INTOBJ(p) ); \
   } \
   SET_ELM_PLIST( list, INT_INTOBJ(p), rhs ); \
-  CHANGED_BAG( list ); \
  } \
  else { \
   C_ASS_LIST( list, p, rhs ) \

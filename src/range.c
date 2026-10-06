@@ -469,7 +469,6 @@ static void AssRange(Obj list, Int pos, Obj val)
 
     // now perform the assignment and return the assigned value
     SET_ELM_PLIST( list, pos, val );
-    CHANGED_BAG( list );
 }
 
 

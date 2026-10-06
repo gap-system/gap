@@ -335,7 +335,6 @@ Obj CALL_WITH_CATCH(Obj func, volatile Obj args)
         if (result) {
             SET_LEN_PLIST(res, 2);
             SET_ELM_PLIST(res, 2, result);
-            CHANGED_BAG(res);
         }
         else
             SET_LEN_PLIST(res, 1);
@@ -345,7 +344,6 @@ Obj CALL_WITH_CATCH(Obj func, volatile Obj args)
         SET_LEN_PLIST(res, 2);
         SET_ELM_PLIST(res, 1, False);
         SET_ELM_PLIST(res, 2, STATE(ThrownObject));
-        CHANGED_BAG(res);
         STATE(ThrownObject) = 0;
         SWITCH_TO_OLD_LVARS(currLVars);
         STATE(Tilde) = tilde;

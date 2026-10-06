@@ -300,7 +300,7 @@ into a bag <C>c</C> and before the next garbage collection,
 you must call <C>CHANGED_BAG(c)</C>, unless
 you know that <C>b</C> cannot be garbage collected (e.g. it
 is an object like <K>true</K>), or <C>c</C> is the most recently
-allocated bag of all.
+allocated bag of all. <C>SET_ELM_PLIST</C> calls it for you.
 <P/>
 
 Other functions are:
@@ -463,15 +463,12 @@ static Obj FuncFoo1(Obj self, Obj x)
     Obj x2, x3;
     Obj list = NEW_PLIST( T_PLIST, 3 );
     SET_ELM_PLIST( list, 1, x );
-    CHANGED_BAG( list );
 
     x2 = PROD( x, x );
     SET_ELM_PLIST( list, 2, x2 );
-    CHANGED_BAG( list );
 
     x3 = PROD( x2, x );
     SET_ELM_PLIST( list, 3, x3 );
-    CHANGED_BAG( list );
 
     SET_LEN_PLIST(list, 3);
     return list;
@@ -482,7 +479,7 @@ static Obj FuncFoo1(Obj self, Obj x)
 If speed is not of utmost importance, then it is usually better
 to use the <C>ASS_LIST</C> etc. functions instead of <C>SET_ELM_PLIST</C>
 and friends, which are more low-level and easier to misuse. For example,
-they automatically call <C>CHANGED_BAG</C> and <C>SET_LEN_PLIST</C>.
+they automatically call <C>SET_LEN_PLIST</C>.
 Then the above example would become this instead:
 
 <Log>
@@ -986,13 +983,10 @@ The compiler code will look as follows:
 t_1 = NEW_PLIST( T_PLIST, 3 );
 SET_LEN_PLIST( t_1, 3 );
 SET_ELM_PLIST( t_1, 1, a_x );
-CHANGED_BAG( t_1 );
 t_2 = POW( a_x, INTOBJ_INT(2) );
 SET_ELM_PLIST( t_1, 2, t_2 );
-CHANGED_BAG( t_1 );
 t_2 = POW( a_x, INTOBJ_INT(3) );
 SET_ELM_PLIST( t_1, 3, t_2 );
-CHANGED_BAG( t_1 );
 SWITCH_TO_OLD_FRAME(oldFrame);
 return t_1;
 ]]>

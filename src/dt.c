@@ -477,8 +477,6 @@ static Obj Mark2(Obj tree, Int index1, Obj reftree, Int index2)
             {
                 new = NewPlistFromArgs(INTOBJ_INT(i));
                 SET_ELM_PLIST(list, INT_INTOBJ( DT_POS(tree, i) ),  new);
-                // tell gasman that list has changed
-                CHANGED_BAG(list);
             }
             // add i to <list>[ pos(tree(<tree>, i)) ]
             else
@@ -634,8 +632,6 @@ static Obj MakeFormulaVector(Obj tree, Obj pr)
                                    BinomialInt(ELM_PLIST(rel, j+1),
                                             INTOBJ_INT(i)        )        );
                     SET_ELM_PLIST(vec,  2, prod);
-                    // tell gasman that vec has changed
-                    CHANGED_BAG(vec);
                     break;
                 }
                 j+=2;

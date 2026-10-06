@@ -936,7 +936,6 @@ static Obj FuncIDENTS_GVAR(Obj self)
          * accessible to users, as these strings must not be changed */
         strcopy = CopyToStringRep( NameGVar( i ) );
         SET_ELM_PLIST( copy, i, strcopy );
-        CHANGED_BAG( copy );
     }
     SET_LEN_PLIST( copy, numGVars );
     return copy;
@@ -959,7 +958,6 @@ static Obj FuncIDENTS_BOUND_GVARS(Obj self)
             * changed */
            strcopy = CopyToStringRep( NameGVar( i ) );
            SET_ELM_PLIST( copy, j, strcopy );
-           CHANGED_BAG( copy );
            j++;
         }
     }

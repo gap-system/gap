@@ -84,7 +84,6 @@ static Obj  HdlrFunc4 (
  SET_ELM_PLIST( t_3, 1, INTOBJ_INT(1) );
  t_4 = POW( INTOBJ_INT(2), INTOBJ_INT(80) );
  SET_ELM_PLIST( t_3, 2, t_4 );
- CHANGED_BAG( t_3 );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
   CALL_2ARGS( t_1, t_2, t_3 );
  }
@@ -101,7 +100,6 @@ static Obj  HdlrFunc4 (
  t_5 = POW( INTOBJ_INT(2), INTOBJ_INT(80) );
  C_AINV_FIA( t_4, t_5 )
  SET_ELM_PLIST( t_3, 1, t_4 );
- CHANGED_BAG( t_3 );
  SET_ELM_PLIST( t_3, 2, INTOBJ_INT(0) );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
   CALL_2ARGS( t_1, t_2, t_3 );
@@ -120,7 +118,6 @@ static Obj  HdlrFunc4 (
  SET_ELM_PLIST( t_3, 2, INTOBJ_INT(2) );
  t_4 = POW( INTOBJ_INT(2), INTOBJ_INT(80) );
  SET_ELM_PLIST( t_3, 3, t_4 );
- CHANGED_BAG( t_3 );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
   CALL_2ARGS( t_1, t_2, t_3 );
  }
@@ -137,7 +134,6 @@ static Obj  HdlrFunc4 (
  t_5 = POW( INTOBJ_INT(2), INTOBJ_INT(80) );
  C_AINV_FIA( t_4, t_5 )
  SET_ELM_PLIST( t_3, 1, t_4 );
- CHANGED_BAG( t_3 );
  SET_ELM_PLIST( t_3, 2, INTOBJ_INT(0) );
  SET_ELM_PLIST( t_3, 3, INTOBJ_INT(1) );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -156,10 +152,8 @@ static Obj  HdlrFunc4 (
  SET_ELM_PLIST( t_3, 1, INTOBJ_INT(0) );
  t_4 = POW( INTOBJ_INT(2), INTOBJ_INT(80) );
  SET_ELM_PLIST( t_3, 2, t_4 );
- CHANGED_BAG( t_3 );
  t_4 = POW( INTOBJ_INT(2), INTOBJ_INT(81) );
  SET_ELM_PLIST( t_3, 3, t_4 );
- CHANGED_BAG( t_3 );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
   CALL_2ARGS( t_1, t_2, t_3 );
  }

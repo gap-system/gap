@@ -500,7 +500,6 @@ static ExecStatus ExecAssList(Expr stat)
                 SET_LEN_PLIST( list, p );
             }
             SET_ELM_PLIST( list, p, rhs );
-            CHANGED_BAG( list );
         }
 
         // generic case
@@ -601,7 +600,6 @@ static ExecStatus ExecAssListLevel(Expr stat)
     for (i = 1; i <= narg; i++) {
         pos = EVAL_EXPR(READ_STAT(stat, i));
         SET_ELM_PLIST(ixs, i, pos);
-        CHANGED_BAG(ixs);
     }
     SET_LEN_PLIST(ixs, narg);
 
@@ -692,7 +690,6 @@ static ExecStatus ExecUnbList(Expr stat)
         // evaluate the position
         pos = EVAL_EXPR(READ_STAT(stat, i));
         SET_ELM_PLIST(ixs,i,pos);
-        CHANGED_BAG(ixs);
       }
       SET_LEN_PLIST(ixs, narg);
       UNBB_LIST(list, ixs);
@@ -826,7 +823,6 @@ static Obj EvalElmListLevel(Expr expr)
     for (i = 1; i <= narg; i++) {
       pos = EVAL_EXPR( READ_EXPR(expr, i));
       SET_ELM_PLIST(ixs, i, pos);
-      CHANGED_BAG(ixs);
     }
     SET_LEN_PLIST(ixs, narg);
     // get the level
@@ -909,7 +905,6 @@ static Obj EvalIsbList(Expr expr)
       for (i = 1; i <= narg; i++) {
         pos = EVAL_EXPR( READ_EXPR(expr, i) );
         SET_ELM_PLIST(ixs,i,pos);
-        CHANGED_BAG(ixs);
       }
       SET_LEN_PLIST(ixs, narg);
       return ISBB_LIST(list, ixs) ? True : False;
