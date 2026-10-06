@@ -14,9 +14,12 @@ outfile="${3:-$gfile.out}"
 # 3) Rewrite the root of gap with the string GAPROOT,
 #    so the output is usable on other machines
 # 4) Set lower and upper memory limits, for consistency
+# 5) Pass on the GAP command line options a test asks for in a first line
+#    of the form '#GAPOPTS <options>'
+read -ra gapopts <<< "$(sed -n '1s/^#GAPOPTS//p' "$gfile")"
 GAPROOT=$("$gap" --print-gaproot)
 ( echo "LogTo(\"${outfile}.tmp\");" ; cat "$gfile" ; echo "QUIT;" ) |
-    "$gap" -r -A -b -m 256m -o 512m -x 800 \
+    "$gap" -r -A -b -m 256m -o 512m -x 800 "${gapopts[@]}" \
            -c 'SetUserPreference("UseColorsInTerminal",false);' \
            -c 'SetUserPreference("WhereDepth", 5);' \
            2>/dev/null >/dev/null
