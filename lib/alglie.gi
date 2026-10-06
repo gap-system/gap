@@ -2659,7 +2659,7 @@ InstallMethod( SemiSimpleType,
           # after the call of DirectSumDecomposition,
           # the root vectors are contained in the basis of `I'.
 
-          BI:= Basis( I );
+          BI:= BasisNC( I, GeneratorsOfLeftModule( I ) );
           bvi:= BasisVectors( BI );
           adH:= List( BasisVectors(Basis(HI)), x->AdjointMatrix(BI,x));
 #T  better!
