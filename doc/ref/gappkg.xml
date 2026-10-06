@@ -195,11 +195,23 @@ packagedir/
 <P/>
 
 This layout of directories and files may be created manually, or automatically
-using the tool called <Package>PackageMaker</Package>,
-available at <URL>https://github.com/gap-system/PackageMaker</URL>. The
-<Package>PackageMaker</Package> asks several questions about the intended
-package and then creates a new directory for it and populates it with all
-the files needed for a basic package.
+with the <Package>PackageMaker</Package> package, which is distributed with
+&GAP; (see <Ref Chap="PackageMaker" BookName="PackageMaker"/>).
+Its function <C>PackageWizard</C> asks several questions about the intended
+package and then creates a new directory for it in the current directory
+and populates it with all the files needed for a basic package.
+<P/>
+<Log><![CDATA[
+gap> LoadPackage("packagemaker");
+true
+gap> PackageWizard();
+Welcome to the GAP PackageMaker Wizard.
+I will now guide you step-by-step through the package
+creation process by asking you some questions.
+
+What is the name of the package? mypkg
+Enter a short (one sentence) description of your package:
+]]></Log>
 <P/>
 
 Packages that contain some code that requires compilation will usually have
