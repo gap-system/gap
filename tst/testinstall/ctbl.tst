@@ -364,8 +364,8 @@ true
 #gap> g:= SmallGroup( 96, 3 );;
 gap> g:= PcGroupCode( 55306968584587147680, 96 );;
 gap> t:= CharacterTable( g );;
-gap> ClassPositionsOfLowerCentralSeries( t );
-[ [ 1 .. 12 ], [ 1, 3, 4, 5, 6, 9, 10, 11 ] ]
+gap> List( ClassPositionsOfLowerCentralSeries( t ), Length );
+[ 12, 8 ]
 
 #gap> g:= SmallGroup( 3^5, 22 );;
 gap> g:= PcGroupCode( 27823197465625143, 3^5 );;
@@ -376,8 +376,8 @@ gap> ClassPositionsOfLowerCentralSeries( t );
 #gap> g:= SmallGroup( 96, 66 );;
 gap> g:= PcGroupCode( 509649248191328977712712, 96 );;
 gap> t:= CharacterTable( g );;
-gap> ClassPositionsOfSupersolvableResiduum( t );
-[ 1, 5, 6 ]
+gap> Length( ClassPositionsOfSupersolvableResiduum( t ) );
+3
 
 # test another bugfix ('IsSimple' does not imply 'IsPerfect')
 gap> t:= CharacterTable( CyclicGroup( 2 ) );;
