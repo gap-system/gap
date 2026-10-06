@@ -891,14 +891,25 @@ each being a record with the following components.
   meaning that the extension shall be loaded as soon as all packages
   <C>pkgname1</C>, <C>pkgname2</C>, <M>\ldots</M>, with versions (at least)
   <C>version1</C>, <C>version2</C>, <M>\ldots</M>, have been loaded,
-  and
 </Item>
-<Mark><C>filename</C></Mark>
+<Mark><C>filename</C> (optional)</Mark>
 <Item>
   the path, relative to the package directory of <C>A</C>,
-  of a file such that reading this file will load the code of the extension.
+  of a file such that reading this file will load the code of the extension,
+</Item>
+<Mark><C>testfiles</C> (optional)</Mark>
+<Item>
+  a list of paths, relative to the package directory of <C>A</C>,
+  of test files and directories that <Ref Func="TestDirectory"/> skips
+  as long as the extension is not loaded.
 </Item>
 </List>
+
+&GAP; ignores all other components,
+so a package can use components introduced by later &GAP; versions.
+&GAP; versions before 4.17 ignore <C>testfiles</C> and cannot load
+packages with extensions without <C>filename</C>;
+a package using either should therefore need &GAP; 4.17 or newer.
 
 <P/>
 
@@ -906,17 +917,24 @@ As an example suppose the following is part of the <F>PackageInfo.g</F>.
 Then &GAP; will load the file <F>fileForB.gd</F> as soon as package
 <C>B</C> is loaded in version 0.6 or newer, and <F>fileForCD.gi</F> once
 package <C>C</C> and <C>D</C> are loaded in version 1.2 and 0.1 or newer respectively.
+<Ref Func="TestDirectory"/> runs <F>tst/B.tst</F> only if <C>B</C> is loaded,
+and the test files in <F>tst/BC</F> only if <C>B</C> and <C>C</C> are loaded.
 
 <Log><![CDATA[
 Extensions := [
   rec(
     needed := [ ["B", "0.6"] ],
     filename := "gap/fileForB.gd",
+    testfiles := [ "tst/B.tst" ],
   ),
   rec(
     needed := [ ["C", "1.2"] , ["D", "0.1"] ],
     filename := "gap/fileForCD.gi",
-  )
+  ),
+  rec(
+    needed := [ ["B", "0.6"] , ["C", "1.2"] ],
+    testfiles := [ "tst/BC" ],
+  ),
 ],
 ]]></Log>
 
@@ -1396,6 +1414,10 @@ set to <K>true</K>:
 <Log><![CDATA[
 TestDirectory(DirectoriesPackageLibrary("packagename", "tst"), rec(exitGAP := true));
 ]]></Log>
+Test files that need additional packages can be listed in the
+<C>testfiles</C> component of a package extension,
+see Section <Ref Sect="Extensions Provided by a Package"/>;
+<Ref Func="TestDirectory"/> then skips them unless these packages are loaded.
 If one needs a more sophisticated test file, then it should end with an invocation
 of <Ref Func="ForceQuitGap"/> with an argument that indicates whether the tests overall
 passed (<K>true</K>) or failed (<K>false</K> or <K>fail</K>). For example,

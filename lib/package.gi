@@ -1548,6 +1548,23 @@ BindGlobal( "GetPackageNameForPrefix", function( prefix )
 
 #############################################################################
 ##
+#F  PackageExtensionDescription( <entry> )
+##
+##  Return a string naming the package extension <entry> in log messages:
+##  its file, or the packages it needs if it has no file.
+##
+BindGlobal( "PackageExtensionDescription", function( entry )
+    if IsBound( entry.filename ) then
+      return entry.filename;
+    fi;
+    return Concatenation( "for ",
+               JoinStringsWithSeparator( List( entry.needed, l -> l[1] ),
+                                         ", " ) );
+    end );
+
+
+#############################################################################
+##
 #F  LoadPackage( <name>[, <version>][, <banner>] )
 ##
 ##  The global option <C>LoadInfo</C> (with value a mutable record)
@@ -1730,7 +1747,8 @@ InstallGlobalFunction( LoadPackage, function( arg )
         if IsBound( info.Extensions ) then
           for entry in info.Extensions do
             LogPackageLoadingMessage( PACKAGE_DEBUG,
-                Concatenation( "notify extension ", entry.filename ),
+                Concatenation( "notify extension ",
+                    PackageExtensionDescription( entry ) ),
                 pkgname );
             r:= ShallowCopy( entry );
             r.providedby:= pkgname;
@@ -1769,11 +1787,14 @@ InstallGlobalFunction( LoadPackage, function( arg )
     for i in [ 1 .. Length( GAPInfo.PackageExtensionsPending ) ] do
       entry:= GAPInfo.PackageExtensionsPending[i];
       if ForAll( entry.needed, l -> IsPackageLoaded( l[1], l[2] ) ) then
-        ReadPackage( entry.providedby, entry.filename );
+        if IsBound( entry.filename ) then
+          ReadPackage( entry.providedby, entry.filename );
+        fi;
         Add( GAPInfo.PackageExtensionsLoaded, entry );
         Unbind( GAPInfo.PackageExtensionsPending[i] );
         LogPackageLoadingMessage( PACKAGE_DEBUG,
-            Concatenation( "load extension ", entry.filename ),
+            Concatenation( "load extension ",
+                PackageExtensionDescription( entry ) ),
             entry.providedby );
       fi;
     od;
@@ -1800,6 +1821,31 @@ InstallGlobalFunction( LoadAllPackages, function()
         List( RecNames( GAPInfo.PackagesInfo ), LoadPackage );
     fi;
     ResumeMethodReordering();
+    end );
+
+
+#############################################################################
+##
+#F  TestFilesOfPendingPackageExtensions()
+##
+InstallGlobalFunction( TestFilesOfPendingPackageExtensions, function()
+    local result, entry, dir, file, path;
+
+    result:= [];
+    for entry in GAPInfo.PackageExtensionsPending do
+      if not IsBound( entry.testfiles ) then
+        continue;
+      fi;
+      dir:= Directory( GAPInfo.PackagesLoaded.( entry.providedby )[1] );
+      for file in entry.testfiles do
+        # compare real paths, since callers may reach the file via symlinks
+        path:= GAP_realpath( Filename( dir, file ) );
+        if path <> fail then
+          Add( result, [ path, entry.needed ] );
+        fi;
+      od;
+    od;
+    return Set( result );
     end );
 
 
@@ -2488,8 +2534,12 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
                          ForAll( r.needed,
                              l -> IsList( l ) and Length( l ) = 2 and
                                   ForAll( l, IsString ) ) and
-                         IsBound( r.filename ) and IsString( r.filename ) ),
-        "a list of records with components `needed' and `filename'" );
+                         ( not IsBound( r.filename ) or
+                           IsString( r.filename ) ) and
+                         ( not IsBound( r.testfiles ) or
+                           IsFilenameList( r.testfiles ) ) ),
+        Concatenation( "a list of records with component `needed' and ",
+                       "optional components `filename' and `testfiles'" ) );
     TestOption( record, "AvailabilityTest", IsFunction, "a function" );
     TestOption( record, "BannerFunction", IsFunction, "a function" );
     TestOption( record, "BannerString", IsString, "a string" );
