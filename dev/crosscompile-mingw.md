@@ -88,11 +88,16 @@ wine gap.exe -A -q -c 'Read("../tst/testinstall.g");' < /dev/null
 
 - Non-ASCII paths: the kernel calls the ANSI Windows API and relies on the
   manifest of `gap.exe` making UTF-8 the code page (Windows 10 1903 and
-  later). `libgap.dll` inside another program gets that program's code page.
+  later). `libgap.dll` inside another program gets that program's code page;
+  `julia.exe` uses the legacy one.
   The console code page is not switched, so non-ASCII output may be garbled.
-- 32-bit builds and native ARM64 builds (MSYS2 CLANGARM64). Untested; the
-  x86-64 build runs on ARM64 Windows under emulation.
-- HPC-GAP, the Julia GC and Boehm GC: rejected by `configure`.
+- 32-bit builds (MSYS2 MINGW32) crash while loading the library.
+- Native ARM64 builds (MSYS2 CLANGARM64, `CC=clang CXX=clang++`) pass
+  testinstall but are not in CI.
+- HPC-GAP and Boehm GC: rejected by `configure`.
+- The Julia GC passes testinstall with Julia 1.12 but is not in CI. The
+  directory of `libjulia.dll` must be in PATH, also during the build. GAP
+  inside Julia is untested.
 - `make install`, and a distribution; the Windows installer ships Cygwin.
 - CI runs testinstall and testmockpkg only. `tst/testinstall/read.tst`
   expects POSIX semantics for opening a directory and is removed there.
