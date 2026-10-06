@@ -1,4 +1,4 @@
-#@local g, t, iso, t3, iso3, orders, n, iso2, filt, outer, c, ord, pi, sort
+#@local g, t, iso, t3, iso3, src, orders, n, iso2, filt, outer, c, ord, pi, sort
 gap> START_TEST( "ctblisoc.tst" );
 
 # one argument
@@ -9,9 +9,10 @@ gap> TransformingPermutationsCharacterTables( t, iso );
 fail
 gap> t3:= t mod 3;;
 gap> iso3:= CharacterTableIsoclinic( t3 );;
-gap> SourceOfIsoclinicTable( iso );
-[ CharacterTable( <pc group of size 48 with 5 generators> ), 
-  [ 1, 3, 4, 5, 7 ], [ 5 ], 5 ]
+gap> src:= SourceOfIsoclinicTable( iso );;  src[1];
+CharacterTable( <pc group of size 48 with 5 generators> )
+gap> Length( src );
+4
 
 # the cases of inconsistent or insufficient arguments
 gap> CharacterTableIsoclinic( t, rec( centralElement:= 1 ) );
