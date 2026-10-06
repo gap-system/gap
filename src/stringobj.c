@@ -2192,7 +2192,7 @@ static Int InitKernel (
         IsStringFuncs[ t1 +IMMUTABLE ] = IsStringListHom;
     }
 
-    for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1++ ) {
+    for ( t1 = T_STRING; t1 <= T_STRING_SSORT+IMMUTABLE; t1++ ) {
         IsStringFuncs[ t1 ] = AlwaysYes;
     }
 
