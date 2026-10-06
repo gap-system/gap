@@ -81,6 +81,12 @@
 #include <readline/readline.h>
 #endif
 
+#ifdef SYS_IS_MINGW
+// zlib for Windows is built with a 32 bit z_off_t, but its header would
+// follow off_t, which config.h makes 64 bit wide: gzseek then returns
+// wrong positions on 32 bit systems, and never -1 on 64 bit systems
+#define z_off_t long
+#endif
 #include <zlib.h>
 
 #ifdef HAVE_SYS_UTSNAME_H
