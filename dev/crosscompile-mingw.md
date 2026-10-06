@@ -1,9 +1,9 @@
 # Cross-compiling GAP for native Windows (mingw-w64)
 
-Status (issue #4157): `gap.exe` passes testinstall, with line editing,
-readline, subprocesses (pipes instead of ptys) and kernel extensions;
-packages needing POSIX, foremost IO, are unavailable. The target is
-x86_64-w64-mingw32, as in the MSYS2 MINGW64 environment of the CI job.
+Status (issue #4157): experimental. `gap.exe` passes testinstall, with line
+editing, readline, subprocesses (pipes instead of ptys) and kernel
+extensions; see "Open items" below. The target is x86_64-w64-mingw32, as in
+the MSYS2 MINGW64 environment of the CI job.
 
 The instructions below are for macOS; on Linux, install `gcc-mingw-w64`
 instead of the brew package and adjust paths.
@@ -83,3 +83,20 @@ Wine (`brew install --cask wine-stable`) runs the result: copy
 ```sh
 wine gap.exe -A -q -c 'Read("../tst/testinstall.g");' < /dev/null
 ```
+
+## Open items
+
+- Paths and user names with non-ASCII characters: the kernel calls the ANSI
+  Windows API (`CreateProcessA`, `LoadLibraryA`, `getenv`, `fopen`). Untested.
+- Paths with spaces, e.g. below `C:/Program Files`. Untested.
+- 32-bit builds and native ARM64 builds (MSYS2 CLANGARM64). Untested; the
+  x86-64 build runs on ARM64 Windows under emulation.
+- HPC-GAP, the Julia GC and Boehm GC: rejected by `configure`.
+- `make install`, and a distribution; the Windows installer ships Cygwin.
+- CI runs testinstall and testmockpkg only. `tst/testinstall/read.tst`
+  expects POSIX semantics for opening a directory and is removed there.
+- `InputOutputLocalProcess` polls its pipe every 10 ms; `UNIXSelect` is
+  unavailable. Children see no terminal and must flush their output.
+- Windows refuses to delete open files; library code doing so fails there.
+- `longjmp` unwinds via SEH on Windows, see the TODO in `src/common.h`.
+- IO package: no `fork`, no sockets.

@@ -563,6 +563,21 @@ Windows. Cygwin is used for making Windows release. Almost all packages are
 supported in the Windows releases. By default the Windows release reads and
 writes files from the user's "Documents" directory.
 
+An *experimental* native Windows port builds GAP with mingw-w64 in the MSYS2
+MINGW64 environment (<https://www.msys2.org>), without Cygwin. The Windows
+installer does not use it. To try it, open an MSYS2 MINGW64 shell and build
+as on Unix:
+
+    pacman -S make mingw-w64-x86_64-gcc mingw-w64-x86_64-gmp \
+        mingw-w64-x86_64-readline mingw-w64-x86_64-zlib
+    ./configure && make
+
+Known limitations: HPC-GAP and the Julia integration are unavailable; child
+processes are attached through pipes, not pseudo terminals; packages relying
+on POSIX features such as `fork` or sockets work only in part; only 64-bit x86
+is tested; paths and user names containing spaces or non-ASCII characters are
+untested. See <https://github.com/gap-system/gap/issues/4157>.
+
 ### Something else went wrong
 
 If all these remedies fail or you encountered a bug please send a mail to
