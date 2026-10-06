@@ -513,7 +513,7 @@ InstallMethod( ViewObj, [ "IsGenericMatrixRep" ],
       Print( "immutable " );
     fi;
     Print( NrRows(M), "x", NrCols(M),
-           "-matrix over ", BaseDomain(M), ">" );
+           " generic matrix over ", BaseDomain(M), ">" );
   end );
 
 InstallMethod( PrintObj, [ "IsGenericMatrixRep" ],
@@ -535,7 +535,7 @@ InstallMethod( Display, [ "IsGenericMatrixRep" ],
       Print( "immutable " );
     fi;
     Print( NrRows(M), "x", NrCols(M),
-           "-matrix over ", BaseDomain(M), ":\n" );
+           " generic matrix over ", BaseDomain(M), ":\n" );
     for i in [ 1 .. NrRows(M) ] do
       if i = 1 then
         Print( "[" );

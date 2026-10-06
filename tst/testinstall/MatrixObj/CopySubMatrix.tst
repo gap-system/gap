@@ -82,14 +82,14 @@ Error, source and destination column lists must be of equal length
 
 # IsGF2MatrixRep
 gap> m1 := IdentityMatrix( IsPlistMatrixRep, Rationals, 10 );
-<10x10-matrix over Rationals>
+<10x10 plist matrix over Rationals>
 gap> m2 := ZeroMatrix( 6, 6, m1 );
-<6x6-matrix over Rationals>
+<6x6 plist matrix over Rationals>
 gap> CopySubMatrix( m1, m2, [ 1..3 ], [ 3..5 ], [ 2..4 ], [ 4..6 ] );
 gap> IsOne(m1);
 true
 gap> Display(m2);
-<6x6-matrix over Rationals:
+<6x6 plist matrix over Rationals:
 [[ 0, 0, 0, 0, 0, 0 ]
  [ 0, 0, 0, 0, 0, 0 ]
  [ 0, 0, 0, 0, 0, 0 ]

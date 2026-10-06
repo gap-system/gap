@@ -22,9 +22,9 @@ true
 # with vector of diagonal entries and example matrix
 gap> M:= Matrix( IsPlistMatrixRep, Integers, [ 1 ], 1 );;
 gap> DiagonalMatrix( [ 1, 2 ], M );
-<2x2-matrix over Integers>
+<2x2 plist matrix over Integers>
 gap> DiagonalMatrix( [], M );
-<0x0-matrix over Integers>
+<0x0 plist matrix over Integers>
 gap> M:= [ [ 1 ] ];;
 gap> DiagonalMatrix( [ 1, 2 ], M );
 [ [ 1, 0 ], [ 0, 2 ] ]
@@ -32,7 +32,7 @@ gap> DiagonalMatrix( [], M );
 [  ]
 gap> M:= Matrix( IsPlistMatrixRep, GF(3), [ Z(3) ], 1 );;
 gap> DiagonalMatrix( [ 1, 2 ] * Z(3), M );
-<2x2-matrix over GF(3)>
+<2x2 plist matrix over GF(3)>
 gap> DiagonalMatrix( [ 1, 2 ], M );
 Error, <ob> must lie in the base domain of <M>
 

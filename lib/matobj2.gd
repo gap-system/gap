@@ -1306,7 +1306,7 @@ DeclareOperation( "IdentityMatrix", [ IsOperation, IsSemiring, IsInt ] );
 ##  gap> x:= X( GF(5) );;  pol:= x^3 + x^2 + 2*x + 3;;
 ##  gap> M:= CompanionMatrix( IsPlistMatrixRep, pol, GF(25) );;
 ##  gap> Display( M );
-##  <3x3-matrix over GF(5^2):
+##  <3x3 plist matrix over GF(5^2):
 ##  [[ 0*Z(5), 0*Z(5), Z(5) ]
 ##   [ Z(5)^0, 0*Z(5), Z(5)^3 ]
 ##   [ 0*Z(5), Z(5)^0, Z(5)^2 ]
@@ -1403,7 +1403,7 @@ DeclareOperation( "CompanionMatrix",
 ##  gap> Matrix( [ [ 5, 6 ], [ 7, 0 ] ], M );
 ##  <matrix mod 8: [ [ 5, 6 ], [ 7, 0 ] ]>
 ##  gap> Matrix( BaseDomain( M ), [ [ 5, 6 ], [ 7, 0 ] ] * One( R ) );
-##  <2x2-matrix over (Integers mod 8)>
+##  <2x2 plist matrix over (Integers mod 8)>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

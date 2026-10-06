@@ -1798,13 +1798,13 @@ DeclareGlobalFunction( "PermutationMat" );
 ##  gap> Is8BitMatrixRep( d1 );
 ##  true
 ##  gap> d2:= DiagonalMatrix( IsPlistMatrixRep, GF(9), [ 1, 2 ] * Z(3)^0 );
-##  <2x2-matrix over GF(3^2)>
+##  <2x2 plist matrix over GF(3^2)>
 ##  gap> IsPlistMatrixRep( d2 );
 ##  true
 ##  gap> DiagonalMatrix( [ 1, 2 ] );
-##  <2x2-matrix over Rationals>
+##  <2x2 plist matrix over Rationals>
 ##  gap> DiagonalMatrix( [ 1, 2 ], Matrix( Integers, [ [ 1 ] ], 1 ) );
-##  <2x2-matrix over Integers>
+##  <2x2 plist matrix over Integers>
 ##  gap> DiagonalMatrix( [ 1, 2 ], [ [ 1 ] ] );
 ##  [ [ 1, 0 ], [ 0, 2 ] ]
 ##  ]]></Example>

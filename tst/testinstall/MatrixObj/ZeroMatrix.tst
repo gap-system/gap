@@ -49,53 +49,53 @@ Error, Is8BitMatrixRep only supports base fields with 3 to 256 elements
 # IsPlistMatrixRep
 #
 gap> TestZeroMatrix(IsPlistMatrixRep, GF(2), 2, 3);
-<2x3-matrix over GF(2)>
+<2x3 plist matrix over GF(2)>
 gap> TestZeroMatrix(IsPlistMatrixRep, GF(2), 2, 0);
-<2x0-matrix over GF(2)>
+<2x0 plist matrix over GF(2)>
 gap> TestZeroMatrix(IsPlistMatrixRep, GF(2), 0, 3);
-<0x3-matrix over GF(2)>
+<0x3 plist matrix over GF(2)>
 
 #
 gap> TestZeroMatrix(IsPlistMatrixRep, Integers, 2, 3);
-<2x3-matrix over Integers>
+<2x3 plist matrix over Integers>
 gap> TestZeroMatrix(IsPlistMatrixRep, Integers, 2, 0);
-<2x0-matrix over Integers>
+<2x0 plist matrix over Integers>
 gap> TestZeroMatrix(IsPlistMatrixRep, Integers, 0, 3);
-<0x3-matrix over Integers>
+<0x3 plist matrix over Integers>
 
 #
 gap> TestZeroMatrix(IsPlistMatrixRep, Rationals, 2, 3);
-<2x3-matrix over Rationals>
+<2x3 plist matrix over Rationals>
 gap> TestZeroMatrix(IsPlistMatrixRep, Rationals, 2, 0);
-<2x0-matrix over Rationals>
+<2x0 plist matrix over Rationals>
 gap> TestZeroMatrix(IsPlistMatrixRep, Rationals, 0, 3);
-<0x3-matrix over Rationals>
+<0x3 plist matrix over Rationals>
 
 #
 gap> TestZeroMatrix(IsPlistMatrixRep, Integers mod 4, 2, 3);
-<2x3-matrix over (Integers mod 4)>
+<2x3 plist matrix over (Integers mod 4)>
 gap> TestZeroMatrix(IsPlistMatrixRep, Integers mod 4, 2, 0);
-<2x0-matrix over (Integers mod 4)>
+<2x0 plist matrix over (Integers mod 4)>
 gap> TestZeroMatrix(IsPlistMatrixRep, Integers mod 4, 0, 3);
-<0x3-matrix over (Integers mod 4)>
+<0x3 plist matrix over (Integers mod 4)>
 
 #
 # IsGenericMatrixRep
 #
 gap> TestZeroMatrix(IsGenericMatrixRep, GF(2), 2, 3);
-<2x3-matrix over GF(2)>
+<2x3 generic matrix over GF(2)>
 gap> TestZeroMatrix(IsGenericMatrixRep, GF(2), 2, 0);
-<2x0-matrix over GF(2)>
+<2x0 generic matrix over GF(2)>
 gap> TestZeroMatrix(IsGenericMatrixRep, GF(2), 0, 3);
-<0x3-matrix over GF(2)>
+<0x3 generic matrix over GF(2)>
 
 #
 gap> TestZeroMatrix(IsGenericMatrixRep, Integers, 2, 3);
-<2x3-matrix over Integers>
+<2x3 generic matrix over Integers>
 gap> TestZeroMatrix(IsGenericMatrixRep, Integers, 2, 0);
-<2x0-matrix over Integers>
+<2x0 generic matrix over Integers>
 gap> TestZeroMatrix(IsGenericMatrixRep, Integers, 0, 3);
-<0x3-matrix over Integers>
+<0x3 generic matrix over Integers>
 
 #
 # Test ZeroMatrix variant which "guesses" a suitable representation, i.e.:
@@ -104,19 +104,19 @@ gap> TestZeroMatrix(IsGenericMatrixRep, Integers, 0, 3);
 
 #
 gap> ZeroMatrix(Integers, 2, 3);
-<2x3-matrix over Integers>
+<2x3 plist matrix over Integers>
 gap> ZeroMatrix(Integers, 0, 3);
-<0x3-matrix over Integers>
+<0x3 plist matrix over Integers>
 gap> ZeroMatrix(Integers, 2, 0);
-<2x0-matrix over Integers>
+<2x0 plist matrix over Integers>
 
 #
 gap> ZeroMatrix(Integers mod 4, 2, 3);
-<2x3-matrix over (Integers mod 4)>
+<2x3 plist matrix over (Integers mod 4)>
 gap> ZeroMatrix(Integers mod 4, 0, 3);
-<0x3-matrix over (Integers mod 4)>
+<0x3 plist matrix over (Integers mod 4)>
 gap> ZeroMatrix(Integers mod 4, 2, 0);
-<2x0-matrix over (Integers mod 4)>
+<2x0 plist matrix over (Integers mod 4)>
 
 #
 gap> ZeroMatrix(GF(2), 2, 3);

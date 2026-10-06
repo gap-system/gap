@@ -29,24 +29,24 @@ true
 # with example matrix
 gap> M:= Matrix( IsPlistMatrixRep, Integers, [ 1 ], 1 );;
 gap> RandomInvertibleMatrix( 2, M );
-<2x2-matrix over Integers>
+<2x2 plist matrix over Integers>
 gap> M:= [ [ 1 ] ];;
 gap> IsPlistRep( RandomInvertibleMatrix( 2, M ) );
 true
 gap> M:= Matrix( IsPlistMatrixRep, GF(3), [ Z(3) ], 1 );;
 gap> RandomInvertibleMatrix( 2, M );
-<2x2-matrix over GF(3)>
+<2x2 plist matrix over GF(3)>
 
 # with random source and example matrix
 gap> M:= Matrix( IsPlistMatrixRep, Integers, [ 1 ], 1 );;
 gap> RandomInvertibleMatrix( rs, 2, M );
-<2x2-matrix over Integers>
+<2x2 plist matrix over Integers>
 gap> M:= [ [ 1 ] ];;
 gap> IsPlistRep( RandomInvertibleMatrix( rs, 2, M ) );
 true
 gap> M:= Matrix( IsPlistMatrixRep, GF(3), [ Z(3) ], 1 );;
 gap> RandomInvertibleMatrix( rs, 2, M );
-<2x2-matrix over GF(3)>
+<2x2 plist matrix over GF(3)>
 
 #
 gap> STOP_TEST( "RandomInvertibleMatrix.tst" );
