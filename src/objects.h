@@ -92,10 +92,10 @@ Int RegisterPackageTNUM(const char * name, Obj (*typeObjFunc)(Obj obj));
 
 /****************************************************************************
 **
+**  IMMUTABLE is not a TNUM, but rather a bitmask. It is not defined via an
+**  enum because C++20 deprecates arithmetic between different enum types.
 */
-enum {
-    IMMUTABLE = 1    // IMMUTABLE is not a TNUM, but rather a bitmask
-};
+#define IMMUTABLE 1
 
 /****************************************************************************
 **
