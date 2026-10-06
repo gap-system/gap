@@ -298,7 +298,7 @@ into a bag <C>c</C> and before the next garbage collection,
 you must call <C>CHANGED_BAG(c)</C>, unless
 you know that <C>b</C> cannot be garbage collected (e.g. it
 is an object like <K>true</K>), or <C>c</C> is the most recently
-allocated bag of all. Setters such as <C>SET_ELM_PLIST</C> call it for you.
+allocated bag of all. <C>SET_ELM_PLIST</C> calls it for you.
 <P/>
 
 Other functions are:

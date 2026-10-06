@@ -742,7 +742,8 @@ static void ReduceWord(Obj x, Obj pcp)
                     help = Multiplyboundred(help, x, i+2, flag, pcp);
                     len = LEN_PLIST(help);
                     for (j=1; j<=len; j++)
-                        SET_ELM_PLIST(x, j+i+1, ELM_PLIST(help, j) );
+                        SET_ELM_PLIST_RAW(x, j+i+1, ELM_PLIST(help, j) );
+                    CHANGED_BAG(x);
                     flag = i+len+1;
                     /*SET_LEN_PLIST(x, flag);*/
                 }

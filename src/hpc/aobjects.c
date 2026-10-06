@@ -391,7 +391,8 @@ Obj FromAtomicList(Obj list)
   SET_LEN_PLIST(result, len);
   MEMBAR_READ();
   for (i=1; i<=len; i++)
-    SET_ELM_PLIST(result, i, data[i].obj);
+    SET_ELM_PLIST_RAW(result, i, data[i].obj);
+  CHANGED_BAG(result);
   return result;
 }
 

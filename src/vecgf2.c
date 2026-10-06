@@ -1288,14 +1288,16 @@ static void PlainGF2Vec(Obj list)
     // wipe out the first entry of the GF2 vector (which becomes the  second
     // entry of the plain list, in case the list has length 1.
     if (len == 1)
-        SET_ELM_PLIST(list, 2, 0);
+        SET_ELM_PLIST_RAW(list, 2, 0);
 
     // replace the bits by 'GF2One' or 'GF2Zero' as the case may be
     // this must of course be done from the end of the list backwards
     for (i = len; 1 < i; i--)
-        SET_ELM_PLIST(list, i, ELM_GF2VEC(list, i));
+        SET_ELM_PLIST_RAW(list, i, ELM_GF2VEC(list, i));
     if (len != 0)
-        SET_ELM_PLIST(list, 1, first);
+        SET_ELM_PLIST_RAW(list, 1, first);
+
+    CHANGED_BAG(list);
 }
 
 
