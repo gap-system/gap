@@ -50,6 +50,9 @@
 
 #ifdef SYS_IS_MINGW
 #include <io.h>                         // for _mktemp
+// omit rarely used parts of windows.h, whose names clash with GAP's
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>                    // for GetFinalPathNameByHandleA
 #endif
 
 #ifndef HAVE_MKDTEMP
@@ -1198,6 +1201,52 @@ static Obj FuncGAP_chdir(Obj self, Obj path)
     return True;
 }
 
+#ifdef SYS_IS_MINGW
+// realpath for Windows: store the path of the existing file or directory
+// <path> in <resolved>, with links resolved, as in "C:/dir/file"; returns
+// NULL on failure
+static char * syWinRealpath(const char * path, char * resolved, DWORD size)
+{
+    // Windows reports \\?\C:\dir\file, or \\?\UNC\server\share\file
+    static const char prefix[] = "\\\\?\\";
+    static const char uncPrefix[] = "\\\\?\\UNC\\";
+    const size_t      prefixLen = sizeof(prefix) - 1;
+    const size_t      uncPrefixLen = sizeof(uncPrefix) - 1;
+
+    // FILE_FLAG_BACKUP_SEMANTICS allows opening a directory
+    HANDLE h = CreateFileA(path, 0,
+                           FILE_SHARE_READ | FILE_SHARE_WRITE |
+                               FILE_SHARE_DELETE,
+                           NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS,
+                           NULL);
+    if (h == INVALID_HANDLE_VALUE) {
+        errno = ENOENT;
+        return NULL;
+    }
+    DWORD len = GetFinalPathNameByHandleA(
+        h, resolved, size, FILE_NAME_NORMALIZED | VOLUME_NAME_DOS);
+    CloseHandle(h);
+    if (len == 0 || len >= size) {
+        errno = ENAMETOOLONG;
+        return NULL;
+    }
+
+    if (strncmp(resolved, uncPrefix, uncPrefixLen) == 0) {
+        // keep two of the leading backslashes: \\server\share\file
+        memmove(resolved + 2, resolved + uncPrefixLen,
+                len - uncPrefixLen + 1);
+    }
+    else if (strncmp(resolved, prefix, prefixLen) == 0) {
+        memmove(resolved, resolved + prefixLen, len - prefixLen + 1);
+    }
+
+    for (char * p = resolved; *p; p++)
+        if (*p == '\\')
+            *p = '/';
+    return resolved;
+}
+#endif
+
 /****************************************************************************
 **
 *F  FuncGAP_realpath( <self>, <path> ) . . . .  TODO
@@ -1208,7 +1257,7 @@ static Obj FuncGAP_realpath(Obj self, Obj path)
     char resolved_path[GAP_PATH_MAX];
 
 #ifdef SYS_IS_MINGW
-    if (NULL == _fullpath(resolved_path, CONST_CSTR_STRING(path), sizeof(resolved_path))) {
+    if (NULL == syWinRealpath(CONST_CSTR_STRING(path), resolved_path, sizeof(resolved_path))) {
 #else
     if (NULL == realpath(CONST_CSTR_STRING(path), resolved_path)) {
 #endif
