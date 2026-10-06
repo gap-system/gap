@@ -523,5 +523,22 @@ true
 false
 false
 
+# dimensions of transposed matrices and products with empty matrices
+gap> M:= ZeroMatrix( IsGenericMatrixRep, Rationals, 0, 3 );;
+gap> T:= TransposedMat( M );;  [ NrRows( T ), NrCols( T ) ];
+[ 3, 0 ]
+gap> T:= TransposedMat( T );;  [ NrRows( T ), NrCols( T ) ];
+[ 0, 3 ]
+gap> N:= ZeroMatrix( IsGenericMatrixRep, Rationals, 2, 3 ) * TransposedMat( M );;
+gap> [ NrRows( N ), NrCols( N ) ];
+[ 2, 0 ]
+gap> N:= M * ZeroMatrix( IsGenericMatrixRep, Rationals, 3, 2 );;
+gap> [ NrRows( N ), NrCols( N ) ];
+[ 0, 2 ]
+gap> N:= ZeroMatrix( IsGenericMatrixRep, Rationals, 2, 0 ) * M;;
+gap> [ NrRows( N ), NrCols( N ) ];  IsZero( N );
+[ 2, 3 ]
+true
+
 #
 gap> STOP_TEST( "matobjgeneric.tst" );
