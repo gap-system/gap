@@ -1812,7 +1812,7 @@ InstallMethod( DirectSumDecomposition,
           q,                # Number of elements of the field of `L'.
           ei,ni,E,        # Elements from `centralizer'
           hom,              # A homomorphism.
-          id,               # A list of idempotents.
+          id,               # A list of indices or of idempotents.
           vv;               # A list of vectors.
 
 
