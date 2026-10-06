@@ -224,8 +224,8 @@ Error, UNITE_BLIST: <blist1> must have the same length as <blist2> (lengths ar\
 e 3 and 2)
 gap> x:= [false,true,true,false];;
 gap> UniteBlist(Immutable(x), [true,true,false,false]);
-Error, UNITE_BLIST: <blist1> must be a mutable boolean list (not a list (boole\
-an))
+Error, UNITE_BLIST: <blist1> must be a mutable boolean list (not an immutable \
+list (boolean))
 gap> x;
 [ false, true, true, false ]
 gap> UniteBlist(x, [true,true,false,false]);
@@ -246,8 +246,8 @@ gap> UniteBlistList([1,2], [true,false], fail);
 Error, UNITE_BLIST_LIST: <sub> must be a small list (not the value 'fail')
 gap> x:= [true,true,false];;
 gap> UniteBlistList([1,2,3], Immutable(x), [2,3]);
-Error, UNITE_BLIST_LIST: <blist> must be a mutable boolean list (not a list (b\
-oolean))
+Error, UNITE_BLIST_LIST: <blist> must be a mutable boolean list (not an immuta\
+ble list (boolean))
 gap> x;
 [ true, true, false ]
 gap> UniteBlistList([1,2,3], x, [2,3]);
@@ -277,8 +277,8 @@ Error, INTER_BLIST: <blist1> must have the same length as <blist2> (lengths ar\
 e 3 and 2)
 gap> x:= [false,true,true,false];;
 gap> IntersectBlist(Immutable(x), [true,true,false,false]);
-Error, INTER_BLIST: <blist1> must be a mutable boolean list (not a list (boole\
-an))
+Error, INTER_BLIST: <blist1> must be a mutable boolean list (not an immutable \
+list (boolean))
 gap> x;
 [ false, true, true, false ]
 gap> IntersectBlist(x, [true,true,false,false]);
@@ -295,8 +295,8 @@ Error, SUBTR_BLIST: <blist1> must have the same length as <blist2> (lengths ar\
 e 3 and 2)
 gap> x:= [false,true,true,false];;
 gap> SubtractBlist(Immutable(x), [true,true,false,false]);
-Error, SUBTR_BLIST: <blist1> must be a mutable boolean list (not a list (boole\
-an))
+Error, SUBTR_BLIST: <blist1> must be a mutable boolean list (not an immutable \
+list (boolean))
 gap> x;
 [ false, true, true, false ]
 gap> SubtractBlist(x, [true,true,false,false]);
@@ -322,8 +322,8 @@ gap> FLIP_BLIST(fail);
 Error, FLIP_BLIST: <blist> must be a boolean list (not the value 'fail')
 gap> x:= [false,true,true,false];;
 gap> FlipBlist(Immutable(x));
-Error, FLIP_BLIST: <blist> must be a mutable boolean list (not a list (boolean\
-))
+Error, FLIP_BLIST: <blist> must be a mutable boolean list (not an immutable li\
+st (boolean))
 gap> x;
 [ false, true, true, false ]
 gap> FLIP_BLIST(x);
@@ -346,8 +346,8 @@ gap> SET_ALL_BLIST(fail);
 Error, SET_ALL_BLIST: <blist> must be a boolean list (not the value 'fail')
 gap> x:= [false,true,true,false];;
 gap> SET_ALL_BLIST(Immutable(x));
-Error, SET_ALL_BLIST: <blist> must be a mutable boolean list (not a list (bool\
-ean))
+Error, SET_ALL_BLIST: <blist> must be a mutable boolean list (not an immutable\
+ list (boolean))
 gap> x;
 [ false, true, true, false ]
 gap> SET_ALL_BLIST(x);
@@ -368,8 +368,8 @@ gap> CLEAR_ALL_BLIST(fail);
 Error, CLEAR_ALL_BLIST: <blist> must be a boolean list (not the value 'fail')
 gap> x:= [false,true,true,false];;
 gap> CLEAR_ALL_BLIST(Immutable(x));
-Error, CLEAR_ALL_BLIST: <blist> must be a mutable boolean list (not a list (bo\
-olean))
+Error, CLEAR_ALL_BLIST: <blist> must be a mutable boolean list (not an immutab\
+le list (boolean))
 gap> x;
 [ false, true, true, false ]
 gap> CLEAR_ALL_BLIST(x);

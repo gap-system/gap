@@ -148,8 +148,8 @@ Error, INTER_RANGE: <range2> must be a range (not the value 'fail')
 gap> r := MakeImmutable([0..9]);
 [ 0 .. 9 ]
 gap> INTER_RANGE(r, [-1..1]);
-Error, INTER_RANGE: <range1> must be a mutable range (not a list (range,ssort)\
-)
+Error, INTER_RANGE: <range1> must be a mutable range (not an immutable list (r\
+ange,ssort))
 gap> r;
 [ 0 .. 9 ]
 
