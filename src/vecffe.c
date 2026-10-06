@@ -857,7 +857,7 @@ static Obj ZeroVecFFE(Obj vec)
     GAP_ASSERT(TNUM_OBJ(vec) == T_PLIST_FFE);
     len = LEN_PLIST(vec);
     assert(len);
-    res  = NEW_PLIST(TNUM_OBJ(vec), len);
+    res = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vec), T_PLIST_FFE, len);
     SET_LEN_PLIST(res, len);
     z = ZERO_SAMEMUT(ELM_PLIST(vec, 1));
     for (i = 1; i <= len; i++)
