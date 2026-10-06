@@ -1772,9 +1772,12 @@ static void AsssPlist(Obj list, Obj poss, Obj vals)
             val = ELMW_LIST( vals, i );
 
             // assign the element into <elms>
-            SET_ELM_PLIST( list, pos, val );
+            SET_ELM_PLIST_RAW( list, pos, val );
 
         }
+
+        // notify Gasman
+        CHANGED_BAG( list );
 
     }
 
@@ -1806,9 +1809,12 @@ static void AsssPlist(Obj list, Obj poss, Obj vals)
             val = ELMW_LIST( vals, i );
 
             // assign the element to <elms>
-            SET_ELM_PLIST( list, pos, val );
+            SET_ELM_PLIST_RAW( list, pos, val );
 
         }
+
+        // notify Gasman
+        CHANGED_BAG( list );
 
     }
 }
