@@ -572,10 +572,10 @@ as on Unix:
         mingw-w64-x86_64-readline mingw-w64-x86_64-zlib
     ./configure && make
 
-Known limitations: HPC-GAP and the Julia integration are unavailable; child
-processes are attached through pipes, not pseudo terminals; packages relying
-on POSIX features such as `fork` or sockets work only in part; only 64-bit x86
-is tested. See <https://github.com/gap-system/gap/issues/4157>.
+Known limitations: HPC-GAP is unavailable; child processes are attached
+through pipes, not pseudo terminals; packages relying on POSIX features such
+as `fork` or sockets work only in part; CI tests only 64-bit x86 with GASMAN.
+See <https://github.com/gap-system/gap/issues/4157>.
 
 ### Something else went wrong
 

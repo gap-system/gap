@@ -32,12 +32,15 @@
 
 #include "config.h"
 
-#include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef SYS_IS_MINGW
+#include "gaptime.h"
+#else
 #include <sys/resource.h>
-#include <unistd.h>
+#endif
 
 #include <julia.h>
 #include <julia_gcext.h>
@@ -582,13 +585,18 @@ static void GapRootScanner(int full)
 // SyTime raises a GAP error when the clock cannot be read, which a GC hook
 // must not do: entering the error handler mid-collection runs GAP code. Read
 // the clock directly instead, and report 0 if it is unavailable. The Julia GC
-// is only supported on systems providing getrusage.
+// is only supported on systems providing getrusage, and on native Windows.
 static UInt GCTime(void)
 {
+#ifdef SYS_IS_MINGW
+    // cannot fail on Windows
+    return SyTime();
+#else
     struct rusage buf;
     if (getrusage(RUSAGE_SELF, &buf))
         return 0;
     return buf.ru_utime.tv_sec * 1000 + buf.ru_utime.tv_usec / 1000;
+#endif
 }
 
 // Julia callback

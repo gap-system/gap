@@ -271,13 +271,13 @@ AS_IF([test "x$with_gc" = xdefault],
     AS_IF([test "x$enable_hpcgap" = xyes], [with_gc=boehm])
     AS_IF([test "x$with_julia" != xno], [with_gc=julia])
     ])
-dnl native Windows (mingw) supports only GASMAN so far
+dnl native Windows (mingw) supports GASMAN and the Julia GC so far
 AS_CASE([$host_os],
   [mingw*],[
     AS_IF([test "x$enable_hpcgap" = xyes],
       [AC_MSG_ERROR([HPC-GAP is not yet supported on native Windows])])
-    AS_IF([test "x$with_gc" != xgasman],
-      [AC_MSG_ERROR([only GASMAN is supported on native Windows])])
+    AS_IF([test "x$with_gc" = xboehm],
+      [AC_MSG_ERROR([Boehm GC is not yet supported on native Windows])])
   ])
 
 AS_CASE([$with_gc],

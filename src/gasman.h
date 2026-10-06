@@ -377,6 +377,12 @@ extern "C++" {
 }
 #endif
 
+// julia.h includes windows.h, which defines names GAP uses itself
+#ifdef SYS_IS_MINGW
+#undef IN
+#undef S_FALSE
+#endif
+
 // Julia 1.14 renamed `jl_gc_wb_back` (JuliaLang/julia#63299)
 #if JULIA_VERSION_MAJOR == 1 && JULIA_VERSION_MINOR < 14
 #define jl_gc_wb_object jl_gc_wb_back
