@@ -91,7 +91,8 @@ wine gap.exe -A -q -c 'Read("../tst/testinstall.g");' < /dev/null
   later). `libgap.dll` inside another program gets that program's code page;
   `julia.exe` uses the legacy one.
   The console code page is not switched, so non-ASCII output may be garbled.
-- 32-bit builds (MSYS2 MINGW32) crash while loading the library.
+- 32-bit builds (MSYS2 MINGW32) pass testinstall except for positions in
+  gzip compressed streams (`compressed.tst`, `files/files.tst`); not in CI.
 - Native ARM64 builds (MSYS2 CLANGARM64, `CC=clang CXX=clang++`) pass
   testinstall but are not in CI.
 - HPC-GAP and Boehm GC: rejected by `configure`.
