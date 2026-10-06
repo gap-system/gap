@@ -202,3 +202,4 @@ DeclareGlobalFunction("SmallRing");
 ##
 DeclareGlobalFunction( "DirectSum" );
 DeclareOperation( "DirectSumOp", [ IsList, IsRing ] );
+DeclareAttribute( "DirectSumInfo", IsGroup, "mutable" );
