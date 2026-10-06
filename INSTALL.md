@@ -575,8 +575,7 @@ as on Unix:
 Known limitations: HPC-GAP and the Julia integration are unavailable; child
 processes are attached through pipes, not pseudo terminals; packages relying
 on POSIX features such as `fork` or sockets work only in part; only 64-bit x86
-is tested; paths and user names containing spaces or non-ASCII characters are
-untested. See <https://github.com/gap-system/gap/issues/4157>.
+is tested. See <https://github.com/gap-system/gap/issues/4157>.
 
 ### Something else went wrong
 

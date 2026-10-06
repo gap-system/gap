@@ -78,6 +78,13 @@ m4_if(m4_version_compare(m4_defn([AC_AUTOCONF_VERSION]), [2.70]), -1,
 AC_PROG_CXX
 AX_CXX_COMPILE_STDCXX(11)
 
+dnl the resource compiler embeds a manifest into gap.exe on native Windows
+AS_CASE([$host_os],
+  [mingw*],[
+    AC_CHECK_TOOL([WINDRES], [windres])
+    AS_IF([test "x$WINDRES" = x], [AC_MSG_ERROR([windres not found])])
+  ])
+
 AC_LANG([C])
 
 
