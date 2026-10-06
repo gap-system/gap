@@ -961,6 +961,45 @@ InstallMethod( IsGeneratorsOfMagmaWithInverses,
 
 #############################################################################
 ##
+#F  CheckMatrixGroupGenerators( <gens>, <id> )
+##
+##  O(Length(<gens>)); inspects no entries.
+##
+InstallGlobalFunction( CheckMatrixGroupGenerators, function( gens, id )
+  local M, filt, R, x;
+
+  if IsEmpty( gens ) or not IsMatrixOrMatrixObj( gens[1] ) then
+    return;
+  elif not IsBool( id ) then
+    gens:= Concatenation( gens, [ id ] );
+  fi;
+
+  M:= gens[1];
+  if IsList( M ) then
+    if not ForAll( gens, IsList ) then
+      ErrorNoReturn( "<gens> must not mix list matrices and matrix objects" );
+    fi;
+    return;
+  fi;
+
+  filt:= ConstructingFilter( M );
+  R:= BaseDomain( M );
+  for x in gens do
+    if IsList( x ) then
+      ErrorNoReturn( "<gens> must not mix list matrices and matrix objects" );
+    elif ConstructingFilter( x ) <> filt then
+      ErrorNoReturn( "<gens> must not mix matrix objects ",
+                     "with different representations" );
+    elif not IsIdenticalObj( BaseDomain( x ), R ) then
+      ErrorNoReturn( "<gens> must not mix matrix objects ",
+                     "with different base domains" );
+    fi;
+  od;
+end );
+
+
+#############################################################################
+##
 #M  GroupWithGenerators( <mats> )
 #M  GroupWithGenerators( <mats>, <id> )
 ##
@@ -973,6 +1012,7 @@ local G,f;
 
   if not IsFinite(gens) then TryNextMethod(); fi;
 
+  CheckMatrixGroupGenerators( gens, false );
   f:=DefaultScalarDomainOfMatrixList(gens);
   gens:=List(gens,i->ImmutableMatrix(f,i));
 
@@ -991,6 +1031,7 @@ local G,f;
 
   if not IsFinite(gens) then TryNextMethod(); fi;
 
+  CheckMatrixGroupGenerators( gens, id );
   f:=DefaultScalarDomainOfMatrixList(gens);
   gens:=List(gens,i->ImmutableMatrix(f,i));
   id:=ImmutableMatrix(f,id);
@@ -1028,6 +1069,7 @@ local G,f;
 
   if not IsFinite(gens) then TryNextMethod(); fi;
 
+  CheckMatrixGroupGenerators( gens, false );
   f:=DefaultScalarDomainOfMatrixList(gens);
   gens:=List(gens,i->ImmutableMatrix(f,i));
 
@@ -1047,6 +1089,7 @@ local G,f;
 
   if not IsFinite(gens) then TryNextMethod(); fi;
 
+  CheckMatrixGroupGenerators( gens, id );
   f:=DefaultScalarDomainOfMatrixList(gens);
   gens:=List(gens,i->ImmutableMatrix(f,i));
   id:=ImmutableMatrix(f,id);

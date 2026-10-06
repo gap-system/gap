@@ -30,6 +30,35 @@ DeclareSynonym( "IsMatrixGroup", IsRingElementCollCollColl and IsGroup );
 
 #############################################################################
 ##
+#F  CheckMatrixGroupGenerators( <gens>, <id> )
+##
+##  <#GAPDoc Label="CheckMatrixGroupGenerators">
+##  <ManSection>
+##  <Func Name="CheckMatrixGroupGenerators" Arg='gens, id'/>
+##
+##  <Returns>nothing</Returns>
+##  <Description>
+##  signals an error unless the matrices in the list <A>gens</A>,
+##  and <A>id</A> if it is not a boolean,
+##  are either all lists,
+##  or all matrix objects that are not lists and have the same
+##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/> value
+##  and identical
+##  <Ref Attr="BaseDomain" Label="for a matrix object"/> values.
+##  The matrix entries are not inspected.
+##  <P/>
+##  <Ref Func="Group" Label="for several generators"/> and
+##  <Ref Oper="GroupWithGenerators"/> call this function.
+##  Code that creates matrix groups by other means can call it
+##  to enforce the same convention.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "CheckMatrixGroupGenerators" );
+
+#############################################################################
+##
 #M  IsHandledByNiceMonomorphism( <mat-grp> )
 ##
 ##  For finite matrix groups, there is a default method for

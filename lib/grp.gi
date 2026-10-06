@@ -4992,6 +4992,7 @@ function( gens )
   fi;
 
   gens:=AsList(gens);
+  CheckMatrixGroupGenerators( gens, false );
   return MakeGroupyObj(FamilyObj(gens), IsGroup, gens, false);
 end );
 
@@ -5008,6 +5009,7 @@ function( gens, id )
   fi;
 
   gens:=AsList(gens);
+  CheckMatrixGroupGenerators( gens, id );
   return MakeGroupyObj(FamilyObj(gens), IsGroup, gens, id);
 end );
 
