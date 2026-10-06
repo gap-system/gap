@@ -549,9 +549,15 @@ GAP_LDFLAGS += -Wl,--allow-multiple-definition
 # static libgcc: the DLL must not depend on libgcc_s_seh-1.dll
 GAP_LDFLAGS += -static-libgcc
 
+# the manifest makes UTF-8 the code page of gap.exe: with the legacy code
+# page GAP cannot even start from a directory whose name is outside of it
+build/obj/gap.rc.o: $(srcdir)/cnf/gap.rc $(srcdir)/cnf/gap.exe.manifest
+	@$(MKDIR_P) $(@D)
+	$(WINDRES) -I $(srcdir)/cnf -O coff -o $@ $<
+
 # as on Cygwin: libgap.dll holds GAP, gap.exe is a stub
-gap$(EXEEXT): build/obj/src/main.c.o libgap$(SHLIB_EXT) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
-	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $< $(GAP_LIBS) -L${abs_builddir} -lgap -o $@
+gap$(EXEEXT): build/obj/src/main.c.o build/obj/gap.rc.o libgap$(SHLIB_EXT) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $< build/obj/gap.rc.o $(GAP_LIBS) -L${abs_builddir} -lgap -o $@
 
 else
 

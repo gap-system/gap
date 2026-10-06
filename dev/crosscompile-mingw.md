@@ -86,9 +86,10 @@ wine gap.exe -A -q -c 'Read("../tst/testinstall.g");' < /dev/null
 
 ## Open items
 
-- Paths and user names with non-ASCII characters: the kernel calls the ANSI
-  Windows API (`CreateProcessA`, `LoadLibraryA`, `getenv`, `fopen`). Untested.
-- Paths with spaces, e.g. below `C:/Program Files`. Untested.
+- Non-ASCII paths: the kernel calls the ANSI Windows API and relies on the
+  manifest of `gap.exe` making UTF-8 the code page (Windows 10 1903 and
+  later). `libgap.dll` inside another program gets that program's code page.
+  The console code page is not switched, so non-ASCII output may be garbled.
 - 32-bit builds and native ARM64 builds (MSYS2 CLANGARM64). Untested; the
   x86-64 build runs on ARM64 Windows under emulation.
 - HPC-GAP, the Julia GC and Boehm GC: rejected by `configure`.
