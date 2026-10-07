@@ -152,5 +152,13 @@ Error, TranslateString: <trans> must be a string (not the integer 1)
 gap> TranslateString("abc","def");
 Error, TranslateString: <trans> must have length >= 256
 
+# an immutable string known to be sorted is still a string
+gap> s := "abc";; IsSSortedList(s);
+true
+gap> MakeImmutable(s);; IsString(s);
+true
+gap> IsStringRep(Concatenation(s, s));
+true
+
 #
 gap> STOP_TEST("kernel/strinobj.tst");
