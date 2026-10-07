@@ -153,6 +153,22 @@ rec( algebras := [ A2, A6 ],
           <zero> of ..., <zero> of ..., <zero> of ..., <zero> of ..., 
           <zero> of ..., <zero> of ..., (1)*(), (1)*(2,3), (1)*(1,2), 
           (1)*(1,2,3), (1)*(1,3,2), (1)*(1,3) ] ], type := "basis vectors" )
+gap> A1256 := DirectSumOfAlgebras( [ A1, A2, A5, A6 ] );;
+gap> info1256 := DirectSumInfo( A1256 ); 
+rec( algebras := [ A1, A2, A5, A6 ], embeddings := [  ], 
+  first := [ 0, 4, 13, 18, 24 ], projections := [  ], type := "basis vectors" )
+gap> e3 := Embedding( A1256, 3 );
+[ (1)*(), (1)*(5,6,7,8,9), (1)*(5,7,9,6,8), (1)*(5,8,6,9,7), (1)*(5,9,8,7,6) ] -> [ v.14, v.15, v.16, v.17, v.18 ]
+gap> p3 := Projection( A1256, 3 );
+[ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8, v.9, v.10, v.11, v.12, v.13, v.14, 
+  v.15, v.16, v.17, v.18, v.19, v.20, v.21, v.22, v.23, v.24 ] -> 
+[ <zero> of ..., <zero> of ..., <zero> of ..., <zero> of ..., <zero> of ..., 
+  <zero> of ..., <zero> of ..., <zero> of ..., <zero> of ..., <zero> of ..., 
+  <zero> of ..., <zero> of ..., <zero> of ..., (1)*(), (1)*(5,6,7,8,9), 
+  (1)*(5,7,9,6,8), (1)*(5,8,6,9,7), (1)*(5,9,8,7,6), <zero> of ..., 
+  <zero> of ..., <zero> of ..., <zero> of ..., <zero> of ..., <zero> of ... ]
+gap> e3 * p3 = IdentityMapping( A5 );
+true
 
 gap> ## Lie algebra example
 gap> L := FullMatrixLieAlgebra( Rationals, 2 );
@@ -163,7 +179,7 @@ gap> L2 := DirectSumOfAlgebras( L, L );
 gap> DirectSumInfo(L2);
 rec( algebras := [ L, L ], embeddings := [  ], first := [ 0, 3, 6 ], 
   projections := [  ], type := "generators" )
-gap> Embedding( L2, 1 );                       
+gap> Embedding( L2, 1 );
 [ LieObject( [ [ 1, 0 ], [ 0, 0 ] ] ), LieObject( [ [ 0, 1 ], [ 0, 0 ] ] ), 
   LieObject( [ [ 0, 0 ], [ 1, 0 ] ] ) ] -> 
 [ LieObject( [ [ 1, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] 
@@ -172,5 +188,21 @@ gap> Embedding( L2, 1 );
      ] ), 
   LieObject( [ [ 0, 0, 0, 0 ], [ 1, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] 
      ] ) ]
+gap> Projection( L2, 2 );
+[ LieObject( [ [ 1, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] 
+     ] ), 
+  LieObject( [ [ 0, 1, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] 
+     ] ), 
+  LieObject( [ [ 0, 0, 0, 0 ], [ 1, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] 
+     ] ), 
+  LieObject( [ [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 0 ] 
+     ] ), 
+  LieObject( [ [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 1 ], [ 0, 0, 0, 0 ] 
+     ] ), 
+  LieObject( [ [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 1, 0 ] 
+     ] ) ] -> [ LieObject( [ [ 0, 0 ], [ 0, 0 ] ] ), 
+  LieObject( [ [ 0, 0 ], [ 0, 0 ] ] ), LieObject( [ [ 0, 0 ], [ 0, 0 ] ] ), 
+  LieObject( [ [ 1, 0 ], [ 0, 0 ] ] ), LieObject( [ [ 0, 1 ], [ 0, 0 ] ] ), 
+  LieObject( [ [ 0, 0 ], [ 1, 0 ] ] ) ]
 
 gap> STOP_TEST("alg-dsum.tst");

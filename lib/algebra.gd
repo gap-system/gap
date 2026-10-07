@@ -598,17 +598,17 @@ DeclareOperation( "DirectSumOfAlgebras", [ IsDenseList ] );
 
 #############################################################################
 ##
-#A  Embedding( <alg> <i> )
+#O  Embedding( <A>, <i> )
 ##
 ##  <#GAPDoc Label="Embedding:algebras">
 ##  <ManSection>
-##  <Attr Name="Embedding" Arg='alg i'
+##  <Oper Name="Embedding" Arg='A, i'
 ##    Label="for a direct sum of algebras and a positive integer"/>
 ##
 ##  <Description>
-##  If algebra <M>A</M> is the direct sum of algebras <M>[A_1,\ldots,A_k]</M>
-##  then <A>Embedding(A,i)</A> for <M>1 \leq i \leq k</M> returns an algebra
-##  homomorphism mapping <M>A_i</M> into <M>A</M>.
+##  If algebra <A>A</A> is the direct sum of algebras <M>[A_1,\ldots,A_k]</M>
+##  then <C>Embedding(A,i)</C> for <M>1 \leq i \leq k</M> returns an algebra
+##  homomorphism mapping <M>A_i</M> into <A>A</A>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> emb1 := Embedding( A35, 1 );
@@ -624,17 +624,17 @@ DeclareOperation( "DirectSumOfAlgebras", [ IsDenseList ] );
 
 #############################################################################
 ##
-#A  Projection( <alg> <i> )
+#O  Projection( <A>, <i> )
 ##
 ##  <#GAPDoc Label="Projection:algebras">
 ##  <ManSection>
-##  <Attr Name="Projection" Arg='alg i'
+##  <Oper Name="Projection" Arg='A, i'
 ##    Label="for a direct sum of algebras and a positive integer"/>
 ##
 ##  <Description>
-##  If algebra <M>A</M> is the direct sum of algebras <M>[A_1,\ldots,A_k]</M>
-##  then <A>Projection(A,i)</A> for <M>1 \leq i \leq k</M> returns an algebra
-##  homomorphism mapping <M>A</M> onto <M>A_i</M>.
+##  If algebra <A>A</A> is the direct sum of algebras <M>[A_1,\ldots,A_k]</M>
+##  then <C>Projection(A,i)</C> for <M>1 \leq i \leq k</M> returns an algebra
+##  homomorphism mapping <A>A</A> onto <M>A_i</M>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> pro2 := Projection( A35, 2 );

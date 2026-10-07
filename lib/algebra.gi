@@ -3253,7 +3253,6 @@ InstallMethod( Embedding, "algebra direct sum and integer",
     if not ( i < Length(first) ) then
         Error( "value of second parameter is too large" );
     fi;
-    ## info.onelist:=List(info.algebras,One);
     # compute embedding
     A := info.algebras[i];
     if ( type = "basis vectors" ) then
@@ -3265,7 +3264,7 @@ InstallMethod( Embedding, "algebra direct sum and integer",
     else
         Error( "unknown type" );
     fi;
-    map := AlgebraHomomorphismByImages( A, D, gens, imgs );
+    map := AlgebraHomomorphismByImagesNC( A, D, gens, imgs );
     SetIsInjective( map, true );
     SetIsTotal( map, true );
     SetIsSingleValued( map, true );
@@ -3312,11 +3311,10 @@ InstallMethod( Projection, "algebra direct sum and integer",
     for k in [j+1..first[i+1]] do
         imgs[k] := genA[k-j];
     od;
-    map := AlgebraHomomorphismByImages( D, A, genD, imgs );
+    map := AlgebraHomomorphismByImagesNC( D, A, genD, imgs );
 
     N := Subalgebra( D, genD{Concatenation( [1..first[i]],
                                [first[i+1]+1..first[len]] )} );
-##    SetIsSurjective( map, true );
     SetKernelOfMultiplicativeGeneralMapping( map, N );
 
     # store information
