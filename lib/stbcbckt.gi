@@ -720,7 +720,7 @@ local  dom,  # operation domain for the group
                           Length( sub ) ^ ( key[ i ] mod d );
             od;
           else
-            Info(InfoWarning,1,"suborbits variant triggered, check!");
+            Info(InfoBckt,2,"suborbit outside the orbit of the root");
           fi;
         od;
       od;
