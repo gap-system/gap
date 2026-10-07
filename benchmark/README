@@ -51,3 +51,43 @@ Command line options that should be given to start GAP. In particular useful
 to indicate required memory settings.
 #packages
 A comma -separated list of packages that must be available
+
+
+Running suites with run.py
+--------------------------
+
+A suite with a file <suite>/<suite>.g defining the list BENCH_CASES (see
+runner.g for the record format) can be run by
+
+    make benchmark                              # the pbt suite
+    make benchmark BENCHFLAGS="--filter psl35 --repeat 3"
+    benchmark/run.py --list
+    benchmark/run.py --category transitive -o new.json --baseline old.json
+    benchmark/compare.py old.json new.json --only-flagged
+
+Each case runs in its own GAP process with a time limit, so one slow case
+cannot hide or distort the others, and a timeout is recorded as such. Only
+the operation itself is timed, not the construction of its input. Timings
+are CPU milliseconds from Runtime(). The random sources are reset before
+each case and the ReproducibleBehaviour preference is set, so a run is
+repeatable; --no-reproducible turns that off, --repeat N runs each case N
+times and compares the minimum. Every case records a result that would
+change if the answer were wrong, so the suite doubles as a regression test.
+
+compare.py flags a case if the ratio of the minimal timings exceeds
+--threshold (1.5) and the difference exceeds --floor-ms (20), if the
+results differ, or if the status changed between ok, timeout, error and
+skipped. Its exit code is 1 if a result or status got worse; with --strict,
+slower cases count too.
+
+To compare two checkouts without rebuilding, point one binary at the
+other's library; --gaproot is passed as -l "<root>;" so the packages of
+the binary's own root stay available:
+
+    benchmark/run.py --gap ../other/gap --gaproot . -o here.json
+
+The pbt suite covers the partition backtrack in lib/stbcbckt.gi:
+normalizers, conjugacy and centralizers of permutation groups and
+elements, set stabilizers and intersections. pbt/fuzz.g checks the
+backtrack in symmetric groups against brute force; pbt/fuzzcheck.sh
+summarizes its output.
