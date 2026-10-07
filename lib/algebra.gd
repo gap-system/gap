@@ -598,44 +598,6 @@ DeclareOperation( "DirectSumOfAlgebras", [ IsDenseList ] );
 
 #############################################################################
 ##
-#A  DirectSumInfo( <alg> )
-##
-##  <#GAPDoc Label="DirectSumInfo:algebras">
-##  <ManSection>
-##  <Attr Name="DirectSumInfo" Arg='alg'
-##    Label="for a direct sum of algebras"/>
-##
-##  <Description>
-##  The operation <C>DirectSum</C> (<Ref Sect="DirectSum"/>) is defined for
-##  rings and comes with the attribute <C>DirctSumInfo</C>
-##  (<Ref Sect="DirectSumInfo"/>) which is an information record.
-##  From &GAP; 4.17.0 a direct sum of algebras is equipped with
-##  a similar record, having fields <A>algebras</A>; <A>first</A>;
-##  <A>type</A>; <A>embeddings</A> and <A>projections</A>.
-##  <P/>
-##  In the example the dimensions of <A>A3</A> and <A>A5</A> are <M>3</M>
-##  and <M>5</M>, so field <A>first</A> has value <M>[0,3,3+5]</M>,
-##  showing where the basis vectors of each component finish in the basis
-##  of <A>A35</A>.
-##  <P/>
-##  The field <A>type</A> is either <C>"basis vectors"</C> or
-##  <C>"generators"</C>, depending on how the algebras are formed.
-##  <P/>
-##  As embeddings and projections are created (see below)
-##  they are stored in the fields <A>embeddings</A> and <A>projections</A>.
-##  <P/>
-##  <Example><![CDATA[
-##  gap> DirectSumInfo( A35 );
-##  rec( algebras := [ A3, A5 ], embeddings := [  ], first := [ 0, 3, 8 ],
-##    projections := [  ], type := "basis vectors" )
-##  ]]></Example>
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-
-
-#############################################################################
-##
 #A  Embedding( <alg> <i> )
 ##
 ##  <#GAPDoc Label="Embedding:algebras">
@@ -679,15 +641,6 @@ DeclareOperation( "DirectSumOfAlgebras", [ IsDenseList ] );
 ##  [ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8 ] -> [ <zero> of ..., <zero> of ...,
 ##    <zero> of ..., (1)*(), (1)*(5,6,7,8,9), (1)*(5,7,9,6,8), (1)*(5,8,6,9,7),
 ##    (1)*(5,9,8,7,6) ]
-##  gap> DirectSumInfo( A35 );
-##  rec( algebras := [ A3, A5 ],
-##    embeddings := [ [ (1)*(), (1)*(1,2,3), (1)*(1,3,2) ] -> [ v.1, v.2, v.3 ] ],
-##    first := [ 0, 3, 8 ],
-##    projections :=
-##      [ , [ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8 ] ->
-##          [ <zero> of ..., <zero> of ..., <zero> of ..., (1)*(),
-##            (1)*(5,6,7,8,9), (1)*(5,7,9,6,8), (1)*(5,8,6,9,7), (1)*(5,9,8,7,6)
-##           ] ], type := "basis vectors" )
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

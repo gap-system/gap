@@ -3034,32 +3034,10 @@ InstallOtherMethod( DirectSumOfAlgebras,
           r,
           pos,   # List of positions.
           info1, # direct sum info for A1 if it exists.
-          info2, # direct sum info for A2 if it exists.
-          alg,   # list of component algebras.
-          first; # positions where bases start in the full basis
+          info2; # direct sum info for A2 if it exists.
 
     if LeftActingDomain( A1 ) <> LeftActingDomain( A2 ) then
       Error( "<A1> and <A2> must be written over the same field" );
-    fi;
-
-    # this method constructs a direct sum of type "basis vectors"
-    # if it should so happen that one of A1,A2 is already a direct sum
-    # of type "generators" then we reconstruct it using "basis vectors"
-    if HasDirectSumInfo( A1 ) and DirectSumInfo( A1 ).type = "generators" then
-      info1 := DirectSumInfo( A1 );
-      L := A2;
-      for i in [1..Length( info1.algebras )] do
-          L := DirectSumOfAlgebras( L, info1.algebras[i] );
-      od;
-      return L;
-    fi;
-    if HasDirectSumInfo( A2 ) and DirectSumInfo( A2 ).type = "generators" then
-      info2 := DirectSumInfo( A2 );
-      L := A1;
-      for i in [1..Length( info2.algebras )] do
-          L := DirectSumOfAlgebras( L, info2.algebras[i] );
-      od;
-      return L;
     fi;
 
     n1:= Dimension( A1 );
@@ -3096,32 +3074,8 @@ InstallOtherMethod( DirectSumOfAlgebras,
 
     L:= AlgebraByStructureConstants( LeftActingDomain( A1 ), T );
 
-    # if one of A1,A2 is already a direct sum then make adjustments
-    if HasDirectSumInfo( A1 ) then
-      info1 := DirectSumInfo( A1 );
-      i := Length( info1.first );
-      if HasDirectSumInfo( A2 ) then
-        info2 := DirectSumInfo( A2 );
-        alg := Concatenation( info1.algebras, info2.algebras );
-        first := ShallowCopy( info1.first ){[1..i-1]};
-        j := info1.first[i];
-        first := Concatenation( first, info2.first + j );
-      else
-        alg := Concatenation( info1.algebras, [A2] );
-        first := ShallowCopy( info1.first );
-        Add( first, first[i] + n2 );
-      fi;
-    elif HasDirectSumInfo( A2 ) then
-      info2 := DirectSumInfo( A2 );
-      alg := Concatenation( [A1], info2.algebras );
-      first := ShallowCopy( info2.first );
-      first := Concatenation( [0], first + n1 );
-    else
-      alg := [A1,A2];
-      first := [0,n1,n1+n2];
-    fi;
-    SetDirectSumInfo( L, rec( algebras := alg,
-                              first := first,
+    SetDirectSumInfo( L, rec( algebras := [A1,A2],
+                              first := [0,n1,n1+n2],
                               type := "basis vectors",
                               embeddings := [],
                               projections := [] ) );
@@ -3353,15 +3307,12 @@ InstallMethod( Projection, "algebra direct sum and integer",
     else
         Error( "unknown type" );
     fi;
-    imgs := ListWithIdenticalEntries( first[len]-1, zA );
+    imgs := ListWithIdenticalEntries( first[len], zA );
     j := first[i];
-    for k in [first[i]+1..first[i+1]] do
+    for k in [j+1..first[i+1]] do
         imgs[k] := genA[k-j];
     od;
-    map := AlgebraGeneralMappingByImages( D, A, genD, imgs );
-    if not IsTotal( map ) and IsSurjective( map ) then
-        Error( "map is not total and surjective" );
-    fi;
+    map := AlgebraHomomorphismByImages( D, A, genD, imgs );
 
     N := Subalgebra( D, genD{Concatenation( [1..first[i]],
                                [first[i+1]+1..first[len]] )} );

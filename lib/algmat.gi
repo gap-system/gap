@@ -1379,38 +1379,11 @@ InstallOtherMethod( DirectSumOfAlgebras,
     fi;
 
     SetIsAssociative( A, true );
-#T nec. ?
-
-    # if one of A1,A2 is already a direct sum then make adjustments
-    if HasDirectSumInfo( A1 ) then
-      info1 := DirectSumInfo( A1 );
-      i := Length( info1.first );
-      if HasDirectSumInfo( A2 ) then
-        info2 := DirectSumInfo( A2 );
-        alg := Concatenation( info1.algebras, info2.algebras );
-        first := ShallowCopy( info1.first ){[1..i-1]};
-        j := info1.first[i];
-        first := Concatenation( first, info2.first + j );
-      else
-        alg := Concatenation( info1.algebras, [A2] );
-        first := ShallowCopy( info1.first );
-        Add( first, first[i] + d2 );
-      fi;
-    elif HasDirectSumInfo( A2 ) then
-      info2 := DirectSumInfo( A2 );
-      alg := Concatenation( [A1], info2.algebras );
-      first := ShallowCopy( info2.first );
-      first := Concatenation( [0], first + d1 );
-    else
-      alg := [A1,A2];
-      first := [0,d1,d1+d2];
-    fi;
-    SetDirectSumInfo( A, rec( algebras := alg,
-                              first := first,
+    SetDirectSumInfo( A, rec( algebras := [A1,A2],
+                              first := [0,d1,d1+d2],
                               type := type,
                               embeddings := [],
                               projections := [] ) );
-
     return A;
     end );
 
