@@ -3204,7 +3204,7 @@ InstallMethod( DirectSumOfAlgebras,
     "for list of algebras",
     [ IsDenseList ],
     function( list )
-    local R, A, i, dim, type, first;
+    local R, A, i;
 
     if IsEmpty( list ) then
       Error( "<list> must be nonempty" );
@@ -3233,7 +3233,7 @@ InstallMethod( DirectSumOfAlgebras,
 InstallMethod( Embedding, "algebra direct sum and integer",
     [ IsAlgebra and HasDirectSumInfo, IsPosInt ],
     function( D, i )
-    local info, type, first, A, imgs, map, gens;
+    local info, type, first, A, gens, imgs, map;
 
     # check
     info := DirectSumInfo( D );
@@ -3273,7 +3273,7 @@ end );
 InstallMethod( Projection, "algebra direct sum and integer",
     [ IsAlgebra and HasDirectSumInfo, IsPosInt ],
     function( D, i )
-    local infoD, type, first, zA, len, A, genA, genD, imgs, j, k, map, N;
+    local infoD, type, first, len, A, zA, genA, genD, imgs, j, k, map;
 
     # check
     infoD := DirectSumInfo( D );
