@@ -3252,36 +3252,20 @@ InstallMethod( HighestWeightModule,
             multiplicity,  sps,  sortmn,  we_had_enough,  le,  f,
             m1a,  g,  m2a,  lcm,  pp,  w2,  e1,  e2,  fac1,  fac2,
             comp,  vec,  ecomp,  vecs,  cfsc,  ec,  wvecs,  no,  fam,
-            B,  delmod,  delB, lexord, longmon;
+            B,  delmod,  delB, lexkey, longmon;
 
 
-    lexord:= function( novar, m1, m2 )
+    lexkey:= function( novar, m )
 
-        # m1, m2 are two monomials in extrep, deg lex order...
+        # Sort key of the monomial m in extrep: descending deg lex order.
 
-        local   d1,  d2,  n1,  k,  n2,  o,  pos;
+        local   n,  k;
 
-        d1:= Sum(m1{[2,4..Length(m1)]});
-        d2:= Sum(m2{[2,4..Length(m2)]});
-        if d1<>d2 then
-            return d1<d2;
-        fi;
-
-        n1:= ListWithIdenticalEntries( novar, 0 );
-        for k in [1,3..Length(m1)-1] do
-            n1[m1[k]]:= m1[k+1];
+        n:= ListWithIdenticalEntries( novar, 0 );
+        for k in [1,3..Length(m)-1] do
+            n[m[k]]:= m[k+1];
         od;
-        n2:= ListWithIdenticalEntries( novar, 0 );
-        for k in [1,3..Length(m2)-1] do
-            n2[m2[k]]:= m2[k+1];
-        od;
-
-        o:= n2-n1;
-        pos:= PositionProperty( o, x -> x <> 0 );
-        if pos = fail then
-            return false;
-        fi;
-        return o[pos] < 0;
+        return Concatenation( [ -Sum( n ) ], n );
     end;
 
 
@@ -3564,8 +3548,7 @@ InstallMethod( HighestWeightModule,
                     sps[j]:= MutableBasis( Rationals, [],
                                      [1..Length(mmm[j])]*0 );
                     sortmn[j]:= List( mmm[j], x -> ExtRepOfObj(x)[1] );
-                    Sort( sortmn[j], function(x,y) return
-                             lexord( novar, y, x ); end );
+                    SortBy( sortmn[j], m -> lexkey( novar, m ) );
 
                 fi;
             fi;
