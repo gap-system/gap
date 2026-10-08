@@ -231,8 +231,7 @@ end);
 ##
 #R  IsRightTransversalPcGroupRep  . . . . . . . right transversal of pc group
 ##
-DeclareRepresentation( "IsRightTransversalPcGroupRep", IsRightTransversalRep,
-    [ "transversal", "canonReps" ] );
+DeclareRepresentation( "IsRightTransversalPcGroupRep", IsRightTransversalRep );
 
 
 #############################################################################

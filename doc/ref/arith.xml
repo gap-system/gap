@@ -122,7 +122,7 @@ We decide to store the data in a list-like structure, at position 1.
 This <E>representation</E> is declared as follows.
 <P/>
 <Log><![CDATA[
-DeclareRepresentation( "IsMyObjectListRep", IsPositionalObjectRep, [ 1 ] );
+DeclareRepresentation( "IsMyObjectListRep", IsPositionalObjectRep );
 ]]></Log>
 <P/>
 Of course we can argue that this declaration is superfluous

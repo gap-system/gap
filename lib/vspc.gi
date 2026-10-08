@@ -389,8 +389,7 @@ InstallMethod( ClosureLeftModule,
 ##
 DeclareRepresentation(
     "IsSubspacesVectorSpaceDefaultRep",
-    IsComponentObjectRep,
-    [ "dimension", "structure" ] );
+    IsComponentObjectRep );
 #T not IsAttributeStoringRep?
 
 

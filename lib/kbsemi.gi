@@ -162,8 +162,7 @@ end);
 ##  fam - the family of elements of the fp smg/monoid
 ##
 DeclareRepresentation("IsKnuthBendixRewritingSystemRep",
-  IsComponentObjectRep,
-  ["family", "tzrules","pairs2check", "reduced", "ordering"]);
+  IsComponentObjectRep);
 
 
 #############################################################################

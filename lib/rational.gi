@@ -72,8 +72,7 @@ InstallMethod( Conjugates,
 #R  IsCanonicalBasisRationals
 ##
 DeclareRepresentation( "IsCanonicalBasisRationals",
-    IsAttributeStoringRep,
-    [] );
+    IsAttributeStoringRep );
 #T is this needed at all?
 
 

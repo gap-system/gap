@@ -1,7 +1,7 @@
 #@local m1, m2, m3, m4, m5, AsDummyMatrix, DummyMatrixAsList
 gap> START_TEST("CopySubMatrix.tst");
 gap> DeclareRepresentation( "IsDummyCopySubMatrixRep6305",
->      IsComponentObjectRep and IsAttributeStoringRep and IsMatrixObj, [] );
+>      IsComponentObjectRep and IsAttributeStoringRep and IsMatrixObj );
 gap> InstallMethod( BaseDomain,
 >      [ IsDummyCopySubMatrixRep6305 ],
 >      M -> M!.basedomain );

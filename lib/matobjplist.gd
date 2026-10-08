@@ -56,8 +56,7 @@ DeclareRepresentation( "IsPlistVectorRep",
         IsVectorObj and IsPositionalObjectRep
     and IsCopyable
     and IsNoImmediateMethodsObject
-    and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain,
-    [] );
+    and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain );
 
 
 #############################################################################
@@ -118,8 +117,7 @@ DeclareRepresentation( "IsPlistMatrixRep",
     and IsCopyable
     and IsNoImmediateMethodsObject
     and HasNumberRows and HasNumberColumns
-    and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain,
-    [] );
+    and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain );
 
 Add( ConstructingFiltersForMatrixGroupElements, IsPlistMatrixRep );
 

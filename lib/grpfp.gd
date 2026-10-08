@@ -735,7 +735,7 @@ DeclareGlobalFunction("SubgroupOfWholeGroupByQuotientSubgroup");
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation("IsSubgroupOfWholeGroupByQuotientRep",
-  IsSubgroupFpGroup and IsComponentObjectRep,["quot","sub"]);
+  IsSubgroupFpGroup and IsComponentObjectRep);
 
 #############################################################################
 ##

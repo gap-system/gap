@@ -44,8 +44,7 @@ BindGlobal ("REQUEST_TYPES", MakeReadOnlyObj( rec (
         ACK := 7)));
 
 DeclareRepresentation( "IsGlobalObjectHandleRep",
-                       IsNonAtomicComponentObjectRep,
-        ["pe", "localId", "owner", "accessType", "immediate", "obj", "control"] );
+                       IsNonAtomicComponentObjectRep );
 
 GlobalObjectHandleDefaultType :=
   NewType( GlobalObjectHandlesFamily,

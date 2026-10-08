@@ -182,8 +182,7 @@ end );
 #R  IsRightTransversalPermGroupRep( <obj> ) . right transversal of perm group
 ##
 DeclareRepresentation( "IsRightTransversalPermGroupRep",
-    IsRightTransversalRep,
-    [ "stabChainGroup", "stabChainSubgroup" ] );
+    IsRightTransversalRep );
 
 InstallMethod( \[\],
     "for right transversal of perm. group, and pos. integer",

@@ -129,7 +129,7 @@ DeclareAttribute( "ComponentsOfDirectProductElementsFamily",
 #R                                                           component object
 ##
 DeclareRepresentation( "IsDefaultDirectProductElementRep",
-    IsPositionalObjectRep and IsDirectProductElement, [] );
+    IsPositionalObjectRep and IsDirectProductElement );
 
 
 #############################################################################

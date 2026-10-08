@@ -54,9 +54,9 @@ DeclareInfoClass("InfoLattice");
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation("IsConjugacyClassSubgroupsRep",
-  IsExternalOrbit,[]);
+  IsExternalOrbit);
 DeclareRepresentation("IsConjugacyClassSubgroupsByStabilizerRep",
-  IsConjugacyClassSubgroupsRep and IsExternalOrbitByStabilizerRep,[]);
+  IsConjugacyClassSubgroupsRep and IsExternalOrbitByStabilizerRep);
 
 
 #############################################################################
@@ -133,8 +133,7 @@ DeclareOperation("ClassElementLattice", [IsExternalOrbit,IsPosInt]);
 ##  </ManSection>
 ##
 DeclareRepresentation("IsLatticeSubgroupsRep",
-  IsComponentObjectRep and IsAttributeStoringRep,
-  ["group","conjugacyClassesSubgroups"]);
+  IsComponentObjectRep and IsAttributeStoringRep);
 
 #############################################################################
 ##

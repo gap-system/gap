@@ -88,8 +88,7 @@ InstallMethod( ImmutableBasis,
 ##  and constructs a new one whenever the mutable basis is changed.
 ##
 DeclareRepresentation( "IsMutableBasisByImmutableBasisRep",
-    IsComponentObjectRep,
-    [ "immutableBasis", "leftActingDomain" ] );
+    IsComponentObjectRep );
 
 
 #############################################################################
@@ -243,8 +242,7 @@ InstallMethod( ImmutableBasis,
 #R  IsMutableBasisViaNiceMutableBasisRep( <B> )
 ##
 DeclareRepresentation( "IsMutableBasisViaNiceMutableBasisRep",
-    IsComponentObjectRep,
-    [ "leftModule", "niceMutableBasis", "zero" ] );
+    IsComponentObjectRep );
 
 
 #############################################################################

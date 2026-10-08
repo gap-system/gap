@@ -1081,7 +1081,7 @@ end);
 #R  IsEnumeratorByNiceomorphismRep
 ##
 DeclareRepresentation( "IsEnumeratorByNiceomorphismRep",
-    IsAttributeStoringRep, [ "group", "morphism", "niceEnumerator" ] );
+    IsAttributeStoringRep );
 
 #############################################################################
 ##

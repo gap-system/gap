@@ -384,8 +384,7 @@ end );
 ##  basis as value of the component `inverseBase'.
 ##
 DeclareRepresentation( "IsBasisFiniteFieldRep",
-    IsAttributeStoringRep,
-    [ "inverseBase", "d", "q" ] );
+    IsAttributeStoringRep );
 
 InstallTrueMethod( IsFinite, IsBasis and IsBasisFiniteFieldRep );
 
@@ -644,8 +643,7 @@ end);
 DeclareRepresentation( "IsFrobeniusAutomorphism",
         IsFieldHomomorphism
     and IsMapping
-    and IsAttributeStoringRep,
-    [ "power" ] );
+    and IsAttributeStoringRep );
 
 
 #############################################################################

@@ -180,8 +180,7 @@ DeclareOperation( "GroupHomomorphismByImagesNC",
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation( "IsGroupGeneralMappingByImages",
-      IsGroupGeneralMapping and IsSPGeneralMapping and IsAttributeStoringRep,
-      [] );
+      IsGroupGeneralMapping and IsSPGeneralMapping and IsAttributeStoringRep );
 
 
 #############################################################################
@@ -201,8 +200,7 @@ DeclareRepresentation( "IsGroupGeneralMappingByImages",
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation( "IsPreimagesByAsGroupGeneralMappingByImages",
-      IsGroupGeneralMapping and IsSPGeneralMapping and IsAttributeStoringRep,
-      [  ] );
+      IsGroupGeneralMapping and IsSPGeneralMapping and IsAttributeStoringRep );
 
 
 #############################################################################
@@ -222,7 +220,7 @@ DeclareRepresentation( "IsPreimagesByAsGroupGeneralMappingByImages",
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation( "IsGroupGeneralMappingByAsGroupGeneralMappingByImages",
-      IsPreimagesByAsGroupGeneralMappingByImages, [  ] );
+      IsPreimagesByAsGroupGeneralMappingByImages );
 
 
 #############################################################################

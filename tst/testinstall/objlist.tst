@@ -2,7 +2,7 @@
 # IsSmallList
 gap> DeclareCategory("IsTestListObj", IsSmallList);;
 gap> BindGlobal( "TestListObjFamily", NewFamily("TestListObjFamily") );;
-gap> DeclareRepresentation( "IsTestListObjRep", IsTestListObj and IsComponentObjectRep, []);;
+gap> DeclareRepresentation( "IsTestListObjRep", IsTestListObj and IsComponentObjectRep);;
 gap> BindGlobal( "TestListObjType", NewType(TestListObjFamily, IsTestListObjRep));;
 gap> BindGlobal( "TestListObjTypeMutable", NewType(TestListObjFamily,
 >                                        IsTestListObjRep and IsMutable));;
