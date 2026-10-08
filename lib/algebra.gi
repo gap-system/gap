@@ -2958,16 +2958,14 @@ InstallMethod( IsNilpotentElement,
     n := Dimension( L );
     i := 1;
 
-    if ForAll( A, x -> n < PositionNonZero( x ) ) then
-#T better ask IsZero?
+    if IsZero( A ) then
       return true;
     fi;
 
     while i < n do
       i:= 2 * i;
       A:= A * A;
-      if ForAll( A, x -> n < PositionNonZero( x ) ) then
-#T better ask IsZero?
+      if IsZero( A ) then
         return true;
       fi;
     od;

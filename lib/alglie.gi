@@ -483,13 +483,7 @@ InstallMethod( LieNormalizer,
     b:= NullspaceMat(A);
 
     # Extract the `normalizer part' of the solution.
-    l:= Length(b);
-    bas:= NullMat( l, n, R );
-    for i in [ 1..l ] do
-      for j in [ 1..n ] do
-        bas[i][j]:= b[i][j];
-      od;
-    od;
+    bas:= List( b, x -> x{[ 1..n ]} );
 
     # Construct the generators from the coefficients list.
     bas:= List( bas, x -> LinearCombination( B, x ) );
@@ -521,17 +515,14 @@ InstallMethod( KappaPerp,
     [ IsAlgebra and IsLieAlgebra, IsVectorSpace ], 0,
     function( L, U )
 
-    local R,          # left acting domain of `L'
-          B,     # a basis of L
+    local B,     # a basis of L
           kap,   # the matrix of the Killing form w.r.t. `B'
           A,     # the matrix of the equation system
           n,     # the dimension of L
           s,     # the dimension of U
           v,     # coefficient list of the basis of U w.r.t. the basis of L
-          i,j,k, # loop variables
           bas;   # the basis of the solution space
 
-    R:= LeftActingDomain( L );
     B:= Basis( L );
     n:= Dimension( L );
     s:= Dimension( U );
@@ -542,17 +533,10 @@ InstallMethod( KappaPerp,
 
     v:= List( BasisVectors( Basis( U ) ),
               x -> Coefficients( B, x ) );
-    A:= NullMat( n, s, R );
     kap:= KillingMatrix( B );
 
     # Compute the equations that define the subspace.
-    for k in [ 1..s ] do
-      for i in [ 1..n ] do
-        for j in [ 1..n ] do
-          A[i][k]:= A[i][k] + v[k][j] * kap[i][j];
-        od;
-      od;
-    od;
+    A:= kap * TransposedMat( v );
 
     # Solve the equation system.
     bas:= NullspaceMat( A );
@@ -1586,10 +1570,8 @@ InstallMethod( LieNilRadical,
           HS,          # Fitting 1-component of `S' wrt `H'
           adH,         # list of ad x for x in a basis of `H'
           n,           # dimension of `L'
-          t,           # the dimension of an ideal
           eqs,         # equation set
           I,           # basis vectors of an ideal of `L'
-          i,j,k,       # loop variables
           sol,         # solution set
           adL,         # list of matrices ad x where x runs through a basis of
                        # `L'
@@ -1631,17 +1613,7 @@ InstallMethod( LieNilRadical,
       R:= RadicalOfAlgebra( AdjointAssociativeAlgebra( S, H ) );
       B:= BasisVectors( Basis( R ) );
 
-      eqs:= NullMat(Dimension(H)+Dimension(R),n^2,F);
-      for i in [1..n] do
-        for j in [1..n] do
-          for k in [1..Dimension(H)] do
-            eqs[k][j+(i-1)*n]:= adH[k][i][j];
-          od;
-          for k in [1..Dimension(R)] do
-            eqs[Dimension(H)+k][j+(i-1)*n]:= B[k][i][j];
-          od;
-        od;
-      od;
+      eqs:= List( Concatenation( adH, B ), Concatenation );
       sol:= NullspaceMat( eqs );
       I:= List( sol, x-> LinearCombination( Basis(H), x{[1..Dimension(H)]} ) );
 
@@ -1665,21 +1637,10 @@ InstallMethod( LieNilRadical,
       fi;
 
       B:= BasisVectors( Basis( R ) );
-      t:= Dimension( R );
 
       # Now we compute the intersection of `R' and `<ad L>'.
 
-      eqs:= NullMat(n+t,n*n,F);
-      for i in [1..n] do
-        for j in [1..n] do
-          for k in [1..n] do
-            eqs[k][j+(i-1)*n]:= adL[k][i][j];
-          od;
-          for k in [1..t] do
-            eqs[n+k][j+(i-1)*n]:= -B[k][i][j];
-          od;
-        od;
-      od;
+      eqs:= List( Concatenation( adL, -B ), Concatenation );
       sol:= NullspaceMat( eqs );
       I:= List( sol, x-> LinearCombination( bv, x{[1..n]} ) );
       return SubalgebraNC( L, I, "basis" );
