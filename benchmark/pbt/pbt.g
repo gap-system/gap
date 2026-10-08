@@ -21,8 +21,8 @@
 ##    conj.pbt, norm.pbt
 ##              the same by ConjugatorPermGroup and NormalizerPermGroup,
 ##              which skip the methods for subgroups of symmetric groups
-##  E is given by two random generators: the generators from a library
-##  can let the search succeed on its first branch by luck.
+##  E is given by random generators: the generators from a library can
+##  let the search succeed on its first branch by luck.
 ##
 
 BENCH_DIR := Concatenation( BENCH.dir, "/", BENCH.suite );
@@ -35,12 +35,14 @@ BENCH_DATA := fail;
 ##  helpers
 ##
 
+# two random elements, and more until they generate <G>
 BENCH_RandomGens := function( G )
     local   gens;
 
-    repeat
-        gens := [ Random( G ), Random( G ) ];
-    until Size( Group( gens ) ) = Size( G );
+    gens := [ Random( G ), Random( G ) ];
+    while Size( Group( gens ) ) < Size( G )  do
+        Add( gens, Random( G ) );
+    od;
     return gens;
 end;
 
