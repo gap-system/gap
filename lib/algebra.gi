@@ -3032,9 +3032,7 @@ InstallOtherMethod( DirectSumOfAlgebras,
           R,     # Root system of L.
           RV,    # List of various things.
           r,
-          pos,   # List of positions.
-          info1, # direct sum info for A1 if it exists.
-          info2; # direct sum info for A2 if it exists.
+          pos;   # List of positions.
 
     if LeftActingDomain( A1 ) <> LeftActingDomain( A2 ) then
       Error( "<A1> and <A2> must be written over the same field" );
@@ -3191,6 +3189,9 @@ InstallOtherMethod( DirectSumOfAlgebras,
        and IsAssociative( A1 ) and IsAssociative( A2 ) then
       SetIsAssociative( L, true );
     fi;
+    if HasName( A1 ) and HasName( A2 ) then
+        SetName( L, Concatenation( Name(A1), "(+)", Name(A2 ) ) );
+    fi;
 
     # Return the result.
     return L;
@@ -3218,32 +3219,11 @@ InstallMethod( DirectSumOfAlgebras,
       fi;
     od;
 
-    if ForAll( list, A -> IsMatrixFLMLOR( A ) and IsAssociative( A ) ) then
-      type := "generators";
-    else
-      type := "basis vectors";
-    fi;
-
     A:= list[1];
-    if ( type = "generators" ) then
-      first := [ 0, Length( GeneratorsOfAlgebra( A ) ) ];
-    else
-      first:= [ 0, Dimension( A ) ];
-    fi;
     for i in [ 2 .. Length( list ) ] do
-      if ( type = "generators" ) then
-        dim := Length( GeneratorsOfAlgebra( list[i] ) );
-      else
-        dim:= Dimension( list[i] );
-      fi;
-      Add( first, first[i] + dim );
       A:= DirectSumOfAlgebras( A, list[i] );
     od;
-    SetDirectSumInfo( A, rec( algebras := list,
-                              first := first,
-                              type := type,
-                              embeddings := [],
-                              projections := [] ) );
+
     return A;
     end );
 
@@ -3326,10 +3306,6 @@ InstallMethod( Projection, "algebra direct sum and integer",
         imgs[k] := genA[k-j];
     od;
     map := AlgebraHomomorphismByImagesNC( D, A, genD, imgs );
-
-    N := Subalgebra( D, genD{Concatenation( [1..first[i]],
-                               [first[i+1]+1..first[len]] )} );
-    SetKernelOfMultiplicativeGeneralMapping( map, N );
 
     # store information
     infoD.projections[i] := map;
