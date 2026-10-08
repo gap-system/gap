@@ -83,10 +83,14 @@ local newrow;
 end);
 
 BindGlobal("SMTX_NewEqns",function (dim, field)
+local zero;
+  # must be a row vector like the equations, which ZeroVector(field, dim)
+  # is not for fields with more than 256 elements
+  zero := ImmutableVector(field, ListWithIdenticalEntries(dim, Zero(field)));
   return rec(
     dim := dim,         # number of variables
     field := field,     # field over which the equation hold
-    mb := MutableBasis(field, [], ZeroVector(field, dim)),
+    mb := MutableBasis(field, [], zero),
   );
 end);
 
@@ -190,12 +194,11 @@ local n, coeffs, x, zero, z, i;
 # Note that the pivots of <base> must be set to 1.
 
   n:=Length(base);
+  x:=ShallowCopy(v);
 
   if n = 0 then
     coeffs:=[];
-    x:=v;
   else
-    x:=ShallowCopy(v);
     zero:=x[1]*0;
     coeffs:=ListWithIdenticalEntries(n, zero);
     for i in [1..n] do
