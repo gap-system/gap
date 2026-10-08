@@ -5687,7 +5687,7 @@ BindGlobal( "LIE_ALGEBRA_OF_P_GROUP_SERIES", function( G, series, pdeg )
                 b:= PreImagesRepresentativeNC( Homs[pos[j]],
                        PreImagesRepresentativeNC( hom_pcg[pos[j]], gens[j] ));
                 c:= Image( hom_pcg[pos[i] + pos[j]],
-                           Image(Homs[pos[i] + pos[j]], a^-1*b^-1*a*b) );
+                           Image(Homs[pos[i] + pos[j]], Comm(a, b)) );
                 e:= ExtRepOfObj(c);
                 co:=[];
                 for k in [1,3..Length(e)-1] do
