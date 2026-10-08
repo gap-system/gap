@@ -1,0 +1,24 @@
+set timeout 10
+
+# from https://serverfault.com/a/981762
+expect_before {
+    timeout { puts " TIMEOUT "; exit 2 }
+    eof     { puts " EOF ";     exit 1 }
+}
+
+# issue 6413: the cursor must stay behind a non-ASCII character, so the echo
+# of the input contains nothing but the characters typed
+expect "gap> "
+sleep 0.1
+send -- "Print(\"àé\");\r"
+expect "Print(\"àé\");"
+
+# ctrl-b and backspace step over a whole character: go left twice, delete
+# the "à", insert "x", go to the end of the line with ctrl-e
+expect "gap> "
+sleep 0.1
+send -- "\"àéï\002\002\177x\005\" = \"x\\303\\251\\303\\257\";\r"
+expect "true"
+
+expect "gap> "
+exit
