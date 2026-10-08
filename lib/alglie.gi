@@ -2458,20 +2458,18 @@ InstallMethod( SemiSimpleType,
 
     CartanInteger := function( R, r1, r2 )
 
-        local R1,s,t,rt;
+        local s,t,rt;
 
-        R1:= ShallowCopy( R );
-        Add( R1, R[1]-R[1] );
         s:= 0;
         t:= 0;
         rt:= r1-r2;
-        while rt in R1 do
+        while (rt in R) or IsZero( rt ) do
           rt:= rt-r2;
           s:= s+1;
         od;
 
         rt:= r1+r2;
-        while rt in R1 do
+        while (rt in R) or IsZero( rt ) do
           rt:= rt+r2;
           t:= t+1;
         od;
