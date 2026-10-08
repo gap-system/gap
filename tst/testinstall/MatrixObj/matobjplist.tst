@@ -57,21 +57,21 @@ true
 
 #
 gap> NewZeroMatrix( IsPlistMatrixRep, Integers, 0, 0 );
-<0x0-matrix over Integers>
+<0x0 plist matrix over Integers>
 gap> NewZeroMatrix( IsPlistMatrixRep, Integers, 2, 0 );
-<2x0-matrix over Integers>
+<2x0 plist matrix over Integers>
 gap> NewZeroMatrix( IsPlistMatrixRep, Integers, 0, 3 );
-<0x3-matrix over Integers>
+<0x3 plist matrix over Integers>
 gap> M:= NewZeroMatrix( IsPlistMatrixRep, Integers, 2, 3 );
-<2x3-matrix over Integers>
+<2x3 plist matrix over Integers>
 gap> IsMutable( M ) and ForAll( [ 1 .. Length( M ) ], i -> IsMutable( M[i] ) );
 true
 
 #
 gap> NewIdentityMatrix( IsPlistMatrixRep, Integers, 0 );
-<0x0-matrix over Integers>
+<0x0 plist matrix over Integers>
 gap> M:= NewIdentityMatrix( IsPlistMatrixRep, Integers, 2 );
-<2x2-matrix over Integers>
+<2x2 plist matrix over Integers>
 gap> IsMutable( M ) and ForAll( [ 1 .. Length( M ) ], i -> IsMutable( M[i] ) );
 true
 
@@ -107,7 +107,7 @@ true
 
 #
 gap> M:= NewZeroMatrix( IsPlistMatrixRep, Integers, 2, 3 );
-<2x3-matrix over Integers>
+<2x3 plist matrix over Integers>
 gap> IsMutable( M );
 true
 gap> IsCyclotomicCollColl( M );
@@ -117,7 +117,7 @@ false
 
 #
 gap> M:= NewZeroMatrix( IsPlistMatrixRep, GF(257), 2, 3 );
-<2x3-matrix over GF(257)>
+<2x3 plist matrix over GF(257)>
 gap> IsMutable( M );
 true
 gap> IsCyclotomicCollColl( M );

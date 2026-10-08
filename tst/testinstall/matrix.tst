@@ -1,10 +1,10 @@
 #
 gap> empty_0x2 := NewZeroMatrix(IsPlistMatrixRep, Integers, 0, 2);
-<0x2-matrix over Integers>
+<0x2 plist matrix over Integers>
 gap> empty_2x0 := NewZeroMatrix(IsPlistMatrixRep, Integers, 2, 0);
-<2x0-matrix over Integers>
+<2x0 plist matrix over Integers>
 gap> empty_0x0 := NewZeroMatrix(IsPlistMatrixRep, Integers, 0, 0);
-<0x0-matrix over Integers>
+<0x0 plist matrix over Integers>
 gap> IsEmptyMatrix(empty_0x2);
 true
 gap> IsEmptyMatrix(empty_2x0);

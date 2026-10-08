@@ -14,7 +14,7 @@ gap> DeterminantMatrix( M );
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `DeterminantMatrix' on 1 arguments
 gap> M:= ZeroMatrix( IsPlistMatrixRep, GF(9), 0, 0 );
-<0x0-matrix over GF(3^2)>
+<0x0 plist matrix over GF(3^2)>
 gap> DeterminantMatrix( M );
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `DeterminantMatrix' on 1 arguments

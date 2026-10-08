@@ -1019,7 +1019,7 @@ InstallMethod( ViewObj, [ "IsPlistMatrixRep" ],
   function( M )
     Print("<");
     if not IsMutable(M) then Print("immutable "); fi;
-    Print(Length(M![ROWSPOS]),"x",M![RLPOS],"-matrix over ",M![BDPOS],">");
+    Print(Length(M![ROWSPOS]),"x",M![RLPOS]," plist matrix over ",M![BDPOS],">");
   end );
 
 InstallMethod( PrintObj, [ "IsPlistMatrixRep" ],
@@ -1038,7 +1038,7 @@ InstallMethod( Display, [ "IsPlistMatrixRep" ],
     local i;
     Print("<");
     if not IsMutable(M) then Print("immutable "); fi;
-    Print(Length(M![ROWSPOS]),"x",M![RLPOS],"-matrix over ",M![BDPOS],":\n");
+    Print(Length(M![ROWSPOS]),"x",M![RLPOS]," plist matrix over ",M![BDPOS],":\n");
     for i in [1..Length(M![ROWSPOS])] do
         if i = 1 then
             Print("[");
