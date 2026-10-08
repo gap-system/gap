@@ -692,7 +692,7 @@ end );
 ##  <P/>
 ##  This function first appeared in GAP 4.12. It is typically called in the
 ##  <C>AvailabilityTest</C> function of a package
-##  (see <Ref Subsect="Test for the Existence of GAP Package Binaries"/>).
+##  (see <Ref Sect="Kernel modules"/>).
 ##  <Log><![CDATA[
 ##  gap> IsKernelExtensionAvailable("myPackageWithKernelExtension");
 ##  true
