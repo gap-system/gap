@@ -483,13 +483,7 @@ InstallMethod( LieNormalizer,
     b:= NullspaceMat(A);
 
     # Extract the `normalizer part' of the solution.
-    l:= Length(b);
-    bas:= NullMat( l, n, R );
-    for i in [ 1..l ] do
-      for j in [ 1..n ] do
-        bas[i][j]:= b[i][j];
-      od;
-    od;
+    bas:= List( b, x -> x{[ 1..n ]} );
 
     # Construct the generators from the coefficients list.
     bas:= List( bas, x -> LinearCombination( B, x ) );
