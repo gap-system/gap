@@ -821,14 +821,19 @@ InstallGlobalFunction( EmptyRBase, function( G, Omega, P )
     else
         rbase.level2 := false;
     fi;
-#    if IsSymmetricGroupQuick( G )  then
-#        Info( InfoBckt, 1, "Searching in symmetric group" );
-#        rbase.fix   := [  ];
-#        rbase.level := NrMovedPoints( G );
-#    else
+    # In the full symmetric group on <Omega>, count the points not yet fixed
+    # instead of changing the base of its stabilizer chain.
+    if     rbase.level2 = false
+       and IsNaturalSymmetricGroup( G )
+       and Set( MovedPoints( G ) ) = Set( Omega )  then
+        Info( InfoBckt, 1, "Searching in symmetric group" );
+        rbase.fix   := [  ];
+        rbase.fixed := BlistList( [ 1 .. Maximum( Omega ) ], [  ] );
+        rbase.level := Length( Omega );
+    else
         rbase.chain := CopyStabChain( StabChainImmutable( G ) );
         rbase.level := rbase.chain;
-#    fi;
+    fi;
 
     # Process all fixpoints in <P>.
     for pnt  in Fixcells( P )  do
@@ -888,6 +893,10 @@ InstallGlobalFunction( ProcessFixpoint, function( arg )
             fi;
         fi;
         if IsInt( rbase.level )  then
+            if rbase.fixed[ pnt ]  then
+                return false;
+            fi;
+            rbase.fixed[ pnt ] := true;
             rbase.level := rbase.level - 1;
         else
             ChangeStabChain( rbase.level, [ pnt ] );
@@ -1124,7 +1133,7 @@ InstallGlobalFunction( PartitionBacktrack,
            orB,          # backup of <orb>
            range,        # range for construction of <orb>
            fix,  fixP,   # fixpoints of partitions at root of search tree
-           obj,  prm,    # temporary variables for constructed permutation
+           prm,          # constructed permutation
            nrback,       # backtrack counter
            bail,         # do we want to bail out quickly?
            i,  dd,  p;   # loop variables
@@ -1188,9 +1197,21 @@ InstallGlobalFunction( PartitionBacktrack,
 
                 else
                     if image.perm = true  then
-                        prm := MappingPermListList
-                               ( rbase.fix[ Length( rbase.base ) ],
-                                 Fixcells( image.partition ) );
+                        if Length( rbase.base ) = 0  then
+                            fix := Fixcells( rbase.partition );
+                        else
+                            fix := rbase.fix[ Length( rbase.base ) ];
+                        fi;
+                        fixP := Fixcells( image.partition );
+
+                        # A partial map could fail <Pr> and so silently
+                        # lose a solution.
+                        if    Length( fix ) <> Length( rbase.domain )
+                           or Length( fixP ) <> Length( rbase.domain )  then
+                            ErrorNoReturn( "partition backtrack: ",
+                                "partitions at a leaf must be discrete" );
+                        fi;
+                        prm := MappingPermListList( fix, fixP );
                     else
                         prm := image.perm;
                     fi;
@@ -1463,20 +1484,9 @@ InstallGlobalFunction( PartitionBacktrack,
     nrback:=0; # count the number of times we jumped up
     bail:=repr and ValueOption("bailout")=true;
 
-    # If necessary, convert <Pr> from a list to a function.
-    if     IsList( Pr )
-       and (    IsTrivial( G )
-             #or IsSymmetricGroupQuick( G )
-             ) then
-        obj := rec( lftObj := Pr[ 1 ],
-#                    rgtObj := Pr[ 2 ],
-                       opr := Pr[ 3 ],
-                      prop := Pr[ 4 ] );
-        Pr := gen -> obj.prop
-              ( rec( lftObj := obj.lftObj
-#             ,
-#                     rgtObj := obj.opr( obj.rgtObj, gen ^ -1 )
-            ) );
+    # If permutations are not kept factorized, <Pr> must be a function.
+    if IsList( Pr ) and ( IsTrivial( G ) or IsBound( rbase.fix ) )  then
+        Pr := Pr[ 4 ];
     fi;
 
     # Trivial cases first.
@@ -1501,9 +1511,9 @@ InstallGlobalFunction( PartitionBacktrack,
 
     # If  <Pr> is  function,   multiply  permutations. Otherwise, keep   them
     # factorized.
-#    if IsSymmetricGroupQuick( G )  then
-#        image.perm := true;
-#    else
+    if IsBound( rbase.fix )  then
+        image.perm := true;
+    else
         if IsList( Pr )  then
             image.perm := Objectify
                 ( NewType( PermutationsFamily, IsSlicedPerm ),
@@ -1516,7 +1526,7 @@ InstallGlobalFunction( PartitionBacktrack,
             image.perm := One( G );
         fi;
         image.level := rbase.chain;
-#    fi;
+    fi;
 
     if repr  then
 
