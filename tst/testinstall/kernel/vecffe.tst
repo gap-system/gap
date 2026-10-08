@@ -125,4 +125,14 @@ gap> SMALLEST_FIELD_VECFFE([Z(8), Z(4)]);
 64
 
 #
+# ZeroSameMutability
+#
+gap> v := [ Z(5), 0*Z(5) ];; IS_VECFFE(v);
+true
+gap> IsMutable(ZeroSameMutability(v));
+true
+gap> IsMutable(ZeroSameMutability(MakeImmutable(v)));
+false
+
+#
 gap> STOP_TEST("kernel/vecffe.tst");

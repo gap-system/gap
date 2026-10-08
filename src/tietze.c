@@ -1482,7 +1482,8 @@ static Obj FuncREDUCE_LETREP_WORDS_REW_SYS(Obj self, Obj tzrules, Obj a_w)
      }
      else {
         // make space for the new word
-        nw = NEW_PLIST(TNUM_OBJ(w),newlen);
+        nw = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(w), TNUM_OBJ(w),
+                                       newlen);
 
        // addresses
        wa=ADDR_OBJ(w);

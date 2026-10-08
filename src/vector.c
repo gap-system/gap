@@ -47,7 +47,8 @@ static Obj SumIntVector(Obj elmL, Obj vecR)
 
     // make the result list
     len = LEN_PLIST(vecR);
-    vecS = NEW_PLIST(TNUM_OBJ(vecR), len);
+    vecS = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecR), TNUM_OBJ(vecR),
+                                     len);
     SET_LEN_PLIST(vecS, len);
 
     // loop over the elements and add
@@ -93,7 +94,8 @@ static Obj SumVectorInt(Obj vecL, Obj elmR)
 
     // make the result list
     len = LEN_PLIST(vecL);
-    vecS = NEW_PLIST(TNUM_OBJ(vecL), len);
+    vecS = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecL), TNUM_OBJ(vecL),
+                                     len);
     SET_LEN_PLIST(vecS, len);
 
     // loop over the elements and add
@@ -253,7 +255,8 @@ static Obj DiffVectorInt(Obj vecL, Obj elmR)
 
     // make the result list
     len = LEN_PLIST(vecL);
-    vecD = NEW_PLIST(TNUM_OBJ(vecL), len);
+    vecD = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecL), TNUM_OBJ(vecL),
+                                     len);
     SET_LEN_PLIST(vecD, len);
 
     // loop over the elements and subtract
