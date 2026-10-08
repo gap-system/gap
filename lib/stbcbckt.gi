@@ -566,7 +566,7 @@ InstallGlobalFunction( Suborbits, function( arg )
         subs.sublilen:=Length(subs.blists);
 
         # store if not too many
-        if Length(suborbits)>bl then
+        if Length(suborbits)>Maximum(bl,50) then
           for i in [1..Length(suborbits)-1] do
             suborbits[i]:=suborbits[i+1];
           od;
@@ -1751,11 +1751,50 @@ Refinements.(STBBCKT_STRING_REGORB3) := Refinements_RegularOrbit3;
 
 #############################################################################
 ##
+#F  STBBCKT_PointwiseStabilizer( <G>, <pts> ) . . cached pointwise stabilizer
+##
+BindGlobal( "STBBCKT_PointwiseStabilizer", function( G, pts )
+    local   key,  H;
+
+    key := Set( pts );
+    if not IsBound( G!.pointstabs )  or  G!.pointstabs[ 1 ] > 10000  then
+        G!.pointstabs := [ 0, NewDictionary( key, true ) ];
+    fi;
+    H := LookupDictionary( G!.pointstabs[ 2 ], key );
+    if H = fail  then
+        H := Stabilizer( G, key, OnTuples );
+        AddDictionary( G!.pointstabs[ 2 ], key, H );
+        G!.pointstabs[ 1 ] := G!.pointstabs[ 1 ] + 1;
+    fi;
+    return H;
+end );
+
+#############################################################################
+##
+#F  STBBCKT_Suborbits( <F>, <image>, <tra>, <b>, <Omega> )  . . . . suborbits
+##
+##  Suborbits rooted at <b> of the stabilizer in <F> of the images of the
+##  first <tra>-1 R-base points or, if <tra> is a list, of the fixpoints in
+##  the cells <tra>.
+##
+BindGlobal( "STBBCKT_Suborbits", function( F, image, tra, b, Omega )
+    local   pts;
+
+    if IsInt( tra )  then
+        return Suborbits( F, image.bimg{ [ 1 .. tra - 1 ] }, b, Omega );
+    fi;
+    pts := List( tra, c -> FixpointCellNo( image.partition, c ) );
+    return Suborbits( STBBCKT_PointwiseStabilizer( F, pts ), [  ], b, Omega );
+end );
+
+#############################################################################
+##
 #F  Refinements.Suborbits0( <tra>, <f>, <lens>, <byLen>, <strat> ) subdegrees
 ##
 ##  Computes   suborbits of the stabilizer in   <F> =  `image.data[2]' of the
 ##  fixpoint in cell no. <f>.  (If <F> is multiply  transitive, replace it by
-##  the stabilizer of the first <tra>-1 images of R-base points.)
+##  the stabilizer of the first <tra>-1 images of R-base points, or of the
+##  fixpoints in the cells <tra> if this is a list.)
 ##
 ##  Returns `true' if (1)~the  list  of suborbit lengths (subdegrees)  equals
 ##  <lens>, (2)~the list of subdegree  frequencies equals <byLen> and (3)~the
@@ -1768,8 +1807,7 @@ function( rbase, image, tra, f, lens, byLen, strat )
 
     F    := image.data[ 2 ];
     pnt  := FixpointCellNo( image.partition, f );
-    subs := Suborbits( F, image.bimg{ [ 1 .. tra - 1 ] }, pnt,
-                    rbase.domain );
+    subs := STBBCKT_Suborbits( F, image, tra, pnt, rbase.domain );
     if    subs.lengths <> lens
        or List( subs.byLengths, Length ) <> byLen  then
         return false;
@@ -1965,6 +2003,23 @@ InstallGlobalFunction( NextLevelRegularGroups, function( P, rbase )
 
 end );
 
+#############################################################################
+##
+#F  STBBCKT_MovedByStabilizer( <F>, <pts> )
+##
+##  Points moved by the pointwise stabilizer of <pts> in <F>.
+##
+BindGlobal( "STBBCKT_MovedByStabilizer", function( F, pts )
+    local   S,  p;
+
+    S := CopyStabChain( StabChainImmutable( F ) );
+    ChangeStabChain( S, pts, false );
+    for p  in pts  do
+        S := S.stabilizer;
+    od;
+    return MovedPoints( S.generators );
+end );
+
 BindGlobal("STBCTEARNS",function(G,Omega)
   G:=Earns(G,Omega);
   if Length(G)=0 then return fail;
@@ -1984,6 +2039,9 @@ InstallGlobalFunction( RBaseGroupsBloxPermGroup, function( repr, G, Omega, E, di
            reg,  orbs, # regular subgroup of <E> or `false'
            doneblox,   # blox already considered
            doneroot,   # roots of orbital graphs already considered
+           doneprefix, # the same for further prefixes, see below
+           blE,        # base length of <E>
+           movedbase,  # choose R-base points moved by stabilizer in <E>
            tra,        # degree of transitivity of <E>
            cp,
            len,  i;
@@ -2046,13 +2104,38 @@ InstallGlobalFunction( RBaseGroupsBloxPermGroup, function( repr, G, Omega, E, di
 
     doneblox := [  ];
     doneroot := [  ];
+    doneprefix := [  ];
+    blE := Length( BaseStabChain( StabChainMutable( E ) ) );
+    movedbase := true;
 
     rbase.nextLevel := function( P, rbase )
         local   len,   Q, strat,  orb,  f,  fpt,  subs,  k,  i,
-                start,  oldstart,  types,  typ,  coll,  pnt,  done;
+                start,  oldstart,  types,  typ,  coll,  pnt,  done,
+                cand,  pc,  c,  pre,  pts,  H,  progress;
 
-        if reg <> fail  then  NextLevelRegularGroups( P, rbase );
-                        else  NextRBasePoint( P, rbase, order );   fi;
+        if reg <> fail  then
+            NextLevelRegularGroups( P, rbase );
+        elif movedbase  then
+
+            # Prefer points moved by the stabilizer in <E> of all fixpoints;
+            # the suborbits of a point fixed by it give nothing new.
+            cand := STBBCKT_MovedByStabilizer( E, Fixcells( P ) );
+            if Length( cand ) = 0  then
+                movedbase := false;
+                NextRBasePoint( P, rbase, order );
+            else
+                cand := Filtered( cand,
+                                  p -> P.lengths[ CellNoPoint( P, p ) ] > 1 );
+                SortBy( cand, p -> P.lengths[ CellNoPoint( P, p ) ] );
+                if order <> false  then
+                    cand := Concatenation( Filtered( cand, p -> p in order ),
+                                           cand );
+                fi;
+                NextRBasePoint( P, rbase, cand );
+            fi;
+        else
+            NextRBasePoint( P, rbase, order );
+        fi;
         len := Length( rbase.base );
         if len >= tra  then
 
@@ -2156,6 +2239,61 @@ InstallGlobalFunction( RBaseGroupsBloxPermGroup, function( repr, G, Omega, E, di
 
               f := FixcellPoint( P, doneroot );
             od;
+        fi;
+
+        # Once the R-base is longer than a base of <E>, the suborbits above
+        # did not suffice. Then also use suborbits of the stabilizer of the
+        # first <tra>-2 and one further R-base point.
+        if len >= tra  and  len > blE  then
+            pc := List( rbase.base{ [ 1 .. Maximum( tra - 2, 0 ) ] },
+                        p -> CellNoPoint( P, p ) );
+            repeat
+                progress := false;
+                for c  in Set( rbase.base, p -> CellNoPoint( P, p ) )  do
+                    if c in pc  or  ( tra > 1  and
+                       FixpointCellNo( P, c ) = rbase.base[ tra - 1 ] )  then
+                        continue;
+                    fi;
+                    pre := Concatenation( pc, [ c ] );
+                    pts := List( pre, x -> FixpointCellNo( P, x ) );
+                    H := STBBCKT_PointwiseStabilizer( E, pts );
+                    k := Size( H );
+                    if k = 1  then
+                        continue;
+                    fi;
+                    if not IsBound( doneprefix[ c ] )  then
+                        doneprefix[ c ] := Set( pre );
+                    fi;
+                    f := FixcellPoint( P, doneprefix[ c ] );
+                    while f <> false  do
+                        fpt := FixpointCellNo( P, f );
+
+                        # A root with trivial stabilizer in <H> gives
+                        # suborbits of length 1 only.
+                        if k > Length( Orbit( H, fpt ) )  then
+                            progress := true;
+                            subs := Suborbits( H, [  ], fpt, Omega );
+                            strat := StratMeetPartition( rbase, P,
+                                             subs.partition, subs.conj );
+                            AddRefinement( rbase, STBBCKT_STRING_SUBORBITS0,
+                                [ pre, f, subs.lengths,
+                                  List( subs.byLengths, Length ), strat ] );
+                            if IsTrivialRBase( rbase )  then
+                                return;
+                            fi;
+
+                            # As above, skip roots in the same <H>-orbit.
+                            for pnt  in Orbit( H, fpt )  do
+                                cp := CellNoPoint( P, pnt );
+                                if P.lengths[ cp ] = 1  then
+                                    AddSet( doneprefix[ c ], cp );
+                                fi;
+                            od;
+                        fi;
+                        f := FixcellPoint( P, doneprefix[ c ] );
+                    od;
+                od;
+            until not progress;
         fi;
 
         # Construct a block system for <E>.
@@ -2611,6 +2749,8 @@ dom, et, ft, Pr, rbase, BF, Q, data,lc;
     fi;
 
     found:=PartitionBacktrack( G, Pr, true, rbase, data, L, R );
+    Unbind( E!.pointstabs );
+    Unbind( F!.pointstabs );
     if IsPerm(found) and map<>false then
       found:=PreImagesRepresentativeNC(map,found);
     fi;
@@ -2650,6 +2790,7 @@ local Pr, div, B, rbase, data, N;
   # remove cached information
   G!.suborbits:=[];
   E!.suborbits:=[];
+  Unbind( E!.pointstabs );
 
   # bring the stabilizer chains back into a decent form
   ReduceStabChain(StabChainMutable(G));

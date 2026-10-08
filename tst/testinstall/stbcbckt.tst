@@ -1,4 +1,4 @@
-#@local G,p,S,T,x,y,c,H,r,N,set
+#@local G,p,S,T,x,y,c,H,r,N,set,M
 gap> START_TEST("stbcbckt.tst");
 
 # Intersection for perm groups with a single moved point in common
@@ -41,6 +41,24 @@ gap> S := SymmetricGroup(3);;
 gap> T := TrivialSubgroup(S);;
 gap> RepOpElmTuplesPermGroup(true, S, [(1,2), (2,3)], [(2,3), (1,3)], T, T);
 (1,2,3)
+
+# issue #3718: PSL(3,5) on 31 points, only refined by suborbits of the
+# stabilizers of further R-base points
+gap> G := Group([ (2,5,4,3)(6,11,16,21)(7,15,19,23)(8,12,20,24)(9,13,17,25)
+>   (10,14,18,22)(27,29)(28,30), (1,26,4,6,9,23,8,17,13,28,5,21,14,12,10,15,
+>   18,25,30,2,16,19,29,31)(3,11,24,20,7,27) ]);;
+gap> H := Group([ (1,4,29,2)(3,30,18,20)(5,19,26,10)(6,13)(7,8,27,31)(9,28,24,
+>   16)(12,22)(14,21,17,23), (1,16,12,31,26,19,5,18,2,23,9,13,8,20,14,10,30,29,
+>   28,22,15,25,11,27)(3,21,24,6,7,17) ]);;
+gap> r := ConjugatorPermGroup(SymmetricGroup(31), G, H);;
+gap> G^r = H;
+true
+
+# R-base points moved by the stabilizer of the earlier ones
+gap> M := MathieuGroup(24);;
+gap> N := NormalizerPermGroup(SymmetricGroup(24), M);;
+gap> N = M;
+true
 
 #
 gap> STOP_TEST("stbcbckt.tst");
