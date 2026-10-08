@@ -3659,7 +3659,7 @@ InstallHandlingByNiceBasis( "IsSpaceOfUEAElements", rec(
       v:= ExtRepOfObj( v )[2];
       monomials:= info.monomials;
       for i in [ 2, 4 .. Length( v ) ] do
-        pos:= Position( monomials, v[ i-1 ] );
+        pos:= PositionSet( monomials, v[ i-1 ] );  # sorted, flag lost
         if pos = fail then
           return fail;
         fi;
