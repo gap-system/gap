@@ -76,8 +76,7 @@ gap> ImageElm( pro2, m0 );
 [ [ 0, 1, 1 ], [ 0, 0, 1 ], [ 0, 0, 0 ] ]
 gap> # mix the two types together
 gap> # A56 has type "basis vectors" and A12 has type "generators"
-gap> # so both A5612 and A1256 have type "basis vectors"
-gap> # and both are ordered [ A5, AS6, A12, A2 ] with the generators last.
+gap> # so A5612 has type "basis vectors"
 gap> A5612 := DirectSumOfAlgebras( A56, A12 );;
 gap> info5612 := DirectSumInfo( A5612 );
 rec( algebras := [ A56, A12 ], embeddings := [  ], first := [ 0, 11, 24 ], 
@@ -153,22 +152,10 @@ rec( algebras := [ A2, A6 ],
           <zero> of ..., <zero> of ..., <zero> of ..., <zero> of ..., 
           <zero> of ..., <zero> of ..., (1)*(), (1)*(2,3), (1)*(1,2), 
           (1)*(1,2,3), (1)*(1,3,2), (1)*(1,3) ] ], type := "basis vectors" )
-gap> A1256 := DirectSumOfAlgebras( [ A1, A2, A5, A6 ] );;
-gap> info1256 := DirectSumInfo( A1256 ); 
-rec( algebras := [ A1, A2, A5, A6 ], embeddings := [  ], 
-  first := [ 0, 4, 13, 18, 24 ], projections := [  ], type := "basis vectors" )
-gap> e3 := Embedding( A1256, 3 );
-[ (1)*(), (1)*(5,6,7,8,9), (1)*(5,7,9,6,8), (1)*(5,8,6,9,7), (1)*(5,9,8,7,6) ] -> [ v.14, v.15, v.16, v.17, v.18 ]
-gap> p3 := Projection( A1256, 3 );
-[ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8, v.9, v.10, v.11, v.12, v.13, v.14, 
-  v.15, v.16, v.17, v.18, v.19, v.20, v.21, v.22, v.23, v.24 ] -> 
-[ <zero> of ..., <zero> of ..., <zero> of ..., <zero> of ..., <zero> of ..., 
-  <zero> of ..., <zero> of ..., <zero> of ..., <zero> of ..., <zero> of ..., 
-  <zero> of ..., <zero> of ..., <zero> of ..., (1)*(), (1)*(5,6,7,8,9), 
-  (1)*(5,7,9,6,8), (1)*(5,8,6,9,7), (1)*(5,9,8,7,6), <zero> of ..., 
-  <zero> of ..., <zero> of ..., <zero> of ..., <zero> of ..., <zero> of ... ]
-gap> e3 * p3 = IdentityMapping( A5 );
-true
+gap> ## the following fails because internal DirectSumOfAlgebras( A1, A2 )
+gap> ## has a basis with 4 matrices instead of 12 (which A12 has)
+gap> A125 := DirectSumOfAlgebras( [ A1, A2, A5 ] );;
+Error, the module of the basis <B> must be closed under multiplication
 
 gap> ## Lie algebra example
 gap> L := FullMatrixLieAlgebra( Rationals, 2 );
