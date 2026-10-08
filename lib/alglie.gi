@@ -2181,10 +2181,9 @@ InstallMethod( DirectSumDecomposition,
             k:= k+1;
           od;
 
-          ideals:= Flat([
+          ideals:= Concatenation(
                         DirectSumDecomposition(IdealNC( L, B1, "basis" )),
-                        DirectSumDecomposition(IdealNC( L, B2, "basis" ))
-                       ]);
+                        DirectSumDecomposition(IdealNC( L, B2, "basis" )) );
           return ideals;
 
         fi;
