@@ -138,6 +138,19 @@ gap> CheckSerialization([1,2,,3,,,4,"x","y"]);
 gap> CheckSerializationGeneric([~], x->IsIdenticalObj(x, x[1]));
 
 #
+# mutability
+#
+gap> Mutability := x -> [IsMutable(x), List(x, IsMutable), IsMutable(x[2].a),
+>                        IsIdenticalObj(x[5], x[6])];;
+gap> x := MakeImmutable([1]);;
+gap> x := [[2], rec(a := [3]), "abc", [1..5], x, x, [true,false]];;
+gap> CheckSerializationBy(x, Mutability);
+gap> CheckSerializationBy(MakeImmutable(x), Mutability);
+gap> CheckSerializationBy(MakeImmutable(rec(a := 1)), IsMutable);
+gap> CheckSerializationBy(MakeImmutable([1..5]), IsMutable);
+gap> CheckSerializationBy(MakeImmutable([true,false]), IsMutable);
+
+#
 # object set
 #
 gap> CheckSerializationBy(OBJ_SET([]), x->SortedList(OBJ_SET_VALUES(x)));
