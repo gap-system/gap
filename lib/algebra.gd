@@ -569,6 +569,8 @@ DeclareOperation( "ProductSpace", [ IsFreeLeftModule, IsFreeLeftModule ] );
 ##  <Description>
 ##  This is the direct sum of the two algebras <A>A1</A> and <A>A2</A>
 ##  or of the algebras in the list <A>list</A>.
+##  In the latter case, <C>DirectSumOfAlgebras(A1,A2,A3,...,An)</C>
+##  returns <M>(...((A_1 \oplus A_2) \oplus A3)...) \oplus A_n</M>.
 ##  <P/>
 ##  If all involved algebras are associative algebras then the result is also
 ##  known to be associative.
@@ -582,12 +584,14 @@ DeclareOperation( "ProductSpace", [ IsFreeLeftModule, IsFreeLeftModule ] );
 ##  algebras or both are associative then the result is again a
 ##  matrix algebra of the appropriate type.
 ##  <Example><![CDATA[
-##  gap> c3 := Group( (1,2,3) );; SetName( c3, "c3" );
-##  gap> A3 := GroupRing( Rationals, c3 );; SetName( A3, "A3" );
-##  gap> c5 := Group( (5,6,7,8,9) );; SetName( c5, "c5" );
-##  gap> A5 := GroupRing( Rationals, c5 );; SetName( A5, "A5" );
+##  gap> c3 := Group( (1,2,3) );;
+##  gap> A3 := GroupRing( Rationals, c3 );;
+##  gap> c5 := Group( (5,6,7,8,9) );;
+##  gap> A5 := GroupRing( Rationals, c5 );;
 ##  gap> A35 := DirectSumOfAlgebras( A3, A5 );
 ##  <algebra of dimension 8 over Rationals>
+##  gap> A353 := DirectSumOfAlgebras( [ A3, A5, A3 ] );
+##  <algebra of dimension 11 over Rationals>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
