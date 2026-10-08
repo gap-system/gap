@@ -402,6 +402,8 @@ GAPInput
   testexpect)
     INPUTRC=/tmp/inputrc expect -c "spawn $GAP -A -b $(gap_cover_arg 1)" $SRCDIR/dev/gaptest.expect
     INPUTRC=/tmp/inputrc expect -c "spawn $GAP -A -b $(gap_cover_arg 2) -l missing-dir" $SRCDIR/dev/gaptest2.expect
+    LC_ALL=C.UTF-8 INPUTRC=/tmp/inputrc expect -c "spawn $GAP -A -b $(gap_cover_arg 3)" $SRCDIR/dev/gaptest-utf8.expect
+    LC_ALL=C.UTF-8 expect -c "spawn $GAP -A -b -E $(gap_cover_arg 4)" $SRCDIR/dev/gaptest-utf8.expect
 
     # not using expect but in a similar vein: check `gap --version output`
     echo "Testing 'gap --version'"
