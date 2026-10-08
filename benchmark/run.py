@@ -57,7 +57,7 @@ def list_cases(args):
     out = subprocess.run(gap_command(args, rec), capture_output=True, text=True,
                          stdin=subprocess.DEVNULL, check=False)
     cases = []
-    for line in out.stdout.splitlines():
+    for line in out.stdout.replace("\\\n", "").splitlines():
         if not line.startswith("@CASE\t"):
             continue
         _, name, category, needs = line.split("\t")
@@ -99,7 +99,8 @@ def run_case(case, args):
         result["status"] = "timeout"
         result["ms"] = [args.timeout * 1000] * args.repeat
         return result
-    for line in out.stdout.splitlines():
+    # GAP breaks long output lines with a backslash; undo that first.
+    for line in out.stdout.replace("\\\n", "").splitlines():
         if not line.startswith("@BENCH\t"):
             continue
         parts = line.split("\t")
