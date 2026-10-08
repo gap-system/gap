@@ -3872,7 +3872,6 @@ InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
                z,s,u,v,x,y,w,   #Bracketed expressions (or `trees')
                cf,              #Coefficient
                found,           #Boolean
-               ll,              #List
                zero,            #The zero element of the field
                tlist,           #List of elements of the free Lie algebra
                Dcopy;           #Two functions
@@ -3910,8 +3909,7 @@ InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
              k:= k+1;
            elif cf = zero or s[1]=s[2] then
              # `s' is zero
-             ll:=Filtered([1..Length(todo)], x -> x<> k);
-             todo:= todo{ll};
+             Remove( todo, k );
            elif todo[k][1] then
              # we already dealt with `s'
              k:=k+1;
@@ -3942,8 +3940,7 @@ InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
 
              if u[1]=u[2] then
                # the whole expression `s' reduces to zero.
-               ll:= Filtered([1..Length(todo)], x->x<>k);
-               todo:= todo{ll};
+               Remove( todo, k );
              else
                if Flat([u[1]]) > Flat([u[2]]) then
                  # interchange u[1] and u[2]; this introduces a -.
@@ -3956,11 +3953,12 @@ InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
                    if todo[i][3] = s and k<>i then
                      todo[i][2]:= todo[i][2]-cf;
                      if todo[i][2] = zero then
-                       ll:=Filtered([1..Length(todo)],x->(x<>k and x<>i ));
+                       # larger index first, so the smaller one stays valid
+                       Remove( todo, Maximum( i, k ) );
+                       Remove( todo, Minimum( i, k ) );
                      else
-                       ll:=Filtered([1..Length(todo)],x->x<>k);
+                       Remove( todo, k );
                      fi;
-                     todo:= todo{ll};
                      found:= true;
                    fi;
                    i:=i+1;
@@ -3980,11 +3978,12 @@ InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
                    if todo[i][3] = s and k<>i then
                      todo[i][2]:= todo[i][2]+cf;
                      if todo[i][2] = zero then
-                       ll:=Filtered([1..Length(todo)],x->(x<>k and x<>i ));
+                       # larger index first, so the smaller one stays valid
+                       Remove( todo, Maximum( i, k ) );
+                       Remove( todo, Minimum( i, k ) );
                      else
-                       ll:=Filtered([1..Length(todo)],x->x<>k);
+                       Remove( todo, k );
                      fi;
-                     todo:= todo{ll};
                      found:= true;
                    fi;
                    i:=i+1;
