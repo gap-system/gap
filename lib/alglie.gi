@@ -2949,7 +2949,6 @@ InstallMethod( RootSystem,
           S,          # A list of the root vectors
           zero,       # zero of `F'
           hts,        # A list of the heights of the root vectors
-          sorh,       # The set `Set( hts )'
           sorR,       # The sorted set of roots
           R,          # The root system.
           Rvecs,      # The root vectors.
@@ -3101,12 +3100,8 @@ InstallMethod( RootSystem,
 
     V:= BasisNC( VectorSpace( F, fundR ), fundR );
     hts:= List( posR, r -> Sum( Coefficients( V, r ) ) );
-    sorh:= Set( hts );
-
-    sorR:= [ ];
-    for i in [1..Length(sorh)] do
-      Append( sorR, Filtered( posR, r -> hts[Position(posR,r)] = sorh[i] ) );
-    od;
+    sorR:= ShallowCopy( posR );
+    StableSortParallel( hts, sorR );
     Append( sorR, -1*sorR );
     Rvecs:= List( sorR, r -> Rvecs[ Position(S,r) ] );
 
