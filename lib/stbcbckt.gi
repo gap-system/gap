@@ -2089,6 +2089,108 @@ function( rbase, image, idx, strat )
     return true;
 end;
 
+#############################################################################
+##
+#F  STBBCKT_BlockAction( <E>, <Omega> ) . . . . . . action on smallest blocks
+##
+##  For <E> transitive on <Omega>, returns `false' or a record with
+##  components `blocks', the block system with the smallest blocks if it is
+##  the only one with blocks of that size, `blockof', the number of the block
+##  of each point, and `act', the action of <E> on the blocks.
+##
+BindGlobal( "STBBCKT_BlockAction", function( E, Omega )
+    local   bl,  c,  r,  i,  p;
+
+    bl := AllBlocks( E );
+    if Length( bl ) = 0  then
+        return false;
+    fi;
+    c := Minimum( List( bl, Length ) );
+    bl := Filtered( bl, b -> Length( b ) = c );
+    if Length( bl ) > 1  then
+        return false;
+    fi;
+    r := rec( blocks := Set( Blocks( E, Omega, bl[ 1 ] ), Set ),
+              blockof := [  ] );
+    for i  in [ 1 .. Length( r.blocks ) ]  do
+        for p  in r.blocks[ i ]  do
+            r.blockof[ p ] := i;
+        od;
+    od;
+    r.act := Action( E, r.blocks, OnSets );
+    return r;
+end );
+
+#############################################################################
+##
+#F  STBBCKT_BlockImage( <rbase>, <image> ) . . . . . . blocks of second group
+##
+##  Returns the blocks of <F> = `image.data[2]' corresponding to those of
+##  `rbase.blockact', numbered such that the map induced on the block
+##  numbers by any element conjugating E to <F> normalizes the action of E
+##  on its blocks. Returns `fail' if there is no such numbering.
+##
+BindGlobal( "STBBCKT_BlockImage", function( rbase, image )
+    local   q,  F,  r,  m,  x,  i,  p;
+
+    if IsBound( image.blockact )  then
+        return image.blockact;
+    fi;
+    q := rbase.blockact;
+    F := image.data[ 2 ];
+    m := Length( q.blocks );
+    image.blockact := fail;
+    if IsIdenticalObj( F, q.group )  then
+        image.blockact := q;
+    elif IsTransitive( F, rbase.domain )  then
+        r := STBBCKT_BlockAction( F, rbase.domain );
+        if     r <> false  and  Length( r.blocks ) = m
+           and Size( r.act ) = Size( q.act )  then
+            x := ConjugatorPermGroup( SymmetricGroup( m ), q.act, r.act );
+            if x <> fail  then
+                r.blocks := List( [ 1 .. m ], i -> r.blocks[ i ^ x ] );
+                for i  in [ 1 .. m ]  do
+                    for p  in r.blocks[ i ]  do
+                        r.blockof[ p ] := i;
+                    od;
+                od;
+                image.blockact := r;
+            fi;
+        fi;
+    fi;
+    return image.blockact;
+end );
+
+#############################################################################
+##
+#F  Refinements.BlockOrbits( <cells>, <T>, <orbs>, <strat> )
+##
+##  The blocks containing the fixpoints in <cells> are <T>, and <orbs> are
+##  the orbits on blocks of the stabilizer of <T> in the normalizer N of the
+##  action of E on its blocks. An element of N maps <T> to the blocks of
+##  <F> containing the fixpoints of the image, and <orbs> to sets of blocks
+##  of <F> which the conjugating element must respect.
+##
+BindGlobal( "STBBCKT_STRING_BLOCKORBITS", MakeImmutable( "BlockOrbits" ) );
+Refinements.(STBBCKT_STRING_BLOCKORBITS) :=
+function( rbase, image, cells, T, orbs, strat )
+    local   r,  P,  t;
+
+    r := STBBCKT_BlockImage( rbase, image );
+    if r = fail  then
+        return false;
+    fi;
+    P := image.partition;
+    t := STBBCKT_MappingOfBase( rbase.blockact.normalizer, T,
+             List( cells, c -> r.blockof[ FixpointCellNo( P, c ) ] ) );
+    if t = fail  then
+        return false;
+    fi;
+    return MeetPartitionStrat( rbase, image, Partition( List( orbs,
+               O -> Concatenation( r.blocks{ OnTuples( O, t ) } ) ) ), (),
+               strat );
+end;
+
 BindGlobal("STBCTEARNS",function(G,Omega)
   G:=Earns(G,Omega);
   if Length(G)=0 then return fail;
@@ -2116,6 +2218,8 @@ InstallGlobalFunction( RBaseGroupsBloxPermGroup, function( repr, G, Omega, E, di
            tchain,  T, # stabilizer chain of <E> whose base <T> are fixpoints
            tgens,      # elements of <E> mapping <T> to fixpoints
            BaseImages,
+           blockact,   # action of <E> on blocks, see `STBBCKT_BlockAction'
+           BlockOrbits,
            tra,        # degree of transitivity of <E>
            cp,
            len,  i;
@@ -2184,6 +2288,70 @@ InstallGlobalFunction( RBaseGroupsBloxPermGroup, function( repr, G, Omega, E, di
     fixseen := BlistList( [ 1 .. Maximum( Omega ) ], [  ] );
     tchain := false;
     tgens := [  ];
+
+    # An element conjugating <E> to F induces a map on the blocks which
+    # conjugates the actions on the blocks. Use the normalizer of the action
+    # of <E> on its smallest blocks, unless it is alternating or symmetric.
+    blockact := false;
+    if reg = fail  and  Length( orbs ) = 1  then
+        blockact := STBBCKT_BlockAction( E, Omega );
+    fi;
+    if blockact <> false  then
+        i := Factorial( Length( blockact.blocks ) );
+        if 2 * Size( blockact.act ) < i  then
+            blockact.normalizer := NormalizerPermGroup(
+                SymmetricGroup( Length( blockact.blocks ) ), blockact.act );
+        fi;
+        if     IsBound( blockact.normalizer )
+           and 2 * Size( blockact.normalizer ) < i  then
+            blockact.group := E;
+            blockact.stab := CopyStabChain( StabChainImmutable(
+                                 blockact.normalizer ) );
+            blockact.fixed := [  ];
+            blockact.cells := [  ];
+            rbase.blockact := blockact;
+        else
+            blockact := false;
+        fi;
+    fi;
+
+    # Meet with the orbits on blocks of the stabilizer in the normalizer of
+    # the blocks containing fixpoints, see `BlockOrbits'.
+    # Returns whether the R-base has become trivial.
+    BlockOrbits := function( P, rbase )
+        local   new,  pnt,  b,  orbs,  strat;
+
+        if Length( blockact.stab.generators ) = 0  then
+            return false;
+        fi;
+        new := [  ];
+        for pnt  in Fixcells( P )  do
+            b := blockact.blockof[ pnt ];
+            if not b in blockact.fixed  then
+                Add( blockact.fixed, b );
+                Add( blockact.cells, CellNoPoint( P, pnt ) );
+                Add( new, b );
+            fi;
+        od;
+        if Length( new ) = 0  then
+            return false;
+        fi;
+        ChangeStabChain( blockact.stab, new, false );
+        for b  in new  do
+            blockact.stab := blockact.stab.stabilizer;
+        od;
+        orbs := OrbitsPerms( blockact.stab.generators,
+                        [ 1 .. Length( blockact.blocks ) ] );
+        if Length( orbs ) = 1  then
+            return false;
+        fi;
+        strat := StratMeetPartition( rbase, P, Partition( List( orbs,
+                     O -> Concatenation( blockact.blocks{ O } ) ) ) );
+        AddRefinement( rbase, STBBCKT_STRING_BLOCKORBITS,
+            [ ShallowCopy( blockact.cells ), ShallowCopy( blockact.fixed ),
+              orbs, strat ] );
+        return IsTrivialRBase( rbase );
+    end;
 
     UpdateFixStab := function( P )
         local   new,  p;
@@ -2455,12 +2623,20 @@ InstallGlobalFunction( RBaseGroupsBloxPermGroup, function( repr, G, Omega, E, di
             od;
         fi;
 
+        if blockact <> false  and  BlockOrbits( P, rbase )  then
+            return;
+        fi;
+
         if reg = fail  then
             UpdateFixStab( P );
             if Length( fixstab.generators ) = 0  and  BaseImages( P, rbase )
                then
                 return;
             fi;
+        fi;
+
+        if blockact <> false  and  BlockOrbits( P, rbase )  then
+            return;
         fi;
 
         # Once the R-base is longer than a base of <E>, the suborbits above
