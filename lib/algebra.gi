@@ -3205,7 +3205,7 @@ InstallMethod( DirectSumOfAlgebras,
     "for list of algebras",
     [ IsDenseList ],
     function( list )
-    local R, A, i, dim, first;
+    local R, A, i, dim, type, first;
 
     if IsEmpty( list ) then
       Error( "<list> must be nonempty" );
@@ -3218,16 +3218,30 @@ InstallMethod( DirectSumOfAlgebras,
       fi;
     od;
 
+    if ForAll( list, A -> IsMatrixFLMLOR( A ) and IsAssociative( A ) ) then
+      type := "generators";
+    else
+      type := "basis vectors";
+    fi;
+
     A:= list[1];
-    first:= [ 0, Dimension( A ) ];
+    if ( type = "generators" ) then
+      first := [ 0, Length( GeneratorsOfAlgebra( A ) ) ];
+    else
+      first:= [ 0, Dimension( A ) ];
+    fi;
     for i in [ 2 .. Length( list ) ] do
-      dim:= Dimension( list[i] );
+      if ( type = "generators" ) then
+        dim := Length( GeneratorsOfAlgebra( list[i] ) );
+      else
+        dim:= Dimension( list[i] );
+      fi;
       Add( first, first[i] + dim );
       A:= DirectSumOfAlgebras( A, list[i] );
     od;
     SetDirectSumInfo( A, rec( algebras := list,
                               first := first,
-                              type := "basis vectors",
+                              type := type,
                               embeddings := [],
                               projections := [] ) );
     return A;
