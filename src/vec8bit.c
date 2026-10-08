@@ -3965,6 +3965,7 @@ static Obj FuncASS_MAT8BIT(Obj self, Obj mat, Obj pos, Obj obj)
                                    ? TYPE_LIST_GF2VEC_LOCKED
                                    : TYPE_LIST_GF2VEC_IMM_LOCKED);
             SET_ELM_GF2MAT(mat, 1, obj);
+            CHANGED_BAG(mat);
             return (Obj)0;
         }
     }
