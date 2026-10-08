@@ -5,7 +5,7 @@
 ##
 ##
 ##
-#@local foo,l,o,r,res,s,t,x
+#@local f,foo,l,o,r,res,s,t,x
 gap> START_TEST("listindex.tst");
 
 # custom list implementation, pretending to have infinite length
@@ -407,6 +407,17 @@ function ( x )
     c := x{[ 1 ]}[1, 1];
     return 1;
 end
+
+# assignment inside a function to an immutable list that the kernel has not
+# classified beyond "plain list"
+gap> l := [ 1, "a", 3 ];; l[5] := 1;; Unbind(l[5]);; MakeImmutable(l);;
+gap> f := function(l, i) l[i] := 0; end;;
+gap> f(l, 1);
+Error, List Assignment: <list> must be a mutable list
+gap> f(l, 5);
+Error, List Assignment: <list> must be a mutable list
+gap> l;
+[ 1, "a", 3 ]
 
 # that's all, folks
 gap> STOP_TEST("listindex.tst");

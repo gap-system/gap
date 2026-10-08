@@ -494,7 +494,7 @@ static ExecStatus ExecAssList(Expr stat)
         p = INT_INTOBJ(pos);
 
         // special case for plain list
-        if ( TNUM_OBJ(list) == T_PLIST ) {
+        if ( TNUM_OBJ(list) == T_PLIST && IS_MUTABLE_OBJ(list) ) {
             if ( LEN_PLIST(list) < p ) {
                 GROW_PLIST( list, p );
                 SET_LEN_PLIST( list, p );
