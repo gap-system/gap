@@ -1556,7 +1556,9 @@ InstallGlobalFunction( CollectUEALatticeElement,
     function( noPosR, BH, f, vars, Rvecs, RT, posR, lst )
 
     local   i, j, k, l, p, q, r, s,   # loop variables
-            todo,                # list of monomials that still need treatment
+            tmons, tcfs,         # sorted monomials that still need treatment,
+                                 # and their coefficients
+            moncf,               # coefficient of `mon'
             dones,               # list of monomials that don't
             collocc,             # `true' is a collection has occurred
             mon, mon1,           # monomials,
@@ -1660,15 +1662,18 @@ InstallGlobalFunction( CollectUEALatticeElement,
     # same order as the roots), then the Cartan elements, and then the
     # `positive' root vectors.
 
-    todo:= ShallowCopy( lst );
+    tmons:= lst{[1,3..Length(lst)-1]};
+    tcfs:= lst{[2,4..Length(lst)]};
+    SortParallel( tmons, tcfs );
     dones:= [ ];
 
-    while todo <> [] do
+    while tmons <> [] do
 
      # `collocc' will be `true' once a collection has occurred.
 
         collocc:= false;
-        mon:= ShallowCopy(todo[1]);
+        mon:= ShallowCopy( Remove( tmons ) );
+        moncf:= Remove( tcfs );
 
      # We collect `mon'.
 
@@ -1705,7 +1710,6 @@ InstallGlobalFunction( CollectUEALatticeElement,
                     temp:= mon[i+1];
                     mon[i+1]:= mon[i+3];
                     mon[i+3]:= temp;
-                    todo[1]:= mon;
                     i:= 1;
 
                 fi;
@@ -1724,7 +1728,6 @@ InstallGlobalFunction( CollectUEALatticeElement,
                     temp:= mon[i+1];
                     mon[i+1]:= mon[i+3];
                     mon[i+3]:= temp;
-                    todo[1]:= mon;
                     i:= 1;
                 fi;
             elif mon[i] = mon[i+2] then
@@ -1732,11 +1735,10 @@ InstallGlobalFunction( CollectUEALatticeElement,
                 # They are the same; so we take them together. This costs
                 # a binomial factor.
                 mon[i+1]:= mon[i+1]+mon[i+3];
-                todo[2]:= todo[2]*Binomial(mon[i+1],mon[i+3]);
+                moncf:= moncf*Binomial(mon[i+1],mon[i+3]);
 
                 Remove( mon, i+2 );
                 Remove( mon, i+2 );
-                todo[1]:= mon;
             elif mon[i] < mon[i+2] then
 
                 # They are in the right order; we do nothing.
@@ -1750,8 +1752,7 @@ InstallGlobalFunction( CollectUEALatticeElement,
                 # To every element of `rr' we then have to prepend
                 # `start' and to append `tail'.
 
-                cf:= todo[2];
-                Unbind( todo[1] ); Unbind( todo[2] );
+                cf:= moncf;
                 start:= mon{[1..i-1]};
                 tail:= mon{[i+4..Length(mon)]};
                 if posR[mon[i]] = -posR[mon[i+2]] then
@@ -2023,18 +2024,17 @@ InstallGlobalFunction( CollectUEALatticeElement,
                     st1:= List( start, ShallowCopy );
                     Append( st1, rr[j] );
                     Append( st1, List( tail, ShallowCopy ) );
-                    p:= Position( todo, st1 );
-                    if p = fail then
-                        Add( todo, st1 );
-                        Add( todo, rr[j+1]*cf );
+                    p:= PositionSorted( tmons, st1 );
+                    if p > Length( tmons ) or tmons[p] <> st1 then
+                        Add( tmons, st1, p );
+                        Add( tcfs, rr[j+1]*cf, p );
                     else
-                        todo[p+1]:= todo[p+1] + rr[j+1]*cf;
-                        if todo[p+1] = 0 then
-                            Unbind( todo[p+1] ); Unbind( todo[p] );
+                        tcfs[p]:= tcfs[p] + rr[j+1]*cf;
+                        if tcfs[p] = 0 then
+                            Remove( tmons, p ); Remove( tcfs, p );
                         fi;
                     fi;
                 od;
-                todo:= Compacted( todo );
                 collocc:= true;
 
                # We performed one collection step, and we break from
@@ -2045,19 +2045,19 @@ InstallGlobalFunction( CollectUEALatticeElement,
 
         if not collocc then
 
-            # No collection has occurred, so `todo[1]' is in normal form.
+            # No collection has occurred, so `mon' is in normal form.
             # First we check whether the monomial has any Cartan elements.
             # (Those are represented by lists, instead of integers).
 
             has_h:= false;
-            for i in [1,3..Length(todo[1])-1] do
-                if IsList(todo[1][i]) then has_h:= true; break; fi;
+            for i in [1,3..Length(mon)-1] do
+                if IsList(mon[i]) then has_h:= true; break; fi;
             od;
 
             if not has_h then
 
               # No Cartan elements; we do not have to transform the monomial.
-                mons:= [ todo[1], todo[2] ];
+                mons:= [ mon, moncf ];
             else
 
               # Here we do have Cartan elements; those occur as pieces of the
@@ -2070,13 +2070,13 @@ InstallGlobalFunction( CollectUEALatticeElement,
               # write that polynomial as a linear combination of pure
               # binomials, and transform the result back again.
 
-                start:= todo[1]{[1..i-1]};
+                start:= mon{[1..i-1]};
                 j:= i;
                 pol:= vars[1]^0;
 
-                while j <= Length( todo[1] ) and IsList( todo[1][j] ) do
-                    q:= Image( f, todo[1][j][1] ) + todo[1][j][2];
-                    s:= todo[1][j+1];
+                while j <= Length( mon ) and IsList( mon[j] ) do
+                    q:= Image( f, mon[j][1] ) + mon[j][2];
+                    s:= mon[j+1];
                     pol:= pol*
                           Product( List( [0..s-1], x -> q - x ) )/Factorial(s);
                     j:= j+2;
@@ -2084,8 +2084,8 @@ InstallGlobalFunction( CollectUEALatticeElement,
 
               # Now we processed the Cartan elements, we still may have a tail.
 
-                if j <= Length( todo[1] ) then
-                    tail:= todo[1]{[j..Length(todo[1])]};
+                if j <= Length( mon ) then
+                    tail:= mon{[j..Length(mon)]};
                 else
                     tail:= [ ];
                 fi;
@@ -2102,7 +2102,7 @@ InstallGlobalFunction( CollectUEALatticeElement,
                     mm:= ShallowCopy( start );
                     Append( mm, ww[k] ); Append( mm, tail );
                     Add( mons, mm );
-                    cf:= ww[k+1]*todo[2];
+                    cf:= ww[k+1]*moncf;
                     if IsRationalFunction( cf ) then
                         cf:= ExtRepPolynomialRatFun( cf )[2];
                     fi;
@@ -2127,9 +2127,6 @@ InstallGlobalFunction( CollectUEALatticeElement,
                     fi;
                 fi;
             od;
-
-            Remove( todo, 1 );
-            Remove( todo, 1 );
 
         fi;
     od;
@@ -3255,36 +3252,20 @@ InstallMethod( HighestWeightModule,
             multiplicity,  sps,  sortmn,  we_had_enough,  le,  f,
             m1a,  g,  m2a,  lcm,  pp,  w2,  e1,  e2,  fac1,  fac2,
             comp,  vec,  ecomp,  vecs,  cfsc,  ec,  wvecs,  no,  fam,
-            B,  delmod,  delB, lexord, longmon;
+            B,  delmod,  delB, lexkey, longmon;
 
 
-    lexord:= function( novar, m1, m2 )
+    lexkey:= function( novar, m )
 
-        # m1, m2 are two monomials in extrep, deg lex order...
+        # Sort key of the monomial m in extrep: descending deg lex order.
 
-        local   d1,  d2,  n1,  k,  n2,  o,  pos;
+        local   n,  k;
 
-        d1:= Sum(m1{[2,4..Length(m1)]});
-        d2:= Sum(m2{[2,4..Length(m2)]});
-        if d1<>d2 then
-            return d1<d2;
-        fi;
-
-        n1:= ListWithIdenticalEntries( novar, 0 );
-        for k in [1,3..Length(m1)-1] do
-            n1[m1[k]]:= m1[k+1];
+        n:= ListWithIdenticalEntries( novar, 0 );
+        for k in [1,3..Length(m)-1] do
+            n[m[k]]:= m[k+1];
         od;
-        n2:= ListWithIdenticalEntries( novar, 0 );
-        for k in [1,3..Length(m2)-1] do
-            n2[m2[k]]:= m2[k+1];
-        od;
-
-        o:= n2-n1;
-        pos:= PositionProperty( o, x -> x <> 0 );
-        if pos = fail then
-            return false;
-        fi;
-        return o[pos] < 0;
+        return Concatenation( [ -Sum( n ) ], n );
     end;
 
 
@@ -3567,8 +3548,7 @@ InstallMethod( HighestWeightModule,
                     sps[j]:= MutableBasis( Rationals, [],
                                      [1..Length(mmm[j])]*0 );
                     sortmn[j]:= List( mmm[j], x -> ExtRepOfObj(x)[1] );
-                    Sort( sortmn[j], function(x,y) return
-                             lexord( novar, y, x ); end );
+                    SortBy( sortmn[j], m -> lexkey( novar, m ) );
 
                 fi;
             fi;

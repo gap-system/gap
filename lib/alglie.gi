@@ -2036,7 +2036,7 @@ InstallMethod( DirectSumDecomposition,
 
               # We remove the old space from the list;
 
-              B:= Filtered( B, x -> (x <> B[k]) );
+              Remove( B, k );
 
             fi;
            fi;
@@ -2066,7 +2066,7 @@ InstallMethod( DirectSumDecomposition,
 
         if contained then     # we do not need B[1] any more
 
-          B:= Filtered( B, x -> x<> B[1] );
+          Remove( B, 1 );
 
         else
 
@@ -2081,7 +2081,7 @@ InstallMethod( DirectSumDecomposition,
           # generate a smaller ideal inside this one.)
 
           bb:= ShallowCopy( B[1] );
-          B:= Filtered( B, x -> x<> B[1] );
+          Remove( B, 1 );
           i:=1;
           while i<= Length( B ) do
 
@@ -2092,7 +2092,7 @@ InstallMethod( DirectSumDecomposition,
 
             if not ForAll( comlist, IsZero ) then
               Append( bb, B[i] );
-              B:= Filtered( B, x -> x <> B[i] );
+              Remove( B, i );
               i:= 1;
             else
               i:=i+1;
@@ -2167,10 +2167,9 @@ InstallMethod( DirectSumDecomposition,
             k:= k+1;
           od;
 
-          ideals:= Flat([
+          ideals:= Concatenation(
                         DirectSumDecomposition(IdealNC( L, B1, "basis" )),
-                        DirectSumDecomposition(IdealNC( L, B2, "basis" ))
-                       ]);
+                        DirectSumDecomposition(IdealNC( L, B2, "basis" )) );
           return ideals;
 
         fi;
@@ -2445,20 +2444,18 @@ InstallMethod( SemiSimpleType,
 
     CartanInteger := function( R, r1, r2 )
 
-        local R1,s,t,rt;
+        local s,t,rt;
 
-        R1:= ShallowCopy( R );
-        Add( R1, R[1]-R[1] );
         s:= 0;
         t:= 0;
         rt:= r1-r2;
-        while rt in R1 do
+        while (rt in R) or IsZero( rt ) do
           rt:= rt-r2;
           s:= s+1;
         od;
 
         rt:= r1+r2;
-        while rt in R1 do
+        while (rt in R) or IsZero( rt ) do
           rt:= rt+r2;
           t:= t+1;
         od;
@@ -2935,7 +2932,6 @@ InstallMethod( RootSystem,
           S,          # A list of the root vectors
           zero,       # zero of `F'
           hts,        # A list of the heights of the root vectors
-          sorh,       # The set `Set( hts )'
           sorR,       # The sorted set of roots
           R,          # The root system.
           Rvecs,      # The root vectors.
@@ -3087,12 +3083,8 @@ InstallMethod( RootSystem,
 
     V:= BasisNC( VectorSpace( F, fundR ), fundR );
     hts:= List( posR, r -> Sum( Coefficients( V, r ) ) );
-    sorh:= Set( hts );
-
-    sorR:= [ ];
-    for i in [1..Length(sorh)] do
-      Append( sorR, Filtered( posR, r -> hts[Position(posR,r)] = sorh[i] ) );
-    od;
+    sorR:= ShallowCopy( posR );
+    StableSortParallel( hts, sorR );
     Append( sorR, -1*sorR );
     Rvecs:= List( sorR, r -> Rvecs[ Position(S,r) ] );
 
@@ -3645,7 +3637,7 @@ InstallHandlingByNiceBasis( "IsSpaceOfUEAElements", rec(
       v:= ExtRepOfObj( v )[2];
       monomials:= info.monomials;
       for i in [ 2, 4 .. Length( v ) ] do
-        pos:= Position( monomials, v[ i-1 ] );
+        pos:= PositionSet( monomials, v[ i-1 ] );  # sorted, flag lost
         if pos = fail then
           return fail;
         fi;
@@ -3863,7 +3855,6 @@ InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
                z,s,u,v,x,y,w,   #Bracketed expressions (or `trees')
                cf,              #Coefficient
                found,           #Boolean
-               ll,              #List
                zero,            #The zero element of the field
                tlist,           #List of elements of the free Lie algebra
                Dcopy;           #Two functions
@@ -3901,8 +3892,7 @@ InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
              k:= k+1;
            elif cf = zero or s[1]=s[2] then
              # `s' is zero
-             ll:=Filtered([1..Length(todo)], x -> x<> k);
-             todo:= todo{ll};
+             Remove( todo, k );
            elif todo[k][1] then
              # we already dealt with `s'
              k:=k+1;
@@ -3933,8 +3923,7 @@ InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
 
              if u[1]=u[2] then
                # the whole expression `s' reduces to zero.
-               ll:= Filtered([1..Length(todo)], x->x<>k);
-               todo:= todo{ll};
+               Remove( todo, k );
              else
                if Flat([u[1]]) > Flat([u[2]]) then
                  # interchange u[1] and u[2]; this introduces a -.
@@ -3947,11 +3936,12 @@ InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
                    if todo[i][3] = s and k<>i then
                      todo[i][2]:= todo[i][2]-cf;
                      if todo[i][2] = zero then
-                       ll:=Filtered([1..Length(todo)],x->(x<>k and x<>i ));
+                       # larger index first, so the smaller one stays valid
+                       Remove( todo, Maximum( i, k ) );
+                       Remove( todo, Minimum( i, k ) );
                      else
-                       ll:=Filtered([1..Length(todo)],x->x<>k);
+                       Remove( todo, k );
                      fi;
-                     todo:= todo{ll};
                      found:= true;
                    fi;
                    i:=i+1;
@@ -3971,11 +3961,12 @@ InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
                    if todo[i][3] = s and k<>i then
                      todo[i][2]:= todo[i][2]+cf;
                      if todo[i][2] = zero then
-                       ll:=Filtered([1..Length(todo)],x->(x<>k and x<>i ));
+                       # larger index first, so the smaller one stays valid
+                       Remove( todo, Maximum( i, k ) );
+                       Remove( todo, Minimum( i, k ) );
                      else
-                       ll:=Filtered([1..Length(todo)],x->x<>k);
+                       Remove( todo, k );
                      fi;
-                     todo:= todo{ll};
                      found:= true;
                    fi;
                    i:=i+1;
