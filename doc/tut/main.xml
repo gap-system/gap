@@ -25,12 +25,13 @@
 
   <Copyright>
     Copyright &copyright; (1987-&RELEASEYEAR;)
-    for the core part of the &GAP; system by the &GAP; Group.
+    for the core part of the &GAP; system by its authors.
     <P/>
     Most parts of this distribution, including the core part of the &GAP;
     system are distributed under the terms of the GNU General Public License,
-    see <URL>https://www.gnu.org/licenses/gpl.html</URL> or the file
-    <F>GPL</F> in the <F>etc</F> directory of the &GAP;
+    version 2 or (at your option) any later version,
+    see <URL>https://www.gnu.org/licenses/old-licenses/gpl-2.0.html</URL> or the
+    <F>LICENSE</F> file in the root directory of the &GAP;
     installation.
     <P/>
     More detailed information about copyright and licenses of parts of this
