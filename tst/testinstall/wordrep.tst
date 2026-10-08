@@ -28,6 +28,14 @@ true
 gap> ExtRepOfObj(winf);
 [ 1, 1099511627776, 2, -10, 1, 4 ]
 
+# only the inf. bits words are positional objects
+gap> List([w8,w16,w32,winf], IsDataObjectRep);
+[ true, true, true, false ]
+gap> List([w8,w16,w32,winf], IsPositionalObjectRep);
+[ false, false, false, true ]
+gap> ForAll([w8,w16,w32,winf], IsSyllableAssocWordRep);
+true
+
 #
 # ExponentSums
 #
