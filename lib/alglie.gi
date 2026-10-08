@@ -3821,7 +3821,7 @@ end );
 ##  <descr> is a list of the form `[ <z>, <list> ]', <z> being the zero
 ##  coefficient of the ring, and <list> being the list of monomials and
 ##  their coefficients.
-##  This function returns the element described in <descr> expanded on
+##  This function returns the description of that element expanded on
 ##  the Lyndon basis of the free Lie algebra. In order to do this we do not
 ##  need to know this basis; we only need a test whether something is a
 ##  Lyndon element (this is done in the function `IsLyndonT').
@@ -3880,6 +3880,7 @@ InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
                ll,              #List
                zero,            #The zero element of the field
                tlist,           #List of elements of the free Lie algebra
+               FM,              #Family of the magma elements
                Dcopy;           #Two functions
 
          Dcopy:=function( l )
@@ -4019,16 +4020,19 @@ InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
            fi;
          od;
 
-# wrap the list `todo' into an element of the free Lie algebra.
+# turn the list `todo' into the description of an element of the free
+# Lie algebra.
 
          todo:= List( todo, x -> [x[3],x[2]] );
          Sort( todo );
+         FM:= ElementsFamily( Fam!.familyMagma );
          tlist:= [];
          for i in [1..Length(todo)] do
-           Append( tlist, todo[i] );
+           Add( tlist, ObjByExtRep( FM, todo[i][1] ) );
+           Add( tlist, todo[i][2] );
          od;
 
-         return ObjByExtRep( Fam, [ zero, tlist ] );
+         return [ zero, tlist ];
 
      end );
 
