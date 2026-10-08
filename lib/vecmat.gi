@@ -2382,7 +2382,7 @@ InstallMethod(NestingDepthA, [IsGF2VectorRep], m->1);
 InstallMethod(PostMakeImmutable, [IsGF2MatrixRep],
         function(m)
     local i;
-    for i in [2..m![1]] do
+    for i in [2..m![1]+1] do
         MakeImmutable(m![i]);
     od;
 end);
