@@ -1584,10 +1584,8 @@ InstallMethod( LieNilRadical,
           HS,          # Fitting 1-component of `S' wrt `H'
           adH,         # list of ad x for x in a basis of `H'
           n,           # dimension of `L'
-          t,           # the dimension of an ideal
           eqs,         # equation set
           I,           # basis vectors of an ideal of `L'
-          i,j,k,       # loop variables
           sol,         # solution set
           adL,         # list of matrices ad x where x runs through a basis of
                        # `L'
@@ -1629,17 +1627,7 @@ InstallMethod( LieNilRadical,
       R:= RadicalOfAlgebra( AdjointAssociativeAlgebra( S, H ) );
       B:= BasisVectors( Basis( R ) );
 
-      eqs:= NullMat(Dimension(H)+Dimension(R),n^2,F);
-      for i in [1..n] do
-        for j in [1..n] do
-          for k in [1..Dimension(H)] do
-            eqs[k][j+(i-1)*n]:= adH[k][i][j];
-          od;
-          for k in [1..Dimension(R)] do
-            eqs[Dimension(H)+k][j+(i-1)*n]:= B[k][i][j];
-          od;
-        od;
-      od;
+      eqs:= List( Concatenation( adH, B ), Concatenation );
       sol:= NullspaceMat( eqs );
       I:= List( sol, x-> LinearCombination( Basis(H), x{[1..Dimension(H)]} ) );
 
@@ -1663,21 +1651,10 @@ InstallMethod( LieNilRadical,
       fi;
 
       B:= BasisVectors( Basis( R ) );
-      t:= Dimension( R );
 
       # Now we compute the intersection of `R' and `<ad L>'.
 
-      eqs:= NullMat(n+t,n*n,F);
-      for i in [1..n] do
-        for j in [1..n] do
-          for k in [1..n] do
-            eqs[k][j+(i-1)*n]:= adL[k][i][j];
-          od;
-          for k in [1..t] do
-            eqs[n+k][j+(i-1)*n]:= -B[k][i][j];
-          od;
-        od;
-      od;
+      eqs:= List( Concatenation( adL, -B ), Concatenation );
       sol:= NullspaceMat( eqs );
       I:= List( sol, x-> LinearCombination( bv, x{[1..n]} ) );
       return SubalgebraNC( L, I, "basis" );
