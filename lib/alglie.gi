@@ -521,17 +521,14 @@ InstallMethod( KappaPerp,
     [ IsAlgebra and IsLieAlgebra, IsVectorSpace ], 0,
     function( L, U )
 
-    local R,          # left acting domain of `L'
-          B,     # a basis of L
+    local B,     # a basis of L
           kap,   # the matrix of the Killing form w.r.t. `B'
           A,     # the matrix of the equation system
           n,     # the dimension of L
           s,     # the dimension of U
           v,     # coefficient list of the basis of U w.r.t. the basis of L
-          i,j,k, # loop variables
           bas;   # the basis of the solution space
 
-    R:= LeftActingDomain( L );
     B:= Basis( L );
     n:= Dimension( L );
     s:= Dimension( U );
@@ -542,17 +539,10 @@ InstallMethod( KappaPerp,
 
     v:= List( BasisVectors( Basis( U ) ),
               x -> Coefficients( B, x ) );
-    A:= NullMat( n, s, R );
     kap:= KillingMatrix( B );
 
     # Compute the equations that define the subspace.
-    for k in [ 1..s ] do
-      for i in [ 1..n ] do
-        for j in [ 1..n ] do
-          A[i][k]:= A[i][k] + v[k][j] * kap[i][j];
-        od;
-      od;
-    od;
+    A:= kap * TransposedMat( v );
 
     # Solve the equation system.
     bas:= NullspaceMat( A );
