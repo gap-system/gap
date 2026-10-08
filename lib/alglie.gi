@@ -5630,6 +5630,7 @@ BindGlobal( "LIE_ALGEBRA_OF_P_GROUP_SERIES", function( G, series, pdeg )
           pcgps,     # list of pc groups, isom to the elts of `grades'.
           hom_pcg,   # list of isomomorphisms of `grades[i]' to `pcgps[i]'.
           enum_gens, # List of numbers of elts of `gens' in extrep.
+          offset,    # offset[i]: number of elts of `gens' before grades[i]
           pp,        # Position in a list.
           hm;
 
@@ -5649,9 +5650,11 @@ BindGlobal( "LIE_ALGEBRA_OF_P_GROUP_SERIES", function( G, series, pdeg )
     pcgps:= List( hom_pcg, Range );
     gens := [];
     enum_gens:= [ ];
+    offset:= [ ];
     pos := [];
     for i in [1.. Length(grades)] do
         tempgens:= GeneratorsOfGroup( pcgps[i] );
+        Add( offset, Length( gens ) );
         Append ( gens , tempgens);
 
         # Record the number that each generator has in extrep.
@@ -5692,7 +5695,7 @@ BindGlobal( "LIE_ALGEBRA_OF_P_GROUP_SERIES", function( G, series, pdeg )
                 co:=[];
                 for k in [1,3..Length(e)-1] do
                     pp:= Position( enum_gens[pos[i]+pos[j]], e[k] );
-                    t:= Sum( enum_gens{[1..pos[i]+pos[j]-1]}, Length )+pp;
+                    t:= offset[pos[i]+pos[j]]+pp;
                     Add( co, One( F )*e[k+1] );
                     Add( co, t );
                 od;
@@ -5745,7 +5748,7 @@ BindGlobal( "LIE_ALGEBRA_OF_P_GROUP_SERIES", function( G, series, pdeg )
             x:= Zero( L );
             for k in [1,3..Length(e)-1] do
                 pp:= Position( enum_gens[pdeg( pos[i] )], e[k] );
-                t:= Sum( enum_gens{[1..pdeg( pos[i] )-1]}, Length )+pp;
+                t:= offset[pdeg( pos[i] )]+pp;
                 x:= x+ One( F )*e[k+1]*vv[t];
             od;
             pimgs[i]:= x;
