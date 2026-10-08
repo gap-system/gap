@@ -2050,7 +2050,7 @@ InstallMethod( DirectSumDecomposition,
 
               # We remove the old space from the list;
 
-              B:= Filtered( B, x -> (x <> B[k]) );
+              Remove( B, k );
 
             fi;
            fi;
@@ -2080,7 +2080,7 @@ InstallMethod( DirectSumDecomposition,
 
         if contained then     # we do not need B[1] any more
 
-          B:= Filtered( B, x -> x<> B[1] );
+          Remove( B, 1 );
 
         else
 
@@ -2095,7 +2095,7 @@ InstallMethod( DirectSumDecomposition,
           # generate a smaller ideal inside this one.)
 
           bb:= ShallowCopy( B[1] );
-          B:= Filtered( B, x -> x<> B[1] );
+          Remove( B, 1 );
           i:=1;
           while i<= Length( B ) do
 
@@ -2106,7 +2106,7 @@ InstallMethod( DirectSumDecomposition,
 
             if not ForAll( comlist, IsZero ) then
               Append( bb, B[i] );
-              B:= Filtered( B, x -> x <> B[i] );
+              Remove( B, i );
               i:= 1;
             else
               i:=i+1;
