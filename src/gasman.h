@@ -548,17 +548,8 @@ void RetypeBagIfWritable(Bag bag, UInt new_type);
 #define RetypeBagIfWritable(x,y)     RetypeBag(x,y)
 #endif
 
-#ifdef GAP_KERNEL_DEBUG
-// This helper tests whether the type change is "allowed". As such, it rejects
-// attempts to retype an immutable list or record into a mutable one.
-void PrecheckRetypeBag(Bag bag, UInt new_type);
-#endif
-
 EXPORT_INLINE void RetypeBag(Bag bag, UInt new_type)
 {
-#ifdef GAP_KERNEL_DEBUG
-    PrecheckRetypeBag(bag, new_type);
-#endif
     RetypeBagIntern(bag, new_type);
 }
 
@@ -567,9 +558,6 @@ EXPORT_INLINE void RetypeBag(Bag bag, UInt new_type)
 **
 **  'RetypeBagSM' works like 'RetypeBag', but ensures that the given bag
 **  retains the same mutability (SM).
-**
-**  FIXME: for now, this checks the tnums; later, this will be turned
-**  into a check for an object flag
 */
 void RetypeBagSM(Bag bag, UInt new_type);
 #ifdef HPCGAP

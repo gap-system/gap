@@ -47,7 +47,8 @@ static Obj SumIntVector(Obj elmL, Obj vecR)
 
     // make the result list
     len = LEN_PLIST(vecR);
-    vecS = NEW_PLIST(TNUM_OBJ(vecR), len);
+    vecS = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecR), TNUM_OBJ(vecR),
+                                     len);
     SET_LEN_PLIST(vecS, len);
 
     // loop over the elements and add
@@ -93,7 +94,8 @@ static Obj SumVectorInt(Obj vecL, Obj elmR)
 
     // make the result list
     len = LEN_PLIST(vecL);
-    vecS = NEW_PLIST(TNUM_OBJ(vecL), len);
+    vecS = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecL), TNUM_OBJ(vecL),
+                                     len);
     SET_LEN_PLIST(vecS, len);
 
     // loop over the elements and add
@@ -253,7 +255,8 @@ static Obj DiffVectorInt(Obj vecL, Obj elmR)
 
     // make the result list
     len = LEN_PLIST(vecL);
-    vecD = NEW_PLIST(TNUM_OBJ(vecL), len);
+    vecD = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecL), TNUM_OBJ(vecL),
+                                     len);
     SET_LEN_PLIST(vecD, len);
 
     // loop over the elements and subtract
@@ -640,7 +643,7 @@ static Obj ZeroVector(Obj vec)
     UInt i, len;
     Obj res;
     GAP_ASSERT(TNUM_OBJ(vec) >= T_PLIST_CYC &&
-               TNUM_OBJ(vec) <= T_PLIST_CYC_SSORT + IMMUTABLE);
+               TNUM_OBJ(vec) <= T_PLIST_CYC_SSORT);
     len = LEN_PLIST(vec);
     res = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vec), T_PLIST_CYC, len);
     SET_LEN_PLIST(res, len);
@@ -654,7 +657,7 @@ static Obj ZeroMutVector(Obj vec)
     UInt i, len;
     Obj res;
     GAP_ASSERT(TNUM_OBJ(vec) >= T_PLIST_CYC &&
-               TNUM_OBJ(vec) <= T_PLIST_CYC_SSORT + IMMUTABLE);
+               TNUM_OBJ(vec) <= T_PLIST_CYC_SSORT);
     len = LEN_PLIST(vec);
     res = NEW_PLIST(T_PLIST_CYC, len);
     SET_LEN_PLIST(res, len);
@@ -695,11 +698,11 @@ static Int InitKernel (
     InitHdlrFuncsFromTable(GVarFuncs);
 
     // install the arithmetic operation methods
-    for (t1 = T_PLIST_CYC; t1 <= T_PLIST_CYC_SSORT + IMMUTABLE; t1++) {
+    for (t1 = T_PLIST_CYC; t1 <= T_PLIST_CYC_SSORT; t1++) {
         ZeroSameMutFuncs[t1] = ZeroVector;
         ZeroMutFuncs[ t1 ] = ZeroMutVector;
 
-        for (t2 = T_PLIST_CYC; t2 <= T_PLIST_CYC_SSORT + IMMUTABLE; t2++) {
+        for (t2 = T_PLIST_CYC; t2 <= T_PLIST_CYC_SSORT; t2++) {
             SumFuncs [ T_INT     ][ t2        ] = SumIntVector;
             SumFuncs [ t1        ][ T_INT     ] = SumVectorInt;
             SumFuncs [ t1        ][ t2        ] = SumVectorVector;

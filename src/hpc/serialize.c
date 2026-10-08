@@ -235,6 +235,10 @@ static inline BOOL IsBasicObj(Obj obj)
 #define OBJ_BACKREF(x) ((Obj)((x) << 2))
 #define BACKREF_OBJ(obj) (((UInt)(obj)) >> 2)
 
+// Tag preceding an immutable list, record, object set or object map; their
+// tnums do not record mutability.
+#define T_IMMUTABLE_TAG 254
+
 static int SerializedAlready(SerializerState * state, Obj obj)
 {
     Obj ref = LookupObjMap(state->registry, obj);
@@ -268,12 +272,21 @@ static void SerializeObj(SerializerState * state, Obj obj)
         WriteImmediateObj(state, INTOBJ_INT(0));
         return;
     }
-    SerializationFuncByTNum[TNUM_OBJ(obj)](state, obj);
+    UInt tnum = TNUM_OBJ(obj);
+    if (FIRST_IMM_MUT_TNUM <= tnum && tnum <= LAST_IMM_MUT_TNUM &&
+        !IS_MUTABLE_OBJ(obj))
+        WriteTNum(state, T_IMMUTABLE_TAG);
+    SerializationFuncByTNum[tnum](state, obj);
 }
 
 static Obj DeserializeObj(DeserializerState * state)
 {
     UInt tnum = ReadTNum(state);
+    if (tnum == T_IMMUTABLE_TAG) {
+        Obj obj = DeserializeObj(state);
+        MakeImmutableNoRecurse(obj);
+        return obj;
+    }
     return DeserializationFuncByTNum[tnum](state, tnum);
 }
 
@@ -585,8 +598,6 @@ static Obj DeserializeRecord(DeserializerState * state, UInt tnum)
         SET_ELM_PREC(result, i, el);
     }
     SortPRecRNam(result);
-    if (tnum == T_PREC + IMMUTABLE)
-        RetypeBag(result, tnum);
     return result;
 }
 
@@ -713,7 +724,6 @@ static Obj LookupIntTag(Obj tag)
 retry:
     switch (map ? TNUM_OBJ(map) : -1) {
     case T_OBJMAP:
-    case T_OBJMAP + IMMUTABLE:
         result = LookupObjMap(map, tag);
         if (result || func)
             return result;
@@ -741,7 +751,6 @@ static Obj DeserializeTypedObj(DeserializerState * state, UInt tnum)
     switch (tagtnum) {
     case T_INT:
     case T_STRING:
-    case T_STRING + IMMUTABLE:
         if (tagtnum == T_INT) {
             tag = DeserializeInt(state, T_INT);
             type = LookupIntTag(tag);
@@ -765,6 +774,7 @@ static Obj DeserializeTypedObj(DeserializerState * state, UInt tnum)
                 ErrorQuit("DeserializeTypedObj: expected plist, got %s", (Int)TNAM_OBJ(result), 0);
             break;
         case T_PREC:
+            // TODO/FIXME: reject immutable ones?
             result = DeserializeObj(state);
             if (TNUM_OBJ(result) != T_COMOBJ)
                 ErrorQuit("DeserializeTypedObj: expected component object, got %s", (Int)TNAM_OBJ(result), 0);
@@ -858,7 +868,6 @@ static void SerializeTypedObj(SerializerState * state, Obj obj)
         switch (TNUM_OBJ(rep)) {
         case T_INT:
         case T_STRING:
-        case T_STRING + IMMUTABLE:
             SerializeObj(state, rep);
             UInt sp = LEN_PLIST(state->stack);
             switch (TNUM_OBJ(obj)) {
@@ -1058,13 +1067,13 @@ static Int InitKernel(StructInitInfo * module)
     for (i = FIRST_PLIST_TNUM; i <= LAST_PLIST_TNUM; i++) {
         RegisterSerializerFunctions(i, SerializeList, DeserializeList);
     }
-    for (i = T_RANGE_NSORT; i <= T_RANGE_SSORT + IMMUTABLE; i++) {
+    for (i = T_RANGE_NSORT; i <= T_RANGE_SSORT; i++) {
         RegisterSerializerFunctions(i, SerializeRange, DeserializeRange);
     }
-    for (i = T_BLIST; i <= T_BLIST_SSORT + IMMUTABLE; i++) {
+    for (i = T_BLIST; i <= T_BLIST_SSORT; i++) {
         RegisterSerializerFunctions(i, SerializeBlist, DeserializeBlist);
     }
-    for (i = T_STRING; i <= T_STRING_SSORT + IMMUTABLE; i++) {
+    for (i = T_STRING; i <= T_STRING_SSORT; i++) {
         RegisterSerializerFunctions(i, SerializeString, DeserializeString);
     }
 
