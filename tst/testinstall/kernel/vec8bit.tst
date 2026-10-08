@@ -99,6 +99,11 @@ Error, COPY_VEC8BIT: <q> must be a positive small integer (not the value 'fail\
 gap> v := V8([]);; PLAIN_VEC8BIT(v);; IsPlistRep(v); Length(v);
 true
 0
+gap> v := MakeImmutable(V8([o, z]));; v := v + v;; IsMutable(v);
+false
+gap> PLAIN_VEC8BIT(v);; IsPlistRep(v); IsMutable(v);
+true
+false
 
 # bad arguments
 gap> PLAIN_VEC8BIT(fail);
@@ -595,6 +600,12 @@ Error, CONV_MAT8BIT: <list> must be a plain list (not a positional object)
 #
 gap> m := Mx08(2);; PLAIN_MAT8BIT(m);; IsPlistRep(m) and m = [[], []];
 true
+gap> m := MakeImmutable(M8([[o, z], [z, o]]));; m := m * m;; IsMutable(m);
+false
+gap> PLAIN_MAT8BIT(m);; IsPlistRep(m); IsMutable(m); IsMutable(m[1]);
+true
+false
+false
 
 # bad arguments
 gap> PLAIN_MAT8BIT(fail);

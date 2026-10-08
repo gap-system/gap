@@ -74,6 +74,11 @@ Error, COPY_GF2VEC: argument must be a list of GF2 elements
 #
 gap> v := V2([]);; PLAIN_GF2VEC(v);; IsPlistRep(v) and Length(v) = 0;
 true
+gap> v := MakeImmutable(V2([o, z]));; v := v + v;; IsMutable(v);
+false
+gap> PLAIN_GF2VEC(v);; IsPlistRep(v); IsMutable(v);
+true
+false
 
 # bad arguments
 gap> PLAIN_GF2VEC(fail);
@@ -84,6 +89,12 @@ Error, PLAIN_GF2VEC: <list> must be a GF2 vector (not the value 'fail')
 #
 gap> m := Mx02(2);; PLAIN_GF2MAT(m);; IsPlistRep(m) and m = [[], []];
 true
+gap> m := MakeImmutable(M2([[o, z], [z, o]]));; m := m * m;; IsMutable(m);
+false
+gap> PLAIN_GF2MAT(m);; IsPlistRep(m); IsMutable(m); IsMutable(m[1]);
+true
+false
+false
 
 # bad arguments
 gap> PLAIN_GF2MAT(fail);
