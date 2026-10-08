@@ -31,7 +31,8 @@ gap> RankFilter( myAltFilt );
 0
 gap> InstallMethod( myOp, "method3", [ "myFilt" ], [ [ "myAltFilt" ] ],
 >                   x -> 3 );
-gap> obj:= Objectify( TYPE_KERNEL_OBJECT, rec() );;
+gap> obj:= Objectify( NewType( NewFamily( "myFam" ), IsComponentObjectRep ),
+>                    rec() );;
 gap> SetFilterObj( obj, myFilt );
 gap> myOp( obj );
 2
