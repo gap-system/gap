@@ -468,15 +468,7 @@ InstallMethod( AdditiveInverseOp,
 InstallOtherMethod( OneOp,
     "for s. c. algebra element",
     [ IsSCAlgebraObj ],
-    function( x )
-    local F, one;
-    F:= FamilyObj( x );
-    one:= IdentityFromSCTable( F!.sctable );
-    if one <> fail then
-      one:= ObjByExtRep( F, one );
-    fi;
-    return one;
-    end );
+    x -> One( FamilyObj( x ) ) );
 
 InstallOtherMethod( InverseOp,
     "for s. c. algebra element",
