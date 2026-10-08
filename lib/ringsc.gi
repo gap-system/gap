@@ -1072,7 +1072,6 @@ local d,t,i;
       fi;
     od;
   fi;
-
   d:=DirectSumOp( arg, arg[1] );
   if ForAll(arg,HasSize) then
     if   ForAll(arg,IsFinite)
@@ -1101,7 +1100,7 @@ local ids, tup, first, i, G, gens, g, new, D;
 
   ids := List( list, Zero );
   tup := [];
-  first := [1];
+  first := [0];
   for i in [1..Length( list )] do
     G    := list[i];
     gens := GeneratorsOfRing( G );
@@ -1114,7 +1113,7 @@ local ids, tup, first, i, G, gens, g, new, D;
       new := DirectProductElement( new );
       Add( tup, new );
     od;
-    Add( first, Length( tup )+1 );
+    Add( first, Length( tup ) );
   od;
 
   D := RingByGenerators( tup );
@@ -1206,6 +1205,73 @@ local ones,s, moduli, orders, offsets, o, p, newmod, t, nams, gens, e, f, D, i, 
                             projections := [] ) );
 
   return D;
+end );
+
+#############################################################################
+##
+#A Embedding
+##
+InstallMethod( Embedding, "ring direct sum and integer",
+    [ IsRing and HasDirectSumInfo, IsPosInt ],
+    function( D, i )
+    local info, first, R, gens, imgs, map;
+
+    # check
+    info := DirectSumInfo( D );
+    if IsBound( info.embeddings[i] ) then
+        return info.embeddings[i];
+    fi;
+    first := info.first;
+    if not ( i < Length(first) ) then
+        Error( "value of second parameter is too large" );
+    fi;
+    # compute embedding
+    R := info.rings[i];
+    gens := GeneratorsOfRing( R );
+    imgs := GeneratorsOfRing( D ){[first[i]+1 .. first[i+1]]};
+    map := RingHomomorphismByImages( R, D, gens, imgs );
+    SetIsInjective( map, true );
+    SetIsTotal( map, true );
+    SetIsSingleValued( map, true );
+
+    # store information
+    info.embeddings[i] := map;
+    return map;
+end );
+
+#############################################################################
+##
+#A  Projection
+##
+InstallMethod( Projection, "ring direct sum and integer",
+    [ IsRing and HasDirectSumInfo, IsPosInt ],
+    function( D, i )
+    local infoD, first, zR, len, R, genR, genD, imgs, j, k, map;
+
+    infoD := DirectSumInfo( D );
+    if IsBound( infoD.projections[i] ) then
+        return infoD.projections[i];
+    fi;
+    first := infoD.first;
+    len := Length( first );
+    if not ( i < len ) then
+        Error( "value of second parameter is too large" );
+    fi;
+    # compute projection
+    R := infoD.rings[i];
+    zR := Zero( R );
+    genR := GeneratorsOfRing( R );
+    genD := GeneratorsOfRing( D );
+    imgs := ListWithIdenticalEntries( first[len], zR );
+    j := first[i];
+    for k in [first[i]+1..first[i+1]] do
+        imgs[k] := genR[k-j];
+    od;
+    map := RingHomomorphismByImages( D, R, genD, imgs );
+
+    # store information
+    infoD.projections[i] := map;
+    return map;
 end );
 
 #############################################################################
