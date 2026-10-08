@@ -2029,7 +2029,7 @@ local x,xd,er,i,j,k,m,p,sel,xi,gamma,G,g,loop,zero,add;
             if k>xi/2 then
               k:=k - xi; #symmetric rep
             fi;
-            if k<>0*k then
+            if not IsZero( k ) then
               Add(g,gamma[j-1]);
               Add(g,k);
             fi;

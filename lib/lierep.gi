@@ -199,7 +199,7 @@ InstallMethod( \+,
                i:= i+1;
             fi;
           od;
-          list:= Filtered( list, x -> x[2]<>0*x[2] );
+          list:= Filtered( list, x -> not IsZero( x[2] ) );
           l[k]:= list;
         fi;
       od;
@@ -433,7 +433,7 @@ InstallHandlingByNiceBasis( "IsCochainsSpace", rec(
       while j <> Length( vec ) do
         l[k]:= [ ];
         for i in [j+1..j+Length(tt)] do
-          if vec[i] <> 0*vec[i] then
+          if not IsZero( vec[i] ) then
             Add( l[k], [ tt[i-j], vec[i] ] );
           fi;
         od;
@@ -494,7 +494,7 @@ InstallGlobalFunction( ValueCochain,
            cfs1:= [ ];
            for i in [1..Length(cfs)] do
              for j in [1..Length(cfs[i][k])]  do
-               if cfs[i][k][j] <> 0*cfs[i][k][j] then
+               if not IsZero( cfs[i][k][j] ) then
                   cf:= ShallowCopy( cfs[i] );
                   cf[k] := [ cf[k][j], j ];
                   Add( cfs1, cf );
@@ -603,7 +603,7 @@ InstallGlobalFunction( LieCoboundaryOperator,
 
          cfs:= Coefficients( Basis(V), val );
          for k in [1..Length(cfs)] do
-           if cfs[k] <> 0*cfs[k] then
+           if not IsZero( cfs[k] ) then
              Add( list[k], [ t, cfs[k] ] );
            fi;
          od;
@@ -873,7 +873,7 @@ BindGlobal( "NextIterator_WeylOrbit", function( it )
     if it!.status = 1 then
         it!.status:= 2;
         mu:= it!.currentWeight;
-        if mu = 0*mu then
+        if IsZero( mu ) then
             it!.isDone:= true;
         fi;
         return mu;
@@ -1644,7 +1644,7 @@ InstallGlobalFunction( CollectUEALatticeElement,
          od;
          Append( res, WriteAsLCOfBinoms( vars, q ) );
          for k in [2,4..Length(res)] do
-             if res[k] = 0*res[k] then
+             if IsZero( res[k] ) then
                  Unbind( res[k-1] ); Unbind( res[k] );
              fi;
          od;
@@ -2191,7 +2191,7 @@ InstallMethod( \*,
     for i in [1..Length( mons )] do
         if len > 0 and lst[len-1] = mons[i] then
             lst[len]:= lst[len]+cfs[i];
-            if lst[len] = 0*lst[len] then
+            if IsZero( lst[len] ) then
                 Remove( lst, len-1 );
                 Remove( lst, len-1 );
                 len:= len-2;
@@ -2670,7 +2670,7 @@ InstallGlobalFunction( LeftReduceUEALatticeElement,
     rem:= p;
     res:= 0*p;
 
-    while rem <> 0*rem do
+    while not IsZero( rem ) do
 
         m1:= LeadingUEALatticeMonomial( novar, rem );
         k:= 1;
@@ -2803,7 +2803,7 @@ InstallMethod(\+,
             lu:= lu0;
         else
             cf:= lu[2*p]+lv[k+1];
-            if cf = 0*cf then
+            if IsZero( cf ) then
                 Remove( lu, 2*p-1 );
                 Remove( lu, 2*p-1 );
                 Remove( vecs, p );
@@ -2977,14 +2977,14 @@ InstallOtherMethod(\^,
                 for k in [j,j+2..len] do
                     cf:= cf*Binomial( hw[ em[i][k]-2*n ], em[i][k+1] );
                 od;
-                if cf <> 0*cf then
+                if not IsZero( cf ) then
                     mon:= em[i]{[1..j-1]};
                     pos:= Position( er, mon );
                     if pos = fail then
                         Add( er, mon ); Add( er, cf );
                     else
                         er[pos+1]:= er[pos+1]+cf;
-                        if er[pos+1] = 0*er[pos+1] then
+                        if IsZero( er[pos+1] ) then
                             Remove( er, pos );
                             Remove( er, pos );
                         fi;
@@ -2999,7 +2999,7 @@ InstallOtherMethod(\^,
                 Add( er, mon ); Add( er, cf );
             else
                 er[pos+1]:= er[pos+1]+cf;
-                if er[pos+1] = 0*er[pos+1] then
+                if IsZero( er[pos+1] ) then
                     Remove( er, pos );
                     Remove( er, pos );
                 fi;
@@ -3277,7 +3277,7 @@ InstallMethod( HighestWeightModule,
         # divide by their greatest common divisor.
 
         res:= LeftReduceUEALatticeElement( novar, G, lms, lmtab, p );
-        if res <> 0*res then
+        if not IsZero( res ) then
             cf:= res![1]{[2,4..Length(res![1])]};
             res:= (Lcm(List(cf,DenominatorRat))/
                                  Gcd(List(cf,NumeratorRat)))*res;
@@ -3620,7 +3620,7 @@ InstallMethod( HighestWeightModule,
                            LeadingUEALatticeMonomial(novar,fac1)[3]*fac2;
                     comp:= NormalizedLeftReduction( novar, GB, lms, lmtab,
                                    comp );
-                    if comp <> 0*comp then
+                    if not IsZero( comp ) then
 
                         vec:= ListWithIdenticalEntries( Length( sortmn[pp] ),
                                       0 );
@@ -3664,7 +3664,7 @@ InstallMethod( HighestWeightModule,
                     ecomp:= [ ];
                     cfsc:= [ ];
                     for i in [1..Length(vecs[l])] do
-                        if vecs[l][i] <> 0*vecs[l][i] then
+                        if not IsZero( vecs[l][i] ) then
 
                             Add( ecomp, sortmn[j][i] );
                             Add( cfsc, vecs[l][i] );
@@ -3975,7 +3975,7 @@ InstallGlobalFunction( ExtendRepresentation,
            for s in [1..Length(cij[1])] do
              M:= M - cij[2][s]*mm[cij[1][s]];
            od;
-           if M <> 0*M then return false; fi;
+           if not IsZero( M ) then return false; fi;
          od;
        od;
        return true;

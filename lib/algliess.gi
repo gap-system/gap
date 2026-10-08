@@ -285,7 +285,7 @@ BindGlobal( "SimpleLieAlgebraTypeA_G", function( type, n, F )
                 # We take care of the commutation relations of the form
                 # [h_j,x_{\beta_i}]= < \beta_i, \alpha_j > x_{\beta_i}.
                 cc:= LinearCombination( R[i], C[j] );
-                if cc <> 0*cc then
+                if not IsZero( cc ) then
 
                     posR[i][j]:= One(F)*cc;
 
@@ -593,7 +593,7 @@ BindGlobal( "SimpleLieAlgebraTypeA_G", function( type, n, F )
                     cc:= d*cc;
                 fi;
 
-                if cc <> 0*cc then
+                if not IsZero( cc ) then
 
                     posR[i][j]:= One(F)*cc;
 

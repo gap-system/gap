@@ -3599,7 +3599,7 @@ InstallMethod( CentralIdempotentsOfAlgebra,
             g:= GcdRepresentation( p, facs[j] );
             gcd:= g[1]*p+g[2]*facs[j];
             qq:= g[1]*(cf[j]-c)/gcd;
-            if qq<>0*qq then
+            if not IsZero( qq ) then
               c:= p*EuclideanRemainder( qq, facs[j] )
                               + c;
             fi;

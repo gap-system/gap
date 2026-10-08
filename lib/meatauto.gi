@@ -768,7 +768,7 @@ local nv, nw, F, zero, minusone, zeroW, gV, gW, k, U, echu, r, homs, s, work, an
         Add(hom, image);
       od;
       hom:=ImmutableMatrix(F,hom);
-      Assert(1,hom<>0*hom);
+      Assert(1,not IsZero( hom ));
       Add(newhoms, hom);
     od;
 

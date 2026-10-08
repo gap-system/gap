@@ -2946,12 +2946,12 @@ InstallMethod( RootSystem,
        local s,t,rt;
        s:=0; t:=0;
        rt:=a-b;
-       while (rt in R) or (rt=0*R[1]) do
+       while (rt in R) or IsZero( rt ) do
          rt:=rt-b;
          s:=s+1;
        od;
        rt:=a+b;
-       while (rt in R) or (rt=0*R[1]) do
+       while (rt in R) or IsZero( rt ) do
          rt:=rt+b;
          t:=t+1;
        od;
@@ -4376,7 +4376,7 @@ local ReductionModuloTable,   #
        n:= Length( r );
 
        for i in [1..n-1] do
-         if r[i][2]=0*r[i][2] or
+         if IsZero( r[i][2] ) or
                     (Length(r[i][1])>1 and r[i][1][1]=r[i][1][2]) then
 
            #the thing is zero; get rid of it.
@@ -4390,7 +4390,7 @@ local ReductionModuloTable,   #
            Unbind(r[i]);
          fi;
        od;
-       if r[n][2]=0*r[n][2] or
+       if IsZero( r[n][2] ) or
                (Length(r[n][1])>1 and r[n][1][1]=r[n][1][2]) then
 
           #the thing is zero; get rid of it.

@@ -1006,13 +1006,13 @@ BindGlobal( "SplitTwoSpace", function(D,raum)
       for root in SquareRoots(D.field,(p/2)^2-q) do
         a1:=(-p/2+root);
         n:=v1v2+a1*v2v2;
-        if (n=0*o) then
+        if IsZero( n ) then
           # proceeding would force a division by zero
           NotFailed:=false;
         else
           a2:=-(v1v1+a1*v2v1)/n;
           n:=v1v1+a2*(v1v2+v2v1)+a2^2*v2v2;
-          if n<>0*o then
+          if not IsZero( n ) then
             deg2:=List(SquareRoots(D.field,o/(raum.dim-d)/n),Int);
             for d2 in deg2 do
               if d2 in mdeg2 then

@@ -1402,7 +1402,7 @@ local
     D:=List(D,d->List([1..Length(ocr.generators)],i->ocr.generators[i]^-1*d[i]));
     D:=List(D,d->ocr.listToCocycle(d));
     TriangulizeMat(D);
-    D:=Filtered(D,x->x<>0*x);
+    D:=Filtered(D,x->not IsZero( x ));
 
     b:=BaseSteinitzVectors(b,D).factorspace;
 

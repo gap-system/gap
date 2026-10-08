@@ -3792,7 +3792,7 @@ InstallGlobalFunction( BasisNullspaceModN, function( M, n )
     # nullM is also the nullspace for M
 
     nullM := null*snf.rowtrans mod n;
-    Assert (1, ForAll (nullM, v -> v*M mod n =0*M[1]));
+    Assert (1, ForAll (nullM, v -> IsZero( v*M mod n )));
     return nullM;
 end);
 
@@ -4506,7 +4506,7 @@ function( mat )
   w:= GcdRepresentation( g, Derivative( g ) )[2];
   w:= w*g;
   B:= ShallowCopy( mat );
-  while Value( g, B ) <> 0*B do
+  while not IsZero( Value( g, B ) ) do
     B:= B - Value( w, B );
   od;
 

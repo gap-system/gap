@@ -1852,7 +1852,7 @@ InstallMethod( ConvertToNormalFormMonomialElement,
 
             is_replaced:= false;
             for j in [1..Length(cf)] do
-                if cf[j] <> 0*cf[j] then
+                if not IsZero( cf[j] ) then
                     if not is_replaced then
                         tt1:= ShallowCopy( tt );
                         tt1[i]:= bases[i][j];
@@ -1885,7 +1885,7 @@ InstallMethod( ConvertToNormalFormMonomialElement,
     for i in [1..Length(tensors)] do
         if len > 0 and tensors[i] = res[len-1] then
             res[len]:= res[len]+cfts[i];
-            if res[len] = 0*res[len] then
+            if IsZero( res[len] ) then
                 Unbind( res[len-1] );
                 Unbind( res[len] );
                 len:= len-2;
@@ -2233,7 +2233,7 @@ InstallMethod( ConvertToNormalFormMonomialElement,
 
             is_replaced:= false;
             for j in [1..Length(cf)] do
-                if cf[j] <> 0*cf[j] then
+                if not IsZero( cf[j] ) then
                     if not is_replaced then
                         tt1:= ShallowCopy( tt );
                         tt1[i]:= basis[j];
@@ -2297,7 +2297,7 @@ InstallMethod( ConvertToNormalFormMonomialElement,
 
         if len > 0 and tensors[i] = res[len-1] then
             res[len]:= res[len]+cfts[i];
-            if res[len] = 0*res[len] then
+            if IsZero( res[len] ) then
                 Unbind( res[len-1] );
                 Unbind( res[len] );
                 len:= len-2;
@@ -2567,7 +2567,7 @@ InstallMethod( ConvertToNormalFormMonomialElement,
 
             is_replaced:= false;
             for j in [1..Length(cf)] do
-                if cf[j] <> 0*cf[j] then
+                if not IsZero( cf[j] ) then
                     if not is_replaced then
                         tt1:= ShallowCopy( tt );
                         tt1[i]:= basis[j];
@@ -2621,7 +2621,7 @@ InstallMethod( ConvertToNormalFormMonomialElement,
         wed:= tensors[i];
         if len > 0 and wed = res[len-1] then
             res[len]:= res[len]+cfts[i];
-            if res[len] = 0*res[len] then
+            if IsZero( res[len] ) then
                 Unbind( res[len-1] );
                 Unbind( res[len] );
                 len:= len-2;
@@ -3376,7 +3376,7 @@ InstallHandlingByNiceBasis( "IsDirectSumElementsSpace", rec(
           cf:= Coefficients( Basis(
                        FamilyObj(v)!.constituentModules[i] ), ev[i] );
           for k in [1..Length(cf)] do
-              if cf[k] <> 0*cf[k] then
+              if not IsZero( cf[k] ) then
                   Add( vec, num+k );
                   Add( vec, cf[k] );
               fi;
