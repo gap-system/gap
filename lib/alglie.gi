@@ -1019,13 +1019,9 @@ InstallGlobalFunction( PowerSi, function( F, i )
                  # function s_i. The list seqs contains
                  # all possible sequences of i-1 1's and p-2-i+1 2's
                  # This function returns the value of s_i(l[1],l[2])
-          j,k,   # loop variables
           p,     # the characteristic of F
-          combs, # the list of all i-1 element subsets of {1,2,\ldots, p-2}
-                 # it serves to make the list seqs
-          v,     # a vector of 1's and 2's
           seqs;  # the list of all sequences of 1's and 2's of length p-2,
-                 # with i-1 1's and p-2 2's serving as input for si
+                 # with i-1 1's and p-1-i 2's serving as input for si
                  # for example, the sequence [1,1,2] means the element
                  #  [[[[x,y],x],x],y] (the first element [x,y] is present
                  #           1  1  2   in all terms of the sum s_i(x,y)).
@@ -1051,19 +1047,9 @@ InstallGlobalFunction( PowerSi, function( F, i )
         end;
 
     p:= Characteristic( F );
-    combs:= Combinations( [1..p-2], i-1 );
-
-    # Now all sequences of 1's and 2's of length p and containing i-1 1's
-    # are constructed the 1's in the jth sequence are put at the positions
-    # contained in combs[j].
-    seqs:=[];
-    for j in [1..Length( combs )] do
-      v:= List( [1..p-2], x -> 2);
-      for k in combs[j] do
-        v[k]:= 1;
-      od;
-      Add( seqs, v );
-    od;
+    seqs:= PermutationsList( Concatenation(
+               ListWithIdenticalEntries( i-1, 1 ),
+               ListWithIdenticalEntries( p-1-i, 2 ) ) );
     return arg -> si( seqs, arg );
 end );
 
