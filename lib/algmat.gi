@@ -1346,15 +1346,16 @@ InstallOtherMethod( DirectSumOfAlgebras,
     # We do not really need a basis for the arguments
     # but if we have one then we use it.
 #T Do we really have so many algebra generators? (distinguish from basis?)
-    if HasBasis( A1 ) and HasBasis( A2 ) then
-      b1:= BasisVectors( Basis( A1 ) );
-      b2:= BasisVectors( Basis( A2 ) );
-      type:= "basis vectors";
-    else
+## Surely this method should always deal with generators, so comment out:
+##    if HasBasis( A1 ) and HasBasis( A2 ) then
+##      b1:= BasisVectors( Basis( A1 ) );
+##      b2:= BasisVectors( Basis( A2 ) );
+##      type:= "basis vectors";
+##    else
       b1:= GeneratorsOfAlgebra( A1 );
       b2:= GeneratorsOfAlgebra( A2 );
       type:= "generators";
-    fi;
+##    fi;
 
     d1:= Length( b1 );
     d2:= Length( b2 );
