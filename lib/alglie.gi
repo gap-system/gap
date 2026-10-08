@@ -5597,20 +5597,14 @@ end );
 
 #############################################################################
 ##
-#M  JenningsLieAlgebra( <G> )
+#F  LIE_ALGEBRA_OF_P_GROUP_SERIES( <G>, <series>, <pdeg> )
 ##
-##  The Jennings Lie algebra of the p-group G.
+##  The Lie algebra of the p-group <G> w.r.t. the series `<series>( <G>, p )'.
+##  The p-th power of an element of degree d has degree `<pdeg>( d )'.
 ##
-##
+BindGlobal( "LIE_ALGEBRA_OF_P_GROUP_SERIES", function( G, series, pdeg )
 
-InstallMethod( JenningsLieAlgebra,
-                "for a p-group",
-                 true,
-                 [IsGroup], 0,
-
- function ( G )
-
-    local J,         # Jennings series of G
+    local J,         # the series `series( G, p )'
           Homs,      # Homomorphisms of J[i] onto the quotient J[i]/J[i+1]
           grades,    # List of the full images of the maps in Homs
           gens,      # List of the generators of the quotients J[i]/J[i+1],
@@ -5646,7 +5640,8 @@ InstallMethod( JenningsLieAlgebra,
 
     # Construct the homogeneous components of `L':
 
-    J:=JenningsSeries ( G );
+    p:= PrimePGroup( G );
+    J:= series( G, p );
     Homs:= List ( [1..Length(J)-1] , x ->
                   NaturalHomomorphismByNormalSubgroupNC( J[x], J[x+1] ));
     grades := List ( Homs , Range );
@@ -5667,7 +5662,6 @@ InstallMethod( JenningsLieAlgebra,
     # Construct the field and the multiplication table:
 
     dim:= Length(gens);
-    p:= PrimePGroup( G );
     F:= GF( p );
     T:= EmptySCTable( dim , Zero(F) , "antisymmetric" );
     pimgs := [];
@@ -5677,9 +5671,9 @@ InstallMethod( JenningsLieAlgebra,
 
         # calculate the p-th power image of `a':
 
-        if pos[i]*p <= Length(Homs) then
-            Add( pimgs, Image( hom_pcg[pos[i]*p],
-                    Image( Homs[pos[i]*p], a^p) ) );
+        if pdeg( pos[i] ) <= Length(Homs) then
+            Add( pimgs, Image( hom_pcg[pdeg( pos[i] )],
+                    Image( Homs[pdeg( pos[i] )], a^p) ) );
         else
             Add( pimgs, "zero" );
         fi;
@@ -5750,8 +5744,8 @@ InstallMethod( JenningsLieAlgebra,
             e:= ExtRepOfObj( pimgs[i] );
             x:= Zero( L );
             for k in [1,3..Length(e)-1] do
-                pp:= Position( enum_gens[pos[i]*p], e[k] );
-                t:= Sum( enum_gens{[1..pos[i]*p-1]}, Length )+pp;
+                pp:= Position( enum_gens[pdeg( pos[i] )], e[k] );
+                t:= Sum( enum_gens{[1..pdeg( pos[i] )-1]}, Length )+pp;
                 x:= x+ One( F )*e[k+1]*vv[t];
             od;
             pimgs[i]:= x;
@@ -5790,6 +5784,19 @@ InstallMethod( JenningsLieAlgebra,
 end );
 
 
+#############################################################################
+##
+#M  JenningsLieAlgebra( <G> )
+##
+##  The Jennings Lie algebra of the p-group G.
+##
+InstallMethod( JenningsLieAlgebra,
+                "for a p-group",
+                 true,
+                 [IsGroup], 0,
+    G -> LIE_ALGEBRA_OF_P_GROUP_SERIES( G, { G, p } -> JenningsSeries( G ),
+                                         d -> d * PrimePGroup( G ) ) );
+
 
 #############################################################################
 ##
@@ -5797,191 +5804,8 @@ end );
 ##
 ##  The p-central Lie algebra of the p-group G.
 ##
-##
 InstallMethod( PCentralLieAlgebra,
                 "for a p-group",
                  true,
                  [IsGroup], 0,
-
- function ( G )
-
-    local J,         # p-central series of G
-          Homs,      # Homomorphisms of J[i] onto the quotient J[i]/J[i+1]
-          grades,    # List of the full images of the maps in Homs
-          gens,      # List of the generators of the quotients J[i]/J[i+1],
-                     # i.e., a basis of the Lie algebra.
-          pos,       # list of positions: if pos[j] = p, then the element
-                     # gens[j] belongs to grades[p]
-          i,j,k,     # loop variables
-          tempgens,
-          t,         # integer
-          T,         # multiplication table of the Lie algebra
-          dim,       # dimension of the Lie algebra
-          a,b,c,f,   # group elements
-          e,         # ext rep of a group element
-          co,        # entry of the multiplication table
-          p,         # the prime of G
-          F,         # ground field
-          L,         # the Lie algebra to be constructed
-          B,         # Basis of L
-          vv, x,     # elements of L
-          comp,      # homogeneous component
-          grading,   # list of homogeneous components
-          pcgps,     # list of pc groups, isom to the elts of `grades'.
-          hom_pcg,   # list of isomomorphisms of `grades[i]' to `pcgps[i]'.
-          enum_gens, # List of numbers of elts of `gens' in extrep.
-          pp,        # Position in a list.
-          pimgs,     # pth power images
-          hm;
-
-
-    # We do not know the characteristic if `G' is trivial.
-    if IsTrivial( G ) then
-      Error( "<G> must be a nontrivial p-group" );
-    fi;
-
-    # Construct the homogeneous components of `L':
-
-    p:= PrimePGroup( G );
-    J:= PCentralSeries( G, p );
-    Homs:= List ( [1..Length(J)-1] , x ->
-                  NaturalHomomorphismByNormalSubgroupNC( J[x], J[x+1] ));
-    grades := List ( Homs , Range );
-    hom_pcg:= List( grades, IsomorphismSpecialPcGroup );
-    pcgps:= List( hom_pcg, Range );
-    gens := [];
-    enum_gens:= [ ];
-    pos := [];
-    for i in [1.. Length(grades)] do
-        tempgens:= GeneratorsOfGroup( pcgps[i] );
-        Append ( gens , tempgens);
-
-        # Record the number that each generator has in extrep.
-        Add( enum_gens, List( tempgens, x -> ExtRepOfObj( x )[1] ) );
-        Append ( pos , List ( tempgens , x-> i ) );
-    od;
-
-    # Construct the field and the multiplication table:
-
-    dim:= Length(gens);
-    F:= GF( p );
-    T:= EmptySCTable( dim , Zero(F) , "antisymmetric" );
-    pimgs := [];
-    for i in [1..dim] do
-        a:= PreImagesRepresentativeNC( Homs[pos[i]] ,
-                    PreImagesRepresentativeNC( hom_pcg[pos[i]], gens[i] ) );
-
-
-        # calculate the p-th power image of `a':
-
-        if pos[i]+1 <= Length(Homs) then
-            Add( pimgs, Image( hom_pcg[pos[i]+1],
-                    Image( Homs[pos[i]+1], a^p) ) );
-        else
-            Add( pimgs, "zero" );
-        fi;
-
-        for j in [i+1.. dim] do
-            if pos[i]+pos[j] <= Length( Homs ) then
-
-               # Calculate the commutator [a,b], and map the result into
-               # the correct homogeneous component.
-
-                b:= PreImagesRepresentativeNC( Homs[pos[j]],
-                       PreImagesRepresentativeNC( hom_pcg[pos[j]], gens[j] ));
-                c:= Image( hom_pcg[pos[i] + pos[j]],
-                           Image(Homs[pos[i] + pos[j]], a^-1*b^-1*a*b) );
-                e:= ExtRepOfObj(c);
-                co:=[];
-                for k in [1,3..Length(e)-1] do
-                    pp:= Position( enum_gens[pos[i]+pos[j]], e[k] );
-                    t:= Sum( enum_gens{[1..pos[i]+pos[j]-1]}, Length )+pp;
-                    Add( co, One( F )*e[k+1] );
-                    Add( co, t );
-                od;
-                SetEntrySCTable( T, i, j, co );
-            fi;
-
-        od;
-    od;
-
-    L:= LieAlgebraByStructureConstants( F, T );
-
-    B:= Basis( L );
-
-    # Now we compute the natural grading of `L'.
-
-    grading:= [ ];
-    k:= 1;
-
-    for i in [1..Length(enum_gens)] do
-        comp:= [ ];
-        for j in [1..Length(enum_gens[i])] do
-            Add( comp, B[k] );
-            k:= k+1;
-        od;
-        Add( grading, Subspace( L, comp ) );
-    od;
-
-    Add( grading, Subspace( L, [ ] ) );
-
-    SetGrading( L, rec( min_degree:= 1,
-                        max_degree:= Length( grading ) - 1,
-                        source:= Integers,
-                        hom_components:= function( d )
-                                            if d in [1..Length(grading)] then
-                                              return grading[d];
-                                            else
-                                              return Last(grading);
-                                            fi;
-                                         end
-                      )
-              );
-
-    vv:= BasisVectors( B );
-
-    # Set the pth-power images of the basis elements of `B':
-
-    for i in [1..Length(pimgs)] do
-        if pimgs[i] = "zero" then
-            pimgs[i]:= Zero( L );
-        else
-            e:= ExtRepOfObj( pimgs[i] );
-            x:= Zero( L );
-            for k in [1,3..Length(e)-1] do
-                pp:= Position( enum_gens[pos[i]+1], e[k] );
-                t:= Sum( enum_gens{[1..pos[i]]}, Length )+pp;
-                x:= x+ One( F )*e[k+1]*vv[t];
-            od;
-            pimgs[i]:= x;
-        fi;
-    od;
-    SetPthPowerImages( B, pimgs );
-    SetIsRestrictedLieAlgebra( L, true );
-    SetIsLieNilpotent( L, true );
-
-        hm:= function( g, i )
-
-             local h, e, x, k, pp, f, t;
-
-             if not g in J[i] then
-                Error("<g> is not an element of the i-th term of the series used to define <L>");
-             fi;
-
-             h:= Image( hom_pcg[i], Image(Homs[i], g ));
-             e:= ExtRepOfObj(h);
-             x:= Zero(L);
-             for k in [1,3..Length(e)-1] do
-                 pp:= Position( enum_gens[i], e[k] );
-                 f:= GeneratorsOfGroup( pcgps[i] )[pp];
-                 t:= Position( gens, f );
-                 x:= x + e[k+1]*Basis(L)[t];
-             od;
-             return x;
-        end ;
-
-    SetNaturalHomomorphismOfLieAlgebraFromNilpotentGroup( L, hm );
-
-    return L;
-
-end );
+    G -> LIE_ALGEBRA_OF_P_GROUP_SERIES( G, PCentralSeries, d -> d + 1 ) );
