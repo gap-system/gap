@@ -60,7 +60,7 @@ A suite with a file <suite>/<suite>.g defining the list BENCH_CASES (see
 runner.g for the record format) can be run by
 
     make benchmark                              # the pbt suite
-    make benchmark BENCHFLAGS="--filter psl35 --repeat 3"
+    make benchmark BENCHFLAGS="--filter psl35 --seeds 1,2,3"
     benchmark/run.py --list
     benchmark/run.py --category transitive -o new.json --baseline old.json
     benchmark/compare.py old.json new.json --only-flagged
@@ -68,10 +68,12 @@ runner.g for the record format) can be run by
 Each case runs in its own GAP process with a time limit, so one slow case
 cannot hide or distort the others, and a timeout is recorded as such. Only
 the operation itself is timed, not the construction of its input. Timings
-are CPU milliseconds from Runtime(). The random sources are reset before
-each case and the ReproducibleBehaviour preference is set, so a run is
-repeatable; --no-reproducible turns that off, --repeat N runs each case N
-times and compares the minimum. Every case records a result that would
+are CPU milliseconds from Runtime(). The backtrack makes random choices,
+and one case can be fast at one seed and slow at the next, so the random
+sources are reset to a seed before each run and --seeds 1,2,3 runs each
+case once per seed; compare.py compares the minima, and the JSON keeps
+all timings. The ReproducibleBehaviour preference is set as well, and
+--no-reproducible turns that off. Every case records a result that would
 change if the answer were wrong, so the suite doubles as a regression test.
 
 compare.py flags a case if the ratio of the minimal timings exceeds

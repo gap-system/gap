@@ -13,7 +13,7 @@
 ##    suite         name of the suite, see runner.g
 ##    list          if true, list the cases and quit
 ##    case          name of the case to run
-##    repeats       number of repetitions
+##    seeds         list of seeds for the random sources, one run each
 ##    reproducible  whether to set the ReproducibleBehaviour preference
 ##
 ##  Output lines read by the driver, with fields separated by tabs:
@@ -45,7 +45,7 @@ BENCH_Main := function( )
         Print( "@BENCH\t", BENCH.case, "\terror\t\tno such case\n" );
         return;
     fi;
-    r := BENCH_RunCase( case, BENCH.repeats );
+    r := BENCH_RunCase( case, BENCH.seeds );
     if r.status = "ok"  then
         Print( "@BENCH\t", case.name, "\tok\t",
                JoinStringsWithSeparator( List( r.ms, String ), "," ), "\t",

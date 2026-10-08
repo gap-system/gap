@@ -28,9 +28,9 @@ BENCH_Field := function( obj )
     return ReplacedString( ReplacedString( s, "\n", " " ), "\t", " " );
 end;
 
-BENCH_Reseed := function( )
-    Reset( GlobalMersenneTwister, 1 );
-    Reset( GlobalRandomSource, 1 );
+BENCH_Reseed := function( seed )
+    Reset( GlobalMersenneTwister, seed );
+    Reset( GlobalRandomSource, seed );
 end;
 
 BENCH_LoadSuite := function( dir, suite )
@@ -39,14 +39,17 @@ end;
 
 #############################################################################
 ##
-#F  BENCH_RunCase( <case>, <repeats> )
+#F  BENCH_RunCase( <case>, <seeds> )
 ##
-##  Runs <case> <repeats> times, each from a fresh setup, and returns a
-##  record with `status' ("ok", "skipped" or "error"), the list `ms' of
-##  timings, and the `result' as a string or the `error' message.
+##  Runs <case> once for each seed in <seeds>, each from a fresh setup with
+##  the random sources reset to the seed, and returns a record with
+##  `status' ("ok", "skipped" or "error"), the list `ms' of timings, and
+##  the `result' as a string or the `error' message. The backtrack makes
+##  random choices, so one case can be fast at one seed and slow at the
+##  next; the results must agree.
 ##
-BENCH_RunCase := function( case, repeats )
-    local   pkg,  ms,  res,  i,  args,  t,  ok;
+BENCH_RunCase := function( case, seeds )
+    local   pkg,  ms,  res,  seed,  args,  t,  ok;
 
     if IsBound( case.needs )  then
         for pkg  in case.needs  do
@@ -59,10 +62,10 @@ BENCH_RunCase := function( case, repeats )
 
     ms := [  ];
     res := fail;
-    for i  in [ 1 .. repeats ]  do
-        BENCH_Reseed( );
+    for seed  in seeds  do
+        BENCH_Reseed( seed );
         args := case.setup( );
-        BENCH_Reseed( );
+        BENCH_Reseed( seed );
         t := Runtime( );
         ok := CALL_WITH_CATCH( case.run, [ args ] );
         t := Runtime( ) - t;
@@ -72,7 +75,8 @@ BENCH_RunCase := function( case, repeats )
         fi;
         if res <> fail  and  res <> ok[ 2 ]  then
             return rec( status := "error", ms := ms,
-                        error := "results differ between repetitions" );
+                        error := Concatenation( "results differ between seeds: ",
+                                     res, " and ", BENCH_Field( ok[ 2 ] ) ) );
         fi;
         res := ok[ 2 ];
         Add( ms, t );

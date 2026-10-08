@@ -22,7 +22,7 @@ for case in BENCH_CASES do
        and PositionSublist( case.name, BENCH_FILTER ) = fail then
     continue;
   fi;
-  r := BENCH_RunCase( case, 1 );
+  r := BENCH_RunCase( case, [ 1 ] );
   if r.status = "ok" then
     Print( case.name, ": ", r.result, " ", r.ms[1], " ms\n" );
     if r.result = "false" then

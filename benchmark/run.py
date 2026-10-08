@@ -22,7 +22,6 @@ import datetime
 import json
 import os
 import re
-import statistics
 import subprocess
 import sys
 
@@ -86,7 +85,7 @@ def run_case(case, args):
         "dir := " + gap_string(HERE),
         "suite := " + gap_string(args.suite),
         "case := " + gap_string(case["name"]),
-        "repeats := " + str(args.repeat),
+        "seeds := [" + ",".join(str(x) for x in args.seeds) + "]",
         "reproducible := " + ("true" if args.reproducible else "false"),
     ])
     result = {"category": case["category"], "status": "error", "ms": [],
@@ -97,7 +96,7 @@ def run_case(case, args):
                              timeout=args.timeout, check=False)
     except subprocess.TimeoutExpired:
         result["status"] = "timeout"
-        result["ms"] = [args.timeout * 1000] * args.repeat
+        result["ms"] = [args.timeout * 1000] * len(args.seeds)
         return result
     # GAP breaks long output lines with a backslash; undo that first.
     for line in out.stdout.replace("\\\n", "").splitlines():
@@ -133,13 +132,13 @@ def git_describe(root):
 def summarize(ms):
     if not ms:
         return None, None
-    return min(ms), int(statistics.median(ms))
+    return min(ms), max(ms)
 
 
 def print_table(results):
     width = max(len(name) for name in results) if results else 10
     print("%-*s  %-12s  %-8s  %9s  %9s  %s" % (width, "case", "category",
-                                               "status", "min ms", "median", "result"))
+                                               "status", "min ms", "max ms", "result"))
     for name in sorted(results, key=lambda n: (results[n]["category"], n)):
         r = results[name]
         mn, md = summarize(r["ms"])
@@ -180,8 +179,9 @@ def main():
                         "default exclusion of %s" % ", ".join(DEFAULT_EXCLUDE))
     p.add_argument("--exclude-category", action="append", default=DEFAULT_EXCLUDE,
                    metavar="CAT")
-    p.add_argument("--repeat", type=int, default=1,
-                   help="repetitions per case; the minimum is compared")
+    p.add_argument("--seeds", default="1", metavar="LIST",
+                   help="comma-separated seeds for the random sources, one run "
+                        "per seed (default: 1); compare.py compares the minima")
     p.add_argument("--timeout", type=int, default=300, metavar="SEC",
                    help="time limit per case process (default: 300)")
     p.add_argument("--jobs", type=int, default=1,
@@ -198,6 +198,7 @@ def main():
     args = p.parse_args()
     args.gap = os.path.abspath(args.gap)
     args.gaproot = os.path.abspath(args.gaproot)
+    args.seeds = [int(x) for x in args.seeds.split(",")]
     if args.output is None:
         args.output = "benchmark-%s.json" % args.suite
 
@@ -228,7 +229,7 @@ def main():
         "gaproot": args.gaproot,
         "commit": git_describe(args.gaproot),
         "date": datetime.datetime.now().isoformat(timespec="seconds"),
-        "repeat": args.repeat,
+        "seeds": args.seeds,
         "timeout": args.timeout,
         "reproducible": args.reproducible,
         "cases": results,
