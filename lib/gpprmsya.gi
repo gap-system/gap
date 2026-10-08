@@ -1198,8 +1198,8 @@ end);
 # Parameters: Overgroup (must be symmetric or alternating, otherwise just
 # returns this overgroup), subgroup.
 InstallGlobalFunction(NormalizerParentSA,function(s,u)
-local dom, issym, o, b, beta, alpha, emb, nb, na, w, perm, pg, l, is, ie, ll,
-syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg,bp;
+local dom, issym, o, b, beta, w, perm, pg, l, is, ie, ll, syll, act, typ,
+sel, bas, wdom, comp, lperm, other, away, i, j, opg, bp;
 
   dom:=Set(MovedPoints(s));
   issym:=IsNaturalSymmetricGroup(s);
@@ -1275,46 +1275,8 @@ syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg,bp;
     return Intersection(s,pg);
 
   elif Length(o)=1 then
-
-    b0:=AllNormalizerfixedBlockSystem(u,o[1]);
-    if b0=fail then
-      # none -- no improvement
-      return s;
-    fi;
-    # the normalizer must fix these block system
-    opg:=fail;
-    for b in b0 do
-      beta:=ActionHomomorphism(u,b,OnSets,"surjective");
-      alpha:=ActionHomomorphism(Stabilizer(u,b[1],OnSets),b[1],"surjective");
-      emb:=KuKGenerators(u,beta,alpha);
-      nb:=Normalizer(SymmetricGroup(Length(b)),Image(beta));
-      na:=Normalizer(SymmetricGroup(Length(b[1])),Image(alpha));
-      w:=WreathProduct(na,nb);
-      if issym then
-        perm:=s;
-      else
-        perm:=SymmetricGroup(MovedPoints(s));
-      fi;
-      perm:=RepresentativeAction(perm,emb,GeneratorsOfGroup(u),OnTuples);
-      if perm<>fail then
-        pg:=w^perm;
-      else
-        #Print("Embedding Problem!\n");
-        w:=WreathProduct(SymmetricGroup(Length(b[1])),SymmetricGroup(Length(b)));
-        perm:=MappingPermListList([1..Length(o[1])],Concatenation(b));
-        pg:=w^perm;
-      fi;
-      if opg<>fail then
-        pg:=Intersection(pg,opg);
-
-      fi;
-      opg:=pg;
-    od;
-    if Length(GeneratorsOfGroup(pg))>5 then
-      opg:=Group(SmallGeneratingSet(pg));
-      SetSize(opg,Size(pg));
-      pg:=opg;
-    fi;
+    # imprimitive: the backtrack uses the action on the blocks itself
+    return s;
 
   else
 
@@ -1428,8 +1390,8 @@ InstallMethod( NormalizerOp, "subgp of natural alternating group",
 # conjugate subgroups of symmetric group.
 # false indicates the method does not work
 BindGlobal("SubgpConjSymmgp",function(s,g,h)
-local og,oh,cb,cc,cac,perm1,perm2,
-  dom,n,a,c,b,b2,w,p1,p2,perm,t,ac,ac2,no,no2,i;
+local og, oh, cb, cc, cac, perm1, perm2, dom, a, c, b, w, p1, p2, perm, t,
+  ac, ac2, no, i;
 
 
   p1:=Set(MovedPoints(g));
@@ -1507,74 +1469,8 @@ local og,oh,cb,cc,cac,perm1,perm2,
 
   fi;
 
-  n:=NrMovedPoints(s);
-  a:=AllBlocks(g);
-  c:=Collected(List(a,Length));
-  c:=Filtered(c,i->i[2]=1);
-  if Length(c)=0 then
-    return false;
-  else
-    c:=c[1][1];
-    a:=First(a,i->Length(i)=c);
-    b:=Blocks(g,MovedPoints(g),a);
-    ac:=Action(g,b,OnSets);
-    a:=AllBlocks(h);
-    a:=Filtered(a,i->Length(i)=c);
-    if Length(a)<>1 then
-      # different blocks
-      return fail;
-    fi;
-    b2:=Blocks(h,MovedPoints(h),a[1]);
-    ac2:=Action(h,b2,OnSets);
-    t:=SymmetricGroup(n/c);
-    perm:=RepresentativeAction(t,ac,ac2);
-    if perm=fail then
-      return fail;
-    else
-      b:=Permuted(b,perm);
-      Assert(1,Action(g,b,OnSets)=ac2);
-    fi;
-    p1:=MappingPermListList(Concatenation(b),[1..n]);
-    p2:=MappingPermListList(Concatenation(b2),[1..n]);
-    no:=Normalizer(t,ac2);
-    #Print(" using blocks ",c," factorgp size ",Size(no),"\n");
-    g:=g^p1;
-    h:=h^p2;
-    b:=List(b,i->OnSets(Set(i),p1));
-    ac:=Action(Stabilizer(g,b[1],OnSets),b[1]);
-    t:=SymmetricGroup(c);
-    for i in [1..Length(b)] do
-      ac2:=Action(Stabilizer(g,b[i],OnSets),b[i]);
-      perm:=RepresentativeAction(t,ac2,ac);
-      if perm=fail then
-        # b cannot be conjugated -- inconsistent
-        Error("inconsistence");
-      fi;
-      perm:=perm^MappingPermListList([1..c],b[i]);
-      g:=g^perm;
-      p1:=p1*perm;
-
-      ac2:=Action(Stabilizer(h,b[i],OnSets),b[i]);
-      perm:=RepresentativeAction(t,ac2,ac);
-      if perm=fail then
-        # cannot map onto -- wrong
-        return fail;
-      fi;
-      perm:=perm^MappingPermListList([1..c],b[i]);
-      h:=h^perm;
-      p2:=p2*perm;
-    od;
-
-    no2:=Normalizer(t,ac);
-
-    w:=WreathProduct(no2,no);
-    perm:=RepresentativeAction(w,g,h);
-    if perm<>fail then
-      Assert(1,ForAll(GeneratorsOfGroup(g),i->i^perm in h));
-      perm:=p1*perm/p2;
-    fi;
-    return perm;
-  fi;
+  # transitive: the backtrack uses the action on the blocks itself
+  return false;
 end);
 
 InstallMethod( IsConjugate, "for natural symmetric group",
