@@ -32,7 +32,7 @@
 #R  IsUnknownDefaultRep( <obj> )
 ##
 DeclareRepresentation( "IsUnknownDefaultRep",
-    IsPositionalObjectRep, [ 1 ] );
+    IsPositionalObjectRep );
 
 
 #############################################################################

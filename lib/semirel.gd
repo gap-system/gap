@@ -426,7 +426,7 @@ DeclareSynonymAttr( "IsSemigroupHomomorphism",
     IsSemigroupGeneralMapping and IsMapping);
 
 DeclareRepresentation( "IsSemigroupGeneralMappingRep",
-      IsSemigroupGeneralMapping and IsSPGeneralMapping and IsAttributeStoringRep, [] );
+      IsSemigroupGeneralMapping and IsSPGeneralMapping and IsAttributeStoringRep );
 
 #DeclareSynonymAttr( "IsSemigroupGeneralMapping", IsGeneralMapping);
 #DeclareSynonymAttr("IsSemigroupHomomorphism", IsSemigroupGeneralMapping and #RespectsMultiplication and IsTotal and IsSingleValued and #IsEndoGeneralMapping);
@@ -448,7 +448,7 @@ DeclareRepresentation( "IsSemigroupGeneralMappingRep",
 
 #JDM include IsSemigroupGeneralMappingRep?
 
-DeclareRepresentation( "IsSemigroupHomomorphismByImagesRep", IsAttributeStoringRep, ["imgslist"] );
+DeclareRepresentation( "IsSemigroupHomomorphismByImagesRep", IsAttributeStoringRep );
 
 #############################################################################
 ##

@@ -107,7 +107,7 @@ DeclareCategory(
 ##
 DeclareRepresentation(
     "IsPcgsDefaultRep",
-    IsComponentObjectRep and IsAttributeStoringRep, [] );
+    IsComponentObjectRep and IsAttributeStoringRep );
 
 
 #############################################################################

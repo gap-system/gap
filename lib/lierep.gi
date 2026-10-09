@@ -16,7 +16,7 @@
 ##
 #R  IsZeroCochainRep( <c> )
 ##
-DeclareRepresentation( "IsZeroCochainRep", IsPackedElementDefaultRep, [1] );
+DeclareRepresentation( "IsZeroCochainRep", IsPackedElementDefaultRep );
 
 #############################################################################
 ##
@@ -2220,8 +2220,7 @@ end );
 #R  IsVectorSearchTableDefaultRep     Representation of vector search tables.
 ##
 DeclareRepresentation( "IsVectorSearchTableDefaultRep",
-    IsVectorSearchTable and IsComponentObjectRep and IsAttributeStoringRep,
-    [ "top" ]);            # the top node of the search data structure
+    IsVectorSearchTable and IsComponentObjectRep and IsAttributeStoringRep);
 
 ## Create a new vector search tree node
 BindGlobal( "VSTNode", function(var, exp, nxt)

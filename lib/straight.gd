@@ -539,7 +539,7 @@ DeclareFilter("StraightLineProgramElmRankFilter",100);
 
 DeclareRepresentation("IsStraightLineProgElm",
   IsMultiplicativeElementWithInverse and IsPositionalObjectRep
-  and StraightLineProgramElmRankFilter,[]);
+  and StraightLineProgramElmRankFilter);
 
 
 #############################################################################

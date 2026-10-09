@@ -20,7 +20,7 @@ DeclareAttribute("AdjoinedIdentityFamily", IsFamily);
 DeclareAttribute("UnderlyingSemigroupFamily", IsFamily);
 DeclareAttribute("AdjoinedIdentityDefaultType", IsFamily);
 
-DeclareRepresentation("IsMonoidByAdjoiningIdentityEltRep", IsPositionalObjectRep, 1);
+DeclareRepresentation("IsMonoidByAdjoiningIdentityEltRep", IsPositionalObjectRep);
 
 #############################################################################
 ##

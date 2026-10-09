@@ -45,8 +45,7 @@ DeclareRepresentation( "IsGenericMatrixRep",
     and IsCopyable
     and IsNoImmediateMethodsObject
     and HasNumberRows and HasNumberColumns
-    and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain,
-    [] );
+    and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain );
 
 
 # Internal positions for IsGenericMatrixRep:

@@ -128,10 +128,7 @@
 #T  (share a list that is filled with the info later?)
 ##
 DeclareRepresentation( "IsLinearGeneralMappingByImagesDefaultRep",
-    IsAttributeStoringRep,
-    [ "basisimage", "preimagesbasisimage", "corelations",
-      "basispreimage", "imagesbasispreimage", "relations",
-      "generators", "genimages" ] );
+    IsAttributeStoringRep );
 
 InstallTrueMethod( IsAdditiveElementWithInverse,
     IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep );
@@ -1091,9 +1088,7 @@ InstallOtherMethod( \+,
 ##
 DeclareRepresentation(
     "IsLinearMappingByMatrixDefaultRep",
-    IsAttributeStoringRep,
-    [ "basissource", "basisrange", "matrix",
-      "basisimage", "preimagesbasisimage", "relations" ] );
+    IsAttributeStoringRep );
 
 InstallTrueMethod( IsAdditiveElementWithInverse,
     IsGeneralMapping and IsLinearMappingByMatrixDefaultRep );

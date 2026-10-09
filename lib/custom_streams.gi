@@ -226,8 +226,7 @@ ReturnFail );
 ##
 DeclareRepresentation(
     "IsOutputTextCustomRep",
-    IsComponentObjectRep,
-    ["state", "write", "close", "buffer", "formatting"] );
+    IsComponentObjectRep );
 
 
 #############################################################################

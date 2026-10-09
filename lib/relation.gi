@@ -122,7 +122,7 @@
 ##  Representation for a binary relation on an arbitrary set of elements
 ##
 DeclareRepresentation("IsBinaryRelationDefaultRep",
-        IsAttributeStoringRep, []);
+        IsAttributeStoringRep);
 
 #############################################################################
 ##
@@ -131,7 +131,7 @@ DeclareRepresentation("IsBinaryRelationDefaultRep",
 ##  Special case that the underlying set is the points 1..n
 ##
 DeclareRepresentation("IsBinaryRelationOnPointsRep",
-        IsAttributeStoringRep, []);
+        IsAttributeStoringRep);
 
 #############################################################################
 ##
@@ -140,7 +140,7 @@ DeclareRepresentation("IsBinaryRelationOnPointsRep",
 ##  Representation of generatl equivalence classes
 ##
 DeclareRepresentation("IsEquivalenceRelationDefaultRep",
-        IsAttributeStoringRep, []);
+        IsAttributeStoringRep);
 
 #############################################################################
 ##
@@ -151,7 +151,7 @@ DeclareRepresentation("IsEquivalenceRelationDefaultRep",
 ##  Representation specific methods are installed here.
 ##
 DeclareRepresentation("IsEquivalenceClassDefaultRep", IsAttributeStoringRep
-        and IsComponentObjectRep, rec());
+        and IsComponentObjectRep);
 
 #############################################################################
 #############################################################################

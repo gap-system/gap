@@ -23,8 +23,7 @@
 ##
 DeclareRepresentation(
     "IsInputTextCustomRep",
-    IsComponentObjectRep,
-    ["state", "read", "close", "buffer", "endofinput", "pos"] );
+    IsComponentObjectRep );
 
 
 #############################################################################

@@ -23,7 +23,7 @@ DeclareInfoClass( "InfoClasses" );
 ##  </ManSection>
 ##
 DeclareRepresentation( "IsExternalOrbitByStabilizerRep",
-    IsExternalOrbit, [  ] );
+    IsExternalOrbit );
 
 
 #############################################################################
@@ -42,10 +42,10 @@ DeclareRepresentation( "IsExternalOrbitByStabilizerRep",
 ##  </ManSection>
 ##
 DeclareRepresentation( "IsConjugacyClassGroupRep",
-    IsExternalOrbit, [  ] );
+    IsExternalOrbit );
 
 DeclareRepresentation( "IsConjugacyClassPermGroupRep",
-    IsExternalOrbitByStabilizerRep and IsConjugacyClassGroupRep, [  ] );
+    IsExternalOrbitByStabilizerRep and IsConjugacyClassGroupRep );
 
 #############################################################################
 ##
@@ -96,12 +96,10 @@ DeclareOperation( "ConjugacyClass", [ IsGroup, IsObject ] );
 ##  </ManSection>
 ##
 DeclareRepresentation( "IsRationalClassGroupRep",
-    IsComponentObjectRep and IsAttributeStoringRep and IsExternalSet,
-    [ "galoisGroup", "power" ] );
+    IsComponentObjectRep and IsAttributeStoringRep and IsExternalSet );
 
 DeclareRepresentation( "IsRationalClassPermGroupRep",
-    IsRationalClassGroupRep,
-    [ "galoisGroup", "power" ] );
+    IsRationalClassGroupRep );
 
 
 #############################################################################

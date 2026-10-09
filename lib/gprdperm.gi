@@ -96,7 +96,7 @@ InstallMethod( Size,
 DeclareRepresentation( "IsEmbeddingDirectProductPermGroup",
       IsAttributeStoringRep and
       IsGroupHomomorphism and IsInjective and
-      IsSPGeneralMapping, [ "component" ] );
+      IsSPGeneralMapping );
 
 #############################################################################
 ##
@@ -105,7 +105,7 @@ DeclareRepresentation( "IsEmbeddingDirectProductPermGroup",
 DeclareRepresentation( "IsEmbeddingWreathProductPermGroup",
       IsAttributeStoringRep and
       IsGroupHomomorphism and IsInjective and
-      IsSPGeneralMapping, [ "component" ] );
+      IsSPGeneralMapping );
 
 #############################################################################
 ##
@@ -113,7 +113,7 @@ DeclareRepresentation( "IsEmbeddingWreathProductPermGroup",
 ##
 ##  special for case of imprimitive wreath product
 DeclareRepresentation( "IsEmbeddingImprimitiveWreathProductPermGroup",
-      IsEmbeddingWreathProductPermGroup, [ "component" ] );
+      IsEmbeddingWreathProductPermGroup );
 
 #############################################################################
 ##
@@ -123,7 +123,7 @@ DeclareRepresentation( "IsEmbeddingImprimitiveWreathProductPermGroup",
 DeclareRepresentation(
   "IsEmbeddingProductActionWreathProductPermGroup",
     IsEmbeddingWreathProductPermGroup
-    and IsGroupGeneralMappingByAsGroupGeneralMappingByImages,["component"]);
+    and IsGroupGeneralMappingByAsGroupGeneralMappingByImages);
 
 #############################################################################
 ##
@@ -258,7 +258,7 @@ end );
 DeclareRepresentation( "IsProjectionDirectProductPermGroup",
       IsAttributeStoringRep and
       IsGroupHomomorphism and IsSurjective and
-      IsSPGeneralMapping, [ "component" ] );
+      IsSPGeneralMapping );
 
 #############################################################################
 ##
@@ -445,7 +445,7 @@ end );
 DeclareRepresentation( "IsProjectionSubdirectProductPermGroup",
       IsAttributeStoringRep and
       IsGroupHomomorphism and IsSurjective and
-      IsSPGeneralMapping, [ "component" ] );
+      IsSPGeneralMapping );
 
 #############################################################################
 ##

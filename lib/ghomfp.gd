@@ -49,8 +49,7 @@ DeclareSynonym("IsFromFpGroupHomomorphism",
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation( "IsFromFpGroupGeneralMappingByImages",
-      IsFromFpGroupGeneralMapping and IsGroupGeneralMappingByImages,
-      [ "generators", "genimages" ] );
+      IsFromFpGroupGeneralMapping and IsGroupGeneralMappingByImages );
 DeclareSynonym("IsFromFpGroupHomomorphismByImages",
   IsFromFpGroupGeneralMappingByImages and IsMapping);
 
@@ -74,7 +73,7 @@ DeclareSynonym("IsFromFpGroupHomomorphismByImages",
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation( "IsFromFpGroupStdGensGeneralMappingByImages",
-      IsFromFpGroupGeneralMappingByImages, [ "generators", "genimages" ] );
+      IsFromFpGroupGeneralMappingByImages );
 DeclareSynonym("IsFromFpGroupStdGensHomomorphismByImages",
   IsFromFpGroupStdGensGeneralMappingByImages and IsMapping);
 
@@ -93,8 +92,7 @@ DeclareSynonym("IsFromFpGroupStdGensHomomorphismByImages",
 ##  </ManSection>
 ##
 DeclareRepresentation( "IsToFpGroupGeneralMappingByImages",
-      IsGroupGeneralMappingByImages,
-      [ "generators", "genimages" ] );
+      IsGroupGeneralMappingByImages );
 DeclareSynonym("IsToFpGroupHomomorphismByImages",
   IsToFpGroupGeneralMappingByImages and IsMapping);
 

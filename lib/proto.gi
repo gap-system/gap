@@ -78,7 +78,7 @@ function(spec)
 
   # declare the representation with the single "data" component
   rep := NewRepresentation(Concatenation(spec.ElementName,"Rep"),
-    repfilters, ["data"]);
+    repfilters);
   BindGlobal(Concatenation(spec.ElementName,"Rep"), rep);
 
   allfilters := cat and rep;

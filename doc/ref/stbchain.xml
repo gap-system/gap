@@ -833,8 +833,7 @@ object. The  enumerator  should  behave as  a   list of  group   elements
 family of the <M>pcgs</M> itself.
 <P/>
 <Log><![CDATA[
-DeclareRepresentation( "IsCosetSolvableFactorEnumeratorRep", IsEnumerator,
-    [ "pcgs", "range", "representative" ] );
+DeclareRepresentation( "IsCosetSolvableFactorEnumeratorRep", IsEnumerator );
 
 EnumeratorCosetSolvableFactor := function( pcgs, range, g )
     return Objectify( NewType( FamilyObj( pcgs ),
@@ -909,8 +908,7 @@ DeclareCategory( "IsPermOnEnumerator",
     IsMultiplicativeElementWithInverse and IsPerm );
 
 DeclareRepresentation( "IsPermOnEnumeratorDefaultRep",
-    IsPermOnEnumerator and IsAttributeStoringRep,
-    [ "perm" ] );
+    IsPermOnEnumerator and IsAttributeStoringRep );
 
 DeclareOperation( "PermOnEnumerator",
     [ IsEnumerator, IsObject ] );

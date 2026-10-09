@@ -15,8 +15,7 @@
 #R  IsEmptyRowVectorRep( <obj> )
 ##
 DeclareRepresentation( "IsEmptyRowVectorRep",
-    IsPositionalObjectRep and IsConstantTimeAccessList,
-    [] );
+    IsPositionalObjectRep and IsConstantTimeAccessList );
 
 
 #############################################################################
