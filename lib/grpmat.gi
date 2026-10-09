@@ -80,6 +80,27 @@ end );
 
 #############################################################################
 ##
+#M  BaseDomain( <mat-grp> )
+##
+##  'CheckMatrixGroupGenerators' guarantees one common base domain for
+##  matrix objects, whereas list matrices of one group may mix them.
+##
+InstallMethod( BaseDomain,
+    "for a matrix group of matrix objects",
+    [ IsMatrixGroup ],
+    function( grp )
+    local one;
+
+    one:= One( grp );
+    if not IsMatrixObj( one ) or IsList( one ) then
+      TryNextMethod();
+    fi;
+    return BaseDomain( one );
+end );
+
+
+#############################################################################
+##
 #M  DimensionOfMatrixGroup( <mat-grp> )
 ##
 InstallMethod( DimensionOfMatrixGroup,
