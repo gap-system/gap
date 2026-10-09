@@ -54,4 +54,16 @@ gap> Union(List(hc, x -> x.indices));
 [ 1 .. 9 ]
 
 #
+# test some random effects
+#
+gap> for p in [ 3, 257 ] do
+>      F:= GF(p);
+>      M:= GModuleByMats( [ [ [ Z(p)^0 ] ] ], F );
+>      N:= GModuleByMats( [ [ [ Z(p) ] ] ], F );
+>      for e in [ 1 .. 10 ] do
+>        SpinHom( M, N );
+>      od;
+>    od;
+
+#
 gap> STOP_TEST("meatauto.tst");
