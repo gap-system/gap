@@ -183,7 +183,12 @@ InstallMethod( TransposedMatMutable,
   [ "IsGenericMatrixRep" ],
   function( M )
     local list;
-    list := TransposedMatMutable(M![GEN_MAT_REP_ROWS_POS]);
+    if NrRows(M) = 0 then
+      # the row list does not know the number of columns
+      list := List( [ 1 .. NrCols(M) ], i -> [] );
+    else
+      list := TransposedMatMutable(M![GEN_MAT_REP_ROWS_POS]);
+    fi;
     return MakeIsGenericMatrixRep( BaseDomain(M), NrRows(M), list, false );
   end );
 
@@ -267,8 +272,10 @@ InstallMethod( \*,
       fi;
     fi;
 
-    if rowsA = 0 or colsB = 0 then
+    if rowsA = 0 then
       list := [];
+    elif colsB = 0 then
+      list := List( [ 1 .. rowsA ], i -> [] );
     elif colsA = 0 then  # colsA = rowsB
       list := EmptyPlist( rowsA );
       for i in [ 1 .. rowsA ] do
