@@ -1316,8 +1316,6 @@ end );
 ##
 ##  Construct an associative matrix FLMLOR.
 ##
-#T embeddings/projections should be provided!
-##
 InstallOtherMethod( DirectSumOfAlgebras,
     "for two associative matrix FLMLORs",
     IsIdenticalObj,
@@ -1326,11 +1324,14 @@ InstallOtherMethod( DirectSumOfAlgebras,
     function( A1, A2 )
 
     local b1,   # Basis vectors of `A1'.
+          d1,   # Dimension of `A1'.
           b2,   # Basis vectors of `A2'.
+          d2,   # Dimension of `A2'.
+          type, # basis vectors or generators.
           p1,   # Length of the matrices of `b1'.
           p2,   # Length of the matrices of `b2'.
           B,    # A basis of `A1 \oplus A2'.
-          i,    # Loop variable.
+          i,j,  # Loop variables.
           Q,    # A matrix.
           A;    # result
 
@@ -1341,14 +1342,19 @@ InstallOtherMethod( DirectSumOfAlgebras,
     # We do not really need a basis for the arguments
     # but if we have one then we use it.
 #T Do we really have so many algebra generators? (distinguish from basis?)
-    if HasBasis( A1 ) and HasBasis( A2 ) then
-      b1:= BasisVectors( Basis( A1 ) );
-      b2:= BasisVectors( Basis( A2 ) );
-    else
+## Surely this method should always deal with generators, so comment out:
+##    if HasBasis( A1 ) and HasBasis( A2 ) then
+##      b1:= BasisVectors( Basis( A1 ) );
+##      b2:= BasisVectors( Basis( A2 ) );
+##      type:= "basis vectors";
+##    else
       b1:= GeneratorsOfAlgebra( A1 );
       b2:= GeneratorsOfAlgebra( A2 );
-    fi;
+      type:= "generators";
+##    fi;
 
+    d1:= Length( b1 );
+    d2:= Length( b2 );
     p1:= DimensionOfVectors( A1 )[1];
     p2:= DimensionOfVectors( A2 )[1];
 
@@ -1370,8 +1376,11 @@ InstallOtherMethod( DirectSumOfAlgebras,
     fi;
 
     SetIsAssociative( A, true );
-#T nec. ?
-
+    SetDirectSumInfo( A, rec( algebras := [A1,A2],
+                              first := [0,d1,d1+d2],
+                              type := type,
+                              embeddings := [],
+                              projections := [] ) );
     return A;
     end );
 
@@ -1382,8 +1391,6 @@ InstallOtherMethod( DirectSumOfAlgebras,
 ##
 ##  Construct a matrix Lie FLMLOR.
 ##
-#T embeddings/projections should be provided!
-##
 InstallOtherMethod( DirectSumOfAlgebras,
     "for two matrix Lie FLMLORs",
     IsIdenticalObj,
@@ -1391,14 +1398,17 @@ InstallOtherMethod( DirectSumOfAlgebras,
       IsMatrixFLMLOR and IsLieAlgebra ], 0,
     function( A1, A2 )
 
-    local b1,   # Basis vectors of `A1'.
-          b2,   # Basis vectors of `A2'.
-          p1,   # Length of the matrices of `b1'.
-          p2,   # Length of the matrices of `b2'.
-          B,    # A basis of `A1 \oplus A2'.
-          i,    # Loop variable.
-          Q,    # A matrix.
-          A;    # result
+    local b1,    # Basis vectors of `A1'.
+          d1,    # Dimension of `A1'.
+          b2,    # Basis vectors of `A2'.
+          d2,    # Dimension of `A2'.
+          type,  # basis vectors or generators.
+          p1,    # Length of the matrices of `b1'.
+          p2,    # Length of the matrices of `b2'.
+          B,     # A basis of `A1 \oplus A2'.
+          i,j,   # Loop variables.
+          Q,     # A matrix.
+          A;     # result
 
     if LeftActingDomain( A1 ) <> LeftActingDomain( A2 ) then
       Error( "<A1> and <A2> must be written over the same domain" );
@@ -1407,14 +1417,19 @@ InstallOtherMethod( DirectSumOfAlgebras,
     # We do not really need a basis for the arguments
     # but if we have one then we use it.
 #T Do we really have so many algebra generators? (distinguish from basis?)
-    if HasBasis( A1 ) and HasBasis( A2 ) then
-      b1:= BasisVectors( Basis( A1 ) );
-      b2:= BasisVectors( Basis( A2 ) );
-    else
+## Surely this method should always deal with generators, so comment out:
+##    if HasBasis( A1 ) and HasBasis( A2 ) then
+##      b1:= BasisVectors( Basis( A1 ) );
+##      b2:= BasisVectors( Basis( A2 ) );
+##      type:= "basis vectors";
+##    else
       b1:= GeneratorsOfAlgebra( A1 );
       b2:= GeneratorsOfAlgebra( A2 );
-    fi;
+      type:= "generators";
+##    fi;
 
+    d1:= Length( b1 );
+    d2:= Length( b2 );
     p1:= DimensionOfVectors( A1 )[1];
     p2:= DimensionOfVectors( A2 )[1];
 
@@ -1436,6 +1451,11 @@ InstallOtherMethod( DirectSumOfAlgebras,
     fi;
     SetIsLieAlgebra( A, true );
 
+    SetDirectSumInfo( A, rec( algebras := [A1,A2],
+                              first := [0,d1,d1+d2],
+                              type := type,
+                              embeddings := [],
+                              projections := [] ) );
     return A;
     end );
 
