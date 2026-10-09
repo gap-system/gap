@@ -78,6 +78,13 @@ m4_if(m4_version_compare(m4_defn([AC_AUTOCONF_VERSION]), [2.70]), -1,
 AC_PROG_CXX
 AX_CXX_COMPILE_STDCXX(11)
 
+dnl the resource compiler embeds a manifest into gap.exe on native Windows
+AS_CASE([$host_os],
+  [mingw*],[
+    AC_CHECK_TOOL([WINDRES], [windres])
+    AS_IF([test "x$WINDRES" = x], [AC_MSG_ERROR([windres not found])])
+  ])
+
 AC_LANG([C])
 
 
@@ -264,6 +271,15 @@ AS_IF([test "x$with_gc" = xdefault],
     AS_IF([test "x$enable_hpcgap" = xyes], [with_gc=boehm])
     AS_IF([test "x$with_julia" != xno], [with_gc=julia])
     ])
+dnl native Windows (mingw) supports GASMAN and the Julia GC so far
+AS_CASE([$host_os],
+  [mingw*],[
+    AS_IF([test "x$enable_hpcgap" = xyes],
+      [AC_MSG_ERROR([HPC-GAP is not yet supported on native Windows])])
+    AS_IF([test "x$with_gc" = xboehm],
+      [AC_MSG_ERROR([Boehm GC is not yet supported on native Windows])])
+  ])
+
 AS_CASE([$with_gc],
     [none|no],  [AC_MSG_ERROR([cannot run GAP without a garbage collector])],
     [boehm],    [AC_SUBST([GC_SOURCES], [src/boehm_gc.c])
@@ -619,7 +635,10 @@ AS_IF([test x$gmp_found = xno],[
   GMP_PREFIX='${abs_builddir}/extern/install/gmp'
   GMP_CPPFLAGS='-I${abs_builddir}/extern/install/gmp/include'
   GMP_LDFLAGS='-L${abs_builddir}/extern/install/gmp/lib'
-  GMP_LIBS='-Wl,-rpath,${abs_builddir}/extern/install/gmp/lib -lgmp'
+  dnl the PE linker knows no rpath
+  AS_CASE([$host_os],
+    [mingw*],[GMP_LIBS='-lgmp'],
+    [GMP_LIBS='-Wl,-rpath,${abs_builddir}/extern/install/gmp/lib -lgmp'])
 ])
 
 AC_SUBST([BUILD_GMP])
@@ -697,7 +716,10 @@ AS_IF([test x$zlib_found = xno],[
   BUILD_ZLIB=yes
   ZLIB_CPPFLAGS='-I${abs_builddir}/extern/install/zlib/include'
   ZLIB_LDFLAGS='-L${abs_builddir}/extern/install/zlib/lib'
-  ZLIB_LIBS='-Wl,-rpath,${abs_builddir}/extern/install/zlib/lib -lz'
+  dnl the PE linker knows no rpath
+  AS_CASE([$host_os],
+    [mingw*],[ZLIB_LIBS='-lz'],
+    [ZLIB_LIBS='-Wl,-rpath,${abs_builddir}/extern/install/zlib/lib -lz'])
 ])
 
 AC_SUBST([BUILD_ZLIB])

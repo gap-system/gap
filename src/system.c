@@ -51,6 +51,12 @@
 
 #include <sys/stat.h>
 
+#ifdef SYS_IS_MINGW
+#include <io.h>                         // for _setmode
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>                    // for GlobalMemoryStatusEx
+#endif
+
 #if defined(__APPLE__) && defined(__MACH__)
 // Workaround: TRUE / FALSE are also defined by the macOS Mach-O headers
 #define ENUM_DYLD_BOOL
@@ -570,6 +576,13 @@ static void InitSysOpts(void)
     Int SyStorMaxFromMem =
         (sysconf(_SC_PAGESIZE) * sysconf(_SC_PHYS_PAGES) * 3) / 4 / 1024;
     SyStorMax = SyStorMaxFromMem > SyStorMax ? SyStorMaxFromMem : SyStorMax;
+  #elif defined(SYS_IS_MINGW)
+    MEMORYSTATUSEX mem;
+    mem.dwLength = sizeof(mem);
+    if (GlobalMemoryStatusEx(&mem)) {
+        Int SyStorMaxFromMem = (Int)(mem.ullTotalPhys / 1024) * 3 / 4;
+        SyStorMax = SyStorMaxFromMem > SyStorMax ? SyStorMaxFromMem : SyStorMax;
+    }
   #endif
 #endif // defined(SYS_IS_64_BIT)
 
@@ -689,6 +702,39 @@ static void InitDotGapPath(void)
 
 void InitSystem(int argc, const char * argv[], BOOL handleSignals)
 {
+#ifdef SYS_IS_MINGW
+    // binary mode by default, as on Cygwin's binmode mounts: the C runtime
+    // must not translate line endings behind GAP's back
+    _fmode = _O_BINARY;
+    _setmode(fileno(stdin), _O_BINARY);
+    _setmode(fileno(stdout), _O_BINARY);
+    _setmode(fileno(stderr), _O_BINARY);
+
+    // have the console interpret ANSI escape sequences like other terminals
+    for (int fd = 1; fd <= 2; fd++) {
+        HANDLE h = (HANDLE)_get_osfhandle(fd);
+        DWORD  mode;
+        if (GetConsoleMode(h, &mode))
+            SetConsoleMode(h, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+    }
+
+    // GAP relies on HOME (tilde expansion, ~/.gap, history): derive it from
+    // USERPROFILE when unset, and use slashes
+    {
+        const char * home = getenv("HOME");
+        if (home == NULL || *home == '\0')
+            home = getenv("USERPROFILE");
+        if (home != NULL && *home != '\0') {
+            static char homebuf[GAP_PATH_MAX + 6] = "HOME=";
+            strxcat(homebuf, home, sizeof(homebuf));
+            for (char * p = homebuf; *p; p++)
+                if (*p == '\\')
+                    *p = '/';
+            _putenv(homebuf);
+        }
+    }
+#endif
+
     InitSysOpts();
 
     if (handleSignals) {

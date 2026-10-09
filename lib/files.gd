@@ -447,13 +447,21 @@ end );
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "PathSystemProgram", function( name )
-    local dir, path;
+    local names, dir, path;
+
+    names:= [ name ];
+    if ARCH_IS_WINDOWS() and ( LENGTH( name ) < 4 or
+       name{ [ LENGTH( name ) - 3 .. LENGTH( name ) ] } <> ".exe" ) then
+      ADD_LIST( names, Concatenation( name, ".exe" ) );
+    fi;
 
     for dir in DirectoriesSystemPrograms() do
-      path:= Filename( dir, name );
-      if IsExecutableFile( path ) then
-        return path;
-      fi;
+      for name in names do
+        path:= Filename( dir, name );
+        if IsExecutableFile( path ) then
+          return path;
+        fi;
+      od;
     od;
 
     return fail;

@@ -1,0 +1,107 @@
+# Cross-compiling GAP for native Windows (mingw-w64)
+
+Status (issue #4157): experimental. `gap.exe` passes testinstall, with line
+editing, readline, subprocesses (pipes instead of ptys) and kernel
+extensions; see "Open items" below. The target is x86_64-w64-mingw32, as in
+the MSYS2 MINGW64 environment of the CI job.
+
+The instructions below are for macOS; on Linux, install `gcc-mingw-w64`
+instead of the brew package and adjust paths.
+
+## Toolchain and dependencies
+
+```sh
+brew install mingw-w64 autoconf automake libtool
+
+# prefix for the cross-compiled dependencies
+export MPREFIX=$HOME/opt/x86_64-w64-mingw32
+
+# GMP: use the copy bundled with GAP (or any gmp release tarball).
+# -std=gnu17 works around GMP 6.3 configure tests that break with the
+# C23 default of GCC >= 15.
+cd extern/gmp
+CC="x86_64-w64-mingw32-gcc -std=gnu17" ./configure \
+    --build=$(./config.guess) --host=x86_64-w64-mingw32 \
+    --prefix=$MPREFIX --disable-shared --enable-static
+make -j8 && make install    # no 'make check': cross binaries cannot run
+cd ../..
+
+# zlib: its configure does not support mingw, use the win32 makefile
+cd extern/zlib
+make -f win32/Makefile.gcc PREFIX=x86_64-w64-mingw32- SHARED_MODE=0 \
+    INCLUDE_PATH=$MPREFIX/include LIBRARY_PATH=$MPREFIX/lib \
+    BINARY_PATH=$MPREFIX/bin libz.a install
+git checkout . && git clean -fdx .    # remove in-tree build artifacts
+cd ../..
+```
+
+## Seeding the generated files
+
+The build runs two just-built programs: `ffgen` (generating
+`build/ffdata.{c,h}`) and `build/gap-nocomp` (generating `build/c_oper1.c`
+and `build/c_type1.c`). When cross-compiling, neither can run, so all four
+files must be seeded from a native build (their content is target
+independent on 64-bit systems):
+
+```sh
+./autogen.sh
+mkdir -p build-native && cd build-native
+../configure && make -j8
+cd ..
+cp build-native/build/{ffdata.c,ffdata.h,c_oper1.c,c_type1.c} src/
+```
+
+Files placed in `src/` under these names override the generated ones
+(see `Makefile.rules`); they are `.gitignore`d.
+
+## Cross-compiling GAP
+
+```sh
+mkdir -p build-mingw64 && cd build-mingw64
+../configure --build=$(../cnf/config.guess) --host=x86_64-w64-mingw32 \
+    --with-gmp=$MPREFIX --with-zlib=$MPREFIX --without-readline
+make -j8
+```
+
+For readline, copy MSYS2's `mingw-w64-x86_64-readline` artifacts into the
+prefix (`include/readline/`, `lib/libreadline.dll.a`,
+`lib/libhistory.dll.a`; plain readline does not build for mingw) and
+configure with `--with-readline=$MPREFIX`. At runtime `libreadline8.dll`
+and `libtermcap-0.dll` must sit next to gap.exe.
+
+Verify:
+
+```sh
+file gap.exe                # PE32+ executable (console) x86-64
+x86_64-w64-mingw32-objdump -p gap.exe | grep 'DLL Name'
+                            # only system DLLs + libwinpthread-1.dll
+```
+
+Wine (`brew install --cask wine-stable`) runs the result: copy
+`libwinpthread-1.dll` from the toolchain next to gap.exe, then e.g.
+
+```sh
+wine gap.exe -A -q -c 'Read("../tst/testinstall.g");' < /dev/null
+```
+
+## Open items
+
+- Non-ASCII paths: the kernel calls the ANSI Windows API and relies on the
+  manifest of `gap.exe` making UTF-8 the code page (Windows 10 1903 and
+  later). `libgap.dll` inside another program gets that program's code page;
+  `julia.exe` uses the legacy one.
+  The console code page is not switched, so non-ASCII output may be garbled.
+- 32-bit builds (MSYS2 MINGW32) and native ARM64 builds (MSYS2 CLANGARM64,
+  `CC=clang CXX=clang++`) pass testinstall but are not in CI.
+- HPC-GAP and Boehm GC: rejected by `configure`.
+- The Julia GC passes testinstall with Julia 1.12 but is not in CI. The
+  directory of `libjulia.dll` must be in PATH, also during the build. GAP
+  inside Julia is untested.
+- `make install`, and a distribution; the Windows installer ships Cygwin.
+- CI runs testinstall and testmockpkg only. `tst/testinstall/read.tst`
+  expects POSIX semantics for opening a directory and is removed there.
+- `InputOutputLocalProcess` polls its pipe every 10 ms; `UNIXSelect` is
+  unavailable. Children see no terminal and must flush their output.
+- Windows refuses to delete open files; library code doing so fails there.
+- `longjmp` unwinds via SEH on Windows, see the TODO in `src/common.h`.
+- IO package: no `fork`, no sockets.

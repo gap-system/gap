@@ -76,7 +76,15 @@ typedef UInt * *        Bag;
 **
 *T  BagHeader
 */
-typedef struct {
+// mingw compilers default to the Microsoft bit-field layout, which does
+// not pack 'size' into one word with 'type' and 'flags'
+#ifdef SYS_IS_MINGW
+#define GAP_GCC_BITFIELDS __attribute__((gcc_struct))
+#else
+#define GAP_GCC_BITFIELDS
+#endif
+
+typedef struct GAP_GCC_BITFIELDS {
     uint8_t type : 8;
     uint8_t flags : 8;
     // the following unnamed field ensures that on 32 bit systems,
@@ -375,6 +383,12 @@ extern "C++" {
 #include <julia.h>
 #ifdef __cplusplus
 }
+#endif
+
+// julia.h includes windows.h, which defines names GAP uses itself
+#ifdef SYS_IS_MINGW
+#undef IN
+#undef S_FALSE
 #endif
 
 // Julia 1.14 renamed `jl_gc_wb_back` (JuliaLang/julia#63299)
