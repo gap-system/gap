@@ -193,10 +193,13 @@ DeclareGlobalFunction("SmallRing");
 ##  (This somewhat strange syntax allows the method selection to choose
 ##  a reasonable method for special cases.)
 ##  <Example><![CDATA[
-##  gap> R5 := SmallRing( 5, 2 );; SetName( R5, "R5" );
 ##  gap> R7 := SmallRing( 7, 2 );; SetName( R7, "R7" );
-##  gap> R57 := DirectSum( R5, R7 );
-##  <ring with 2 generators>
+##  gap> R8 := SmallRing( 8, 52 );; SetName( R8, "R8" );
+##  gap> R78 := DirectSum( R7, R8 );
+##  <ring with 4 generators>
+##  gap> R9 := SmallRing( 9, 11 );; SetName( R9, "R9" );
+##  gap> R789 := DirectSum( [ R7, R8, R9 ] );
+##  <ring with 6 generators>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -221,9 +224,9 @@ DeclareAttribute( "DirectSumInfo", IsRing, "mutable" );
 ##  homomorphism mapping <M>R_i</M> into <A>R</A>.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> emb1 := Embedding( R57, 1 );
+##  gap> emb1 := Embedding( R78, 1 );
 ##  [ a ] -> [ Aa ]
-##  gap> a := GeneratorsOfRing( R5 )[1];;
+##  gap> a := GeneratorsOfRing( R7 )[1];;
 ##  gap> ImageElm( emb1, 3*a );
 ##  3*Aa
 ##  ]]></Example>
@@ -246,11 +249,11 @@ DeclareAttribute( "DirectSumInfo", IsRing, "mutable" );
 ##  homomorphism mapping <A>R</A> onto <M>R_i</M>.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> pro2 := Projection( R57, 2 );
-##  [ Aa, Ba ] -> [ 0*a, a ]
-##  gap> b := GeneratorsOfRing( R57 )[2];;
-##  gap> ImageElm( pro2, 4*b );
-##  4*a
+##  gap> pro2 := Projection( R78, 2 );
+##  [ Aa, Ba, Bb, Bc ] -> [ 0*a, a, b, c ]
+##  gap> b := GeneratorsOfRing( R78 )[2];;
+##  gap> ImageElm( pro2, 5*b );
+##  a
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
