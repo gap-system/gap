@@ -212,7 +212,7 @@ DeclareAttribute( "DirectSumInfo", IsRing, "mutable" );
 ##
 ##  <#GAPDoc Label="Embedding:rings">
 ##  <ManSection>
-##  <Oper Name="Embedding" Arg='R,i'
+##  <Oper Name="Embedding" Arg='R, i'
 ##    Label="for a direct sum of rings and a positive integer"/>
 ##
 ##  <Description>
@@ -237,7 +237,7 @@ DeclareAttribute( "DirectSumInfo", IsRing, "mutable" );
 ##
 ##  <#GAPDoc Label="Projection:rings">
 ##  <ManSection>
-##  <Oper Name="Projection" Arg='R,i'
+##  <Oper Name="Projection" Arg='R, i'
 ##    Label="for a direct sum of rings and a positive integer"/>
 ##
 ##  <Description>

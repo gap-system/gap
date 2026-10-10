@@ -1072,6 +1072,7 @@ local d,t,i;
       fi;
     od;
   fi;
+
   d:=DirectSumOp( arg, arg[1] );
   if ForAll(arg,HasSize) then
     if   ForAll(arg,IsFinite)
@@ -1212,7 +1213,7 @@ end );
 #A Embedding
 ##
 InstallMethod( Embedding, "ring direct sum and integer",
-    [ IsRing and HasDirectSumInfo, IsPosInt ],
+    [ IsSubringSCRing and HasDirectSumInfo, IsPosInt ],
     function( D, i )
     local info, first, R, gens, imgs, map;
 
@@ -1227,7 +1228,7 @@ InstallMethod( Embedding, "ring direct sum and integer",
     fi;
     # compute embedding
     R := info.rings[i];
-    gens := GeneratorsOfRing( R );
+    gens := StandardGeneratorsSubringSCRing( R )[3];
     imgs := GeneratorsOfRing( D ){[first[i]+1 .. first[i+1]]};
     map := RingHomomorphismByImages( R, D, gens, imgs );
     SetIsInjective( map, true );
@@ -1244,7 +1245,7 @@ end );
 #A  Projection
 ##
 InstallMethod( Projection, "ring direct sum and integer",
-    [ IsRing and HasDirectSumInfo, IsPosInt ],
+    [ IsSubringSCRing and HasDirectSumInfo, IsPosInt ],
     function( D, i )
     local infoD, first, zR, len, R, genR, genD, imgs, j, k, map;
 
@@ -1260,7 +1261,7 @@ InstallMethod( Projection, "ring direct sum and integer",
     # compute projection
     R := infoD.rings[i];
     zR := Zero( R );
-    genR := GeneratorsOfRing( R );
+    genR := StandardGeneratorsSubringSCRing( R )[3];
     genD := GeneratorsOfRing( D );
     imgs := ListWithIdenticalEntries( first[len], zR );
     j := first[i];
