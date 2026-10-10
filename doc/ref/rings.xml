@@ -190,6 +190,8 @@ see <Ref Sect="Homomorphisms of Algebras"/>.
 <#Include Label="Subrings">
 <#Include Label="Ideals">
 <#Include Label="DirectSum">
+<#Include Label="Embedding:rings">
+<#Include Label="Projection:rings">
 <#Include Label="RingByStructureConstants">
 
 

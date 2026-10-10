@@ -193,8 +193,13 @@ DeclareGlobalFunction("SmallRing");
 ##  (This somewhat strange syntax allows the method selection to choose
 ##  a reasonable method for special cases.)
 ##  <Example><![CDATA[
-##  gap> DirectSum(SmallRing(5,1),SmallRing(5,1));
-##  <ring with 2 generators>
+##  gap> R7 := SmallRing( 7, 2 );; SetName( R7, "R7" );
+##  gap> R8 := SmallRing( 8, 52 );; SetName( R8, "R8" );
+##  gap> R78 := DirectSum( R7, R8 );
+##  <ring with 4 generators>
+##  gap> R9 := SmallRing( 9, 11 );; SetName( R9, "R9" );
+##  gap> R789 := DirectSum( [ R7, R8, R9 ] );
+##  <ring with 6 generators>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -202,5 +207,54 @@ DeclareGlobalFunction("SmallRing");
 ##
 DeclareGlobalFunction( "DirectSum" );
 DeclareOperation( "DirectSumOp", [ IsList, IsRing ] );
-DeclareAttribute( "DirectSumInfo", IsGroup, "mutable" );
+DeclareAttribute( "DirectSumInfo", IsRing, "mutable" );
 
+#############################################################################
+##
+#O  Embedding( <R>,<i> )
+##
+##  <#GAPDoc Label="Embedding:rings">
+##  <ManSection>
+##  <Oper Name="Embedding" Arg='R, i'
+##    Label="for a direct sum of rings and a positive integer"/>
+##
+##  <Description>
+##  If ring <A>R</A> is the direct sum of rings <M>[R_1,\ldots,R_k]</M>
+##  then <C>Embedding(R,i)</C> for <M>1 \leq i \leq k</M> returns a ring
+##  homomorphism mapping <M>R_i</M> into <A>R</A>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> emb1 := Embedding( R78, 1 );
+##  [ a ] -> [ Aa ]
+##  gap> a := GeneratorsOfRing( R7 )[1];;
+##  gap> ImageElm( emb1, 3*a );
+##  3*Aa
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+
+#############################################################################
+##
+#O  Projection( <R>,<i> )
+##
+##  <#GAPDoc Label="Projection:rings">
+##  <ManSection>
+##  <Oper Name="Projection" Arg='R, i'
+##    Label="for a direct sum of rings and a positive integer"/>
+##
+##  <Description>
+##  If ring <A>R</A> is the direct sum of rings <M>[R_1,\ldots,R_k]</M>
+##  then <C>Projection(R,i)</C> for <M>1 \leq i \leq k</M> returns a ring
+##  homomorphism mapping <A>R</A> onto <M>R_i</M>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> pro2 := Projection( R78, 2 );
+##  [ Aa, Ba, Bb, Bc ] -> [ 0*a, a, b, c ]
+##  gap> b := GeneratorsOfRing( R78 )[2];;
+##  gap> ImageElm( pro2, 5*b );
+##  a
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
