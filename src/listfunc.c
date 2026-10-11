@@ -67,6 +67,7 @@ void AddPlist3(Obj list, Obj obj, Int pos)
 {
     UInt len;
 
+    GAP_ASSERT(IS_PLIST(list));
     if (!IS_MUTABLE_OBJ(list)) {
         ErrorMayQuit("List Assignment: <list> must be a mutable list", 0, 0);
     }
@@ -165,6 +166,7 @@ static Obj RemPlist(Obj list)
     Int                 pos;
     Obj removed;
 
+    GAP_ASSERT(IS_PLIST(list));
     if ( ! IS_MUTABLE_OBJ(list) ) {
         ErrorMayQuit("Remove: <list> must be a mutable list", 0, 0);
     }

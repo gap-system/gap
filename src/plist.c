@@ -229,6 +229,8 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
 
     Obj  loopTypeObj = 0; // typeObj in loop
 
+    GAP_ASSERT(IS_PLIST(list));
+
 #ifdef HPCGAP
     if (!CheckWriteAccess(list)) {
       return MUTABLE_TNUM(TNUM_OBJ(list));
