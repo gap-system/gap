@@ -1,4 +1,5 @@
 #@local g,t,lin,G,attr,cclreps,grps,pi,permG,permt,n,sortt
+#@local idlast,permtbl,repchar,reps
 
 gap> START_TEST("ctbl.tst");
 
@@ -532,6 +533,83 @@ gap> sortt:= CharacterTableWithSortedClasses( permt,
 gap> lin:= LinearCharacters( sortt );;
 gap> ScalarProduct( lin[1], lin[2] );
 0
+
+# groups whose character tables list the classes in another order:
+# 'idlast' stores the identity class last in the group,
+# 'permtbl' stores a table with the nonidentity classes reversed
+gap> idlast:= function( G )
+>      local reps, H;
+>      reps:= List( ConjugacyClasses( G ), Representative );
+>      reps:= Concatenation( reps{ [ 2 .. Length( reps ) ] }, reps{ [ 1 ] } );
+>      H:= GroupWithGenerators( GeneratorsOfGroup( G ) );
+>      SetConjugacyClasses( H, List( reps, x -> ConjugacyClass( H, x ) ) );
+>      return H;
+>    end;;
+gap> permtbl:= function( G )
+>      local H, ccl, perm, tbl;
+>      H:= GroupWithGenerators( GeneratorsOfGroup( G ) );
+>      ccl:= List( ConjugacyClasses( G ),
+>                  C -> ConjugacyClass( H, Representative( C ) ) );
+>      SetConjugacyClasses( H, ccl );
+>      perm:= Concatenation( [ 1 ], [ Length( ccl ), Length( ccl ) - 1 .. 2 ] );
+>      tbl:= Objectify( NewType( NearlyCharacterTablesFamily,
+>                                IsOrdinaryTable and IsAttributeStoringRep ),
+>                       rec() );
+>      SetUnderlyingGroup( tbl, H );
+>      SetUnderlyingCharacteristic( tbl, 0 );
+>      SetConjugacyClasses( tbl, ccl{ perm } );
+>      SetIdentificationOfConjugacyClasses( tbl, perm );
+>      SetOrdinaryCharacterTable( H, tbl );
+>      return H;
+>    end;;
+
+# the character of a representation w.r.t. the classes of the table,
+# 'fail' if the images of the generators do not define a homomorphism
+gap> repchar:= function( G, rep )
+>      local gens, imgs, hom;
+>      gens:= GeneratorsOfGroup( G );
+>      imgs:= List( gens, g -> ImagesRepresentative( rep, g ) );
+>      hom:= GroupHomomorphismByImages( G, Group( imgs ), gens, imgs );
+>      if hom = fail then
+>        return fail;
+>      fi;
+>      return List( ConjugacyClasses( CharacterTable( G ) ),
+>          C -> TraceMat( ImagesRepresentative( hom, Representative( C ) ) ) );
+>    end;;
+gap> g:= SymmetricGroup( 5 );;
+gap> for G in [ idlast( g ), permtbl( g ) ] do
+>      reps:= IrreducibleRepresentationsDixon( G );
+>      Print( List( reps, rep -> repchar( G, rep ) ) = Irr( G ), "\n" );
+>    od;
+true
+true
+gap> g:= SymmetricGroup( 4 );;
+gap> for G in [ idlast( g ), permtbl( g ) ] do
+>      reps:= Reversed( IrreducibleRepresentations( g ) );
+>      pi:= RepresentationsPermutationIrreducibleCharacters( G, Irr( G ),
+>               reps );
+>      Print( pi <> fail and
+>             List( Permuted( reps, pi ), rep -> repchar( G, rep ) ) = Irr( G ),
+>             "\n" );
+>    od;
+true
+true
+gap> for g in [ SymmetricGroup( 3 ), DihedralGroup( IsPermGroup, 12 ) ] do
+>      for G in [ idlast( g ), permtbl( g ) ] do
+>        Print( Set( IrrConlon( G ) ) = Set( IrrDixonSchneider( G ) ), "\n" );
+>      od;
+>    od;
+true
+true
+true
+true
+gap> for G in [ idlast( GL( 2, 3 ) ), permtbl( GL( 2, 3 ) ) ] do
+>      Print( Set( LinearCharacters( G ) )
+>             = Filtered( Set( IrrDixonSchneider( G ) ), chi -> chi[1] = 1 ),
+>             "\n" );
+>    od;
+true
+true
 
 ##
 gap> STOP_TEST( "ctbl.tst" );

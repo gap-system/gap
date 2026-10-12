@@ -2600,7 +2600,7 @@ local i,H,r;
 end);
 
 InstallGlobalFunction(IrreducibleRepresentationsDixon,function(arg)
-local G,chi,reps,r,i,gensp;
+local G,chi,reps,r,i,gensp,cl;
   G:=arg[1];
   if Length(arg)=1 then
     chi:=Irr(G);
@@ -2626,8 +2626,10 @@ local G,chi,reps,r,i,gensp;
     if i[1]=1 then
       # linear
       if gensp=fail then
+        # the values of a character belong to the classes of its table
+        cl:=ConjugacyClasses(UnderlyingCharacterTable(i));
         gensp:=List(GeneratorsOfGroup(G),
-          i->PositionProperty(ConjugacyClasses(G),j->i in j));
+          i->PositionProperty(cl,j->i in j));
       fi;
       r:=List(i{gensp},i->[[i]]);
       r:=GroupHomomorphismByImagesNC(G,Group(r),GeneratorsOfGroup(G),r);
@@ -2662,7 +2664,8 @@ local imgs, cl, d, cands, j, t, i;
     Error("inconsistency");
   fi;
   imgs:=[];
-  cl:=ConjugacyClasses(G);
+  # the values of a character belong to the classes of its table
+  cl:=ConjugacyClasses(UnderlyingCharacterTable(chars[1]));
   for i in reps do
     d:=Length(One(Range(i)));
     cands:=Filtered([1..Length(chars)],i->chars[i][1]=d);
