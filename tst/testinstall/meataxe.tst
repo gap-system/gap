@@ -353,5 +353,10 @@ gap> M2:= GModuleByMats( [
 gap> Length( MTX.BasisModuleHomomorphisms( M, M2 ) );
 4
 
+#Test for MTX.FieldGenCenMat
+gap> newgens := [ [ [ 0*Z(5), Z(5) ], [ Z(5)^2, 0*Z(5) ] ] ];;
+gap> newm := GModuleByMats(newgens,GF(5));;
+gap> MTX.FieldGenCentMat(newm);;
+
 #
 gap> STOP_TEST("meataxe.tst");
