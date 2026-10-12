@@ -130,7 +130,11 @@ BindGlobal("SMTX_NullspaceEqns",function(e)
 local mat, n, one, zerovec, i, k, nullspace, row;
 
   # HACK: convert MutableBasis into the "old" format expected by this code
-  e.mat := ShallowCopy(e.mb!.basisVectors);
+  if IsBound( e.mb!.basisVectors ) then
+    e.mat:= ShallowCopy( e.mb!.basisVectors );
+  else
+    e.mat:= List( BasisVectors( e.mb ), ShallowCopy );
+  fi;
   e.pivots := List(e.mat, PositionNonZero);
   SortParallel(e.pivots, e.mat);
 
