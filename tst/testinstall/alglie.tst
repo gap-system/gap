@@ -1,4 +1,4 @@
-#@local L,T,U,g,so3,b2,h3,dec,F
+#@local L,T,U,g,so3,b2,h3,dec,F,R,Fam,a,b,ma,mb,descr
 gap> START_TEST("alglie.tst");
 
 # universal enveloping algebra
@@ -93,6 +93,22 @@ gap> L:= LieAlgebraByStructureConstants( Rationals,
 >                                        EmptySCTable( 0, 0, "antisymmetric" ) );;
 gap> List( DirectSumDecomposition( L ), Dimension );
 [ 0 ]
+
+# NormalizedElementOfMagmaRingModuloRelations for free Lie algebras
+# returns a description of the element, not the element
+gap> R:= FreeLieAlgebra( Rationals, 2 );;
+gap> Fam:= ElementsFamily( FamilyObj( R ) );;
+gap> a:= R.1;;  b:= R.2;;
+gap> ma:= CoefficientsAndMagmaElements( a )[1];;
+gap> mb:= CoefficientsAndMagmaElements( b )[1];;
+gap> descr:= [ 0, CoefficientsAndMagmaElements( a + a*b ) ];;
+gap> NormalizedElementOfMagmaRingModuloRelations( Fam, descr ) = descr;
+true
+gap> NormalizedElementOfMagmaRingModuloRelations( Fam, [ 0, [ mb*ma, 1 ] ] )
+>    = [ 0, CoefficientsAndMagmaElements( b*a ) ];
+true
+gap> NormalizedElementOfMagmaRingModuloRelations( Fam, [ 0, [ ma*ma, 1 ] ] );
+[ 0, [  ] ]
 
 #
 gap> STOP_TEST("alglie.tst");
