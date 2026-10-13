@@ -501,12 +501,12 @@ local schreiertree, cosetrepresentative, flag, schtree, stab, k, p, j,
     flag:= false;
   else
     j:=orbits[k][1];
-    cosetrep:=cosetrepresentative(schtree,1,j);
+    cosetrep:=cosetrepresentative(schtree,pt1,j);
     cosetrep:=cosetrep^(-1);
     neworb:=List(orbits[k],x->x^cosetrep);
     int:=Intersection(orbits[k],neworb);
     Add(int,orbits[k][1]);
-    Add(int,1);
+    Add(int,pt1);
     if Length(int) <> n then
         flag:=false;
     else
