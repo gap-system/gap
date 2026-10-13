@@ -696,7 +696,8 @@ InstallMethod( IrrConlon, [ "IsGroup" ],
 function( G )
   local pcgs, clreps, ct, irr, tr, Cs, normal, N, hom, Cab, abgens,
         ind, coreps, evals, xg, K, sz, h, qu, genqu, multi, mods,
-        ch, c, ms, vals, cval, k, C, x, g, t, i, j, r, tm, new;
+        ch, c, ms, vals, cval, k, C, x, g, t, i, j, r, tm, new, known, min,
+        pos;
   pcgs := Pcgs(G);
   # return no characters if G is not solvable
   if pcgs = fail then
@@ -712,6 +713,8 @@ function( G )
     SetTestMonomial( ch, tm );
   od;
   tm := rec( isMonomial := true, comment := "induced from given subgroup" );
+  # the smallest values list of each Galois orbit found so far
+  known := [];
 
   # we now only need the triples for proper subgroups
   tr := Filtered( CoveringTriplesCharacters( G, One( G ) ), a-> a[1] <> G );
@@ -806,7 +809,15 @@ function( G )
             od;
           fi;
         od;
-        new := List( vals, l-> Character( ct, l ) );
+        # The characters from one triple form an orbit under Galois
+        # conjugation, and several triples can yield the same orbit.
+        min := Minimum( vals );
+        pos := PositionSorted( known, min );
+        if pos <= Length( known ) and known[pos] = min then
+          continue;
+        fi;
+        Add( known, min, pos );
+        new := List( DuplicateFreeList( vals ), l-> Character( ct, l ) );
         for ch in new do
           SetTestMonomial( ch, tm );
         od;

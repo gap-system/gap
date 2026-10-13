@@ -97,5 +97,21 @@ true
 gap> CharacterDegrees( tbl mod 3 ) = [ [ 1, 2 ], [ 4, 2 ], [ 6, 1 ] ];
 true
 
+## 'IrrConlon' returns no character twice
+gap> for G in [ SymmetricGroup( 3 ), DihedralGroup( 8 ),
+>               DihedralGroup( 10 ) ] do
+>      Print( Length( IrrConlon( G ) ) = NrConjugacyClasses( G ), "\n" );
+>    od;
+true
+true
+true
+gap> IsDuplicateFreeList( IrrConlon( SymmetricGroup( 4 ) ) );
+true
+gap> G:= DihedralGroup( 8 );;  IsSupersolvableGroup( G );;  IrrConlon( G );;
+gap> Length( Irr( G ) );
+5
+gap> InfoText( CharacterTable( G ) );
+"origin: Conlon's Algorithm"
+
 ##
 gap> STOP_TEST("ctblsolv.tst");
