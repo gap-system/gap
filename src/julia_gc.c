@@ -237,12 +237,26 @@ static void MarkAllSubBagsDefault(Bag bag, void * ref)
     MarkArrayOfBags(CONST_PTR_BAG(bag), SIZE_BAG(bag) / sizeof(Bag), ref);
 }
 
+// Queue `obj` for marking and return whether it is young. Mark functions
+// count the young objects a bag references, so that an old bag stays in
+// the remembered set. The return value of jl_gc_mark_queue_obj is of no
+// use for this: since Julia 1.10 it tells whether the call set the mark
+// bit, which it does not if `obj` was marked before, be it by another GC
+// thread.
+static inline int MarkQueueObj(jl_ptls_t ptls, void * obj)
+{
+    // 2 is GC_OLD
+    int young = !(jl_astaggedvalue(obj)->bits.gc & 2);
+    jl_gc_mark_queue_obj(ptls, (jl_value_t *)obj);
+    return young;
+}
+
 static inline int JMarkTyped(jl_ptls_t ptls, void * obj, jl_datatype_t * ty)
 {
     // only traverse objects internally used by GAP
     if (!jl_typeis(obj, ty))
         return 0;
-    return jl_gc_mark_queue_obj(ptls, (jl_value_t *)obj);
+    return MarkQueueObj(ptls, obj);
 }
 
 // Check that `obj` is still allocated and not on a free list already,
@@ -263,13 +277,13 @@ static inline int ValidTypeOfMarkedObj(void * obj)
     return jl_typeis(ty, jl_datatype_type);
 }
 
-static inline int JMark(jl_ptls_t ptls, void * obj)
+static inline void JMark(jl_ptls_t ptls, void * obj)
 {
 #ifdef VALIDATE_MARKING
     if (!ValidTypeOfMarkedObj(obj))
         abort();
 #endif
-    return jl_gc_mark_queue_obj(ptls, (jl_value_t *)obj);
+    jl_gc_mark_queue_obj(ptls, (jl_value_t *)obj);
 }
 
 // helper called directly by GAP.jl / JuliaInterface
@@ -279,7 +293,7 @@ void MarkJuliaObjSafe(void * obj, void * ref)
         return;
     if (!ValidTypeOfMarkedObj(obj))
         return;
-    if (jl_gc_mark_queue_obj(((MarkData *)ref)->ptls, (jl_value_t *)obj))
+    if (MarkQueueObj(((MarkData *)ref)->ptls, obj))
         ((MarkData *)ref)->youngRef++;
 }
 
@@ -288,7 +302,11 @@ void MarkJuliaObj(void * obj, void * ref)
 {
     if (!obj)
         return;
-    if (JMark(((MarkData *)ref)->ptls, obj))
+#ifdef VALIDATE_MARKING
+    if (!ValidTypeOfMarkedObj(obj))
+        abort();
+#endif
+    if (MarkQueueObj(((MarkData *)ref)->ptls, obj))
         ((MarkData *)ref)->youngRef++;
 }
 
@@ -642,7 +660,17 @@ static uintptr_t MPtrMarkFunc(jl_ptls_t ptls, jl_value_t * obj)
     void * ty = jl_typeof(header);
     if (ty != DatatypeSmallBag && ty != DatatypeLargeBag)
         return 0;
-    if (JMark(ptls, header))
+    // The tag alone does not prove that a small bag is still allocated:
+    // Julia leaves the cells of a page untouched when it frees the page as
+    // a whole.
+    if (ty == DatatypeSmallBag &&
+        jl_gc_internal_obj_base_ptr(header) != header)
+        return 0;
+#ifdef VALIDATE_MARKING
+    if (!ValidTypeOfMarkedObj(header))
+        abort();
+#endif
+    if (MarkQueueObj(ptls, header))
         return 1;
     return 0;
 }
