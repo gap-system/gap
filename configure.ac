@@ -975,8 +975,6 @@ dnl
 dnl Detect host specific setting
 dnl
 
-GP_C_LONG_ALIGN
-
 case "$host_cpu" in
   sparc* )
     AC_DEFINE([SYS_IS_SPARC], [1], [define as 1 on SPARC architecture to flush register windows])

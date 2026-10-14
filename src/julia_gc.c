@@ -428,14 +428,14 @@ static void FindLiveRangeReverse(PtrArray * arr, void * start, void * end)
         }
     }
     char * p = (char *)(align_ptr(start));
-    char * q = (char *)end - sizeof(void *);
+    char * q = (char *)align_ptr((char *)end - sizeof(void *));
     while (!lt_ptr(q, p)) {
         void * addr = *(void **)q;
         if (addr && jl_gc_internal_obj_base_ptr(addr) == addr &&
             jl_typeis(addr, DatatypeGapObj)) {
             PtrArrayAdd(arr, addr);
         }
-        q -= C_STACK_ALIGN;
+        q -= sizeof(void *);
     }
 }
 
@@ -493,8 +493,8 @@ static NOINLINE void TryMarkRange(jl_ptls_t ptls, void * start, void * end)
         SWAP(void *, start, end);
     }
     char * p = (char *)align_ptr(start);
-    char * q = (char *)end - sizeof(void *) + C_STACK_ALIGN;
-    while (lt_ptr(p, q)) {
+    char * q = (char *)end - sizeof(void *);
+    while (!lt_ptr(q, p)) {
         void * addr = *(void **)p;
         if (addr) {
             TryMark(ptls, addr);
@@ -505,7 +505,7 @@ static NOINLINE void TryMarkRange(jl_ptls_t ptls, void * start, void * end)
             }
 #endif
         }
-        p += C_STACK_ALIGN;
+        p += sizeof(void *);
     }
 }
 

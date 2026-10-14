@@ -1472,7 +1472,7 @@ void InitializeGap(void * stackBottom, int argc, const char * argv[], BOOL handl
     InitSystem(argc, argv, handleSignals);
 
     // Initialise memory  -- have to do this here to make sure we are at top of C stack
-    Bag * alignedStackBottom = (Bag *)(((UInt)stackBottom / C_STACK_ALIGN) * C_STACK_ALIGN);
+    Bag * alignedStackBottom = (Bag *)(((UInt)stackBottom / sizeof(Bag)) * sizeof(Bag));
 #if defined(USE_GASMAN)
     InitBags(SyStorMin, alignedStackBottom);
 #else
