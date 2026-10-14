@@ -1210,7 +1210,7 @@ end );
 
 #############################################################################
 ##
-#A Embedding
+#M  Embedding( <D>, <i> )
 ##
 InstallMethod( Embedding, "ring direct sum and integer",
     [ IsSubringSCRing and HasDirectSumInfo, IsPosInt ],
