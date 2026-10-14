@@ -67,4 +67,20 @@ gap> DirectSumInfo( D );
 rec( embeddings := [  ], first := [ 0, 2, 3, 5, 6, 9, 11 ], 
   projections := [  ], 
   rings := [ (Integers mod 4), GF(5), (Integers mod 6), R7, R8, R9 ] )
+gap> #
+gap> # subrings whose generators are not the standard generators
+gap> R3 := SmallRing( 3, 2 );;
+gap> T3 := Subring( R3, [ -GeneratorsOfRing( R3 )[1] ] );;
+gap> D3 := DirectSum( T3, T3 );;
+gap> e := Embedding( D3, 2 );;  p := Projection( D3, 2 );;
+gap> ForAll( T3, r -> ( r ^ e ) ^ p = r );
+true
+gap> ForAll( T3, r -> IsZero( ( r ^ e ) ^ Projection( D3, 1 ) ) );
+true
+gap> S4 := SmallRing( 4, 1 );;  g := GeneratorsOfRing( S4 )[1];;
+gap> T4 := Subring( S4, [ 2*g, g ] );;
+gap> D4 := DirectSum( T4, R3 );;
+gap> e := Embedding( D4, 1 );;  p := Projection( D4, 1 );;
+gap> ForAll( T4, r -> ( r ^ e ) ^ p = r );
+true
 gap> STOP_TEST("ring-dsum.tst");
