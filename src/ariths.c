@@ -42,9 +42,9 @@ ArithMethod1 ZeroSameMutFuncs[LAST_REAL_TNUM + 1];
 **
 *F  ZeroSameMutObject( <obj> ) . . . . . . . . . . . . . . . . . call methsel
 */
-static Obj ZeroSameMutabilityOp;
+static Obj ZeroSameMutabilityOp GAP_GC_GLOBALLY_ROOTED;
 
-static Obj ZeroSameMutObject(Obj obj)
+static Obj ZeroSameMutObject(Obj obj) GAP_GC_CANSAFEPOINT
 {
     Obj val;
     val = DoOperation1Args(ZeroSameMutabilityOp, obj);
@@ -57,7 +57,7 @@ static Obj ZeroSameMutObject(Obj obj)
 **
 *F  VerboseZeroSameMutObject( <obj> ) . . . . . . . . .  call verbose methsel
 */
-static Obj VerboseZeroSameMutObject(Obj obj)
+static Obj VerboseZeroSameMutObject(Obj obj) GAP_GC_CANSAFEPOINT
 {
     Obj val;
     val = DoVerboseOperation1Args(ZeroSameMutabilityOp, obj);
@@ -102,9 +102,9 @@ ArithMethod1 ZeroMutFuncs [LAST_REAL_TNUM+1];
 **
 *F  ZeroMutObject( <obj> ) . . . . . . . . . . . . . . . . . . . call methsel
 */
-static Obj ZeroOp;
+static Obj ZeroOp GAP_GC_GLOBALLY_ROOTED;
 
-static Obj ZeroMutObject(Obj obj)
+static Obj ZeroMutObject(Obj obj) GAP_GC_CANSAFEPOINT
 
 {
   Obj val;
@@ -118,7 +118,7 @@ static Obj ZeroMutObject(Obj obj)
 **
 *F  VerboseZeroMutObject( <obj> ) . . . . . . . . . . .  call verbose methsel
 */
-static Obj VerboseZeroMutObject(Obj obj)
+static Obj VerboseZeroMutObject(Obj obj) GAP_GC_CANSAFEPOINT
 
 {
   Obj val;
@@ -169,9 +169,9 @@ ArithMethod1 AInvMutFuncs[ LAST_REAL_TNUM + 1];
 **
 *F  AInvObj( <obj> )  . . . . . . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj AdditiveInverseSameMutabilityOp;
+static Obj AdditiveInverseSameMutabilityOp GAP_GC_GLOBALLY_ROOTED;
 
-static Obj AInvSameMutObject(Obj obj)
+static Obj AInvSameMutObject(Obj obj) GAP_GC_CANSAFEPOINT
 {
     Obj val;
     val = DoOperation1Args(AdditiveInverseSameMutabilityOp, obj);
@@ -184,7 +184,7 @@ static Obj AInvSameMutObject(Obj obj)
 **
 *F  VerboseAInvSameMutObject( <obj> ) . . . . . . . . .  call verbose methsel
 */
-static Obj VerboseAInvSameMutObject(Obj obj)
+static Obj VerboseAInvSameMutObject(Obj obj) GAP_GC_CANSAFEPOINT
 {
     Obj val;
     val = DoVerboseOperation1Args(AdditiveInverseSameMutabilityOp, obj);
@@ -222,9 +222,9 @@ static Obj FuncAINV_SAMEMUT(Obj self, Obj obj)
 **
 *F  AInvMutObject( <obj> ) . . . . . . . . . . . . . . . . . . . call methsel
 */
-static Obj AdditiveInverseOp;
+static Obj AdditiveInverseOp GAP_GC_GLOBALLY_ROOTED;
 
-static Obj AInvMutObject(Obj obj)
+static Obj AInvMutObject(Obj obj) GAP_GC_CANSAFEPOINT
 {
   Obj val;
   val = DoOperation1Args( AdditiveInverseOp, obj );
@@ -237,7 +237,7 @@ static Obj AInvMutObject(Obj obj)
 **
 *F  VerboseAInvMutObject( <obj> )  . . . . . . . . . . . call verbose methsel
 */
-static Obj VerboseAInvMutObject(Obj obj)
+static Obj VerboseAInvMutObject(Obj obj) GAP_GC_CANSAFEPOINT
 {
   Obj val;
   val = DoVerboseOperation1Args( AdditiveInverseOp, obj );
@@ -283,9 +283,9 @@ ArithMethod1 OneFuncs [LAST_REAL_TNUM+1];
 **
 *F  OneObject( <obj> )  . . . . . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj OneOp;
+static Obj OneOp GAP_GC_GLOBALLY_ROOTED;
 
-static Obj OneObject(Obj obj)
+static Obj OneObject(Obj obj) GAP_GC_CANSAFEPOINT
 {
   Obj val;
   val = DoOperation1Args( OneOp, obj );
@@ -298,7 +298,7 @@ static Obj OneObject(Obj obj)
 **
 *F  VerboseOneObject( <obj> ) . . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj VerboseOneObject(Obj obj)
+static Obj VerboseOneObject(Obj obj) GAP_GC_CANSAFEPOINT
 {
   Obj val;
   val = DoVerboseOperation1Args( OneOp, obj );
@@ -343,9 +343,9 @@ ArithMethod1 OneSameMut[LAST_REAL_TNUM + 1];
 **
 *F  OneSameMutObject( <obj> ) . . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj OneSameMutabilityOp;
+static Obj OneSameMutabilityOp GAP_GC_GLOBALLY_ROOTED;
 
-static Obj OneSameMutObject(Obj obj)
+static Obj OneSameMutObject(Obj obj) GAP_GC_CANSAFEPOINT
 {
   Obj val;
   val = DoOperation1Args(OneSameMutabilityOp, obj);
@@ -358,7 +358,7 @@ static Obj OneSameMutObject(Obj obj)
 **
 *F  VerboseOneSameMutObject( <obj> ) . . . . . . . . . . . . . . call methsel
 */
-static Obj VerboseOneSameMutObject(Obj obj)
+static Obj VerboseOneSameMutObject(Obj obj) GAP_GC_CANSAFEPOINT
 {
   Obj val;
   val = DoVerboseOperation1Args(OneSameMutabilityOp, obj);
@@ -404,9 +404,9 @@ ArithMethod1 InvFuncs [LAST_REAL_TNUM+1];
 **
 *F  InvObject( <obj> )  . . . . . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj InvOp;
+static Obj InvOp GAP_GC_GLOBALLY_ROOTED;
 
-static Obj InvObject(Obj obj)
+static Obj InvObject(Obj obj) GAP_GC_CANSAFEPOINT
 {
   Obj val;
   val = DoOperation1Args( InvOp, obj );
@@ -419,7 +419,7 @@ static Obj InvObject(Obj obj)
 **
 *F  VerboseInvObject( <obj> ) . . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj VerboseInvObject(Obj obj)
+static Obj VerboseInvObject(Obj obj) GAP_GC_CANSAFEPOINT
 {
   Obj val;
   val = DoVerboseOperation1Args( InvOp, obj );
@@ -465,9 +465,9 @@ ArithMethod1 InvSameMutFuncs[LAST_REAL_TNUM + 1];
 **
 *F  InvSameMutObject( <obj> ) . . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj InverseSameMutabilityOp;
+static Obj InverseSameMutabilityOp GAP_GC_GLOBALLY_ROOTED;
 
-static Obj InvSameMutObject(Obj obj)
+static Obj InvSameMutObject(Obj obj) GAP_GC_CANSAFEPOINT
 {
   Obj val;
   val = DoOperation1Args(InverseSameMutabilityOp, obj);
@@ -480,7 +480,7 @@ static Obj InvSameMutObject(Obj obj)
 **
 *F  VerboseInvSameMutObject( <obj> ) . . . . . . . . . . . . . . call methsel
 */
-static Obj VerboseInvSameMutObject(Obj obj)
+static Obj VerboseInvSameMutObject(Obj obj) GAP_GC_CANSAFEPOINT
 {
   Obj val;
   val = DoVerboseOperation1Args(InverseSameMutabilityOp, obj);
@@ -541,7 +541,7 @@ static Int EqNot(Obj opL, Obj opR)
 **
 *F  EqObject( <opL>, <opR> )  . . . . . . . . . . . . . . . . .  call methsel
 */
-Obj EqOper;
+Obj EqOper GAP_GC_GLOBALLY_ROOTED;
 
 Int EqObject (
     Obj                 opL,
@@ -555,7 +555,7 @@ Int EqObject (
 **
 *F  VerboseEqObject( <opL>, <opR> ) . . . . . . . . . . . . . .  call methsel
 */
-static Int VerboseEqObject(Obj opL, Obj opR)
+static Int VerboseEqObject(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     return (DoVerboseOperation2Args( EqOper, opL, opR ) == True);
 }
@@ -602,9 +602,9 @@ CompaMethod LtFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 **
 *F  LtObject( <opL>, <opR> )  . . . . . . . . . . . . . . . . .  call methsel
 */
-Obj LtOper;
+Obj LtOper GAP_GC_GLOBALLY_ROOTED;
 
-static Int LtObject(Obj opL, Obj opR)
+static Int LtObject(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     return (DoOperation2Args( LtOper, opL, opR ) == True);
 }
@@ -614,7 +614,7 @@ static Int LtObject(Obj opL, Obj opR)
 **
 *F  VerboseLtObject( <opL>, <opR> ) . . . . . . . . . . . . . .  call methsel
 */
-static Int VerboseLtObject(Obj opL, Obj opR)
+static Int VerboseLtObject(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     return (DoVerboseOperation2Args( LtOper, opL, opR ) == True);
 }
@@ -661,7 +661,7 @@ CompaMethod InFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 **
 *F  InUndefined( <self>, <opL>, <opR> ) . . . . . . . . . . . . . cannot 'in'
 */
-static Int InUndefined(Obj opL, Obj opR)
+static Int InUndefined(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     ErrorMayQuit("operations: IN of %s and %s is not defined",
                  (Int)TNAM_OBJ(opL), (Int)TNAM_OBJ(opR));
@@ -672,9 +672,9 @@ static Int InUndefined(Obj opL, Obj opR)
 **
 *F  InObject( <opL>, <opR> )  . . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj InOper;
+static Obj InOper GAP_GC_GLOBALLY_ROOTED;
 
-static Int InObject(Obj opL, Obj opR)
+static Int InObject(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     return (DoOperation2Args( InOper, opL, opR ) == True);
 }
@@ -684,7 +684,7 @@ static Int InObject(Obj opL, Obj opR)
 **
 *F  VerboseInObject( <opL>, <opR> ) . . . . . . . . . . . . . .  call methsel
 */
-static Int VerboseInObject(Obj opL, Obj opR)
+static Int VerboseInObject(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
     return (DoVerboseOperation2Args( InOper, opL, opR ) == True);
 }
@@ -736,9 +736,9 @@ ArithMethod2    SumFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 **
 *F  SumObject( <opL>, <opR> ) . . . . . . . . . . . . . . . . .  call methsel
 */
-Obj SumOper;
+Obj SumOper GAP_GC_GLOBALLY_ROOTED;
 
-static Obj SumObject(Obj opL, Obj opR)
+static Obj SumObject(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
   Obj val;
   val = DoOperation2Args( SumOper, opL, opR );
@@ -751,7 +751,7 @@ static Obj SumObject(Obj opL, Obj opR)
 **
 *F  VerboseSumObject( <opL>, <opR> )  . . . . . . . . . . . . .  call methsel
 */
-static Obj VerboseSumObject(Obj opL, Obj opR)
+static Obj VerboseSumObject(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
   Obj val;
   val = DoVerboseOperation2Args( SumOper, opL, opR );
@@ -803,10 +803,13 @@ ArithMethod2 DiffFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 */
 static Obj DiffDefault(Obj opL, Obj opR)
 {
-    Obj                 tmp;
+    Obj                 tmp = 0;
 
+    GAP_GC_PUSH1(&tmp);
     tmp = AINV_SAMEMUT(opR);
-    return SUM( opL, tmp );
+    tmp = SUM( opL, tmp );
+    GAP_GC_POP();
+    return tmp;
 }
 
 
@@ -814,9 +817,9 @@ static Obj DiffDefault(Obj opL, Obj opR)
 **
 *F  DiffObject( <opL>, <opR> )  . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj DiffOper;
+static Obj DiffOper GAP_GC_GLOBALLY_ROOTED;
 
-static Obj DiffObject(Obj opL, Obj opR)
+static Obj DiffObject(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
   Obj val;
   val = DoOperation2Args( DiffOper, opL, opR );
@@ -829,7 +832,7 @@ static Obj DiffObject(Obj opL, Obj opR)
 **
 *F  VerboseDiffObject( <opL>, <opR> ) . . . . . . . . . . . . .  call methsel
 */
-static Obj VerboseDiffObject(Obj opL, Obj opR)
+static Obj VerboseDiffObject(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
   Obj val;
   val = DoVerboseOperation2Args( DiffOper, opL, opR );
@@ -889,9 +892,9 @@ ArithMethod2    ProdFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 **
 *F  ProdObject( <opL>, <opR> )  . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj ProdOper;
+static Obj ProdOper GAP_GC_GLOBALLY_ROOTED;
 
-static Obj ProdObject(Obj opL, Obj opR)
+static Obj ProdObject(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
   Obj val;
   val = DoOperation2Args( ProdOper, opL, opR );
@@ -904,7 +907,7 @@ static Obj ProdObject(Obj opL, Obj opR)
 **
 *F  VerboseProdObject( <opL>, <opR> ) . . . . . . . . . . . . .  call methsel
 */
-static Obj VerboseProdObject(Obj opL, Obj opR)
+static Obj VerboseProdObject(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
   Obj val;
   val = DoVerboseOperation2Args( ProdOper, opL, opR );
@@ -956,9 +959,12 @@ ArithMethod2 QuoFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 */
 static Obj QuoDefault(Obj opL, Obj opR)
 {
-    Obj                 tmp;
+    Obj                 tmp = 0;
+    GAP_GC_PUSH1(&tmp);
     tmp = INV_SAMEMUT(opR);
-    return PROD( opL, tmp );
+    tmp = PROD( opL, tmp );
+    GAP_GC_POP();
+    return tmp;
 }
 
 
@@ -966,9 +972,9 @@ static Obj QuoDefault(Obj opL, Obj opR)
 **
 *F  QuoObject( <opL>, <opR> ) . . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj QuoOper;
+static Obj QuoOper GAP_GC_GLOBALLY_ROOTED;
 
-static Obj QuoObject(Obj opL, Obj opR)
+static Obj QuoObject(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
   Obj val;
   val = DoOperation2Args( QuoOper, opL, opR );
@@ -981,7 +987,7 @@ static Obj QuoObject(Obj opL, Obj opR)
 **
 *F  VerboseQuoObject( <opL>, <opR> )  . . . . . . . . . . . . .  call methsel
 */
-static Obj VerboseQuoObject(Obj opL, Obj opR)
+static Obj VerboseQuoObject(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
   Obj val;
   val = DoVerboseOperation2Args( QuoOper, opL, opR );
@@ -1043,9 +1049,12 @@ ArithMethod2 LQuoFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 */
 static Obj LQuoDefault(Obj opL, Obj opR)
 {
-    Obj                 tmp;
+    Obj                 tmp = 0;
+    GAP_GC_PUSH1(&tmp);
     tmp = INV_SAMEMUT(opL);
-    return PROD( tmp, opR );
+    tmp = PROD( tmp, opR );
+    GAP_GC_POP();
+    return tmp;
 }
 
 
@@ -1053,9 +1062,9 @@ static Obj LQuoDefault(Obj opL, Obj opR)
 **
 *F  LQuoObject( <opL>, <opR> )  . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj LQuoOper;
+static Obj LQuoOper GAP_GC_GLOBALLY_ROOTED;
 
-static Obj LQuoObject(Obj opL, Obj opR)
+static Obj LQuoObject(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
   Obj val;
   val = DoOperation2Args( LQuoOper, opL, opR );
@@ -1068,7 +1077,7 @@ static Obj LQuoObject(Obj opL, Obj opR)
 **
 *F  VerboseLQuoObject( <opL>, <opR> ) . . . . . . . . . . . . .  call methsel
 */
-static Obj VerboseLQuoObject(Obj opL, Obj opR)
+static Obj VerboseLQuoObject(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
   Obj val;
   val = DoOperation2Args( LQuoOper, opL, opR );
@@ -1130,9 +1139,12 @@ ArithMethod2 PowFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 */
 static Obj PowDefault(Obj opL, Obj opR)
 {
-    Obj                 tmp;
+    Obj                 tmp = 0;
+    GAP_GC_PUSH1(&tmp);
     tmp = LQUO( opR, opL );
-    return PROD( tmp, opR );
+    tmp = PROD( tmp, opR );
+    GAP_GC_POP();
+    return tmp;
 }
 
 
@@ -1140,9 +1152,9 @@ static Obj PowDefault(Obj opL, Obj opR)
 **
 *F  PowObject( <opL>, <opR> ) . . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj PowOper;
+static Obj PowOper GAP_GC_GLOBALLY_ROOTED;
 
-static Obj PowObject(Obj opL, Obj opR)
+static Obj PowObject(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
   Obj val;
   val = DoOperation2Args( PowOper, opL, opR );
@@ -1155,7 +1167,7 @@ static Obj PowObject(Obj opL, Obj opR)
 **
 *F  VerbosePowObject( <opL>, <opR> )  . . . . . . . . . . . . .  call methsel
 */
-static Obj VerbosePowObject(Obj opL, Obj opR)
+static Obj VerbosePowObject(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
 
   Obj val;
@@ -1218,11 +1230,14 @@ ArithMethod2 CommFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 */
 static Obj CommDefault(Obj opL, Obj opR)
 {
-    Obj                 tmp1;
-    Obj                 tmp2;
+    Obj                 tmp1 = 0;
+    Obj                 tmp2 = 0;
+    GAP_GC_PUSH2(&tmp1, &tmp2);
     tmp1 = PROD( opR, opL );
     tmp2 = PROD( opL, opR );
-    return LQUO( tmp1, tmp2 );
+    tmp1 = LQUO( tmp1, tmp2 );
+    GAP_GC_POP();
+    return tmp1;
 }
 
 
@@ -1230,9 +1245,9 @@ static Obj CommDefault(Obj opL, Obj opR)
 **
 *F  CommObject( <opL>, <opR> )  . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj CommOper;
+static Obj CommOper GAP_GC_GLOBALLY_ROOTED;
 
-static Obj CommObject(Obj opL, Obj opR)
+static Obj CommObject(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
   Obj val;
   val = DoOperation2Args( CommOper, opL, opR );
@@ -1245,7 +1260,7 @@ static Obj CommObject(Obj opL, Obj opR)
 **
 *F  VerboseCommObject( <opL>, <opR> ) . . . . . . . . . . . . .  call methsel
 */
-static Obj VerboseCommObject(Obj opL, Obj opR)
+static Obj VerboseCommObject(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
   Obj val;
   val = DoVerboseOperation2Args( CommOper, opL, opR );
@@ -1306,9 +1321,9 @@ ArithMethod2 ModFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 **
 *F  ModObject( <opL>, <opR> ) . . . . . . . . . . . . . . . . .  call methsel
 */
-static Obj ModOper;
+static Obj ModOper GAP_GC_GLOBALLY_ROOTED;
 
-static Obj ModObject(Obj opL, Obj opR)
+static Obj ModObject(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
   Obj val;
   val = DoOperation2Args( ModOper, opL, opR );
@@ -1321,7 +1336,7 @@ static Obj ModObject(Obj opL, Obj opR)
 **
 *F  VerboseModObject( <opL>, <opR> )  . . . . . . . . . . . . .  call methsel
 */
-static Obj VerboseModObject(Obj opL, Obj opR)
+static Obj VerboseModObject(Obj opL, Obj opR) GAP_GC_CANSAFEPOINT
 {
   Obj val;
   val = DoVerboseOperation2Args( ModOper, opL, opR );
@@ -1668,7 +1683,7 @@ static Int InitKernel (
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarOpersFromTable( GVarOpers );

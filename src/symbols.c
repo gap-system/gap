@@ -189,6 +189,7 @@ UInt LookupSymbol(SymbolTable * symtab, const char * name)
     // (copy the name first, to avoid a stale pointer in case of a GC)
     strxcpy(namx, name, sizeof(namx));
     string = MakeImmString(namx);
+    GAP_GC_PUSH1(&string);
 
     // store the id
     GAP_ASSERT(id == 0);
@@ -197,6 +198,7 @@ UInt LookupSymbol(SymbolTable * symtab, const char * name)
 
     // notify about the new entry
     symtab->newSymbolFunc(symtab, INT_INTOBJ(id), string);
+    GAP_GC_POP();
 
     // if the table is too crowded, make a larger one, rehash the names
     if (sizeTable < 3 * INT_INTOBJ(id) / 2) {

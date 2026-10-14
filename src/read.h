@@ -37,7 +37,7 @@
 ExecStatus ReadEvalCommand(Obj            context,
                            TypInputFile * input,
                            Obj *          evalResult,
-                           BOOL *         dualSemicolon);
+                           BOOL *         dualSemicolon) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -50,7 +50,8 @@ ExecStatus ReadEvalCommand(Obj            context,
 **  It does not expect the first symbol of its input already read and reads
 **  to the end of the input (unless an error happens).
 */
-ExecStatus ReadEvalFile(TypInputFile * input, Obj * evalResult);
+ExecStatus ReadEvalFile(TypInputFile * input, Obj * evalResult)
+    GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

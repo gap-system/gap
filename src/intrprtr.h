@@ -22,6 +22,7 @@
 #include "code.h"
 #include "common.h"
 #include "gap.h"
+#include <stddef.h>    // for offsetof
 
 
 struct IntrState {
@@ -60,6 +61,14 @@ struct IntrState {
     Obj StackObj;
 };
 
+// See CODE_STATE_ROOTS in code.h. Note 'cs' is declared as CodeState[1], so
+// it is already a pointer here.
+#define INTR_STATE_ROOTS(p)    CODE_STATE_ROOTS((p)->cs), &(p)->StackObj
+
+GAP_STATIC_ASSERT(offsetof(struct IntrState, StackObj) + sizeof(Obj) ==
+                      sizeof(struct IntrState),
+                  "IntrState grew; check INTR_STATE_ROOTS");
+
 typedef struct IntrState IntrState;
 
 
@@ -83,7 +92,7 @@ typedef struct IntrState IntrState;
 **  quit-statement was interpreted. If 'IntrEnd' returns 'STATUS_QQUIT', then
 **  a QUIT-statement was interpreted.
 */
-void IntrBegin(IntrState * intr);
+void IntrBegin(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
 ExecStatus IntrEnd(IntrState * intr, BOOL error, Obj * result);
 
@@ -115,7 +124,8 @@ void IntrAbortCoding(IntrState * intr);
 */
 void IntrFuncCallBegin(IntrState * intr);
 
-void IntrFuncCallEnd(IntrState * intr, UInt funccall, UInt options, UInt nr);
+void IntrFuncCallEnd(IntrState * intr, UInt funccall, UInt options, UInt nr)
+    GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
@@ -129,17 +139,18 @@ void IntrFuncCallEnd(IntrState * intr, UInt funccall, UInt options, UInt nr);
 **  The net effect of all of these is to leave a record object on the stack
 **  where IntrFuncCallEnd can use it
 */
-void IntrFuncCallOptionsBegin(IntrState * intr);
+void IntrFuncCallOptionsBegin(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrFuncCallOptionsBeginElmName(IntrState * intr, UInt rnam);
+void IntrFuncCallOptionsBeginElmName(IntrState * intr, UInt rnam)
+    GAP_GC_CANSAFEPOINT;
 
-void IntrFuncCallOptionsBeginElmExpr(IntrState * intr);
+void IntrFuncCallOptionsBeginElmExpr(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrFuncCallOptionsEndElm(IntrState * intr);
+void IntrFuncCallOptionsEndElm(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrFuncCallOptionsEndElmEmpty(IntrState * intr);
+void IntrFuncCallOptionsEndElmEmpty(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrFuncCallOptionsEnd(IntrState * intr, UInt nr);
+void IntrFuncCallOptionsEnd(IntrState * intr, UInt nr) GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
@@ -157,13 +168,15 @@ void IntrFuncCallOptionsEnd(IntrState * intr, UInt nr);
 **  is the number of statements in the body of the function.
 */
 void IntrFuncExprBegin(
-    IntrState * intr, Int narg, Int nloc, Obj nams, Int startLine);
+    IntrState * intr, Int narg, Int nloc, Obj nams, Int startLine)
+    GAP_GC_CANSAFEPOINT;
 
 #ifdef HPCGAP
 void IntrFuncExprSetLocks(IntrState * intr, Obj locks);
 #endif
 
-void IntrFuncExprEnd(IntrState * intr, UInt nr, Int endLine);
+void IntrFuncExprEnd(IntrState * intr, UInt nr, Int endLine)
+    GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
@@ -201,13 +214,13 @@ void IntrIfBegin(IntrState * intr);
 
 void IntrIfElif(IntrState * intr);
 
-void IntrIfElse(IntrState * intr);
+void IntrIfElse(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrIfBeginBody(IntrState * intr);
+void IntrIfBeginBody(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-Int IntrIfEndBody(IntrState * intr, UInt nr);
+Int IntrIfEndBody(IntrState * intr, UInt nr) GAP_GC_CANSAFEPOINT;
 
-void IntrIfEnd(IntrState * intr, UInt nr);
+void IntrIfEnd(IntrState * intr, UInt nr) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -241,15 +254,15 @@ void IntrIfEnd(IntrState * intr, UInt nr);
 **  Since loops cannot be interpreted immediately,  the interpreter calls the
 **  coder  to create a  procedure (with no arguments) and  calls that.
 */
-void IntrForBegin(IntrState * intr, Obj stackNams);
+void IntrForBegin(IntrState * intr, Obj stackNams) GAP_GC_CANSAFEPOINT;
 
 void IntrForIn(IntrState * intr);
 
 void IntrForBeginBody(IntrState * intr);
 
-void IntrForEndBody(IntrState * intr, UInt nr);
+void IntrForEndBody(IntrState * intr, UInt nr) GAP_GC_CANSAFEPOINT;
 
-void IntrForEnd(IntrState * intr, Obj stackNams);
+void IntrForEnd(IntrState * intr, Obj stackNams) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -278,13 +291,13 @@ void IntrForEnd(IntrState * intr, Obj stackNams);
 **  Since loops cannot be interpreted immediately,  the interpreter calls the
 **  coder  to create a  procedure (with no arguments) and  calls that.
 */
-void IntrWhileBegin(IntrState * intr, Obj stackNams);
+void IntrWhileBegin(IntrState * intr, Obj stackNams) GAP_GC_CANSAFEPOINT;
 
 void IntrWhileBeginBody(IntrState * intr);
 
-void IntrWhileEndBody(IntrState * intr, UInt nr);
+void IntrWhileEndBody(IntrState * intr, UInt nr) GAP_GC_CANSAFEPOINT;
 
-void IntrWhileEnd(IntrState * intr, Obj stackNams);
+void IntrWhileEnd(IntrState * intr, Obj stackNams) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -295,7 +308,7 @@ void IntrWhileEnd(IntrState * intr, Obj stackNams);
 **  These functions interpret the beginning and end of the readonly/readwrite
 **  qualified expressions of an atomic statement.
 */
-void IntrQualifiedExprBegin(IntrState * intr, UInt qual);
+void IntrQualifiedExprBegin(IntrState * intr, UInt qual) GAP_GC_CANSAFEPOINT;
 
 void IntrQualifiedExprEnd(IntrState * intr);
 
@@ -328,13 +341,13 @@ void IntrQualifiedExprEnd(IntrState * intr);
 **  they are simply placeholders.
 */
 
-void IntrAtomicBegin(IntrState * intr, Obj stackNams);
+void IntrAtomicBegin(IntrState * intr, Obj stackNams) GAP_GC_CANSAFEPOINT;
 
-void IntrAtomicBeginBody(IntrState * intr, UInt nrexprs);
+void IntrAtomicBeginBody(IntrState * intr, UInt nrexprs) GAP_GC_CANSAFEPOINT;
 
-void IntrAtomicEndBody(IntrState * intr, Int nrstats);
+void IntrAtomicEndBody(IntrState * intr, Int nrstats) GAP_GC_CANSAFEPOINT;
 
-void IntrAtomicEnd(IntrState * intr, Obj stackNams);
+void IntrAtomicEnd(IntrState * intr, Obj stackNams) GAP_GC_CANSAFEPOINT;
 
 #ifdef HPCGAP
 // TODO: move these constants to a more appropriate location
@@ -370,13 +383,13 @@ enum {
 **  Since loops cannot be interpreted immediately,  the interpreter calls the
 **  coder  to create a  procedure (with no arguments) and  calls that.
 */
-void IntrRepeatBegin(IntrState * intr, Obj stackNams);
+void IntrRepeatBegin(IntrState * intr, Obj stackNams) GAP_GC_CANSAFEPOINT;
 
 void IntrRepeatBeginBody(IntrState * intr);
 
-void IntrRepeatEndBody(IntrState * intr, UInt nr);
+void IntrRepeatEndBody(IntrState * intr, UInt nr) GAP_GC_CANSAFEPOINT;
 
-void IntrRepeatEnd(IntrState * intr, Obj stackNams);
+void IntrRepeatEnd(IntrState * intr, Obj stackNams) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -389,7 +402,7 @@ void IntrRepeatEnd(IntrState * intr, Obj stackNams);
 **  Break-statements are  always coded (if  they are not ignored), since they
 **  can only appear in loops.
 */
-void IntrBreak(IntrState * intr);
+void IntrBreak(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -400,7 +413,7 @@ void IntrBreak(IntrState * intr);
 **  is  called when  the reader encounters  a  'return  <expr>;', but *after*
 **  reading the expression <expr>.
 */
-void IntrReturnObj(IntrState * intr);
+void IntrReturnObj(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -410,7 +423,7 @@ void IntrReturnObj(IntrState * intr);
 **  'IntrReturnVoid' is the action to interpret  a return-void-statement.  It
 **  is called when the reader encounters a 'return;'.
 */
-void IntrReturnVoid(IntrState * intr);
+void IntrReturnVoid(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -420,7 +433,7 @@ void IntrReturnVoid(IntrState * intr);
 **  'IntrQuit' is the  action to interpret   a quit-statement.  It  is called
 **  when the reader encounters a 'quit;'.
 */
-void IntrQuit(IntrState * intr);
+void IntrQuit(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
@@ -429,7 +442,7 @@ void IntrQuit(IntrState * intr);
 **  'IntrQUIT' is the  action to interpret   a QUIT-statement.  It  is called
 **  when the reader encounters a 'QUIT;'.
 */
-void IntrQUIT(IntrState * intr);
+void IntrQUIT(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -445,9 +458,9 @@ void IntrQUIT(IntrState * intr);
 **  the reader encountered  the  end of  the  expression, i.e., *after*  both
 **  operands are read.
 */
-void IntrOrL(IntrState * intr);
+void IntrOrL(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrOr(IntrState * intr);
+void IntrOr(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -463,9 +476,9 @@ void IntrOr(IntrState * intr);
 **  the reader encountered   the end of   the expression, i.e., *after*  both
 **  operands are read.
 */
-void IntrAndL(IntrState * intr);
+void IntrAndL(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrAnd(IntrState * intr);
+void IntrAnd(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -475,7 +488,7 @@ void IntrAnd(IntrState * intr);
 **  'IntrNot' is the action to interpret a not-expression.  It is called when
 **  the reader encounters a not-expression, *after* the operand is read.
 */
-void IntrNot(IntrState * intr);
+void IntrNot(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -491,17 +504,17 @@ void IntrNot(IntrState * intr);
 **  actions to interpret the respective operator expression.  They are called
 **  by the reader *after* *both* operands are read.
 */
-void IntrEq(IntrState * intr);
+void IntrEq(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrNe(IntrState * intr);
+void IntrNe(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrLt(IntrState * intr);
+void IntrLt(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrGe(IntrState * intr);
+void IntrGe(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrGt(IntrState * intr);
+void IntrGt(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrLe(IntrState * intr);
+void IntrLe(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -511,7 +524,7 @@ void IntrLe(IntrState * intr);
 **  'IntrIn'  is the action  to interpret an  in-expression.  It is called by
 **  the reader *after* *both* operands are read.
 */
-void IntrIn(IntrState * intr);
+void IntrIn(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -528,26 +541,26 @@ void IntrIn(IntrState * intr);
 **  are  the actions to interpret  the  respective operator expression.  They
 **  are called by the reader *after* *both* operands are read.
 */
-void IntrSum(IntrState * intr);
+void IntrSum(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrAInv(IntrState * intr);
+void IntrAInv(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrDiff(IntrState * intr);
+void IntrDiff(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrProd(IntrState * intr);
+void IntrProd(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrQuo(IntrState * intr);
+void IntrQuo(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrMod(IntrState * intr);
+void IntrMod(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrPow(IntrState * intr);
+void IntrPow(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  IntrIntObjExpr(<val>)
 */
-void IntrIntObjExpr(IntrState * intr, Obj val);
+void IntrIntObjExpr(IntrState * intr, Obj val) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -557,7 +570,7 @@ void IntrIntObjExpr(IntrState * intr, Obj val);
 **  'IntrIntExpr' is the action  to  interpret a literal  integer expression.
 **  <str> is the integer as a (null terminated) C character string.
 */
-void IntrIntExpr(IntrState * intr, Obj string, Char * str);
+void IntrIntExpr(IntrState * intr, Obj string, Char * str) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -567,7 +580,8 @@ void IntrIntExpr(IntrState * intr, Obj string, Char * str);
 **  'IntrFloatExpr' is the action  to  interpret a literal  float expression.
 **  <str> is the float as a (null terminated) C character string.
 */
-void IntrFloatExpr(IntrState * intr, Obj string, Char * str);
+void IntrFloatExpr(IntrState * intr, Obj string, Char * str)
+    GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -576,7 +590,7 @@ void IntrFloatExpr(IntrState * intr, Obj string, Char * str);
 **
 **  'IntrTrueExpr' is the action to interpret a literal true expression.
 */
-void IntrTrueExpr(IntrState * intr);
+void IntrTrueExpr(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -585,7 +599,7 @@ void IntrTrueExpr(IntrState * intr);
 **
 **  'IntrFalseExpr' is the action to interpret a literal false expression.
 */
-void IntrFalseExpr(IntrState * intr);
+void IntrFalseExpr(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
@@ -593,9 +607,9 @@ void IntrFalseExpr(IntrState * intr);
 **
 **  'IntrTildeExpr' is the action to interpret a tilde expression.
 */
-void IntrTildeExpr(IntrState * intr);
+void IntrTildeExpr(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrHelp(IntrState * intr, Obj topic);
+void IntrHelp(IntrState * intr, Obj topic) GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
@@ -604,7 +618,7 @@ void IntrHelp(IntrState * intr, Obj topic);
 **  'IntrCharExpr' is the action to interpret a literal character expression.
 **  <chr> is the C character.
 */
-void IntrCharExpr(IntrState * intr, Char chr);
+void IntrCharExpr(IntrState * intr, Char chr) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -612,9 +626,9 @@ void IntrCharExpr(IntrState * intr, Char chr);
 *F  IntrPermCycle(<nr>) . . . . . .  interpret literal permutation expression
 *F  IntrPerm(<nr>)  . . . . . . . .  interpret literal permutation expression
 */
-void IntrPermCycle(IntrState * intr, UInt nrx, UInt nrc);
+void IntrPermCycle(IntrState * intr, UInt nrx, UInt nrc) GAP_GC_CANSAFEPOINT;
 
-void IntrPerm(IntrState * intr, UInt nrc);
+void IntrPerm(IntrState * intr, UInt nrc) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -624,23 +638,24 @@ void IntrPerm(IntrState * intr, UInt nrc);
 *F  IntrListExprEndElm()  . . . . . . . . .  interpret list expr, end element
 *F  IntrListExprEnd(<nr>,<range>,<top>,<tilde>) . .  interpret list expr, end
 */
-void IntrListExprBegin(IntrState * intr, UInt top);
+void IntrListExprBegin(IntrState * intr, UInt top) GAP_GC_CANSAFEPOINT;
 
-void IntrListExprBeginElm(IntrState * intr, UInt pos);
+void IntrListExprBeginElm(IntrState * intr, UInt pos) GAP_GC_CANSAFEPOINT;
 
-void IntrListExprEndElm(IntrState * intr);
+void IntrListExprEndElm(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
 void IntrListExprEnd(
-    IntrState * intr, UInt nr, UInt range, UInt top, UInt tilde);
+    IntrState * intr, UInt nr, UInt range, UInt top, UInt tilde)
+    GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  IntrStringExpr(<str>) . . . . . . . . interpret literal string expression
 */
-void IntrStringExpr(IntrState * intr, Obj string);
+void IntrStringExpr(IntrState * intr, Obj string) GAP_GC_CANSAFEPOINT;
 
-void IntrPragma(IntrState * intr, Obj pragma);
+void IntrPragma(IntrState * intr, Obj pragma) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -651,87 +666,88 @@ void IntrPragma(IntrState * intr, Obj pragma);
 *F  IntrRecExprEndElmExpr() . . . . . . .  interpret record expr, end element
 *F  IntrRecExprEnd(<nr>,<top>,<tilde>)  . . . . .  interpret record expr, end
 */
-void IntrRecExprBegin(IntrState * intr, UInt top);
+void IntrRecExprBegin(IntrState * intr, UInt top) GAP_GC_CANSAFEPOINT;
 
-void IntrRecExprBeginElmName(IntrState * intr, UInt rnam);
+void IntrRecExprBeginElmName(IntrState * intr, UInt rnam) GAP_GC_CANSAFEPOINT;
 
-void IntrRecExprBeginElmExpr(IntrState * intr);
+void IntrRecExprBeginElmExpr(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrRecExprEndElm(IntrState * intr);
+void IntrRecExprEndElm(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrRecExprEnd(IntrState * intr, UInt nr, UInt top, UInt tilde);
+void IntrRecExprEnd(IntrState * intr, UInt nr, UInt top, UInt tilde)
+    GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  IntrAssLVar(<lvar>) . . . . . . . . . . . . interpret assignment to local
 */
-void IntrAssLVar(IntrState * intr, UInt lvar);
+void IntrAssLVar(IntrState * intr, UInt lvar) GAP_GC_CANSAFEPOINT;
 
-void IntrUnbLVar(IntrState * intr, UInt lvar);
+void IntrUnbLVar(IntrState * intr, UInt lvar) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  IntrRefLVar(<lvar>) . . . . . . . . . . . .  interpret reference to local
 */
-void IntrRefLVar(IntrState * intr, UInt lvar);
+void IntrRefLVar(IntrState * intr, UInt lvar) GAP_GC_CANSAFEPOINT;
 
-void IntrIsbLVar(IntrState * intr, UInt lvar);
+void IntrIsbLVar(IntrState * intr, UInt lvar) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  IntrAssHVar(<hvar>) . . . . . . . . . . .  interpret assignment to higher
 */
-void IntrAssHVar(IntrState * intr, UInt hvar);
+void IntrAssHVar(IntrState * intr, UInt hvar) GAP_GC_CANSAFEPOINT;
 
-void IntrUnbHVar(IntrState * intr, UInt hvar);
+void IntrUnbHVar(IntrState * intr, UInt hvar) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  IntrRefHVar(<hvar>) . . . . . . . . . . . . interpret reference to higher
 */
-void IntrRefHVar(IntrState * intr, UInt hvar);
+void IntrRefHVar(IntrState * intr, UInt hvar) GAP_GC_CANSAFEPOINT;
 
-void IntrIsbHVar(IntrState * intr, UInt hvar);
+void IntrIsbHVar(IntrState * intr, UInt hvar) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  IntrAssDVar(<dvar>) . . . . . . . . . . . . interpret assignment to debug
 */
-void IntrAssDVar(IntrState * intr, UInt dvar, UInt depth);
+void IntrAssDVar(IntrState * intr, UInt dvar, UInt depth) GAP_GC_CANSAFEPOINT;
 
-void IntrUnbDVar(IntrState * intr, UInt dvar, UInt depth);
+void IntrUnbDVar(IntrState * intr, UInt dvar, UInt depth) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  IntrRefDVar(<dvar>) . . . . . . . . . . . .  interpret reference to debug
 */
-void IntrRefDVar(IntrState * intr, UInt dvar, UInt depth);
+void IntrRefDVar(IntrState * intr, UInt dvar, UInt depth) GAP_GC_CANSAFEPOINT;
 
-void IntrIsbDVar(IntrState * intr, UInt dvar, UInt depth);
+void IntrIsbDVar(IntrState * intr, UInt dvar, UInt depth) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  IntrAssGVar(<gvar>) . . . . . . . . . . .  interpret assignment to global
 */
-void IntrAssGVar(IntrState * intr, UInt gvar);
+void IntrAssGVar(IntrState * intr, UInt gvar) GAP_GC_CANSAFEPOINT;
 
-void IntrUnbGVar(IntrState * intr, UInt gvar);
+void IntrUnbGVar(IntrState * intr, UInt gvar) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  IntrRefGVar(<gvar>) . . . . . . . . . . . . interpret reference to global
 */
-void IntrRefGVar(IntrState * intr, UInt gvar);
+void IntrRefGVar(IntrState * intr, UInt gvar) GAP_GC_CANSAFEPOINT;
 
-void IntrIsbGVar(IntrState * intr, UInt gvar);
+void IntrIsbGVar(IntrState * intr, UInt gvar) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -741,15 +757,16 @@ void IntrIsbGVar(IntrState * intr, UInt gvar);
 *F  IntrAssListLevel(<level>) . . . . . interpret assignment to several lists
 *F  IntrAsssListLevel(<level>)  . . intr multiple assignment to several lists
 */
-void IntrAssList(IntrState * intr, Int narg);
+void IntrAssList(IntrState * intr, Int narg) GAP_GC_CANSAFEPOINT;
 
-void IntrAsssList(IntrState * intr);
+void IntrAsssList(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrAssListLevel(IntrState * intr, Int narg, UInt level);
+void IntrAssListLevel(IntrState * intr, Int narg, UInt level)
+    GAP_GC_CANSAFEPOINT;
 
-void IntrAsssListLevel(IntrState * intr, UInt level);
+void IntrAsssListLevel(IntrState * intr, UInt level) GAP_GC_CANSAFEPOINT;
 
-void IntrUnbList(IntrState * intr, Int narg);
+void IntrUnbList(IntrState * intr, Int narg) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -759,15 +776,16 @@ void IntrUnbList(IntrState * intr, Int narg);
 *F  IntrElmListLevel(<level>) . . . . .  interpret selection of several lists
 *F  IntrElmsListLevel(<level>)  . .  intr multiple selection of several lists
 */
-void IntrElmList(IntrState * intr, Int narg);
+void IntrElmList(IntrState * intr, Int narg) GAP_GC_CANSAFEPOINT;
 
-void IntrElmsList(IntrState * intr);
+void IntrElmsList(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrElmListLevel(IntrState * intr, Int narg, UInt level);
+void IntrElmListLevel(IntrState * intr, Int narg, UInt level)
+    GAP_GC_CANSAFEPOINT;
 
-void IntrElmsListLevel(IntrState * intr, UInt level);
+void IntrElmsListLevel(IntrState * intr, UInt level) GAP_GC_CANSAFEPOINT;
 
-void IntrIsbList(IntrState * intr, Int narg);
+void IntrIsbList(IntrState * intr, Int narg) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -775,13 +793,13 @@ void IntrIsbList(IntrState * intr, Int narg);
 *F  IntrAssRecName(<rnam>)  . . . . . . . .  interpret assignment to a record
 *F  IntrAssRecExpr()  . . . . . . . . . . .  interpret assignment to a record
 */
-void IntrAssRecName(IntrState * intr, UInt rnam);
+void IntrAssRecName(IntrState * intr, UInt rnam) GAP_GC_CANSAFEPOINT;
 
-void IntrAssRecExpr(IntrState * intr);
+void IntrAssRecExpr(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrUnbRecName(IntrState * intr, UInt rnam);
+void IntrUnbRecName(IntrState * intr, UInt rnam) GAP_GC_CANSAFEPOINT;
 
-void IntrUnbRecExpr(IntrState * intr);
+void IntrUnbRecExpr(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -789,31 +807,31 @@ void IntrUnbRecExpr(IntrState * intr);
 *F  IntrElmRecName(<rnam>)  . . . . . . . . . interpret selection of a record
 *F  IntrElmRecExpr()  . . . . . . . . . . . . interpret selection of a record
 */
-void IntrElmRecName(IntrState * intr, UInt rnam);
+void IntrElmRecName(IntrState * intr, UInt rnam) GAP_GC_CANSAFEPOINT;
 
-void IntrElmRecExpr(IntrState * intr);
+void IntrElmRecExpr(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrIsbRecName(IntrState * intr, UInt rnam);
+void IntrIsbRecName(IntrState * intr, UInt rnam) GAP_GC_CANSAFEPOINT;
 
-void IntrIsbRecExpr(IntrState * intr);
+void IntrIsbRecExpr(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  IntrAssPosObj() . . . . . . . . . . . .  interpret assignment to a posobj
 */
-void IntrAssPosObj(IntrState * intr);
+void IntrAssPosObj(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrUnbPosObj(IntrState * intr);
+void IntrUnbPosObj(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  IntrElmPosObj() . . . . . . . . . . . . . interpret selection of a posobj
 */
-void IntrElmPosObj(IntrState * intr);
+void IntrElmPosObj(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrIsbPosObj(IntrState * intr);
+void IntrIsbPosObj(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -821,13 +839,13 @@ void IntrIsbPosObj(IntrState * intr);
 *F  IntrAssComObjName(<rnam>) . . . . . . .  interpret assignment to a comobj
 *F  IntrAssComObjExpr() . . . . . . . . . .  interpret assignment to a comobj
 */
-void IntrAssComObjName(IntrState * intr, UInt rnam);
+void IntrAssComObjName(IntrState * intr, UInt rnam) GAP_GC_CANSAFEPOINT;
 
-void IntrAssComObjExpr(IntrState * intr);
+void IntrAssComObjExpr(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrUnbComObjName(IntrState * intr, UInt rnam);
+void IntrUnbComObjName(IntrState * intr, UInt rnam) GAP_GC_CANSAFEPOINT;
 
-void IntrUnbComObjExpr(IntrState * intr);
+void IntrUnbComObjExpr(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -835,20 +853,20 @@ void IntrUnbComObjExpr(IntrState * intr);
 *F  IntrElmComObjName(<rnam>) . . . . . . . . interpret selection of a comobj
 *F  IntrElmComObjExpr() . . . . . . . . . . . interpret selection of a comobj
 */
-void IntrElmComObjName(IntrState * intr, UInt rnam);
+void IntrElmComObjName(IntrState * intr, UInt rnam) GAP_GC_CANSAFEPOINT;
 
-void IntrElmComObjExpr(IntrState * intr);
+void IntrElmComObjExpr(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
-void IntrIsbComObjName(IntrState * intr, UInt rnam);
+void IntrIsbComObjName(IntrState * intr, UInt rnam) GAP_GC_CANSAFEPOINT;
 
-void IntrIsbComObjExpr(IntrState * intr);
+void IntrIsbComObjExpr(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
 *F  IntrEmpty() . . . . . . . . . . . . .  Interpret an empty statement body
 **
 */
-void IntrEmpty(IntrState * intr);
+void IntrEmpty(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
@@ -858,8 +876,8 @@ void IntrEmpty(IntrState * intr);
 */
 
 void IntrInfoBegin(IntrState * intr);
-void IntrInfoMiddle(IntrState * intr);
-void IntrInfoEnd(IntrState * intr, UInt narg);
+void IntrInfoMiddle(IntrState * intr) GAP_GC_CANSAFEPOINT;
+void IntrInfoEnd(IntrState * intr, UInt narg) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -880,17 +898,17 @@ void IntrInfoEnd(IntrState * intr, UInt narg);
 */
 
 void IntrAssertBegin(IntrState * intr);
-void IntrAssertAfterLevel(IntrState * intr);
-void IntrAssertAfterCondition(IntrState * intr);
-void IntrAssertEnd2Args(IntrState * intr);
-void IntrAssertEnd3Args(IntrState * intr);
+void IntrAssertAfterLevel(IntrState * intr) GAP_GC_CANSAFEPOINT;
+void IntrAssertAfterCondition(IntrState * intr) GAP_GC_CANSAFEPOINT;
+void IntrAssertEnd2Args(IntrState * intr) GAP_GC_CANSAFEPOINT;
+void IntrAssertEnd3Args(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  IntrContinue() . . . . . . . . . . . . . . . interpret continue-statement
 */
-void IntrContinue(IntrState * intr);
+void IntrContinue(IntrState * intr) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

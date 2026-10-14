@@ -1,0 +1,7 @@
+# Checkers to silence per source file, for findings that are known false
+# positives. One line per file: <basename> <checker>[;<checker>...]
+# The clang core checkers cannot see that the static lookup tables these two
+# files index are filled in before use, nor that the elements-per-byte count
+# read from the field-info table is never zero.
+vecgf2.c core.NullDereference;core.NullPointerArithm
+vec8bit.c core.NullDereference;core.DivideZero

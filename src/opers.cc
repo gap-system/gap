@@ -71,19 +71,19 @@ extern "C" {
 **
 *V  TRY_NEXT_METHOD . . . . . . . . . . . . . . . . .  'TRY_NEXT_METHOD' flag
 */
-Obj TRY_NEXT_METHOD;
+Obj TRY_NEXT_METHOD GAP_GC_GLOBALLY_ROOTED;
 
 
 #define CACHE_SIZE 5
 
 
-static Obj StringFilterSetter;
-static Obj ArglistObjVal;
-static Obj ArglistObj;
+static Obj StringFilterSetter GAP_GC_GLOBALLY_ROOTED;
+static Obj ArglistObjVal GAP_GC_GLOBALLY_ROOTED;
+static Obj ArglistObj GAP_GC_GLOBALLY_ROOTED;
 
 
-static Obj SetterAndFilter(Obj getter);
-static Obj TesterAndFilter(Obj getter);
+static Obj SetterAndFilter(Obj getter) GAP_GC_CANSAFEPOINT;
+static Obj TesterAndFilter(Obj getter) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -118,7 +118,7 @@ static void PrintFlags(Obj flags)
 **
 *F  TypeFlags( <flags> )  . . . . . . . . . . . . . . .  type of a flags list
 */
-static Obj TYPE_FLAGS;
+static Obj TYPE_FLAGS GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeFlags(Obj flags)
 {
@@ -192,7 +192,7 @@ static void LoadFlags(Obj flags)
 */
 #define HASH_FLAGS_SIZE (Int4)67108879L
 
-static Obj FuncHASH_FLAGS(Obj self, Obj flags)
+static Obj FuncHASH_FLAGS(Obj self, Obj flags) GAP_GC_CANSAFEPOINT
 {
     Int4                 hash;
     Int4                 x;
@@ -253,7 +253,7 @@ static Obj FuncHASH_FLAGS(Obj self, Obj flags)
 **
 **  see 'FuncPositionsTruesBlist' in "blister.c" for information.
 */
-static Obj FuncTRUES_FLAGS(Obj self, Obj flags)
+static Obj FuncTRUES_FLAGS(Obj self, Obj flags) GAP_GC_CANSAFEPOINT
 {
     Obj                 sub;            // handle of the result
     Int                 len;            // logical length of the list
@@ -301,7 +301,7 @@ static Obj FuncTRUES_FLAGS(Obj self, Obj flags)
 **
 **  see 'FuncSIZE_FLAGS'
 */
-static Obj FuncSIZE_FLAGS(Obj self, Obj flags)
+static Obj FuncSIZE_FLAGS(Obj self, Obj flags) GAP_GC_CANSAFEPOINT
 {
     UInt *              ptr;            // pointer to flags
     UInt                nrb;            // number of blocks in flags
@@ -377,6 +377,7 @@ static Int EqFlags(Obj flags1, Obj flags2)
 *F  FuncIS_EQUAL_FLAGS( <self>, <flags1>, <flags2> )  equality of flags lists
 */
 static Obj FuncIS_EQUAL_FLAGS(Obj self, Obj flags1, Obj flags2)
+    GAP_GC_CANSAFEPOINT
 {
     // do some trivial checks
     RequireFlags(SELF_NAME, flags1);
@@ -394,7 +395,7 @@ static Int IsSubsetFlagsCalls;
 **
 *F  IS_SUBSET_FLAGS( <flags1>, <flags2> ) . subset test with no safety check
 */
-BOOL IS_SUBSET_FLAGS(Obj flags1, Obj flags2)
+BOOL IS_SUBSET_FLAGS(Obj flags1, Obj flags2) GAP_GC_NOTSAFEPOINT
 {
     Int    len1;
     Int    len2;
@@ -437,6 +438,7 @@ BOOL IS_SUBSET_FLAGS(Obj flags1, Obj flags2)
 *F  FuncIS_SUBSET_FLAGS( <self>, <flags1>, <flags2> ) . . . . . . subset test
 */
 static Obj FuncIS_SUBSET_FLAGS(Obj self, Obj flags1, Obj flags2)
+    GAP_GC_CANSAFEPOINT
 {
     // do some correctness checks
     RequireFlags(SELF_NAME, flags1);
@@ -449,7 +451,7 @@ static Obj FuncIS_SUBSET_FLAGS(Obj self, Obj flags1, Obj flags2)
 **
 *F  FuncSUB_FLAGS( <self>, <flags1>, <flags2> ) . . . . subtract a flags list
 */
-static Obj FuncSUB_FLAGS(Obj self, Obj flags1, Obj flags2)
+static Obj FuncSUB_FLAGS(Obj self, Obj flags1, Obj flags2) GAP_GC_CANSAFEPOINT
 {
     Obj                 flags;
     Int                 len1;
@@ -505,7 +507,7 @@ static Int AndFlagsCacheMiss;
 static Int AndFlagsCacheLost;
 #endif
 
-static Obj FuncAND_FLAGS(Obj self, Obj flags1, Obj flags2)
+static Obj FuncAND_FLAGS(Obj self, Obj flags1, Obj flags2) GAP_GC_CANSAFEPOINT
 {
     Obj                 flags;
     Int                 len1;
@@ -682,21 +684,25 @@ static void StoreHashTable(Obj ht, Int hash, Obj new_with, Obj new_flags)
 }
 
 
-static Obj HIDDEN_IMPS;
-static Obj WITH_HIDDEN_IMPS_FLAGS_CACHE;
+static Obj HIDDEN_IMPS GAP_GC_GLOBALLY_ROOTED;
+static Obj WITH_HIDDEN_IMPS_FLAGS_CACHE GAP_GC_GLOBALLY_ROOTED;
 enum { HIDDEN_IMPS_CACHE_LENGTH = 20003 };
 
 // Forward declaration of FuncFLAGS_FILTER
-static Obj FuncFLAGS_FILTER(Obj self, Obj oper);
+static Obj FuncFLAGS_FILTER(Obj self, Obj oper) GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
 *F  FuncInstallHiddenTrueMethod( <filter>, <filters> ) Add a hidden true method
 */
 static Obj FuncInstallHiddenTrueMethod(Obj self, Obj filter, Obj filters)
+    GAP_GC_CANSAFEPOINT
 {
-    Obj imp = FuncFLAGS_FILTER(0, filter);
-    Obj imps = FuncFLAGS_FILTER(0, filters);
+    Obj imp = 0;
+    Obj imps = 0;
+    GAP_GC_PUSH2(&imp, &imps);
+    imp = FuncFLAGS_FILTER(0, filter);
+    imps = FuncFLAGS_FILTER(0, filters);
 #ifdef HPCGAP
     RegionWriteLock(REGION(HIDDEN_IMPS));
 #endif
@@ -708,6 +714,7 @@ static Obj FuncInstallHiddenTrueMethod(Obj self, Obj filter, Obj filters)
 #ifdef HPCGAP
     RegionWriteUnlock(REGION(HIDDEN_IMPS));
 #endif
+    GAP_GC_POP();
     return 0;
 }
 
@@ -715,7 +722,7 @@ static Obj FuncInstallHiddenTrueMethod(Obj self, Obj filter, Obj filters)
 **
 *F  FuncCLEAR_HIDDEN_IMP_CACHE( <self>, <flags> ) . . . .clear cache of flags
 */
-static Obj FuncCLEAR_HIDDEN_IMP_CACHE(Obj self, Obj filter)
+static Obj FuncCLEAR_HIDDEN_IMP_CACHE(Obj self, Obj filter) GAP_GC_CANSAFEPOINT
 {
   Int i;
   Obj flags = FuncFLAGS_FILTER(0, filter);
@@ -745,7 +752,7 @@ static Obj FuncCLEAR_HIDDEN_IMP_CACHE(Obj self, Obj filter)
 static Int WITH_HIDDEN_IMPS_MISS=0;
 static Int WITH_HIDDEN_IMPS_HIT=0;
 #endif
-static Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
+static Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags) GAP_GC_CANSAFEPOINT
 {
     // do some trivial checks, so we can use IS_SUBSET_FLAGS
     RequireFlags(SELF_NAME, flags);
@@ -760,6 +767,7 @@ static Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
         INT_INTOBJ(FuncHASH_FLAGS(0, flags)) % HIDDEN_IMPS_CACHE_LENGTH;
     Obj cacheval;
     Obj with = flags;
+    Obj imp = 0;
 
     cacheval = LookupHashTable<HIDDEN_IMPS_CACHE_LENGTH>(
         WITH_HIDDEN_IMPS_FLAGS_CACHE, hash, flags);
@@ -776,6 +784,7 @@ static Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
 #ifdef COUNT_OPERS
     WITH_HIDDEN_IMPS_MISS++;
 #endif
+    GAP_GC_PUSH2(&with, &imp);
     changed = TRUE;
     lastand = 0;
     while (changed)
@@ -786,7 +795,8 @@ static Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
         if( IS_SUBSET_FLAGS(with, ELM_PLIST(HIDDEN_IMPS, i*2)) &&
            !IS_SUBSET_FLAGS(with, ELM_PLIST(HIDDEN_IMPS, i*2-1)) )
         {
-          with = FuncAND_FLAGS(0, with, ELM_PLIST(HIDDEN_IMPS, i*2-1));
+          imp = ELM_PLIST(HIDDEN_IMPS, i*2-1);
+          with = FuncAND_FLAGS(0, with, imp);
           changed = TRUE;
           stop = 0;
           lastand = i;
@@ -796,6 +806,7 @@ static Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
 
     StoreHashTable<HIDDEN_IMPS_CACHE_LENGTH>(WITH_HIDDEN_IMPS_FLAGS_CACHE,
                                              hash, with, flags);
+    GAP_GC_POP();
 
 #ifdef HPCGAP
     RegionWriteUnlock(REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE));
@@ -804,9 +815,9 @@ static Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
 }
 
 
-static Obj IMPLICATIONS_SIMPLE;
-static Obj IMPLICATIONS_COMPOSED;
-static Obj WITH_IMPS_FLAGS_CACHE;
+static Obj IMPLICATIONS_SIMPLE GAP_GC_GLOBALLY_ROOTED;
+static Obj IMPLICATIONS_COMPOSED GAP_GC_GLOBALLY_ROOTED;
+static Obj WITH_IMPS_FLAGS_CACHE GAP_GC_GLOBALLY_ROOTED;
 enum { IMPS_CACHE_LENGTH = 21001 };
 
 /****************************************************************************
@@ -838,7 +849,7 @@ static Obj FuncCLEAR_IMP_CACHE(Obj self)
 static Int WITH_IMPS_FLAGS_MISS=0;
 static Int WITH_IMPS_FLAGS_HIT=0;
 #endif
-static Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
+static Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags) GAP_GC_CANSAFEPOINT
 {
     // do some trivial checks, so we can use IS_SUBSET_FLAGS
     RequireFlags(SELF_NAME, flags);
@@ -851,8 +862,8 @@ static Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
     Int hash = INT_INTOBJ(FuncHASH_FLAGS(0, flags)) % IMPS_CACHE_LENGTH;
     Obj cacheval;
     Obj with = flags;
-    Obj imp;
-    Obj trues;
+    Obj imp = 0;
+    Obj trues = 0;
 
     cacheval = LookupHashTable<IMPS_CACHE_LENGTH>(WITH_IMPS_FLAGS_CACHE, hash,
                                                   flags);
@@ -869,6 +880,7 @@ static Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
 #ifdef COUNT_OPERS
     WITH_IMPS_FLAGS_MISS++;
 #endif
+    GAP_GC_PUSH3(&with, &imp, &trues);
     // first implications from simple filters (need only be checked once)
     trues = FuncTRUES_FLAGS(0, flags);
     for (i=1; i<=LEN_PLIST(trues); i++) {
@@ -897,7 +909,8 @@ static Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
         if( IS_SUBSET_FLAGS(with, ELM_PLIST(imp, 2)) &&
            !IS_SUBSET_FLAGS(with, ELM_PLIST(imp, 1)) )
         {
-          with = FuncAND_FLAGS(0, with, ELM_PLIST(imp, 1));
+          imp = ELM_PLIST(imp, 1);
+          with = FuncAND_FLAGS(0, with, imp);
           changed = TRUE;
           stop = imps_length+1;
           lastand = i;
@@ -907,6 +920,7 @@ static Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
 
     StoreHashTable<IMPS_CACHE_LENGTH>(WITH_IMPS_FLAGS_CACHE, hash, with,
                                       flags);
+    GAP_GC_POP();
 
 #ifdef HPCGAP
     RegionWriteUnlock(REGION(IMPLICATIONS_SIMPLE));
@@ -914,7 +928,7 @@ static Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
     return with;
 }
 
-static Obj FuncWITH_IMPS_FLAGS_STAT(Obj self)
+static Obj FuncWITH_IMPS_FLAGS_STAT(Obj self) GAP_GC_CANSAFEPOINT
 {
     Obj res;
     res = NEW_PLIST(T_PLIST, 3);
@@ -947,7 +961,7 @@ static Int CountFlags;
 **
 *F  SetterFilter( <oper> )  . . . . . . . . . . . . . . .  setter of a filter
 */
-static Obj SetterFilter(Obj oper)
+static Obj SetterFilter(Obj oper) GAP_GC_CANSAFEPOINT
 {
     Obj                 setter;
 
@@ -962,7 +976,7 @@ static Obj SetterFilter(Obj oper)
 **
 *F  SetterAndFilter( <getter> )  . . . . . .  setter of a concatenated filter
 */
-static Obj DoSetAndFilter(Obj self, Obj obj, Obj val)
+static Obj DoSetAndFilter(Obj self, Obj obj, Obj val) GAP_GC_CANSAFEPOINT
 {
     Obj                 op;
 
@@ -984,11 +998,15 @@ static Obj DoSetAndFilter(Obj self, Obj obj, Obj val)
 
 static Obj SetterAndFilter(Obj getter)
 {
-    Obj                 setter;
-    Obj                 obj;
+    Obj                 setter = 0;
+    Obj                 obj = 0;
+    Obj                 name = 0;
+
+    GAP_GC_PUSH3(&setter, &obj, &name);
     if ( SETTR_FILT( getter ) == INTOBJ_INT(0xBADBABE) ) {
+        name = MakeImmString("<<setter-and-filter>>");
         setter = NewFunctionT( T_FUNCTION, sizeof(OperBag),
-                                MakeImmString("<<setter-and-filter>>"), 2, ArglistObjVal,
+                                name, 2, ArglistObjVal,
                                 (ObjFunc)DoSetAndFilter );
         // assign via 'obj' to avoid GC issues
         obj =  SetterFilter( FLAG1_FILT(getter) );
@@ -998,6 +1016,7 @@ static Obj SetterAndFilter(Obj getter)
         SET_SETTR_FILT(getter, setter);
     }
 
+    GAP_GC_POP();
     return SETTR_FILT(getter);
 }
 
@@ -1006,7 +1025,7 @@ static Obj SetterAndFilter(Obj getter)
 **
 *F  TesterFilter( <oper> )  . . . . . . . . . . . . . . .  tester of a filter
 */
-static Obj TesterFilter(Obj oper)
+static Obj TesterFilter(Obj oper) GAP_GC_CANSAFEPOINT
 {
     Obj                 tester;
 
@@ -1023,13 +1042,18 @@ static Obj TesterFilter(Obj oper)
 */
 static Obj TesterAndFilter(Obj getter)
 {
-    Obj                 tester;
+    Obj                 tester = 0;
+    Obj                 tester1 = 0;
+    Obj                 tester2 = 0;
 
+    GAP_GC_PUSH3(&tester, &tester1, &tester2);
     if ( TESTR_FILT( getter ) == INTOBJ_INT(0xBADBABE) ) {
-        tester = NewAndFilter( TesterFilter( FLAG1_FILT(getter) ),
-                               TesterFilter( FLAG2_FILT(getter) ) );
+        tester1 = TesterFilter( FLAG1_FILT(getter) );
+        tester2 = TesterFilter( FLAG2_FILT(getter) );
+        tester = NewAndFilter( tester1, tester2 );
         SET_TESTR_FILT(getter, tester);
     }
+    GAP_GC_POP();
     return TESTR_FILT(getter);
 }
 
@@ -1038,7 +1062,7 @@ static Obj TesterAndFilter(Obj getter)
 **
 *F  NewFilter( <name>, <nams>, <hdlr> ) . . . . . . . . . . make a new filter
 */
-static Obj DoSetFilter(Obj self, Obj obj, Obj val)
+static Obj DoSetFilter(Obj self, Obj obj, Obj val) GAP_GC_CANSAFEPOINT
 {
     Int                 flag1;
     Obj                 type;
@@ -1060,7 +1084,7 @@ static Obj DoSetFilter(Obj self, Obj obj, Obj val)
     return 0;
 }
 
-static Obj NewSetterFilter(Obj getter)
+static Obj NewSetterFilter(Obj getter) GAP_GC_CANSAFEPOINT
 {
     Obj                 setter;
 
@@ -1077,7 +1101,7 @@ Obj DoFilter (
     Obj                 self,
     Obj                 obj )
 {
-    Obj                 val;
+    Obj                 val = 0;
     Int                 flag1;
     Obj                 type;
     Obj                 flags;
@@ -1102,14 +1126,15 @@ Obj NewFilter (
     Obj                 nams,
     ObjFunc_1ARGS       hdlr )
 {
-    Obj                 getter;
-    Obj                 setter;
+    Obj                 getter = 0;
+    Obj                 setter = 0;
     Int                 flag1;
-    Obj                 flags;
+    Obj                 flags = 0;
 
     flag1 = ++CountFlags;
 
     GAP_ASSERT(hdlr);
+    GAP_GC_PUSH3(&getter, &setter, &flags);
     getter = NewOperation(name, 1, nams, (ObjFunc)hdlr);
     SET_FLAG1_FILT(getter, INTOBJ_INT(flag1));
     SET_FLAG2_FILT(getter, INTOBJ_INT(0));
@@ -1122,6 +1147,7 @@ Obj NewFilter (
     SET_SETTR_FILT(getter, setter);
     SET_TESTR_FILT(getter, ReturnTrueFilter);
 
+    GAP_GC_POP();
     return getter;
 }
 
@@ -1137,7 +1163,7 @@ static Obj FuncIS_FILTER(Obj self, Obj obj)
 */
 static Obj DoAndFilter(Obj self, Obj obj)
 {
-    Obj                 val;
+    Obj                 val = 0;
     Obj                 op;
 
     // call the first 'and'-ed function
@@ -1158,11 +1184,11 @@ Obj NewAndFilter (
     Obj                 oper1,
     Obj                 oper2 )
 {
-    Obj                 getter;
-    Obj                 flags;
+    Obj                 getter = 0;
+    Obj                 flags = 0;
 
     Int                 str_len;
-    Obj                 str;
+    Obj                 str = 0;
 
     RequireFilter(0, oper1, "<oper1>");
     RequireFilter(0, oper2, "<oper2>");
@@ -1176,6 +1202,7 @@ Obj NewAndFilter (
     if ( oper1 == oper2 )
         return oper1;
 
+    GAP_GC_PUSH3(&getter, &flags, &str);
     str_len = GET_LEN_STRING(NAME_FUNC(oper1)) + GET_LEN_STRING(NAME_FUNC(oper2)) + 8;
     str = NEW_STRING(str_len);
     SET_LEN_STRING(str, 0);
@@ -1195,6 +1222,7 @@ Obj NewAndFilter (
     SET_TESTR_FILT(getter, INTOBJ_INT(0xBADBABE));
     SET_IS_FILTER(getter);
 
+    GAP_GC_POP();
     return getter;
 }
 
@@ -1208,7 +1236,7 @@ static Obj FuncIS_AND_FILTER(Obj self, Obj filt)
 **
 *V  ReturnTrueFilter . . . . . . . . . . . . . . . . the return 'true' filter
 */
-Obj ReturnTrueFilter;
+Obj ReturnTrueFilter GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
@@ -1216,6 +1244,7 @@ Obj ReturnTrueFilter;
 *F  NewReturnTrueFilter() . . . . . . . . . . create a new return true filter
 */
 static Obj DoSetReturnTrueFilter(Obj self, Obj obj, Obj val)
+    GAP_GC_CANSAFEPOINT
 {
     if ( val != True ) {
         ErrorMayQuit("you cannot set this flag to 'false'", 0, 0);
@@ -1223,16 +1252,20 @@ static Obj DoSetReturnTrueFilter(Obj self, Obj obj, Obj val)
     return 0;
 }
 
-static Obj SetterReturnTrueFilter(Obj getter)
+static Obj SetterReturnTrueFilter(Obj getter) GAP_GC_CANSAFEPOINT
 {
-    Obj                 setter;
+    Obj                 setter = 0;
+    Obj                 name = 0;
 
+    GAP_GC_PUSH2(&setter, &name);
+    name = MakeImmString("<<setter-true-filter>>");
     setter = NewFunctionT( T_FUNCTION, sizeof(OperBag),
-        MakeImmString("<<setter-true-filter>>"), 2, ArglistObjVal,
+        name, 2, ArglistObjVal,
         (ObjFunc)DoSetReturnTrueFilter );
     SET_FLAG1_FILT(setter, INTOBJ_INT(0));
     SET_FLAG2_FILT(setter, INTOBJ_INT(0));
 
+    GAP_GC_POP();
     return setter;
 }
 
@@ -1241,14 +1274,17 @@ static Obj DoReturnTrueFilter(Obj self, Obj obj)
     return True;
 }
 
-static Obj NewReturnTrueFilter(void)
+static Obj NewReturnTrueFilter(void) GAP_GC_CANSAFEPOINT
 {
-    Obj                 getter;
-    Obj                 setter;
-    Obj                 flags;
+    Obj                 getter = 0;
+    Obj                 setter = 0;
+    Obj                 flags = 0;
+    Obj                 name = 0;
 
+    GAP_GC_PUSH4(&getter, &setter, &flags, &name);
+    name = MakeImmString("ReturnTrueFilter");
     getter = NewFunctionT( T_FUNCTION, sizeof(OperBag),
-        MakeImmString("ReturnTrueFilter"), 1, ArglistObj,
+        name, 1, ArglistObj,
         (ObjFunc)DoReturnTrueFilter );
     SET_FLAG1_FILT(getter, INTOBJ_INT(0));
     SET_FLAG2_FILT(getter, INTOBJ_INT(0));
@@ -1262,6 +1298,7 @@ static Obj NewReturnTrueFilter(void)
     // the tester also returns true, so we can reuse the getter
     SET_TESTR_FILT(getter, getter);
 
+    GAP_GC_POP();
     return getter;
 }
 
@@ -1276,7 +1313,7 @@ static Obj NewReturnTrueFilter(void)
 **
 *F  FuncNEW_FILTER( <self>, <name> )  . . . . . . . . . . . . .  new filter
 */
-static Obj FuncNEW_FILTER(Obj self, Obj name)
+static Obj FuncNEW_FILTER(Obj self, Obj name) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, name);
     return NewFilter(name, 0, DoFilter);
@@ -1287,7 +1324,7 @@ static Obj FuncNEW_FILTER(Obj self, Obj name)
 **
 *F  FuncFLAG1_FILTER( <self>, <oper> )  . . . . . . . . . . . .  `FLAG1_FILT'
 */
-static Obj FuncFLAG1_FILTER(Obj self, Obj oper)
+static Obj FuncFLAG1_FILTER(Obj self, Obj oper) GAP_GC_CANSAFEPOINT
 {
     Obj                 flag1;
 
@@ -1303,7 +1340,7 @@ static Obj FuncFLAG1_FILTER(Obj self, Obj oper)
 **
 *F  FuncFLAG2_FILTER( <self>, <oper> )  . . . . . . . . . . . .  `FLAG2_FILT'
 */
-static Obj FuncFLAG2_FILTER(Obj self, Obj oper)
+static Obj FuncFLAG2_FILTER(Obj self, Obj oper) GAP_GC_CANSAFEPOINT
 {
     Obj                 flag2;
 
@@ -1321,7 +1358,7 @@ static Obj FuncFLAG2_FILTER(Obj self, Obj oper)
 */
 static Obj FuncFLAGS_FILTER(Obj self, Obj oper)
 {
-    Obj                 flags;
+    Obj                 flags = 0;
 
     RequireOperation(oper);
     flags = FLAGS_FILT( oper );
@@ -1335,7 +1372,7 @@ static Obj FuncFLAGS_FILTER(Obj self, Obj oper)
 **
 *F  FuncSETTER_FILTER( <self>, <oper> ) . . . . . . . . .  setter of a filter
 */
-static Obj FuncSETTER_FILTER(Obj self, Obj oper)
+static Obj FuncSETTER_FILTER(Obj self, Obj oper) GAP_GC_CANSAFEPOINT
 {
     Obj                 setter;
 
@@ -1350,7 +1387,7 @@ static Obj FuncSETTER_FILTER(Obj self, Obj oper)
 **
 *F  FuncTESTER_FILTER( <self>, <oper> ) . . . . . . . . .  tester of a filter
 */
-static Obj FuncTESTER_FILTER(Obj self, Obj oper)
+static Obj FuncTESTER_FILTER(Obj self, Obj oper) GAP_GC_CANSAFEPOINT
 {
     Obj                 tester;
 
@@ -1383,18 +1420,20 @@ static UInt RNamArguments;
 static UInt RNamIsVerbose;
 static UInt RNamIsConstructor;
 static UInt RNamPrecedence;
-static Obj  HANDLE_METHOD_NOT_FOUND;
-static Obj  CHECK_REPEATED_ATTRIBUTE_SET;
+static Obj  HANDLE_METHOD_NOT_FOUND GAP_GC_GLOBALLY_ROOTED;
+static Obj  CHECK_REPEATED_ATTRIBUTE_SET GAP_GC_GLOBALLY_ROOTED;
 
 static void HandleMethodNotFound(
     Obj oper, Obj arglist, UInt verbose, UInt constructor, Int precedence)
+    GAP_GC_CANSAFEPOINT
 {
-  Obj r;
+  Obj r = 0;
 #ifdef HPCGAP
   Region *savedRegion = TLS(currentRegion);
   TLS(currentRegion) = TLS(threadRegion);
 #endif
 
+  GAP_GC_PUSH1(&r);
   r = NEW_PREC(5);
   if (RNamOperation == 0)
     {
@@ -1427,10 +1466,10 @@ static void HandleMethodNotFound(
 
 #ifdef USE_GASMAN
 
-static Obj FLUSH_ALL_METHOD_CACHES;
+static Obj FLUSH_ALL_METHOD_CACHES GAP_GC_GLOBALLY_ROOTED;
 
 static Int NextTypeID;
-static Obj IsType;
+static Obj IsType GAP_GC_GLOBALLY_ROOTED;
 
 static void FixTypeIDs( Bag b ) {
   if ( (TNUM_OBJ( b )  == T_POSOBJ) &&
@@ -1443,7 +1482,7 @@ static void FixTypeIDs( Bag b ) {
 
 #endif
 
-static Obj FuncCOMPACT_TYPE_IDS(Obj self)
+static Obj FuncCOMPACT_TYPE_IDS(Obj self) GAP_GC_CANSAFEPOINT
 {
 #ifdef USE_GASMAN
   NextTypeID = INT_INTOBJ_MIN;
@@ -1525,7 +1564,7 @@ static void UnlockCache(void)
 
 #endif
 
-static inline Obj CacheOper(Obj oper, UInt i)
+static inline Obj CacheOper(Obj oper, UInt i) GAP_GC_CANSAFEPOINT
 {
     Obj  cache = CACHE_OPER(oper, i);
     UInt len;
@@ -1670,9 +1709,9 @@ CacheMethod(Obj cacheBag, UInt n, Int prec, Obj * ids, Obj method)
 }
 #endif // WARD_ENABLED
 
-static Obj ReturnTrue;
-static Obj VMETHOD_PRINT_INFO;
-static Obj NEXT_VMETHOD_PRINT_INFO;
+static Obj ReturnTrue GAP_GC_GLOBALLY_ROOTED;
+static Obj VMETHOD_PRINT_INFO GAP_GC_GLOBALLY_ROOTED;
+static Obj NEXT_VMETHOD_PRINT_INFO GAP_GC_GLOBALLY_ROOTED;
 
 // This function searches through the methods of operation <oper> with
 // arity <n>, looking for those matching the given <types>. Among these,
@@ -1833,22 +1872,40 @@ CallNArgs(Obj method, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
 template <Int n, BOOL verbose, BOOL constructor>
 static Obj
 DoOperationNArgs(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
+    GAP_GC_CANSAFEPOINT
 {
     // the following two lines look this way to avoid "allocating" a
     // zero-length array, which would result in undefined behavior (even
     // though we don't access the two arrays when n is zero). In addition, we
     // carefully avoid warnings in GCC due to -Wduplicated-branches.
+#ifdef GAP_GC_PRECISE
+    // types[] holds GAP objects and is live across the family predicate call
+    // in GetMethodUncached, which runs arbitrary GAP code. A precise collector
+    // cannot see a plain C array, so put it in a GC frame instead. ids[] needs
+    // no rooting: ID_TYPE yields the type's number, which is an immediate.
+    jl_value_t ** typeRoots;
+    GAP_GC_PUSHARGS(typeRoots, n > 0 ? n : 1);
+    Obj * types = (Obj *)typeRoots;
+#else
     Obj types[n > 0 ? n : +1];
+#endif
     Obj ids[n > 0 ? n : +1];
     Int prec;
-    Obj method;
-    Obj res;
+    Obj method = 0;
+    Obj res = 0;
+    Obj arglist = 0;
+    Obj cacheBag = 0;
+    Obj methods = 0;
 
+    GAP_GC_PUSH5(&method, &res, &arglist, &cacheBag, &methods);
     Obj earlyMethod = CONST_OPER(oper)->earlyMethod[n];
     if (earlyMethod) {
         res = CallNArgs<n>(earlyMethod, a1, a2, a3, a4, a5, a6);
-        if (res != TRY_NEXT_METHOD)
+        if (res != TRY_NEXT_METHOD) {
+            GAP_GC_POP();
+            GAP_GC_POP();   // the types[] frame
             return res;
+        }
     }
 
     switch (n) {
@@ -1869,7 +1926,13 @@ DoOperationNArgs(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
         FALLTHROUGH;
     case 1:
         if (constructor) {
-            RequireFilter("Constructor", a1, "the first argument");
+            if (!IS_FILTER(a1)) {
+                GAP_GC_POP();
+                GAP_GC_POP();   // the types[] frame
+                RequireArgumentEx("Constructor", a1, "the first argument",
+                                  "must be a filter");
+                return 0;
+            }
             types[0] = FLAGS_FILT(a1);
         }
         else
@@ -1890,8 +1953,8 @@ DoOperationNArgs(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
     for (int i = 1; i < n; i++)
         ids[i] = ID_TYPE(types[i]);
 
-    Obj cacheBag = CacheOper(oper, n);
-    Obj methods = METHS_OPER(oper, n);
+    cacheBag = CacheOper(oper, n);
+    methods = METHS_OPER(oper, n);
 
 #ifdef HPCGAP
     // reset the method cache if necessary
@@ -1933,7 +1996,6 @@ DoOperationNArgs(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
         // If there was no method found, then pass the information needed
         // for the error reporting. This function rarely returns
         if (method == Fail) {
-            Obj arglist;
             switch (n) {
             case 0:
                 arglist = NewEmptyPlist();
@@ -1970,6 +2032,8 @@ DoOperationNArgs(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
         res = CallNArgs<n>(method, a1, a2, a3, a4, a5, a6);
     } while (res == TRY_NEXT_METHOD);
 
+    GAP_GC_POP();
+    GAP_GC_POP();   // the types[] frame
     return res;
 }
 
@@ -2126,45 +2190,49 @@ Obj NewOperation(Obj name, Int narg, Obj nams, ObjFunc hdlr)
 *F  DoConstructorXArgs( <oper> )
 */
 
-static Obj DoConstructor0Args(Obj oper)
+static Obj DoConstructor0Args(Obj oper) GAP_GC_CANSAFEPOINT
 {
     ErrorQuit("constructors must have at least one argument", 0, 0);
     return 0;
 }
 
-static Obj DoConstructor1Args(Obj oper, Obj a1)
+static Obj DoConstructor1Args(Obj oper, Obj a1) GAP_GC_CANSAFEPOINT
 {
     return DoOperationNArgs<1, FALSE, TRUE>(oper, a1, 0, 0, 0, 0, 0);
 }
 
-static Obj DoConstructor2Args(Obj oper, Obj a1, Obj a2)
+static Obj DoConstructor2Args(Obj oper, Obj a1, Obj a2) GAP_GC_CANSAFEPOINT
 {
     return DoOperationNArgs<2, FALSE, TRUE>(oper, a1, a2, 0, 0, 0, 0);
 }
 
 static Obj DoConstructor3Args(Obj oper, Obj a1, Obj a2, Obj a3)
+    GAP_GC_CANSAFEPOINT
 {
     return DoOperationNArgs<3, FALSE, TRUE>(oper, a1, a2, a3, 0, 0, 0);
 }
 
 static Obj DoConstructor4Args(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4)
+    GAP_GC_CANSAFEPOINT
 {
     return DoOperationNArgs<4, FALSE, TRUE>(oper, a1, a2, a3, a4, 0, 0);
 }
 
 static Obj
 DoConstructor5Args(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5)
+    GAP_GC_CANSAFEPOINT
 {
     return DoOperationNArgs<5, FALSE, TRUE>(oper, a1, a2, a3, a4, a5, 0);
 }
 
 static Obj
 DoConstructor6Args(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
+    GAP_GC_CANSAFEPOINT
 {
     return DoOperationNArgs<6, FALSE, TRUE>(oper, a1, a2, a3, a4, a5, a6);
 }
 
-static Obj DoConstructorXArgs(Obj self, Obj args)
+static Obj DoConstructorXArgs(Obj self, Obj args) GAP_GC_CANSAFEPOINT
 {
     ErrorQuit("sorry: cannot yet have X argument constructors", 0, 0);
     return 0;
@@ -2183,45 +2251,50 @@ static Obj DoConstructorXArgs(Obj self, Obj args)
 *F  DoVerboseConstructorXArgs( <oper> )
 */
 
-static Obj DoVerboseConstructor0Args(Obj oper)
+static Obj DoVerboseConstructor0Args(Obj oper) GAP_GC_CANSAFEPOINT
 {
     ErrorQuit("constructors must have at least one argument", 0, 0);
     return 0;
 }
 
-static Obj DoVerboseConstructor1Args(Obj oper, Obj a1)
+static Obj DoVerboseConstructor1Args(Obj oper, Obj a1) GAP_GC_CANSAFEPOINT
 {
     return DoOperationNArgs<1, TRUE, TRUE>(oper, a1, 0, 0, 0, 0, 0);
 }
 
 static Obj DoVerboseConstructor2Args(Obj oper, Obj a1, Obj a2)
+    GAP_GC_CANSAFEPOINT
 {
     return DoOperationNArgs<2, TRUE, TRUE>(oper, a1, a2, 0, 0, 0, 0);
 }
 
 static Obj DoVerboseConstructor3Args(Obj oper, Obj a1, Obj a2, Obj a3)
+    GAP_GC_CANSAFEPOINT
 {
     return DoOperationNArgs<3, TRUE, TRUE>(oper, a1, a2, a3, 0, 0, 0);
 }
 
 static Obj DoVerboseConstructor4Args(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4)
+    GAP_GC_CANSAFEPOINT
 {
     return DoOperationNArgs<4, TRUE, TRUE>(oper, a1, a2, a3, a4, 0, 0);
 }
 
 static Obj
 DoVerboseConstructor5Args(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5)
+    GAP_GC_CANSAFEPOINT
 {
     return DoOperationNArgs<5, TRUE, TRUE>(oper, a1, a2, a3, a4, a5, 0);
 }
 
 static Obj DoVerboseConstructor6Args(
     Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
+    GAP_GC_CANSAFEPOINT
 {
     return DoOperationNArgs<6, TRUE, TRUE>(oper, a1, a2, a3, a4, a5, a6);
 }
 
-static Obj DoVerboseConstructorXArgs(Obj self, Obj args)
+static Obj DoVerboseConstructorXArgs(Obj self, Obj args) GAP_GC_CANSAFEPOINT
 {
     ErrorQuit("sorry: cannot yet have X argument constructors", 0, 0);
     return 0;
@@ -2232,7 +2305,7 @@ static Obj DoVerboseConstructorXArgs(Obj self, Obj args)
 **
 *F  NewConstructor( <name>> )
 */
-static Obj NewConstructor(Obj name)
+static Obj NewConstructor(Obj name) GAP_GC_CANSAFEPOINT
 {
     Obj                 oper;
 
@@ -2295,7 +2368,7 @@ Obj DoAttribute (
     Obj                 self,
     Obj                 obj )
 {
-    Obj                 val;
+    Obj                 val = 0;
     Int                 flag2;
     Obj                 type;
     Obj                 flags;
@@ -2313,6 +2386,7 @@ Obj DoAttribute (
     }
 
     // call the operation to compute the value
+    GAP_GC_PUSH1(&val);
     val = DoOperation1Args( self, obj );
     if (val == 0) {
         ErrorMayQuit("Method for an attribute must return a value", 0, 0);
@@ -2334,6 +2408,7 @@ Obj DoAttribute (
     }
 
     // return the value
+    GAP_GC_POP();
     return val;
 }
 
@@ -2344,9 +2419,9 @@ Obj DoAttribute (
 */
 #define DoVerboseSetAttribute  DoVerboseOperation2Args
 
-static Obj DoVerboseAttribute(Obj self, Obj obj)
+static Obj DoVerboseAttribute(Obj self, Obj obj) GAP_GC_CANSAFEPOINT
 {
-    Obj                 val;
+    Obj                 val = 0;
     Int                 flag2;
     Obj                 type;
     Obj                 flags;
@@ -2364,6 +2439,7 @@ static Obj DoVerboseAttribute(Obj self, Obj obj)
     }
 
     // call the operation to compute the value
+    GAP_GC_PUSH1(&val);
     val = DoVerboseOperation1Args( self, obj );
     if (val == (Obj)0) {
         ErrorMayQuit("Method for an attribute must return a value", 0, 0);
@@ -2385,6 +2461,7 @@ static Obj DoVerboseAttribute(Obj self, Obj obj)
     }
 
     // return the value
+    GAP_GC_POP();
     return val;
 }
 
@@ -2393,9 +2470,9 @@ static Obj DoVerboseAttribute(Obj self, Obj obj)
 **
 **  DoMutableAttribute( <attr>, <obj> )
 */
-static Obj DoMutableAttribute(Obj self, Obj obj)
+static Obj DoMutableAttribute(Obj self, Obj obj) GAP_GC_CANSAFEPOINT
 {
-    Obj                 val;
+    Obj                 val = 0;
     Int                 flag2;
     Obj                 type;
     Obj                 flags;
@@ -2413,6 +2490,7 @@ static Obj DoMutableAttribute(Obj self, Obj obj)
     }
 
     // call the operation to compute the value
+    GAP_GC_PUSH1(&val);
     val = DoOperation1Args( self, obj );
     if (val == 0) {
         ErrorMayQuit("Method for an attribute must return a value", 0, 0);
@@ -2432,6 +2510,7 @@ static Obj DoMutableAttribute(Obj self, Obj obj)
     }
 
     // return the value
+    GAP_GC_POP();
     return val;
 }
 
@@ -2440,9 +2519,9 @@ static Obj DoMutableAttribute(Obj self, Obj obj)
 **
 **  DoVerboseMutableAttribute( <attr>, <obj> )
 */
-static Obj DoVerboseMutableAttribute(Obj self, Obj obj)
+static Obj DoVerboseMutableAttribute(Obj self, Obj obj) GAP_GC_CANSAFEPOINT
 {
-    Obj                 val;
+    Obj                 val = 0;
     Int                 flag2;
     Obj                 type;
     Obj                 flags;
@@ -2460,6 +2539,7 @@ static Obj DoVerboseMutableAttribute(Obj self, Obj obj)
     }
 
     // call the operation to compute the value
+    GAP_GC_PUSH1(&val);
     val = DoVerboseOperation1Args( self, obj );
     if (val == 0) {
         ErrorMayQuit("Method for an attribute must return a value", 0, 0);
@@ -2479,6 +2559,7 @@ static Obj DoVerboseMutableAttribute(Obj self, Obj obj)
     }
 
     // return the value
+    GAP_GC_POP();
     return val;
 }
 
@@ -2490,11 +2571,14 @@ static Obj DoVerboseMutableAttribute(Obj self, Obj obj)
 ** MakeSetter, MakeTester and SetupAttribute are support functions
 */
 
-static Obj WRAP_NAME(Obj name, const char *addon)
+static Obj WRAP_NAME(Obj name, const char *addon) GAP_GC_CANSAFEPOINT
 {
     UInt name_len = GET_LEN_STRING(name);
     UInt addon_len = strlen(addon);
-    Obj fname = NEW_STRING( name_len + addon_len + 2 );
+    Obj fname = 0;
+
+    GAP_GC_PUSH1(&fname);
+    fname = NEW_STRING( name_len + addon_len + 2 );
 #ifdef HPCGAP
     ImpliedWriteGuard(fname);
 #endif
@@ -2508,33 +2592,41 @@ static Obj WRAP_NAME(Obj name, const char *addon)
     *ptr++ = ')';
     *ptr = 0;
     MakeImmutable(fname);
+    GAP_GC_POP();
     return fname;
 }
 
-static Obj PREFIX_NAME(Obj name, const char *prefix)
+static Obj PREFIX_NAME(Obj name, const char *prefix) GAP_GC_CANSAFEPOINT
 {
-    Obj fname = MakeString(prefix);
+    Obj fname = 0;
+    GAP_GC_PUSH1(&fname);
+    fname = MakeString(prefix);
     AppendString(fname, name);
     MakeImmutable(fname);
+    GAP_GC_POP();
     return fname;
 }
 
 static Obj MakeSetter(Obj name, Int flag1, Int flag2, ObjFunc_2ARGS setFunc)
+    GAP_GC_CANSAFEPOINT
 {
-    Obj fname;
-    Obj setter;
+    Obj fname = 0;
+    Obj setter = 0;
+    GAP_GC_PUSH2(&fname, &setter);
     fname = PREFIX_NAME(name, "Set");
     setter = NewOperation(fname, 2, 0, (ObjFunc)setFunc);
     SET_FLAG1_FILT(setter, INTOBJ_INT(flag1));
     SET_FLAG2_FILT(setter, INTOBJ_INT(flag2));
+    GAP_GC_POP();
     return setter;
 }
 
-static Obj MakeTester( Obj name, Int flag1, Int flag2)
+static Obj MakeTester( Obj name, Int flag1, Int flag2) GAP_GC_CANSAFEPOINT
 {
-    Obj fname;
-    Obj tester;
-    Obj flags;
+    Obj fname = 0;
+    Obj tester = 0;
+    Obj flags = 0;
+    GAP_GC_PUSH3(&fname, &tester, &flags);
     fname = PREFIX_NAME(name, "Has");
     tester = NewFunctionT(T_FUNCTION, sizeof(OperBag), fname, 1, 0,
                           (ObjFunc)DoTestAttribute);
@@ -2546,6 +2638,7 @@ static Obj MakeTester( Obj name, Int flag1, Int flag2)
     SET_SETTR_FILT(tester, 0);
     SET_TESTR_FILT(tester, ReturnTrueFilter);
     SET_IS_FILTER(tester);
+    GAP_GC_POP();
     return tester;
 }
 
@@ -2570,13 +2663,14 @@ Obj NewAttribute (
     Obj                 nams,
     ObjFunc_1ARGS       hdlr )
 {
-    Obj                 getter;
-    Obj                 setter;
-    Obj                 tester;
+    Obj                 getter = 0;
+    Obj                 setter = 0;
+    Obj                 tester = 0;
     Int                 flag2;
 
     flag2 = ++CountFlags;
 
+    GAP_GC_PUSH3(&getter, &setter, &tester);
     setter = MakeSetter(name, 0, flag2, DoSetAttribute);
     tester = MakeTester(name, 0, flag2);
 
@@ -2585,6 +2679,7 @@ Obj NewAttribute (
 
     SetupAttribute(getter, setter, tester, flag2);
 
+    GAP_GC_POP();
     return getter;
 }
 
@@ -2596,9 +2691,10 @@ Obj NewAttribute (
 */
 
 static void ConvertOperationIntoAttribute(Obj oper, ObjFunc_1ARGS hdlr)
+    GAP_GC_CANSAFEPOINT
 {
-    Obj                 setter;
-    Obj                 tester;
+    Obj                 setter = 0;
+    Obj                 tester = 0;
     Int                 flag2;
     Obj                 name;
 
@@ -2607,6 +2703,7 @@ static void ConvertOperationIntoAttribute(Obj oper, ObjFunc_1ARGS hdlr)
 
     flag2 = ++CountFlags;
 
+    GAP_GC_PUSH2(&setter, &tester);
     setter = MakeSetter(name, 0, flag2, DoSetAttribute);
     tester = MakeTester(name, 0, flag2);
 
@@ -2615,6 +2712,7 @@ static void ConvertOperationIntoAttribute(Obj oper, ObjFunc_1ARGS hdlr)
     SET_HDLR_FUNC(oper, 1, (ObjFunc)hdlr);
 
     SetupAttribute( oper, setter, tester, flag2);
+    GAP_GC_POP();
 }
 
 
@@ -2622,9 +2720,9 @@ static void ConvertOperationIntoAttribute(Obj oper, ObjFunc_1ARGS hdlr)
 **
 *F  DoProperty( <name> )  . . . . . . . . . . . . . . . . make a new property
 */
-Obj SET_FILTER_OBJ;
+Obj SET_FILTER_OBJ GAP_GC_GLOBALLY_ROOTED;
 
-Obj RESET_FILTER_OBJ;
+Obj RESET_FILTER_OBJ GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
@@ -2694,11 +2792,12 @@ Obj DoProperty (
     Obj                 self,
     Obj                 obj )
 {
-    Obj                 val;
+    Obj                 val = 0;
     Int                 flag1;
     Int                 flag2;
     Obj                 type;
     Obj                 flags;
+    Obj                 setflags = 0;
 
     // get the flags for the getter and the tester
     flag1 = INT_INTOBJ( FLAG1_FILT( self ) );
@@ -2714,6 +2813,7 @@ Obj DoProperty (
     }
 
     // call the operation to compute the value
+    GAP_GC_PUSH2(&val, &setflags);
     val = DoOperation1Args( self, obj );
     if (val != True && val != False) {
         ErrorMayQuit("Method for a property did not return true or false", 0,
@@ -2730,12 +2830,13 @@ Obj DoProperty (
         case T_ACOMOBJ:
         case T_APOSOBJ:
 #endif
-            flags = (val == True ? self : TESTR_FILT(self));
-            CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
+            setflags = (val == True ? self : TESTR_FILT(self));
+            CALL_2ARGS( SET_FILTER_OBJ, obj, setflags );
         }
     }
 
     // return the value
+    GAP_GC_POP();
     return val;
 }
 
@@ -2744,13 +2845,14 @@ Obj DoProperty (
 **
 **  DoVerboseProperty( <prop>, <obj> )
 */
-static Obj DoVerboseProperty(Obj self, Obj obj)
+static Obj DoVerboseProperty(Obj self, Obj obj) GAP_GC_CANSAFEPOINT
 {
-    Obj                 val;
+    Obj                 val = 0;
     Int                 flag1;
     Int                 flag2;
     Obj                 type;
     Obj                 flags;
+    Obj                 setflags = 0;
 
     // get the flags for the getter and the tester
     flag1 = INT_INTOBJ( FLAG1_FILT( self ) );
@@ -2766,6 +2868,7 @@ static Obj DoVerboseProperty(Obj self, Obj obj)
     }
 
     // call the operation to compute the value
+    GAP_GC_PUSH2(&val, &setflags);
     val = DoVerboseOperation1Args( self, obj );
     if (val != True && val != False) {
         ErrorMayQuit("Method for a property did not return true or false", 0,
@@ -2782,12 +2885,13 @@ static Obj DoVerboseProperty(Obj self, Obj obj)
         case T_ACOMOBJ:
         case T_APOSOBJ:
 #endif
-            flags = (val == True ? self : TESTR_FILT(self));
-            CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
+            setflags = (val == True ? self : TESTR_FILT(self));
+            CALL_2ARGS( SET_FILTER_OBJ, obj, setflags );
         }
     }
 
     // return the value
+    GAP_GC_POP();
     return val;
 }
 
@@ -2802,17 +2906,18 @@ Obj NewProperty (
     ObjFunc_1ARGS       getHdlr,
     ObjFunc_2ARGS       setHdlr )
 {
-    Obj                 getter;
-    Obj                 setter;
-    Obj                 tester;
+    Obj                 getter = 0;
+    Obj                 setter = 0;
+    Obj                 tester = 0;
     Int                 flag1;
     Int                 flag2;
-    Obj                 flags;
+    Obj                 flags = 0;
 
     flag1 = ++CountFlags;
     flag2 = ++CountFlags;
 
     GAP_ASSERT(setHdlr);
+    GAP_GC_PUSH4(&getter, &setter, &tester, &flags);
     setter = MakeSetter(name, flag1, flag2, setHdlr);
     tester = MakeTester(name, flag1, flag2);
 
@@ -2836,6 +2941,7 @@ Obj NewProperty (
     SET_TESTR_FILT(setter, tester);
 
     // return the getter
+    GAP_GC_POP();
     return getter;
 }
 
@@ -2850,7 +2956,7 @@ Obj NewProperty (
 **
 **  DoUninstalledGlobalFunction( <oper>, <args> )
 */
-static Obj DoUninstalledGlobalFunction(Obj oper, Obj args)
+static Obj DoUninstalledGlobalFunction(Obj oper, Obj args) GAP_GC_CANSAFEPOINT
 {
     ErrorQuit("%g: function is not yet defined", (Int)NAME_FUNC(oper), 0);
     return 0;
@@ -2861,12 +2967,16 @@ static Obj DoUninstalledGlobalFunction(Obj oper, Obj args)
 **
 *F  NewGlobalFunction( <name>, <nams> )
 */
-static Obj NewGlobalFunction(Obj name, Obj nams)
+static Obj NewGlobalFunction(Obj name, Obj nams) GAP_GC_CANSAFEPOINT
 {
-    Obj                 func;
-    Obj                 namobj;
+    Obj                 func = 0;
+    Obj                 namobj = 0;
+    Obj                 filename = 0;
+    Obj                 body_bag = 0;
+    Obj                 empty = 0;
 
     // create the function
+    GAP_GC_PUSH5(&func, &namobj, &filename, &body_bag, &empty);
     func = NewFunction( name, -1, nams, (ObjFunc)DoUninstalledGlobalFunction );
     SET_HDLR_FUNC(func, 0, (ObjFunc)DoUninstalledGlobalFunction);
     SET_HDLR_FUNC(func, 1, (ObjFunc)DoUninstalledGlobalFunction);
@@ -2883,17 +2993,19 @@ static Obj NewGlobalFunction(Obj name, Obj nams)
 
     // We set the location to a description, to make clear the function
     // hasn't been defined yet
-    Obj  filename = MakeString("the global function \"");
+    filename = MakeString("the global function \"");
     AppendString(filename, namobj);
     const char * end = "\" is not yet defined";
     AppendCStr(filename, end, strlen(end));
 
-    Obj body_bag = NewFunctionBody();
+    body_bag = NewFunctionBody();
+    empty = MakeImmString("");
     SET_FILENAME_BODY(body_bag, filename);
-    SET_LOCATION_BODY(body_bag, MakeImmString(""));
+    SET_LOCATION_BODY(body_bag, empty);
     SET_BODY_FUNC(func, body_bag);
 
     // and return
+    GAP_GC_POP();
     return func;
 }
 
@@ -2902,7 +3014,7 @@ static Obj NewGlobalFunction(Obj name, Obj nams)
 **
 *F  InstallGlobalFunction( <oper>, <func> ) . . . . . . . . .  clone function
 */
-static void InstallGlobalFunction(Obj oper, Obj func)
+static void InstallGlobalFunction(Obj oper, Obj func) GAP_GC_CANSAFEPOINT
 {
     // get the name
     Obj name = NAME_FUNC(oper);
@@ -2987,7 +3099,7 @@ void LoadOperationExtras (
 **
 *F  FuncNEW_OPERATION( <self>, <name> ) . . . . . . . . . . . . new operation
 */
-static Obj FuncNEW_OPERATION(Obj self, Obj name)
+static Obj FuncNEW_OPERATION(Obj self, Obj name) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, name);
     return NewOperation(name, -1, 0, (ObjFunc)DoOperationXArgs);
@@ -2998,7 +3110,7 @@ static Obj FuncNEW_OPERATION(Obj self, Obj name)
 **
 *F  FuncNEW_CONSTRUCTOR( <self>, <name> ) . . . . . . . . . . new constructor
 */
-static Obj FuncNEW_CONSTRUCTOR(Obj self, Obj name)
+static Obj FuncNEW_CONSTRUCTOR(Obj self, Obj name) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, name);
     return NewConstructor( name );
@@ -3013,7 +3125,7 @@ static Obj FuncIS_CONSTRUCTOR(Obj self, Obj x)
 **
 *F  FuncNEW_ATTRIBUTE( <self>, <name> ) . . . . . . . . . . . . new attribute
 */
-static Obj FuncNEW_ATTRIBUTE(Obj self, Obj name)
+static Obj FuncNEW_ATTRIBUTE(Obj self, Obj name) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, name);
     return NewAttribute(name, 0, DoAttribute);
@@ -3022,7 +3134,7 @@ static Obj FuncNEW_ATTRIBUTE(Obj self, Obj name)
 **
 *F  FuncOPER_TO_ATTRIBUTE( <self>, oper ) make existing operation into attribute
 */
-static Obj FuncOPER_TO_ATTRIBUTE(Obj self, Obj oper)
+static Obj FuncOPER_TO_ATTRIBUTE(Obj self, Obj oper) GAP_GC_CANSAFEPOINT
 {
     RequireOperation(oper);
     ConvertOperationIntoAttribute(oper, DoAttribute);
@@ -3034,6 +3146,7 @@ static Obj FuncOPER_TO_ATTRIBUTE(Obj self, Obj oper)
 *F  FuncOPER_TO_MUTABLE_ATTRIBUTE( <self>, oper ) make existing operation into attribute
 */
 static Obj FuncOPER_TO_MUTABLE_ATTRIBUTE(Obj self, Obj oper)
+    GAP_GC_CANSAFEPOINT
 {
     RequireOperation(oper);
     ConvertOperationIntoAttribute(oper, DoMutableAttribute);
@@ -3045,7 +3158,7 @@ static Obj FuncOPER_TO_MUTABLE_ATTRIBUTE(Obj self, Obj oper)
 **
 *F  FuncNEW_MUTABLE_ATTRIBUTE( <self>, <name> ) . . . . new mutable attribute
 */
-static Obj FuncNEW_MUTABLE_ATTRIBUTE(Obj self, Obj name)
+static Obj FuncNEW_MUTABLE_ATTRIBUTE(Obj self, Obj name) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, name);
     return NewAttribute(name, 0, DoMutableAttribute);
@@ -3056,7 +3169,7 @@ static Obj FuncNEW_MUTABLE_ATTRIBUTE(Obj self, Obj name)
 **
 *F  FuncNEW_PROPERTY( <self>, <name> )  . . . . . . . . . . . .  new property
 */
-static Obj FuncNEW_PROPERTY(Obj self, Obj name)
+static Obj FuncNEW_PROPERTY(Obj self, Obj name) GAP_GC_CANSAFEPOINT
 {
     RequireStringRep(SELF_NAME, name);
     return NewProperty(name, 0, DoProperty, DoSetProperty);
@@ -3067,18 +3180,21 @@ static Obj FuncNEW_PROPERTY(Obj self, Obj name)
 **
 *F  FuncNEW_GLOBAL_FUNCTION( <self>, <name> ) . . . . . . new global function
 */
-static Obj FuncNEW_GLOBAL_FUNCTION(Obj self, Obj name)
+static Obj FuncNEW_GLOBAL_FUNCTION(Obj self, Obj name) GAP_GC_CANSAFEPOINT
 {
-    Obj                 args;
-    Obj                 list;
+    Obj                 args = 0;
+    Obj                 list = 0;
 
     RequireStringRep(SELF_NAME, name);
 
+    GAP_GC_PUSH2(&args, &list);
     args = MakeImmString("args");
     list = NEW_PLIST( T_PLIST, 1 );
     SET_LEN_PLIST( list, 1 );
     SET_ELM_PLIST( list, 1, args );
-    return NewGlobalFunction( name, list );
+    Obj func = NewGlobalFunction( name, list );
+    GAP_GC_POP();
+    return func;
 }
 
 
@@ -3086,9 +3202,10 @@ static Obj FuncNEW_GLOBAL_FUNCTION(Obj self, Obj name)
 **
 *F  FuncINSTALL_GLOBAL_FUNCTION( <self>, <oper>, <func> )
 */
-static Obj REREADING;
+static Obj REREADING GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncINSTALL_GLOBAL_FUNCTION(Obj self, Obj oper, Obj func)
+    GAP_GC_CANSAFEPOINT
 {
     RequireFunction(SELF_NAME, oper);
     if ( (REREADING != True) &&
@@ -3110,7 +3227,7 @@ static Obj FuncINSTALL_GLOBAL_FUNCTION(Obj self, Obj oper, Obj func)
 **
 *F  FiltIS_OPERATION( <self>, <obj> ) . . . . . . . . . is <obj> an operation
 */
-static Obj IsOperationFilt;
+static Obj IsOperationFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_OPERATION(Obj self, Obj obj)
 {
@@ -3130,7 +3247,7 @@ static Obj FiltIS_OPERATION(Obj self, Obj obj)
 **
 *F  FuncMETHODS_OPERATION( <self>, <oper>, <narg> ) . . . . .  list of method
 */
-static Obj MethsOper(Obj oper, UInt i)
+static Obj MethsOper(Obj oper, UInt i) GAP_GC_CANSAFEPOINT
 {
     Obj                 methods;
     methods = METHS_OPER( oper, i );
@@ -3145,6 +3262,7 @@ static Obj MethsOper(Obj oper, UInt i)
 }
 
 static Obj FuncMETHODS_OPERATION(Obj self, Obj oper, Obj narg)
+    GAP_GC_CANSAFEPOINT
 {
     Int                 n;
     Obj                 meth;
@@ -3164,6 +3282,7 @@ static Obj FuncMETHODS_OPERATION(Obj self, Obj oper, Obj narg)
 *F  FuncCHANGED_METHODS_OPERATION( <self>, <oper>, <narg> ) . . . clear cache
 */
 static Obj FuncCHANGED_METHODS_OPERATION(Obj self, Obj oper, Obj narg)
+    GAP_GC_CANSAFEPOINT
 {
     Obj *               cache;
     Bag                 cacheBag;
@@ -3191,6 +3310,7 @@ static Obj FuncCHANGED_METHODS_OPERATION(Obj self, Obj oper, Obj narg)
 *F  FuncSET_METHODS_OPERATION( <self>, <oper>, <narg>, <list> ) . set methods
 */
 static Obj FuncSET_METHODS_OPERATION(Obj self, Obj oper, Obj narg, Obj meths)
+    GAP_GC_CANSAFEPOINT
 {
     Int                 n;
 
@@ -3209,6 +3329,7 @@ static Obj FuncSET_METHODS_OPERATION(Obj self, Obj oper, Obj narg, Obj meths)
 *F  FuncINSTALL_EARLY_METHOD( <self>, <oper>, <func> ) . install early method
 */
 static Obj FuncINSTALL_EARLY_METHOD(Obj self, Obj oper, Obj func)
+    GAP_GC_CANSAFEPOINT
 {
     RequireOperation(oper);
     RequireFunction(SELF_NAME, func);
@@ -3238,7 +3359,7 @@ static Obj FuncINSTALL_EARLY_METHOD(Obj self, Obj oper, Obj func)
 **
 *F  FuncEARLY_METHOD( <self>, <oper>, <narg> ) . . . . . . . get early method
 */
-static Obj FuncEARLY_METHOD(Obj self, Obj oper, Obj narg)
+static Obj FuncEARLY_METHOD(Obj self, Obj oper, Obj narg) GAP_GC_CANSAFEPOINT
 {
     RequireOperation(oper);
     int n = GetBoundedInt(SELF_NAME, narg, 0, MAX_OPER_ARGS);
@@ -3250,7 +3371,7 @@ static Obj FuncEARLY_METHOD(Obj self, Obj oper, Obj narg)
 **
 *F  FuncSETTER_FUNCTION( <self>, <name>, <filter> )  default attribute setter
 */
-static Obj DoSetterFunction(Obj self, Obj obj, Obj value)
+static Obj DoSetterFunction(Obj self, Obj obj, Obj value) GAP_GC_CANSAFEPOINT
 {
     Obj                 tmp;
     Obj                 tester;
@@ -3300,16 +3421,21 @@ static Obj DoSetterFunction(Obj self, Obj obj, Obj value)
 
 
 static Obj FuncSETTER_FUNCTION(Obj self, Obj name, Obj filter)
+    GAP_GC_CANSAFEPOINT
 {
-    Obj                 func;
-    Obj                 fname;
-    Obj                 tmp;
+    Obj                 func = 0;
+    Obj                 fname = 0;
+    Obj                 tmp = 0;
+    Obj                 rnam = 0;
 
+    GAP_GC_PUSH4(&func, &fname, &tmp, &rnam);
     fname = WRAP_NAME(name, "SetterFunc");
     func = NewFunction( fname, 2, ArglistObjVal, (ObjFunc)DoSetterFunction );
-    tmp = NewPlistFromArgs(INTOBJ_INT(RNamObj(name)), filter);
+    rnam = INTOBJ_INT(RNamObj(name));
+    tmp = NewPlistFromArgs(rnam, filter);
     MakeImmutableNoRecurse(tmp);
     SET_ENVI_FUNC(func, tmp);
+    GAP_GC_POP();
     return func;
 }
 
@@ -3318,7 +3444,7 @@ static Obj FuncSETTER_FUNCTION(Obj self, Obj name, Obj filter)
 **
 *F  FuncGETTER_FUNCTION( <self>, <name> ) . . . . .  default attribute getter
 */
-static Obj DoGetterFunction(Obj self, Obj obj)
+static Obj DoGetterFunction(Obj self, Obj obj) GAP_GC_CANSAFEPOINT
 {
     switch (TNUM_OBJ(obj)) {
       case T_COMOBJ:
@@ -3334,14 +3460,16 @@ static Obj DoGetterFunction(Obj self, Obj obj)
 }
 
 
-static Obj FuncGETTER_FUNCTION(Obj self, Obj name)
+static Obj FuncGETTER_FUNCTION(Obj self, Obj name) GAP_GC_CANSAFEPOINT
 {
-    Obj                 func;
-    Obj                 fname;
+    Obj                 func = 0;
+    Obj                 fname = 0;
 
+    GAP_GC_PUSH2(&func, &fname);
     fname = WRAP_NAME(name, "GetterFunc");
     func = NewFunction( fname, 1, ArglistObj, (ObjFunc)DoGetterFunction );
     SET_ENVI_FUNC(func, INTOBJ_INT( RNamObj(name) ));
+    GAP_GC_POP();
     return func;
 }
 
@@ -3350,7 +3478,7 @@ static Obj FuncGETTER_FUNCTION(Obj self, Obj name)
 **
 *F  FuncOPERS_CACHE_INFO( <self> )  . . . . . . .  return cache stats as list
 */
-static Obj FuncOPERS_CACHE_INFO(Obj self)
+static Obj FuncOPERS_CACHE_INFO(Obj self) GAP_GC_CANSAFEPOINT
 {
     Obj                 list;
     Int                 i;
@@ -3507,7 +3635,7 @@ void ChangeDoOperations (
 **
 *F  FuncTRACE_METHODS( <oper> ) . . . . . . . .  switch tracing of methods on
 */
-static Obj FuncTRACE_METHODS(Obj self, Obj oper)
+static Obj FuncTRACE_METHODS(Obj self, Obj oper) GAP_GC_CANSAFEPOINT
 {
     RequireOperation(oper);
     ChangeDoOperations(oper, 1);
@@ -3519,7 +3647,7 @@ static Obj FuncTRACE_METHODS(Obj self, Obj oper)
 **
 *F  FuncUNTRACE_METHODS( <oper> ) . . . . . . . switch tracing of methods off
 */
-static Obj FuncUNTRACE_METHODS(Obj self, Obj oper)
+static Obj FuncUNTRACE_METHODS(Obj self, Obj oper) GAP_GC_CANSAFEPOINT
 {
     RequireOperation(oper);
     ChangeDoOperations(oper, 0);
@@ -3636,8 +3764,10 @@ static StructGVarFunc GVarFuncs [] = {
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
+    Obj obj = 0;
+    Obj val = 0;
 
     CountFlags = 0;
 
@@ -3649,12 +3779,15 @@ static Int InitKernel (
     // share between uncompleted functions
     StringFilterSetter = MakeImmString("<<filter-setter>>");
 
-    ArglistObj = NewPlistFromArgs(MakeImmString("obj"));
+    GAP_GC_PUSH2(&obj, &val);
+    obj = MakeImmString("obj");
+    ArglistObj = NewPlistFromArgs(obj);
     MakeImmutableNoRecurse(ArglistObj);
 
-    ArglistObjVal =
-        NewPlistFromArgs(MakeImmString("obj"), MakeImmString("val"));
+    val = MakeImmString("val");
+    ArglistObjVal = NewPlistFromArgs(obj, val);
     MakeImmutableNoRecurse(ArglistObjVal);
+    GAP_GC_POP();
 
     // Declare the handlers used in various places. Some of the most common
     // ones are abbreviated to save space in saved workspace.
@@ -3793,7 +3926,7 @@ static Int InitKernel (
 *F  PostRestore( <module> ) . . . . . . .  initialise library data structures
 **
 */
-static Int PostRestore(StructInitInfo * module)
+static Int PostRestore(StructInitInfo * module) GAP_GC_CANSAFEPOINT
 {
     CountFlags = LEN_LIST(ValGVar(GVarName("FILTERS")));
     return 0;
@@ -3803,7 +3936,7 @@ static Int PostRestore(StructInitInfo * module)
 **
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-static Int InitLibrary(StructInitInfo * module)
+static Int InitLibrary(StructInitInfo * module) GAP_GC_CANSAFEPOINT
 {
     ExportAsConstantGVar(BASE_SIZE_METHODS_OPER_ENTRY);
 
