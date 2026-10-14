@@ -53,8 +53,7 @@ computability.
 So for example <Ref Oper="Position"/> will return <K>fail</K>
 if the point searched for is not in the list.
 <P/>
-<K>fail</K> is simply an object that is different from every other object
-than itself.
+<K>fail</K> is simply an object that is equal only to itself.
 <P/>
 For technical reasons, <K>fail</K> is a boolean value.
 But note that <K>fail</K> cannot be used to form boolean expressions with

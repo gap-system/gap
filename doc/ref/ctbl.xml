@@ -64,7 +64,7 @@ as well as the list handling
 &ndash;it is an important feature of character theoretic methods
 that questions about groups are translated into manipulations of lists;
 on the other hand, the datatype of cyclotomics
-(see Chapter&nbsp;<Ref Var="Cyclotomics"/>)
+(see Chapter&nbsp;<Ref Chap="Cyclotomic Numbers"/>)
 was added to the &GAP; kernel because of the character theory algorithms.
 For developing further code, also other areas of &GAP;'s library became
 interesting, such as permutation groups, finite fields, and polynomials.
@@ -406,7 +406,7 @@ Note that there is no <Q>safety net</Q>:
 The routines (being somehow internal) do no error checking,
 and assume the information given is correct.
 <P/>
-When the info level of <Ref InfoClass="InfoCharacterTable"/> if positive,
+When the info level of <Ref InfoClass="InfoCharacterTable"/> is positive,
 information about the progress of splitting is printed.
 (The default value is zero.)
 

@@ -53,7 +53,7 @@ DeclareInfoClass( "InfoSchur" );
 ##  ]]></Example>
 ##  <P/>
 ##  If the group becomes bigger, Schur Cover calculations might become
-##  unfeasible.
+##  infeasible.
 ##  <P/>
 ##  There is another operation, <Ref Attr="AbelianInvariantsMultiplier"/>,
 ##  which only returns the structure of the Schur Multiplier,
@@ -185,7 +185,7 @@ DeclareAttribute( "AbelianInvariantsMultiplier", IsGroup );
 ##  There are various ways of describing the epicentre of a group <A>G</A>.
 ##  It is the smallest normal subgroup <M>N</M> of <A>G</A> such that
 ##  <M><A>G</A>/N</M> is a central quotient of a group.
-##  It is also equal to the Exterior Center of <A>G</A>,
+##  It is also equal to the exterior centre of <A>G</A>,
 ##  see <Cite Key="Ellis98"/>.
 ##  </Description>
 ##  </ManSection>

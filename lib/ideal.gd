@@ -90,7 +90,7 @@
 ##  <Func Name="RightIdeal" Arg='R, gens[, "basis"]'/>
 ##
 ##  <Description>
-##  Let <A>R</A> be a ring, and <A>gens</A> a list of collection of elements
+##  Let <A>R</A> be a ring, and <A>gens</A> a list or collection of elements
 ##  in <A>R</A>.
 ##  <Ref Func="TwoSidedIdeal"/>, <Ref Func="LeftIdeal"/>,
 ##  and <Ref Func="RightIdeal"/> return the two-sided,

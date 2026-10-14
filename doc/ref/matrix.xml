@@ -79,7 +79,7 @@ and the multiplicative behaviour is defined only for lists in the category
 <Index Subkey="matrices">addition</Index>
 <C><A>mat1</A> + <A>mat2</A></C>
 <P/>
-returns the sum of the two matrices <A>mat1</A> and <A>mat2</A>,
+returns the sum of the two matrices <A>mat1</A> and <A>mat2</A>.
 Probably the most usual situation is that <A>mat1</A> and <A>mat2</A> have the same
 dimensions and are defined over a common field;
 in this case the sum is a new matrix over the same field where each entry
@@ -173,7 +173,7 @@ This form evaluates to the (Cauchy) product of the two matrices <A>mat1</A> and
 <A>mat2</A>.
 Probably the most usual situation is that the number of columns of <A>mat1</A>
 equals the number of rows of <A>mat2</A>,
-and that the elements of <A>mat</A> and <A>vec</A> lie in a common field;
+and that the elements of <A>mat1</A> and <A>mat2</A> lie in a common field;
 if <A>mat1</A> is a matrix with <M>m</M> rows and <M>n</M> columns and <A>mat2</A> is a
 matrix with <M>n</M> rows and <M>o</M> columns, the result is a new matrix with <M>m</M>
 rows and <M>o</M> columns.
@@ -222,7 +222,7 @@ the matrix <C><A>mat2</A>^-1 * <A>mat1</A> * <A>mat2</A></C>.
 <P/>
 Powering a row vector <A>vec</A> by a matrix <A>mat</A> is in every respect equivalent
 to <C><A>vec</A> * <A>mat</A></C>.
-This operations reflects the fact that matrices act naturally on row vectors
+This operation reflects the fact that matrices act naturally on row vectors
 by multiplication from the right, and that the powering operator is &GAP;'s
 standard for group actions.
 <P/>
@@ -282,7 +282,7 @@ evaluates to <C><A>matlist</A> * <A>mat</A>^-1</C>.
 <Index Subkey="vector and matrix list">multiplication</Index>
 <C><A>vec</A> * <A>matlist</A></C>
 <P/>
-returns the product of the vector <A>vec</A> and the list of matrices <A>mat</A>.
+returns the product of the vector <A>vec</A> and the list of matrices <A>matlist</A>.
 The lengths <A>l</A> of <A>vec</A> and <A>matlist</A> must be equal.
 All matrices in <A>matlist</A> must have the same dimensions. The elements of
 <A>vec</A> and the elements of the matrices in <A>matlist</A> must lie in a common

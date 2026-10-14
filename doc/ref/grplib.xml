@@ -40,7 +40,7 @@ initially knows the following groups:
     (see&nbsp;<Ref BookName="perfgrp" Chap="The Perfect Groups Library"/>),
 </Item>
 <Item>
- a library of primitive permutations groups,
+ a library of primitive permutation groups,
     provided by the <Package>PrimGrp</Package> package
     (see&nbsp;<Ref BookName="primgrp" Sect="Primitive Permutation Groups"/>),
 </Item>
@@ -208,7 +208,7 @@ The first argument <A>cat</A> for each method of this constructor must be
 the category for which the method is installed.
 For example the method for constructing a cyclic permutation group
 is installed as follows (see&nbsp;<Ref Func="InstallMethod"/>
-for the meaning of the arguments.
+for the meaning of the arguments).
 <P/>
 <Log><![CDATA[
 InstallMethod( CyclicGroupCons,
@@ -721,7 +721,7 @@ The resulting record contains six or seven components:
 <Item>
       the elementary divisors of the associated Gram matrix  <A>F</A>  (in the
       same format as the result of the function
-      <Ref Oper="ElementaryDivisorsMat"/>,
+      <Ref Oper="ElementaryDivisorsMat"/>),
 </Item>
 <Mark><C>minimalNorm</C> </Mark>
 <Item>
@@ -817,9 +817,8 @@ gap> for m in GeneratorsOfGroup( G ) do PrintArray( m ); od;
 <P/>
 The attributes <Ref Attr="Size"/> and <C>IsSolvable</C> will be
 properly set in the resulting matrix group <M>G</M>.
-In addition, it has two attributes <C>IsImfMatrixGroup</C> and
-<C>ImfRecord</C> where the first one is just a logical flag set to
-<K>true</K> and the latter one is a record.
+In addition, it lies in the filter <C>IsImfMatrixGroup</C> and has the
+attribute <C>ImfRecord</C>, which is a record.
 Except for the group size and the solvability flag, this record contains the
 same components as the resulting record of the function
 <Ref Func="ImfInvariants"/> described above, namely the components

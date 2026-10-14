@@ -18,7 +18,7 @@ if <M>p</M> divides neither <M>a</M> nor <M>b</M>.
 They form a field of characteristic 0 which nevertheless shows
 some behaviour of the finite field with <M>p</M> elements.
 <P/>
-A <M>p</M>-adic numbers can be represented by a
+A <M>p</M>-adic number can be represented by a
 <Q><M>p</M>-adic expansion</Q> which is similar to the decimal expansion
 used for the reals (but written from left to right).
 So for example if <M>p = 2</M>, the numbers <M>1</M>, <M>2</M>, <M>3</M>,

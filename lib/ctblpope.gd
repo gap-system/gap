@@ -45,7 +45,7 @@
 ##  permutation characters,
 ##  using that such a class function <M>\pi</M> must have at least the
 ##  following properties.
-##  (For details, see&nbsp;<Cite Key="Isa76" Where="Theorem 5.18."/>),
+##  (For details, see&nbsp;<Cite Key="Isa76" Where="Theorem 5.18"/>.)
 ##
 ##  <List>
 ##  <Mark>(a)</Mark>
@@ -312,8 +312,8 @@ DeclareGlobalFunction( "PermCharInfoRelative" );
 ##  <Description>
 ##  The first three of these functions implement tests of the properties of
 ##  possible permutation characters listed in
-##  Section&nbsp;<Ref Sect="Possible Permutation Characters"/>,
-##  The other two implement test of additional properties.
+##  Section&nbsp;<Ref Sect="Possible Permutation Characters"/>.
+##  The other two implement tests of additional properties.
 ##  Let <A>tbl</A> be the ordinary character table of a group <M>G</M>,
 ##  <A>char</A> a rational character of <A>tbl</A>,
 ##  and <A>chars</A> a list of rational characters of <A>tbl</A>.
@@ -326,7 +326,7 @@ DeclareGlobalFunction( "PermCharInfoRelative" );
 ##  The return values of the functions were chosen parallel to the tests
 ##  listed in&nbsp;<Cite Key="NPP84"/>.
 ##  <P/>
-##  <Ref Func="TestPerm1"/> return <C>1</C> or <C>2</C> if <A>char</A> fails
+##  <Ref Func="TestPerm1"/> returns <C>1</C> or <C>2</C> if <A>char</A> fails
 ##  because of (T1) or (T2), respectively;
 ##  this corresponds to the criteria (b) and (d).
 ##  Note that only those power maps are considered that are stored on
@@ -562,7 +562,7 @@ DeclareGlobalFunction( "TestPerm5" );
 ##  ]]></Example>
 ##  <P/>
 ##  An additional restriction on the possible permutation characters computed
-##  can be forced if <A>con</A> contains, in addition to <C>torso</C>,
+##  can be forced if <A>cond</A> contains, in addition to <C>torso</C>,
 ##  the components <C>normalsubgroup</C> and <C>nonfaithful</C>,
 ##  with values a list of class positions of a normal subgroup <M>N</M> of
 ##  the group <M>G</M> of <A>tbl</A> and a possible permutation character
@@ -578,7 +578,7 @@ DeclareGlobalFunction( "TestPerm5" );
 ##  An interpretation of the computed characters is the following.
 ##  Suppose there exists a subgroup <M>V</M> of <M>G</M> such that
 ##  <M>\pi = (1_V)^G</M>;
-##  Then <M>N \leq V</M>, and if a computed character is of the form
+##  then <M>N \leq V</M>, and if a computed character is of the form
 ##  <M>(1_U)^G</M>, for a subgroup <M>U</M> of <M>G</M>, then <M>V = UN</M>.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -758,7 +758,7 @@ DeclareGlobalFunction( "PermBounds" );
 ##  this is useful if the multiplicities are expected to be small,
 ##  and if this is forced by high irreducible degrees.
 ##  <P/>
-##  A list of upper bounds on the multiplicities of the rational irreducibles
+##  A list of upper bounds on the multiplicities of the rational irreducible
 ##  characters can be explicitly prescribed as a <C>maxmult</C> component in
 ##  <A>arec</A>.
 ##  </Description>

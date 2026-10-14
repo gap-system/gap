@@ -117,7 +117,7 @@ components.
 <Mark><C>points</C></Mark>
 <Item>
         a list  of all points contained in  the  partition, such that the
-        points of each cell from lie consecutively,
+        points of each cell lie consecutively,
 </Item>
 <Mark><C>cellno</C></Mark>
 <Item>
@@ -159,8 +159,8 @@ the ones that remain inside occupy positions <C>[ <A>P</A>.firsts[<A>m</A>] .. <
 <Item>
 The  points  at  positions  <C>[ <A>last</A> + 1 .. <A>P</A>.firsts[<A>m</A>] +
 <A>P</A>.lengths[<A>m</A>] - 1 ]</C> will form the additional cell.
-For this new  cell
-requires additional entries are added to the lists <C><A>P</A>.firsts</C>  (namely,
+For this new  cell,
+entries are added to the lists <C><A>P</A>.firsts</C>  (namely,
 <C><A>last</A>+1</C>) and <C><A>P</A>.lengths</C> (namely,
 <C><A>P</A>.firsts[<A>m</A>] + <A>P</A>.lengths[<A>m</A>] - <A>last</A> - 1</C>).
 </Item>
@@ -363,7 +363,7 @@ The list numbers below refer to the line numbers of the code above.
     <M>q</M>:
     It prescribes <M>q</M> as next base in the stabilizer chain for  <M>G</M>
     (needed, e.g., in line&nbsp;5)
-    and  returns  <K>false</K>  if  <M>q</M>  was  already  fixed  the
+    and  returns  <K>false</K>  if  <M>q</M>  was  already  fixed  by the
     stabilizer of the earlier base points
     (and <K>true</K> otherwise; this is  not used here).
     Another call to <C>ProcessFixpoint</C> like  this  was  implicitly
@@ -460,7 +460,7 @@ The list numbers below refer to the line numbers of the code above.
 The last
 subsection showed   how the refinement   process leading from  <M>\Pi_i</M> to
 <M>\Pi_{{i+1}}</M>  is coded in the  function  <M>R</M><C>.nextLevel</C>, this  has to be
-executed once the  base point  <M>a_{{i+1}}</M>.  The analogous refinement  step
+executed once the  base point  <M>a_{{i+1}}</M> has been chosen.  The analogous refinement  step
 from <M>\Sigma_i</M> to <M>\Sigma_{{i+1}}</M> must be performed for each choice of an
 image <M>b_{{i+1}}</M> for  <M>a_{{i+1}}</M>, and it will  depend  on the corresponding
 value of <M>\Sigma_i \wedge (\{b_{{i+1}}\}, \Omega \setminus \{b_{{i+1}}\})</M>.

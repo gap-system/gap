@@ -195,7 +195,7 @@ DeclareCategory( "IsInfBitsFamily", IsSyllableWordsFamily );
 ##
 ##  <Description>
 ##  A word in syllable representation stores generator/exponents pairs (as
-##  given by <Ref Oper="ExtRepOfObj"/>.
+##  given by <Ref Oper="ExtRepOfObj"/>).
 ##  Syllable access is fast, letter access is slow for such words.
 ##  </Description>
 ##  </ManSection>
@@ -242,7 +242,7 @@ fi;
 ##  <Description>
 ##  these two subrepresentations of <Ref Filt="IsLetterAssocWordRep"/>
 ##  indicate whether the word is stored as a list of bytes (in a string)
-##  or as a list of integers).
+##  or as a list of integers.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -737,7 +737,7 @@ DeclareOperation( "ExponentSumWord", [ IsAssocWord, IsAssocWord ] );
 ##  over an alphabet containing <M>x_1, x_2, \ldots, x_k</M>,
 ##  such that <M>x_i \neq x_{{i+1}}^{{\pm 1}}</M> for
 ##  <M>1 \leq i \leq k-1</M>,
-##  the subwords <M>x_i^{{e_i}}</M> are uniquely determined;
+##  the subwords <M>x_i^{{n_i}}</M> are uniquely determined;
 ##  these powers of generators are called the <E>syllables</E> of <M>w</M>.
 ##  <#/GAPDoc>
 ##
@@ -843,7 +843,7 @@ DeclareOperation( "SubSyllables", [ IsAssocWord, IsInt, IsInt ] );
 ##  <Oper Name="LetterRepAssocWord" Arg='w[, gens]'/>
 ##
 ##  <Description>
-##  The <E>letter representation</E> of an associated word is as a list of
+##  The <E>letter representation</E> of an associative word is as a list of
 ##  integers, each entry corresponding to a group generator. Inverses of the
 ##  generators are represented by negative numbers. The generator numbers
 ##  are as associated to the family.
@@ -874,7 +874,7 @@ DeclareOperation( "LetterRepAssocWord", [ IsAssocWord ] );
 ##  <Description>
 ##  takes a letter representation <A>lrep</A>
 ##  (see <Ref Oper="LetterRepAssocWord"/>) and returns an associative word in
-##  family <A>fam</A> corresponding to this letter representation.
+##  family <A>Fam</A> corresponding to this letter representation.
 ##  <P/>
 ##  If <A>gens</A> is given, the numbers in the letter
 ##  representation correspond to <A>gens</A>.

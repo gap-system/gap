@@ -71,7 +71,7 @@ not homogeneous like lists.
 <P/>
 The above construct evaluates to the value of the record component with
 the name <A>name</A> in the record <A>r</A>. Note that the <A>name</A> is not
-evaluated, i.e. it is taken literal.
+evaluated, i.e. it is taken literally.
 <P/>
 <Example><![CDATA[
 gap> r := rec( a := 1, b := 2 );;
@@ -222,7 +222,7 @@ a record assignment also changes the other one. This is slightly
 incorrect, because if <E>two</E> records are identical, there are actually
 only two names for <E>one</E> record. However, the correct usage would be
 very awkward and would only add to the confusion.  Note that two
-identical records must be equal, because there is only one records with
+identical records must be equal, because there is only one record with
 two different names. Thus identity is an equivalence relation that is a
 refinement of equality.
 <P/>
@@ -428,7 +428,7 @@ methods for these operations for any object. This
 permits objects to simulate record behavior.
 <P/>
 To save memory, records do not store a list of all component names, but only
-numbers identifying the components. There numbers are called <E>RNams</E>.
+numbers identifying the components. These numbers are called <E>RNams</E>.
 &GAP; keeps a global list of all RNams that are used and provides
 the functions <Ref Func="NameRNam"/> and
 <Ref Func="RNamObj" Label="for a string"/>
@@ -464,7 +464,7 @@ gap> NameRNam(last);
 <P/>
 The correspondence between strings and RNams is not predetermined ab initio,
 but RNams are assigned to component names dynamically on a
-<Q>first come, first serve</Q> basis.
+<Q>first come, first served</Q> basis.
 Therefore, depending on the version of the library you are using and on the
 assignments done so far, the <E>same</E> component name may be represented
 by <E>different</E> RNams in different &GAP; sessions.

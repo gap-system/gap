@@ -620,9 +620,9 @@ DeclareAttribute( "UnderlyingGeneralMapping", IsCollection );
 ##  <Func Name="GeneralMappingsFamily" Arg='sourcefam, rangefam'/>
 ##
 ##  <Description>
-##  All general mappings with same source family <A>FS</A> and same range
-##  family <A>FR</A> lie in the family
-##  <C>GeneralMappingsFamily( <A>FS</A>, <A>FR</A> )</C>.
+##  All general mappings with same source family <A>sourcefam</A> and same
+##  range family <A>rangefam</A> lie in the family
+##  <C>GeneralMappingsFamily( <A>sourcefam</A>, <A>rangefam</A> )</C>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -684,11 +684,11 @@ DeclareAttribute( "IdentityMapping", IsCollection );
 ##  <P/>
 ##  Note that the inverse general mapping of a mapping <A>map</A> is
 ##  in general only a general mapping.
-##  If <A>map</A> knows to be bijective, then its inverse general mapping will know
-##  to be a mapping.
+##  If <A>map</A> is known to be bijective, its inverse general mapping is
+##  known to be a mapping.
 ##  However, <Ref Attr="Inverse"/> works for a bijective general mapping <A>map</A>
 ##  only if the source and range of <A>map</A> coincide.
-##  This behaviour agrees with the definition of <A>Inverse</A>.
+##  This behaviour agrees with the definition of <Ref Attr="Inverse"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

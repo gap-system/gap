@@ -281,7 +281,7 @@ Transformation( [ 1, 3, 8, 1, 3, 1, 3, 4 ] )
       the kernel corresponding to <A>ker</A>.
       <P/>
 
-      Note that this is function does not always return the same
+      Note that this function does not always return the same
       transformation as <C>TransformationByImageAndKernel</C> with the
       same arguments.
 
@@ -604,8 +604,7 @@ gap> PermutationOfImage( f );
   <Description>
       <C><A>f</A> ^ <A>g</A></C>
       returns <C><A>g</A> ^ -1 * <A>f</A> * <A>g</A></C> when
-      <A>f</A> is a transformation and <A>g</A> is a permutation
-      <Ref Oper="\^"/>.
+      <A>f</A> is a transformation and <A>g</A> is a permutation.
       This operation requires essentially the same number of steps as
       multiplying a transformation by a permutation, which is
       approximately one third of the number required to first invert
@@ -650,7 +649,7 @@ gap> PermutationOfImage( f );
 </ManSection>
 
 <ManSection>
-  <Meth Name="\&lt;" Arg="i, f" Label="for transformations"/>
+  <Meth Name="\&lt;" Arg="f, g" Label="for transformations"/>
   <Description>
       <Index Subkey="for transformations">smaller</Index>
       <C><A>f</A> &lt; <A>g</A></C>
@@ -934,7 +933,7 @@ gap> MovedPoints( f );
       <C>i ^ <A>f</A> &lt;> i</C>.
       <P/>
 
-      <C>MovedPoints</C> returns the number of points which are moved by at
+      <C>NrMovedPoints</C> returns the number of points which are moved by at
       least one element of the collection of transformations <A>coll</A>.
       <Example><![CDATA[
 gap> f := Transformation( [ 7, 1, 4, 3, 2, 7, 7, 6, 6, 5 ] );;
@@ -989,7 +988,7 @@ gap> SmallestMovedPoint( f );
     Label="for a transformation coll"/>
   <Returns>A positive integer.</Returns>
   <Description>
-    <C>LargestMovedPoint</C> returns the largest positive integers
+    <C>LargestMovedPoint</C> returns the largest positive integer
     <C>i</C> such that <C>i ^ <A>f</A> &lt;> i</C> if such an <C>i</C>
     exists.  If <A>f</A> is the identity transformation, then <C>0</C>
     is returned.
@@ -1031,7 +1030,7 @@ gap> LargestMovedPoint( f );
     transformation, then <K>infinity</K> is returned.<P/>
 
     If the argument is a collection of transformations <A>coll</A>, then
-    the smallest integer which is the image a point moved by at least
+    the smallest integer which is the image of a point moved by at least
     one element of <A>coll</A> is returned, if such a point exists.  If
     <A>coll</A> only contains identity transformations, then
     <C>SmallestImageOfMovedPoint</C> returns <K>infinity</K>.
@@ -1068,7 +1067,7 @@ gap> SmallestImageOfMovedPoint( f );
     <P/>
 
     If the argument is a collection of transformations <A>coll</A>, then
-    the largest integer which is the image a point moved by at least one
+    the largest integer which is the image of a point moved by at least one
     element of <A>coll</A> is returned, if such a point exists.  If
     <A>coll</A> only contains identity transformations, then
     <C>LargestImageOfMovedPoint</C> returns <C>0</C>.
@@ -1458,7 +1457,7 @@ false
   <Heading>Displaying transformations</Heading>
     It is possible to change the way that &GAP; displays transformations
     using the user preferences <C>TransformationDisplayLimit</C> and
-    <C>NotationForTransformations</C>; see Section <Ref
+    <C>NotationForTransformations</C>; see <Ref
       Func="UserPreference"/> for more information about user
     preferences.
     <P/>
@@ -1485,7 +1484,7 @@ false
 
       <Mark>input</Mark>
       <Item>
-        With this option a transformation <A>f</A> is displayed in as:
+        With this option a transformation <A>f</A> is displayed as:
         <C>Transformation( ImageListOfTransformation( <A>f</A>, n ) )</C>
         where <C>n</C> is the degree of <A>f</A>. The only exception is
         the identity transformation, which is displayed as:
@@ -1493,7 +1492,7 @@ false
       </Item>
 
       <Mark>fr</Mark>
-      <Item>With this option a transformation <A>f</A> is displayed in as:
+      <Item>With this option a transformation <A>f</A> is displayed as:
         <C>&lt;transformation: ImageListOfTransformation( <A>f</A>, n )></C>
         where <C>n</C> is the largest moved point of <A>f</A>. The only
         exception is the identity transformation, which is displayed as:
@@ -1634,7 +1633,7 @@ gap> DegreeOfTransformationSemigroup( S );
   <A>n</A> points and any transformation of rank <C><A>n</A> - 1</C>.
   <P/>
 
-  <C>FulTransformationMonoid</C> is a synonym for
+  <C>FullTransformationMonoid</C> is a synonym for
   <C>FullTransformationSemigroup</C>.
 
   <Example><![CDATA[

@@ -52,7 +52,7 @@
 ##  <M>P</M> and <M>n</M> yields the homomorphism embedding the <M>n</M>-th
 ##  factor into <M>P</M>; calling
 ##  <Ref Oper="Projection" Label="for a domain and a positive integer"/> with
-##  <A>P</A> and <A>n</A> yields the projection of <M>P</M> onto the
+##  <M>P</M> and <M>n</M> yields the projection of <M>P</M> onto the
 ##  <M>n</M>-th factor,
 ##  see&nbsp;<Ref Sect="Embeddings and Projections for Group Products"/>.
 ##  <P/>
@@ -186,13 +186,13 @@ DeclareGlobalFunction("SubdirectDiagonalPerms");
 ##  dimension over a subfield of <A>F</A>, or into a permutation group
 ##  (in this case permutation matrices are taken).
 ##  <P/>
-##  In the second variant, <A>autgp</A> must be a group of automorphism of
+##  In the second variant, <A>autgp</A> must be a group of automorphisms of
 ##  <A>N</A>, it is a shorthand for
 ##  <C>SemidirectProduct(<A>autgp</A>,IdentityMapping(<A>autgp</A>),<A>N</A>)</C>.
-##  Note that (unless <A>autgrp</A> has been obtained by the operation
+##  Note that (unless <A>autgp</A> has been obtained by the operation
 ##  <Ref Attr="AutomorphismGroup"/>)
-##  you have to test <Ref Prop="IsGroupOfAutomorphisms"/> for <A>autgrp</A>
-##  to ensure that &GAP; knows that <A>autgrp</A> consists of
+##  you have to test <Ref Prop="IsGroupOfAutomorphisms"/> for <A>autgp</A>
+##  to ensure that &GAP; knows that <A>autgp</A> consists of
 ##  group automorphisms.
 ##  <Example><![CDATA[
 ##  gap> n:=AbelianGroup(IsPcGroup,[5,5]);
@@ -249,7 +249,7 @@ DeclareGlobalFunction("SubdirectDiagonalPerms");
 ##  <Ref Oper="Embedding" Label="for a domain and a positive integer"/> with
 ##  <M>P</M> and <C>2</C> yields the embedding of <A>N</A>; calling
 ##  <Ref Oper="Projection" Label="for a domain and a positive integer"/> with
-##  <A>P</A> yields the projection of <M>P</M> onto <A>G</A>,
+##  <M>P</M> yields the projection of <M>P</M> onto <A>G</A>,
 ##  see&nbsp;<Ref Sect="Embeddings and Projections for Group Products"/>.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -352,7 +352,8 @@ DeclareOperation( "StandardWreathProduct", [ IsGroup, IsGroup ] );
 ##  this action will be on <M>l \cdot m</M> points,
 ##  it will be imprimitive with <M>m</M> blocks of size <M>l</M> each.
 ##  <P/>
-##  The operations <Ref Oper="Embedding" Label="for two domains"/>
+##  The operations
+##  <Ref Oper="Embedding" Label="for a domain and a positive integer"/>
 ##  and <Ref Oper="Projection" Label="for two domains"/>
 ##  operate on this product as described for general wreath products.
 ##  <P/>
@@ -382,7 +383,8 @@ DeclareGlobalFunction( "WreathProductImprimitiveAction" );
 ##  If <A>G</A> acts on <M>l</M> points and <A>H</A> on
 ##  <M>m</M> points this action will be on <M>l^m</M> points.
 ##  <P/>
-##  The operations <Ref Oper="Embedding" Label="for two domains"/>
+##  The operations
+##  <Ref Oper="Embedding" Label="for a domain and a positive integer"/>
 ##  and <Ref Oper="Projection" Label="for two domains"/>
 ##  operate on this product as described for general wreath products.
 ##  <Example><![CDATA[
@@ -437,7 +439,8 @@ DeclareGlobalFunction( "SubdirectProducts" );
 ##  If the group arguments are not finitely presented groups,
 ##  then <Ref Attr="IsomorphismFpGroup"/> must be defined for them.
 ##  <P/>
-##  The operation <Ref Oper="Embedding" Label="for two domains"/>
+##  The operation
+##  <Ref Oper="Embedding" Label="for a domain and a positive integer"/>
 ##  operates on this product.
 ##  <Example><![CDATA[
 ##  gap> g := DihedralGroup(8);;
@@ -588,8 +591,8 @@ DeclareRepresentation("IsWreathProductElementDefaultRep",
 ##  <Ref Func="ListWreathProductElement"/> returns a list <M>[f_1, \ldots, f_m, h]</M>
 ##  containing the components of <A>x</A> or <K>fail</K> if <A>x</A> cannot be decomposed in the wreath product.
 ##  <P/>
-##  If omitted, the argument <A>testDecomposition</A> defaults to true.
-##  If <A>testDecomposition</A> is true, <Ref Func="ListWreathProductElement"/> makes additional tests to ensure
+##  If omitted, the argument <A>testDecomposition</A> defaults to <K>true</K>.
+##  If <A>testDecomposition</A> is <K>true</K>, <Ref Func="ListWreathProductElement"/> makes additional tests to ensure
 ##  that the computed decomposition of <A>x</A> is correct,
 ##  i.e. it checks that <A>x</A> is an element of the parent wreath product of <A>G</A>:
 ##  <P/>

@@ -993,7 +993,7 @@ DeclareCategoryCollections("IsZDFRECollection");
 ##  <Filt Name="IsMatrix" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
-##  By convention <E>matrix</E> is a list of lists of equal length whose
+##  By convention a <E>matrix</E> is a list of lists of equal length whose
 ##  entries lie in a common ring.
 ##  <P/>
 ##  For technical reasons laid out at the top of Chapter <Ref Chap="Matrices"/>,
@@ -1258,8 +1258,8 @@ DeclareCategoryCollections( "IsCommutativeElementCollection" );
 ##  knows that it has finite multiplicative order.
 ##  For example, each finite field element and each permutation lies in
 ##  this category.
-##  However the value may be <K>false</K> even if <A>obj</A> has finite
-##  order, but if this was not known when <A>obj</A> was constructed.
+##  However, the value may be <K>false</K> even if <A>obj</A> has finite
+##  order, if this was not known when <A>obj</A> was constructed.
 ##  <P/>
 ##  Although it is legal to set this filter for any object with finite order,
 ##  this is really useful only in the case that all elements of a family are

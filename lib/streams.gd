@@ -281,10 +281,10 @@ DeclareOperation( "IsEndOfStream", [ IsInputStream ] );
 ##  <Ref Oper="RewindStream"/>. <Ref Oper="PositionStream"/>
 ##  returns a non-negative integer denoting
 ##  the current position in the stream (usually the number of characters
-##  <E>before</E> the next one to be read.
+##  <E>before</E> the next one to be read).
 ##  <P/>
 ##  If this is not possible, for example for an input stream attached to
-##  standard input (normally the keyboard), then <K>fail</K> is returned
+##  standard input (normally the keyboard), then <K>fail</K> is returned.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -304,7 +304,7 @@ DeclareOperation( "PositionStream", [ IsInputStream ] );
 ##
 ##  <Description>
 ##  <Ref Oper="ReadAll"/> returns all characters as string from the input stream
-##  <A>stream-in</A>.  It waits (blocks) until at least one
+##  <A>input-stream</A>.  It waits (blocks) until at least one
 ##  character is available from the stream, or until there is evidence
 ##  that no characters will ever be available again. This last indicates
 ##  that the stream is at end-of-stream.
@@ -466,7 +466,7 @@ DeclareOperation( "ReadAllLine", [ IsInputStream, IsBool, IsFunction ] );
 ##  <Description>
 ##  <Ref Oper="RewindStream"/> attempts to return an input stream to its starting
 ##  condition, so that all the same characters can be read again. It returns
-##  <K>true</K> if the rewind succeeds and <K>fail</K> otherwise
+##  <K>true</K> if the rewind succeeds and <K>fail</K> otherwise.
 ##  <P/>
 ##  A default method implements RewindStream using <Ref Oper="SeekPositionStream"/>.
 ##  </Description>
@@ -749,7 +749,7 @@ DeclareOperation( "OutputTextString", [ IsList, IsBool ] );
 ##
 ##  <Description>
 ##  <C>OutputTextFile( <A>filename</A>, <A>append</A> )</C> returns an output stream in the
-##  category <C>IsOutputTextFile</C> that writes received characters to the file
+##  category <Ref Filt="IsOutputTextStream"/> that writes received characters to the file
 ##  <A>filename</A>.  If <A>append</A> is <K>false</K>, then the file is emptied first,
 ##  otherwise received characters are added at the end of the file.
 ##  <C>OutputGzipFile</C> acts identically to <C>OutputTextFile</C>, except it compresses
@@ -857,7 +857,7 @@ DeclareGlobalFunction( "OutputTextUser" );
 ##  As far as possible, no translation is done on characters written
 ##  to, or read from the stream, and no control characters have special
 ##  effects, but the details of particular pseudo-tty implementations
-##  may effect this.
+##  may affect this.
 ##  <#/GAPDoc>
 ##
 
@@ -956,7 +956,7 @@ DeclareGlobalFunction( "InputOutputLocalProcess" );
 ##  sensible places, lines containing elements of lists or records are
 ##  indented, and so forth.
 ##  This is appropriate if the output is eventually to be viewed by a human,
-##  and harmless if it to passed as input to &GAP;,
+##  and harmless if it is to be passed as input to &GAP;,
 ##  but may be unhelpful if the output is to be passed as input to another
 ##  program.
 ##  It is possible to turn off this behaviour for a stream using the

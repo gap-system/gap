@@ -29,9 +29,9 @@
 ##  example <Cite Key="Sims94"/>.
 ##  <P/>
 ##  Notice that this might not terminate. In particular, if the semigroup or
-##  monoid <A>S</A> does not have a solvable word problem then it this will
+##  monoid <A>S</A> does not have a solvable word problem then this will
 ##  certainly never end.
-##  Also, in this case, the object returned is an immutable
+##  If it terminates, the object returned is an immutable
 ##  rewriting system, because once we have a confluent
 ##  rewriting system for a finitely presented semigroup or monoid we do
 ##  not want to allow it to change (as it was most probably very time
@@ -59,7 +59,7 @@
 ##  The creation of a reduced confluent rewriting system for a semigroup
 ##  or for a monoid, in &GAP;, uses the Knuth-Bendix procedure for strings,
 ##  which manipulates a rewriting system of the semigroup or monoid and
-##  attempts to make it confluent,
+##  attempts to make it confluent
 ##  (see Chapter <Ref Chap="Rewriting Systems"/>
 ##  and also Sims <Cite Key="Sims94"/>).
 ##  (Since the word problem for semigroups/monoids is not solvable in general,

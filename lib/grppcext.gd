@@ -156,8 +156,8 @@ DeclareGlobalFunction( "CompatiblePairs" );
 ##
 ##  <Description>
 ##  returns the extension of <A>G</A> by the <A>G</A>-module <A>M</A>
-##  via the cocycle <A>c</A> as pc groups.
-##  The <C>NC</C> version does not check the resulting group for consistence.
+##  via the cocycle <A>c</A> as a pc group.
+##  The <C>NC</C> version does not check the resulting group for consistency.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

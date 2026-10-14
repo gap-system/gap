@@ -466,7 +466,7 @@ DeclareOperation( "LeftModuleByGenerators",
 ##  <Description>
 ##  The vectors in the list <A>gens</A> are known to form a basis of the
 ##  free left module <A>V</A>.
-##  <Ref Oper="UseBasis"/> stores information in <A>V</A> that can be derived form this fact,
+##  <Ref Oper="UseBasis"/> stores information in <A>V</A> that can be derived from this fact,
 ##  namely
 ##  <List>
 ##  <Item>

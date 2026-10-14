@@ -32,9 +32,9 @@
 ##  <C>GF(<A>p^d</A>)</C> such that either
 ##  (1) <A>p^d</A> <M>&lt;= 65536</M> (in which case an extremely efficient
 ##      internal representation is used);
-##  (2) d = 1, (in which case, for large <A>p</A>, the field is represented
-##      using the machinery of residue class rings
-##      (see section&nbsp;<Ref Sect="Residue Class Rings"/>) or
+##  (2) d = 1 (in which case, for large <A>p</A>, the field is represented
+##      using the machinery of residue class rings,
+##      see section&nbsp;<Ref Sect="Residue Class Rings"/>); or
 ##  (3) if the Conway polynomial of degree <A>d</A> over the field with
 ##      <A>p</A> elements is known, or can be computed
 ##      (see <Ref Func="ConwayPolynomial"/>).
@@ -597,7 +597,7 @@ DeclareAttribute( "IntFFE", IsFFE  );
 ##  <M>i</M><C> * One( </C><A>z</A><C> ) = </C><A>z</A> holds.
 ##  <P/>
 ##  For a vector <A>vec</A> of FFEs, the operation returns the result of
-##  applying <Ref Attr="IntFFESymm" Label="for a vector of FFEs"/>
+##  applying <Ref Attr="IntFFESymm" Label="for a FFE"/>
 ##  to every entry of the vector.
 ##  <P/>
 ##  The  correspondence between elements from a finite prime field of
@@ -653,7 +653,8 @@ DeclareOperation( "IntVecFFE", [ IsRowVector and IsFFECollection ] );
 ##  <Attr Name="AsInternalFFE" Arg='ffe'/>
 ##
 ## <Description>
-## return an internal FFE equal to <A>ffe</A> if one exists, otherwise <C>fail</C>
+## returns an internal finite field element equal to <A>ffe</A> if one
+## exists, otherwise <C>fail</C>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

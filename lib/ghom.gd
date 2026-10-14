@@ -584,7 +584,7 @@ DeclareGlobalFunction( "MakeMapping" );
 ##  such that each element <C>s</C> of <A>S</A> is mapped to the element
 ##  <A>fun</A><C>( s )</C>, where <A>fun</A> is a &GAP; function.
 ##  <P/>
-##  If the argument <A>invfun</A> is bound then <A>hom</A> is a bijection
+##  If the argument <A>invfun</A> is bound then <C>hom</C> is a bijection
 ##  between <A>S</A> and <A>R</A>,
 ##  and the preimage of each element <C>r</C> of <A>R</A> is given by
 ##  <A>invfun</A><C>( r )</C>,

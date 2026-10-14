@@ -805,7 +805,7 @@ Any &GAP; object is either mutable or immutable. This can be tested
 with the function <Ref Filt="IsMutable"/>.
 The intended meaning of (im)mutability is a mathematical one:
 an immutable object should never change in
-such a way that it represents a different Element. Objects <E>may</E>
+such a way that it represents a different element. Objects <E>may</E>
 change in other ways, for instance to store more information, or
 represent an element in a different way.
 <P/>
@@ -929,7 +929,7 @@ ineligible any methods that might change the object. As a consequence,
 you must allow for the possibility of immutable versions of any
 objects you create.
 <P/>
-So, if you are implementing your own external objects. The rules amount to the
+If you are implementing your own external objects, the rules amount to the
 following:
 <P/>
 <Enum>

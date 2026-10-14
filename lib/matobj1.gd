@@ -176,7 +176,7 @@ InstallTrueMethod( IsMatrixOrMatrixObj, IsMatrix );
 ##  <Ref Oper="\in" Label="for a collection"/>,
 ##  <Ref Attr="Characteristic"/>,
 ##  <Ref Prop="IsFinite"/>.
-##  We say that <M>v</M> is defined over <M>R</M>.
+##  We say that <M>M</M> is defined over <M>R</M>.
 ##  Typically, <M>R</M> will be at least a semiring.
 ##  <P/>
 ##  For creating new matrix objects compatible with <M>M</M>,

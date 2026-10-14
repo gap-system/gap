@@ -421,7 +421,7 @@ elements in <A>gens</A> and with <C>Parent( <A>S</A> ) = <A>G</A></C>.
 <Index Key="Substruct"><C>Sub<A>struct</A></C></Index>
 <C>Sub<A>struct</A>( <A>D</A>, <A>gens</A> )</C>
 <P/>
-More general, if <A>D</A> is a domain whose algebraic structure is given by the
+More generally, if <A>D</A> is a domain whose algebraic structure is given by the
 function <A>Struct</A> (for example <C>Group</C>, <C>Algebra</C>, <C>Field</C>)
 then the function <C>Sub<A>struct</A></C> (for example <C>Subgroup</C>, <C>Subalgebra</C>,
 <C>Subfield</C>) returns domains with structure <A>Struct</A> and parent set to
@@ -579,7 +579,7 @@ consult the appropriate index entries for them.
 <Heading>Relations Between Domains</Heading>
 
 Domains are often constructed relative to other domains.
-The probably most usual case is to form a <E>subset</E> of a domain,
+Probably the most common case is to form a <E>subset</E> of a domain,
 for example the intersection
 (see&nbsp;<Ref Func="Intersection" Label="for a list"/>) of two domains,
 or a Sylow subgroup of a given group (see&nbsp;<Ref Oper="SylowSubgroup"/>).

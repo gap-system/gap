@@ -118,7 +118,7 @@ DeclareGlobalFunction( "MolienSeriesWithGivenDenominator" );
 ##  <Mark><C>denom</C></Mark>
 ##  <Item>
 ##       denominator of <A>ratfun</A> (in general a multiple of the
-##       denominator one gets by <Ref Attr="NumeratorOfRationalFunction"/>),
+##       denominator one gets by <Ref Attr="DenominatorOfRationalFunction"/>),
 ##  </Item>
 ##  <Mark><C>ratfun</C></Mark>
 ##  <Item>
@@ -251,7 +251,7 @@ DeclareGlobalFunction( "SummandMolienSeries" );
 ##  <Func Name="ValueMolienSeries" Arg='molser, i'/>
 ##
 ##  <Description>
-##  is the <A>i</A>-th coefficient of the Molien series <A>series</A>
+##  is the <A>i</A>-th coefficient of the Molien series <A>molser</A>
 ##  computed by <Ref Func="MolienSeries"/>.
 ##  <P/>
 ##  <Example><![CDATA[

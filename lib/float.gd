@@ -77,13 +77,13 @@ end);
 ##   <Attr Name="Exp10" Arg="f"/>
 ##   <Attr Name="CubeRoot" Arg="f"/>
 ##   <Attr Name="Square" Arg="f"/>
-##   <Oper Name="Hypothenuse" Arg="x y"/>
+##   <Oper Name="Hypothenuse" Arg="x, y"/>
 ##   <Attr Name="Ceil" Arg="f"/>
 ##   <Attr Name="Floor" Arg="f"/>
 ##   <Attr Name="Round" Arg="f"/>
 ##   <Attr Name="Trunc" Arg="f"/>
 ##   <Attr Name="FrExp" Arg="f"/>
-##   <Oper Name="LdExp" Arg="f exp"/>
+##   <Oper Name="LdExp" Arg="f, exp"/>
 ##   <Attr Name="AbsoluteValue" Arg="f" Label="for floats"/>
 ##   <Attr Name="Norm" Arg="f" Label="for floats"/>
 ##   <Attr Name="Frac" Arg="f"/>
@@ -138,8 +138,8 @@ DeclareAttribute("Gamma", IsFloat);
 ################################################################
 ## <#GAPDoc Label="Float-Extra">
 ## <ManSection>
-##   <Oper Name="EqFloat" Arg="x y"/>
-##   <Returns>Whether the floateans <A>x</A> and <A>y</A> are equal</Returns>
+##   <Oper Name="EqFloat" Arg="x, y"/>
+##   <Returns>Whether the floating-point numbers <A>x</A> and <A>y</A> are equal</Returns>
 ##   <Description>
 ##     This function compares two floating-point numbers, and returns
 ##     <K>true</K> if they are equal, and <K>false</K> otherwise; with the
@@ -181,7 +181,7 @@ DeclareAttribute("Gamma", IsFloat);
 ## </ManSection>
 ##
 ## <ManSection>
-##   <Oper Name="Atan2" Arg="y x"/>
+##   <Oper Name="Atan2" Arg="y, x"/>
 ##   <Returns>The polar angle of <A>(x, y)</A> in the plane as float.</Returns>
 ##   <Description>
 ##        Returns the principal value of the argument (polar angle) of <M>(<A>x</A>, <A>y</A>)</M> in the plane.
@@ -322,27 +322,27 @@ DeclareGlobalFunction("RootsFloat");
 ##   </Description>
 ## </ManSection>
 ## <ManSection>
-##   <Oper Name="IsDisjoint" Arg="x1 x2"/>
+##   <Oper Name="IsDisjoint" Arg="x1, x2"/>
 ##   <Description>
 ##     Returns <K>true</K> if the two intervals <A>x1</A>, <A>x2</A>
 ##     are disjoint.
 ##   </Description>
 ## </ManSection>
 ## <ManSection>
-##   <Oper Name="IsSubset" Arg="x1 x2" Label="for interval floats"/>
+##   <Oper Name="IsSubset" Arg="x1, x2" Label="for interval floats"/>
 ##   <Description>
 ##     Returns <K>true</K> if the interval <A>x1</A> contains <A>x2</A>.
 ##   </Description>
 ## </ManSection>
 ## <ManSection>
-##   <Oper Name="IncreaseInterval" Arg="x delta"/>
+##   <Oper Name="IncreaseInterval" Arg="x, delta"/>
 ##   <Description>
 ##     Returns an interval with same midpoint as <A>x</A> but absolute diameter increased by
 ##     <A>delta</A>.
 ##   </Description>
 ## </ManSection>
 ## <ManSection>
-##   <Oper Name="BlowupInterval" Arg="x ratio"/>
+##   <Oper Name="BlowupInterval" Arg="x, ratio"/>
 ##   <Description>
 ##     Returns an interval with same midpoint as <A>x</A> but relative diameter increased by
 ##     <A>ratio</A>.
@@ -377,29 +377,27 @@ DeclareOperation("BisectInterval", [IsFloatInterval]);
 ##   <Heading>Float creators</Heading>
 ##   <Func Name="Float" Arg="obj"/>
 ##   <Constr Name="NewFloat" Arg="filter, obj"/>
-##   <Oper Name="MakeFloat" Arg="sample obj, obj"/>
+##   <Oper Name="MakeFloat" Arg="sample, obj"/>
 ##   <Returns>A new floating-point number, based on <A>obj</A></Returns>
 ##   <Description>
 ##     This function creates a new floating-point number.
 ##
 ##     <P/> If <A>obj</A> is a rational number, the created number is created
 ##     with sufficient precision so that the number can (usually) be converted
-##     back to the original number (see <Ref Attr="Rat" BookName="ref"/> and
-##     <Ref Attr="Rat"/>). For an integer, the precision, if unspecified, is
+##     back to the original number (see <Ref Attr="Rat" Label="for floats"/>). For an integer, the precision, if unspecified, is
 ##     chosen sufficient so that <C>Int(Float(obj))=obj</C> always holds, but
 ##     at least 64 bits.
 ##
 ##     <P/> <A>obj</A> may also be a string, which may be of the form
 ##     <C>"3.14e0"</C> or <C>".314e1"</C> or <C>".314@1"</C> etc.
 ##
-##     <P/> An option may be passed to specify, it bits, a desired precision.
+##     <P/> An option may be passed to specify the desired precision in bits.
 ##     The format is <C>Float("3.14":PrecisionFloat:=1000)</C> to create
 ##     a 1000-bit approximation of <M>3.14</M>.
 ##
 ##     <P/> In particular, if <A>obj</A> is already a floating-point number,
 ##     then <C>Float(obj:PrecisionFloat:=prec)</C> creates a copy of
 ##     <A>obj</A> with a new precision.
-##     prec
 ##   </Description>
 ## </ManSection>
 ##
@@ -423,7 +421,7 @@ DeclareOperation("BisectInterval", [IsFloatInterval]);
 ## </ManSection>
 ##
 ## <ManSection>
-##   <Oper Name="Cyc" Arg="f [degree]" Label="for floats"/>
+##   <Oper Name="Cyc" Arg="f[, degree]" Label="for floats"/>
 ##   <Returns>A cyclotomic approximation to <A>f</A></Returns>
 ##   <Description>
 ##     This command constructs a cyclotomic approximation to the
@@ -438,12 +436,12 @@ DeclareOperation("BisectInterval", [IsFloatInterval]);
 ## </ManSection>
 ##
 ## <ManSection>
-##   <Func Name="SetFloats" Arg="rec [bits] [install]"/>
+##   <Func Name="SetFloats" Arg="rec[, bits][, install]"/>
 ##   <Description>
 ##     Installs a new interface to floating-point numbers in &GAP;, optionally
 ##     with a desired precision <A>bits</A> in binary digits. The last
 ##     optional argument <A>install</A> is a boolean value; if false, it
-##     only installs the eager handler and the precision for the floateans,
+##     only installs the eager handler and the precision for the floating-point numbers,
 ##     without making them the default.
 ##   </Description>
 ## </ManSection>

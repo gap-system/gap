@@ -194,7 +194,7 @@ generators. Because of the fundamental problems mentioned in the
 introduction to this chapter such a test may take very long and cannot be
 guaranteed to finish.
 <P/>
-The method employed by &GAP; for such an equality test use the underlying
+The method employed by &GAP; for such an equality test uses the underlying
 finitely presented group. First (unless this group is known to be infinite)
 &GAP; tries to find a faithful permutation representation by a bounded
 Todd-Coxeter.
@@ -204,7 +204,7 @@ is attempted and the words are compared via their normal form.
 <P/>
 If only elements in a subgroup are to be tested for equality it thus can be
 useful to translate the problem in a new finitely presented group by
-rewriting (see <Ref Attr="IsomorphismFpGroup"/>);
+rewriting (see <Ref Attr="IsomorphismFpGroup"/>).
 <P/>
 The equality test of elements underlies many <Q>basic</Q> calculations,
 such as the order of an element,

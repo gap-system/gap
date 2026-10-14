@@ -130,7 +130,7 @@ DeclareGlobalFunction( "MagmaWithInversesByMultiplicationTable" );
 ##  For a magma <A>M</A> and a positive integer <A>i</A>,
 ##  <Ref Func="MagmaElement"/> returns the <A>i</A>-th element of <A>M</A>,
 ##  w.r.t.&nbsp;the ordering <C>&lt;</C>.
-##  If <A>M</A> has less than <A>i</A> elements then <K>fail</K> is returned.
+##  If <A>M</A> has fewer than <A>i</A> elements then <K>fail</K> is returned.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

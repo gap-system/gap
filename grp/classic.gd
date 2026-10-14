@@ -80,7 +80,7 @@
 ##  <Item>
 ##  The invariant sesquilinear form defining the unitary groups
 ##  is stored as the value of the attribute
-##  <Ref Attr="InvariantSesquilinearForm"/>).
+##  <Ref Attr="InvariantSesquilinearForm"/>.
 ##  </Item>
 ##  <Item>
 ##  The defining quadratic form of orthogonal groups is stored as the value

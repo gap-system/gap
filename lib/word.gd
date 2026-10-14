@@ -290,7 +290,7 @@ DeclareCategoryFamily( "IsNonassocWordWithOne" );
 ##  <Ref Func="FreeGroup" Label="for given rank"/> etc. consists of words
 ##  over a new alphabet.
 ##  In particular, there is no <Q>universal</Q> empty word,
-##  every families of words in <Ref Filt="IsWordWithOne"/> has its own
+##  every family of words in <Ref Filt="IsWordWithOne"/> has its own
 ##  empty word.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -356,8 +356,8 @@ DeclareCategoryFamily( "IsNonassocWordWithOne" );
 ##  and <A>imgs</A> have only length <M>1</M> is handled more efficiently by
 ##  <Ref Oper="EliminatedWord"/>.
 ##  <P/>
-##  If the word is from a free group, it is permitted to give inverses of
-##  (some) of the generators as extra generators. This can speed up the
+##  If the word is from a free group, it is permitted to include inverses
+##  of some generators as extra entries of <A>gens</A>. This can speed up the
 ##  execution by removing the need to calculate inverses anew.
 ##  <Example><![CDATA[
 ##  gap> m:= FreeMagma( "a", "b" );;  gens:= GeneratorsOfMagma( m );;

@@ -334,7 +334,7 @@ and the functions whose names end with
 <Heading>Further Information about Domains</Heading>
 
 More information about domains can be found in
-Chapter&nbsp;<Ref Sect="Domains" BookName="ref"/>. Many other chapters deal with specific
+Section&nbsp;<Ref Sect="Domains" BookName="ref"/>. Many other chapters deal with specific
 types of domain such as groups, vector spaces or algebras.
 
 </Section>

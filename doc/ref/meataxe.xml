@@ -137,7 +137,7 @@ they should have the same number of generators.
 <Func Name="WedgeGModule" Arg='module'/>
 
 <Description>
-<Ref Func="WedgeGModule"/> calculates the wedge product of a <A>G</A>-module.
+<Ref Func="WedgeGModule"/> calculates the wedge product of <A>module</A>.
 That is the action on antisymmetric tensors.
 </Description>
 </ManSection>
@@ -683,7 +683,7 @@ is known to be irreducible.
 <Func Name="SMTX.SortHomGModule" Arg='module1, module2, homs'/>
 
 <Description>
-Function to sort the output of <C>Homomorphisms</C>.
+Function to sort the output of <Ref Func="MTX.Homomorphisms"/>.
 </Description>
 </ManSection>
 
@@ -742,7 +742,7 @@ neither sets an absolute irreducibility flag, nor tests it.
 
 <Description>
 returns the basis of a minimal submodule of <A>module</A> containing the
-indicated composition factor. It assumes <C>Distinguish</C> has been called
+indicated composition factor. It assumes <Ref Func="MTX.Distinguish"/> has been called
 already.
 </Description>
 </ManSection>

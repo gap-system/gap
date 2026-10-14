@@ -31,7 +31,7 @@ true
   itself satisfies <Ref Filt="IsMagmaWithZeroAdjoined"/>.<P/>
 
   <C>MagmaWithZeroAdjoined</C> is just shorthand for
-  <C>Range(InjectionZeroMagma(<A>M</A>)))</C>.<P/>
+  <C>Range(InjectionZeroMagma(<A>M</A>))</C>.<P/>
 
   If <C>N</C> is a magma with zero adjoined, then the embedding
   used to create <C>N</C> can be recovered using

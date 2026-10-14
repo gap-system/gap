@@ -445,7 +445,7 @@ DeclareAttribute( "StructureConstantsTable", IsBasis );
 ##  would have to store the basis vectors and the coefficient domain
 ##  separately.
 ##  Storing the module allows one for example to deal with bases whose basis
-##  vectors have not yet been computed yet (see&nbsp;<Ref Attr="Basis"/>);
+##  vectors have not yet been computed (see&nbsp;<Ref Attr="Basis"/>);
 ##  furthermore, in some cases it is convenient to test membership of a
 ##  vector in the module before computing coefficients w.r.t.&nbsp;a basis.
 ##  <!-- this happens for example for finite fields and cyclotomic fields-->
@@ -1145,11 +1145,11 @@ DeclareAttribute( "NiceFreeLeftModuleInfo",
 ##  free left module <A>V</A> and <C><A>W</A>:= NiceFreeLeftModule( <A>V</A> )</C>.
 ##  <P/>
 ##  If <A>v</A> lies in the elements family of the family of <A>V</A> then
-##  <C>NiceVector( <A>v</A> )</C> is either <K>fail</K> or an element in the elements family
+##  <C>NiceVector( <A>V</A>, <A>v</A> )</C> is either <K>fail</K> or an element in the elements family
 ##  of the family of <A>W</A>.
 ##  <P/>
 ##  If <A>r</A> lies in the elements family of the family of <A>W</A> then
-##  <C>UglyVector( <A>r</A> )</C> is either <K>fail</K> or an element in the elements family
+##  <C>UglyVector( <A>V</A>, <A>r</A> )</C> is either <K>fail</K> or an element in the elements family
 ##  of the family of <A>V</A>.
 ##  <P/>
 ##  If <A>v</A> lies in <A>V</A> (which usually <E>cannot</E> be checked without using <A>W</A>)

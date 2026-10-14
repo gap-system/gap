@@ -197,11 +197,8 @@ a string.
 If also the &GAP; Character Table Library is installed and contains the
 ordinary character table of the group for which one wants to fetch the table
 of marks then one can also call
-<Ref Attr="TableOfMarks" Label="for a string"/>
-<!-- This reference is not correct.
-     The Character Table Library or the ``Interface'' section above
-     should document this method,
-     and then an external reference should be created. -->
+<Ref Meth="TableOfMarks" Label="for a character table from the library"
+BookName="ctbllib"/>
 with argument the character table.
 <P/>
 A list of all names of tables of marks that are provided by the

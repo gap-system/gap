@@ -325,12 +325,12 @@ DeclareAttribute( "PcgsElementaryAbelianSeries", IsGroup );
 ##  <Description>
 ##  Let <A>pcgs</A> be a pcgs obtained as corresponding to a series of normal
 ##  subgroups with elementary abelian factors (for example from calling
-##  <Ref Attr="PcgsElementaryAbelianSeries" Label="for a group"/>)
+##  <Ref Attr="PcgsElementaryAbelianSeries" Label="for a group"/>).
 ##  Then <Ref Attr="IndicesEANormalSteps"/> returns a sorted list of
 ##  integers, indicating the tails of <A>pcgs</A> which generate these normal
-##  subgroup of <A>G</A>.
-##  If <M>i</M> is an element of this list, <M>(g_i, \ldots, g_n)</M>
-##  is a normal subgroup of <A>G</A>.  The list always starts with <M>1</M>
+##  subgroups of the group.
+##  If <M>i</M> is an element of this list,
+##  <M>\langle g_i, \ldots, g_n \rangle</M> is normal.  The list always starts with <M>1</M>
 ##  and ends with <M>n+1</M>.
 ##  (These indices form <E>one</E> series with elementary abelian
 ##  subfactors, not necessarily the most refined one.)
@@ -339,7 +339,7 @@ DeclareAttribute( "PcgsElementaryAbelianSeries", IsGroup );
 ##  series of subgroups.
 ##  <P/>
 ##  For arbitrary pcgs not obtained as belonging to a special series such a
-##  set of indices not necessarily exists,
+##  set of indices does not necessarily exist,
 ##  and <Ref Attr="IndicesEANormalSteps"/> is not
 ##  guaranteed to work in this situation.
 ##  <P/>
@@ -429,9 +429,9 @@ DeclareAttribute( "PcgsCentralSeries", IsGroup);
 ##  (for example from calling <Ref Attr="PcgsCentralSeries"/>).
 ##  Then <Ref Attr="IndicesCentralNormalSteps"/> returns a sorted list of
 ##  integers, indicating the tails of <A>pcgs</A> which generate these normal
-##  subgroups of <A>G</A>.
-##  If <M>i</M> is an element of this list, <M>(g_i, \ldots, g_n)</M>
-##  is a normal subgroup of <A>G</A>.
+##  subgroups of the group.
+##  If <M>i</M> is an element of this list,
+##  <M>\langle g_i, \ldots, g_n \rangle</M> is normal.
 ##  The list always starts with <M>1</M> and ends with <M>n+1</M>.
 ##  (These indices form <E>one</E> series with central elementary abelian
 ##  subfactors, not necessarily the most refined one.)
@@ -440,7 +440,7 @@ DeclareAttribute( "PcgsCentralSeries", IsGroup);
 ##  series of subgroups.
 ##  <P/>
 ##  For arbitrary pcgs not obtained as belonging to a special series such a
-##  set of indices not necessarily exists,
+##  set of indices does not necessarily exist,
 ##  and <Ref Attr="IndicesCentralNormalSteps"/>
 ##  is not guaranteed to work in this situation.
 ##  <P/>
@@ -524,9 +524,9 @@ DeclareAttribute( "PcgsPCentralSeriesPGroup", IsGroup);
 ##  (for example from calling <Ref Attr="PcgsPCentralSeriesPGroup"/>).
 ##  Then <Ref Attr="IndicesPCentralNormalStepsPGroup"/> returns a sorted list
 ##  of integers, indicating the tails of <A>pcgs</A> which generate these
-##  normal subgroups of <A>G</A>.
-##  If <M>i</M> is an element of this list, <M>(g_i, \ldots, g_n)</M>
-##  is a normal subgroup of <A>G</A>.
+##  normal subgroups of the group.
+##  If <M>i</M> is an element of this list,
+##  <M>\langle g_i, \ldots, g_n \rangle</M> is normal.
 ##  The list always starts with <M>1</M> and ends with <M>n+1</M>.
 ##  (These indices form <E>one</E> series with central elementary abelian
 ##  subfactors, not necessarily the most refined one.)
@@ -535,7 +535,7 @@ DeclareAttribute( "PcgsPCentralSeriesPGroup", IsGroup);
 ##  actual series of subgroups.
 ##  <P/>
 ##  For arbitrary pcgs not obtained as belonging to a special series such a
-##  set of indices not necessarily exists, and
+##  set of indices does not necessarily exist, and
 ##  <Ref Attr="IndicesPCentralNormalStepsPGroup"/>
 ##  is not guaranteed to work in this situation.
 ##  <P/>
@@ -613,12 +613,12 @@ DeclareAttribute( "PcgsChiefSeries", IsGroup );
 ##
 ##  <Description>
 ##  Let <A>pcgs</A> be a pcgs obtained as corresponding to a chief series
-##  for example from calling <Ref Attr="PcgsChiefSeries"/>).
+##  (for example from calling <Ref Attr="PcgsChiefSeries"/>).
 ##  Then <Ref Attr="IndicesChiefNormalSteps"/> returns a sorted list of
 ##  integers, indicating the tails of <A>pcgs</A> which generate these normal
-##  subgroups of <A>G</A>.
-##  If <M>i</M> is an element of this list, <M>(g_i, \ldots, g_n)</M>
-##  is a normal subgroup of <A>G</A>.
+##  subgroups of the group.
+##  If <M>i</M> is an element of this list,
+##  <M>\langle g_i, \ldots, g_n \rangle</M> is normal.
 ##  The list always starts with <M>1</M> and ends with <M>n+1</M>.
 ##  (These indices form <E>one</E> series with elementary abelian
 ##  subfactors, not necessarily the most refined one.)
@@ -627,7 +627,7 @@ DeclareAttribute( "PcgsChiefSeries", IsGroup );
 ##  series of subgroups.
 ##  <P/>
 ##  For arbitrary pcgs not obtained as belonging to a special series such a
-##  set of indices not necessarily exists,
+##  set of indices does not necessarily exist,
 ##  and <Ref Attr="IndicesChiefNormalSteps"/> is not
 ##  guaranteed to work in this situation.
 ##  <P/>
@@ -707,7 +707,7 @@ DeclareAttribute( "IndicesNormalSteps", IsPcgs );
 ##  <Attr Name="NormalSeriesByPcgs" Arg='pcgs'/>
 ##
 ##  <Description>
-##  returns the subgroups the pc series, which are normal in
+##  returns the subgroups of the pc series, which are normal in
 ##  the group defined by the pcgs.
 ##  <P/>
 ##  (In general, this function yields a slower performance than the more
@@ -1263,7 +1263,7 @@ DeclareOperation( "SumPcgs", [ IsModuloPcgs, IsList, IsList ] );
 ##  computes the sum and intersection of the lists <A>n</A> and <A>u</A> whose
 ##  elements form modulo pcgs induced by <A>parentpcgs</A> for two subgroups
 ##  modulo a kernel given by <A>kerpcgs</A>.
-##  If <A>kerpcgs</A> is a tail if the <A>parent-pcgs</A> it is sufficient
+##  If <A>kerpcgs</A> is a tail of <A>parentpcgs</A>, it is sufficient
 ##  to give the starting depth,
 ##  this can be more efficient than to construct an explicit pcgs.
 ##  The factor group modulo <A>kerpcgs</A> generated by <A>n</A> must be
@@ -1325,8 +1325,8 @@ DeclareOperation(
 ##  <Oper Name="ExtendedPcgs" Arg='N, gens'/>
 ##
 ##  <Description>
-##  extends the pcgs <A>N</A> (induced w.r.t. <A>home</A>) to a new
-##  induced pcgs by prepending <A>gens</A>.
+##  extends the induced pcgs <A>N</A> to a new induced pcgs
+##  (with respect to the same parent pcgs) by prepending <A>gens</A>.
 ##  No checks are performed that this really yields an induced pcgs.
 ##  </Description>
 ##  </ManSection>
@@ -1384,8 +1384,8 @@ DeclareGlobalFunction( "Pcgs_OrbitStabilizer_Blist" );
 ##  (respectively to take preimages) without the need to construct a
 ##  homomorphism.
 ##  <P/>
-##  The setup is always a pcgs <A>pcgs</A> of <A>G</A> and a pcgs
-##  <A>fpcgs</A> of a factor group <M>H = <A>G</A>/<A>N</A></M>
+##  The setup is always a pcgs <A>pcgs</A> of <M>G</M> and a pcgs
+##  <A>fpcgs</A> of a factor group <M>H = G/N</M>
 ##  which corresponds to a head of <A>pcgs</A>.
 ##  <P/>
 ##  No tests for validity of the input are performed.
@@ -1401,7 +1401,7 @@ DeclareGlobalFunction( "Pcgs_OrbitStabilizer_Blist" );
 ##  <Func Name="LiftedPcElement" Arg='pcgs, fpcgs, elm'/>
 ##
 ##  <Description>
-##  returns a preimage in <A>G</A> of an element <A>elm</A> of <A>H</A>.
+##  returns a preimage in <M>G</M> of an element <A>elm</A> of <M>H</M>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1417,7 +1417,7 @@ DeclareGlobalFunction( "LiftedPcElement" );
 ##  <Func Name="ProjectedPcElement" Arg='pcgs, fpcgs, elm'/>
 ##
 ##  <Description>
-##  returns the image in <A>H</A> of an element <A>elm</A> of <A>G</A>.
+##  returns the image in <M>H</M> of an element <A>elm</A> of <M>G</M>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

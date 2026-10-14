@@ -89,7 +89,7 @@ DeclareCategory( "IsMagmaWithOne",
 ##  <P/>
 ##  This category was introduced mainly to describe division rings,
 ##  since the nonzero elements in a division ring form a group;
-##  So an object <M>M</M> in <Ref Filt="IsMagmaWithInversesIfNonzero"/>
+##  so an object <M>M</M> in <Ref Filt="IsMagmaWithInversesIfNonzero"/>
 ##  will usually have both a multiplicative and an additive structure
 ##  (see&nbsp;<Ref Chap="Additive Magmas"/>),
 ##  and the set <M>Z</M>, if it is nonempty, contains exactly the zero

@@ -75,7 +75,7 @@ index <M>k</M> such that <M>e_k \neq 0</M> is called the <E>depth</E> of <A>g</A
 For many applications we have to assume that each of the relative orders
 <M>r_i</M> is either a prime or infinity. This is equivalent to saying that
 there are no trivial factors in the pc series and the finite factors of the
-pc series are maximal refined.
+pc series are maximally refined.
 Then we obtain that <M>r_i</M> is the order of <M>g C_{{i+1}}</M> for all
 elements <M>g</M> in <M>C_i \setminus C_{{i+1}}</M> and we call
 <M>r_i</M> the <E>relative order</E> of the element <M>g</M>.
@@ -330,9 +330,9 @@ Pcgs([ (1,3)(2,4) ])
 <Section Label="Factor Groups of Polycyclic Groups in their Own Representation">
 <Heading>Factor Groups of Polycyclic Groups in their Own Representation</Heading>
 
-If substantial calculations are done in a factor it might be worth still to
-construct the factor group in its own representation (for example by
-calling <Ref Attr="PcGroupWithPcgs"/> on a modulo pcgs.
+If substantial calculations are done in a factor it might still be worth
+constructing the factor group in its own representation (for example by
+calling <Ref Attr="PcGroupWithPcgs"/> on a modulo pcgs).
 <P/>
 <#Include Label="[1]{pcgs}">
 <#Include Label="ProjectedPcElement">
@@ -405,11 +405,11 @@ These pcgs have been introduced by C. R. Leedham-Green who also gave an
 algorithm to compute them. Improvements to this algorithm
 <!-- %%  and the &GAP; implementation -->
 are due to Bettina Eick.  For a more detailed account of
-their definition the reader is referred to <Cite Key="Eick97"/>
+their definition the reader is referred to <Cite Key="Eick97"/>.
 <P/>
 To introduce the definition of special pcgs we first need to define
 the <E>LG-series</E> and <E>head complements</E> of a finite polycyclic group <A>G</A>.
-Let <M>G = G_1 > G_2 > \ldots G_m > G_{{m+1}} = \{ 1 \}</M> be the lower
+Let <M>G = G_1 > G_2 > \ldots > G_m > G_{{m+1}} = \{ 1 \}</M> be the lower
 nilpotent series of <M>G</M>; that is, <M>G_i</M> is the smallest normal
 subgroup of <M>G_{{i-1}}</M> with nilpotent factor. To obtain the LG-series
 of <A>G</A> we need to refine this series.
@@ -445,7 +445,7 @@ of <A>G</A>.
 <P/>
 To record information about the LG-series with the special pcgs
 we define the <E>LGWeights</E> of the special pcgs. These weights are
-a list which contains a weight <M>w</M> for each elements <M>g</M> of the
+a list which contains a weight <M>w</M> for each element <M>g</M> of the
 special pcgs. Such a weight <M>w</M> represents the smallest subgroup of
 the LG-series containing <M>g</M>.
 <P/>

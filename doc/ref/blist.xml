@@ -51,7 +51,7 @@ In function names we call boolean lists <E>blists</E> for brevity.
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Function that Modify Boolean Lists">
-<Heading>Function that Modify Boolean Lists</Heading>
+<Heading>Functions that Modify Boolean Lists</Heading>
 
 <#Include Label="UniteBlist">
 <#Include Label="UniteBlistList">

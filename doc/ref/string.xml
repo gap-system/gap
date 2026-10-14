@@ -88,7 +88,7 @@ These commands <E>interpret</E> a string in the sense that they essentially
 send the characters of the string directly to the output stream/file.
 (But depending on  the type of the stream and the presence of some special
 characters used as hints for line breaks there may be sent some additional
-newline (or backslash and newline) characters.
+newline (or backslash and newline) characters.)
 <!-- % XXX Should the characters \< and \> and their use with <C>Print</C> be documented? -->
 <P/>
 <Example><![CDATA[
@@ -179,7 +179,7 @@ For any other sequence starting with a backslash, the backslash is ignored.
 <C>\'</C></Mark>
 <Item>
     <E>singlequote character</E>.
-    Inside a character a singlequote must escaped by the backslash,
+    Inside a character a singlequote must be escaped by the backslash,
     because it is otherwise interpreted as end of the character.
 </Item>
 <Mark>
@@ -272,21 +272,21 @@ This is one line.
 This is another line.
 ]]></Example>
 <P/>
-Note in particular that it is not  allowed to enclose a <A>newline</A> inside
+Note in particular that it is not  allowed to enclose a newline inside
 the string.
 You can use the  special character sequence <C>\n</C> to write strings that
-include <A>newline</A> characters.
+include newline characters.
 If, however, an input string is too long to fit on a single line it is
 possible to <E>continue</E> it over several lines.
 In this case the last character of each input line, except the last line must
 be a backslash.
-Both backslash and <A>newline</A> are thrown away by &GAP; while reading the
+Both backslash and newline are thrown away by &GAP; while reading the
 string.
 Note that the same continuation mechanism is available for identifiers and
 integers, see&nbsp;<Ref Sect="Special Rules for Input Lines"/>.
 
 The rules on escaping are ignored in a triple quoted string, see <Ref
-Sect="Triple Quoted String"/>
+Sect="Triple Quoted String"/>.
 
 </Section>
 
@@ -296,7 +296,7 @@ Sect="Triple Quoted String"/>
 
 Another method of entering strings in GAP is triple quoted strings.
 Triple quoted strings ignore the rules on escaping given in <Ref
-Sect="Special Characters"/>. Triple quoted strings begin an end with
+Sect="Special Characters"/>. Triple quoted strings begin and end with
 three doublequotes. Inside the triple quotes no escaping is done,
 and the string continues, including newlines, until three doublequotes
 are found.
@@ -338,12 +338,12 @@ internal representation which
 has enough memory allocated for <A>len</A> characters. This can be useful
 for creating and filling a string with a known number of entries.
 <P/>
-The function <Ref Func="ShrinkAllocationString"/> gives back to &GAP;s
+The function <Ref Func="ShrinkAllocationString"/> gives back to &GAP;'s
 memory manager the physical memory which is allocated for the string
 <A>str</A> in internal representation but not needed by its current
 number of characters.
 <P/>
-These functions are intended for saving some of &GAP;s memory in certain
+These functions are intended for saving some of &GAP;'s memory in certain
 situations, see the explanations and the example for the analogous
 functions <Ref Func="EmptyPlist"/> and <Ref Func="ShrinkAllocationPlist"/>
 for plain lists.
@@ -774,7 +774,7 @@ of methods that may be distributed all over the library, the user will
 have a clean overview of the whole process of &LaTeX; code generation if
 it is contained in a single function. Furthermore, there may be kinds of
 objects which are not detected by the method selection, or there may be
-a need in additional parameters specifying requirements for the output.
+a need for additional parameters specifying requirements for the output.
 <P/>
 
 This is why having a special purpose function for each particular case

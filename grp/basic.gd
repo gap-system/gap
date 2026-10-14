@@ -69,7 +69,7 @@ DeclareConstructor( "TrivialGroupCons", [ IsGroup ] );
 ##  constructs a trivial group in the category given by the filter
 ##  <A>filter</A>.
 ##  If <A>filter</A> is not given it defaults to <Ref Filt="IsPcGroup"/>.
-##  For more information on possible values of <A>filt</A> see section
+##  For more information on possible values of <A>filter</A> see section
 ##  (<Ref Sect="Basic Groups"/>).
 ##  <P/>
 ##  <Example><![CDATA[
@@ -128,7 +128,7 @@ DeclareConstructor( "AbelianGroupCons", [ IsGroup, IsList ] );
 ##
 ##  If <A>filt</A> is not given it defaults to <Ref Filt="IsPcGroup"/>,
 ##  unless any 0 or <C>infinity</C> is contained in  <A>ints</A>, in which
-##  the default filter is switched to  <Ref Filt="IsFpGroup"/>.
+##  case the default filter is switched to  <Ref Filt="IsFpGroup"/>.
 ##  The generators of the group returned are the elements corresponding to
 ##  the factors <M>C_{{<A>ints</A>[i]}}</M> and hence the integers in <A>ints</A>.
 ##  For more information on possible values of <A>filt</A> see section
@@ -543,7 +543,7 @@ DeclareConstructor( "FreeAbelianGroupCons", [ IsGroup, IsInt ] );
 ##  <Func Name="FreeAbelianGroup" Arg='[filt, ]rank'/>
 ##
 ##  <Description>
-##  constructs the free abelian group of rank <A>n</A> in the category
+##  constructs the free abelian group of rank <A>rank</A> in the category
 ##  given by the filter <A>filt</A>.
 ##  If <A>filt</A> is not given it defaults to <Ref Filt="IsFpGroup"/>.
 ##  For more information on possible values of <A>filt</A> see section

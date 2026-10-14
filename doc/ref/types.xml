@@ -81,8 +81,7 @@ The two situations where families come into play are the following.
 <P/>
 First, since families are used to describe relations between arguments of
 operations in the method selection mechanism
-(see Chapter&nbsp;<Ref Chap="Method Selection"/>,
-and also Chapter&nbsp;<Ref Chap="Types of Objects"/>),
+(see Chapter&nbsp;<Ref Chap="Method Selection"/>),
 one has to prescribe such a relation in each method installation
 (see&nbsp;<Ref Sect="Method Installation"/>);
 usual relations are <Ref Func="ReturnTrue"/>
@@ -120,7 +119,7 @@ On the other extreme, if one wants to create domains of the new objects
 then one has to choose the family in such a way that all intended
 elements of a domain do in fact lie in the same family.
 (Remember that a domain is a collection,
-see Chapter&nbsp;<Ref Sect="Domains"/>,
+see Section&nbsp;<Ref Sect="Domains"/>,
 and that a collection consists of elements in the same family,
 see Chapter&nbsp;<Ref Chap="Collections"/>
 and Section&nbsp;<Ref Sect="Families"/>.)
@@ -465,7 +464,7 @@ must require exactly one argument, and this must lie in the filter
 resp. <Ref Func="NewProperty"/>.
 <P/>
 As for any operation, for attributes one can install a method taking an
-argument that does not lie in <A>filt</A> via <Ref Func="InstallOtherMethod"/>,
+argument that does not lie in <A>filter</A> via <Ref Func="InstallOtherMethod"/>,
 or a method for more than one argument. For example,
 <Ref Oper="IsTransitive" Label="for a group, an action domain, etc."/>
 is an attribute for a <M>G</M>-set that
@@ -533,7 +532,7 @@ for example, <C>Setter( Size )( <A>obj</A>, <A>val</A> )</C>
 sets <A>val</A> as size of the
 object <A>obj</A> if the size was not yet known.
 <P/>
-Calling the setter an of attribute for an object which stores already
+Calling the setter of an attribute for an object which stores already
 a value for this attribute <E>has no effect</E>,
 except if the attribute has been created as a <E>mutable</E> attribute
 (see <Ref Func="NewAttribute"/>).

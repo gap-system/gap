@@ -231,7 +231,7 @@ DeclareGlobalFunction( "DescriptionOfRootOfUnity" );
 ##  The following so-called <E>atomic irrationalities</E>
 ##  (see <Cite Key="CCN85" Where="Chapter 7, Section 10"/>)
 ##  can be entered using functions.
-##  (Note that the values are not necessary irrational.)
+##  (Note that the values are not necessarily irrational.)
 ##  <P/>
 ##  <Table Align="lclclcl">
 ##  <Row>
@@ -440,7 +440,7 @@ DeclareGlobalFunction( "ER" );
 ##    <Item><M>(n = <A>N</A>_3)</M></Item>
 ##  </Row>
 ##  <Row>
-##    <Item><C>EW</C>(<A>N</A><C>)</C></Item>
+##    <Item><C>EW(</C><A>N</A><C>)</C></Item>
 ##    <Item>=</Item>
 ##    <Item><M>w_{<A>N</A>}</M></Item>
 ##    <Item>=</Item>

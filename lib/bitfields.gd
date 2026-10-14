@@ -17,7 +17,7 @@
 #F  MakeBitfields(<width>[, <width>[, <width>...]]])
 ##  <#GAPDoc Label="MakeBitfields">
 ##  <ManSection>
-##  <Func Name="MakeBitfields" Arg='width....'/>
+##  <Func Name="MakeBitfields" Arg='width...'/>
 ##
 ##  <Description>
 ##
@@ -42,14 +42,14 @@
 ##  <Mark><C>setters</C></Mark> <Item> a list of <M>n</M> functions each taking
 ##  two arguments: a packed value and a new value for one of its fields and
 ##  returning a new packed value. The
-##  <M>i</M>th function returned the new packed value in which the <M>i</M>th
+##  <M>i</M>th function returns the new packed value in which the <M>i</M>th
 ##  field has been replaced by the new value.
 ##   Note that this does NOT modify the original packed value.</Item>
 ##
 ##  </List>
 ##
 ##  Two additional fields may be present if any of the field widths is
-##  one. Each is a list and only has entried bound in the positions
+##  one. Each is a list and only has entries bound in the positions
 ##  corresponding to the width 1 fields.
 ##  <List> <Mark><C>booleanGetters</C></Mark> <Item>if the <M>i</M>th position of
 ##  this list is set, it contains a function which extracts the <M>i</M>th
@@ -76,17 +76,12 @@ DeclareGlobalFunction( "MakeBitfields" );
 ##  <Func Name="BuildBitfields" Arg='widths, vals...'/>
 ##  <Description>
 ##
-##  This function takes one or more argument. Its first argument is a list
+##  This function takes one or more arguments. Its first argument is a list
 ##  of field widths, as found in the <C>widths</C> entry of a record returned
 ##  by <C>MakeBitfields</C>. The remaining arguments are unsigned integer
 ##  values, equal in number to the entries of the list of field widths. It returns
 ##  a small integer in which those entries are packed into bitfields of the
 ##  given widths. The first entry occupies the least significant bits.
-##
-##
-
-DeclareGlobalFunction("BuildBitfields");
-
 ##
 ##  <Example><![CDATA[
 ##  gap> bf := MakeBitfields(1,2,3);
@@ -113,3 +108,4 @@ DeclareGlobalFunction("BuildBitfields");
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+DeclareGlobalFunction("BuildBitfields");

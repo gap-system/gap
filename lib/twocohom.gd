@@ -261,11 +261,11 @@ DeclareOperation( "TwoCohomologyGeneric", [ IsGroup, IsObject ] );
 ##  <Description>
 ##  For a record <A>r</A> as returned by
 ##  <Ref Oper="TwoCohomologyGeneric"/> and a vector <A>c</A> in the space of
-##  two-cocycles, this operation returns a finitely presented group that is
+##  two-cocycles, this function returns a finitely presented group that is
 ##  an extension corresponding to the cocycle <A>c</A>. If the underlying
 ##  module has dimension <M>d</M>, the last <M>d</M> generators generate the
 ##  normal subgroup.
-##  If the optional parameter <A>doperm</A> is given as <A>true</A>, a
+##  If the optional parameter <A>doperm</A> is given as <K>true</K>, a
 ##  faithful permutation representation is computed and stored in the
 ##  attribute <Ref Attr="IsomorphismPermGroup"/> of the computed group.
 ##  If the option <C>normalform</C> is given as <C>true</C>, arithmetic in

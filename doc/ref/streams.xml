@@ -49,8 +49,8 @@
 
 <Description>
 makes the UNIX C-library function <C>select</C> accessible from &GAP;
-for streams. The functionality is as described in the man page (see
-
+for streams. The functionality is as described in the man page (see <C>man select</C>).
+The first three arguments must be lists containing
 UNIX file descriptors (integers) for streams. They can be obtained via
 <Ref Oper="FileDescriptorOfStream"/> for streams
 to local processes and to local files. The argument <A>timeoutsec</A> is a

@@ -53,12 +53,12 @@
 ##      controls the sensitivity of the algorithm,
 ##      see&nbsp;<Ref Func="LLLReducedBasis"/>,
 ##  </Item>
-##  <Mark><A>"sort"</A></Mark>
+##  <Mark><C>"sort"</C></Mark>
 ##  <Item>
 ##      <Ref Func="LLL"/> sorts <A>characters</A> and the <C>remainders</C>
 ##      component of the result according to the degrees,
 ##  </Item>
-##  <Mark><A>"linearcomb"</A></Mark>
+##  <Mark><C>"linearcomb"</C></Mark>
 ##  <Item>
 ##      the returned record contains components <C>irreddecomp</C>
 ##      and <C>reddecomp</C>, which are decomposition matrices of

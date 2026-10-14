@@ -1099,7 +1099,7 @@ The inverse (see&nbsp;<Ref Attr="Inverse"/>) of an invertible square table
 <A>x</A> in <Ref Filt="IsMultiplicativeGeneralizedRowVector"/> whose entries
 lie in a common field is defined as the usual inverse <M>y</M>, i.e.,
 a square matrix over the same field such that <M><A>x</A> y</M> and
-<M>y <A>x</A></M> is equal to <C>One( <A>x</A> )</C>.
+<M>y <A>x</A></M> are equal to <C>One( <A>x</A> )</C>.
 <P/>
 <Example><![CDATA[
 gap> Inverse( [ [ 1, 2 ], [ 3, 4 ] ] );
@@ -1792,7 +1792,7 @@ Error, Range: <last>-<first> (31) must be divisible by <inc> (3)
 ]]></Example>
 <P/>
 Most often ranges are used in connection with the <K>for</K>-loop
-see&nbsp;<Ref Sect="For"/>).
+(see&nbsp;<Ref Sect="For"/>).
 Here the construct
 <P/>
 <C>for <A>var</A> in [ <A>first</A> .. <A>last</A> ] do <A>statements</A> od</C>

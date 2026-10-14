@@ -43,13 +43,13 @@
 ##  since more special representations (compressed, sparse, etc.)
 ##  have already been and even more will be implemented.
 ##  Here we describe a programming interface to vectors and matrices,
-##  which solves this problem,
+##  which solves this problem.
 ##  <P/>
 ##  The idea of this interface is that &GAP; should be able to
 ##  represent vectors and matrices by objects that store their type,
 ##  in order to benefit from method selection.
 ##  These objects are created by <Ref Func="Objectify"/>,
-##  we therefore refer to the them as <Q>vector objects</Q> and
+##  we therefore refer to them as <Q>vector objects</Q> and
 ##  <Q>matrix objects</Q> respectively.
 ##  <P/>
 ##  (Of course the terminology is somewhat confusing:
@@ -78,7 +78,7 @@
 ##  <P/>
 ##  This latter requirement makes it necessary to distinguish between
 ##  different representations of matrices:
-##  <Q>Row list</Q> matrices (see <Ref Filt="IsRowListMatrix"/>
+##  <Q>Row list</Q> matrices (see <Ref Filt="IsRowListMatrix"/>)
 ##  behave basically like lists of rows,
 ##  in particular the rows are individual &GAP; objects that can
 ##  be shared between different matrix objects.
@@ -221,7 +221,7 @@ DeclareAttribute( "ConstructingFilter", IsVecOrMatObj );
 ##  either a filter <C>f</C> such that vector objects with
 ##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> value
 ##  <C>f</C> are compatible in the sense that <A>M</A> can be multiplied with
-##  these vector objects, of <K>fail</K> if no such filter is known.
+##  these vector objects, or <K>fail</K> if no such filter is known.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -830,10 +830,10 @@ DeclareTagBasedOperation( "NewZeroVector",
 ##  For a filter <A>filt</A>, a semiring <A>R</A>,
 ##  a positive integer <A>ncols</A>, and a list <A>list</A>,
 ##  <Ref Oper="NewMatrix"/> returns a matrix object which has
-##  the <Ref Attr="ConstructingFilter" Label="for a vector object"/>
+##  the <Ref Attr="ConstructingFilter" Label="for a matrix object"/>
 ##  <A>filt</A>,
 ##  the <Ref Attr="BaseDomain" Label="for a matrix object"/> <A>R</A>,
-##  <A>n</A> columns
+##  <A>ncols</A> columns
 ##  (see <Ref Attr="NumberColumns" Label="for a matrix object"/>),
 ##  and the entries described by <A>list</A>,
 ##  which can be either a plain list of vector objects of length <A>ncols</A>
@@ -851,14 +851,14 @@ DeclareTagBasedOperation( "NewZeroVector",
 ##  Similarly, <Ref Oper="NewZeroMatrix"/> returns a zero matrix
 ##  object with <A>m</A> rows and <A>n</A> columns
 ##  which has <A>filt</A> and <A>R</A> as
-##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> and
-##  <Ref Attr="BaseDomain" Label="for a vector object"/> values.
+##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/> and
+##  <Ref Attr="BaseDomain" Label="for a matrix object"/> values.
 ##  <P/>
 ##  Similarly, <Ref Oper="NewIdentityMatrix"/> returns an identity
 ##  matrix object with <A>n</A> rows and columns
 ##  which has <A>filt</A> and <A>R</A> as
-##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> and
-##  <Ref Attr="BaseDomain" Label="for a vector object"/> values,
+##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/> and
+##  <Ref Attr="BaseDomain" Label="for a matrix object"/> values,
 ##  and contains the identity element of <A>R</A> in the diagonal
 ##  and the zero of <A>R</A> in each off-diagonal position.
 ##  <P/>
@@ -1052,7 +1052,7 @@ DeclareOperationKernel( "ExtractSubMatrix",
 ##  For a matrix object <A>M</A>, this operation returns a fully mutable
 ##  copy of <A>M</A>, with the same
 ##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/> and
-##  <Ref Attr="BaseDomain" Label="for a matrix object"/> values,
+##  <Ref Attr="BaseDomain" Label="for a matrix object"/> values.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

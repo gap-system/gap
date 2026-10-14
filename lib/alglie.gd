@@ -949,7 +949,7 @@ DeclareAttribute( "NegativeRoots", IsRootSystem );
 ##  <Description>
 ##  A list of positive root vectors of the root system <A>R</A> that comes
 ##  from a Lie algebra <C>L</C>. This is a list in bijection with the list
-##  <C>PositiveRoots( L )</C> (see&nbsp;<Ref Attr="PositiveRoots"/>). The
+##  <C>PositiveRoots( <A>R</A> )</C> (see&nbsp;<Ref Attr="PositiveRoots"/>). The
 ##  root vector is a non-zero element of the root space (in <C>L</C>) of
 ##  the corresponding root.
 ##  </Description>
@@ -970,7 +970,7 @@ DeclareAttribute( "PositiveRootVectors", IsRootSystemFromLieAlgebra );
 ##  <Description>
 ##  A list of negative root vectors of the root system <A>R</A> that comes
 ##  from a Lie algebra <C>L</C>. This is a list in bijection with the list
-##  <C>NegativeRoots( L )</C> (see&nbsp;<Ref Attr="NegativeRoots"/>). The
+##  <C>NegativeRoots( <A>R</A> )</C> (see&nbsp;<Ref Attr="NegativeRoots"/>). The
 ##  root vector is a non-zero element of the root space (in <C>L</C>) of
 ##  the corresponding root.
 ##  </Description>
@@ -1216,7 +1216,7 @@ DeclareGlobalFunction( "DescriptionOfNormalizedUEAElement" );
 ##
 ##  <Description>
 ##  Returns the universal enveloping algebra of the Lie algebra <A>L</A>.
-##  The elements of this algebra are written on a Poincare-Birkhoff-Witt
+##  The elements of this algebra are written on a Poincaré-Birkhoff-Witt
 ##  basis.
 ##  <P/>
 ##  If a second argument <A>B</A> is given, it must be a basis of <A>L</A>,

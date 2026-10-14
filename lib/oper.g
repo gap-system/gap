@@ -665,7 +665,7 @@ end );
 ##  <Mark>One, OneMut</Mark><Item>Mutable and Immutable <Ref Attr="One"/></Item>
 ##  <Mark>Inv, InvMut</Mark><Item>Mutable and Immutable <Ref Attr="Inverse"/></Item>
 ##  <Mark>Sum</Mark><Item>The operator <Ref Oper="\+"/></Item>
-##  <Mark>Diff</Mark><Item>The operator <C>-</C> operator</Item>
+##  <Mark>Diff</Mark><Item>The operator <C>-</C></Item>
 ##  <Mark>Prod</Mark><Item>The operator <Ref Oper="\*"/></Item>
 ##  <Mark>Quo</Mark><Item>The operator <Ref Oper="\/"/></Item>
 ##  <Mark>LQuo</Mark><Item>The left-quotient operator</Item>
@@ -1897,7 +1897,7 @@ end );
 ##  <#GAPDoc Label="DeclareGlobalFunction">
 ##  <ManSection>
 ##  <Func Name="DeclareGlobalFunction" Arg='name'/>
-##  <Func Name="InstallGlobalFunction" Arg='oper, func'/>
+##  <Func Name="InstallGlobalFunction" Arg='gvar, func'/>
 ##
 ##  <Description>
 ##  &GAP; functions that are not operations and that are intended to be

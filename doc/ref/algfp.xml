@@ -16,7 +16,7 @@ so this chapter is merely a placeholder.
 <P/>
 The special case of finitely presented <E>Lie</E> algebras is described
 in&nbsp;<Ref Sect="Finitely Presented Lie Algebras"/>,
-and there is also a &GAP; package <C>fplsa</C> for computing structure constants
+and there is also a &GAP; package <Package>fplsa</Package> for computing structure constants
 of <E>f</E>initely <E>p</E>resented <E>L</E>ie (<E>s</E>uper)<E>a</E>lgebras.
 <P/>
 <!-- % Finitely presented <E>associative</E> algebras will eventually be handled by -->

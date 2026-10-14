@@ -2,11 +2,11 @@
 <Heading>Floats</Heading>
 
 Starting with version 4.5, &GAP; has built-in support for
-floating-point numbers in machine format, and allows package to
+floating-point numbers in machine format, and allows packages to
 implement arbitrary-precision floating-point arithmetic in a uniform
 manner. For now, one such package, <Package>Float</Package> exists,
 and is based on the arbitrary-precision routines
-in <Package>mpfr</Package>.
+in the MPFR library.
 
 <P/> A word of caution: &GAP; deals primarily with algebraic objects,
 which can be represented exactly in a computer. Numerical imprecision
@@ -86,8 +86,8 @@ the current floating-point format. The underscore may be followed by a
 single letter, which specifies which format/precision to use. By
 default, &GAP; has a single floating-point handler, with fixed (53
 bits) precision, and its format specifier is <C>'l'</C> as
-in <C>1._l</C>. Higher-precision floating-point computations is
-available via external packages; <Package>float</Package> for example.
+in <C>1._l</C>. Higher-precision floating-point computations are
+available via external packages; <Package>Float</Package> for example.
 <P/>
 
 A record, <Ref Var="FLOAT" Label="constants"/>,
@@ -178,10 +178,10 @@ false
     <Mark>MAX_EXP</Mark> <Item>Maximal binary exponent;</Item>
     <Mark>MIN</Mark> <Item>Minimal positive representable number;</Item>
     <Mark>MIN_10_EXP</Mark> <Item>Minimal decimal exponent;</Item>
-    <Mark>MIN_EXP</Mark> <Item>Minimal exponent;</Item>
+    <Mark>MIN_EXP</Mark> <Item>Minimal binary exponent;</Item>
     <Mark>INFINITY</Mark> <Item>Positive infinity;</Item>
     <Mark>NINFINITY</Mark> <Item>Negative infinity;</Item>
-    <Mark>NAN</Mark> <Item>Not-a-number,</Item>
+    <Mark>NAN</Mark> <Item>Not-a-number;</Item>
     </List>
     as well as mathematical constants <C>E</C>, <C>LOG2E</C>, <C>LOG10E</C>,
     <C>LN2</C>, <C>LN10</C>, <C>PI</C>, <C>PI_2</C>, <C>PI_4</C>,

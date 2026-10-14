@@ -195,7 +195,7 @@ DeclareAttribute( "GaloisGroup", IsRationalClassGroupRep );
 ##  This works very efficiently for almost simple groups.
 ##  <P/>
 ##  This function is also accessible via the option <C>random</C> to
-##  the function <Ref Oper="ConjugacyClass"/>.
+##  the function <Ref Attr="ConjugacyClasses" Label="attribute"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -219,15 +219,15 @@ DeclareGlobalFunction( "ConjugacyClassesByRandomSearch" );
 ##  thus a membership test will be quick as well.
 ##  <P/>
 ##  This function is also accessible via the option <C>action</C> to
-##  the function <Ref Oper="ConjugacyClass"/>.
+##  the function <Ref Attr="ConjugacyClasses" Label="attribute"/>.
 ##  <P/>
 ##  Typically, for small groups (roughly of order up to <M>10^3</M>)
 ##  the computation of classes as orbits under the action is fastest;
 ##  memory restrictions (and the increasing cost of eliminating duplicates)
 ##  make this less efficient for larger groups.
 ##  <P/>
-##  Calculation by random search has the smallest memory requirement, but in
-##  generally performs worse, the more classes are there.
+##  Calculation by random search has the smallest memory requirement, but
+##  generally performs worse the more classes there are.
 ##  <P/>
 ##  The following example shows the effect of this for a small group
 ##  with many classes:
@@ -305,7 +305,7 @@ DeclareGlobalFunction("PcClassFactorCentralityTest");
 ##  4 Conjugacy test for the two elements in <A>opt</A><C>.candidates</C>
 ##  <P/>
 ##  In mode 0 the function returns a list of records containing components
-##  <A>representative</A> and <A>centralizer</A>.
+##  <C>representative</C> and <C>centralizer</C>.
 ##  In mode 4 it returns a conjugating element.
 ##  <P/>
 ##  The optional record <A>opt</A> may contain the following components
@@ -374,7 +374,7 @@ DeclareGlobalFunction("MultiClassIdsPc");
 ##  1 Rational classes of a <M>p</M>-group (mode 3 is used internally as well)
 ##  <P/>
 ##  In mode 0 the function returns a list of records containing components
-##  <A>representative</A> and <A>centralizer</A>. In mode 1 the records in addition
+##  <C>representative</C> and <C>centralizer</C>. In mode 1 the records in addition
 ##  contain the component <A>galoisGroup</A>.
 ##  <P/>
 ##  The optional record <A>opt</A> may contain the following components that will

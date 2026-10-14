@@ -23,7 +23,7 @@ DeclareSynonym( "InfoOperation",InfoAction );
 ##
 ##  <Description>
 ##  An <E>external set</E> specifies a group action
-##  <M>\mu: \Omega \times G \mapsto \Omega</M> of a group <M>G</M>
+##  <M>\mu: \Omega \times G \rightarrow \Omega</M> of a group <M>G</M>
 ##  on a domain <M>\Omega</M>. The external set knows the group,
 ##  the domain and the actual acting function.
 ##  Mathematically, an external set is the set&nbsp;<M>\Omega</M>,
@@ -325,7 +325,8 @@ DeclareAttribute( "StabilizerOfExternalSet", IsExternalSet );
 ##
 ##  <Description>
 ##  The canonical representative of an external set <A>xset</A> may only
-##  depend on the defining attributes <A>G</A>, <A>Omega</A>, <A>act</A>
+##  depend on the defining attributes <Ref Attr="ActingDomain"/>,
+##  <Ref Attr="HomeEnumerator"/>, <Ref Attr="FunctionAction"/>
 ##  of <A>xset</A> and (in the case of external subsets)
 ##  <C>Enumerator( <A>xset</A> )</C>.
 ##  It must <E>not</E> depend, e.g., on the representative of an external
@@ -1082,7 +1083,7 @@ DeclareGlobalFunction("MultiActionsHomomorphism");
 ##  where <M>D</M> is the union of the <A>G</A>-orbits of all points in
 ##  <A>start</A>.
 ##  In the <Ref Oper="Orbit"/> calls that are used to create <M>D</M>,
-##  again the optional arguments given are entered.)
+##  again the optional arguments given are entered.
 ##  <P/>
 ##  If <A>G</A> acts on a very large domain not surjectively
 ##  this may yield a permutation image of
@@ -1739,7 +1740,7 @@ OrbitsishOperation( "Transitivity", OrbitsishReq, false, NewAttribute );
 ##  If the action is primitive, the block system <C>[ <A>Omega</A> ]</C>
 ##  consisting of the single block <A>Omega</A> is returned.
 ##  If <A>seed</A> is given, a block system in which <A>seed</A>
-##  is the subset of one block is computed.
+##  is a subset of one block is computed.
 ##  <P/>
 ##  If the action is not transitive, an error is signalled for a
 ##  permutation group acting on points, and the result is undefined
@@ -1848,7 +1849,7 @@ OrbitishFO( "MaximalBlocks",
 ##   Label="for an external set"/>
 ##
 ##  <Description>
-##  computes a list of block representatives for all minimal (i.e blocks are
+##  computes a list of block representatives for all minimal (i.e., blocks are
 ##  minimal with respect to inclusion) nontrivial block systems for the
 ##  transitive (see
 ##  <Ref Oper="IsTransitive" Label="for a group, an action domain, etc."/>)
@@ -2571,14 +2572,14 @@ DeclareGlobalFunction( "StabilizerOfBlockNC" );
 ##  of a common parent that are normal under <A>G</A>, such that
 ##  the subfactor <M><A>M</A>/<A>N</A></M> is elementary abelian.
 ##  The operation <Ref Oper="AbelianSubfactorAction"/> returns a list
-##  <C>[ <A>phi</A>, <A>alpha</A>, <A>bas</A> ]</C> where
-##  <A>bas</A> is a list of elements of <A>M</A> which are representatives
+##  <C>[ phi, alpha, bas ]</C> where
+##  <C>bas</C> is a list of elements of <A>M</A> which are representatives
 ##  for a basis of <M><A>M</A>/<A>N</A></M>,
-##  <A>alpha</A> is a map from <A>M</A> into a <M>n</M>-dimensional row space
+##  <C>alpha</C> is a map from <A>M</A> into an <M>n</M>-dimensional row space
 ##  over <M>GF(p)</M> where <M>[<A>M</A>:<A>N</A>] = p^n</M> that is the
 ##  natural homomorphism of <A>M</A> by <A>N</A> with the quotient
 ##  represented as an additive group.
-##  Finally <A>phi</A> is a homomorphism from <A>G</A>
+##  Finally <C>phi</C> is a homomorphism from <A>G</A>
 ##  into <M>GL_n(p)</M> that represents the action of <A>G</A> on the factor
 ##  <M><A>M</A>/<A>N</A></M>.
 ##  <P/>
@@ -2698,7 +2699,7 @@ DeclareOperation( "AbelianSubfactorAction",[IsGroup,IsGroup,IsGroup] );
 ##  of a right coset as an external set
 ##  (see&nbsp;<Ref Sect="External Sets"/>),
 ##  that is, a right coset <M>Ug</M> is an external set for the group
-##  <M>U</M> acting on it via <Ref Func="OnLeftInverse"/>.)
+##  <M>U</M> acting on it via <Ref Func="OnLeftInverse"/>.
 ##  <Example><![CDATA[
 ##  gap> OnLeftInverse( [ 1, 2 ], [ [ 1, 2 ], [ 3, 4 ] ] );
 ##  [ 0, 1/2 ]

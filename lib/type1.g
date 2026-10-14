@@ -68,7 +68,7 @@ InstallAttributeFunction(
 ##  Any type that is created for <C>fam</C> (see <Ref Func="NewType"/>) will
 ##  describe objects in these filters, and thus
 ##  any object that is created in <C>fam</C> (see <Ref Func="Objectify"/>)
-##  will lie automatically in <A>req</A><C> and </C><A>imp</A>.
+##  will lie automatically in <C><A>req</A> and <A>imp</A></C>.
 ##  (Thus it does not matter whether one uses <A>req</A> or <A>imp</A>
 ##  or both in the call, the distinction has only historical reasons.)
 ##  <P/>
@@ -733,7 +733,7 @@ end );
 ##  You can avoid this  by  setting the attributes immediately while the
 ##  object is created, as follows.
 ##  <Ref Func="ObjectifyWithAttributes"/> takes a plain list or record
-##  <A>obj</A> and turns it an object just like <Ref Func="Objectify"/>
+##  <A>obj</A> and turns it into an object just like <Ref Func="Objectify"/>
 ##  and sets attribute <A>attr1</A> to <A>val1</A>,
 ##  sets attribute <A>attr2</A> to <A>val2</A> and so forth.
 ##  <P/>

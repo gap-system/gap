@@ -222,7 +222,7 @@ DeclareSynonymAttr("AssociatedSemigroup", ParentAttr);
 ##  <P/>
 ##  Additionally, if <A>S</A> is a Green's <M>D</M>-class of a semigroup, then
 ##  <C>GreensRClasses</C> and <C>GreensLClasses</C> return the Green's <M>R</M>-
-##  or <M>L-</M>classes of the semigroup, respectively, contained in the
+##  or <M>L</M>-classes of the semigroup, respectively, contained in the
 ##  <M>D</M>-class <A>S</A>;
 ##  if <A>S</A> is a Green's <M>D</M>-, <M>R</M>-, or <M>L</M>-class of a
 ##  semigroup, then <C>GreensHClasses</C> returns the Green's <M>H</M>-classes
@@ -319,7 +319,7 @@ DeclareAttribute("GroupHClassOfGreensDClass",IsGreensDClass);
 ##  <Prop Name="IsRegularDClass" Arg='Dclass'/>
 ##
 ##  <Description>
-##  returns <K>true</K> if the Greens <M>D</M> class <A>Dclass</A> is
+##  returns <K>true</K> if the Green's <M>D</M>-class <A>Dclass</A> is
 ##  regular.
 ##  A <M>D</M> class is regular if and only if each of its elements is
 ##  regular, which in turn is true if and only if any one element of

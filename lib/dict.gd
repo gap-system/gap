@@ -99,7 +99,7 @@ DeclareCategory( "IsHash", IsLookupDictionary );
 ##  There are several ways how dictionaries are implemented: As lists, as
 ##  sorted lists, as hash tables or via binary lists. A user however will
 ##  just have to call <Ref Func="NewDictionary"/> and obtain a <Q>suitable</Q> dictionary
-##  for the kind of objects she wants to create. It is possible however to
+##  for the kind of objects to be stored. It is possible however to
 ##  create hash tables (see&nbsp;<Ref Sect="General Hash Tables"/>)
 ##  and dictionaries using binary lists (see&nbsp;<Ref Func="DictionaryByPosition"/>).
 ##  <P/>
@@ -173,10 +173,10 @@ DeclareGlobalFunction("NewDictionary");
 ##  <Description>
 ##  creates a new (lookup) dictionary which uses
 ##  <Ref Oper="PositionCanonical"/> in <A>list</A> for indexing.
-##  The dictionary will have an entry <A>dict</A><C>!.blist</C>
+##  The returned dictionary <C>dict</C> will have an entry <C>dict!.blist</C>
 ##  which is a bit list corresponding to <A>list</A> indicating the known
 ##  values.
-##  If <A>look</A> is <K>true</K>,
+##  If <A>lookup</A> is <K>true</K>,
 ##  the dictionary will be a lookup dictionary,
 ##  otherwise it is an ordinary dictionary.
 ##  </Description>

@@ -216,7 +216,7 @@ DeclareOperation( "PadicNumber", [ IsPadicNumberFamily, IsObject ] );
 ##
 ##  <#GAPDoc Label="ShiftedPadicNumber">
 ##  <ManSection>
-##  <Oper Name="ShiftedPadicNumber" Arg='padic, int'/>
+##  <Oper Name="ShiftedPadicNumber" Arg='padic, shift'/>
 ##
 ##  <Description>
 ##  <Ref Oper="ShiftedPadicNumber"/> takes a <M>p</M>-adic number

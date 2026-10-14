@@ -414,7 +414,7 @@ DeclareOperation( "FieldExtension", [ IsField, IsUnivariatePolynomial ] );
 ##  the <E>minimal polynomial</E> <M>\mu_{\alpha}</M> and the
 ##  <E>trace polynomial</E> <M>\chi_{\alpha}</M> of <M>\alpha</M>
 ##  are defined as the minimal polynomial
-##  (see&nbsp;<Ref Sect="MinimalPolynomial" Label="over a field"/>)
+##  (see&nbsp;<Ref Oper="MinimalPolynomial" Label="over a field"/>)
 ##  and the characteristic polynomial
 ##  (see&nbsp;<Ref Attr="CharacteristicPolynomial"/> and
 ##  <Ref Oper="TracePolynomial"/>) of <M>M_{\alpha}</M>.
@@ -442,7 +442,7 @@ DeclareOperation( "FieldExtension", [ IsField, IsUnivariatePolynomial ] );
 ##  the norm of <M>\alpha</M> equals the product and the trace of
 ##  <M>\alpha</M> equals the sum of the conjugates of <M>\alpha</M>,
 ##  and the Galois group in the sense of the above definition equals
-##  the usual Galois group,
+##  the usual Galois group.
 ##  <P/>
 ##  Note that <C>MinimalPolynomial( <A>F</A>, <A>z</A> )</C> is a polynomial
 ##  <E>over</E> <A>F</A>,
@@ -471,7 +471,7 @@ DeclareOperation( "FieldExtension", [ IsField, IsUnivariatePolynomial ] );
 ##  computations in a different way since the field extensions in question
 ##  are Galois extensions, and the Galois groups are well-known in these
 ##  cases.
-##  More general,
+##  More generally,
 ##  if a field is in the category
 ##  <C>IsFieldControlledByGaloisGroup</C> then
 ##  the default methods are the following.

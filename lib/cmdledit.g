@@ -105,7 +105,7 @@ GAPInfo.UseReadline := true;
 ##  <Item>Most keys still do the  same as explained in
 ##  <Ref Sect="Line Editing"/> (in the default configuration).
 ##  </Item>
-##  <Item>There are many additional commands, e.g. undoing (<B>Ctrl-_</B>,
+##  <Item>There are many additional commands, e.g. undoing (<B>Ctrl-_</B>),
 ##  keyboard macros (<B>Ctrl-x(</B>, <B>Ctrl-x)</B> and <B>Ctrl-xe</B>),
 ##  file name completion (hit <B>Esc</B> two or four times),
 ##  showing matching parentheses,

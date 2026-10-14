@@ -593,16 +593,13 @@ end );
 ##  <Description>
 ##  <Index>hash function</Index>
 ##  <Index>checksum</Index>
-##  This function computes a CRC (cyclic redundancy check) number for the
-##  content of the file <A>filename</A>.
-##  <P/>
 ##  <Ref Func="CrcFile"/> computes a CRC (cyclic redundancy check) checksum
 ##  value for the file with filename <A>filename</A> and returns this value
 ##  as an integer. The function returns <K>fail</K> if an error occurred,
 ##  for example, if <A>filename</A> does not exist.
 ##  In this case the function <Ref Func="LastSystemError"/>
 ##  can be used to get information about the error.
-##  See also <Ref Func="CrcFile"/> and <Ref Func="HexSHA256"/>.
+##  See also <Ref Func="CrcString"/> and <Ref Func="HexSHA256"/>.
 ##  <P/>
 ##  <Log><![CDATA[
 ##  gap> CrcFile( "lib/morpheus.gi" );

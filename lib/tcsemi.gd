@@ -30,8 +30,8 @@
 ##  transformations of the congruence classes of <A>r</A>.
 ##  <P/>
 ##  The images   of the cosets under the   generators are compiled in  a list
-##  <A>table</A> such that  <A>table[i][s]</A> contains  the image  of  coset <A>s</A> under
-##  generator <A>i</A>.
+##  <C>table</C> such that  <C>table[i][s]</C> contains  the image  of  coset <M>s</M> under
+##  generator <M>i</M>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
