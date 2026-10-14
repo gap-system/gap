@@ -1232,8 +1232,6 @@ InstallMethod( Embedding, "ring direct sum and integer",
     imgs := GeneratorsOfRing( D ){[first[i]+1 .. first[i+1]]};
     map := RingHomomorphismByImages( R, D, gens, imgs );
     SetIsInjective( map, true );
-    SetIsTotal( map, true );
-    SetIsSingleValued( map, true );
 
     # store information
     info.embeddings[i] := map;
