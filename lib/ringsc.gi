@@ -1240,7 +1240,7 @@ end );
 
 #############################################################################
 ##
-#A  Projection
+#M  Projection( <D>, <i> )
 ##
 InstallMethod( Projection, "ring direct sum and integer",
     [ IsSubringSCRing and HasDirectSumInfo, IsPosInt ],
