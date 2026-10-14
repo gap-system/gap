@@ -76,6 +76,10 @@ enum {
 #define HAVE_FUNC_ATTRIBUTE_FORMAT 1
 #endif
 
+#if __has_attribute(no_sanitize)
+#define HAVE_FUNC_ATTRIBUTE_NO_SANITIZE 1
+#endif
+
 #endif
 
 #if defined(HAVE_FUNC_ATTRIBUTE_ALWAYS_INLINE) && !defined(GAP_KERNEL_DEBUG)
@@ -94,6 +98,12 @@ enum {
 #define NOINLINE __attribute__((noinline))
 #else
 #define NOINLINE
+#endif
+
+#ifdef HAVE_FUNC_ATTRIBUTE_NO_SANITIZE
+#define NO_SANITIZE_ALIGNMENT __attribute__((no_sanitize("alignment")))
+#else
+#define NO_SANITIZE_ALIGNMENT
 #endif
 
 
