@@ -1373,7 +1373,7 @@ static void ConvGF2Vec(Obj list)
     }
     if (SIZE_PLEN_GF2VEC(len) > SIZE_OBJ(list))
         ResizeBag(list, SIZE_PLEN_GF2VEC(len));
-    BOOL mutable = IS_PLIST_MUTABLE(list);
+    BOOL mutable = IS_MUTABLE_OBJ(list);
 
     block = 0;
     bit = 1;
@@ -1473,7 +1473,7 @@ static Obj NewGF2Vec(Obj list)
     }
 
     // mutability should be inherited from the argument
-    if (IS_PLIST_MUTABLE(list))
+    if (IS_MUTABLE_OBJ(list))
         SetTypeDatObj(res, TYPE_LIST_GF2VEC);
     else
         SetTypeDatObj(res, TYPE_LIST_GF2VEC_IMM);
@@ -1529,7 +1529,7 @@ static Obj FuncCONV_GF2MAT(Obj self, Obj list)
         SET_ELM_PLIST(list, i + 1, tmp);
     }
     SET_ELM_PLIST(list, 1, INTOBJ_INT(len));
-    mut = IS_PLIST_MUTABLE(list);
+    mut = IS_MUTABLE_OBJ(list);
     RetypeBag(list, T_POSOBJ);
     SET_TYPE_POSOBJ(list, mut ? TYPE_LIST_GF2MAT : TYPE_LIST_GF2MAT_IMM);
     return (Obj)0;
