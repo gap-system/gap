@@ -703,8 +703,8 @@ function( G )
   if pcgs = fail then
     return [];
   fi;
-  clreps := List( ConjugacyClasses( G ), Representative );
   ct := CharacterTable( G );
+  clreps := List( ConjugacyClasses( ct ), Representative );
   irr := [];
   # linear characters without covering triples
   Append( irr, LinearCharacters( G ) );

@@ -1141,9 +1141,10 @@ InstallMethod( LinearCharacters,
 #   return RestrictedClassFunctions( CharacterTable( img ),
 #              Irr( img, 0 ), pi );
 # We cannot use this because the source of `pi' may be not identical with `G'!
+# `FusionConjugacyClasses( pi )' refers to the classes of that source
+# and of the group `img', so compute the fusion between the tables.
     tbl:= CharacterTable( G );
-    fus:= FusionConjugacyClasses( pi ){
-              IdentificationOfConjugacyClasses( tbl ) };
+    fus:= FusionConjugacyClasses( pi, tbl, CharacterTable( img ) );
     res:= List( Irr( img, 0 ), x -> Character( tbl, x{ fus } ) );
     for chi in res do
       SetIsIrreducibleCharacter( chi, true );
