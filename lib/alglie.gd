@@ -680,15 +680,15 @@ DeclareOperation( "KappaPerp",
 
 #############################################################################
 ##
-#O  PowerSi( <one>, <i> )
+#F  PowerSi( <F>, <i> )
 #A  PowerS( <L> )
 ##
 ##  <ManSection>
-##  <Oper Name="PowerSi" Arg='one, i'/>
+##  <Func Name="PowerSi" Arg='F, i'/>
 ##  <Attr Name="PowerS" Arg='L'/>
 ##
 ##  <Description>
-##  <A>one</A> is the identity in a field <M>F</M> of characteristic <M>p</M>.
+##  <A>F</A> is a field of characteristic <M>p</M>.
 ##  The <M>p</M>-th power map of a restricted Lie algebra over <M>F</M>
 ##  satisfies the following relation.
 ##  <M>(x+y)^{[p]} = x^{[p]} + y^{[p]} + \sum_{i=1}^{p-1} s_i(x,y)</M>
@@ -702,6 +702,7 @@ DeclareOperation( "KappaPerp",
 ##  <P/>
 ##  <C>PowerSi</C> returns the function <M>s_i</M>, which only depends on <M>p</M> and
 ##  <M>i</M> and not on the Lie algebra or on <M>F</M>.
+##  It can be called as <C>s( x, y )</C> or as <C>s( [ x, y ] )</C>.
 ##  <P/>
 ##  <C>PowerS</C> returns the list <M>[ s_1, \ldots, s_{p-1} ]</M> of all s-functions
 ##  as computed by <C>PowerSi</C>.
