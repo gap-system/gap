@@ -774,6 +774,12 @@ GMP_FILES := $(GMP_PREFIX)/lib/libgmp.la
 
 EXTERN_FILES += $(GMP_FILES)
 
+# GMP 6.3.0's configure probes are invalid C23 (they call `void g(){}` with
+# arguments), so build it as C11 even if CC defaults to C23 (GCC >= 15) or
+# our configure picked -std=gnu23 (autoconf >= 2.73). Overrides the CC in
+# EXTERN_CONFIGFLAGS.
+GMP_CC := $(filter-out -std=%,$(CC)) -std=gnu11
+
 # Note: we pass the ABI flag to gmp, and also --enable-shared ; the latter
 # is there for the benefit of cygwin builds, where GMP otherwise defaults
 # to building only a static library.
@@ -784,6 +790,7 @@ $(GMP_FILES):
 	touch "$(abs_srcdir)/extern/gmp/doc/gmp.info"
 	MAKE=$(MAKE) $(srcdir)/cnf/build-extern.sh gmp "$(abs_srcdir)/extern/gmp" \
 	$(EXTERN_CONFIGFLAGS) \
+	CC="$(GMP_CC)" \
 	ABI="$(ABI)" \
 	--disable-static \
 	--enable-shared
