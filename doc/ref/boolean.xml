@@ -238,7 +238,7 @@ false
 <K>not</K> <A>bool</A>
 <P/>
 The logical operator <K>not</K> returns <K>true</K>
-if the boolean value <A>bool</A> is <K>false</K>, and <K>true</K> otherwise.
+if the boolean value <A>bool</A> is <K>false</K>, and <K>false</K> otherwise.
 An error is signalled if <A>bool</A> does not evaluate to <K>true</K> or
 <K>false</K>.
 <P/>

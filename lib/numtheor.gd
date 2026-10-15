@@ -62,9 +62,6 @@ DeclareInfoClass( "InfoNumtheor" );
 ##  <C>[ 0 .. Abs( <A>m</A> )-1 ]</C>
 ##  that are coprime to the integer <A>m</A>.
 ##  <P/>
-##  <C>Abs(<A>m</A>)</C> must be less than <M>2^{28}</M>,
-##  otherwise the set would probably be too large anyhow.
-##  <P/>
 ##  <Example><![CDATA[
 ##  gap> PrimeResidues( 0 );  PrimeResidues( 1 );  PrimeResidues( 20 );
 ##  [  ]
@@ -91,7 +88,7 @@ DeclareGlobalFunction( "PrimeResidues" );
 ##  <Index Subkey="order">prime residue group</Index>
 ##  <Index>Euler's totient function</Index>
 ##  <Ref Oper="Phi"/> returns the number <M>\phi(<A>m</A>)</M> of positive
-##  integers less than the positive integer <A>m</A>
+##  integers not exceeding the positive integer <A>m</A>
 ##  that are coprime to <A>m</A>.
 ##  <P/>
 ##  Suppose that <M>m = p_1^{{e_1}} p_2^{{e_2}} \cdots p_k^{{e_k}}</M>.
@@ -129,7 +126,7 @@ DeclareOperation( "Phi", [ IsObject ] );
 ##  <P/>
 ##  <M>\lambda(<A>m</A>)</M> is the smallest positive integer <M>l</M> such that for every
 ##  <M>a</M> relatively prime to <A>m</A> we have <M>a^l \equiv 1 \pmod{<A>m</A>}</M>.
-##  Fermat's theorem asserts
+##  Euler's theorem asserts
 ##  <M>a^{{\phi(<A>m</A>)}} \equiv 1 \pmod{<A>m</A>}</M>;
 ##  thus <M>\lambda(<A>m</A>)</M> divides <M>\phi(<A>m</A>)</M> (see&nbsp;<Ref Oper="Phi"/>).
 ##  <P/>
@@ -258,7 +255,7 @@ DeclareGlobalFunction( "IsPrimitiveRootMod" );
 ##  <Ref Func="PrimitiveRootMod"/> returns the smallest primitive root that
 ##  is strictly larger than <A>start</A>.
 ##  <Example><![CDATA[
-##  gap> # largest primitive root for a prime less than 2000:
+##  gap> # largest smallest primitive root of a prime less than 2000:
 ##  gap> PrimitiveRootMod( 409 );
 ##  21
 ##  gap> PrimitiveRootMod( 541, 2 );
@@ -342,7 +339,7 @@ DeclareGlobalFunction( "GeneratorsPrimeResidues" );
 ##  It is defined as follows:
 ##  <P/>
 ##  If <M>n</M> and <M>m</M> are not coprime then <M>J(n,m) = 0</M>.
-##  Furthermore, <M>J(n,1) = 1</M> and <M>J(n,-1) = -1</M> if <M>m &lt; 0</M>
+##  Furthermore, <M>J(n,1) = 1</M> and <M>J(n,-1) = -1</M> if <M>n &lt; 0</M>
 ##  and  <M>+1</M>  otherwise.
 ##  And for odd <M>n</M> it is <M>J(n,2) = (-1)^k</M> with
 ##  <M>k = (n^2-1)/8</M>.
@@ -449,8 +446,9 @@ DeclareGlobalFunction( "Legendre" );
 ##  <P/>
 ##  A square root of <A>n</A> exists only if <C>Legendre(<A>n</A>,<A>m</A>) = 1</C>
 ##  (see&nbsp;<Ref Func="Legendre"/>).
-##  If <A>m</A> has <M>r</M> different prime factors then  there are <M>2^r</M>  different
-##  roots of <A>n</A> mod  <A>m</A>.
+##  If <A>m</A> is odd and coprime to <A>n</A>, has <M>r</M> different prime
+##  factors, and a square root of <A>n</A> exists, then there are <M>2^r</M>
+##  different square roots of <A>n</A> mod <A>m</A>.
 ##  It is unspecified which one <Ref Func="RootMod"/> returns.
 ##  You can, however, use <Ref Func="RootsMod"/> to compute the full set
 ##  of roots.
@@ -523,7 +521,7 @@ DeclareGlobalFunction( "RootsMod" );
 ##  <Ref Func="RootsUnityMod"/> returns the set of <A>k</A>-th roots of unity
 ##  modulo the positive integer <A>m</A>, i.e.,
 ##  the list of all solutions <M>r</M> of
-##  <M>r^{<A>k</A>} \equiv <A>n</A> \pmod{<A>m</A>}</M>.
+##  <M>r^{<A>k</A>} \equiv 1 \pmod{<A>m</A>}</M>.
 ##  If only the argument <A>m</A> is given,
 ##  the default value for <A>k</A> is <M>2</M>.
 ##  <P/>

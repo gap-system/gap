@@ -124,14 +124,15 @@ DeclareGlobalFunction("PrimalityProof_FindStructure");
 ##  <P/>
 ##  <Ref Func="IsPrimeInt"/> will return <K>true</K> for every prime <A>n</A>.
 ##  <Ref Func="IsPrimeInt"/> will return <K>false</K> for all composite
-##  <A>n</A> <M>&lt; 10^{18}</M> and for all composite <A>n</A> that have
-##  a factor <M>p &lt; 1000</M>. So for integers <A>n</A> <M>&lt; 10^{18}</M>,
+##  <A>n</A> <M>&lt; 2^{64}</M> and for all composite <A>n</A> that have
+##  a factor <M>p &lt; 1000</M>. So for integers <A>n</A> <M>&lt; 2^{64}</M>,
 ##  <Ref Func="IsPrimeInt"/> is a proper primality test. It is conceivable that
 ##  <Ref Func="IsPrimeInt"/> may  return <K>true</K> for some  composite
-##  <A>n</A> <M>&gt; 10^{18}</M>, but no such <A>n</A> is currently known.
-##  So for integers <A>n</A> <M>&gt; 10^{18}</M>, <Ref Func="IsPrimeInt"/>
-##  is a  probable-primality test. <Ref Func="IsPrimeInt"/> will issue a
-##  warning when its argument is probably prime but not a proven prime.
+##  <A>n</A> <M>&gt; 2^{64}</M>, but no such <A>n</A> is currently known.
+##  So for integers <A>n</A> <M>&gt; 2^{64}</M>, <Ref Func="IsPrimeInt"/>
+##  is a  probable-primality test. For such <A>n</A> that pass this test,
+##  <Ref Func="IsPrimeInt"/> tries to prove primality using
+##  <Ref Func="PrimalityProof"/>, and issues a warning if this fails.
 ##  (The function <Ref Func="IsProbablyPrimeInt"/> will do a similar
 ##  calculation but not issue a warning.) The warning can be switched off by
 ##  <C>SetInfoLevel( InfoPrimeInt, 0 );</C>, the default level is <M>1</M>
@@ -157,8 +158,8 @@ DeclareGlobalFunction("PrimalityProof_FindStructure");
 ##  <Ref Func="IsPrimeInt"/> is a method for the general operation <Ref Oper="IsPrime"/>.
 ##  <P/>
 ##  Remark: In future versions of &GAP; we hope to change the definition of
-##  <Ref Func="IsPrimeInt"/> to return <K>true</K> only for proven primes (currently, we lack
-##  a sufficiently good primality proving function). In applications, use
+##  <Ref Func="IsPrimeInt"/> to return <K>true</K> only for proven primes.
+##  In applications, use
 ##  explicitly <Ref Func="IsPrimeInt"/> or <Ref Func="IsProbablyPrimeInt"/>
 ##  with this change in mind.
 ##  <Example><![CDATA[
