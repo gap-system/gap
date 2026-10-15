@@ -500,7 +500,9 @@ static const struct optInfo options[] = {
   { 0, 'M', "", toggle, &SyUseModule, 0}, // must be handled in kernel
   { 0, 'e', "", toggle, &SyCTRD, 0 }, // kernel
   { 0, 'f', "", forceLineEditing, (void *)2, 0 }, // probably library now
+#ifdef HAVE_LIBREADLINE
   { 0, 'E', "readline", toggle, &SyUseReadline, 0 }, // kernel
+#endif
   { 1, 'l', "roots", setGapRootPath, 0, 1}, // kernel
 #ifdef USE_GASMAN
   { 0, 'm', "minworkspace", storeMemory2, &SyStorMin, 1 }, // kernel

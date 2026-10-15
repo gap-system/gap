@@ -1,6 +1,7 @@
 gap> #GAPOPTS -E --readline --minworkspace 300m --maxworkspace 600m --limitworkspace 1g
 gap> # the kernel must honour the long forms of its options
-gap> GAPInfo.KernelInfo.HAVE_LIBREADLINE;
+gap> # readline is used if and only if the kernel has it
+gap> GAPInfo.KernelInfo.HAVE_LIBREADLINE = IsBound( READLINEINITLINE );
 true
 gap> l := GASMAN_LIMITS();;
 gap> expected := [ 300, 600, 1024 ] * 1024;;
