@@ -429,6 +429,10 @@ static jl_task_t * ScannedRootTask;
 #endif
 
 static size_t MaxPoolObjSize;
+
+#ifdef GAP_GC_INLINE_PGCSTACK
+ssize_t GAP_JuliaTLSOffset = -1;
+#endif
 static UInt   StartTime, TotalTime;
 
 #if !defined(USE_GAP_INSIDE_JULIA) && !defined(DISABLE_STACK_SCAN)
@@ -1095,6 +1099,13 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
     jl_gc_enable_conservative_gc_support();
 #if !defined(USE_GAP_INSIDE_JULIA)
     jl_init();
+#endif
+
+#ifdef GAP_GC_INLINE_PGCSTACK
+    // not in Julia's public headers, so look it up; see GAP_GetPgcstack
+    const ssize_t * tlsOffset = dlsym(RTLD_DEFAULT, "jl_tls_offset");
+    if (tlsOffset)
+        GAP_JuliaTLSOffset = *tlsOffset;
 #endif
 
     // The root scanner also marks GAP's global bags, so it is required
