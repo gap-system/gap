@@ -1177,11 +1177,13 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,r,
 
   onlystab:=IsBound(dopr.onlystab) and dopr.onlystab=true;
 
-  # try to find a domain
+  # try to find a domain, for the dictionary only: the result of
+  # DomainForAction may be a hint such as a record, not a list of points
   if IsBool(D) then
-    D:=DomainForAction(d,acts,act);
+    dict:=NewDictionary(d,true,DomainForAction(d,acts,act));
+  else
+    dict:=NewDictionary(d,true,D);
   fi;
-  dict:=NewDictionary(d,true,D);
 
   if IsBound(dopr.stabsub) then
     stabsub:=AsSubgroup(Parent(G),dopr.stabsub);
