@@ -219,7 +219,7 @@ InstallMethod( AsSubmonoid,
     IsIdenticalObj,
     [ IsDomain, IsCollection ], 0,
     function( G, U )
-    local S;
+    local S, elms;
     if not IsSubset( G, U ) then
       return fail;
     fi;
@@ -229,10 +229,16 @@ InstallMethod( AsSubmonoid,
       fi;
       S:= SubmonoidNC( G, GeneratorsOfMagmaWithOne( U ) );
     else
-      S:= SubmagmaWithOneNC( G, AsList( U ) );
+      elms:= AsSSortedList( U );
+      if not One( G ) in elms
+         or ForAny( elms, x -> ForAny( elms, y -> not x * y in elms ) ) then
+        return fail;
+      fi;
+      S:= SubmagmaWithOneNC( G, elms );
       if not IsAssociative( S ) then
         return fail;
       fi;
+      SetAsSSortedList( S, elms );
     fi;
     UseIsomorphismRelation( U, S );
     UseSubsetRelation( U, S );

@@ -622,7 +622,7 @@ InstallMethod( AsSubsemigroup,
     IsIdenticalObj,
     [ IsDomain, IsCollection ],
     function( G, U )
-    local S;
+    local S, elms;
     if not IsSubset( G, U ) then
       return fail;
     fi;
@@ -632,10 +632,15 @@ InstallMethod( AsSubsemigroup,
       fi;
       S:= SubsemigroupNC( G, GeneratorsOfMagma( U ) );
     else
-      S:= SubmagmaNC( G, AsList( U ) );
+      elms:= AsSSortedList( U );
+      if ForAny( elms, x -> ForAny( elms, y -> not x * y in elms ) ) then
+        return fail;
+      fi;
+      S:= SubmagmaNC( G, elms );
       if not IsAssociative( S ) then
         return fail;
       fi;
+      SetAsSSortedList( S, elms );
     fi;
     UseIsomorphismRelation( U, S );
     UseSubsetRelation( U, S );
