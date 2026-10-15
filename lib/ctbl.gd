@@ -4719,8 +4719,7 @@ BindGlobal( "SupportedLibraryTableComponents", [
      "indicator",
     ] );
 
-DeclareRepresentation( "IsLibraryCharacterTableRep", IsAttributeStoringRep,
-    SupportedLibraryTableComponents );
+DeclareRepresentation( "IsLibraryCharacterTableRep", IsAttributeStoringRep );
 
 
 #############################################################################
@@ -4740,22 +4739,7 @@ DeclareRepresentation( "IsLibraryCharacterTableRep", IsAttributeStoringRep,
 ##  </ManSection>
 ##
 DeclareRepresentation( "IsGenericCharacterTableRep",
-     IsNearlyCharacterTable and IsComponentObjectRep,
-     [
-     "domain",
-     "wholetable",
-     "classparam",
-     "charparam",
-     "specializedname",
-     "size",
-     "centralizers",
-     "orders",
-     "powermap",
-     "classtext",
-     "matrix",
-     "irreducibles",
-     "text",
-     ] );
+     IsNearlyCharacterTable and IsComponentObjectRep );
 
 
 #############################################################################

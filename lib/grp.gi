@@ -3215,8 +3215,7 @@ InstallGlobalFunction( IsSubgroup,
 #R  IsRightTransversalRep( <obj> )  . . . . . . . . . . . . right transversal
 ##
 DeclareRepresentation( "IsRightTransversalRep",
-    IsAttributeStoringRep and IsRightTransversal,
-    [ "group", "subgroup" ] );
+    IsAttributeStoringRep and IsRightTransversal );
 
 InstallMethod( PrintObj,
     "for right transversal",

@@ -76,8 +76,7 @@ SetIsWholeFamily( PositiveIntegers, false );
 ##
 DeclareRepresentation(
     "IsCanonicalBasisIntegersRep",
-    IsAttributeStoringRep,
-    [] );
+    IsAttributeStoringRep );
 #T is this needed at all?
 
 

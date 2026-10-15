@@ -17,35 +17,27 @@
 ##
 #R  IsModuloPcgsRep
 ##
-DeclareRepresentation( "IsModuloPcgsRep", IsPcgsDefaultRep,
-    [ "moduloDepths", "moduloMap", "numerator", "denominator",
-      "depthMap" ] );
+DeclareRepresentation( "IsModuloPcgsRep", IsPcgsDefaultRep );
 
 
 #############################################################################
 ##
 #R  IsModuloTailPcgsRep
 ##
-DeclareRepresentation( "IsModuloTailPcgsRep", IsModuloPcgsRep,
-    [ "moduloDepths", "moduloMap", "numerator", "denominator",
-      "depthMap" ] );
+DeclareRepresentation( "IsModuloTailPcgsRep", IsModuloPcgsRep );
 
 #############################################################################
 ##
 #R  IsSubsetInducedNumeratorModuloTailPcgsRep(<obj>)
 ##
 DeclareRepresentation( "IsSubsetInducedNumeratorModuloTailPcgsRep",
-    IsModuloTailPcgsRep,
-    [ "moduloDepths", "moduloMap", "numerator", "denominator",
-      "depthMap","depthsInParent","numeratorParent","parentZeroVector" ] );
+    IsModuloTailPcgsRep );
 
 #############################################################################
 ##
 #R  IsModuloTailPcgsByListRep(<obj>)
 ##
-DeclareRepresentation( "IsModuloTailPcgsByListRep", IsModuloTailPcgsRep,
-    [ "moduloDepths", "moduloMap", "numerator", "denominator",
-      "depthMap","depthsInParent","numeratorParent","parentZeroVector" ] );
+DeclareRepresentation( "IsModuloTailPcgsByListRep", IsModuloTailPcgsRep );
 
 #############################################################################
 ##
@@ -54,9 +46,7 @@ DeclareRepresentation( "IsModuloTailPcgsByListRep", IsModuloTailPcgsRep,
 ##  modulo pcgs in this representation can use the numerator parent for
 ##  computing exponents
 DeclareRepresentation( "IsNumeratorParentForExponentsRep",
-    IsModuloPcgsRep,
-    [ "moduloDepths", "moduloMap", "numerator", "denominator",
-      "depthMap","depthsInParent","numeratorParent","parentZeroVector" ] );
+    IsModuloPcgsRep );
 
 #############################################################################
 ##
@@ -66,9 +56,7 @@ DeclareRepresentation( "IsNumeratorParentForExponentsRep",
 ##  computing exponents by working in elementary abelian layers (but not in
 ##  one chunk, as there are cofactors).
 DeclareRepresentation( "IsNumeratorParentLayersForExponentsRep",
-    IsModuloPcgsRep,
-    [ "moduloDepths", "moduloMap", "numerator", "denominator",
-      "depthMap","depthsInParent","numeratorParent","parentZeroVector" ] );
+    IsModuloPcgsRep );
 
 #############################################################################
 ##

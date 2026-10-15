@@ -401,8 +401,7 @@ InstallOtherMethod( BaseDomain,
 ##
 ##  representation of the embedding of a family into its Lie family
 ##
-DeclareRepresentation( "IsLieEmbeddingRep", IsAttributeStoringRep,
-    [ "packedType" ] );
+DeclareRepresentation( "IsLieEmbeddingRep", IsAttributeStoringRep );
 
 
 #############################################################################

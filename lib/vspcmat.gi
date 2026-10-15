@@ -154,8 +154,7 @@ InstallHandlingByNiceBasis( "IsNonGaussianMatrixSpace", rec(
 ##  then the component `heads' is bound.
 ##
 DeclareRepresentation( "IsSemiEchelonBasisOfGaussianMatrixSpaceRep",
-    IsAttributeStoringRep,
-    [ "heads" ] );
+    IsAttributeStoringRep );
 
 InstallTrueMethod( IsSmallList,
     IsList and IsSemiEchelonBasisOfGaussianMatrixSpaceRep );
@@ -819,8 +818,7 @@ InstallMethod( CanonicalBasis,
 ##  also if the defining matrices are Lie matrices.
 ##
 DeclareRepresentation( "IsMutableBasisOfGaussianMatrixSpaceRep",
-    IsComponentObjectRep,
-    [ "heads", "basisVectors", "leftActingDomain", "zero" ] );
+    IsComponentObjectRep );
 
 
 #############################################################################

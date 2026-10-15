@@ -81,10 +81,10 @@ InstallMethod( IsFullSCAlgebra,
 ##
 if IsHPCGAP then
 DeclareRepresentation( "IsDenseCoeffVectorRep",
-    IsAtomicPositionalObjectRep, [ 1 ] );
+    IsAtomicPositionalObjectRep );
 else
 DeclareRepresentation( "IsDenseCoeffVectorRep",
-    IsPositionalObjectRep, [ 1 ] );
+    IsPositionalObjectRep );
 fi;
 
 

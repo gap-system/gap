@@ -71,8 +71,7 @@ MakeImmutable(OrbitsishReq);
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation( "IsExternalSubset",
-    IsComponentObjectRep and IsAttributeStoringRep and IsExternalSet,
-    [ "start" ] );
+    IsComponentObjectRep and IsAttributeStoringRep and IsExternalSet );
 
 
 #############################################################################
@@ -90,7 +89,7 @@ DeclareRepresentation( "IsExternalSubset",
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation( "IsExternalOrbit",
-    IsExternalSubset, [ "start" ] );
+    IsExternalSubset );
 DeclareCategory( "IsExternalSetByPcgs", IsExternalSet );
 
 
@@ -111,11 +110,9 @@ DeclareCategory( "IsExternalSetByPcgs", IsExternalSet );
 ##  </ManSection>
 ##
 DeclareRepresentation( "IsExternalSetDefaultRep",
-    IsAttributeStoringRep and IsExternalSet,
-    [  ] );
+    IsAttributeStoringRep and IsExternalSet );
 DeclareRepresentation( "IsExternalSetByActorsRep",
-    IsAttributeStoringRep and IsExternalSet,
-    [ "generators", "operators", "funcOperation" ] );
+    IsAttributeStoringRep and IsExternalSet );
 DeclareSynonym( "IsExternalSetByOperatorsRep",IsExternalSetByActorsRep);
 
 #############################################################################
@@ -166,12 +163,12 @@ DeclareAttribute( "HomeEnumerator", IsExternalSet );
 
 DeclareRepresentation( "IsActionHomomorphism",
     IsGroupHomomorphism and IsAttributeStoringRep and
-    IsPreimagesByAsGroupGeneralMappingByImages, [  ] );
+    IsPreimagesByAsGroupGeneralMappingByImages );
 
 DeclareRepresentation( "IsActionHomomorphismByActors",
-      IsActionHomomorphism, [  ] );
+      IsActionHomomorphism );
 
-DeclareRepresentation("IsActionHomomorphismSubset",IsActionHomomorphism,[]);
+DeclareRepresentation("IsActionHomomorphismSubset",IsActionHomomorphism);
 
 #############################################################################
 ##
@@ -203,7 +200,7 @@ DeclareAttribute( "ActionKernelExternalSet", IsExternalSet );
 ##  </ManSection>
 ##
 DeclareRepresentation( "IsActionHomomorphismByBase",
-      IsActionHomomorphism, [  ] );
+      IsActionHomomorphism );
 
 #############################################################################
 ##
@@ -217,10 +214,10 @@ DeclareRepresentation( "IsActionHomomorphismByBase",
 ##  </ManSection>
 ##
 DeclareRepresentation( "IsConstituentHomomorphism",
-    IsActionHomomorphism, [ "conperm" ] );
+    IsActionHomomorphism );
 
 DeclareRepresentation( "IsBlocksHomomorphism",
-    IsActionHomomorphism, [ "reps" ] );
+    IsActionHomomorphism );
 
 #############################################################################
 ##
@@ -236,7 +233,7 @@ DeclareRepresentation( "IsBlocksHomomorphism",
 ##  </ManSection>
 ##
 DeclareRepresentation( "IsLinearActionHomomorphism",
-      IsActionHomomorphism, [  ] );
+      IsActionHomomorphism );
 
 #############################################################################
 ##
@@ -252,7 +249,7 @@ DeclareRepresentation( "IsLinearActionHomomorphism",
 ##  </ManSection>
 ##
 DeclareRepresentation( "IsProjectiveActionHomomorphism",
-      IsActionHomomorphism, [  ] );
+      IsActionHomomorphism );
 
 #############################################################################
 ##

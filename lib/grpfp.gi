@@ -5461,7 +5461,7 @@ end);
 #M  RightTransversal   fp group
 ##
 DeclareRepresentation( "IsRightTransversalFpGroupRep",
-    IsRightTransversalRep, [ "group", "subgroup", "table", "iso","reps" ] );
+    IsRightTransversalRep );
 
 InstallMethod(RightTransversalOp, "via coset table",
   IsIdenticalObj,[IsSubgroupFpGroup,IsSubgroupFpGroup],0,

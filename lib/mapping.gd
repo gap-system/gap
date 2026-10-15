@@ -1260,7 +1260,7 @@ DeclareGlobalFunction( "CompositionMapping" );
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation( "IsCompositionMappingRep",
-    IsGeneralMapping and IsAttributeStoringRep, [ "map1", "map2" ] );
+    IsGeneralMapping and IsAttributeStoringRep );
 
 
 #############################################################################
@@ -1331,7 +1331,7 @@ DeclareOperation( "RestrictedMapping", [ IsGeneralMapping, IsDomain ] );
 ##  the original map but new source and range.
 ##
 DeclareRepresentation( "IsGeneralRestrictedMappingRep",
-    IsGeneralMapping and IsAttributeStoringRep, [ "map" ] );
+    IsGeneralMapping and IsAttributeStoringRep );
 
 #############################################################################
 ##

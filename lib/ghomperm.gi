@@ -1995,7 +1995,7 @@ InstallGlobalFunction( PreImageSetStabBlocksHomomorphism, function( hom, I )
 end );
 
 DeclareRepresentation("IsBlocksOfActionHomomorphism",
-  IsActionHomomorphismByBase,[]);
+  IsActionHomomorphismByBase);
 
 #############################################################################
 ##

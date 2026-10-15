@@ -143,7 +143,7 @@ function(G)
 end);
 
 DeclareRepresentation("IsActionHomomorphismAutomGroup",
-  IsActionHomomorphismByBase,["basepos"]);
+  IsActionHomomorphismByBase);
 
 #############################################################################
 ##

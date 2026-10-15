@@ -43,8 +43,7 @@ BindGlobal( "Refinements", AtomicRecord() );
 ##
 #F  IsSlicedPerm( <perm> )  . . . . . . . . . . . . . . . sliced permutations
 ##
-DeclareRepresentation( "IsSlicedPerm", IsPerm and IsComponentObjectRep,
-                        [ "length", "word", "lftObj","opr" ] );
+DeclareRepresentation( "IsSlicedPerm", IsPerm and IsComponentObjectRep );
 
 #############################################################################
 ##
@@ -96,8 +95,7 @@ InstallMethod( ViewObj,"sliced perm", true, [ IsSlicedPerm ], 0,
     Print( "<perm word of length ", perm!.length, ">" );
 end );
 
-DeclareRepresentation( "IsSlicedPermInv", IsPerm and IsComponentObjectRep,
-                           [ "length", "word", "lftObj", "opr" ] );
+DeclareRepresentation( "IsSlicedPermInv", IsPerm and IsComponentObjectRep );
 
 InstallOtherMethod( \^,"sliced perm", true, [ IsObject, IsSlicedPermInv ], 0,
     function( p, perm )

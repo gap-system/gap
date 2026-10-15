@@ -381,8 +381,7 @@ the declarations this chapter is about).
 <Log><![CDATA[
 DeclareRepresentation(
   "IsPermutationGroupByRelations",
-  IsComponentObjectRep and IsAttributeStoringRep and IsPermGroup,
-  ["degree","relations"]);
+  IsComponentObjectRep and IsAttributeStoringRep and IsPermGroup);
 ]]></Log>
 <P/>
 (If we wanted to implement sparse matrices we might for example rather

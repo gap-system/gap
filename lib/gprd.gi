@@ -340,7 +340,7 @@ end);
 ##
 #R  IsPcgsDirectProductRep
 ##
-DeclareRepresentation ("IsPcgsDirectProductRep", IsPcgsDefaultRep, ["pcgs","len"]);
+DeclareRepresentation ("IsPcgsDirectProductRep", IsPcgsDefaultRep);
 
 #############################################################################
 ##

@@ -1373,7 +1373,7 @@ local v,aiu,aiv,G,primes,irrel,ma,mao,mau,a,k,gens,imgs,q,dec,deco,piv,co;
 end);
 
 DeclareRepresentation("IsModuloPcgsFpGroupRep",
-  IsModuloPcgs and IsPcgsDefaultRep, [ "hom", "impcgs", "groups" ] );
+  IsModuloPcgs and IsPcgsDefaultRep );
 
 
 InstallMethod(ModuloPcgs,"subgroups fp",true,

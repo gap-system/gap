@@ -80,7 +80,7 @@ DeclareOperation("IsMultiplicativeZero", [ IsMagma, IsMultiplicativeElement ] );
 
 DeclareRepresentation("IsMagmaWithZeroAdjoinedElementRep",
 IsComponentObjectRep and IsMultiplicativeElementWithZero and
-IsAttributeStoringRep, []);
+IsAttributeStoringRep);
 
 DeclareCategory( "IsMagmaWithZeroAdjoined", IsMagma);
 DeclareAttribute( "InjectionZeroMagma", IsMagma );

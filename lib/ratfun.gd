@@ -394,8 +394,7 @@ InstallTrueMethod( IsConstantRationalFunction,IsZeroRationalFunction );
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation("IsRationalFunctionDefaultRep",
-    IsComponentObjectRep and IsAttributeStoringRep and IsRationalFunction,
-    ["zeroCoefficient","numerator","denominator"] );
+    IsComponentObjectRep and IsAttributeStoringRep and IsRationalFunction );
 
 
 #############################################################################
@@ -418,7 +417,7 @@ DeclareRepresentation("IsRationalFunctionDefaultRep",
 ##
 DeclareRepresentation("IsPolynomialDefaultRep",
     IsComponentObjectRep and IsAttributeStoringRep
-    and IsPolynomialFunction and IsPolynomial,["zeroCoefficient","numerator"]);
+    and IsPolynomialFunction and IsPolynomial);
 
 
 #############################################################################
@@ -440,7 +439,7 @@ DeclareRepresentation("IsPolynomialDefaultRep",
 ##
 DeclareRepresentation("IsLaurentPolynomialDefaultRep",
     IsComponentObjectRep and IsAttributeStoringRep
-    and IsPolynomialFunction and IsLaurentPolynomial, [] );
+    and IsPolynomialFunction and IsLaurentPolynomial );
 
 #############################################################################
 ##
@@ -459,7 +458,7 @@ DeclareRepresentation("IsLaurentPolynomialDefaultRep",
 ##
 DeclareRepresentation("IsUnivariateRationalFunctionDefaultRep",
     IsComponentObjectRep and IsAttributeStoringRep
-    and IsPolynomialFunction and IsUnivariateRationalFunction, [] );
+    and IsPolynomialFunction and IsUnivariateRationalFunction );
 
 
 ##  <#GAPDoc Label="[1]{ratfun}">

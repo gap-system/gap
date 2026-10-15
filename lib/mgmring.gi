@@ -70,11 +70,9 @@
 ##  <#/GAPDoc>
 ##
 if IsHPCGAP then
-DeclareRepresentation( "IsMagmaRingObjDefaultRep", IsAtomicPositionalObjectRep,
-    [ 1, 2 ] );
+DeclareRepresentation( "IsMagmaRingObjDefaultRep", IsAtomicPositionalObjectRep );
 else
-DeclareRepresentation( "IsMagmaRingObjDefaultRep", IsPositionalObjectRep,
-    [ 1, 2 ] );
+DeclareRepresentation( "IsMagmaRingObjDefaultRep", IsPositionalObjectRep );
 fi;
 
 #############################################################################
@@ -853,8 +851,7 @@ InstallMethod( AugmentationIdeal,
 #R  IsCanonicalBasisFreeMagmaRingRep( <B> )
 ##
 DeclareRepresentation( "IsCanonicalBasisFreeMagmaRingRep",
-    IsCanonicalBasis and IsAttributeStoringRep,
-    [ "zerovector" ] );
+    IsCanonicalBasis and IsAttributeStoringRep );
 
 
 #############################################################################
@@ -1164,8 +1161,7 @@ DeclareRepresentation( "IsEmbeddingRingMagmaRing",
     and RespectsZero
     and RespectsMultiplication
     and RespectsOne
-    and IsAttributeStoringRep,
-    [] );
+    and IsAttributeStoringRep );
 
 
 #############################################################################
@@ -1288,8 +1284,7 @@ DeclareRepresentation( "IsEmbeddingMagmaMagmaRing",
     and IsMapping
     and IsInjective
     and RespectsMultiplication
-    and IsAttributeStoringRep,
-    [] );
+    and IsAttributeStoringRep );
 
 
 #############################################################################

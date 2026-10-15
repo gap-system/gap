@@ -1211,8 +1211,7 @@ end );
 ##  In all other cases a normal basis is chosen.
 ##
 DeclareRepresentation( "IsCanonicalBasisAbelianNumberFieldRep",
-    IsAttributeStoringRep,
-    [ "coeffslist", "coeffsmat", "lenstrabase", "conductor" ] );
+    IsAttributeStoringRep );
 
 
 #############################################################################
@@ -1224,8 +1223,7 @@ DeclareRepresentation( "IsCanonicalBasisAbelianNumberFieldRep",
 ##  Otherwise it is a normal basis.
 ##
 DeclareRepresentation( "IsCanonicalBasisCyclotomicFieldRep",
-    IsCanonicalBasisAbelianNumberFieldRep,
-    [ "zumbroichbase" ] );
+    IsCanonicalBasisAbelianNumberFieldRep );
 
 
 #############################################################################
@@ -1689,7 +1687,7 @@ InstallMethod( Coefficients,
 #R  IsANFAutomorphismRep( <obj> )
 ##
 DeclareRepresentation( "IsANFAutomorphismRep",
-    IsAttributeStoringRep, [ "galois" ] );
+    IsAttributeStoringRep );
 
 
 #############################################################################

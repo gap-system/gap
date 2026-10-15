@@ -476,8 +476,7 @@ end );
 #R  IsMutableBasisViaUnderlyingMutableBasisRep( <B> )
 ##
 DeclareRepresentation( "IsMutableBasisViaUnderlyingMutableBasisRep",
-    IsComponentObjectRep,
-        [ "moduleElementsFam", "underlyingMutableBasis" ] );
+    IsComponentObjectRep );
 
 #############################################################################
 ##
@@ -1327,7 +1326,7 @@ end );
 ##  The second component is `true' or `false',
 ##  `true' if the monomial element is in normal form, `false' otherwise.
 ##
-DeclareRepresentation( "IsMonomialElementRep", IsPositionalObjectRep, [1,2] );
+DeclareRepresentation( "IsMonomialElementRep", IsPositionalObjectRep );
 
 
 #############################################################################
@@ -1598,8 +1597,7 @@ end );
 ##  `TriangulizeMonomialElementList' with its basis vectors as input.
 ##  It also knows the zero of the ground field.
 ##
-DeclareRepresentation( "IsBasisOfMonomialSpaceRep", IsComponentObjectRep,
-        [ "echelonBasis", "heads", "baseChange", "zeroCoefficient" ] );
+DeclareRepresentation( "IsBasisOfMonomialSpaceRep", IsComponentObjectRep );
 
 
 #############################################################################
@@ -2964,8 +2962,7 @@ end );
 ##  when we loop over the entire list `basechange[i]'.), `zeroCoefficient'
 ##  (the zero of the ground field).
 ##
-DeclareRepresentation( "IsBasisOfSparseRowSpaceRep", IsComponentObjectRep,
-        [ "echelonBasis", "heads", "baseChange", "zeroCoefficient" ] );
+DeclareRepresentation( "IsBasisOfSparseRowSpaceRep", IsComponentObjectRep );
 
 #############################################################################
 ##

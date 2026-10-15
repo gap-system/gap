@@ -511,8 +511,7 @@ end );
 ##
 DeclareRepresentation(
     "IsInputTextFileRep",
-    IsPositionalObjectRep,
-    [] );
+    IsPositionalObjectRep );
 
 
 #############################################################################
@@ -705,8 +704,7 @@ end);
 ##
 DeclareRepresentation(
     "IsInputTextNoneRep",
-    IsPositionalObjectRep,
-    [] );
+    IsPositionalObjectRep );
 
 
 #############################################################################
@@ -951,8 +949,7 @@ end);
 ##
 DeclareRepresentation(
     "IsOutputTextFileRep",
-    IsPositionalObjectRep,
-    ["fid", "fname", "format" ] );
+    IsPositionalObjectRep );
 
 
 #############################################################################
@@ -1176,8 +1173,7 @@ end);
 ##
 DeclareRepresentation(
     "IsOutputTextNoneRep",
-    IsPositionalObjectRep,
-    [] );
+    IsPositionalObjectRep );
 
 
 #############################################################################
@@ -1344,8 +1340,7 @@ end );
 ##  Position 4 if boolean -- true for end of file
 ##
 
-DeclareRepresentation("IsInputOutputStreamByPtyRep", IsPositionalObjectRep,
-        []);
+DeclareRepresentation("IsInputOutputStreamByPtyRep", IsPositionalObjectRep);
 
 InputOutputStreamByPtyDefaultType :=
   NewType(StreamsFamily, IsInputOutputStreamByPtyRep and IsInputOutputStream);

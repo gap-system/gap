@@ -923,7 +923,7 @@ end );
 ##  `IsComponentObjectRep'.
 ##
 DeclareRepresentation( "IsPresentationDefaultRep",
-    IsComponentObjectRep and IsAttributeStoringRep, [] );
+    IsComponentObjectRep and IsAttributeStoringRep );
 #T eventually the admissible component names should be listed here
 
 

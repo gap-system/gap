@@ -41,9 +41,9 @@
 ##  integer at first position.
 ##
 if IsHPCGAP then
-DeclareRepresentation( "IsModulusRep", IsReadOnlyPositionalObjectRep, [ 1 ] );
+DeclareRepresentation( "IsModulusRep", IsReadOnlyPositionalObjectRep );
 else
-DeclareRepresentation( "IsModulusRep", IsPositionalObjectRep, [ 1 ] );
+DeclareRepresentation( "IsModulusRep", IsPositionalObjectRep );
 fi;
 
 

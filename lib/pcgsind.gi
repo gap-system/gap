@@ -19,7 +19,7 @@
 ##
 DeclareRepresentation(
     "IsInducedPcgsRep",
-    IsPcgsDefaultRep, [ "depthsInParent", "depthMapFromParent" ] );
+    IsPcgsDefaultRep );
 
 
 #############################################################################
@@ -28,7 +28,7 @@ DeclareRepresentation(
 ##
 DeclareRepresentation(
     "IsSubsetInducedPcgsRep",
-    IsInducedPcgsRep, ["parentZeroVector"] );
+    IsInducedPcgsRep );
 
 
 #############################################################################
@@ -37,7 +37,7 @@ DeclareRepresentation(
 ##
 DeclareRepresentation(
     "IsTailInducedPcgsRep",
-    IsSubsetInducedPcgsRep, [] );
+    IsSubsetInducedPcgsRep );
 
 
 #############################################################################

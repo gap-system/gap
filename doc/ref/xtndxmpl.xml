@@ -272,7 +272,7 @@ and the object itself is chosen to be a positional object with this
 residue at the first and only position (see&nbsp;<Ref Sect="Positional Objects"/>).
 <P/>
 <Example><![CDATA[
-gap> DeclareRepresentation("IsMyModulusRep", IsPositionalObjectRep, [1]);
+gap> DeclareRepresentation("IsMyModulusRep", IsPositionalObjectRep);
 ]]></Example>
 <P/>
 The fourth ingredients of a type, <E>attributes</E>, are usually of minor
@@ -1037,7 +1037,7 @@ gap> DeclareCategory( "IsMyZmodnZObjNonprime", IsMyZmodnZObj );
 gap> 
 gap> DeclareSynonym( "IsMyZmodpZObj", IsMyZmodnZObj and IsFFE );
 gap> 
-gap> DeclareRepresentation( "IsMyModulusRep", IsPositionalObjectRep, [ 1 ] );
+gap> DeclareRepresentation( "IsMyModulusRep", IsPositionalObjectRep );
 gap> 
 gap> DeclareGlobalFunction( "MyZmodnZObj" );
 gap> 

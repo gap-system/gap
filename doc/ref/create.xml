@@ -94,8 +94,8 @@ and even more careful when using the assignment to components using <C>!.</C>,
 in order to keep the information stored in <A>cobj</A> consistent.
 <P/>
 First of all, in the access or assignment to a component as shown above,
-<A>name</A> must be among the admissible component names
-for the representation of <A>cobj</A>, see&nbsp;<Ref Func="NewRepresentation"/>.
+<A>name</A> must be one of the component names used by
+the representation of <A>cobj</A>.
 Second, preferably only few low level functions should use <C>!.</C>,
 whereas this operator should not occur in <Q>user interactions</Q>.
 <P/>
@@ -119,14 +119,13 @@ and <M>a_n = (1-n)/2</M> otherwise.
 <P/>
 <Log><![CDATA[
 DeclareRepresentation( "IsIntegersIteratorCompRep",
-    IsComponentObjectRep, [ "counter" ] );
+    IsComponentObjectRep );
 ]]></Log>
 <P/>
 The above command creates a new representation (see&nbsp;<Ref Func="NewRepresentation"/>)
 <C>IsIntegersIteratorCompRep</C>,
-as a subrepresentation of <Ref Filt="IsComponentObjectRep"/>,
-and with one admissible component <C>counter</C>.
-So no other components than <C>counter</C> will be needed.
+as a subrepresentation of <Ref Filt="IsComponentObjectRep"/>.
+Its objects will need no other component than <C>counter</C>.
 <P/>
 <Log><![CDATA[
 InstallMethod( Iterator,
@@ -203,8 +202,8 @@ and even more careful when using the assignment to positions using <C>![]</C>,
 in order to keep the information stored in <A>pobj</A> consistent.
 <P/>
 First of all, in the access or assignment to a position as shown above,
-<A>pos</A> must be among the admissible positions
-for the representation of <A>pobj</A>, see&nbsp;<Ref Func="NewRepresentation"/>.
+<A>pos</A> must be one of the positions used by
+the representation of <A>pobj</A>.
 Second, preferably only few low level functions should use <C>![]</C>,
 whereas this operator should not occur in <Q>user interactions</Q>.
 <P/>
@@ -222,13 +221,13 @@ and more details.
 <P/>
 <Log><![CDATA[
 DeclareRepresentation( "IsIntegersIteratorPosRep",
-    IsPositionalObjectRep, [ 1 ] );
+    IsPositionalObjectRep );
 ]]></Log>
 <P/>
 The above command creates a new representation (see&nbsp;<Ref Func="NewRepresentation"/>)
 <C>IsIntegersIteratorPosRep</C>,
-as a subrepresentation of <Ref Filt="IsPositionalObjectRep"/>,
-and with only the first position being admissible for storing data.
+as a subrepresentation of <Ref Filt="IsPositionalObjectRep"/>.
+Its objects will store data only at the first position.
 <P/>
 <Log><![CDATA[
 InstallMethod( Iterator,

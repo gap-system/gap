@@ -107,8 +107,7 @@ InstallMethod( NumberRows,
 ##  bases are always constructed with explicitly given basis vectors.)
 ##
 DeclareRepresentation( "IsRelativeBasisDefaultRep",
-    IsAttributeStoringRep,
-    [ "basis", "basechangeMatrix" ] );
+    IsAttributeStoringRep );
 
 InstallTrueMethod( IsFinite, IsBasis and IsRelativeBasisDefaultRep );
 
@@ -1428,7 +1427,7 @@ InstallMethod( SiftedVector,
 #R  IsBasisWithReplacedLeftModuleRep( <B> )
 ##
 DeclareRepresentation( "IsBasisWithReplacedLeftModuleRep",
-    IsAttributeStoringRep, [ "basisWithWrongModule" ] );
+    IsAttributeStoringRep );
 
 
 #############################################################################

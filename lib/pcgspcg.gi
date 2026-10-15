@@ -17,7 +17,7 @@
 ##
 #R  IsUnsortedPcgsRep
 ##
-DeclareRepresentation( "IsUnsortedPcgsRep", IsPcgsDefaultRep, [] );
+DeclareRepresentation( "IsUnsortedPcgsRep", IsPcgsDefaultRep );
 
 #############################################################################
 ##
@@ -25,7 +25,7 @@ DeclareRepresentation( "IsUnsortedPcgsRep", IsPcgsDefaultRep, [] );
 ##
 ##  the pc sequence is in different depth in the same order as the sorting
 ##  pcgs (so in particular depths are the same).
-DeclareRepresentation( "IsSortedPcgsRep", IsUnsortedPcgsRep, [] );
+DeclareRepresentation( "IsSortedPcgsRep", IsUnsortedPcgsRep );
 
 
 #############################################################################

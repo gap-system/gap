@@ -41,16 +41,16 @@
 ##
 
 DeclareRepresentation( "Is8BitsAssocWord",
-    IsSyllableAssocWordRep and IsDataObjectRep, [] );
+    IsSyllableAssocWordRep and IsDataObjectRep );
 
 DeclareRepresentation( "Is16BitsAssocWord",
-    IsSyllableAssocWordRep and IsDataObjectRep, [] );
+    IsSyllableAssocWordRep and IsDataObjectRep );
 
 DeclareRepresentation( "Is32BitsAssocWord",
-    IsSyllableAssocWordRep and IsDataObjectRep, [] );
+    IsSyllableAssocWordRep and IsDataObjectRep );
 
 DeclareRepresentation( "IsInfBitsAssocWord",
-    IsSyllableAssocWordRep and IsPositionalObjectRep,[]);
+    IsSyllableAssocWordRep and IsPositionalObjectRep);
 
 #############################################################################
 ##
@@ -1135,8 +1135,7 @@ end );
 ##  <init> is stored at position 2.
 ##
 DeclareRepresentation( "IsInfiniteListOfNamesRep",
-    IsPositionalObjectRep,
-    [ 1, 2 ] );
+    IsPositionalObjectRep );
 
 InstallMethod( PrintObj,
     "for an infinite list of names",
@@ -1261,8 +1260,7 @@ end );
 ##  at position 2 a (possibly empty) list of initial generators is stored.
 ##
 DeclareRepresentation( "IsInfiniteListOfGeneratorsRep",
-    IsPositionalObjectRep,
-    [ 1, 2 ] );
+    IsPositionalObjectRep );
 
 InstallMethod( ViewObj,
     "for an infinite list of generators",

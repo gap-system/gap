@@ -278,7 +278,7 @@ DeclareOperation("LookupDictionary",[IsDictionary,IsObject]);
 DeclareSynonym("GetHashEntry",LookupDictionary);
 
 DeclareRepresentation("IsDictionaryDefaultRep",
-  IsDictionary and IsNonAtomicComponentObjectRep,[]);
+  IsDictionary and IsNonAtomicComponentObjectRep);
 
 #############################################################################
 ##
@@ -294,11 +294,9 @@ DeclareRepresentation("IsDictionaryDefaultRep",
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareRepresentation("IsListDictionary",IsDictionaryDefaultRep,
-  ["entries"] );
+DeclareRepresentation("IsListDictionary",IsDictionaryDefaultRep );
 DeclareRepresentation("IsListLookupDictionary",
-  IsListDictionary and IsLookupDictionary,
-  ["entries"] );
+  IsListDictionary and IsLookupDictionary );
 
 #############################################################################
 ##
@@ -328,11 +326,9 @@ DeclareOperation( "ListKeyEnumerator", [ IsListDictionary ] );
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareRepresentation("IsSortDictionary",IsListDictionary,
-  ["entries"] );
+DeclareRepresentation("IsSortDictionary",IsListDictionary );
 DeclareRepresentation("IsSortLookupDictionary",
-  IsSortDictionary and IsListLookupDictionary and IsLookupDictionary,
-  ["entries"] );
+  IsSortDictionary and IsListLookupDictionary and IsLookupDictionary );
 
 #############################################################################
 ##
@@ -350,10 +346,9 @@ DeclareRepresentation("IsSortLookupDictionary",
 ##  </ManSection>
 ##
 DeclareRepresentation("IsPositionDictionary",
-  IsDictionaryDefaultRep,["domain","blist"] );
+  IsDictionaryDefaultRep );
 DeclareRepresentation("IsPositionLookupDictionary",
-  IsPositionDictionary and IsLookupDictionary,
-  ["domain","blist","vals"] );
+  IsPositionDictionary and IsLookupDictionary );
 
 #############################################################################
 #############################################################################
@@ -449,8 +444,7 @@ DeclareFilter( "TableHasIntKeyFun" );
 DeclareRepresentation( "IsDenseHashRep",
     # as we will call `Enumerator' to get the *current* value list, a hash
     # table may not be attribute storing.
-    IsComponentObjectRep and IsHash,
-    ["KeyArray", "ValueArray"] );
+    IsComponentObjectRep and IsHash );
 
 #############################################################################
 ##
@@ -499,10 +493,7 @@ DeclareGlobalFunction( "DenseHashTable" );
 DeclareRepresentation( "IsSparseHashRep",
     # as we will call `Enumerator' to get the *current* value list, a hash
     # table may not be attribute storing.
-    IsNonAtomicComponentObjectRep and IsHash,
-    ["KeyArray", "ValueArray", "HashFunct", "LengthArray",
-     "LengthArrayHalf", # so we dont need to *2 to see overflow
-     "NumberKeys"] );
+    IsNonAtomicComponentObjectRep and IsHash );
 
 BindGlobal("DefaultSparseHashRepType",
   NewType( DictionariesFamily, IsSparseHashRep and IsMutable and IsCopyable ));

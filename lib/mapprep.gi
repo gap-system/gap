@@ -36,8 +36,7 @@
 ##  a positional or a component object.
 ##
 DeclareRepresentation( "IsDefaultGeneralMappingRep",
-    IsGeneralMapping and HasSource and HasRange,
-    [] );
+    IsGeneralMapping and HasSource and HasRange );
 #T methods to handle attributes 'One', 'Inverse', and 'InverseGeneralMapping',
 #T 'ImagesSource', 'PreImagesRange'?
 
@@ -524,8 +523,7 @@ InstallMethod( PrintObj,
 #R  IsMappingByFunctionRep( <map> )
 ##
 DeclareRepresentation( "IsMappingByFunctionRep",
-    IsMapping and IsAttributeStoringRep,
-    [ "fun" ] );
+    IsMapping and IsAttributeStoringRep );
 #T really attribute storing ??
 
 
@@ -535,39 +533,35 @@ DeclareRepresentation( "IsMappingByFunctionRep",
 ##
 DeclareRepresentation( "IsMappingByFunctionWithInverseRep",
         IsMappingByFunctionRep
-    and IsBijective,
-#T 1996/10/10 fceller where to put non-reps, 4th position?
-    [ "fun", "invFun" ] );
+    and IsBijective );
 
 #############################################################################
 ##
 #R  IsNonSPMappingByFunctionRep( <map> )
 ##
 DeclareRepresentation( "IsNonSPMappingByFunctionRep",
-    IsNonSPGeneralMapping and IsMappingByFunctionRep, [] );
+    IsNonSPGeneralMapping and IsMappingByFunctionRep );
 
 #############################################################################
 ##
 #R  IsNonSPMappingByFunctionWithInverseRep( <map> )
 ##
 DeclareRepresentation( "IsNonSPMappingByFunctionWithInverseRep",
-        IsMappingByFunctionWithInverseRep and IsNonSPMappingByFunctionRep,
-    [ "fun", "invFun" ] );
+        IsMappingByFunctionWithInverseRep and IsNonSPMappingByFunctionRep );
 
 #############################################################################
 ##
 #R  IsSPMappingByFunctionRep( <map> )
 ##
 DeclareRepresentation( "IsSPMappingByFunctionRep",
-    IsSPGeneralMapping and IsMappingByFunctionRep, [] );
+    IsSPGeneralMapping and IsMappingByFunctionRep );
 
 #############################################################################
 ##
 #R  IsSPMappingByFunctionWithInverseRep( <map> )
 ##
 DeclareRepresentation( "IsSPMappingByFunctionWithInverseRep",
-        IsMappingByFunctionWithInverseRep and IsSPMappingByFunctionRep,
-    [ "fun", "invFun" ] );
+        IsMappingByFunctionWithInverseRep and IsSPMappingByFunctionRep );
 
 
 #############################################################################
@@ -938,8 +932,7 @@ InstallMethod( PrintObj,
 ##  delegated to the inverse of a mapping.
 ##
 DeclareRepresentation( "IsInverseGeneralMappingRep",
-    IsNonSPGeneralMapping,
-    [] );
+    IsNonSPGeneralMapping );
 
 
 #############################################################################

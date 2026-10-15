@@ -23,9 +23,9 @@ SetInfoLevel(InfoTempDirectories,1);
 #R  IsDirectoryRep  . . . . . . . . . . default representation of a directory
 ##
 if IsHPCGAP then
-DeclareRepresentation( "IsDirectoryRep", IsReadOnlyPositionalObjectRep, [] );
+DeclareRepresentation( "IsDirectoryRep", IsReadOnlyPositionalObjectRep );
 else
-DeclareRepresentation( "IsDirectoryRep", IsPositionalObjectRep, [] );
+DeclareRepresentation( "IsDirectoryRep", IsPositionalObjectRep );
 fi;
 
 #############################################################################

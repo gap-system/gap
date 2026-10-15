@@ -20,8 +20,7 @@
 ##  represented as transformation on  [1 .. Length(EnumeratorSorted(D))]
 ##
 DeclareRepresentation("IsTransformationRepOfEndo",
-IsComponentObjectRep and IsAttributeStoringRep,
-["transformation"]);
+IsComponentObjectRep and IsAttributeStoringRep);
 
 #############################################################################
 ##
