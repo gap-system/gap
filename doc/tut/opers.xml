@@ -197,7 +197,7 @@ For example, <Cite Key="Sims90b"/> describes an algorithm to compute the size
 of a solvable permutation group, which can be used also to decide
 whether or not a permutation group is solvable.
 Suppose that the function <C>size_solvable</C> implements this algorithm,
-and that is returns the order of the group if it is solvable and
+and that it returns the order of the group if it is solvable and
 <K>fail</K> otherwise.
 Then we can install the following method for
 <Ref Func="Size" BookName="ref"/> with required
@@ -324,7 +324,7 @@ If you want to know  which properties are already known for an object
 <A>obj</A>, or which properties are known to be true, you can use the
 functions <C>KnownPropertiesOfObject( <A>obj</A> )</C> resp.
 <C>KnownTruePropertiesOfObject( <A>obj</A> )</C>.
-This will print a list of names
+These return a list of names
 of properties. These names are also the identifiers of the property
 getters, by which you can retrieve the value of the properties (and
 confirm that they are really <K>true</K>). Analogously, there is the function
@@ -334,7 +334,7 @@ of the known attributes, leaving out the properties.
 <Index Key="ApplicableMethod"><C>ApplicableMethod</C></Index>
 Since &GAP; lets you know what it already  knows about an object, it is
 only natural  that   it also  lets   you know what  methods  it considers
-applicable for a certain method, and in  what order it  will try them (in
+applicable for a certain operation, and in what order it will try them (in
 case <C>TryNextMethod()</C>  occurs).
 <C>ApplicableMethod( <A>opr</A>, [ arg_1, arg_2, ... ] )</C>
 returns the  first  applicable method for the  call

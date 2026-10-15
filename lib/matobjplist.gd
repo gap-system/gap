@@ -27,7 +27,7 @@
 ##  An object <A>obj</A> in <Ref Filt="IsPlistVectorRep"/> describes
 ##  a vector object (see <Ref Filt="IsVectorObj"/>) that can occur as a row
 ##  in a row list matrix
-##  (see Section <Ref Subsect="Operations for Row List Matrix Objects"/>).
+##  (see Section <Ref Sect="Operations for Row List Matrix Objects"/>).
 ##  <P/>
 ##  <Ref Filt="IsPlistVectorRep"/> implies <Ref Filt="IsCopyable"/>,
 ##  thus vector objects in this representation can be mutable.

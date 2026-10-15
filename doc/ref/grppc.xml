@@ -78,7 +78,7 @@ For infinite groups we need additionally
 <Row>
   <Item></Item>
   <Item></Item>
-  <Item>for <M>1 \leq i &lt; j \leq n</M> and <M>i, j, \not \in I</M></Item>
+  <Item>for <M>1 \leq i &lt; j \leq n</M> and <M>i, j \not\in I</M></Item>
 </Row>
 </Table>
 Here the right hand sides are assumed to be words in normal
@@ -244,7 +244,7 @@ One way is to define a finitely presented group with a
 pc presentation in &GAP; and then convert this presentation
 into a pc group, see <Ref Func="PcGroupFpGroup"/>.
 Note that this does not work for arbitrary presentations of polycyclic
-groups, see Chapter <Ref Sect="Quotient Methods"/> for further information.
+groups, see Section <Ref Sect="Quotient Methods"/> for further information.
 <P/>
 Another way is to create and manipulate a collector of a pc group by hand
 and to use it to define a pc group.
@@ -445,8 +445,8 @@ be represented as pc groups again.
 <P/>
 To define the elementary abelian group <M>M</M> together with an action of
 <M>G</M> on <M>M</M> we consider <M>M</M> as a MeatAxe module for <M>G</M>
-over a finite field (section&nbsp;<Ref Oper="IrreducibleModules"/>
-describes functions that can be used to obtain certain modules).
+over a finite field (<Ref Oper="IrreducibleModules"/>
+can be used to obtain certain modules).
 For further information on meataxe modules see Chapter
 <Ref Chap="The MeatAxe"/>.
 Note that the matrices defining the module must correspond to the pcgs
@@ -527,7 +527,7 @@ up to equivalence, but not up to isomorphism.
 <Oper Name="SplitExtension" Arg='G, aut, N' Label="with specified homomorphism"/>
 
 <Description>
-returns the split extensions of the pc group <A>G</A> by the pc group
+returns the split extension of the pc group <A>G</A> by the pc group
 <A>N</A>.
 <A>aut</A> should be a homomorphism from <A>G</A> into Aut(<A>N</A>).
 <P/>
@@ -574,7 +574,7 @@ presentations by integers. To decode a given code the size of the
 underlying pc group is needed as well. For the full definition and
 the coding and decoding
 procedures see <Cite Key="BescheEick98"/>. This method is used with the small
-groups library (see <Ref BookName="smallgrp" Chap="The Small Groups Library"/>.
+groups library (see <Ref BookName="smallgrp" Chap="The Small Groups Library"/>).
 
 <#Include Label="CodePcgs">
 <#Include Label="CodePcGroup">

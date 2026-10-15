@@ -201,8 +201,8 @@ end );
 ##  can be comparatively time-consuming, it is usually suspended when a lot
 ##  of implications are due to be installed, for instance when loading the
 ##  library, or a package. This is done by calling
-##  <Ref Func="SuspendMethodReordering"/> once the installations are done,
-##  <Ref Func="ResumeMethodReordering"/> should be called. These pairs of calls
+##  <Ref Func="SuspendMethodReordering"/> before the installations; once they
+##  are done, <Ref Func="ResumeMethodReordering"/> should be called. These pairs of calls
 ##  can be nested. When the outermost pair is complete, method reordering
 ##  takes place and is enabled in <Ref Func="InstallTrueMethod"/> thereafter.
 ##

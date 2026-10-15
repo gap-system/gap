@@ -802,7 +802,8 @@ DeclareSynonym( "IsSubsetBlist", IS_SUB_BLIST );
 ##  [ true, true, true, false ]
 ##  ]]></Example>
 ##  <P/>
-##  The function <Ref Func="UnionBlist" Label="for a list"/> is the
+##  The function <Ref Func="UnionBlist" Label="for various boolean lists"/>
+##  is the
 ##  nondestructive counterpart to <Ref Func="UniteBlist"/>.
 ##  </Description>
 ##  </ManSection>
@@ -837,7 +838,8 @@ DeclareSynonym( "UniteBlist", UNITE_BLIST );
 ##  [ true, false, false, false ]
 ##  ]]></Example>
 ##  <P/>
-##  The function <Ref Func="IntersectionBlist" Label="for a list"/> is the
+##  The function
+##  <Ref Func="IntersectionBlist" Label="for various boolean lists"/> is the
 ##  nondestructive counterpart to <Ref Func="IntersectBlist"/>.
 ##  </Description>
 ##  </ManSection>

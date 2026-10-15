@@ -184,7 +184,7 @@ DeclareGlobalFunction( "CopyToVectorRepNC");
 ##
 ##  <Description>
 ##
-##  This function is more technical version of <Ref Oper="ImmutableMatrix"/>,
+##  This function is a more technical version of <Ref Oper="ImmutableMatrix"/>,
 ##  which will never copy a matrix (or any rows of it) but may fail if it
 ##  encounters rows locked in the wrong representation, or various other
 ##  more technical problems. Most users should use <Ref Oper="ImmutableMatrix"/>
@@ -241,7 +241,7 @@ DeclareGlobalFunction( "ConvertToMatrixRep" );
 ##  The base domain of <A>obj</A> is the field with <M>2</M> elements.
 ##  <P/>
 ##  <Ref Filt="IsGF2MatrixRep"/> implies <Ref Filt="IsCopyable"/>,
-##  thus vector objects in this representation can be mutable.
+##  thus matrix objects in this representation can be mutable.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

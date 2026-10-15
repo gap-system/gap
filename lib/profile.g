@@ -520,7 +520,7 @@ end );
 ##  <Func Name="ProfileFunctions" Arg='funcs'/>
 ##
 ##  <Description>
-##  starts profiling for all function in the list <A>funcs</A>.
+##  starts profiling for all functions in the list <A>funcs</A>.
 ##  You can use <Ref Func="ProfileGlobalFunctions"/>
 ##  to turn profiling on for all globally declared functions simultaneously.
 ##  </Description>
@@ -598,7 +598,7 @@ end);
 ##  <Func Name="UnprofileFunctions" Arg='funcs'/>
 ##
 ##  <Description>
-##  stops profiling for all function in the list <A>funcs</A>.
+##  stops profiling for all functions in the list <A>funcs</A>.
 ##  Recorded information is still kept, so you can  display it even after
 ##  turning the profiling off.
 ##  </Description>

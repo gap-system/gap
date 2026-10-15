@@ -116,7 +116,7 @@ DeclareGlobalFunction( "DaysInYear" );
 ##
 ##  <Description>
 ##  returns the number of days in month number <A>month</A> of <A>year</A>,
-##  and <K>fail</K> if <C>month</C> is not in the valid range.
+##  and <K>fail</K> if <A>month</A> is not in the valid range.
 ##  <Example><![CDATA[
 ##  gap> DaysInYear(1998);
 ##  365
@@ -162,7 +162,7 @@ DeclareGlobalFunction( "DMYDay" );
 ##  <C>[ day, month, year ]</C> in Gregorian calendar counting.
 ##  The result is <K>fail</K> on input outside valid ranges.
 ##  <P/>
-##  Note that this makes not much sense for early dates like: before 1582
+##  Note that this makes little sense for early dates: before 1582
 ##  (no Gregorian calendar at all), or before 1753 in many English speaking
 ##  countries or before 1917 in Russia.
 ##  </Description>
@@ -854,12 +854,12 @@ BindGlobal("BHINT", MakeImmutable("\>\<"));
 ##  <Arg>numbytes</Arg> of memory. It is used in printing amounts of memory
 ##  allocated by tests and benchmarks. Binary prefixes (representing powers of
 ##  1024) are used.
-##  </Description>
-##  </ManSection>
 ##  <Example><![CDATA[
 ##  gap> StringOfMemoryAmount(123456789);
 ##  "117MB"
 ##  ]]></Example>
+##  </Description>
+##  </ManSection>
 ##  <#/GAPDoc>
 
 
@@ -915,15 +915,13 @@ DeclareGlobalFunction("StringOfMemoryAmount");
 ##  </Item>
 ##  </List>
 ##
-##  A single brace can be outputted by doubling, so <C>{{</C> in the format string
+##  A single brace can be produced by doubling it, so <C>{{</C> in the format string
 ##  produces <C>{</C> and <C>}}</C> produces <C>}</C>.
 ##  <P/>
 ##  The <C>format</C> decides how the variable is printed. <C>format</C> must be one
 ##  of  <C>s</C> (which uses <Ref Attr="String"/>), <C>v</C> (which uses
 ##  <Ref Oper="ViewString"/>) or <C>d</C> (which calls <Ref Oper="DisplayString"/>).
 ##  The default value for <C>format</C> is <C>s</C>.
-##  </Description>
-##  </ManSection>
 ##  <Example><![CDATA[
 ##  gap> StringFormatted("I have {} cats and {} dogs", 4, 5);
 ##  "I have 4 cats and 5 dogs"
@@ -937,6 +935,8 @@ DeclareGlobalFunction("StringOfMemoryAmount");
 ##  gap> StringFormatted("String: {1!s}, ViewString: {1!v}", sym3);
 ##  "String: SymmetricGroup( [ 1 .. 3 ] ), ViewString: Sym( [ 1 .. 3 ] )"
 ##  ]]></Example>
+##  </Description>
+##  </ManSection>
 ##  <#/GAPDoc>
 
 
@@ -983,8 +983,6 @@ DeclareGlobalFunction("PrintToFormatted");
 ##    remove the control characters <C>\&lt;</C> and <C>\&gt;</C> from
 ##    the return value.
 ##
-##  </Description>
-##  </ManSection>
 ##  <Example><![CDATA[
 ##  gap> Pluralize( "generator" );
 ##  "generators"
@@ -1005,6 +1003,8 @@ DeclareGlobalFunction("PrintToFormatted");
 ##  gap> Print( Pluralize( 4, "battery" ) );
 ##  4 batteries
 ##  ]]></Example>
+##  </Description>
+##  </ManSection>
 ##  <#/GAPDoc>
 
 DeclareGlobalFunction("Pluralize");

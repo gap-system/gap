@@ -79,7 +79,7 @@ compute the commutator  subgroup  of <E>two</E> arbitrary  subgroups.)  The
 situation is  a bit  different for  Sylow  <M>p</M>-subgroups: The function
 <Ref Func="SylowSubgroup" BookName="ref"/> also  requires  two arguments,
 namely a   group and a
-prime <M>p</M>, but the result is  stored in the  group &ndash;namely together
+prime <M>p</M>, but the result is stored in the group &ndash; namely together
 with the prime  <M>p</M> in a  list that can be accessed with
 <C>ComputedSylowSubgroups</C>, but we
 won't dwell on the details here.
@@ -308,8 +308,7 @@ Note also the function <Ref Oper="First" BookName="ref"/>,
 used to find the first element in a list which passes some test.
 <P/>
 In this example,
-we  have specified the action function <Ref Func="OnPoints" BookName="ref"/>
-in this example,
+we have specified the action function <Ref Func="OnPoints" BookName="ref"/>,
 which is defined as
 <C>OnPoints( </C><M>d</M><C>, </C><M>g</M><C> ) = </C><M>d</M><C> ^ </C><M>g</M>.
 This <Q>caret</Q>  operator denotes conjugation in  a group if  both
@@ -402,7 +401,7 @@ gap> Image(nophom,(1,2,3));
 91)(42,72,92)
 ]]></Example>
 <P/>
-In this situation, however (for performance reasons, avoiding computation
+In this situation, however (for performance reasons, avoiding the computation of
 an image that might never be needed) the homomorphism is defined to be not
 into the <E>Image</E> of the action, but into the <E>full symmetric
 group</E>, i.e. it is not automatically surjective. Surjectivity can be
@@ -657,7 +656,7 @@ Remember that we can leave out the function if we mean
 but that we have to specify the action domain for all action functions.
 <P/>
 We see that <C>a8_56</C>   is not primitive. This  means  of course   that the
-action  of <C>a8</C>  on  <C>orb[2]</C>  is not  primitive,  because those   two
+action of <C>a8</C> on <C>orbs[2]</C> is not primitive, because those two
 actions are equivalent. So the stabilizer <C>u56</C> is not maximal. Let us
 try to find its supergroups.
 We use the function <Ref Func="Blocks" BookName="ref"/> to find a block
@@ -743,7 +742,7 @@ of <Ref Func="OnPairs" BookName="ref"/>)
 and   then  pass it   as  action domain  to   the function
 <Ref Func="IsRegular" BookName="ref"/>.
 The positive result of  the regularity test means that this
-action is equivalent  to the actions of <C>u336</C>  on  its 60 elements
+action is equivalent to the action of <C>u336</C> on its 60 elements
 from the right.
 <P/>
 <Example><![CDATA[
@@ -1038,8 +1037,8 @@ gap> rev := GroupGeneralMappingByImages( s3, s4,
 >           [(1,2),(2,3)], GeneratorsOfGroup(s4) );;
 ]]></Example>
 <P/>
-Now <M>hom</M> maps <M>a</M> to <M>b</M> if and only if
-<M>rev</M> maps <M>b</M> to <M>a</M>,
+Now <C>hom</C> maps <M>a</M> to <M>b</M> if and only if
+<C>rev</C> maps <M>b</M> to <M>a</M>,
 for <M>a \in</M> <C>s4</C> and <M>b \in</M> <C>s3</C>.
 Since every such <M>b</M> has four preimages under <C>hom</C>,
 it now has four images under <C>rev</C>.
@@ -1167,7 +1166,7 @@ true
 <P/>
 Note that a nice monomorphism might be defined on a larger group than
 <C>grp</C>
-&ndash;so we have to use <C>Image( hom, grp )</C> and not only
+&ndash; so we have to use <C>Image( hom, grp )</C> and not only
 <C>Image( hom )</C>.
 <P/>
 Nice monomorphisms are not only used for matrix groups, but also for

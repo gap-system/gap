@@ -149,7 +149,7 @@ DeclareOperation("CanonicalRightCosetElement",
 ##
 ##  <#GAPDoc Label="IsDoubleCoset">
 ##  <ManSection>
-##  <Filt Name="IsDoubleCoset" Arg='obj' Type='Category' Label="operation"/>
+##  <Filt Name="IsDoubleCoset" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
 ##  The category of double cosets.

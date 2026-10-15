@@ -33,7 +33,7 @@ strings like section  headers,
 function names, and index  entries  to  be  searched  by  the  online  help;
 information about the available formats of this book like text,  html,  dvi,
 and pdf;  the  actual  files  containing  the  documentation,  corresponding
-section numbers, and page numbers: and so on.
+section numbers, and page numbers, and so on.
 See&nbsp;<Ref Sect="The manual.six File"/>  for
 a description of the format of the <F>manual.six</F> file.
 <P/>
@@ -99,13 +99,13 @@ where <A>myownformat</A> is an identifying string for this format. The reading
 of the (remainder of the) file is then delegated to the function
 <C>HELP_BOOK_HANDLER.<A>myownformat</A>.ReadSix</C> which must exist. Thus
 there are no further regulations for the format of the <F>manual.six</F> file,
-other that what you yourself impose. If such a line is missing then it is
+other than what you yourself impose. If such a line is missing then it is
 assumed that the <F>manual.six</F> file complies with the <F>gapmacro.tex</F>
 documentation format, which internally is referred to as the <C>default</C>
 format for historical reasons. In that case reading the file is delegated to
 <C>HELP_BOOK_HANDLER.default.ReadSix</C>.
 <P/>
-Section <Ref Sect="The Help Book Handler"/> explains how the return value of
+Section <Ref Sect="The Help Book Handler"/> explains what the return value of
 <C>HELP_BOOK_HANDLER.<A>myownformat</A>.ReadSix</C> should look like and which further
 function should be contained in <C>HELP_BOOK_HANDLER.<A>myownformat</A></C>.
 
@@ -176,7 +176,7 @@ gap> stream := InputTextFile( file );;
   This  function must  return  a  list of  indices  of <A>info</A><C>.entries</C>  for
   entries which  match the search  string <A>topic</A>. If <A>frombegin</A>  is <K>true</K>
   then  those parts  of  <A>topic</A> which  are separated  by  spaces should  be
-  considered  as  the  beginnings  of  words  to  decide  the  matching.  It
+  considered as the beginnings of words to decide the matching. If
   <A>frombegin</A> is <K>false</K>, a substring search should be performed. The string
   <A>topic</A>  can be  assumed to  be already  normalized (transformed  to lower
   case, and whitespace normalized). The function must return a list with two
@@ -232,7 +232,7 @@ following values of the <A>type</A> argument.
 </Item>
 <Mark><C>"url"</C> </Mark>
 <Item>
-  If the help book is available in HTML  format this must return an URL as a
+  If the help book is available in HTML format this must return a URL as a
   string (Probably a <C>file://</C> URL containing  a label for the  exact start
   position in that file). Otherwise it returns <K>fail</K>.
 </Item>
@@ -260,7 +260,7 @@ following values of the <A>type</A> argument.
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Introducing new Viewer for the Online Help">
-<Heading>Introducing new Viewer for the Online Help</Heading>
+<Heading>Introducing a New Viewer for the Online Help</Heading>
 
 To introduce a new viewer for the online help,
 one should extend the global record <Ref Var="HELP_VIEWER_INFO"/>,

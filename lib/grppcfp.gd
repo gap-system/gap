@@ -138,8 +138,8 @@ DeclareGlobalFunction( "TryLayerSQ" );
 #F  SQ(<F>,<...> )
 ##
 ##  <#GAPDoc Label="SolvableQuotient">
-##  <Heading>SolvableQuotient</Heading>
 ##  <ManSection>
+##  <Heading>SolvableQuotient</Heading>
 ##  <Func Name="SolvableQuotient" Arg='F, size'
 ##   Label="for a f.p. group and a size"/>
 ##  <Func Name="SolvableQuotient" Arg='F, primes'
@@ -177,7 +177,7 @@ DeclareSynonym( "SQ", SolvableQuotient);
 ##  <Func Name="EpimorphismSolvableQuotient" Arg='F, param'/>
 ##
 ##  <Description>
-##  computes an epimorphism from the finitely presented group <A>fpgrp</A>
+##  computes an epimorphism from the finitely presented group <A>F</A>
 ##  to the largest solvable quotient given by <A>param</A> (specified as in
 ##  <Ref Func="SolvableQuotient" Label="for a f.p. group and a size"/>).
 ##  <P/>

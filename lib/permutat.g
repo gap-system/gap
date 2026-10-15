@@ -218,11 +218,11 @@ DeclareSynonymAttr( "LargestMovedPointPerm", LargestMovedPoint );
 ##  (The actual moved points are returned by
 ##  <Ref Attr="MovedPoints" Label="for a permutation"/>.)
 ##  <Example><![CDATA[
-##  gap> SmallestMovedPointPerm((4,5,6)(7,2,8));
+##  gap> SmallestMovedPoint((4,5,6)(7,2,8));
 ##  2
-##  gap> LargestMovedPointPerm((4,5,6)(7,2,8));
+##  gap> LargestMovedPoint((4,5,6)(7,2,8));
 ##  8
-##  gap> NrMovedPointsPerm((4,5,6)(7,2,8));
+##  gap> NrMovedPoints((4,5,6)(7,2,8));
 ##  6
 ##  gap> MovedPoints([(2,3,4),(7,6,3),(5,47)]);
 ##  [ 2, 3, 4, 5, 6, 7, 47 ]

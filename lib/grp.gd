@@ -60,7 +60,7 @@ DeclareInfoClass( "InfoGroup" );
 ##
 ##  <Description>
 ##  A group is a magma-with-inverses (see&nbsp;<Ref Filt="IsMagmaWithInverses"/>)
-##  and associative (see&nbsp;<Ref Prop="IsAssociative"/>) multiplication.
+##  whose multiplication is associative (see&nbsp;<Ref Prop="IsAssociative"/>).
 ##  <P/>
 ##  <C>IsGroup</C> tests whether the object <A>obj</A> fulfills these conditions,
 ##  it does <E>not</E> test whether <A>obj</A> is a set of elements that forms a group
@@ -274,7 +274,7 @@ InstallTrueMethod( IsSubsetLocallyFiniteGroup,
 ##  An answer <K>false</K> indicates that no method for this group may exist,
 ##  or that the existing methods might run into problems.
 ##  <P/>
-##  Typical examples when this might happen is with finitely presented
+##  A typical example is finitely presented
 ##  groups, for which many of the methods cannot be guaranteed to succeed in
 ##  all situations.
 ##  <P/>
@@ -372,7 +372,7 @@ InstallTrueMethod( CanComputeSize, IsTrivial );
 ##  <Oper Name="CanComputeIndex" Arg='G, H'/>
 ##
 ##  <Description>
-##  This function indicates whether the index <M>[<A>G</A>:<A>H</A>]</M>
+##  This operation indicates whether the index <M>[<A>G</A>:<A>H</A>]</M>
 ##  (which might be <Ref Var="infinity"/>) can be computed.
 ##  It assumes that <M><A>H</A> \leq <A>G</A></M>
 ##  (see <Ref Oper="CanComputeIsSubset"/>).
@@ -428,7 +428,7 @@ DeclareOperation( "KnowsHowToDecompose", [ IsGroup, IsList ] );
 ##  <P/>
 ##  Finite <M>p</M>-groups are precisely those groups whose order
 ##  (see&nbsp;<Ref Attr="Size"/>) is <M>1</M> or a prime power
-##  (see&nbsp;<Ref Func="IsPrimePowerInt"/>,
+##  (see&nbsp;<Ref Func="IsPrimePowerInt"/>),
 ##  and are always nilpotent.
 ##  <P/>
 ##  Note that <M>p</M>-groups can also be infinite, and in that case,
@@ -971,7 +971,7 @@ DeclareAttribute( "AbelianRank", IsGroup );
 ##  <Description>
 ##  <Index Subkey="for groups" Key="IsInfiniteAbelianizationGroup">
 ##  <C>IsInfiniteAbelianizationGroup</C></Index>
-##  returns true if the commutator factor group <M><A>G</A>/<A>G</A>'</M> is
+##  returns <K>true</K> if the commutator factor group <M><A>G</A>/<A>G</A>'</M> is
 ##  infinite. This might be done without computing the full structure of the
 ##  commutator factor group.
 ##  </Description>
@@ -1051,7 +1051,7 @@ DeclareAttribute( "ChiefSeries", IsGroup );
 ##  returns a series of normal subgroups of <A>G</A> which are invariant under
 ##  <A>H</A> such that the series cannot be refined any further.
 ##  <A>G</A> must be a subgroup of <A>H</A>.
-##  This attribute returns <E>one</E> such series (of potentially many
+##  This operation returns <E>one</E> such series (of potentially many
 ##  possibilities).
 ##  </Description>
 ##  </ManSection>
@@ -1072,7 +1072,7 @@ DeclareOperation( "ChiefSeriesUnderAction", [ IsGroup, IsGroup ] );
 ##  is a chief series of the group <A>G</A> going through
 ##  the normal subgroups in the list <A>l</A>, which must be a list of normal
 ##  subgroups of <A>G</A> contained in each other, sorted by descending size.
-##  This attribute returns <E>one</E>
+##  This operation returns <E>one</E>
 ##  chief series (of potentially many possibilities).
 ##  </Description>
 ##  </ManSection>
@@ -1241,9 +1241,9 @@ DeclareGlobalFunction( "DisplayCompositionSeries" );
 ##  6
 ##  ]]></Example>
 ##  <P/>
-##  In general, you will not need to have to influence the method, but simply
+##  In general, you will not need to influence the method, but simply
 ##  call <Ref Attr="ConjugacyClasses" Label="attribute"/>
-##  &ndash;&GAP; will try to select a suitable method on its own.
+##  &ndash; &GAP; will try to select a suitable method on its own.
 ##  The method specifications are provided here mainly for expert use.
 ##  </Description>
 ##  </ManSection>
@@ -1674,7 +1674,7 @@ DeclareAttribute( "CommutatorLength", IsGroup );
 ##  <Attr Name="DimensionsLoewyFactors" Arg='G'/>
 ##
 ##  <Description>
-##  This operation computes the dimensions of the factors of the Loewy
+##  This attribute computes the dimensions of the factors of the Loewy
 ##  series of <A>G</A>.
 ##  (See <Cite Key="Hup82" Where="p. 157"/> for the slightly complicated
 ##  definition of the Loewy Series.)
@@ -2684,7 +2684,7 @@ DeclareOperation( "ClassMultiplicationCoefficient",
 ##  <Func Name="ClosureGroupDefault" Arg='G, elm'/>
 ##
 ##  <Description>
-##  This functions returns the closure of the group <A>G</A> with the element
+##  This function returns the closure of the group <A>G</A> with the element
 ##  <A>elm</A>.
 ##  If <A>G</A> has the attribute <Ref Attr="AsSSortedList"/> then also the
 ##  result has this attribute.
@@ -2961,7 +2961,7 @@ InParentFOA( "Core", IsGroup, IsGroup, DeclareAttribute );
 ##  generators and their inverses in the ordering
 ##  <M>g_1, g_1^{{-1}}, g_2, g_2^{{-1}}</M>.
 ##  (See section&nbsp;<Ref Sect="Standardization of coset tables"/>
-##  for a description on the way the numbers are assigned.)
+##  for a description of the way the numbers are assigned.)
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -3482,7 +3482,7 @@ KeyDependentOperation( "PCentralSeries", IsGroup, IsPosInt, "prime" );
 ##  <Description>
 ##  For a prime <M>p</M>, the <E><A>p</A>-rump</E> of a group <A>G</A> is the
 ##  subgroup <M><A>G</A>' <A>G</A>^{<A>p</A>}</M>. Unless it equals <A>G</A>
-##  itself (which is the e.g. the case if <A>G</A> is perfect), it is equal
+##  itself (which is the case, e.g., if <A>G</A> is perfect), it is equal
 ##  to the second term of the <A>p</A>-central series of <A>G</A>, see
 ##  <Ref Oper="PCentralSeries"/>.
 ##  <P/>
@@ -3548,9 +3548,9 @@ KeyDependentOperation( "PCore", IsGroup, IsPosInt, "prime" );
 ##  <Description>
 ##  The structural series of a finite group <A>G</A> is a descending series
 ##  of characteristic subgroups which goes through the derived series of
-##  the solvable radical of $G$, refined into elementary abelian factors, as
-##  well as the socle and the <A>Pker</A> (kernel of the action on socle
-##  components) of the radical factor
+##  the solvable radical of <A>G</A>, refined into elementary abelian factors, as
+##  well as the socle and the <C>Pker</C> (kernel of the action on socle
+##  components) of the radical factor.
 ##  <Example><![CDATA[
 ##  gap> gp:=WreathProduct(SymmetricGroup(5),SymmetricGroup(3));;
 ##  gap> gp:=WreathProduct(Group((1,2,3,4,5,6)),gp);;
@@ -4512,7 +4512,7 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##  to a finitely presented group <A>F</A> isomorphic to <A>G</A>.
 ##  The generators of <A>F</A> correspond to the
 ##  <E>generators of <A>G</A> given in the list <A>gens</A></E>.
-#   If <A>string</A> is given it is used to name the generators of the
+##  If <A>string</A> is given it is used to name the generators of the
 ##  finitely presented group.
 ##  <P/>
 ##  The <C>NC</C> version will avoid testing whether the elements in
@@ -4583,7 +4583,7 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##  <Item>
 ##    This chooses an alternative method which essentially is a kind of
 ##    multi-stage algorithm for a stabilizer chain of <A>G</A> but does not
-##    make any attempt do reduce the number of relators as it is done in
+##    make any attempt to reduce the number of relators as it is done in
 ##    Cannon's algorithm or to reduce their total length.
 ##    Hence it is often much faster than the default method, but the total
 ##    length of the resulting presentation may be huge.
@@ -4899,7 +4899,7 @@ DeclareGlobalFunction("GroupEnumeratorByClosure");
 ##  calculation of maximal subgroups.
 ##  <P/>
 ##  The function <Ref Func="LowLayerSubgroups"/> works similar but does not
-##  bound the index, but instead considers up to <A>layer</A>-th maximal
+##  bound the index, but instead considers up to <C>lim</C>-th maximal
 ##  subgroups.
 ##  <Example><![CDATA[
 ##  gap> g:=TransitiveGroup(18,950);;

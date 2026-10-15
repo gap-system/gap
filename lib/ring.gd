@@ -135,7 +135,7 @@ DeclareSynonymAttr( "IsRingWithOne", IsRing and IsMagmaWithOne );
 ##
 ##  <Description>
 ##  If the elements in the collection <A>C</A> form a ring then
-##  <Ref Func="AsRing"/> returns this ring,
+##  <Ref Attr="AsRing"/> returns this ring,
 ##  otherwise <K>fail</K> is returned.
 ##  </Description>
 ##  </ManSection>
@@ -319,7 +319,7 @@ DeclareOperation( "RingWithOneByGenerators", [ IsCollection ] );
 ##  <A>r</A>, <A>s</A>, <M>\ldots</M>
 ##  In the second form <Ref Func="RingWithOne" Label="for a collection"/>
 ##  returns the smallest ring with one that contains all the elements
-##  in the collection <A>C</A>.
+##  in the collection <A>coll</A>.
 ##  If any element is not an element of a ring or if the elements lie in no
 ##  common ring an error is raised.
 ##  <Example><![CDATA[
@@ -908,7 +908,7 @@ DeclareOperation( "InterpolatedPolynomial",
 ##  and otherwise in their default ring
 ##  (see <Ref Func="DefaultRing" Label="for ring elements"/>).
 ##  More specifically, it returns a ring element <M>q</M> such that
-##  <M>r = q * s</M> holds, or <K>fail</K> if no such elements exists in the
+##  <M>r = q * s</M> holds, or <K>fail</K> if no such element exists in the
 ##  respective ring.
 ##  <P/>
 ##  The result may not be unique if the ring contains zero divisors.
@@ -1454,7 +1454,7 @@ DeclareGlobalFunction( "Lcm" );
 ##  of two ring elements <A>r</A>, <A>s</A> in the ring <A>R</A>
 ##  or in their default ring, respectively.
 ##  <P/>
-##  The default methods for this uses the equality
+##  The default method uses the equality
 ##  <M>lcm( m, n ) = m*n / gcd( m, n )</M> (see&nbsp;<Ref Oper="GcdOp"/>).
 ##  </Description>
 ##  </ManSection>

@@ -42,7 +42,7 @@
 ##  <Func Name="ListOfDigits" Arg='n'/>
 ##
 ##  <Description>
-##  For a positive integer <A>n</A> this function returns a list <A>l</A>,
+##  For a positive integer <A>n</A> this function returns a list,
 ##  consisting of the digits of <A>n</A> in decimal representation.
 ##  <Example><![CDATA[
 ##  gap> ListOfDigits(3142);
@@ -60,13 +60,13 @@ DeclareGlobalFunction("ListOfDigits");
 ##
 ##  <#GAPDoc Label="RootsOfPolynomial">
 ##  <ManSection>
-##  <Func Name="RootsOfPolynomial" Arg='[R,],p'/>
+##  <Func Name="RootsOfPolynomial" Arg='[R, ]p'/>
 ##
 ##  <Description>
 ##  For a univariate polynomial <A>p</A>, this function returns all roots of
 ##  <A>p</A> over the ring <A>R</A>. If the ring is not specified, it defaults
 ##  to the ring specified by the coefficients of <A>p</A> via
-##  <Ref Func="DefaultRing" Label="for ring elements"/>).
+##  <Ref Func="DefaultRing" Label="for ring elements"/>.
 ##  <Example><![CDATA[
 ##  gap> x:=X(Rationals,"x");;p:=x^4-1;
 ##  x^4-1
@@ -139,14 +139,13 @@ DeclareGlobalFunction("ShowGcd");
 ##  Z(2^2)   | Z(2^2)   Z(2^2)^2 0*Z(2)   Z(2)^0
 ##  Z(2^2)^2 | Z(2^2)^2 Z(2^2)   Z(2)^0   0*Z(2)
 ##
-##gap> ShowMultiplicationTable(GF(4));
-##*        | 0*Z(2)   Z(2)^0   Z(2^2)   Z(2^2)^2
-##---------+------------------------------------
-##0*Z(2)   | 0*Z(2)   0*Z(2)   0*Z(2)   0*Z(2)
-##Z(2)^0   | 0*Z(2)   Z(2)^0   Z(2^2)   Z(2^2)^2
-##Z(2^2)   | 0*Z(2)   Z(2^2)   Z(2^2)^2 Z(2)^0
-##Z(2^2)^2 | 0*Z(2)   Z(2^2)^2 Z(2)^0   Z(2^2)
-
+##  gap> ShowMultiplicationTable(GF(4));
+##  *        | 0*Z(2)   Z(2)^0   Z(2^2)   Z(2^2)^2
+##  ---------+------------------------------------
+##  0*Z(2)   | 0*Z(2)   0*Z(2)   0*Z(2)   0*Z(2)
+##  Z(2)^0   | 0*Z(2)   Z(2)^0   Z(2^2)   Z(2^2)^2
+##  Z(2^2)   | 0*Z(2)   Z(2^2)   Z(2^2)^2 Z(2)^0
+##  Z(2^2)^2 | 0*Z(2)   Z(2^2)^2 Z(2)^0   Z(2^2)
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

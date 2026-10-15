@@ -212,8 +212,8 @@ DeclareOperationKernel( "[]",
 ##  <A>default</A> otherwise.
 ##  <P/>
 ##  While this method can be used on any list, it is particularly useful
-##  for Weak Pointer lists <Ref Sect="Weak Pointer Objects"/> where the
-##  value of the list can change.
+##  for weak pointer lists (see <Ref Sect="Weak Pointer Objects"/>), whose
+##  entries can change.
 ##  <P/>
 ##  To distinguish between the <A>n</A>th element being unbound, or
 ##  <A>default</A> being in <A>list</A>, users can create a new mutable
@@ -479,7 +479,7 @@ InstallTrueMethod( IsFinite, IsHomogeneousList and IsInternalRep );
 ##  by binary search, see&nbsp;<Ref Sect="Sorted Lists and Sets"/>.
 ##  <P/>
 ##  Note that  &GAP; cannot  compare (by  less than)  arbitrary objects.
-##  This can cause  that <Ref Prop="IsSortedList"/> runs  into an error,
+##  Hence <Ref Prop="IsSortedList"/> may signal an error
 ##  if <A>obj</A> is a list with some non-comparable entries.
 ##  </Description>
 ##  </ManSection>
@@ -520,7 +520,7 @@ InstallTrueMethod( IsList, IsSortedList );
 ##  that they are sorted but not strictly sorted.)
 ##  <P/>
 ##  Note that  &GAP; cannot  compare (by  less than)  arbitrary objects.
-##  This can cause  that <Ref Prop="IsSSortedList"/> runs  into an error,
+##  Hence <Ref Prop="IsSSortedList"/> may signal an error
 ##  if <A>obj</A> is a list with some non-comparable entries.
 ##  </Description>
 ##  </ManSection>
@@ -556,7 +556,7 @@ InstallTrueMethod( IsSSortedList, IsList and IsEmpty );
 ##  Every domain (see&nbsp;<Ref Sect="Domains"/>) is duplicate free.
 ##  <P/>
 ##  Note that  &GAP; cannot  compare arbitrary objects (by equality).
-##  This can cause  that <Ref Prop="IsDuplicateFree"/> runs  into an error,
+##  Hence <Ref Prop="IsDuplicateFree"/> may signal an error
 ##  if <A>obj</A> is a list with some non-comparable entries.
 ##  </Description>
 ##  </ManSection>
@@ -623,7 +623,7 @@ DeclareCategoryKernel( "IsTable", IsHomogeneousList and IsCollection,
 ##  <Oper Name="Position" Arg='list, obj[, from]'/>
 ##
 ##  <Description>
-##  returns the position of the first occurrence <A>obj</A> in <A>list</A>,
+##  returns the position of the first occurrence of <A>obj</A> in <A>list</A>,
 ##  or <K>fail</K> if <A>obj</A> is not contained in <A>list</A>.
 ##  If a starting index <A>from</A> is given, it
 ##  returns the position of the first occurrence starting the search
@@ -699,7 +699,7 @@ DeclareOperation( "PositionsOp", [ IsList, IsObject ] );
 ##  The definition of this associate depends on <A>list</A>.
 ##  For internally represented lists it is defined as the element itself
 ##  (and <Ref Oper="PositionCanonical"/> thus defaults to
-##  <Ref Oper="Position"/>,
+##  <Ref Oper="Position"/>),
 ##  but for example for certain enumerators
 ##  (see&nbsp;<Ref Sect="Enumerators"/>)
 ##  other canonical associates can be defined.
@@ -831,7 +831,7 @@ DeclareOperation( "PositionSortedOp", [ IsList, IsObject, IsFunction ] );
 ##  <C>PositionSorted(List(list, func), val)</C>, but computes it in
 ##  a more efficient way.
 ##  <P/>
-##  To be more precise, <A>func</A> must be a function on one argument which
+##  To be more precise, <A>func</A> must be a function of one argument which
 ##  returns values that can be compared to <A>val</A>, and <A>list</A>
 ##  must be a list for which <C>func(list[i]) &lt;= func(list[i+1])</C> holds
 ##  for all relevant <A>i</A>. This property is not verified, and if the
@@ -1584,7 +1584,7 @@ DeclareOperation( "Shuffle", [IsDenseList and IsMutable] );
 ##  <ManSection>
 ##  <Oper Name="Sort" Arg='list[, func]'/>
 ##  <Oper Name="SortBy" Arg='list, func'/>
-##  <Oper Name="StableSort" Arg='list, [func]'/>
+##  <Oper Name="StableSort" Arg='list[, func]'/>
 ##  <Oper Name="StableSortBy" Arg='list, [func]'/>
 ##  <Description>
 ##  <Ref Oper="Sort"/> sorts the list <A>list</A> in increasing order.
@@ -1611,7 +1611,7 @@ DeclareOperation( "Shuffle", [IsDenseList and IsMutable] );
 ##  <P/>
 ##  <Ref Oper="SortBy"/> sorts the list <A>list</A> into an order such that
 ##  <C>func(list[i]) &lt;= func(list[i+1])</C> for all relevant
-##  <A>i</A>. <A>func</A> must thus be a function on one argument which returns
+##  <A>i</A>. <A>func</A> must thus be a function of one argument which returns
 ##  values that can be compared.  Each <C>func(list[i])</C> is computed just
 ##  once and stored, making this more efficient than using the two-argument
 ##  version of <Ref Oper="Sort"/> in many cases.
@@ -1827,7 +1827,7 @@ DeclareOperation( "StableSortParallel",
 ##  gap> Maximum( [1,2], [0,15], [1,5], [2,-11] );
 ##  [ 2, -11 ]
 ##  ]]></Example>
-##  To get the index of the maximum element use <Ref Func="PositionMaximum"/>
+##  To get the index of the maximum element use <Ref Func="PositionMaximum"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1870,7 +1870,7 @@ DeclareGlobalFunction( "Maximum" );
 ##  gap> Minimum( [ 1, 2 ], [ 0, 15 ], [ 1, 5 ], [ 2, -11 ] );
 ##  [ 0, 15 ]
 ##  ]]></Example>
-##  To get the index of the minimum element use <Ref Func="PositionMinimum"/>
+##  To get the index of the minimum element use <Ref Func="PositionMinimum"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1886,8 +1886,8 @@ DeclareGlobalFunction( "Minimum" );
 ##  <#GAPDoc Label="MaximumList">
 ##  <ManSection>
 ##  <Heading>MaximumList and MinimumList</Heading>
-##  <Oper Name="MaximumList" Arg='list [seed]'/>
-##  <Oper Name="MinimumList" Arg='list [seed]'/>
+##  <Oper Name="MaximumList" Arg='list[, seed]'/>
+##  <Oper Name="MinimumList" Arg='list[, seed]'/>
 ##
 ##  <Description>
 ##  return the maximum resp.&nbsp;the minimum of the elements in the list
@@ -1900,7 +1900,7 @@ DeclareGlobalFunction( "Minimum" );
 ##  resp.&nbsp;the minimum of a range (see&nbsp;<Ref Sect="Ranges"/>).
 ##  <P/>
 ##  If a second argument <A>seed</A> is supplied, then the result is the
-##  maximum resp.&nbsp;minimum of the union of <A>list</A> and <A>seed</A>.
+##  maximum resp.&nbsp;minimum of the entries of <A>list</A> and <A>seed</A>.
 ##  In this manner, the operations may be applied to empty lists.
 ##  </Description>
 ##  </ManSection>
@@ -2279,9 +2279,9 @@ DeclareGlobalFunction( "IntersectionBlist" );
 ##  <Func Name="ListWithIdenticalEntries" Arg='n, obj'/>
 ##
 ##  <Description>
-##  is a list <A>list</A> of length <A>n</A> that has the object <A>obj</A>
+##  returns a list of length <A>n</A> that has the object <A>obj</A>
 ##  stored at each of the positions from <C>1</C> to <A>n</A>.
-##  Note that all elements of <A>lists</A> are identical,
+##  Note that all its entries are identical,
 ##  see&nbsp;<Ref Sect="Identical Lists"/>.
 ##  <P/>
 ##  <Example><![CDATA[

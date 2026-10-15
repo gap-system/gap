@@ -29,11 +29,11 @@
 ##  Basic operations for collections are <Ref Attr="Size"/>
 ##  and <Ref Attr="Enumerator"/>;
 ##  for <E>finite</E> collections,
-##  <Ref Attr="Enumerator"/> admits to delegate the other
+##  <Ref Attr="Enumerator"/> allows the other
 ##  operations for collections
 ##  (see&nbsp;<Ref Sect="Attributes and Properties for Collections"/>
 ##  and&nbsp;<Ref Sect="Operations for Collections"/>)
-##  to functions for lists (see&nbsp;<Ref Chap="Lists"/>).
+##  to be delegated to functions for lists (see&nbsp;<Ref Chap="Lists"/>).
 ##  Obviously, special methods depending on the arguments are needed for
 ##  the computation of e.g.&nbsp;the intersection of two <E>infinite</E>
 ##  domains.
@@ -134,7 +134,7 @@ DeclareAttribute( "CollectionsFamily", IsFamily );
 ##  <Filt Name="IsCollectionFamily" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
-##  is <K>true</K> if <A>Fam</A> is a family of collections,
+##  is <K>true</K> if <A>obj</A> is a family of collections,
 ##  and <K>false</K> otherwise.
 ##  </Description>
 ##  </ManSection>
@@ -220,7 +220,6 @@ fi;
 ##  <Ref Filt="IsPerm"/>,
 ##  and each collection of permutations (permutation group or dense list of
 ##  permutations) lies in the category <C>CategoryCollections( IsPerm )</C>.
-##  <C>CategoryCollections( IsPerm )</C>.
 ##  Note that this works only if the collections category is created
 ##  <E>before</E> the collections family.
 ##  So it is necessary to construct interesting collections categories
@@ -361,7 +360,7 @@ end );
 ##  <P/>
 ##  When <A>value</A> is actually an attribute then
 ##  <Ref Func="DeclareSynonymAttr"/> should be used;
-##  this binds also globals variables <C>Set</C><A>name</A> and
+##  this also binds global variables <C>Set</C><A>name</A> and
 ##  <C>Has</C><A>name</A> for its setter and tester, respectively.
 ##  <P/>
 ##  <Log><![CDATA[
@@ -1090,7 +1089,7 @@ end );
 ##  <Ref Oper="NextIterator"/>, and <Ref Oper="ShallowCopy"/>.
 ##  In particular, it is only possible to access the next element of the
 ##  iterator with <Ref Oper="NextIterator"/> if there is one,
-##  and this can be checked with <Ref Oper="IsDoneIterator"/>
+##  and this can be checked with <Ref Oper="IsDoneIterator"/>.
 ##  For an iterator <M>iter</M>, <Ref Oper="ShallowCopy"/> returns a
 ##  mutable iterator <M>new</M> that iterates over the remaining elements
 ##  independent of <M>iter</M>;
@@ -1332,14 +1331,14 @@ DeclareGlobalFunction( "TrivialIterator" );
 ##  <Mark><C>ViewObj</C> and <C>PrintObj</C></Mark>
 ##  <Item>
 ##      two functions that print what one wants to be printed when
-##      <C>View( <A>iter</A> )</C> or <C>Print( <A>item</A> )</C> is called
+##      <C>View( <A>iter</A> )</C> or <C>Print( <A>iter</A> )</C> is called
 ##      (see&nbsp;<Ref Sect="View and Print"/>),
 ##      if the <C>ViewObj</C> component is missing then the <C>PrintObj</C>
 ##      method is used as a default.
 ##  </Item>
 ##  </List>
 ##  Further (data) components may be contained in <A>record</A> which can be
-##  used by these function.
+##  used by these functions.
 ##  <P/>
 ##  <Ref Func="IteratorByFunctions"/> does <E>not</E> make a shallow copy of
 ##  <A>record</A>, this record is changed in place
@@ -1809,7 +1808,7 @@ DeclareAttribute( "PseudoRandomSeed", IsListOrCollection, "mutable" );
 ##  same order.
 ##  If the argument is a collection that is not a list,
 ##  then <C>Length( </C><M>enum</M><C> )</C> is the number of different
-##  elements of <A>C</A>,
+##  elements of this collection,
 ##  and <M>enum</M> contains the different elements of the collection in an
 ##  unspecified order, which may change for repeated calls of
 ##  <Ref Attr="Enumerator"/>.
@@ -1905,8 +1904,8 @@ DeclareGlobalFunction( "EnumeratorOfSubset" );
 #F  EnumeratorByFunctions( <Fam>, <record> )
 ##
 ##  <#GAPDoc Label="EnumeratorByFunctions">
-##  <Heading>EnumeratorByFunctions</Heading>
 ##  <ManSection>
+##  <Heading>EnumeratorByFunctions</Heading>
 ##  <Func Name="EnumeratorByFunctions" Arg='D, record'
 ##   Label="for a domain and a record"/>
 ##  <Func Name="EnumeratorByFunctions" Arg='Fam, record'
@@ -1946,7 +1945,7 @@ DeclareGlobalFunction( "EnumeratorOfSubset" );
 ##  </List>
 ##  <P/>
 ##  Further (data) components may be contained in <A>record</A>
-##  which can be used by these function.
+##  which can be used by these functions.
 ##  <P/>
 ##  If the first argument is a domain <A>D</A> then <A>enum</A> lists the
 ##  elements of <A>D</A> (in general <A>enum</A> is <E>not</E> sorted),
@@ -1988,7 +1987,7 @@ DeclareGlobalFunction( "EnumeratorOfSubset" );
 ##  <Mark><C>Membership</C></Mark>
 ##  <Item>
 ##      a function taking two arguments <A>elm</A> and <A>enum</A>,
-##      which returns <K>true</K> is <A>elm</A> is an element of <A>enum</A>,
+##      which returns <K>true</K> if <A>elm</A> is an element of <A>enum</A>,
 ##      and <K>false</K> otherwise
 ##      (see&nbsp;<Ref Sect="Basic Operations for Lists"/>);
 ##      if this component is missing then <C>NumberElement</C> is used
@@ -2300,7 +2299,7 @@ DeclareSynonym( "Set", SSortedList );
 ##  and the size of <A>imm</A> in memory is proportional to its length.
 ##  <P/>
 ##  If you expect to do many element tests in the resulting list, it might
-##  be worth to use a sorted list instead, using <Ref Attr="AsSSortedList"/>.
+##  be worth using a sorted list instead, using <Ref Attr="AsSSortedList"/>.
 ##  <!-- <P/> -->
 ##  <!--  For both lists and collections, the default method is-->
 ##  <!--  <C>ConstantTimeAccessList( Enumerator( <A>C</A> ) )</C>.-->
@@ -2339,7 +2338,7 @@ DeclareAttribute( "AsList", IsListOrCollection );
 ##  <C>Length( <A>imm</A> )</C> is the number of elements of the argument,
 ##  and <A>imm</A> contains the elements in sorted order,
 ##  w.r.t.&nbsp;<C>&lt;=</C>.
-##  <C><A>new</A>[<A>pos</A>]</C> executes in constant time
+##  <C><A>imm</A>[<A>pos</A>]</C> executes in constant time
 ##  (see&nbsp;<Ref Filt="IsConstantTimeAccessList"/>),
 ##  and the size of <A>imm</A> in memory is proportional to its length.
 ##  <P/>
@@ -2684,7 +2683,7 @@ DeclareOperation( "SumOp", [ IsListOrCollection ] );
 ##  <P/>
 ##  The general rules for arithmetic operations apply
 ##  (see&nbsp;<Ref Sect="Mutability Status and List Arithmetic"/>),
-##  so the result is immutable if and only if all summands are immutable.
+##  so the result is immutable if and only if all factors are immutable.
 ##  <P/>
 ##  If <A>listorcoll</A> contains exactly one element then this element
 ##  (or its image under <A>func</A> if applicable) itself is returned,
@@ -2731,7 +2730,7 @@ DeclareOperation( "ProductOp", [ IsListOrCollection ] );
 ##
 ##  <Description>
 ##  returns a new list that contains those elements of the list or collection
-##  <A>listorcoll</A> (see&nbsp;<Ref Chap="Collections"/>), respectively,
+##  <A>listorcoll</A> (see&nbsp;<Ref Chap="Collections"/>)
 ##  for which the unary function <A>func</A> returns <K>true</K>.
 ##  <P/>
 ##  If the first argument is a list, the order of the elements in the result
@@ -3313,7 +3312,7 @@ DeclareOperation( "IsSubset", [ IsListOrCollection, IsListOrCollection ] );
 ##  applies <Ref Oper="Set"/> to it first.
 ##  <P/>
 ##  The result of <Ref Func="Intersection" Label="for a list"/> is the set
-##  of elements that lie in every of the collections <A>C1</A>, <A>C2</A>,
+##  of elements that lie in each of the collections <A>C1</A>, <A>C2</A>,
 ##  etc.
 ##  If the result is a list then it is mutable and new, i.e., not identical
 ##  to any of <A>C1</A>, <A>C2</A>, etc.
@@ -3527,7 +3526,7 @@ InstallTrueMethod(CanEasilyCompareElements,CanEasilySortElements);
 ##  <Oper Name="CanComputeIsSubset" Arg='A, B'/>
 ##
 ##  <Description>
-##  This filter indicates that &GAP; can test (via <Ref Oper="IsSubset"/>)
+##  This operation indicates whether &GAP; can test (via <Ref Oper="IsSubset"/>)
 ##  whether <A>B</A> is a subset of <A>A</A>.
 ##  </Description>
 ##  </ManSection>

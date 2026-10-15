@@ -381,7 +381,7 @@ BIND_GLOBAL( "InstallOtherMethod",
 ##  <P/>
 ##  This can be used to avoid method selection overhead for certain special
 ##  cases, i.e., as an optimization. Overall, we recommend to use this
-##  feature very sparingly, as it is tool with sharp edges: for example, any
+##  feature very sparingly, as it is a tool with sharp edges: for example, any
 ##  inputs that are handled by an early method can not be intercepted by a
 ##  regular method, no matter how high its rank is; this can preclude other
 ##  kinds of optimizations.

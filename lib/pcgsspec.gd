@@ -190,7 +190,7 @@ DeclareAttribute( "LGFirst", IsPcgs );
 ##  <P/>
 ##  In this example the <Ref Attr="FamilyPcgs"/> value of the groups used
 ##  was a special pcgs, but this is not necessarily the case.
-##  For performance reasons it can be worth to enforce this,
+##  For performance reasons it can be worth enforcing this,
 ##  see&nbsp;<Ref Attr="IsomorphismSpecialPcGroup"/>.
 ##  </Description>
 ##  </ManSection>

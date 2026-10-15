@@ -48,7 +48,7 @@ DeclareOperation( "FiltersObj", [ IsObject ] );
 ##
 ##  <#GAPDoc Label="TypeOfOperation">
 ##  <ManSection>
-##  <Func Name="TypeOfOperation" Arg='object'/>
+##  <Func Name="TypeOfOperation" Arg='op'/>
 ##
 ##  <Description>
 ##  returns a string from the list <C>[ "Attribute", "Operation", "Property",

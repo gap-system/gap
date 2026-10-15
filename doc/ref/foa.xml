@@ -66,24 +66,24 @@ and, in particular,
 the Section&nbsp;<Ref Sect="About Group Actions"/>
 <!-- % currently in <C>abattoir/group.tex</C>, <C>abattoir/permgrp.tex</C>, -->
 <!-- % <C>abattoir/solvgrp.tex</C> ... -->
-explain that certain operations such as <Ref Sect="Orbits"/>),
+explain that certain operations such as <Ref Oper="Orbits" Label="operation"/>,
 besides their usual usage with arguments <A>G</A>, <A>D</A>, and <A>opr</A>,
 can also be applied to an external set (<M>G</M>-set),
 in which case they can be interpreted as attributes.
 Moreover, they can also be interpreted as attributes for permutation
 groups, meaning the natural action on the set of its moved points.
 <P/>
-The definition of <Ref Sect="Orbits"/> says that a method
+The definition of <Ref Oper="Orbits" Label="operation"/> says that a method
 should be a function
 with arguments <A>G</A>, <A>D</A>, <A>gens</A>, <A>oprs</A>, and <A>opr</A>,
 as in the case of the operation <Ref Oper="ExternalSet"/>
 when specified via <A>gens</A> and <A>oprs</A>
 (see&nbsp;<Ref Sect="External Sets"/>).
-All other syntax variants allowed for <Ref Sect="Orbits"/>
+All other syntax variants allowed for <Ref Oper="Orbits" Label="operation"/>
 (e.g., leaving out <A>gens</A> and <A>oprs</A>)
 are handled by default methods.
 <P/>
-The default methods for <Ref Sect="Orbits"/> support the
+The default methods for <Ref Oper="Orbits" Label="operation"/> support the
 following behaviour.
 <Enum>
 <Item>
@@ -137,7 +137,7 @@ as follows.
 <Subsection Label="Example: Orbit and OrbitOp">
 <Heading>Example: Orbit and OrbitOp</Heading>
 
-For example, to setup the function <Ref Oper="Orbit"/>
+For example, to set up the function <Ref Oper="Orbit"/>
 and its operation <C>OrbitOp</C>,
 the declaration file <F>lib/oprt.gd</F> contains the following line of code:
 <Log><![CDATA[

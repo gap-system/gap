@@ -34,7 +34,7 @@
 ##  <M>c( x_{{i_1}}, \ldots, x_{{i_s}} ) =
 ##  \sum \lambda^k_{{i_1,\ldots, i_s}} v_k</M>.
 ##  Denote the dimension of <M>V</M> by <M>r</M>.
-##  Then we represent an <M>s</M>-cocycle by a list of <M>r</M> lists.
+##  Then we represent an <M>s</M>-cochain by a list of <M>r</M> lists.
 ##  The <M>j</M>-th of those lists consists of entries of the form
 ##  <Display Mode="M">
 ##  [ [ i_1, i_2, \ldots, i_s ], \lambda^j_{{i_1, \ldots, i_s}} ]
@@ -96,7 +96,7 @@ DeclareCategoryCollections( "IsCochain" );
 ##  <Oper Name="Cochain" Arg='V, s, obj'/>
 ##
 ##  <Description>
-##  Constructs a <A>s</A>-cochain given by the data in <A>obj</A>, with
+##  Constructs an <A>s</A>-cochain given by the data in <A>obj</A>, with
 ##  respect to the Lie algebra module <A>V</A>. If <A>s</A> is non-zero,
 ##  then <A>obj</A> must be a list.
 ##  <Example><![CDATA[
@@ -638,12 +638,12 @@ DeclareOperation( "DimensionOfHighestWeightModule", [ IsLieAlgebra, IsList ] );
 ##  </Table>
 ##  Then by a theorem of Kostant, the <M>x_{\alpha}^{(n)}</M> and
 ##  <M>y_{\alpha}^{(n)}</M> generate a subring of the universal enveloping algebra
-##  <M>U(L)</M> spanned (as a free <M>Z</M>-module) by the elements
+##  <M>U(L)</M> spanned (as a free <M>&ZZ;</M>-module) by the elements
 ##  <Display Mode="M">
 ##  y^M h^K x^N
 ##  </Display>
-##  (see, e.g., <Cite Key="Hum72"/> or <Cite Key="Hum78" Where="Section 26"/>)
-##  So by the Poincare-Birkhoff-Witt theorem
+##  (see, e.g., <Cite Key="Hum72"/> or <Cite Key="Hum78" Where="Section 26"/>).
+##  So by the Poincaré-Birkhoff-Witt theorem
 ##  this subring is a lattice in <M>U(L)</M>. Furthermore, this lattice is
 ##  invariant under the <M>x_{\alpha}^{(n)}</M> and <M>y_{\alpha}^{(n)}</M>.
 ##  Therefore, it is called an admissible lattice in <M>U(L)</M>.

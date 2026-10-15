@@ -15,7 +15,7 @@ This chapter gives a few examples of how one can extend the functionality of
 They are arranged in ascending difficulty. We show how to install new
 methods, add new operations and attributes and how to implement new features
 using categories and representations.  (As we do not introduce completely
-new kinds of objects in these example it will not be necessary to declare
+new kinds of objects in these examples it will not be necessary to declare
 any families.)
 Finally we show a simple way how to create new objects with an own
 arithmetic.
@@ -49,7 +49,7 @@ in section&nbsp;<Ref Sect="Numerical Group Attributes"/>)
 and the declaration in the library file <F>lib/grp.gd</F>.
 The easiest way to find the place of the declaration is usually to
 <C>grep</C> over all <C>.gd</C> and <C>.g</C> files,
-see section&nbsp;<Ref Chap="Library Files"/>.
+see chapter&nbsp;<Ref Chap="Library Files"/>.
 <P/>
 In our example the declaration in the library is:
 <Log><![CDATA[
@@ -80,7 +80,7 @@ a method that has been installed for mere groups or for solvable groups but
 will be ranked lower than the library method for abelian groups.
 <P/>
 That's all.
-Using <Ref Sect="ApplicableMethod"/> we can
+Using <Ref Func="ApplicableMethod"/> we can
 check for a nilpotent group that indeed our new method will be used.
 <P/>
 When testing, remember that the method selection will not check for
@@ -218,7 +218,7 @@ InstallMethod(Exponent,"test abelianity", [IsGroup],
   -RankFilter(IsGroup),
 function(G)
 ]]></Log>
-the slightly complicated construction of addition and subtraction is
+The slightly complicated construction of addition and subtraction is
 necessary because <Ref Filt="IsGroup"/> and
 <Ref Prop="IsAbelian"/> might imply the <E>same</E>
 elementary filters which we otherwise would count twice.
@@ -325,7 +325,7 @@ Next we have to install method(s) for the attribute that compute its value.
 (This is not strictly necessary. We could use the attribute also without
 methods only for storing and retrieving information, but calling it for objects
 for which the value is not known would produce a <Q>no method found</Q> error.)
-For this purpose we can imagine the attribute simply as an one-argument
+For this purpose we can imagine the attribute simply as a one-argument
 operation:
 <P/>
 <Log><![CDATA[
@@ -476,7 +476,7 @@ access to it, attributes are preferable. Moreover, attributes can be used
 by the method selection (by specifying the filter <C>HasAttr</C> for an
 attribute <C>Attr</C>). They provide a clean
 interface and their immutability makes it safe to hand the data to a user who potentially
-could corrupt a components entries.
+could corrupt a component's entries.
 <P/>
 On the other hand more <Q>technical</Q> data (say the encoding of a sparse
 matrix) is better hidden from the user in a component, as declaring it as an
@@ -485,7 +485,7 @@ attribute would not give any advantage.
 Resource-wise, attributes need more memory (the attribute setter and
 tester are implicitly declared, and one filter bit is required), the
 attribute access is one further function call in the kernel, thus components
-might be an immeasurable bit faster.
+might be a tiny bit faster.
 
 </Section>
 
@@ -582,7 +582,7 @@ IsMGroup:=NewProperty("IsMGroup",IsSolvableGroup);
 The filter <Ref Prop="IsSolvableGroup"/> in this declaration
 <E>only</E> means that methods
 for <C>IsMGroup</C> by default can only be installed for groups that are (and
-know to be) solvable (though they could be installed for more general
+known to be) solvable (though they could be installed for more general
 situations using <Ref Func="InstallOtherMethod"/>).
 It does not yet imply that M-groups
 are solvable. We must do this deliberately via an implication and we use the
@@ -650,7 +650,7 @@ words in cosets.
 <Subsection Label="Example: Groups with a decomposition as semidirect product">
 <Heading>Example: Groups with a decomposition as semidirect product</Heading>
 <P/>
-<Index Key="DeclareAttribute!example"><C>DeclareAttribute!example</C></Index>
+<Index Key="DeclareAttribute" Subkey="example"><C>DeclareAttribute</C></Index>
 The third example is groups which have a (nontrivial) decomposition as a
 semidirect product. If this information has been found out, we want to be
 able to use it in algorithms. (Thus we do not only need the fact <E>that</E>
@@ -662,7 +662,7 @@ which have been explicitly constructed via
 <P/>
 Instead we simply declare an attribute
 <C>SemidirectProductDecomposition</C> for groups.
-(Again, in this manual we don't go in the details of how such an
+(Again, in this manual we don't go into the details of what such a
 decomposition would look like).
 <P/>
 <Log><![CDATA[
@@ -695,7 +695,7 @@ present a simple approach that may be useful to get started but does not
 permit you to exploit all potential features.
 <P/>
 The basic design is that the user designs some way to represent her objects
-in terms of &GAP;s built-in types, for example as a list or a record.
+in terms of &GAP;'s built-in types, for example as a list or a record.
 We call this the <Q>defining data</Q> of the new objects.
 Also provided are functions that perform arithmetic on this <Q>defining
 data</Q>, that is they take objects of this form and return objects that

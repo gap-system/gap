@@ -600,11 +600,11 @@ DeclareOperation("SymmetricClosureBinaryRelation", [IsBinaryRelation]);
 ##  <Oper Name="TransitiveClosureBinaryRelation" Arg='rel'/>
 ##
 ##  <Description>
-##  is the smallest binary relation containing the binary relation <A>R</A>
+##  is the smallest binary relation containing the binary relation <A>rel</A>
 ##  which is transitive.
 ##  This closure inherits the properties reflexive and symmetric from
-##  <A>R</A>.
-##  E.g., if <A>R</A> is symmetric then its transitive closure is also.
+##  <A>rel</A>.
+##  E.g., if <A>rel</A> is symmetric then its transitive closure is also.
 ##  <P/>
 ##  <Ref Oper="TransitiveClosureBinaryRelation"/> is a modified version of
 ##  the Floyd-Warshall method of solving the all-pairs shortest-paths problem
@@ -621,16 +621,16 @@ DeclareOperation("TransitiveClosureBinaryRelation", [IsBinaryRelation]);
 
 #############################################################################
 ##
-#O  HasseDiagramBinaryRelation(<partial-order>)
+#O  HasseDiagramBinaryRelation(<rel>)
 ##
 ##  <#GAPDoc Label="HasseDiagramBinaryRelation">
 ##  <ManSection>
-##  <Oper Name="HasseDiagramBinaryRelation" Arg='partial-order'/>
+##  <Oper Name="HasseDiagramBinaryRelation" Arg='rel'/>
 ##
 ##  <Description>
 ##  is the smallest relation contained in the partial order
-##  <A>partial-order</A> whose reflexive and transitive closure is equal to
-##  <A>partial-order</A>.
+##  <A>rel</A> whose reflexive and transitive closure is equal to
+##  <A>rel</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -770,27 +770,14 @@ DeclareAttribute("GeneratorsOfEquivalenceRelationPartition",
 ##  <Func Name="EquivalenceRelationByPartitionNC" Arg='domain, list'/>
 ##
 ##  <Description>
-##  constructs the equivalence relation over the set <A>domain</A>
-##  which induces the partition represented by <A>list</A>.
-##  This representation includes only the non-trivial blocks
-##  (or equivalent classes). <A>list</A> is a list of lists,
-##  each of these lists contain elements of <A>domain</A> and are
-##  pairwise mutually exclusive.
-##  <P/>
-##  The list of lists do not need to be in any order nor do the
-##  elements in the blocks
-##  (see <Ref Attr="EquivalenceRelationPartition"/>).
-##  a list of elements of <A>domain</A>
-##  The partition <A>list</A> is a
-##  list of lists, each of these is a list of elements of <A>domain</A>
-##  that makes up a block (or equivalent class). The
-##  <A>domain</A> is the domain over which the relation is defined, and
-##  <A>list</A> is a list of lists, each of these is a list of elements
-##  of <A>domain</A> which are related to each other.
-##  <A>list</A> need only contain the nontrivial blocks
-##  and singletons will be ignored. The <C>NC</C> version will not check
-##  to see if the lists are pairwise mutually exclusive or that
-##  they contain only elements of the domain.
+##  constructs the equivalence relation on <A>domain</A> whose nonsingleton
+##  classes are the entries of <A>list</A>, a list of pairwise disjoint
+##  lists of elements of <A>domain</A>.
+##  Neither the blocks nor their entries need to be ordered
+##  (see <Ref Attr="EquivalenceRelationPartition"/>);
+##  singletons are ignored.
+##  The <C>NC</C> version does not check that the blocks are disjoint and
+##  contained in <A>domain</A>.
 ##  <Example><![CDATA[
 ##  gap> er:=EquivalenceRelationByPartition(Domain([1..10]),[[1,3,5,7,9],[2,4,6,8,10]]);
 ##  <equivalence relation on Domain([ 1 .. 10 ]) >

@@ -766,7 +766,7 @@ DeclareGlobalFunction("DefiningQuotientHomomorphism");
 ##
 ##  <Description>
 ##  returns the same subgroup in the representation
-##  <Ref Attr="AsSubgroupOfWholeGroupByQuotient"/>.
+##  <Ref Filt="IsSubgroupOfWholeGroupByQuotientRep"/>.
 ##  <P/>
 ##  See also <Ref Func="SubgroupOfWholeGroupByCosetTable"/>
 ##  and <Ref Oper="CosetTableBySubgroup"/>.
@@ -865,7 +865,7 @@ DeclareAttribute("AsSubgroupOfWholeGroupByQuotient", IsSubgroupFpGroup);
 ##  compute all conjugacy classes of torsion free subgroups of index at most
 ##  <M>24</M> in the group <M>G =
 ##  \langle x,y,z \mid x^2, y^4, z^3, (xy)^3, (yz)^2, (xz)^3 \rangle</M>.
-##  It is know from theory that each torsion element of this
+##  It is known from theory that each torsion element of this
 ##  group is conjugate to a power of <M>x</M>, <M>y</M>, <M>z</M>, <M>xy</M>,
 ##  <M>xz</M>, or <M>yz</M>.
 ##  (Note that this includes conjugates of <M>y^2</M>.)

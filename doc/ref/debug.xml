@@ -162,7 +162,7 @@ returns the info level of <A>infoclass</A>.
 </ManSection>
 <P/>
 <ManSection>
-<Func Name="ShowUsedInfoClasses" Arg='infoclass'/>
+<Func Name="ShowUsedInfoClasses" Arg='bool'/>
 
 <Description>
 Called with argument <K>true</K>, this makes &GAP; print the info class and level of
@@ -281,7 +281,7 @@ The initial default for all <Ref Func="Info"/>
 classes is the string <C>"*Print*"</C> which means the current output
 file. The default can be changed with <Ref Func="SetDefaultInfoOutput"/>.
 The argument <A>out</A> can be a filename or an open stream,
-the special names <C>"*Print*"</C>, <C>"*errout*</C> and <C>"*stdout*</C>
+the special names <C>"*Print*"</C>, <C>"*errout*"</C> and <C>"*stdout*"</C>
 are also recognized.<P/>
 For example,
 <C>SetDefaultInfoOutput("*errout*");</C> would send <Ref Func="Info"/>
@@ -535,7 +535,7 @@ usage.
 <Subsection Label="FunctionProfiling">
 <Heading>Function Profiling</Heading>
 
-This section describes how to profiling at the function level.
+This section describes how to profile at the function level.
 The idea is that
 <List>
 <Item>
@@ -780,7 +780,7 @@ There are two kinds of profiles GAP can build:
 
 <List>
   <Item> Coverage : This records which lines of code are executed</Item>
-  <Item> Timing : This records how much time is spend executing each line of code </Item>
+  <Item> Timing : This records how much time is spent executing each line of code </Item>
 </List>
 
 A timing profile provides more information, but will take longer to generate
@@ -859,15 +859,15 @@ Profiles are transformed into a human-readable form with
 
 The global variable <C>GAPInfo.Version</C> (see <Ref Var="GAPInfo"/>)
 contains the version number of the version of &GAP;. Its value can be
-checked other version number using <Ref Func="CompareVersionNumbers"/>.
+compared with other version numbers using <Ref Func="CompareVersionNumbers"/>.
 <P/>
 To produce sample citations for the used version of &GAP; or for a
 package available in this &GAP; installation, use <Ref Func="Cite"/>.
 <P/>
 If you wish to report a problem to &GAP; Support or &GAP; Forum, it may
 be useful to not only report the version used, but also to include the
-&GAP; banner displays the information about the architecture for which
-the &GAP; binary is built, used libraries and loaded packages.
+&GAP; banner, which shows the architecture for which
+the &GAP; binary is built, the libraries used and the loaded packages.
 </Section>
 
 

@@ -235,7 +235,7 @@ All rows of a matrix must have the same length and the same base domain.
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Implementing New Vector and Matrix Objects Types">
-<Heading>Implementing New Vector and Matrix Objects Types</Heading>
+<Heading>Implementing New Types of Vector and Matrix Objects</Heading>
 
 The first step in the design of a new type of vector or matrix objects
 is to create a new filter that serves as the

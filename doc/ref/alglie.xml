@@ -303,7 +303,7 @@ for constructing a highest-weight module over a semisimple Lie algebra.
  Label="for creating a UEALattice element"/>
 
 <Description>
-An UEALattice element is represented by a list of the form
+A UEALattice element is represented by a list of the form
 <C>[ m1, c1, m2, c2, ... ]</C>, where the <C>c1</C>, <C>c2</C> etc. are
 coefficients, and the <C>m1</C>, <C>m2</C> etc. are monomials. A monomial
 is a list of the form <C>[ ind1, e1, ind2, e2, ... ]</C> where <C>ind1</C>,

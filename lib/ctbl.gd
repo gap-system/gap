@@ -61,7 +61,7 @@
 ##  <#GAPDoc Label="[1]{ctbl}">
 ##  It seems to be necessary to state some basic facts
 ##  &ndash;and maybe warnings&ndash;
-##  at the beginning of the character theory package.
+##  at the beginning of the chapters on character theory.
 ##  This holds for people who are familiar with character theory because
 ##  there is no global reference on computational character theory,
 ##  although there are many papers on this topic,
@@ -367,7 +367,7 @@ BindGlobal( "NearlyCharacterTablesFamily",
 ##  records, using <Ref Func="ConvertToCharacterTable"/>,
 ##  <Ref Var="SupportedCharacterTableInfo"/> specifies those
 ##  record components that shall be used as attribute values;
-##  other record components are <E>not</E> be regarded as attribute
+##  other record components are <E>not</E> regarded as attribute
 ##  values in the conversion process.
 ##  <P/>
 ##  New attributes and properties can be notified to
@@ -900,7 +900,7 @@ InstallIsomorphismMaintenance( CharacterDegrees,
 ##  <Ref Attr="Irr" Label="for a group"/> returns the irreducible characters
 ##  of the <A>p</A>-modular Brauer table of <A>G</A>.
 ##  Called with an (ordinary or Brauer) character table <A>tbl</A>,
-##  <Ref Attr="Irr" Label="for a group"/> returns the list of all
+##  <Ref Attr="Irr" Label="for a character table"/> returns the list of all
 ##  complex absolutely irreducible characters of <A>tbl</A>.
 ##  <P/>
 ##  For a character table <A>tbl</A> with underlying group,
@@ -2112,7 +2112,7 @@ DeclareGlobalFunction( "CharacterTable_UpperCentralSeriesFactor" );
 ##
 ##  <Description>
 ##  corresponds to <Ref Attr="LowerCentralSeriesOfGroup"/>
-##  for the group of the ordinary character table <A>ordtbl</A>.
+##  for the group of the ordinary character table <A>tbl</A>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> tbls4:= CharacterTable( "Symmetric", 4 );;
@@ -2306,7 +2306,7 @@ DeclareOperation( "ClassPositionsOfNormalClosure",
 ##  </Item>
 ##  </List>
 ##  <P/>
-##  The components <C>relevant</C> and <C>centralcharacters</C> are
+##  The components <C>relevant</C> and <C>centralcharacter</C> are
 ##  used by <Ref Func="SameBlock"/>.
 ##  <P/>
 ##  If <Ref InfoClass="InfoCharacterTable"/> has level at least 2,
@@ -2484,7 +2484,7 @@ DeclareAttributeSuppCT( "BlocksInfo", IsNearlyCharacterTable, "mutable",
 ##  decomposition matrix of <A>modtbl</A>, where the rows and columns are
 ##  indexed by the irreducible characters of the ordinary character table of
 ##  <A>modtbl</A> and the irreducible characters of <A>modtbl</A>,
-##  respectively,
+##  respectively.
 ##  <P/>
 ##  Called with two arguments, <Ref Oper="DecompositionMatrix"/> returns the
 ##  decomposition matrix of the block of <A>modtbl</A> with number
@@ -2793,7 +2793,7 @@ DeclareGlobalFunction( "IsClassFusionOfNormalSubgroup" );
 ##  </Item>
 ##  </List>
 ##  <P/>
-##  For each <M>2</M>-modular Brauer characters where these conditions are
+##  For each <M>2</M>-modular Brauer character where these conditions are
 ##  not sufficient to determine the indicator, an unknown value
 ##  (see <Ref Oper="Unknown"/>) is returned.
 ##  </Description>
@@ -3291,7 +3291,7 @@ DeclareGlobalFunction( "CharacterTableRegular" );
 ##  checks of <A>record</A> are omitted.
 ##  <P/>
 ##  An example of a conversion from a record to a character table object
-##  can be found in Section&nbsp;<Ref Func="PrintCharacterTable"/>.
+##  can be found in the description of <Ref Func="PrintCharacterTable"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -3341,7 +3341,7 @@ DeclareGlobalFunction( "ConvertToLibraryCharacterTableNC" );
 ##  tables prints the string <C>"CharacterTable"</C>,
 ##  followed by the identifier
 ##  (see&nbsp;<Ref Attr="Identifier" Label="for character tables"/>) or,
-##  if known, the group of the character table enclosed in brackets.
+##  if known, the group of the character table enclosed in parentheses.
 ##  <Ref Oper="ViewObj"/> for Brauer tables does the same, except that the
 ##  first string is replaced by <C>"BrauerTable"</C>,
 ##  and that the characteristic is also shown.
@@ -3400,7 +3400,7 @@ DeclareGlobalFunction( "ConvertToLibraryCharacterTableNC" );
 ##  If no class names are stored on <A>tbl</A>,
 ##  <Ref Attr="ClassNames"/> is called.
 ##  <P/>
-##  Preceded by a name <C>P<A>n</A></C>, the next lines show the <A>n</A>th
+##  Preceded by a name <C>P<A>n</A></C>, the next lines show the <A>n</A>-th
 ##  power maps of <A>tbl</A> in terms of the former shown class names.
 ##  <P/>
 ##  Every ambiguous or unknown (see Chapter&nbsp;<Ref Chap="Unknowns"/>)
@@ -4377,7 +4377,7 @@ DeclareOperation( "CharacterTableWithSortedClasses",
 ##
 ##  <Description>
 ##  is a character table obtained on permutation of the classes and the
-##  irreducibles characters of <A>tbl</A>.
+##  irreducible characters of <A>tbl</A>.
 ##  <P/>
 ##  The first form sorts the classes at positions contained in the list
 ##  <A>kernel</A> to the beginning, and sorts all characters in
@@ -4407,14 +4407,14 @@ DeclareOperation( "CharacterTableWithSortedClasses",
 ##  <P/>
 ##  All rearrangements of classes and characters are stable,
 ##  i.e., the relative positions of classes and characters that are not
-##  distinguished by any relevant property is not changed.
+##  distinguished by any relevant property are not changed.
 ##  <P/>
 ##  The result has all those attributes and properties of <A>tbl</A> that are
 ##  stored in <Ref Var="SupportedCharacterTableInfo"/> and do not depend on
 ##  the ordering of classes and characters.
 ##  <P/>
 ##  The <Ref Attr="ClassPermutation"/> value of <A>tbl</A> is changed if
-##  necessary, see&nbsp;<Ref Sect="Conventions for Character Tables"/>.
+##  necessary, see&nbsp;<Ref Attr="ClassPermutation"/>.
 ##  <P/>
 ##  <Ref Func="SortedCharacterTable" Label="w.r.t. a normal subgroup"/>
 ##  uses <Ref Oper="CharacterTableWithSortedClasses"/> and

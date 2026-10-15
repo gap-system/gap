@@ -171,7 +171,7 @@ Thus when control returns to the main read-eval-print loop the user can
 continue with &GAP;.
 If &GAP; was started with an input redirection, statements are read from the
 current position in the input file up to the end of the file.
-When control returns to the main read eval view loop the input stream will
+When control returns to the main read-eval-print loop the input stream will
 still return end of file, and &GAP; will terminate.
 <P/>
 The  special filename <C>"*errin*"</C> denotes the stream connected to the

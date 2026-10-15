@@ -398,7 +398,7 @@ enclosing quotes, so <Ref Func="Print"/> can be used to produce formatted
 text on the standard output
 (see also chapter&nbsp;<Ref Chap="Strings and Characters"/>).
 Some characters preceded by a backslash, such as <C>\n</C>, are processed
-specially (see chapter&nbsp;<Ref Sect="Special Characters"/>).
+specially (see section&nbsp;<Ref Sect="Special Characters"/>).
 <Ref Func="PrintTo"/> can be used to print to a file.
 <P/>
 <Example><![CDATA[
@@ -726,11 +726,6 @@ the error occurred. If not given, <A>nr</A> defaults to the value of the
 <C>WhereDepth</C> user preference (initially 5).
 If <A>nr</A> or the <C>WhereDepth</C> preference is not a non-negative integer,
 it is treated as 5.
-(Assume, for the
-following example, that after the last example <Ref Func="OnBreak"/>
-has been set back to its default value.). <Ref Func="WhereWithVars"/> acts the
-same as <Ref Func="Where"/> while also showing the arguments and local
-variables of each function.
 <P/>
 <Ref Func="WhereWithVars"/> acts the same as <Ref Func="Where"/> while also
 showing the arguments and local variables of each function.

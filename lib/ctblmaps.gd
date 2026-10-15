@@ -38,7 +38,7 @@
 ##  (see Section&nbsp;<Ref Sect="Class Fusions between Character Tables"/>)
 ##  must be known to get information about the embedding or simply to induce
 ##  or restrict characters,
-##  see Section&nbsp;<Ref Sect="Restricted and Induced Class Functions"/>).
+##  see Section&nbsp;<Ref Sect="Restricted and Induced Class Functions"/>.
 ##  <P/>
 ##  These are examples of functions from conjugacy classes which will be
 ##  called <E>maps</E> in the following.
@@ -196,7 +196,7 @@ DeclareAttributeSuppCT( "ComputedPowerMaps",
 ##  <Ref Oper="PossiblePowerMaps"/> returns the list of all maps that have
 ##  the following properties of the <M>p</M>-th power map of <A>tbl</A>.
 ##  (Representative orders are used only if the
-##  <Ref Attr="OrdersClassRepresentatives"/> value of <A>tbl</A> is known.
+##  <Ref Attr="OrdersClassRepresentatives"/> value of <A>tbl</A> is known.)
 ##
 ##  <Enum>
 ##  <Item>
@@ -207,7 +207,7 @@ DeclareAttributeSuppCT( "ComputedPowerMaps",
 ##  </Item>
 ##  <Item>
 ##    Let <M>n</M> be the order of elements in class <M>i</M>.
-##    If <A>prime</A> divides <M>n</M> then the images have order <M>n/p</M>;
+##    If <A>p</A> divides <M>n</M> then the images have order <M>n/p</M>;
 ##    otherwise the images have order <M>n</M>.
 ##    These criteria are checked in <Ref Func="InitPowerMap"/>.
 ##  </Item>
@@ -220,8 +220,8 @@ DeclareAttributeSuppCT( "ComputedPowerMaps",
 ##    then the two values are equal.
 ##    This congruence is checked for the characters specified below in
 ##    the discussion of the <A>options</A> argument;
-##    For linear characters <M>\lambda</M> among these characters,
-##    the condition <M>\chi(g)^p = \chi(g^p)</M> is checked.
+##    for linear characters <M>\lambda</M> among these characters,
+##    the condition <M>\lambda(g)^p = \lambda(g^p)</M> is checked.
 ##    The corresponding function is
 ##    <Ref Func="Congruences" Label="for character tables"/>.
 ##  </Item>
@@ -679,7 +679,7 @@ DeclareOperation( "FusionConjugacyClassesOp",
 ##  computed already by
 ##  <Ref Oper="FusionConjugacyClasses" Label="for two character tables"/> or
 ##  explicitly stored by <Ref Func="StoreFusion"/>
-##  are stored in the <Ref Attr="ComputedClassFusions"/> list of <A>tbl1</A>.
+##  are stored in the <Ref Attr="ComputedClassFusions"/> list of <A>tbl</A>.
 ##  Each entry of this list is a record with the following components.
 ##
 ##  <List>
@@ -706,7 +706,7 @@ DeclareOperation( "FusionConjugacyClassesOp",
 ##  <P/>
 ##  Note that stored fusion maps may differ from the maps returned by
 ##  <Ref Func="GetFusionMap"/> and the maps entered by
-##  <Ref Func="StoreFusion"/> if the table <A>destination</A> has a
+##  <Ref Func="StoreFusion"/> if the destination table has a
 ##  nonidentity <Ref Attr="ClassPermutation"/> value.
 ##  So if one fetches a fusion map from a table <A>tbl1</A> to a table
 ##  <A>tbl2</A> via access to the data in the
@@ -1538,13 +1538,13 @@ DeclareGlobalFunction( "CommutativeDiagram" );
 ##  <Description>
 ##  Let <A>inside1</A>, <A>between</A>, <A>inside2</A> be parametrized maps,
 ##  where <A>between</A> is assumed to map each fixed point of <A>inside1</A>
-##  (that is, <A>inside1</A><C>[</C><M>i</M><C>] = </C><A>i</A>)
+##  (that is, <A>inside1</A><C>[</C><M>i</M><C>] = </C><M>i</M>)
 ##  to a fixed point of <A>inside2</A>
 ##  (that is, <A>between</A><C>[</C><M>i</M><C>]</C> is either an integer
 ##  that is fixed by <A>inside2</A> or a list that has nonempty intersection
 ##  with the union of its images under <A>inside2</A>).
 ##  <Ref Func="CheckFixedPoints"/> changes <A>between</A> and <A>inside2</A>
-##  by removing all those entries violate this condition.
+##  by removing all entries that violate this condition.
 ##  <P/>
 ##  When an inconsistency is detected,
 ##  <Ref Func="CheckFixedPoints"/> immediately returns <K>fail</K>.
@@ -1893,7 +1893,7 @@ DeclareGlobalFunction( "ContainedPossibleCharacters" );
 ##  has nonnegative integral scalar product in <A>tbl</A> with all entries of
 ##  <A>constituents</A>.
 ##  This situation is handled by <Ref Func="ContainedCharacters"/>.
-##  Note that the entries of the result list are <E>not</E> necessary linear
+##  Note that the entries of the result list are <E>not</E> necessarily linear
 ##  combinations of <A>constituents</A>,
 ##  and they are <E>not</E> necessarily characters of <A>tbl</A>.
 ##  <P/>
@@ -1990,7 +1990,7 @@ DeclareGlobalFunction( "InitPowerMap" );
 ##  <A>prime</A> a prime integer,
 ##  <A>approxmap</A> a parametrized map that is an approximation for the
 ##  <A>prime</A>-th power map of <A>tbl</A>
-##  (e.g., a list returned by <Ref Func="InitPowerMap"/>,
+##  (e.g., a list returned by <Ref Func="InitPowerMap"/>),
 ##  and <A>quick</A> a Boolean.
 ##  <P/>
 ##  The <A>quick</A> value <K>true</K> means that only those classes are
@@ -2166,7 +2166,7 @@ DeclareGlobalFunction( "MinusCharacter" );
 ##  <A>prime</A> a prime integer,
 ##  <A>approxmap</A> a parametrized map that is an approximation of the
 ##  <A>prime</A>-th power map of <A>tbl</A>
-##  (e.g., a list returned by <Ref Func="InitPowerMap"/>,
+##  (e.g., a list returned by <Ref Func="InitPowerMap"/>),
 ##  <A>chars</A> and <A>subchars</A> two lists of (values lists of)
 ##  characters of <A>tbl</A>,
 ##  and <A>parameters</A> a record with components

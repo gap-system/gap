@@ -53,7 +53,7 @@ DeclareCategoryKernel( "IsObject", IS_OBJECT, IS_OBJECT );
 ##  <Ref Func="IsIdenticalObj"/> tests whether the objects
 ##  <A>obj1</A> and <A>obj2</A> are identical (that is they are either
 ##  equal immediate objects or are both stored at the same location in
-##  memory.
+##  memory).
 ##  <P/>
 ##  If two copies of a simple constant object
 ##  (see section <Ref Sect="Mutability and Copyability"/>) are created,

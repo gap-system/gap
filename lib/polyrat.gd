@@ -137,7 +137,7 @@ DeclareGlobalFunction("OneFactorBound");
 ##
 ##  <#GAPDoc Label="HenselBound">
 ##  <ManSection>
-##  <Func Name="HenselBound" Arg='pol,[minpol,den]'/>
+##  <Func Name="HenselBound" Arg='pol[, minpol, den]'/>
 ##
 ##  <Description>
 ##  returns the Hensel bound of the polynomial <A>pol</A>.

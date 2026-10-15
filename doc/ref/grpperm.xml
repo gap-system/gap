@@ -335,12 +335,12 @@ Now randomized verification will be used.
 We require that the result is guaranteed correct with probability
 <M>90</M> percent.
 This means that if we would do this calculation many times over,
-&GAP; would <E>guarantee</E> that in least <M>90</M> percent of all
+&GAP; would <E>guarantee</E> that in at least <M>90</M> percent of all
 calculations the result is correct.
 In fact the results are much better than the guarantee,
 but we cannot promise that this will really happen.
-(For the meaning of the <C>random</C> component in the second argument of
-<Ref Func="StabChain" Label="for a group (and a record)"/>.)
+(See <Ref Func="StabChain" Label="for a group (and a record)"/> for the
+meaning of the <C>random</C> component in its second argument.)
 <P/>
 First the group is created anew.
 <P/>
@@ -461,7 +461,7 @@ Note: Since the structure is recursive, <E>never print a stabilizer chain!</E>
         components are identical (i.e., the same &GAP; object)
         in every stabilizer of the chain;
         thus the <C>labels</C> of a stabilizer do not necessarily all lie
-        in the this stabilizer (but see <C>genlabels</C> below).
+        in this stabilizer (but see <C>genlabels</C> below).
 </Item>
 <Mark><C>genlabels</C> </Mark>
 <Item>

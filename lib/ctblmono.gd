@@ -83,8 +83,8 @@
 ##  possible.
 ##  For example, if you need the normal subgroups of <M>G</M> then they can
 ##  be computed more efficiently if the character table of <M>G</M> is known,
-##  and they can be stored compatibly to the contained <M>G</M>-conjugacy
-##  classes.
+##  and they can be stored as lists of positions of the <M>G</M>-conjugacy
+##  classes they contain.
 ##  This correspondence of classes list and normal subgroup can be used very
 ##  often.
 ##  <#/GAPDoc>
@@ -170,14 +170,14 @@ DeclareAttribute( "Delta", IsGroup );
 ##
 ##  <Description>
 ##  Called with an irreducible character <A>chi</A> of a group <M>G</M>,
-##  <Ref Prop="IsBergerCondition" Label="for a group"/> returns <K>true</K>
+##  <Ref Prop="IsBergerCondition" Label="for a character"/> returns <K>true</K>
 ##  if <A>chi</A> satisfies <M>M' \leq \ker(\chi)</M> for every normal
 ##  subgroup <M>M</M> of <M>G</M> with the property that
 ##  <M>M \leq \ker(\psi)</M> holds for all <M>\psi \in Irr(G)</M> with
 ##  <M>\psi(1) &lt; \chi(1)</M>, and <K>false</K> otherwise.
 ##  <P/>
 ##  Called with a group <A>G</A>,
-##  <Ref Prop="IsBergerCondition" Label="for a character"/> returns
+##  <Ref Prop="IsBergerCondition" Label="for a group"/> returns
 ##  <K>true</K> if all irreducible characters of <A>G</A> satisfy the
 ##  inequality above, and <K>false</K> otherwise.
 ##  <P/>
@@ -566,13 +566,13 @@ DeclareProperty( "IsMonomialNumber", IsPosInt );
 ##  <Ref Attr="TestMonomialQuick" Label="for a group"/> if
 ##  <A>G</A> is nilpotent or Sylow abelian by supersolvable,
 ##  or if <A>G</A> is solvable and its order is not divisible by the third
-##  power of a prime,
+##  power of a prime.
 ##  Nonsolvable groups are proved to be nonmonomial by
 ##  <Ref Attr="TestMonomialQuick" Label="for a group"/>.
 ##  <P/>
 ##  An irreducible character <A>chi</A> is proved to be monomial if
 ##  it is linear, or if its codegree is a prime power,
-##  or if its group knows to be monomial,
+##  or if its group is known to be monomial,
 ##  or if the factor group modulo the kernel can be proved to be monomial by
 ##  <Ref Attr="TestMonomialQuick" Label="for a group"/>.
 ##  <P/>
@@ -779,7 +779,7 @@ DeclareProperty( "IsSubnormallyMonomial", IsClassFunction );
 ##  <Ref Oper="TestRelativelySM" Label="for a group and a normal subgroup"/>
 ##  returns a record with information whether
 ##  the first argument is relatively SM with respect to <A>N</A>,
-##  i.e, whether there is a subnormal subgroup <M>H</M> of <M>G</M> that
+##  i.e., whether there is a subnormal subgroup <M>H</M> of <M>G</M> that
 ##  contains <A>N</A> such that the character <A>chi</A>
 ##  resp.&nbsp;every irreducible character of <M>G</M> is induced from a
 ##  character <M>\psi</M> of <M>H</M> such that the restriction of

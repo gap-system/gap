@@ -431,7 +431,7 @@ DeclareGlobalFunction( "FactorsInt" );
 ##  <Attr Name="PrimeDivisors" Arg='n'/>
 ##  <Description>
 ##  <Ref Attr="PrimeDivisors"/> returns for a non-zero integer <A>n</A> a set
-##  of its positive (probable) primes divisors. In rare cases the result could
+##  of its positive (probable) prime divisors. In rare cases the result could
 ##  contain a composite number which passed certain primality tests, see
 ##  <Ref Func="IsProbablyPrimeInt"/> and <Ref Func="FactorsInt"/> for more details.
 ##  <Example>

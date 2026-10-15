@@ -84,7 +84,7 @@ and then set the attribute tester for the object to <K>true</K>.
 Constructors are a special type of operation used to make new objects. The key
 difference compared to regular operations is that method selection works
 slightly differently for them: The first argument in a call to a constructor
-must always be a filter <Ref Sect="Filters"/>. The result of a method is
+must always be a filter (see <Ref Sect="Filters"/>). The result of a method is
 expected to lie in that filter. Moreover, while normally method selection
 matches on the type of each argument, for a constructor the first argument is
 treated differently: instead of matching its type, the argument itself (which
@@ -121,7 +121,7 @@ as in this case).
 <P/>
 
 If no method has been installed which guarantees to produce a suitable
-object, a "No Method Found" error will be returned.
+object, a <Q>no method found</Q> error is signalled.
 <Log><![CDATA[
 gap> XCons(IsFullTransformationMonoid,4);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
@@ -181,7 +181,7 @@ The maximal number of arguments supported for methods is six,
 one gets an error message if one tries to install a method with at least
 seven arguments.
 <P/>
-So <A>args-filt</A> describes conditions for each argument,
+So <A>args-filts</A> describes conditions for each argument,
 and <A>famp</A> describes a relation between the arguments.
 <P/>
 For unary operations such as attributes and properties,
@@ -204,7 +204,7 @@ the error message <Q>no method found</Q> is signaled.
 Otherwise, the applicable method with highest <E>rank</E> is selected and then
 called.
 This rank is usually given by the sum of the ranks of the filters in the list
-<A>args-filt</A>,
+<A>args-filts</A>,
 <E>including involved filters</E>.
 This value can be modified by the optional <A>val</A> argument used in the
 call of <Ref Func="InstallMethod"/>, as follows.
@@ -222,7 +222,7 @@ call of <Ref Func="InstallMethod"/>, as follows.
   If <A>val</A> is a list of the form <C>[ filters ]</C> or
   <C>[ filters, abs ]</C>, where <C>filters</C> is a list of filters
   and <C>abs</C>, if given, is an integer, then ignore the filters in
-  <A>args-filt</A> for the rank computation, and instead take the sum of
+  <A>args-filts</A> for the rank computation, and instead take the sum of
   the filters in <C>filters</C> (including involved filters) plus <C>abs</C>.
 </Item>
 </List>
@@ -234,7 +234,7 @@ to shift the rank of the method by the rank of certain filters;
 note that such ranks need not be constant during a &GAP; session,
 they can grow due to implications, see <Ref Func="InstallTrueMethod"/>.
 The variant where <A>val</A> is a list can be useful for example if one wants
-that certain filters that are involved in <A>args-filt</A> are required but
+that certain filters that are involved in <A>args-filts</A> are required but
 shall not count for the rank of the method.
 <P/>
 Note that for operations which are constructors special rules with respect

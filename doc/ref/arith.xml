@@ -11,7 +11,7 @@
 In this chapter, we give a &ndash;hopefully typical&ndash;
 example of extending &GAP; by new objects with prescribed
 arithmetic operations (for a simple approach that may be useful
-to get started though does not permit to exploit all potential
+to get started though does not permit exploiting all potential
 features, see also <Ref Func="ArithmeticElementCreator"/>).
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
@@ -469,7 +469,7 @@ know this in advance,
 for checking with <Ref Oper="AsField"/> whether a domain
 is in fact a field, for computing the closure as a field.)
 <P/>
-It should be emphasized that the mechanism described above may be not
+It should be emphasized that the mechanism described above may not be
 suitable for the situation that one wants to consider many different
 multiplications <Q>on the same set of objects</Q>,
 since the installation of a new multiplication requires the declaration

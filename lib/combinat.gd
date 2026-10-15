@@ -493,7 +493,7 @@ DeclareGlobalFunction("NrArrangements");
 ##  implies that the last index runs fastest.
 ##  That means the first tuple contains the smallest element from <A>set</A>
 ##  <A>k</A> times, the second tuple contains the smallest element of
-##  <A>set</A> at all positions except at the last positions,
+##  <A>set</A> at all positions except the last one,
 ##  where it contains the second smallest element from <A>set</A> and so on.
 ##  </Description>
 ##  </ManSection>
@@ -572,9 +572,9 @@ DeclareGlobalFunction("NrUnorderedTuples");
 ##  <P/>
 ##  Resulting tuples will be returned in the lexicographic order.
 ##  Usage of iterators of cartesian products is recommended in the
-##  case when the resulting cartesian product is big enough, so its
-##  generating and storage will require essential amount of runtime
-##  and memory. For smaller cartesian products it is faster to generate the
+##  case when the resulting cartesian product is big enough, so
+##  generating and storing it requires substantial time and memory.
+##  For smaller cartesian products it is faster to generate the
 ##  full set of tuples using <Ref Func="Cartesian" Label="for a list"/>
 ##  and then loop over its elements (with some minor overhead of needing
 ##  more memory).
@@ -606,7 +606,7 @@ DeclareGlobalFunction("EnumeratorOfCartesianProduct");
 ##  the last index runs fastest.
 ##  That means the first tuple contains the smallest element from <A>set</A>
 ##  <A>k</A> times, the second tuple contains the smallest element of
-##  <A>set</A> at all positions except at the last positions,
+##  <A>set</A> at all positions except the last one,
 ##  where it contains the second smallest element from <A>set</A> and so on.
 ##  </Description>
 ##  </ManSection>
@@ -712,7 +712,7 @@ DeclareGlobalFunction("NrTuples");
 ##  same elements as <A>mset</A>, but possibly in different order.
 ##  If <A>mset</A> is a proper set there are <M>|<A>mset</A>| !</M>
 ##  (see <Ref Func="Factorial"/>) such permutations.
-##  Otherwise if the first elements appears <M>k_1</M> times,
+##  Otherwise if the first element appears <M>k_1</M> times,
 ##  the second element appears <M>k_2</M> times and so on,
 ##  the number of permutations is
 ##  <M>|<A>mset</A>| ! / (k_1! k_2! \ldots)</M>,
@@ -944,7 +944,7 @@ DeclareGlobalFunction("Partitions");
 ##  <Func Name="NrPartitions" Arg='n [,k]'/>
 ##
 ##  <Description>
-##  returns the number of <C>Partitions(<A>set</A>,<A>k</A>)</C>.
+##  returns the number of <C>Partitions(<A>n</A>,<A>k</A>)</C>.
 ##  <Example><![CDATA[
 ##  gap> Partitions( 7 );
 ##  [ [ 1, 1, 1, 1, 1, 1, 1 ], [ 2, 1, 1, 1, 1, 1 ], [ 2, 2, 1, 1, 1 ],
@@ -1035,7 +1035,7 @@ DeclareGlobalFunction("PartitionsGreatestEQ");
 ##  <Index Subkey="ordered, of an integer">partitions</Index>
 ##  <Index Subkey="improper, of an integer">partitions</Index>
 ##  of the positive integer <A>n</A> into sums with <A>k</A> summands.
-##  If <A>k</A> is not given it returns all ordered partitions of <A>set</A>
+##  If <A>k</A> is not given it returns all ordered partitions of <A>n</A>
 ##  for all <A>k</A>.
 ##  <P/>
 ##  An <E>ordered partition</E> is an ordered sum
@@ -1063,7 +1063,7 @@ DeclareGlobalFunction("OrderedPartitions");
 ##  <Func Name="NrOrderedPartitions" Arg='n [,k]'/>
 ##
 ##  <Description>
-##  returns the number of <C>OrderedPartitions(<A>set</A>,<A>k</A>)</C>.
+##  returns the number of <C>OrderedPartitions(<A>n</A>,<A>k</A>)</C>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> OrderedPartitions( 5 );
@@ -1392,7 +1392,7 @@ DeclareGlobalFunction("NrPartitionTuples");
 ##  is sometimes called the Lucas sequence.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> List( [0..10], i -> Lucas(1,-2,i)[1] );     # 2^k - (-1)^k)/3
+##  gap> List( [0..10], i -> Lucas(1,-2,i)[1] );     # (2^k - (-1)^k)/3
 ##  [ 0, 1, 1, 3, 5, 11, 21, 43, 85, 171, 341 ]
 ##  gap> List( [0..10], i -> Lucas(1,-2,i)[2] );     # 2^k + (-1)^k
 ##  [ 2, 1, 5, 7, 17, 31, 65, 127, 257, 511, 1025 ]

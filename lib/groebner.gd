@@ -304,7 +304,7 @@ DeclareGlobalFunction("MonomialGrlexOrdering");
 ##  This function creates a <Q>grevlex</Q> ordering.
 ##  In this ordering monomials are compared first by total degree and then
 ##  backwards lexicographically.
-##  (This is different than <Q>grlex</Q> ordering with variables reversed.)
+##  (This is different from <Q>grlex</Q> ordering with variables reversed.)
 ##  <P/>
 ##  The variables are ordered according to their (internal) index, i.e.,
 ##  <M>x_1</M> is larger than <M>x_2</M> and so on.
@@ -552,7 +552,7 @@ DeclareSynonym("ReducedGrobnerBasis",ReducedGroebnerBasis);
 ##  For an ideal <A>I</A> in a polynomial ring, this attribute holds a list
 ##  <M>[ B, O ]</M> where <M>B</M> is a Groebner basis for the monomial
 ##  ordering <M>O</M>.
-##  this can be used to test membership or canonical coset representatives.
+##  This can be used to test membership or canonical coset representatives.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

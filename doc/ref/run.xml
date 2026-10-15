@@ -637,7 +637,7 @@ will save a <Q>snapshot</Q> image of the current &GAP; workspace in the file
 then will behave as at the point when <Ref Func="SaveWorkspace"/> was called.
 <P/>
 <Log><![CDATA[
-gap> a:=1;
+gap> a:=1;;
 gap> SaveWorkspace("savefile");
 true
 gap> quit;

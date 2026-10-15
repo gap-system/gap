@@ -41,7 +41,7 @@
 ##  <List>
 ##    <Item> <Ref Func="EnableAttributeValueStoring"/> is used (level 2).</Item>
 ##    <Item> <Ref Func="DisableAttributeValueStoring"/> is used (level 3).</Item>
-##    <Item> When trying to assign to non-mutable attribute which already is set to a different value (level 3).</Item>
+##    <Item> When trying to assign to an immutable attribute that is already set to a different value (level 3).</Item>
 ##    <Item> When the test filter for an attribute (i.e., <C>HasFOO</C>) is set, but no value is assigned (level 3).</Item>
 ##  </List>
 ##  </Description>

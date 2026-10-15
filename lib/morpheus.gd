@@ -202,17 +202,17 @@ DeclareAttribute("InnerAutomorphismGroup", IsGroup);
 ##  <Func Name="AssignNiceMonomorphismAutomorphismGroup" Arg='autgrp, group'/>
 ##
 ##  <Description>
-##  computes a nice monomorphism for <A>autgroup</A> acting on <A>group</A>
+##  computes a nice monomorphism for <A>autgrp</A> acting on <A>group</A>
 ##  and stores it as <Ref Attr="NiceMonomorphism"/> value of <A>autgrp</A>.
 ##  <P/>
 ##  If the centre of <Ref Attr="AutomorphismDomain"/> of <A>autgrp</A> is
-##  trivial, the operation will first try to represent all automorphisms by
+##  trivial, the function will first try to represent all automorphisms by
 ##  conjugation (in <A>group</A> or in a natural parent of <A>group</A>).
 ##  <P/>
-##  If this fails the operation tries to find a small subset of <A>group</A>
+##  If this fails the function tries to find a small subset of <A>group</A>
 ##  on which the action will be faithful.
 ##  <P/>
-##  The operation sets the attribute <Ref Attr="NiceMonomorphism"/>
+##  The function sets the attribute <Ref Attr="NiceMonomorphism"/>
 ##  and does not return a value.
 ##  </Description>
 ##  </ManSection>
@@ -303,7 +303,7 @@ DeclareGlobalFunction("MorMaxFusClasses");
 ##  This function loops over element tuples taken from <A>classes</A> and
 ##  checks these for properties such as generating a given group,
 ##  or fulfilling relations.
-##  This can be used to find small generating sets or all types of Morphisms.
+##  This can be used to find small generating sets or all types of morphisms.
 ##  The element tuples are used only up to inner automorphisms as
 ##  all images can be obtained easily from them by conjugation while
 ##  running through all of them usually would take too long.
@@ -343,7 +343,7 @@ DeclareGlobalFunction("MorMaxFusClasses");
 ##  </Item>
 ##  <Mark><C>free</C></Mark>
 ##  <Item>
-##   free generators, a list of the same length than the
+##   free generators, a list of the same length as the
 ##   generators <C>gens</C>.
 ##  </Item>
 ##  <Mark><C>rels</C></Mark>

@@ -574,7 +574,7 @@ DeclareGlobalFunction( "ReduceStabChain" );
 ##
 ##  <Description>
 ##  constructs a stabilizer chain for the trivial group with
-##  <C>identity</C> value equal to<A>id</A> and
+##  <C>identity</C> value equal to <A>id</A> and
 ##  <C>labels = </C><M>\{ <A>id</A> \} \cup</M> <A>labels</A>
 ##  (but of course with <C>genlabels</C> and <C>generators</C> values an
 ##  empty list).

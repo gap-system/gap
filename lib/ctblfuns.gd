@@ -409,7 +409,7 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  is a more interesting operation than the vector product of plain lists.
 ##  (Another candidate for a multiplication of compatible class functions
 ##  would have been the inner product, which is implemented via the function
-##  <Ref Oper="ScalarProduct" Label="for characters"/>.
+##  <Ref Oper="ScalarProduct" Label="for characters"/>.)
 ##  In terms of filters, the arithmetic of class functions is based on the
 ##  decision that they lie in <Ref Filt="IsGeneralizedRowVector"/>,
 ##  with additive nesting depth <M>1</M>, but they do <E>not</E> lie in
@@ -572,7 +572,7 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##
 ##  <Description>
 ##  The <E>characteristic</E> of class functions is zero,
-##  as for all list of cyclotomics.
+##  as for all lists of cyclotomics.
 ##  For class functions of a <M>p</M>-modular character table, such as Brauer
 ##  characters, the prime <M>p</M> is given by the
 ##  <Ref Attr="UnderlyingCharacteristic" Label="for a character table"/>
@@ -602,7 +602,7 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  <Ref Attr="ComplexConjugate" Label="for a class function"/>,
 ##  <Ref Oper="GaloisCyc" Label="for a class function"/>,
 ##  and <Ref Meth="Permuted" Label="for a class function"/> return
-##  a class function when they are called with a class function;
+##  a class function when they are called with a class function.
 ##  The complex conjugate of a class function that is known to be a (virtual)
 ##  character is again known to be a (virtual) character, and applying an
 ##  arbitrary Galois automorphism to an ordinary (virtual) character yields
@@ -1248,7 +1248,7 @@ DeclareOperation( "ScalarProduct",
 ##  Called with two lists <A>list</A>, <A>list2</A> of class functions of the
 ##  same character table (which may be given as the argument <A>tbl</A>),
 ##  <Ref Oper="MatScalarProducts"/> returns the matrix of scalar products
-##  (see <Ref Oper="ScalarProduct" Label="for characters"/>)
+##  (see <Ref Oper="ScalarProduct" Label="for characters"/>).
 ##  More precisely, this matrix contains in the <M>i</M>-th row the list of
 ##  scalar products of <M><A>list2</A>[i]</M>
 ##  with the entries of <A>list</A>.
@@ -1336,7 +1336,7 @@ DeclareOperation( "Norm", [ IsOrdinaryTable, IsHomogeneousList ] );
 ##  the quotient of the value of <A>chi</A> by the degree of <A>chi</A> is
 ##  a root of unity.
 ##  <P/>
-##  If the underlying character table of <A>psi</A> does not store the group
+##  If the underlying character table of <A>chi</A> does not store the group
 ##  <M>G</M> then an error is signalled.
 ##  (See&nbsp;<Ref Attr="ClassPositionsOfCentre" Label="for a character"/>
 ##  for a way to handle the centre implicitly,
@@ -1547,8 +1547,8 @@ DeclareAttribute( "ClassPositionsOfKernel", IsHomogeneousList );
 ##  <Oper Name="CycleStructureClass" Arg='[tbl, ]chi, class'/>
 ##
 ##  <Description>
-##  Let <A>permchar</A> be a permutation character, and <A>class</A> be the
-##  position of a conjugacy class of the character table of <A>permchar</A>.
+##  Let <A>chi</A> be a permutation character, and <A>class</A> be the
+##  position of a conjugacy class of the character table of <A>chi</A>.
 ##  <Ref Oper="CycleStructureClass"/> returns a list describing
 ##  the cycle structure of each element in class <A>class</A> in the
 ##  underlying permutation representation, in the same format as the result
@@ -1582,7 +1582,7 @@ DeclareOperation( "CycleStructureClass", [ IsClassFunction, IsPosInt ] );
 ##  corresponds to an action on the <M>G</M>-set <M>\Omega</M>
 ##  (see&nbsp;<Ref Oper="PermutationCharacter"
 ##  Label="for a group, an action domain, and a function"/>),
-##  <Ref Oper="IsTransitive" Label="for a group, an action domain, etc."/>
+##  <Ref Prop="IsTransitive" Label="for a character"/>
 ##  returns <K>true</K> if the action of <M>G</M> on <M>\Omega</M> is
 ##  transitive, and <K>false</K> otherwise.
 ##  </Description>
@@ -1852,7 +1852,7 @@ DeclareOperation( "TensorProductOp", [ IsDenseList, IsClassFunction ] );
 ##  Let <A>chi</A> be a class function of a group <M>G</M>
 ##  and let <A>target</A> be either a subgroup <M>H</M> of <M>G</M>
 ##  or an injective homomorphism from <M>H</M> to <M>G</M>
-##  or the character table of <A>H</A>.
+##  or the character table of <M>H</M>.
 ##  Then <Ref Oper="RestrictedClassFunction"/> returns the class function of
 ##  <M>H</M> obtained by restricting <A>chi</A> to <M>H</M>.
 ##  <P/>

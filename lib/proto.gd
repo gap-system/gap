@@ -35,7 +35,7 @@
 ##  <Item>
 ##     string used to identify the new type of object. A global
 ##     identifier <C>Is<A>ElementName</A></C> will be defined to indicate
-##     a category for these now objects. (Therefore it is not clever to have
+##     a category for these new objects. (Therefore it is not clever to have
 ##     blanks in the name). Also a collections category is defined.
 ##     (You will get an error message if the identifier
 ##     <C>Is<A>ElementName</A></C> is already defined.)

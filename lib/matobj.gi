@@ -1467,7 +1467,7 @@ InstallMethod( Characteristic,
 ##
 ##  <Returns>a matrix object</Returns>
 ##  <Description>
-##  For a vector object <A>M</A>,
+##  For a matrix object <A>M</A>,
 ##  the operations for computing the additive inverse with prescribed
 ##  mutability return a matrix object with the same
 ##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/> and

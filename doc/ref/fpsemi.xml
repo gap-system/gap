@@ -57,7 +57,7 @@ false
 However, one can build a finitely presented semigroup isomorphic
 to that finitely presented monoid (see <Ref Attr="IsomorphismFpSemigroup"/>).
 <P/>
-Also note that is not possible to refer to the generators by their names.
+Also note that it is not possible to refer to the generators by their names.
 These names are not variables, but just display figures.
 So, if one wants to access the generators by their names, one first has to
 introduce the respective variables and to assign the generators to them.

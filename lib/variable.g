@@ -121,7 +121,7 @@ end );
 ##  will assign a structural copy of <A>value</A> to <A>gvar</A>.
 ##  <Ref Func="InstallFlushableValueFromFunction"/> instead assigns
 ##  the result of <A>func</A> to <A>gvar</A> (<A>func</A> is re-evaluated
-##  for each invocation of <Ref Oper="FlushCaches"/>
+##  for each invocation of <Ref Oper="FlushCaches"/>).
 ##  <P/>
 ##  <Ref Func="InstallValue"/> does <E>not</E> work if <A>value</A> is an
 ##  <Q>immediate object</Q>, i.e., an internally represented small integer or

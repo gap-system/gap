@@ -407,9 +407,8 @@ DeclareRepresentation("IsRationalFunctionDefaultRep",
 ##
 ##  <Description>
 ##  is the default representation of polynomials. A polynomial
-##  in this representation is defined by the components
-##  and <Ref Attr="ExtRepNumeratorRatFun"/> where
-##  <Ref Attr="ExtRepNumeratorRatFun"/> is the
+##  in this representation is defined by the attribute
+##  <Ref Attr="ExtRepNumeratorRatFun"/>, which is the
 ##  external representation of the polynomial.
 ##  </Description>
 ##  </ManSection>
@@ -463,7 +462,7 @@ DeclareRepresentation("IsUnivariateRationalFunctionDefaultRep",
 
 ##  <#GAPDoc Label="[1]{ratfun}">
 ##  <Index>External representation of polynomials</Index>
-##  The representation of a polynomials is a list of the form
+##  The representation of a polynomial is a list of the form
 ##  <C>[<A>mon</A>,<A>coeff</A>,<A>mon</A>,<A>coeff</A>,...]</C> where <A>mon</A> is a monomial in
 ##  expanded form (that is given as list) and <A>coeff</A> its coefficient. The
 ##  monomials must be sorted according to the total degree/lexicographic
@@ -472,7 +471,7 @@ DeclareRepresentation("IsUnivariateRationalFunctionDefaultRep",
 ##  this the <E>external representation</E> of a polynomial. (The
 ##  reason for ordering is that addition of polynomials becomes linear in
 ##  the number of monomials instead of quadratic; the reason for the
-##  particular ordering chose is that it is compatible with multiplication
+##  particular ordering chosen is that it is compatible with multiplication
 ##  and thus gives acceptable performance for quotient calculations.)
 ##  <#/GAPDoc>
 ##
@@ -609,7 +608,7 @@ DeclareSynonym( "CoefficientsOfUnivariateLaurentPolynomial",
 ##  will default to a value of 1.
 ##  Therefore two univariate polynomials may be considered to be in the same
 ##  univariate polynomial ring if their indeterminates have the same number
-##  or one if of them is constant.  (see also&nbsp;<Ref Func="CIUnivPols"/>
+##  or one of them is constant. (see also&nbsp;<Ref Func="CIUnivPols"/>
 ##  and&nbsp;<Ref Filt="IsLaurentPolynomialDefaultRep"/>).
 ##  </Description>
 ##  </ManSection>
@@ -660,8 +659,8 @@ DeclareSynonym( "UnivariateLaurentPolynomialByCoefficients",
 ##
 ##  <#GAPDoc Label="LaurentPolynomialByExtRep">
 ##  <ManSection>
-##  <Func Name="LaurentPolynomialByExtRep" Arg='fam, cofs,val ,ind'/>
-##  <Func Name="LaurentPolynomialByExtRepNC" Arg='fam, cofs,val ,ind'/>
+##  <Func Name="LaurentPolynomialByExtRep" Arg='fam, cofs, val, ind'/>
+##  <Func Name="LaurentPolynomialByExtRepNC" Arg='fam, cofs, val, ind'/>
 ##
 ##  <Description>
 ##  creates a Laurent polynomial in the family <A>fam</A> with [<A>cofs</A>,<A>val</A>] as
@@ -966,7 +965,7 @@ BindGlobal("DEGREE_ZERO_LAURPOL",Ninfinity);
 ##  <Oper Name="UnivariatePolynomialByCoefficients" Arg='fam, cofs, ind'/>
 ##
 ##  <Description>
-##  constructs an univariate polynomial over the coefficients family
+##  constructs a univariate polynomial over the coefficients family
 ##  <A>fam</A> and in the indeterminate <A>ind</A> with the coefficients given by
 ##  <A>cofs</A>. This function should be used in algorithms to create
 ##  polynomials as it avoids overhead associated with
@@ -988,7 +987,7 @@ DeclareOperation( "UnivariatePolynomialByCoefficients",
 ##  <Oper Name="UnivariatePolynomial" Arg='ring, cofs[, ind]'/>
 ##
 ##  <Description>
-##  constructs an univariate polynomial over the ring <A>ring</A> in the
+##  constructs a univariate polynomial over the ring <A>ring</A> in the
 ##  indeterminate <A>ind</A> with the coefficients given by <A>cofs</A>.
 ##  </Description>
 ##  </ManSection>
@@ -1068,16 +1067,16 @@ DeclareOperation( "UnivariateRationalFunctionByCoefficients",
 ##  <P/>
 ##  A variation is the evaluation at elements of another ring <M>R</M>,
 ##  for which a multiplication with elements of the coefficient ring of
-##  <A>ratfun</A> are defined.
+##  <A>ratfun</A> is defined.
 ##  In this situation the identity element of <M>R</M> may be given by a
 ##  further argument <A>one</A> which will be used for <M>x^0</M> for any
 ##  specialized indeterminate <M>x</M>.
 ##  <P/>
-##  The second version takes an univariate rational function and specializes
-##  the value of its indeterminate to <A>val</A>.
+##  The second version takes a univariate rational function and specializes
+##  the value of its indeterminate to <A>value</A>.
 ##  Again, an optional argument <A>one</A> may be given.
-##  <C>Value( <A>upol</A>, <A>val</A> )</C> can also be expressed as <C>upol(
-##  <A>val</A> )</C>.
+##  <C>Value( <A>upol</A>, <A>value</A> )</C> can also be expressed as <C>upol(
+##  <A>value</A> )</C>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> Value(x*y+y+x^7,[x,y],[5,7]);
@@ -1323,7 +1322,7 @@ DeclareOperation("DegreeIndeterminate",[IsPolynomial,IsPosInt]);
 ##
 ##  <Description>
 ##  If <A>ratfun</A> is a univariate rational function then
-##  <Ref Attr="Derivative"/> returns the <E>derivative</E> of <A>ufun</A> by
+##  <Ref Attr="Derivative"/> returns the <E>derivative</E> of <A>ratfun</A> by
 ##  its indeterminate.
 ##  For a rational function <A>ratfun</A>,
 ##  the derivative by the indeterminate <A>ind</A> is returned,
@@ -1347,10 +1346,10 @@ DeclareOperation("Derivative",[IsPolynomialFunction,IsPosInt]);
 ##
 ##  <#GAPDoc Label="TaylorSeriesRationalFunction">
 ##  <ManSection>
-##  <Attr Name="TaylorSeriesRationalFunction" Arg='ratfun, at, deg]'/>
+##  <Attr Name="TaylorSeriesRationalFunction" Arg='ratfun, at, deg'/>
 ##
 ##  <Description>
-##  Computes the taylor series up to degree <A>deg</A> of <A>ratfun</A> at
+##  Computes the Taylor series up to degree <A>deg</A> of <A>ratfun</A> at
 ##  <A>at</A>.
 ##  <Example><![CDATA[
 ##  gap> TaylorSeriesRationalFunction((x^5+3*x+7)/(x^5+x+1),0,11);
@@ -1504,7 +1503,7 @@ DeclareOperation("HeuristicCancelPolynomialsExtRep",
 ##  <Func Name="QuotientPolynomialsExtRep" Arg='fam,a,b'/>
 ##
 ##  <Description>
-##  Let <A>a</A> and <A>b</A> the external representations of two polynomials
+##  Let <A>a</A> and <A>b</A> be the external representations of two polynomials
 ##  in the rational functions family <A>fam</A>.
 ##  This function computes the external representation of the quotient of
 ##  both polynomials,

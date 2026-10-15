@@ -50,9 +50,10 @@
 ##  <Ref Sect="Operations for Abelian Number Fields"/> introduces operations
 ##  for abelian number fields,
 ##  <Ref Sect="Integral Bases of Abelian Number Fields"/> deals with the
-##  vector space structure of abelian number fields, and
+##  vector space structure of abelian number fields,
 ##  <Ref Sect="Galois Groups of Abelian Number Fields"/> describes field
-##  automorphisms of abelian number fields,
+##  automorphisms of abelian number fields, and
+##  <Ref Sect="Gaussians"/> deals with the Gaussian integers.
 ##  <!-- % section about Gaussians here? -->
 ##  <#/GAPDoc>
 ##
@@ -274,7 +275,7 @@ InstallTrueMethod( IsCyclotomicField, IsRationals );
 ##  and <K>false</K> for all other &GAP; objects.
 ##  <P/>
 ##  (For details about the field of rationals,
-##  see Chapter&nbsp;<Ref Var="Rationals"/>.)
+##  see Chapter&nbsp;<Ref Chap="Rational Numbers"/>.)
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> CF(4) = GaussianRationals;
@@ -623,7 +624,7 @@ DeclareGlobalFunction( "ZumbroichBase" );
 ##  consistently with the action of <A>stabilizer</A>, i.e.,
 ##  each orbit of <A>super</A> is a union of orbits of <A>stabilizer</A>.
 ##  (A usual case is <A>super</A><C> = </C><A>stabilizer</A>,
-##  so there is no additional condition.
+##  so there is no additional condition.)
 ##  <P/>
 ##  <E>Note:</E>
 ##  The <M>b_i</M> are in general not sets,

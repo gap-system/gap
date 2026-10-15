@@ -275,7 +275,7 @@ residue at the first and only position (see&nbsp;<Ref Sect="Positional Objects"/
 gap> DeclareRepresentation("IsMyModulusRep", IsPositionalObjectRep);
 ]]></Example>
 <P/>
-The fourth ingredients of a type, <E>attributes</E>, are usually of minor
+The fourth ingredient of a type, <E>attributes</E>, are usually of minor
 importance for element objects.
 In particular,
 we do not need to introduce special attributes for residue classes.
@@ -463,11 +463,11 @@ gap> InstallMethod( PrintObj,
 So we installed a method for the operation
 <Ref Oper="PrintObj"/> (first argument),
 and we gave it a suitable information message (second argument),
-see&nbsp;<Ref Sect="ApplicableMethod"/> and&nbsp;<Ref Sect="Tracing Methods"/> for applications of
+see&nbsp;<Ref Func="ApplicableMethod"/> and&nbsp;<Ref Sect="Tracing Methods"/> for applications of
 this information string.
 The third argument tells &GAP; that the method is applicable for
 objects that lie in the category <C>IsMyZmodnZObj</C> and in the representation
-<C>IsMyModulusRep</C>.
+<C>IsMyModulusRep</C>,
 and the fourth argument is the method itself.
 More details about <Ref Func="InstallMethod"/> can be found
 in&nbsp;<Ref Sect="Method Installation"/>.
@@ -553,7 +553,7 @@ The method for the operation <Ref Oper="\+"/> allows us
 to use the infix operator <C>+</C> for residue classes.
 The method for <Ref Oper="ZeroOp"/> is used when we call
 this operation or the attribute <Ref Attr="Zero"/> explicitly,
-and <Ref Oper="ZeroOp"/> it is also used when we ask for
+and <Ref Oper="ZeroOp"/> is also used when we ask for
 <C>0 * <A>rescl</A></C>, where <A>rescl</A> is a residue class.
 <P/>
 (Note that <Ref Attr="Zero"/> and
@@ -1027,7 +1027,7 @@ and then repeat the installations with suitable modifications.
 <P/>
 (We should start a new &GAP; session for that, otherwise &GAP; will
 complain that the objects to be declared are already bound;
-additionally, the methods installed above may be not compatible with
+additionally, the methods installed above may not be compatible with
 the ones we want.)
 <P/>
 <Log><![CDATA[
@@ -1366,7 +1366,7 @@ There are of course many possibilities to improve the implementation.
 With the setup as described above,
 subsequent calls <C>MyZmodnZ( <A>n</A> )</C> with the same <A>n</A> yield incompatible
 rings in the sense that elements of one ring cannot be added to elements
-of an other one.
+of another one.
 The solution for this problem is to keep a global list of all results of
 <C>MyZmodnZ</C> in the current &GAP; session, and to return the stored values
 whenever possible.

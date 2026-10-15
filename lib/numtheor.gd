@@ -660,7 +660,7 @@ DeclareOperation( "Sigma", [ IsObject ] );
 ##  nonzero integer <A>n</A>.
 ##  <P/>
 ##  <Ref Oper="Tau"/> is a multiplicative arithmetic function, i.e.,
-##  if <M>n</M> and  <M>m</M> are relative prime we have
+##  if <M>n</M> and <M>m</M> are relatively prime we have
 ##  <M>\tau(n \cdot m) = \tau(n) \tau(m)</M>.
 ##  Together with the formula <M>\tau(p^k) = k+1</M> this allows us
 ##  to compute <M>\tau(<A>n</A>)</M>.
@@ -694,10 +694,10 @@ DeclareOperation( "Tau", [ IsObject ] );
 ##  <Func Name="MoebiusMu" Arg='n'/>
 ##
 ##  <Description>
-##  <Ref Func="MoebiusMu"/> computes the value of Moebius inversion function
+##  <Ref Func="MoebiusMu"/> computes the value of the Moebius function
 ##  for the nonzero integer <A>n</A>.
 ##  This is 0 for integers which are not squarefree, i.e.,
-##  which are divided by a square <M>r^2</M>.
+##  which are divisible by a square <M>r^2</M> with <M>r > 1</M>.
 ##  Otherwise it is 1 if <A>n</A> has an even number and <M>-1</M> if <A>n</A>
 ##  has an odd number of prime factors.
 ##  <P/>
@@ -754,7 +754,7 @@ DeclareGlobalFunction( "MoebiusMu" );
 ##  half, whichever is a perfect square.
 ##  Then the minimal possible gcd of <M>x</M> and <M>y</M> is the square root
 ##  <M>c</M> of <M>a \cdot b</M>.
-##  The number of different minimal representation with <M>x \leq y</M> is
+##  The number of different minimal representations with <M>x \leq y</M> is
 ##  <M>2^{{l-1}}</M>, where <M>l</M> is the number of different prime factors
 ##  of the form <M>4k+1</M> of <A>n</A>.
 ##  <P/>

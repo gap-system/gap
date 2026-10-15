@@ -43,7 +43,7 @@ fastest possible access to objects. These internal methods include
 <Heading>Using Dictionaries</Heading>
 
 The standard way to use dictionaries is to first create a dictionary (using
-<Ref Func="NewDictionary"/>, and then to store objects (and associated information) in
+<Ref Func="NewDictionary"/>), and then to store objects (and associated information) in
 it and look them up.
 <P/>
 For the creation of objects the user has to make a few choices: Is the
@@ -175,7 +175,7 @@ functionality ought to use the dictionary interface described above.
 We hash by keys and also store a value.  Keys
 cannot be removed from the table, but the corresponding value can be
 changed.  Fast access to last hash index allows you to efficiently store
-more than one array of values &ndash;this facility should be used with care.
+more than one array of values &ndash; this facility should be used with care.
 <P/>
 This code works for any kind of object, provided you have a
 <Ref Oper="DenseIntKey"/> method to convert the key into a positive integer.
@@ -223,10 +223,10 @@ and so <C>KeyIntDense</C> must be one-to-one.
 <Heading>Sparse hash tables</Heading>
 
 Sparse hash tables are used for hashing sparse sets.
-Stores keys as an array with fail
-denoting an empty position, stores values as an array with holes.
-Uses
-the result of calling <Ref Oper="SparseIntKey"/>) of the key.
+Keys are stored as an array with <K>fail</K>
+denoting an empty position, values as an array with holes.
+The position is computed from
+the result of calling <Ref Oper="SparseIntKey"/> on the key.
 <C>DefaultHashLength</C>
 is the default starting hash table length; the table is doubled
 when it becomes half full.

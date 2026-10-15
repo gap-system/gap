@@ -31,13 +31,13 @@ In &GAP;, groups always act from the right, that is
 <M>\mu( \mu( x, g ), h ) = \mu( x, gh )</M>.
 <P/>
 &GAP; does not test whether the acting function <M>\mu</M> satisfies the
-conditions for a group operation but silently assumes that is does.
+conditions for a group operation but silently assumes that it does.
 (If it does not, results are unpredictable.)
 <P/>
 The first section of this chapter, <Ref Sect="About Group Actions"/>,
 describes the various ways how operations for group actions can be called.
 <P/>
-Functions for several commonly used action are already built into &GAP;.
+Functions for several commonly used actions are already built into &GAP;.
 These are listed in section&nbsp;<Ref Sect="Basic Actions"/>.
 <P/>
 The sections <Ref Sect="The Permutation Image of an Action"/> and
@@ -266,7 +266,7 @@ The <E>stabilizer</E> of a point <M>x</M> under the action of a group
 <Heading>The Permutation Image of an Action</Heading>
 
 When a group <M>G</M> acts on a domain <M>\Omega</M>,
-an enumeration of <M>Omega</M> yields a homomorphism from <M>G</M> into
+an enumeration of <M>\Omega</M> yields a homomorphism from <M>G</M> into
 the symmetric group on <M>\{ 1, \ldots, |\Omega| \}</M>.
 In &GAP;, the enumeration of <M>\Omega</M> is provided by the
 <Ref Attr="Enumerator"/> value of <M>\Omega</M>

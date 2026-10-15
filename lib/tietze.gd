@@ -187,7 +187,7 @@ DeclareGlobalFunction("AddGenerator");
 ##  <Func Name="AddRelator" Arg='P, word'/>
 ##
 ##  <Description>
-##  adds the relator <A>word</A> to the presentation <A>P</A>, probably
+##  adds the relator <A>word</A> to the presentation <A>P</A>, possibly
 ##  changing the group defined by <A>P</A>.
 ##  <A>word</A> must be an abstract word in the generators of <A>P</A>.
 ##  </Description>
@@ -245,7 +245,7 @@ DeclareGlobalFunction("AddRelator");
 ##  are constructed by the program.
 ##  <P/>
 ##  Each of the secondary generators is defined by a word of length two in
-##  the preceding generators and their inverses. By historical reasons, the
+##  the preceding generators and their inverses. For historical reasons, the
 ##  list of these definitions is called the <E>subgroup generators tree</E>
 ##  though in fact it is not a tree but rather a kind of bush.
 ##  <Index>subgroup generators tree</Index>
@@ -327,7 +327,7 @@ DeclareGlobalFunction("AddRelator");
 ##  Tietze transformation.
 ##  <P/>
 ##  Nevertheless, a certain misuse of the command is still possible, and we
-##  want to explicitly warn you from this.
+##  want to explicitly warn you about this.
 ##  The reason is that the Tietze option parameters described in
 ##  Section <Ref Sect="Tietze Options"/> apply to
 ##  <Ref Func="DecodeTree"/> as well.
@@ -623,7 +623,7 @@ DeclareGlobalFunction("RelsViaCosetTable");
 ##
 ##  <Description>
 ##  removes the <A>n</A>-th relator from the presentation <A>P</A>,
-##  probably changing the group defined by <A>P</A>.
+##  possibly changing the group defined by <A>P</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

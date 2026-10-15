@@ -253,7 +253,7 @@ DeclareOperation(
 ##
 ##  <Description>
 ##  Let <M>p1</M> (and <M>p2</M>) be polynomials given by the first
-##  <A>len1</A> (<A>len2</A>) entries of the coefficient list <A>list2</A>
+##  <A>len1</A> (<A>len2</A>) entries of the coefficient list <A>list1</A>
 ##  (<A>list2</A>).
 ##  If <A>len1</A> and <A>len2</A> are omitted,
 ##  they default to the lengths of <A>list1</A> and <A>list2</A>.
@@ -287,7 +287,7 @@ DeclareOperation(
 ##  If <A>len1</A> and <A>len2</A> are omitted,
 ##  they default to the lengths of <A>list1</A> and <A>list2</A>.
 ##  <Ref Oper="ReduceCoeffs"/> changes <A>list1</A> to the coefficient list
-##  of the remainder when dividing <A>p1</A> by <A>p2</A>.
+##  of the remainder when dividing <M>p1</M> by <M>p2</M>.
 ##  This operation changes <A>list1</A> which therefore must be a mutable
 ##  list.
 ##  The operation returns the position of the last non-zero entry of the
@@ -324,7 +324,7 @@ DeclareOperation(
 ##  they default to the lengths of <A>list1</A> and <A>list2</A>.
 ##  <Ref Oper="ReduceCoeffsMod"/> changes <A>list1</A> to the
 ##  coefficient list of the remainder when dividing
-##  <A>p1</A> by <A>p2</A> modulo <A>modulus</A>,
+##  <M>p1</M> by <M>p2</M> modulo <A>modulus</A>,
 ##  which must be a positive integer.
 ##  This operation changes <A>list1</A> which therefore must be a mutable
 ##  list.

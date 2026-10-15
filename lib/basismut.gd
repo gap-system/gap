@@ -47,7 +47,7 @@
 ##  It is, however, a collection, more precisely its family (see&nbsp;<Ref Sect="Families"/>)
 ##  equals the family of its collection of basis vectors.
 ##  <P/>
-##  Mutable bases can be constructed with <C>MutableBasis</C>.
+##  Mutable bases can be constructed with <Ref Oper="MutableBasis"/>.
 ##  <P/>
 ##  Similar to the situation with bases (cf.&nbsp;<Ref Sect="Bases of Vector Spaces"/>),
 ##  &GAP; supports the following three kinds of mutable bases.
@@ -264,7 +264,7 @@ DeclareOperation( "CloseMutableBasis",
 ##
 ##  <Description>
 ##  For a mutable basis <A>MB</A> over the coefficient ring <M>R</M>
-##  and a vector <A>v</A>, <C>IsContainedInSpan</C> returns <K>true</K> is <A>v</A> lies in the
+##  and a vector <A>v</A>, <C>IsContainedInSpan</C> returns <K>true</K> if <A>v</A> lies in the
 ##  <M>R</M>-span of the current basis vectors of <A>MB</A>,
 ##  and <K>false</K> otherwise.
 ##  </Description>

@@ -84,7 +84,7 @@ DeclareOperation("InversesOfSemigroupElement",
 ##  <#GAPDoc Label="Semigroup">
 ##  <ManSection>
 ##  <Heading>Semigroup</Heading>
-##  <Func Name="Semigroup" Arg='gen1, gen2 ...'
+##  <Func Name="Semigroup" Arg='gen1, gen2, ...'
 ##   Label="for various generators"/>
 ##  <Func Name="Semigroup" Arg='gens' Label="for a list"/>
 ##
@@ -215,7 +215,7 @@ DeclareOperation( "AsSubsemigroup", [ IsDomain, IsCollection ] );
 ##  <Attr Name="GeneratorsOfSemigroup" Arg='S'/>
 ##
 ##  <Description>
-##  Semigroup generators of a semigroup <A>D</A> are the same as magma
+##  Semigroup generators of a semigroup <A>S</A> are the same as magma
 ##  generators, see&nbsp;<Ref Attr="GeneratorsOfMagma"/>.
 ##  <Example><![CDATA[
 ##  gap> GeneratorsOfSemigroup(s);

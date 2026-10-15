@@ -56,7 +56,7 @@ section&nbsp;<Ref Sect="Group Automorphisms"/>).
 group. Such homomorphisms can be constructed by
 <Ref Func="NaturalHomomorphismByNormalSubgroup"/>.
 <P/>
-<E>The fourth</E> class is homomorphisms in a permutation group
+<E>The fourth</E> class is homomorphisms into a permutation group
 that are induced by an action on a set.
 Such homomorphisms are described in the context of group actions,
 see chapter&nbsp;<Ref Chap="Group Actions"/> and in particular
@@ -265,7 +265,7 @@ Testing injectivity is a test for triviality of the kernel.
 The comparison of mappings is based on a lexicographic comparison of a
 sorted element list of the source.
 For group homomorphisms, this can be simplified,
-using <Ref Attr="ImagesSmallestGenerators"/>
+using <Ref Attr="ImagesSmallestGenerators"/>.
 
 </Subsection>
 
@@ -396,7 +396,7 @@ The value of this option is checked in methods for the operations
 <Section Label="Group Automorphisms">
 <Heading>Group Automorphisms</Heading>
 
-Group automorphisms are bijective homomorphism from a group onto itself.
+Group automorphisms are bijective homomorphisms from a group onto itself.
 An important subclass are automorphisms which are induced by conjugation of
 the group itself or a supergroup.
 
@@ -413,7 +413,7 @@ the group itself or a supergroup.
 <Section Label="Groups of Automorphisms">
 <Heading>Groups of Automorphisms</Heading>
 
-Group automorphism can be multiplied and inverted and thus it is possible
+Group automorphisms can be multiplied and inverted and thus it is possible
 to form groups of automorphisms.
 
 <#Include Label="AutomorphismGroup">

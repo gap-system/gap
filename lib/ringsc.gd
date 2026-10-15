@@ -43,7 +43,7 @@ DeclareSynonym("IsSubringSCRing",IsRing and IsSCRingObjCollection);
 ##  with multiplication defined by the structure constants table
 ##  <A>sctable</A>.
 ##  The optional argument <A>nameinfo</A> can be used to prescribe names for
-##  the elements of the canonical generators of <M>R</M>;
+##  the canonical generators of <M>R</M>;
 ##  it can be either a string <A>name</A>
 ##  (then <A>name</A><C>1</C>, <A>name</A><C>2</C> etc. are chosen)
 ##  or a list of strings which are then chosen.
@@ -148,10 +148,10 @@ DeclareGlobalFunction("NumberSmallRings");
 ##
 ##  <#GAPDoc Label="SmallRing">
 ##  <ManSection>
-##  <Func Name="SmallRing" Arg='s n'/>
+##  <Func Name="SmallRing" Arg='s, n'/>
 ##
 ##  <Description>
-##  returns the <M>n</M>-th ring of order <M>s</M> from a library of
+##  returns the <A>n</A>-th ring of order <A>s</A> from a library of
 ##  rings of small order (up to isomorphism).
 ##  <Example><![CDATA[
 ##  gap> R:=SmallRing(8,37);

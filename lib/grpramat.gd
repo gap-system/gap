@@ -259,7 +259,7 @@ DeclareGlobalFunction( "SetCrystGroupDefaultAction" );
 ##  <Prop Name="IsBravaisGroup" Arg='G'/>
 ##
 ##  <Description>
-##  test whether <A>G</A> coincides with its Bravais group
+##  tests whether <A>G</A> coincides with its Bravais group
 ##  (see <Ref Attr="BravaisGroup"/>).
 ##  </Description>
 ##  </ManSection>

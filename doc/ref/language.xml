@@ -77,7 +77,7 @@ characters again. What you do with this external representation is up to
 you. You can look at it, paste it with the mouse into another window, or
 write it to a file.
 <P/>
-Lets look at an example to make this more clear. Suppose you type in the
+Let us look at an example to make this more clear. Suppose you type in the
 following string of 8 characters
 <P/>
 <Listing><![CDATA[
@@ -1295,7 +1295,7 @@ compatible with the relation of being a subgroup.)
 <P/>
 Comparison operators, including the operator <K>in</K>
 (see&nbsp;<Ref Sect="Membership Test for Lists"/>),
-are not associative,
+are not associative.
 Hence it is not allowed to write <C><A>a</A> = <A>b</A> &lt;> <A>c</A> = <A>d</A></C>,
 you must use <C>(<A>a</A> = <A>b</A>) &lt;> (<A>c</A> = <A>d</A>)</C> instead.
 The comparison operators have  higher precedence than the logical operators
@@ -1303,7 +1303,7 @@ The comparison operators have  higher precedence than the logical operators
 (see&nbsp;<Ref Sect="Operations for Booleans"/>), but lower precedence than the arithmetic
 operators (see&nbsp;<Ref Sect="Arithmetic Operators"/>).
 Thus, for instance, <C><A>a</A> * <A>b</A> = <A>c</A> and <A>d</A></C> is interpreted as
-<C>((<A>a</A> * <A>b</A>) = <A>c</A>) and <A>d</A>)</C>.
+<C>((<A>a</A> * <A>b</A>) = <A>c</A>) and <A>d</A></C>.
 <P/>
 The following example shows a comparison where the left operand is an
 expression.

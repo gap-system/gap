@@ -441,7 +441,7 @@ end);
 ##  <C>#@fi</C> is reached.
 ##  If an <C>#@else</C> is present then the lines after the <C>#@else</C>
 ##  are used if and only if <C>EXPR</C> evaluated to <K>false</K> in all <C>#@if</C> and
-##  <C>#@elif</C> clauses. Finally, once <C>#fi</C> is reached, evaluation continues
+##  <C>#@elif</C> clauses. Finally, once <C>#@fi</C> is reached, evaluation continues
 ##  normally.
 ##  <P/>
 ##  Note that each <C>EXPR</C> is evaluated after all <C>#@exec</C> lines have been

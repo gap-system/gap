@@ -148,7 +148,7 @@ end;
 ##  This function is only available within a break loop caused by a <Q>No
 ##  Method Found</Q>-error. It prints an overview about the installed methods
 ##  for those arguments the operation was called with (using
-##  <Ref Sect="sect:ApplicableMethod"/>. The verbosity can be
+##  <Ref Sect="sect:ApplicableMethod"/>). The verbosity can be
 ##  controlled by the optional integer parameter <A>verbosity</A>. The default
 ##  is 2, which lists all applicable methods. With verbosity 1
 ##  <Ref Func="ShowMethods"/> only shows the number of installed methods and the
@@ -185,7 +185,7 @@ end;
 ##  This function is only available within a break loop caused by a <Q>No
 ##  Method Found</Q>-error. It prints an overview about the installed methods
 ##  for a different number of arguments than the number of arguments the
-##  operation was called with (using <Ref Sect="sect:ApplicableMethod"/>.
+##  operation was called with (using <Ref Sect="sect:ApplicableMethod"/>).
 ##  The verbosity can be controlled by the optional
 ##  integer parameter <A>verbosity</A>. The default is 1 which lists only the
 ##  number of applicable methods.
