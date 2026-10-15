@@ -1182,6 +1182,11 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,r,
     D:=DomainForAction(d,acts,act);
   fi;
   dict:=NewDictionary(d,true,D);
+  # reject certain output by DomainForAction
+  # that would get interpreted as an actual domain
+  if IsList(D) and Length(D)=3 and D[1]="BoundedTuples" then
+    D:=fail;
+  fi;
 
   if IsBound(dopr.stabsub) then
     stabsub:=AsSubgroup(Parent(G),dopr.stabsub);
