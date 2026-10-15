@@ -129,7 +129,8 @@ DeclareInfoClass( "InfoMonomial" );
 ##  For a group <A>G</A>, <Ref Attr="Alpha"/> returns a list
 ##  whose <M>i</M>-th entry is the maximal derived length of groups
 ##  <M><A>G</A> / \ker(\chi)</M> for <M>\chi \in Irr(<A>G</A>)</M> with
-##  <M>\chi(1)</M> at most the <M>i</M>-th irreducible degree of <A>G</A>.
+##  <M>\chi(1)</M> at most the <M>i</M>-th smallest of the distinct
+##  irreducible degrees of <A>G</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -494,8 +495,9 @@ DeclareProperty( "IsMonomialCharacter", IsClassFunction );
 ##  </Item>
 ##  <Mark>3.</Mark>
 ##  <Item>
-##    there are odd prime divisors <M>p</M> and <M>q</M> of <M>n</M>
-##    such that <M>ord(p,q)</M> is even and <M>ord(p,q) &lt; \nu_p(n)</M>
+##    there are prime divisors <M>p</M> and <M>q</M> of <M>n</M>,
+##    <M>q</M> odd, such that <M>ord(p,q)</M> is even and
+##    <M>ord(p,q) &lt; \nu_p(n)</M>
 ##    (especially <M>\nu_p(n) \geq 3</M>),
 ##  </Item>
 ##  <Mark>4.</Mark>
@@ -506,7 +508,8 @@ DeclareProperty( "IsMonomialCharacter", IsClassFunction );
 ##  </Item>
 ##  <Mark>5.</Mark>
 ##  <Item>
-##    <M>\nu_2(n) \geq 2</M> and there is a <M>p</M> such that
+##    <M>\nu_2(n) \geq 2</M> and there are prime divisors <M>p</M> and
+##    <M>q</M> of <M>n</M>, <M>q</M> odd, such that
 ##    <M>p \equiv  1 \pmod{4}</M>, <M>ord(p,q)</M> is odd,
 ##    and <M>2 ord(p,q) &lt; \nu_p(n)</M>
 ##    (especially <M>\nu_p(n) \geq 3</M>).
@@ -610,10 +613,10 @@ DeclareAttribute( "TestMonomialQuick", IsGroup );
 ##        Label="for a group and a Boolean"/>
 ##
 ##  <Description>
-##  Called with a group character <A>chi</A> of a group <A>G</A>,
+##  Called with a group character <A>chi</A> or a group <A>G</A>,
 ##  <Ref Attr="TestMonomial" Label="for a character"/>
 ##  returns a record containing information about monomiality of the group
-##  <A>G</A> or the group character <A>chi</A>, respectively.
+##  character <A>chi</A> or the group <A>G</A>, respectively.
 ##  <P/>
 ##  If <Ref Attr="TestMonomial" Label="for a character"/> proves
 ##  the character <A>chi</A> to be monomial then the result contains
@@ -864,7 +867,7 @@ DeclareProperty( "IsMinimalNonmonomial", IsGroup );
 ##  <Description>
 ##  is a solvable minimal nonmonomial group described by the parameters
 ##  <A>factsize</A> and <A>p</A> if such a group exists,
-##  and <K>false</K> otherwise.
+##  and <K>fail</K> otherwise.
 ##  <P/>
 ##  Suppose that the required group <M>K</M> exists.
 ##  Then <A>factsize</A> is the size of the Fitting factor <M>K / F(K)</M>,

@@ -74,7 +74,7 @@
 ##  <Func Name="IsDxLargeGroup" Arg='G'/>
 ##
 ##  <Description>
-##  returns <K>true</K> if the order of the group <A>G</A> is smaller than
+##  returns <K>true</K> if the order of the group <A>G</A> is larger than
 ##  the current value of the global variable <C>DXLARGEGROUPORDER</C>,
 ##  and <K>false</K> otherwise.
 ##  In Dixon-Schneider calculations, for small groups in the above sense a
