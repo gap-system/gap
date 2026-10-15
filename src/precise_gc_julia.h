@@ -42,6 +42,38 @@ extern "C++" {
 #endif
 #endif
 
+// JL_GC_PUSH and JL_GC_POP find the frame stack through jl_get_pgcstack(),
+// a chain of out-of-line calls. If Julia's TLS slot is in the static TLS
+// block of the executable (julia has it there, and so does gap, see main.c),
+// Julia records its offset from the thread pointer in jl_tls_offset, and the
+// slot can be read inline, as Julia's own codegen does. The thread pointer
+// is read anew each time, as a task may resume on another thread.
+#if defined(GAP_GC_PRECISE) && defined(__ELF__) &&                           \
+    (defined(__x86_64__) || defined(__aarch64__)) &&                         \
+    !defined(__clang_gcanalyzer__) && !defined(__clang_safetyanalysis__)
+#define GAP_GC_INLINE_PGCSTACK 1
+
+// -1 until InitBags has read jl_tls_offset, and if Julia does not know it
+extern ssize_t GAP_JuliaTLSOffset;
+
+EXPORT_INLINE jl_gcframe_t ** GAP_GetPgcstack(void) GAP_GC_NOTSAFEPOINT
+{
+    if (GAP_JuliaTLSOffset == -1)
+        return jl_get_pgcstack();
+
+    char * tp;
+#if defined(__x86_64__)
+    __asm__ volatile("movq %%fs:0, %0" : "=r"(tp));
+#else
+    __asm__ volatile("mrs %0, tpidr_el0" : "=r"(tp));
+#endif
+    return *(jl_gcframe_t ***)(tp + GAP_JuliaTLSOffset);
+}
+
+#undef jl_pgcstack
+#define jl_pgcstack (*GAP_GetPgcstack())
+#endif
+
 #ifdef GAP_MEM_CHECK
 // Under memory checking every push is recorded with its source location and
 // every pop checked against the record, so a frame pushed and never popped,
