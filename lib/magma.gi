@@ -1285,14 +1285,19 @@ InstallMethod( AsSubmagma,
     IsIdenticalObj,
     [ IsDomain, IsCollection ], 0,
     function( G, U )
-    local S;
+    local S, elms;
     if not IsSubset( G, U ) then
       return fail;
     fi;
     if IsMagma( U ) then
       S:= SubmagmaNC( G, GeneratorsOfMagma( U ) );
     else
-      S:= SubmagmaNC( G, AsList( U ) );
+      elms:= AsSSortedList( U );
+      if ForAny( elms, x -> ForAny( elms, y -> not x * y in elms ) ) then
+        return fail;
+      fi;
+      S:= SubmagmaNC( G, elms );
+      SetAsSSortedList( S, elms );
     fi;
     UseIsomorphismRelation( U, S );
     UseSubsetRelation( U, S );
