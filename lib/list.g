@@ -394,7 +394,8 @@ DeclareCategoryKernel( "IsRange",
 ##  <P/>
 ##  Lists created by the syntactic construct
 ##  <C>[ <A>first</A>, <A>second</A>  .. <A>last</A> ]</C>,
-##  see <Ref Sect="Ranges"/>, are in <Ref Filt="IsRangeRep"/>.
+##  see <Ref Sect="Ranges"/>, with at least two elements are in
+##  <Ref Filt="IsRangeRep"/>.
 ##  <P/>
 #   Note that if you modify an <Ref Filt="IsRangeRep"/> object by assigning to
 #   one of its entries, or by using <Ref Oper="Add"/> or <Ref Oper="Append"/>,
