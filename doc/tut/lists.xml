@@ -893,7 +893,7 @@ matrix has infinite order, and one gets the following warning.
 #I  Order: warning, order of <mat> might be infinite
 ]]></Log>
 In such a case, if the order of the matrix really is infinite, you will
-have to interrupt &GAP; by  pressing <B>Ctrl-C</B> (followed by <B>Ctrl-D</B> or
+have to interrupt &GAP; by pressing <B>Ctrl-C</B> (followed by <B>Ctrl-D</B> or
 <C>quit;</C>  to leave the   break loop).
 <P/>
 To prove that the order of <C>m</C> is infinite, we also could look at the

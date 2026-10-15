@@ -272,7 +272,7 @@ This is one line.
 This is another line.
 ]]></Example>
 <P/>
-Note in particular that it is not  allowed to enclose a newline inside
+Note in particular that it is not allowed to enclose a newline inside
 the string.
 You can use the  special character sequence <C>\n</C> to write strings that
 include newline characters.

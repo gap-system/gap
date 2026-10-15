@@ -126,7 +126,7 @@
 ##  When  this  declaration  is  evaluated  it  is  checked,  if  this  user
 ##  preference is  already set in the  current session. If not  the value of
 ##  the user  preference is set to  its default. (Do not  use <K>fail</K> as
-##  default  value  since this  indicates  that  a  user preference  is  not
+##  default value since this indicates that a user preference is not
 ##  set.)<P/>
 ##
 ##  The argument <A>record</A> of <Ref Func="DeclareUserPreference"/> must be

@@ -128,7 +128,7 @@ DeclareConstructor( "AbelianGroupCons", [ IsGroup, IsList ] );
 ##
 ##  If <A>filt</A> is not given it defaults to <Ref Filt="IsPcGroup"/>,
 ##  unless any 0 or <C>infinity</C> is contained in  <A>ints</A>, in which
-##  case the default filter is switched to  <Ref Filt="IsFpGroup"/>.
+##  case the default filter is switched to <Ref Filt="IsFpGroup"/>.
 ##  The generators of the group returned are the elements corresponding to
 ##  the factors <M>C_{{<A>ints</A>[i]}}</M> and hence the integers in <A>ints</A>.
 ##  For more information on possible values of <A>filt</A> see section

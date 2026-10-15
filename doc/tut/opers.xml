@@ -334,7 +334,7 @@ of the known attributes, leaving out the properties.
 <Index Key="ApplicableMethod"><C>ApplicableMethod</C></Index>
 Since &GAP; lets you know what it already  knows about an object, it is
 only natural  that   it also  lets   you know what  methods  it considers
-applicable for a certain operation, and in  what order it  will try them (in
+applicable for a certain operation, and in what order it will try them (in
 case <C>TryNextMethod()</C>  occurs).
 <C>ApplicableMethod( <A>opr</A>, [ arg_1, arg_2, ... ] )</C>
 returns the  first  applicable method for the  call

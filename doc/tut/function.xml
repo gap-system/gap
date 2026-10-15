@@ -303,7 +303,7 @@ a function call is not very cheap.)
 <Section Label="Further Information about Functions">
 <Heading>Further Information about Functions</Heading>
 
-The function  syntax is described  in Chapter <Ref Chap="Functions" BookName="ref"/>.   The <K>if</K>
+The function syntax is described in Chapter <Ref Chap="Functions" BookName="ref"/>. The <K>if</K>
 statement is described  in more detail in  Section <Ref Sect="If" BookName="ref"/>.  More  about
 Fibonacci  numbers is found  in  Section <Ref Func="Fibonacci" BookName="ref"/>  and more  about
 partitions in Section <Ref Func="Partitions" BookName="ref"/>.

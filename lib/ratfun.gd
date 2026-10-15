@@ -609,7 +609,7 @@ DeclareSynonym( "CoefficientsOfUnivariateLaurentPolynomial",
 ##  will default to a value of 1.
 ##  Therefore two univariate polynomials may be considered to be in the same
 ##  univariate polynomial ring if their indeterminates have the same number
-##  or one of them is constant.  (see also&nbsp;<Ref Func="CIUnivPols"/>
+##  or one of them is constant. (see also&nbsp;<Ref Func="CIUnivPols"/>
 ##  and&nbsp;<Ref Filt="IsLaurentPolynomialDefaultRep"/>).
 ##  </Description>
 ##  </ManSection>

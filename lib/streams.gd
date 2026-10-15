@@ -304,7 +304,7 @@ DeclareOperation( "PositionStream", [ IsInputStream ] );
 ##
 ##  <Description>
 ##  <Ref Oper="ReadAll"/> returns all characters as string from the input stream
-##  <A>input-stream</A>.  It waits (blocks) until at least one
+##  <A>input-stream</A>. It waits (blocks) until at least one
 ##  character is available from the stream, or until there is evidence
 ##  that no characters will ever be available again. This last indicates
 ##  that the stream is at end-of-stream.

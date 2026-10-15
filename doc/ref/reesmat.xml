@@ -302,7 +302,7 @@ true]]></Example>
       and <M>U'</M> is a subsemigroup of <M>U</M>.
       It can be costly to check that a subsemigroup defined by generators satisfies
       <Ref Prop="IsReesMatrixSemigroup"/>.
-      The  analogous statement holds for Rees 0-matrix semigroups. <P/>
+      The analogous statement holds for Rees 0-matrix semigroups. <P/>
 
       It is not necessarily the case that a simple subsemigroup of a Rees matrix
       semigroup satisfies <Ref Prop="IsReesMatrixSemigroup"/>. A Rees matrix

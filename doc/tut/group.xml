@@ -79,7 +79,7 @@ compute the commutator  subgroup  of <E>two</E> arbitrary  subgroups.)  The
 situation is  a bit  different for  Sylow  <M>p</M>-subgroups: The function
 <Ref Func="SylowSubgroup" BookName="ref"/> also  requires  two arguments,
 namely a   group and a
-prime <M>p</M>, but the result is  stored in the  group &ndash; namely together
+prime <M>p</M>, but the result is stored in the group &ndash; namely together
 with the prime  <M>p</M> in a  list that can be accessed with
 <C>ComputedSylowSubgroups</C>, but we
 won't dwell on the details here.
@@ -308,7 +308,7 @@ Note also the function <Ref Oper="First" BookName="ref"/>,
 used to find the first element in a list which passes some test.
 <P/>
 In this example,
-we  have specified the action function <Ref Func="OnPoints" BookName="ref"/>,
+we have specified the action function <Ref Func="OnPoints" BookName="ref"/>,
 which is defined as
 <C>OnPoints( </C><M>d</M><C>, </C><M>g</M><C> ) = </C><M>d</M><C> ^ </C><M>g</M>.
 This <Q>caret</Q>  operator denotes conjugation in  a group if  both
@@ -656,7 +656,7 @@ Remember that we can leave out the function if we mean
 but that we have to specify the action domain for all action functions.
 <P/>
 We see that <C>a8_56</C>   is not primitive. This  means  of course   that the
-action  of <C>a8</C>  on  <C>orbs[2]</C>  is not  primitive,  because those   two
+action of <C>a8</C> on <C>orbs[2]</C> is not primitive, because those two
 actions are equivalent. So the stabilizer <C>u56</C> is not maximal. Let us
 try to find its supergroups.
 We use the function <Ref Func="Blocks" BookName="ref"/> to find a block
@@ -742,7 +742,7 @@ of <Ref Func="OnPairs" BookName="ref"/>)
 and   then  pass it   as  action domain  to   the function
 <Ref Func="IsRegular" BookName="ref"/>.
 The positive result of  the regularity test means that this
-action is equivalent  to the action of <C>u336</C>  on  its 60 elements
+action is equivalent to the action of <C>u336</C> on its 60 elements
 from the right.
 <P/>
 <Example><![CDATA[

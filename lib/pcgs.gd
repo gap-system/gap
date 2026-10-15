@@ -330,7 +330,7 @@ DeclareAttribute( "PcgsElementaryAbelianSeries", IsGroup );
 ##  integers, indicating the tails of <A>pcgs</A> which generate these normal
 ##  subgroups of the group.
 ##  If <M>i</M> is an element of this list,
-##  <M>\langle g_i, \ldots, g_n \rangle</M> is normal.  The list always starts with <M>1</M>
+##  <M>\langle g_i, \ldots, g_n \rangle</M> is normal. The list always starts with <M>1</M>
 ##  and ends with <M>n+1</M>.
 ##  (These indices form <E>one</E> series with elementary abelian
 ##  subfactors, not necessarily the most refined one.)

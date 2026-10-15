@@ -660,7 +660,7 @@ DeclareOperation( "Sigma", [ IsObject ] );
 ##  nonzero integer <A>n</A>.
 ##  <P/>
 ##  <Ref Oper="Tau"/> is a multiplicative arithmetic function, i.e.,
-##  if <M>n</M> and  <M>m</M> are relatively prime we have
+##  if <M>n</M> and <M>m</M> are relatively prime we have
 ##  <M>\tau(n \cdot m) = \tau(n) \tau(m)</M>.
 ##  Together with the formula <M>\tau(p^k) = k+1</M> this allows us
 ##  to compute <M>\tau(<A>n</A>)</M>.

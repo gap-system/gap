@@ -176,7 +176,7 @@ gap> stream := InputTextFile( file );;
   This  function must  return  a  list of  indices  of <A>info</A><C>.entries</C>  for
   entries which  match the search  string <A>topic</A>. If <A>frombegin</A>  is <K>true</K>
   then  those parts  of  <A>topic</A> which  are separated  by  spaces should  be
-  considered  as  the  beginnings  of  words  to  decide  the  matching.  If
+  considered as the beginnings of words to decide the matching. If
   <A>frombegin</A> is <K>false</K>, a substring search should be performed. The string
   <A>topic</A>  can be  assumed to  be already  normalized (transformed  to lower
   case, and whitespace normalized). The function must return a list with two
@@ -232,7 +232,7 @@ following values of the <A>type</A> argument.
 </Item>
 <Mark><C>"url"</C> </Mark>
 <Item>
-  If the help book is available in HTML  format this must return a URL as a
+  If the help book is available in HTML format this must return a URL as a
   string (Probably a <C>file://</C> URL containing  a label for the  exact start
   position in that file). Otherwise it returns <K>fail</K>.
 </Item>
