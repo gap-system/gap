@@ -2,7 +2,7 @@
 // © Copyright Henrik Ravn 2004
 //
 // Use, modification and distribution are subject to the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+// (See accompanying file LICENSE_1_0.txt or copy at https://www.boost.org/LICENSE_1_0.txt)
 //
 
 using System;
@@ -34,7 +34,7 @@ namespace DotZLib
         }
 
         /// <summary>
-        /// Initializes a new instance of the checksum generator basewith a specified value
+        /// Initializes a new instance of the checksum generator base with a specified value
         /// </summary>
         /// <param name="initialValue">The value to set the current checksum to</param>
         public ChecksumGeneratorBase(uint initialValue)

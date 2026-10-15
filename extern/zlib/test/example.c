@@ -1,9 +1,13 @@
 /* example.c -- usage example of the zlib compression library
- * Copyright (C) 1995-2006, 2011, 2016 Jean-loup Gailly
+ * Copyright (C) 1995-2026 Jean-loup Gailly
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
 /* @(#) $Id$ */
+
+#if defined(_WIN32) && !defined(_CRT_SECURE_NO_WARNINGS)
+#  define _CRT_SECURE_NO_WARNINGS
+#endif
 
 #include "zlib.h"
 #include <stdio.h>
@@ -13,8 +17,10 @@
 #  include <stdlib.h>
 #endif
 
-#if defined(VMS) || defined(RISCOS)
+#if defined(VMS)
 #  define TESTFILE "foo-gz"
+#elif defined(__riscos) && !defined(__TARGET_UNIXLIB__)
+#  define TESTFILE "foo/gz"
 #else
 #  define TESTFILE "foo.gz"
 #endif
@@ -36,12 +42,12 @@ static uLong dictId;    /* Adler32 value of the dictionary */
 
 #ifdef Z_SOLO
 
-void *myalloc(void *q, unsigned n, unsigned m) {
+static void *myalloc(void *q, unsigned n, unsigned m) {
     (void)q;
     return calloc(n, m);
 }
 
-void myfree(void *q, void *p) {
+static void myfree(void *q, void *p) {
     (void)q;
     free(p);
 }
@@ -57,7 +63,7 @@ static free_func zfree = (free_func)0;
 /* ===========================================================================
  * Test compress() and uncompress()
  */
-void test_compress(Byte *compr, uLong comprLen, Byte *uncompr,
+static void test_compress(Byte *compr, uLong comprLen, Byte *uncompr,
                    uLong uncomprLen) {
     int err;
     uLong len = (uLong)strlen(hello)+1;
@@ -81,7 +87,7 @@ void test_compress(Byte *compr, uLong comprLen, Byte *uncompr,
 /* ===========================================================================
  * Test read/write of .gz files
  */
-void test_gzio(const char *fname, Byte *uncompr, uLong uncomprLen) {
+static void test_gzio(const char *fname, Byte *uncompr, uLong uncomprLen) {
 #ifdef NO_GZCOMPRESS
     fprintf(stderr, "NO_GZCOMPRESS -- gz* functions cannot compress\n");
 #else
@@ -163,7 +169,7 @@ void test_gzio(const char *fname, Byte *uncompr, uLong uncomprLen) {
 /* ===========================================================================
  * Test deflate() with small buffers
  */
-void test_deflate(Byte *compr, uLong comprLen) {
+static void test_deflate(Byte *compr, uLong comprLen) {
     z_stream c_stream; /* compression stream */
     int err;
     uLong len = (uLong)strlen(hello)+1;
@@ -198,7 +204,7 @@ void test_deflate(Byte *compr, uLong comprLen) {
 /* ===========================================================================
  * Test inflate() with small buffers
  */
-void test_inflate(Byte *compr, uLong comprLen, Byte *uncompr,
+static void test_inflate(Byte *compr, uLong comprLen, Byte *uncompr,
                   uLong uncomprLen) {
     int err;
     z_stream d_stream; /* decompression stream */
@@ -237,7 +243,7 @@ void test_inflate(Byte *compr, uLong comprLen, Byte *uncompr,
 /* ===========================================================================
  * Test deflate() with large buffers and dynamic change of compression level
  */
-void test_large_deflate(Byte *compr, uLong comprLen, Byte *uncompr,
+static void test_large_deflate(Byte *compr, uLong comprLen, Byte *uncompr,
                         uLong uncomprLen) {
     z_stream c_stream; /* compression stream */
     int err;
@@ -290,7 +296,7 @@ void test_large_deflate(Byte *compr, uLong comprLen, Byte *uncompr,
 /* ===========================================================================
  * Test inflate() with large buffers
  */
-void test_large_inflate(Byte *compr, uLong comprLen, Byte *uncompr,
+static void test_large_inflate(Byte *compr, uLong comprLen, Byte *uncompr,
                         uLong uncomprLen) {
     int err;
     z_stream d_stream; /* decompression stream */
@@ -319,7 +325,7 @@ void test_large_inflate(Byte *compr, uLong comprLen, Byte *uncompr,
     CHECK_ERR(err, "inflateEnd");
 
     if (d_stream.total_out != 2*uncomprLen + uncomprLen/2) {
-        fprintf(stderr, "bad large inflate: %ld\n", d_stream.total_out);
+        fprintf(stderr, "bad large inflate: %lu\n", d_stream.total_out);
         exit(1);
     } else {
         printf("large_inflate(): OK\n");
@@ -329,7 +335,7 @@ void test_large_inflate(Byte *compr, uLong comprLen, Byte *uncompr,
 /* ===========================================================================
  * Test deflate() with full flush
  */
-void test_flush(Byte *compr, uLong *comprLen) {
+static void test_flush(Byte *compr, uLong *comprLen) {
     z_stream c_stream; /* compression stream */
     int err;
     uInt len = (uInt)strlen(hello)+1;
@@ -364,7 +370,8 @@ void test_flush(Byte *compr, uLong *comprLen) {
 /* ===========================================================================
  * Test inflateSync()
  */
-void test_sync(Byte *compr, uLong comprLen, Byte *uncompr, uLong uncomprLen) {
+static void test_sync(Byte *compr, uLong comprLen, Byte *uncompr,
+                      uLong uncomprLen) {
     int err;
     z_stream d_stream; /* decompression stream */
 
@@ -404,7 +411,7 @@ void test_sync(Byte *compr, uLong comprLen, Byte *uncompr, uLong uncomprLen) {
 /* ===========================================================================
  * Test deflate() with preset dictionary
  */
-void test_dict_deflate(Byte *compr, uLong comprLen) {
+static void test_dict_deflate(Byte *compr, uLong comprLen) {
     z_stream c_stream; /* compression stream */
     int err;
 
@@ -438,7 +445,7 @@ void test_dict_deflate(Byte *compr, uLong comprLen) {
 /* ===========================================================================
  * Test inflate() with a preset dictionary
  */
-void test_dict_inflate(Byte *compr, uLong comprLen, Byte *uncompr,
+static void test_dict_inflate(Byte *compr, uLong comprLen, Byte *uncompr,
                        uLong uncomprLen) {
     int err;
     z_stream d_stream; /* decompression stream */
@@ -503,7 +510,7 @@ int main(int argc, char *argv[]) {
     }
 
     printf("zlib version %s = 0x%04x, compile flags = 0x%lx\n",
-            ZLIB_VERSION, ZLIB_VERNUM, zlibCompileFlags());
+            ZLIB_VERSION, (unsigned)ZLIB_VERNUM, zlibCompileFlags());
 
     compr    = (Byte*)calloc((uInt)comprLen, 1);
     uncompr  = (Byte*)calloc((uInt)uncomprLen, 1);
