@@ -1432,8 +1432,7 @@ DeclareOperation( "GcdRepresentationOp",
 ##  Note that this in particular implies the following:
 ##  For the zero element <M>z</M> of <A>R</A>, we have
 ##  <C>Lcm( <A>r</A>, </C><M>z</M><C> ) = Lcm( </C><M>z</M><C>, <A>r</A> )
-##  = StandardAssociate( <A>r</A> )</C>
-##  and <C>Lcm( </C><M>z</M><C>, </C><M>z</M><C> ) = </C><M>z</M>.
+##  = </C><M>z</M>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

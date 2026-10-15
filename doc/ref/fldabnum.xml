@@ -42,7 +42,7 @@ For operations for elements of abelian number fields, e.g.,
 see Chapter&nbsp;<Ref Chap="Cyclotomic Numbers"/>.
 
 <ManSection>
-<Meth Name="Factors" Arg='F'
+<Meth Name="Factors" Arg='R, pol'
  Label="for polynomials over abelian number fields"/>
 
 <Description>
@@ -131,7 +131,7 @@ of prime residues modulo <M>n</M>, via the isomorphism
 that is defined by
 <M>k + n &ZZ; \mapsto ( z \mapsto z^{*k} )</M>.
 <P/>
-The Galois group of the field extension <M>&QQ;_n / L</M> with
+The Galois group of the field extension <M>L / &QQ;</M> with
 any abelian number field <M>L \subseteq &QQ;_n</M> is simply the
 factor group of <M>Gal( &QQ;_n, &QQ; )</M> modulo the stabilizer of <M>L</M>,
 and the Galois group of <M>L / L'</M>, with <M>L'</M> an abelian
