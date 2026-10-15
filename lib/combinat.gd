@@ -21,7 +21,7 @@
 ##  <Func Name="Factorial" Arg='n'/>
 ##
 ##  <Description>
-##  returns the <E>factorial</E> <M>n!</M> of the positive integer <A>n</A>,
+##  returns the <E>factorial</E> <M>n!</M> of the nonnegative integer <A>n</A>,
 ##  which is defined as the product <M>1 \cdot 2 \cdot 3 \cdots n</M>.
 ##  <P/>
 ##  <M>n!</M> is the number of permutations of a set of <M>n</M> elements.
@@ -1452,7 +1452,7 @@ DeclareOperation("LucasMod",[IsInt,IsInt,IsInt,IsInt]);
 ##  which is consistent with the recurrence relation.
 ##  <P/>
 ##  Using generating functions one can prove that
-##  <M>F_n = \phi^n - 1/\phi^n</M>,
+##  <M>F_n = (\phi^n - (-1/\phi)^n)/\sqrt{{5}}</M>,
 ##  where <M>\phi</M> is <M>(\sqrt{{5}} + 1)/2</M>,
 ##  i.e., one root of <M>x^2 - x - 1 = 0</M>.
 ##  Fibonacci numbers have the property

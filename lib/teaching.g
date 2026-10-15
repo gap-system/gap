@@ -331,8 +331,8 @@ DeclareGlobalFunction("CheckDigitTestFunction");
 ##  each representing a single digit.
 ##
 ##  The check digits tested are the 10-digit ISBN (International Standard Book
-##  Number) using <Ref Func="CheckDigitISBN"/> (since arithmetic is module 11, a
-##  digit 11 is represented by an X);
+##  Number) using <Ref Func="CheckDigitISBN"/> (since arithmetic is modulo 11, a
+##  check digit 10 is represented by an X);
 ##  the newer 13-digit ISBN-13 using <Ref Func="CheckDigitISBN13"/>;
 ##  the numbers of 11-digit US postal money orders using
 ##  <Ref Func="CheckDigitPostalMoneyOrder"/>; and

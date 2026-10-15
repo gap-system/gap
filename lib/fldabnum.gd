@@ -223,7 +223,7 @@ InstallIsomorphismMaintenance( GaloisStabilizer,
 ##  <Filt Name="IsRationals" Arg='obj'/>
 ##
 ##  <Description>
-##  <Ref Var="Rationals"/> is the field <M>&QQ;</M> of rational integers,
+##  <Ref Var="Rationals"/> is the field <M>&QQ;</M> of rational numbers,
 ##  as a set of cyclotomic numbers,
 ##  see Chapter&nbsp;<Ref Chap="Cyclotomic Numbers"/> for basic operations,
 ##  Functions for the field <Ref Var="Rationals"/> can be found in the
