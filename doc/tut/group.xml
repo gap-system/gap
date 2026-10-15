@@ -79,7 +79,7 @@ compute the commutator  subgroup  of <E>two</E> arbitrary  subgroups.)  The
 situation is  a bit  different for  Sylow  <M>p</M>-subgroups: The function
 <Ref Func="SylowSubgroup" BookName="ref"/> also  requires  two arguments,
 namely a   group and a
-prime <M>p</M>, but the result is  stored in the  group &mdash; namely together
+prime <M>p</M>, but the result is  stored in the  group &ndash; namely together
 with the prime  <M>p</M> in a  list that can be accessed with
 <C>ComputedSylowSubgroups</C>, but we
 won't dwell on the details here.
@@ -1166,7 +1166,7 @@ true
 <P/>
 Note that a nice monomorphism might be defined on a larger group than
 <C>grp</C>
-&mdash; so we have to use <C>Image( hom, grp )</C> and not only
+&ndash; so we have to use <C>Image( hom, grp )</C> and not only
 <C>Image( hom )</C>.
 <P/>
 Nice monomorphisms are not only used for matrix groups, but also for

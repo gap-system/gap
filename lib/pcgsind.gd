@@ -64,7 +64,7 @@ DeclareOperation( "InducedPcgsByPcSequenceNC", [ IsPcgs, IsList ] );
 ##
 ##  <Description>
 ##  This attribute is used to store leading coefficients with respect to the
-##  parent pcgs. The <A>i</A>-th entry &ndash;if bound&ndash; is the leading
+##  parent pcgs. The <A>i</A>-th entry &ndash; if bound &ndash; is the leading
 ##  exponent of the element of <A>igs</A> that has depth <A>i</A> in the
 ##  parent.
 ##  (It cannot be assigned to a component in the object created by
