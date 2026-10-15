@@ -1034,7 +1034,13 @@ InstallGlobalFunction( PowerSi, function( F, i )
     seqs:= PermutationsList( Concatenation(
                ListWithIdenticalEntries( i-1, 1 ),
                ListWithIdenticalEntries( p-1-i, 2 ) ) );
-    return arg -> si( seqs, arg );
+    return function( arg )
+        # accept s_i( x, y ) and s_i( [ x, y ] )
+        if Length( arg ) = 1 then
+          return si( seqs, arg[1] );
+        fi;
+        return si( seqs, arg );
+    end;
 end );
 
 
