@@ -1139,6 +1139,11 @@ static Obj FuncTzSearchC(Obj self, Obj args)
        {
           continue;  // loop over y
        }
+
+       // A relator that was just shortened is examined again whatever its
+       // length, but it cannot contain a match longer than itself
+       if ( ylen < mlen )
+          continue;  // loop over y
        lasty = y;
 
        // Compute the key values of the current relator
