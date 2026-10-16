@@ -274,8 +274,8 @@ DeclareAttribute( "NrInputsOfStraightLineProgram", IsStraightLineProgram );
 ##      let <M>r</M> be of length <M>n</M>.
 ##      If <M>p_i</M> is the external representation of an associative word
 ##      in the first <M>n</M> generators then the image of this word under
-##      the homomorphism that is given by mapping <M>r</M> to these first
-##      <M>n</M> generators is added to <M>r</M>;
+##      the homomorphism that is given by mapping these first <M>n</M>
+##      generators to <M>r</M> is added to <M>r</M>;
 ##      if <M>p_i</M> is a pair <M>[ l, j ]</M>, for a list <M>l</M>,
 ##      then the same element is computed, but instead of being added to
 ##      <M>r</M>, it replaces the <M>j</M>-th entry of <M>r</M>.
