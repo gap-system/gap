@@ -148,41 +148,19 @@ end);
 
 #############################################################################
 ##
-#M  SparseIntKey(<objcol>)
+#M  SparseIntKey( <enum>, <list> )
 ##
-InstallMethod(SparseIntKey,"for bounded tuples",true,
-    [ IsList,IsList and IsCyclotomicCollection ], 0,
+InstallMethod(SparseIntKey,"for enumerators of lists of small integers",true,
+    [ IsEnumeratorOfSmallIntLists, IsObject ], 0,
 function(m, v)
-  if Length(m)<> 3 or m[1]<>"BoundedTuples" then
-    TryNextMethod();
-  fi;
-  # Due to the way BoundedTuples are presently implemented we expect the input
-  # to the hash function to always be a list of positive immediate integers. This means
-  # that using HashKeyWholeBag should be safe.
+  # the entries are immediate, so equal lists have equal entry slots
   return function(x)
-    Assert(1, IsPositionsList(x));
     if not IsPlistRep(x) then
       x := PlainListCopy(x);
     fi;
-    return HashKeyBag(x, 1, 0, Length(x) * GAPInfo.BytesPerVariable);
+    return HashKeyBag(x, 1, GAPInfo.BytesPerVariable,
+                      Length(x) * GAPInfo.BytesPerVariable);
   end;
-
-  # alternative code w/o HashKeyBag
-  ## build a weight vector to distinguish lists. Make entries large while staying clearly within
-  ## immediate int (2^55 replacing 2^60, since we take subsequent primes).
-  #step:=NextPrimeInt(QuoInt(2^55,Maximum(m[2])*m[3]));
-  #weights:=[1];
-  #len:=Length(v);
-  ## up to 56 full, then increasingly reduce
-  #len:=Minimum(len,8*RootInt(len));
-  #while Length(weights)<len do
-  #  Add(weights,Last(weights)+step);
-  #  step:=NextPrimeInt(step);
-  #od;
-  #return function(a)
-  #  return a*weights;
-  #end;
-
 end);
 
 BindGlobal( "SparseIntKeyVecListAndMatrix", function(d,m)

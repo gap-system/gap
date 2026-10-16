@@ -325,13 +325,13 @@ DeclareGlobalFunction("Combinations");
 #############################################################################
 ##
 #F  IteratorOfCombinations( mset[, k ] )
-#F  EnumeratorOfCombinations( mset )
+#F  EnumeratorOfCombinations( mset[, k ] )
 ##
 ##  <#GAPDoc Label="IteratorOfCombinations">
 ##  <ManSection>
 ##  <Heading>Iterator and enumerator of combinations</Heading>
 ##  <Func Name="IteratorOfCombinations" Arg='mset[, k]'/>
-##  <Func Name="EnumeratorOfCombinations" Arg='mset'/>
+##  <Func Name="EnumeratorOfCombinations" Arg='mset[, k]'/>
 ##
 ##  <Description>
 ##  <Ref Func="IteratorOfCombinations" /> returns an <Ref Oper="Iterator" />
@@ -341,8 +341,8 @@ DeclareGlobalFunction("Combinations");
 ##  all combinations.
 ##  <P/>
 ##  <Ref Func="EnumeratorOfCombinations"/> returns an <Ref Attr="Enumerator" />
-##  of the given multiset <A>mset</A>. Currently only a variant without second
-##  argument <A>k</A> is implemented.
+##  for the same combinations.
+##  With second argument <A>k</A>, it is strictly sorted.
 ##  <P/>
 ##  The ordering of combinations from these functions can be different and also
 ##  different from the list returned by <Ref Func="Combinations"/>.
@@ -359,6 +359,12 @@ DeclareGlobalFunction("Combinations");
 ##  [ 1, 2, 3, 6, 7, 8, 9, 10 ]
 ##  gap> Position(cm, [1,13,15,15]);
 ##  36866
+##  gap> cm := EnumeratorOfCombinations([1..30], 6);
+##  EnumeratorOfCombinations( [ 1 .. 30 ], 6 )
+##  gap> Length(cm);
+##  593775
+##  gap> Position(cm, [1,2,3,4,5,7]);
+##  2
 ##  </Example>
 ##  </Description>
 ##  </ManSection>
@@ -638,6 +644,10 @@ DeclareGlobalFunction("Tuples");
 ##  also for other functions that are declared in <F>lib/combinat.gd</F>.
 ##
 DeclareGlobalFunction( "EnumeratorOfTuples" );
+
+##  Set for the enumerators above if their elements are lists of small
+##  integers, so that dictionaries can hash these lists by their contents.
+DeclareFilter( "IsEnumeratorOfSmallIntLists" );
 
 
 #############################################################################
