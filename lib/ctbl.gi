@@ -1135,7 +1135,7 @@ InstallMethod( LinearCharacters,
       return Irr( G, 0 );
     fi;
 
-    pi:= NaturalHomomorphismByNormalSubgroupNC( G, DerivedSubgroup( G ) );
+    pi:= MaximalAbelianQuotient( G );
     img:= ImagesSource( pi );
     SetIsAbelian( img, true );
 #   return RestrictedClassFunctions( CharacterTable( img ),

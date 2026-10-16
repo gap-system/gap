@@ -922,7 +922,7 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,sg,c,i;
   fi;
 
   if IsAbelian(G) and not IsAbelian(H) then
-    k:=NaturalHomomorphismByNormalSubgroup(H,DerivedSubgroup(H));
+    k:=MaximalAbelianQuotient(H);
     return List(AllHomomorphismClasses(Image(k),G),x->k*x);
   fi;
 
