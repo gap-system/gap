@@ -220,7 +220,7 @@ DeclareOperation( "ExternalFilename", [ IsList, IsString ] );
 ##  The input for this break loop is not taken from the file, but from the
 ##  input connected to the <C>stderr</C> output of &GAP;.
 ##  If <C>stderr</C> is not connected to a terminal,
-##  no break loop is entered.
+##  the input is taken from the standard input instead.
 ##  If this break loop is left with <K>quit</K> (or <B>Ctrl-D</B>),
 ##  &GAP; exits from the <Ref Oper="Read"/> command, and from all enclosing
 ##  <Ref Oper="Read"/> commands, so that control is normally returned to an
