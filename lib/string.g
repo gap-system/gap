@@ -248,14 +248,11 @@ BIND_GLOBAL( "TYPE_STRING_SSORT_IMMUTABLE",
 ##  <Ref Func="IsEmptyString"/> returns <K>true</K> if <A>str</A> is the
 ##  empty string in the representation <Ref Filt="IsStringRep"/>,
 ##  and <K>false</K> otherwise.
-##  Note that the empty list <C>[]</C> and the empty string <C>""</C> have
-##  the same type, the recommended way to distinguish them is via
+##  Note that the empty list <C>[]</C> and the empty string <C>""</C> are
+##  equal and both satisfy <Ref Filt="IsString"/>,
+##  the recommended way to distinguish them is via
 ##  <Ref Func="IsEmptyString"/>.
 ##  For formatted printing, this distinction is sometimes necessary.
-##  <!-- The type is the same because <C>IsStringRep</C> is not <E>set</E> in this type,-->
-##  <!-- and <C>IsPlistRep</C> is <E>set</E>,-->
-##  <!-- although <E>calling</E> <C>IsStringRep</C> for <C>[]</C> yields <K>false</K>,-->
-##  <!-- and <E>calling</E> <C>IsPlistRep</C> for <C>""</C> yields <K>false</K>, too.-->
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> l:= [];;  IsString( l );  IsEmptyString( l );  IsEmpty( l );
