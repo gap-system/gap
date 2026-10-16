@@ -22,9 +22,10 @@
 ##  <Description>
 ##  <Ref Func="ProfileLineByLine"/> begins GAP recording profiling
 ##  data to the file <A>filename</A>. This file will get *very* large
-##  very quickly. This file is compressed using gzip to reduce its size.
+##  very quickly. If <A>filename</A> ends in <C>.gz</C>, the file is
+##  compressed using gzip to reduce its size.
 ##
-##  <A>options</A> is an optional dictionary, which sets various
+##  <A>options</A> is an optional record, which sets various
 ##  configuration options. These are
 ##  <List>
 ##  <Mark>coverage</Mark>

@@ -80,7 +80,8 @@ InstallMethod( FlushCaches, "return method", [], function() end );
 ##    <Ref Oper="FlushCaches"/> is called; if false, then the cache
 ##    cannot be flushed.
 ##  </Item>
-##  <Mark><C>errorHandler</C> (defaults to <Ref Func="Error"/>)</Mark>
+##  <Mark><C>errorHandler</C> (defaults to raising an error with
+##  <Ref Func="ErrorNoReturn"/>)</Mark>
 ##  <Item>
 ##    A function to be called when an input which is not a positive integer
 ##    is passed to the cache. The function can either raise an error, or else

@@ -225,6 +225,8 @@ DeclareGlobalFunction( "Exec" );
 ##  <P/>
 ##  The returned record always has the component <C>status</C>: the exit code
 ##  of the program, or <K>fail</K> if it could not be executed at all.
+##  If <A>cmd</A> is not a path and cannot be found in the system path,
+##  an error is signalled.
 ##  A nonzero exit code is not treated as an error by
 ##  <Ref Func="RunProcess"/>; it is up to the caller to check it.
 ##  Note that <Ref Oper="Process"/>, and hence <Ref Func="RunProcess"/>, reports

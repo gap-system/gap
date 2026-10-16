@@ -83,7 +83,7 @@ end;
 ##  It prints the <A>nr</A>-th arguments of the operation call
 ##  for which no method was found.
 ##  <Ref Func="ShowArgument"/> needs exactly one
-##  argument which is an integer between 0 and the number of arguments the
+##  argument which is an integer between 1 and the number of arguments the
 ##  operation was called with.
 ##  </Description>
 ##  </ManSection>

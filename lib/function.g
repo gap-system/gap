@@ -260,9 +260,9 @@ DeclareOperationKernel( "NamesLocalVariablesFunction", [IS_OBJECT], NAMS_FUNC );
 ##  fail
 ##  gap> FilenameFunc( x -> x^2 );  # an interactively entered function
 ##  "*stdin*"
-##  gap> meth:= ApplicableMethod( Size, [ Group( () ) ] );;
+##  gap> meth:= ApplicableMethod( Size, [ Group( (1,2,3), (1,2) ) ] );;
 ##  gap> FilenameFunc( meth );
-##  "... some path .../grpperm.gi"
+##  "... some path .../lib/coll.gi"
 ##  ]]></Log>
 ##  </Description>
 ##  </ManSection>
@@ -290,13 +290,13 @@ BIND_GLOBAL( "FilenameFunc", FILENAME_FUNC );
 ##  in this file where the definition of <A>func</A> ends.
 ##  <P/>
 ##  <Log><![CDATA[
-##  gap> meth:= ApplicableMethod( Size, [ Group( () ) ] );;
+##  gap> meth:= ApplicableMethod( Size, [ Group( (1,2,3), (1,2) ) ] );;
 ##  gap> FilenameFunc( meth );
-##  "... some path ... /lib/grpperm.gi"
+##  "... some path ... /lib/coll.gi"
 ##  gap> StartlineFunc( meth );
-##  487
+##  166
 ##  gap> EndlineFunc( meth );
-##  487
+##  171
 ##  ]]></Log>
 ##  </Description>
 ##  </ManSection>
@@ -427,7 +427,7 @@ end);
 ##  gap> CallFuncListWrap( x -> x, [1] );
 ##  [ 1 ]
 ##  gap> CallFuncListWrap( function(x) end, [1] );
-##  [ ]
+##  [  ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
