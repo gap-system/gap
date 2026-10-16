@@ -3001,13 +3001,17 @@ local hom,F,new;
   #TODO: Remove the !.nathom component
   if not IsBound(F!.nathom) then
     F!.nathom:=hom;
-  else
-    # avoid cached homomorphisms
-    new:=Group(GeneratorsOfGroup(F),One(F));
-    hom:=hom*GroupHomomorphismByImagesNC(F,new,
-      GeneratorsOfGroup(F),GeneratorsOfGroup(F));
-    F:=new;
-    F!.nathom:=hom;
+  elif not IsIdenticalObj(F!.nathom,hom) then
+    # Unrelated natural homomorphisms can share their image, for example a
+    # cached pc group. Then return a copy of <F>, the same one in each call.
+    if not IsBound(hom!.factorGroup) then
+      new:=Group(GeneratorsOfGroup(F),One(F));
+      UseIsomorphismRelation(F,new);
+      new!.nathom:=hom*GroupHomomorphismByImagesNC(F,new,
+        GeneratorsOfGroup(F),GeneratorsOfGroup(F));
+      hom!.factorGroup:=new;
+    fi;
+    F:=hom!.factorGroup;
   fi;
   return F;
 end );
