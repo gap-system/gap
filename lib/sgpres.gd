@@ -484,11 +484,11 @@ PresentationNormalClosure := PresentationNormalClosureRrs;
 
 #############################################################################
 ##
-#F  PresentationSubgroupMtc(<G>, <H>[, <string>][, <print level>] )
+#F  PresentationSubgroupMtc(<G>, <H>[, <string>] )
 ##
 ##  <#GAPDoc Label="PresentationSubgroupMtc">
 ##  <ManSection>
-##  <Func Name="PresentationSubgroupMtc" Arg='G, H[, string][, print level]'/>
+##  <Func Name="PresentationSubgroupMtc" Arg='G, H[, string]'/>
 ##
 ##  <Description>
 ##  uses the Modified Todd-Coxeter coset representative enumeration method
@@ -500,10 +500,6 @@ PresentationNormalClosure := PresentationNormalClosureRrs;
 ##  <M>\ldots</M>, the default string is <C>"_x"</C>.
 ##  You may access the <M>i</M>-th of these generators by
 ##  <M>P</M><C>!.</C><M>i</M>.
-##  <P/>
-##  The default print level is <M>1</M>.
-##  If the print level is set to <M>0</M>, then the printout of the
-##  implicitly called function <Ref Func="DecodeTree"/> will be suppressed.
 ##  <Example><![CDATA[
 ##  gap> p := PresentationSubgroupMtc( g, u );
 ##  <presentation with 2 gens and 3 rels of total length 14>
@@ -562,17 +558,9 @@ PresentationNormalClosure := PresentationNormalClosureRrs;
 ##  The different behaviour here is caused by the fact that coincidences may
 ##  have occurred in the Modified Todd-Coxeter coset enumeration.
 ##  <P/>
-##  To overcome this problem without extending the presentation by all
-##  secondary generators, the <Ref Func="PresentationSubgroupMtc"/> command
-##  applies the so called <E>decoding tree</E> algorithm which provides a
-##  more economical approach.
-##  The reader is strongly recommended to carefully read section
-##  <Ref Sect="sect:DecodeTree"/> where this algorithm is described in more
-##  detail.
-##  Here we will only mention that this procedure may add a lot of
-##  intermediate generators and relators (and even change the isomorphism
-##  type) in a process which in fact eliminates all
-##  secondary generators from the presentation and hence finally provides
+##  The <Ref Func="PresentationSubgroupMtc"/> command therefore extends the
+##  presentation in this way and then eliminates all
+##  secondary generators by Tietze transformations, which finally provides
 ##  a presentation of <A>H</A> on the primary, i.e., the originally given,
 ##  generators of <A>H</A>. This is a remarkable advantage of the command
 ##  <Ref Func="PresentationSubgroupMtc"/> compared to the command
@@ -585,19 +573,7 @@ PresentationNormalClosure := PresentationNormalClosureRrs;
 ##  The resulting presentation is returned in the form of a presentation,
 ##  <M>P</M> say.
 ##  <P/>
-##  As the function <Ref Func="PresentationSubgroupRrs"
-##  Label="for a group and a coset table (and a string)"/> described above
-##  (see there for details),
-##  the function <Ref Func="PresentationSubgroupMtc"/> returns a list of the
-##  primary subgroup generators of <A>H</A> in the attribute
-##  <Ref Attr="PrimaryGeneratorWords"/> of <M>P</M>.
-##  In fact, this list is not very exciting here
-##  because it is just a shallow copy of the value of
-##  <Ref Func="GeneratorsOfPresentation"/> of <A>H</A>, however it is
-##  needed to guarantee a certain consistency between the results of the
-##  different functions for computing subgroup presentations.
-##  <P/>
-##  Though the decoding tree routine already involves a lot of Tietze
+##  Though this elimination already involves a lot of Tietze
 ##  transformations, we recommend that you try to further simplify the
 ##  resulting presentation by appropriate Tietze transformations
 ##  (see <Ref Sect="Tietze Transformations"/>).

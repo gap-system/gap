@@ -2918,9 +2918,7 @@ InParentFOA( "Core", IsGroup, IsGroup, DeclareAttribute );
 ##  <P/>
 ##  Basically a coset table is the permutation representation of the finitely
 ##  presented group on the cosets of a subgroup  (which need  not be faithful
-##  if the subgroup has a nontrivial  core).  Most  of  the set theoretic and
-##  group functions use the regular representation of <A>G</A>,
-##  i.e., the coset table of <A>G</A> over the trivial subgroup.
+##  if the subgroup has a nontrivial  core).
 ##  <P/>
 ##  The coset table is returned as a list of lists. For each generator of
 ##  <A>G</A> and its inverse the table contains a generator list. A generator
