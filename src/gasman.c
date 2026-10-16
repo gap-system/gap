@@ -1914,7 +1914,9 @@ static void SparcStackFuncBags(void)
 #endif
 
 
-static NOINLINE void ScanRange(void * vpA, void * vpB)
+// reads stack words at offsets that are multiples of C_STACK_ALIGN, which
+// may be less than sizeof(Bag), so that unaligned bag references are found
+static NOINLINE NO_SANITIZE_ALIGNMENT void ScanRange(void * vpA, void * vpB)
 {
     UInt  i;
     Bag * p;
