@@ -70,7 +70,8 @@ DeclareAttribute( "SchurCover", IsGroup );
 ##
 ##  <#GAPDoc Label="EpimorphismSchurCover">
 ##  <ManSection>
-##  <Attr Name="EpimorphismSchurCover" Arg='G[, pl]'/>
+##  <Attr Name="EpimorphismSchurCover" Arg='G'/>
+##  <Oper Name="EpimorphismSchurCover" Arg='G, pl' Label="for a group and a list of primes"/>
 ##
 ##  <Description>
 ##  returns an epimorphism <M>epi</M> from a group <M>D</M> onto <A>G</A>.

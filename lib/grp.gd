@@ -389,7 +389,8 @@ DeclareOperation( "CanComputeIndex", [IsGroup,IsGroup] );
 ##
 ##  <#GAPDoc Label="KnowsHowToDecompose">
 ##  <ManSection>
-##  <Prop Name="KnowsHowToDecompose" Arg='G[, gens]'/>
+##  <Prop Name="KnowsHowToDecompose" Arg='G'/>
+##  <Oper Name="KnowsHowToDecompose" Arg='G, gens' Label="for a group and generators"/>
 ##
 ##  <Description>
 ##  Tests whether the group <A>G</A> can decompose elements in the generators
@@ -1972,7 +1973,7 @@ DeclareAttribute( "InvariantForm", IsGroup );
 ##  <Description>
 ##  For a <M>p</M>-group <A>G</A>, this function returns its Jennings series.
 ##  This series is defined by setting
-##  <M>G_1 = <A>G</A></M> and for <M>i \geq 0</M>,
+##  <M>G_1 = <A>G</A></M> and for <M>i \geq 1</M>,
 ##  <M>G_{{i+1}} = [G_i,<A>G</A>] G_j^p</M>,
 ##  where <M>j</M> is the smallest integer <M>> i/p</M>.
 ##  </Description>
@@ -2764,11 +2765,11 @@ DeclareGlobalFunction( "ClosureGroupIntest" );
 ##  <Func Name="ClosureSubgroupNC" Arg='G, obj'/>
 ##
 ##  <Description>
-##  For a group <A>G</A> that stores a parent group (see&nbsp;<Ref Sect="Parents"/>),
 ##  <Ref Func="ClosureSubgroup"/> calls <Ref Oper="ClosureGroup"/> with the same
 ##  arguments;
-##  if the result is a subgroup of the parent of <A>G</A> then the parent of <A>G</A>
-##  is set as parent of the result, otherwise an error is raised.
+##  if <A>G</A> stores a parent group (see&nbsp;<Ref Sect="Parents"/>) and
+##  the result is a subgroup of it then the parent of <A>G</A>
+##  is set as parent of the result; otherwise no parent is set.
 ##  The check whether the result is contained in the parent of <A>G</A> is omitted
 ##  by the <C>NC</C> version. As a wrong parent might imply wrong properties this
 ##  version should be used with care.
@@ -4296,8 +4297,9 @@ DeclareOperation( "IntermediateSubgroups", [IsGroup, IsGroup] );
 ##  group, and a record as described for the case of a group <A>G</A>
 ##  otherwise.
 ##  If more than one simple group of order <A>n</A> exists then the result
-##  record contains only the <C>name</C> component, a string that lists the
-##  two possible isomorphism types of simple groups of this order.
+##  record contains the <C>name</C> component, a string that lists the
+##  two possible isomorphism types of simple groups of this order,
+##  and possibly the <C>parameter</C> component.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( 5 );
@@ -4327,12 +4329,13 @@ DeclareAttribute( "IsomorphismTypeInfoFiniteSimpleGroup", IsPosInt );
 ##  <Func Name="SmallSimpleGroup" Arg='order[, i]'/>
 ##  <Returns>
 ##    The <A>i</A>th simple group of order <A>order</A> in the stored list,
-##    given in a small-degree permutation representation, or <Ref Var="fail"/>
+##    given in a small-degree permutation representation (a pc group if
+##    <A>order</A> is prime), or <Ref Var="fail"/>
 ##    if no such simple group exists.
 ##  </Returns>
 ##  <Description>
 ##    If <A>i</A> is not given, it defaults to&nbsp;1.
-##    Currently, all simple groups of order less than <M>10^6</M> are
+##    Currently, all simple groups of order up to <M>10^{{27}}</M> are
 ##    available via this function.
 ##  <Example>
 ##  gap> SmallSimpleGroup(60);
@@ -4363,7 +4366,7 @@ DeclareGlobalFunction( "SmallSimpleGroup" );
 ##  <Description>
 ##    The groups are given in small-degree permutation representations.
 ##    The returned list is sorted by ascending group order.
-##    Currently, all simple groups of order less than <M>10^6</M> are
+##    Currently, all simple groups of order up to <M>10^{{27}}</M> are
 ##    available via this function.
 ##  <Example>
 ##  gap> List(AllSmallNonabelianSimpleGroups([1..1000000]),

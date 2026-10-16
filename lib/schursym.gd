@@ -69,7 +69,7 @@
 ##
 ##  <ManSection>
 ##
-##  <Func Name="BasicSpinRepresentationOfSymmetricGroup" Arg="n, p, sign"/>
+##  <Func Name="BasicSpinRepresentationOfSymmetricGroup" Arg="n[, p[, sign]]"/>
 ##
 ##  <Description> Constructs the image of the Coxeter generators in the basic
 ##  spin (projective) representation of the symmetric group of degree <A>n</A>
@@ -94,7 +94,7 @@ DeclareGlobalFunction( "BasicSpinRepresentationOfSymmetricGroup" );
 ##
 ##  <#GAPDoc Label="SchurCoverOfSymmetricGroup">
 ##
-##  <ManSection> <Oper Name="SchurCoverOfSymmetricGroup" Arg='n, p, sign'/>
+##  <ManSection> <Oper Name="SchurCoverOfSymmetricGroup" Arg='n[, p[, sign]]'/>
 ##
 ##  <Description> Constructs a Schur cover of <C>SymmetricGroup(<A>n</A>)</C>
 ##  as a faithful, irreducible matrix group in characteristic <A>p</A>
@@ -129,20 +129,20 @@ DeclareOperation("SchurCoverOfSymmetricGroup",[IsPosInt,IsInt,IsInt]);
 ##
 ##  <#GAPDoc Label="DoubleCoverOfAlternatingGroup">
 ##
-##  <ManSection> <Oper Name="DoubleCoverOfAlternatingGroup" Arg='n, p'/>
+##  <ManSection> <Oper Name="DoubleCoverOfAlternatingGroup" Arg='n[, p]'/>
 ##
 ##  <Description>
 ##
 ##  Constructs a double cover of <C>AlternatingGroup(<A>n</A>)</C> as a
 ##  faithful, completely reducible matrix group in characteristic <A>p</A>
-##  (<M>p \neq 2</M>) for <M>n \geq 4</M>.
+##  (<M><A>p</A> \neq 2</M>) for <M><A>n</A> \geq 4</M>.
 ##
-##  For <M>n \leq 3</M>, the alternating group is its own Schur cover, and
-##  <K>fail</K> is returned. For <M>p = 2</M>, there is no faithful, completely
+##  For <M><A>n</A> \leq 3</M>, the alternating group is its own Schur cover, and
+##  <K>fail</K> is returned. For <M><A>p</A> = 2</M>, there is no faithful, completely
 ##  reducible representation of the double cover, so <K>fail</K> is returned.
 ##
-##  The field of the matrix group is generally <C>GF(p^2)</C> if <M>p>0</M>,
-##  and an abelian number field if <M>p=0</M>.  If <A>p</A> is omitted, the
+##  The field of the matrix group is generally <C>GF(<A>p</A>^2)</C> if <M><A>p</A> &gt; 0</M>,
+##  and an abelian number field if <M><A>p</A> = 0</M>.  If <A>p</A> is omitted, the
 ##  default is 3.
 ##
 ##  </Description> </ManSection>
