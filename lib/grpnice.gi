@@ -91,7 +91,7 @@ InstallMethod( GroupByNiceMonomorphism,
     0,
 
 function( nice, grp )
-    local   fam,  pre;
+    local   fam,  pre,  src;
 
     if not ( HasIsInjective( nice ) and IsInjective( nice ) ) then
       Error( "<nice> is not known to be injective" );
@@ -103,6 +103,13 @@ function( nice, grp )
     SetNiceObject( pre, grp );
     SetOne(pre,One(Source(nice)));
     UseIsomorphismRelation(grp,pre);
+
+    # 'pre' is a subgroup of the source
+    src:= Source( nice );
+    if IsMatrixGroup( src ) and HasBaseDomain( src ) then
+      SetBaseDomain( pre, BaseDomain( src ) );
+    fi;
+
     return pre;
 end );
 
