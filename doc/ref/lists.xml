@@ -110,7 +110,7 @@ may have to be paid (see&nbsp;<Ref Attr="ConstantTimeAccessList"/>).
 <ManSection>
 <Oper Name="\[\]" Arg='list, ix'/>
 <Oper Name="IsBound\[\]" Arg='list, ix'/>
-<Oper Name="\[\]\:\=" Arg='list, pos, ix'/>
+<Oper Name="\[\]\:\=" Arg='list, ix, obj'/>
 <Oper Name="Unbind\[\]" Arg='list, ix'/>
 
 <Description>
@@ -357,7 +357,7 @@ For example
 <P/>
 <Log><![CDATA[
     l[pos1]{poss2}{poss3}[pos4]{poss5}[pos6]
-level   0      0      1     1      1     2
+level   0      0      1     2      2     3
 ]]></Log>
 <P/>
 Then a list assignment <C><A>list</A>[<A>pos</A>] := <A>vals</A>;</C> of
@@ -729,11 +729,11 @@ of garbage that the garbage collector would have to reclaim.
 So the following strategy is used.  If a list is created it is created
 with exactly the correct size. If a  list is enlarged, because of an
 assignment beyond  the end of the list,  it is enlarged  by at least
-<C><A>length</A>/8 + 4</C> entries.
+<C><A>length</A>/4 + 4</C> entries.
 Therefore the next assignments beyond the end of the list do not need
 to enlarge the list.
 For example creating a list of 1000 elements by assigning them in order,
-would now take only 32 enlargements.
+would now take only 19 enlargements.
 <P/>
 The result of this is of course that the <E>physical length</E> of a list
 may be larger than the <E>logical length</E>,
@@ -813,7 +813,7 @@ This definition will cause problems with lists which are their own entries.
 Comparing two such lists for equality may lead to an infinite recursion in
 the kernel if the list comparison has to compare the list entries which are
 in fact the lists themselves,
-and then &GAP; crashes.
+which is stopped by the recursion depth trap.
 <P/>
 <Index Subkey="comparison">list smaller</Index>
 <C><A>list1</A> &lt; <A>list2</A></C>
@@ -1197,7 +1197,7 @@ If exactly one argument has odd nesting depth,
 the other is treated as a scalar if it has lower multiplicative nesting
 depth, and as a matrix otherwise.
 In the former case, we specify result (L) or (R), depending on ordering;
-in the latter case, we specify result (L) or (I), depending on ordering.
+in the latter case, we specify result (R) or (I), depending on ordering.
 <P/>
 We are left with the case that each argument has even multiplicative
 nesting depth.
@@ -1466,13 +1466,12 @@ copy using <Ref Func="Immutable"/>.
 <Section Label="Sorting Lists">
 <Heading>Sorting Lists</Heading>
 
-GAP implements three different families of sorting algorithms. The
+GAP implements two different families of sorting algorithms. The
 default algorithm is pattern-defeating quicksort, a variant of quicksort
 which performs better on partially sorted lists and has good worst-case
 behaviour. The functions which begin <C>Stable</C> are stable (equal
 elements keep the same relative order in the sorted list) and use
-merge sort. Finally, the functions which begin <C>Shell</C> use the shell
-sort which was GAP's default search algorithm before 4.9.
+merge sort.
 
 <Ref Oper="Sortex"/> and <Ref Attr="SortingPerm"/> are also stable.
 

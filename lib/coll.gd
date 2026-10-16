@@ -2749,8 +2749,8 @@ DeclareOperation( "ProductOp", [ IsListOrCollection ] );
 ##  The elements of that list however are identical to the corresponding
 ##  elements of the argument list (see&nbsp;<Ref Sect="Identical Lists"/>).
 ##  <P/>
-##  List assignment using the operator <Ref Oper="\{\}"/>
-##  (see&nbsp;<Ref Sect="List Assignment"/>) can be used to extract
+##  Sublist access using the operator <Ref Oper="\{\}"/>
+##  (see&nbsp;<Ref Sect="List Elements"/>) can be used to extract
 ##  elements of a list according to indices given in another list.
 ##  <P/>
 ##  Developers who wish to adapt this for custom list or collection types need to
@@ -2794,7 +2794,7 @@ DeclareOperation( "FilteredOp", [ IsListOrCollection, IsFunction ] );
 ##  and <Ref Attr="Size"/> return the same value;
 ##  for lists with holes <Ref Func="Number"/> returns the number of bound
 ##  entries, <Ref Attr="Length"/> returns the largest index of a bound entry,
-##  and <Ref Attr="Size"/> signals an error.
+##  and <Ref Attr="Size"/> returns the length.
 ##  <P/>
 ##  Called with two arguments, a list or collection <A>listorcoll</A> and a
 ##  unary function <A>func</A>, <Ref Func="Number"/> returns the number of
