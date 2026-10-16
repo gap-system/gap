@@ -198,10 +198,173 @@ end);
 #############################################################################
 ##
 #F  IteratorOfCombinations( <mset>[, <k> ] )
-#F  EnumeratorOfCombinations( <mset> )
+#F  EnumeratorOfCombinations( <mset>[, <k> ] )
 ##
-InstallGlobalFunction(EnumeratorOfCombinations, function(mset)
+
+# The combinations with <k> entries are numbered in lexicographic order.
+# For a set of size n, the combination at positions p_1 < ... < p_k has
+# number Binomial(n, k) - Sum_j Binomial(n - p_j, k + 1 - j), using the
+# combinatorial number system on the reflected positions n + 1 - p_j.
+BindGlobal("ElementNumber_Combinations_set", function(enum, num)
+  local set, n, r, comb, c, i, lo, hi, mid;
+  if num > enum!.size then
+    Error("Index ", num, " not bound.");
+  fi;
+  set := enum!.set;
+  n := Length(set);
+  r := enum!.size - num;
+  comb := EmptyPlist(enum!.k);
+  c := n;
+  for i in [enum!.k, enum!.k-1 .. 1] do
+    # binary search for the largest lo < c with Binomial(lo, i) <= r
+    lo := i-1;
+    hi := c-1;
+    while lo < hi do
+      mid := QuoInt(lo+hi+1, 2);
+      if Binomial(mid, i) <= r then
+        lo := mid;
+      else
+        hi := mid-1;
+      fi;
+    od;
+    Add(comb, set[n-lo]);
+    r := r - Binomial(lo, i);
+    c := lo;
+  od;
+  return comb;
+end);
+
+BindGlobal("NumberElement_Combinations_set", function(enum, comb)
+  local set, n, k, num, prev, j, p;
+  k := enum!.k;
+  if not IsDenseList(comb) or Length(comb) <> k then
+    return fail;
+  fi;
+  set := enum!.set;
+  n := Length(set);
+  num := enum!.size;
+  prev := 0;
+  for j in [1..k] do
+    p := Position(set, comb[j]);
+    if p = fail or p <= prev then
+      return fail;
+    fi;
+    num := num - Binomial(n-p, k+1-j);
+    prev := p;
+  od;
+  return num;
+end);
+
+# For a multiset, nr[i][r+1] is the number of combinations with r entries
+# from els{[i..Length(els)]}. Of two combinations, the one with more copies
+# of the first element in which they differ comes first.
+BindGlobal("ElementNumber_Combinations_mset", function(enum, num)
+  local els, max, nr, r, comb, i, a;
+  if num > enum!.size then
+    Error("Index ", num, " not bound.");
+  fi;
+  els := enum!.els;
+  max := enum!.max;
+  nr := enum!.nr;
+  num := num-1;
+  r := enum!.k;
+  comb := [];
+  for i in [1..Length(els)] do
+    a := Minimum(max[i], r);
+    while num >= nr[i+1][r-a+1] do
+      num := num - nr[i+1][r-a+1];
+      a := a-1;
+    od;
+    Append(comb, ListWithIdenticalEntries(a, els[i]));
+    r := r-a;
+  od;
+  return comb;
+end);
+
+BindGlobal("NumberElement_Combinations_mset", function(enum, comb)
+  local els, max, nr, d, prev, x, p, num, r, i;
+  if not IsDenseList(comb) or Length(comb) <> enum!.k then
+    return fail;
+  fi;
+  els := enum!.els;
+  max := enum!.max;
+  nr := enum!.nr;
+  d := 0*max;
+  prev := 1;
+  for x in comb do
+    p := Position(els, x);
+    if p = fail or p < prev or d[p] = max[p] then
+      return fail;
+    fi;
+    d[p] := d[p]+1;
+    prev := p;
+  od;
+  num := 1;
+  r := enum!.k;
+  for i in [1..Length(els)] do
+    num := num + Sum([d[i]+1 .. Minimum(max[i], r)], a -> nr[i+1][r-a+1]);
+    r := r-d[i];
+  od;
+  return num;
+end);
+
+BindGlobal("EnumeratorOfCombinations_k", function(mset, k)
+  local els, c, max, l, nr, i, enum;
+  if k > Length(mset) then
+    return Immutable([]);
+  fi;
+  els := Set(mset);
+  if Length(els) = Length(mset) then
+    enum := EnumeratorByFunctions(CollectionsFamily(FamilyObj(els)), rec(
+              ElementNumber := ElementNumber_Combinations_set,
+              NumberElement := NumberElement_Combinations_set,
+              Length := enum -> enum!.size,
+              PrintObj := function(enum)
+                Print("EnumeratorOfCombinations( ");
+                PrintObj(enum!.set);
+                Print(", ", enum!.k, " )");
+              end,
+              set := els,
+              k := k,
+              size := Binomial(Length(els), k)));
+  else
+    c := Collected(mset);
+    max := List(c, a -> a[2]);
+    l := Length(els);
+    nr := [];
+    nr[l+1] := Concatenation([1], ListWithIdenticalEntries(k, 0));
+    for i in [l, l-1 .. 1] do
+      nr[i] := List([0..k], r -> Sum([0..Minimum(max[i], r)],
+                                     a -> nr[i+1][r-a+1]));
+    od;
+    enum := EnumeratorByFunctions(CollectionsFamily(FamilyObj(els)), rec(
+              ElementNumber := ElementNumber_Combinations_mset,
+              NumberElement := NumberElement_Combinations_mset,
+              Length := enum -> enum!.size,
+              PrintObj := function(enum)
+                Print("EnumeratorOfCombinations( ");
+                PrintObj(Concatenation(List([1..Length(enum!.els)],
+                  i -> ListWithIdenticalEntries(enum!.max[i], enum!.els[i]))));
+                Print(", ", enum!.k, " )");
+              end,
+              els := els,
+              max := max,
+              nr := nr,
+              k := k,
+              size := nr[1][k+1]));
+  fi;
+  SetIsSSortedList(enum, true);
+  if IsRange(els) or ForAll(els, IsSmallIntRep) then
+    SetFilterObj(enum, IsEnumeratorOfSmallIntLists);
+  fi;
+  return enum;
+end);
+
+InstallGlobalFunction(EnumeratorOfCombinations, function(mset, arg...)
   local c, max, l, mods, size, els, ElementNumber, NumberElement;
+  if Length(arg) > 0 then
+    return EnumeratorOfCombinations_k(mset, arg[1]);
+  fi;
   c := Collected(mset);
   max := List(c, a-> a[2]);
   els := List(c, a-> a[1]);
@@ -1006,17 +1169,17 @@ InstallGlobalFunction( EnumeratorOfTuples, function( set, k )
         end,
 
         NumberElement:= function( enum, elm )
-          local n, i;
-          if not IsList( elm ) then
-            return fail;
-          fi;
-          elm:= List( elm, x -> Position( enum!.set, x ) );
-          if fail in elm or Length( elm ) <> enum!.k then
+          local n, i, p;
+          if not IsDenseList( elm ) or Length( elm ) <> enum!.k then
             return fail;
           fi;
           n:= 0;
           for i in [ 1 .. enum!.k ] do
-            n:= Length( enum!.set ) * n + elm[i] - 1;
+            p:= Position( enum!.set, elm[i] );
+            if p = fail then
+              return fail;
+            fi;
+            n:= Length( enum!.set ) * n + p - 1;
           od;
           return n+1;
         end,
@@ -1033,6 +1196,9 @@ InstallGlobalFunction( EnumeratorOfTuples, function( set, k )
 
     # We know that this enumerator is strictly sorted.
     SetIsSSortedList( enum, true );
+    if IsRange( enum!.set ) or ForAll( enum!.set, IsSmallIntRep ) then
+      SetFilterObj( enum, IsEnumeratorOfSmallIntLists );
+    fi;
 
     # Return the result.
     return enum;

@@ -492,19 +492,18 @@ function ( set, k )
                 return nn;
             end,
           NumberElement := function ( enum, elm )
-                local  n, i;
-                if not IsList( elm )  then
-                    return fail;
-                fi;
-                elm := List( elm, function ( x )
-                        return Position( enum!.set, x );
-                    end );
-                if fail in elm or Length( elm ) <> enum!.k  then
+                local  n, i, p;
+                if not IsDenseList( elm ) or Length( elm ) <> enum!.k
+                    then
                     return fail;
                 fi;
                 n := 0;
                 for i  in [ 1 .. enum!.k ]  do
-                    n := Length( enum!.set ) * n + elm[i] - 1;
+                    p := Position( enum!.set, elm[i] );
+                    if p = fail  then
+                        return fail;
+                    fi;
+                    n := Length( enum!.set ) * n + p - 1;
                 od;
                 return n + 1;
             end,
@@ -519,6 +518,9 @@ function ( set, k )
           set := Set( set ),
           k := k ) );
     SetIsSSortedList( enum, true );
+    if IsRange( enum!.set ) or ForAll( enum!.set, IsSmallIntRep )  then
+        SetFilterObj( enum, IsEnumeratorOfSmallIntLists );
+    fi;
     return enum;
 end
 ]]></Example>
