@@ -134,6 +134,7 @@ InstallMethod( Iterator,
     function( Integers )
     return Objectify( NewType( IteratorsFamily,
                                    IsIterator
+                               and IsMutable
                                and IsIntegersIteratorCompRep ),
                       rec( counter := 0 ) );
     end );
@@ -146,7 +147,7 @@ the filter <Ref Filt="IsIntegers"/>.
 <P/>
 By the call to <Ref Func="NewType"/>, the returned object lies in the family
 containing all iterators, which is <C>IteratorsFamily</C>,
-it lies in the category <Ref Filt="IsIterator"/>
+it lies in the categories <Ref Filt="IsIterator"/> and <Ref Filt="IsMutable"/>,
 and in the representation <C>IsIntegersIteratorCompRep</C>;
 furthermore, it has the component <C>counter</C> with value <C>0</C>.
 <P/>
@@ -167,7 +168,7 @@ InstallMethod( IsDoneIterator,
 
 InstallMethod( NextIterator,
     "method for iterator of `Integers'",
-    [ IsIntegersIteratorCompRep ],
+    [ IsIterator and IsMutable and IsIntegersIteratorCompRep ],
     function( iter )
     iter!.counter:= iter!.counter + 1;
     if iter!.counter mod 2 = 0 then
@@ -236,6 +237,7 @@ InstallMethod( Iterator,
     function( Integers )
     return Objectify( NewType( IteratorsFamily,
                                    IsIterator
+                               and IsMutable
                                and IsIntegersIteratorPosRep ),
                       [ 0 ] );
     end );
@@ -248,7 +250,7 @@ the filter <Ref Filt="IsIntegers"/>.
 <P/>
 By the call to <Ref Func="NewType"/>, the returned object lies in the family
 containing all iterators, which is <C>IteratorsFamily</C>,
-it lies in the category <Ref Filt="IsIterator"/>
+it lies in the categories <Ref Filt="IsIterator"/> and <Ref Filt="IsMutable"/>,
 and in the representation <C>IsIntegersIteratorPosRep</C>;
 furthermore, the first position has value <C>0</C>.
 <P/>
@@ -269,7 +271,7 @@ InstallMethod( IsDoneIterator,
 
 InstallMethod( NextIterator,
     "method for iterator of `Integers'",
-    [ IsIntegersIteratorPosRep ],
+    [ IsIterator and IsMutable and IsIntegersIteratorPosRep ],
     function( iter )
     iter![1]:= iter![1] + 1;
     if iter![1] mod 2 = 0 then
@@ -526,7 +528,7 @@ end
 We see that the enumerator is a homogeneous list that stores individual
 functions <C>ElementNumber</C>, <C>NumberElement</C>,
 <C>Length</C>, and <C>PrintObj</C>;
-besides that, the data components <M>S</M> and <M>k</M> are contained.
+besides that, the data components <C>set</C> and <C>k</C> are contained.
 
 </Section>
 

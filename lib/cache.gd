@@ -24,10 +24,12 @@
 ##  has been declared with <Ref Func="DeclareGlobalVariable"/> and for which
 ##  the initial value has been set with <Ref Func="InstallFlushableValue"/>
 ##  or <Ref Func="InstallFlushableValueFromFunction"/>
-##  to this initial value.
+##  to this initial value,
+##  and clears the other caches registered for flushing, for example those
+##  created with <Ref Func="MemoizePosIntFunction"/>.
 ##  <P/>
 ##  <Ref Oper="FlushCaches"/> should be used only for debugging purposes,
-##  since the involved global variables include for example lists that store
+##  since the involved caches include for example those that store
 ##  finite fields and cyclotomic fields used in the current &GAP; session,
 ##  in order to avoid that these fields are constructed anew in each call
 ##  to <Ref Func="GF" Label="for field size"/> and

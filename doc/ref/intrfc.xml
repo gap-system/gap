@@ -65,7 +65,7 @@ right set of arguments and install it as a method. In our example this
 installation would be:
 <Log><![CDATA[
 InstallMethod(Exponent,"for nilpotent groups",
-  [IsGroup and IsNilpotent],
+  [IsGroup and IsNilpotentGroup],
 function(G)
   [function body omitted]
 end);
@@ -118,7 +118,7 @@ however the declaration is a bit more complicated.
 In the library we find
 <P/>
 <Log><![CDATA[
-InParentFOA( "Normalizer", IsGroup, IsObject, NewAttribute );
+InParentFOA( "Normalizer", IsGroup, IsObject, DeclareAttribute );
 ]]></Log>
 <P/>
 The full mechanism of <Ref Func="InParentFOA"/> is described in
@@ -407,7 +407,7 @@ However in most cases the function is straightforward:
 <P/>
 <Log><![CDATA[
 PermutationGroupByRelations:=function(degree,relations)
-local g
+local g;
   g:=Objectify(NewType(CollectionsFamily(PermutationsFamily),
                IsPermutationGroupByRelations),
                rec(degree:=degree,relations:=relations));

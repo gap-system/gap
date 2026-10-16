@@ -173,7 +173,7 @@ gap> stream := InputTextFile( file );;
 </Item>
 <Mark><C>SearchMatches( <A>info</A>, <A>topic</A>, <A>frombegin</A> )</C> </Mark>
 <Item>
-  This  function must  return  a  list of  indices  of <A>info</A><C>.entries</C>  for
+  This  function must  return  lists of  indices  of <A>info</A><C>.entries</C>  for
   entries which  match the search  string <A>topic</A>. If <A>frombegin</A>  is <K>true</K>
   then  those parts  of  <A>topic</A> which  are separated  by  spaces should  be
   considered as the beginnings of words to decide the matching. If

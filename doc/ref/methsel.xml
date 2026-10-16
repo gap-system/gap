@@ -87,10 +87,10 @@ slightly differently for them: The first argument in a call to a constructor
 must always be a filter (see <Ref Sect="Filters"/>). The result of a method is
 expected to lie in that filter. Moreover, while normally method selection
 matches on the type of each argument, for a constructor the first argument is
-treated differently: instead of matching its type, the argument itself (which
-is a filter) must be a subset of the filter specified by the method which is
-being tested for match. In other words, the argument filter must imply the
-method filter.
+treated differently: instead of matching its type, the filter specified by
+the method which is being tested for match must be a subset of the argument
+itself (which is a filter). In other words, the method filter must imply the
+argument filter.
 <P/>
 
 Also, method ranking works differently: instead of the sum of the ranks of the
