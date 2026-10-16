@@ -344,7 +344,8 @@ The <Package>Example</Package> package's documentation (see its <F>doc</F>
 directory) may be used as a prototype. It consists of the master file
 <F>main.xml</F>, further <F>.xml</F> files for manual chapters (included in
 the manual via <C>Include</C> directives in the master file) and the &GAP;
-input file <F>../makedocrel.g</F> which generates the manuals.
+input file <F>makedoc.g</F> in the package root directory which generates
+the manual.
 Generally, one should also provide a <F>manual.bib</F> Bib&TeX; database
 file or an <F>xml</F> file in the BibXMLext format (see
 <Ref Sect="The BibXMLext Format" BookName="gapdoc"/>).
@@ -750,7 +751,8 @@ The latter possibility can be useful if the banner shall show information
 that is available only at runtime.
 <P/>
 If you will be designing a banner for your package, it is a good idea to suggest
-there how to access package  documentation. For example, the banner of the
+there how to access package  documentation. For example, the commented-out
+<C>BannerString</C> in the <F>PackageInfo.g</F> file of the
 <Package>Example</Package> package says:
 <P/>
 <Log><![CDATA[
@@ -1478,14 +1480,14 @@ gap -q -A --packagedirs DIR -c 'LoadPackage("packagename" : OnlyNeeded);
 <ManSection>
 <Func Name="LoadAllPackages" Arg=": reversed"/>
 <Description>
-loads all &GAP; packages from their list sorted in alphabetical order
+loads all &GAP; packages in an unspecified order
 (needed and suggested packages will be loaded when required). This is a
 technical function to check packages compatibility, so it should NOT be
 used to run anything except tests; it is known that &GAP; performance is
 slower if all packages are loaded. To introduce some variations of the
 order in which packages will be loaded for testing purposes,
 <Ref Func="LoadAllPackages"/> accepts option <C>reversed</C> to load
-packages from their list sorted in the reverse alphabetical order.
+packages in the reverse of that order.
 </Description>
 </ManSection>
 
