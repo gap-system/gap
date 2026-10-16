@@ -22,8 +22,7 @@ lower case (systems that do not recognize lower case in file names will
 convert them automatically to upper case). It is no longer so important to
 adhere to these conventions, but at the very least filenames should adhere
 to a 16+5 convention, and be distinct even after identifying upper and lower
-case. Directory names of packages, however, <E>must</E> be in lower case
-(the <Ref Func="LoadPackage"/> command assumes this).
+case.
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->

@@ -52,7 +52,8 @@ DeclareOperation( "FiltersObj", [ IsObject ] );
 ##
 ##  <Description>
 ##  returns a string from the list <C>[ "Attribute", "Operation", "Property",
-##  "Category", "Representation", "Filter", "Setter"]</C> reflecting which
+##  "Category", "Representation", "Filter", "Setter", "Constructor" ]</C>
+##  reflecting which
 ##  type of operation <A>op</A> is.
 ##  <P/>
 ##  (see&nbsp;<Ref Sect="Categories"/>, <Ref Sect="Representation"/>,

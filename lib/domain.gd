@@ -402,7 +402,7 @@ DeclareGlobalFunction( "InstallAccessToGenerators" );
 ##  For example, to set up the three objects
 ##  <Ref Oper="Index" Label="for a group and its subgroup"/>, <C>IndexOp</C>,
 ##  and <C>IndexInParent</C> together,
-##  the declaration file <F>lib/domain.gd</F> contains the following line of
+##  the declaration file <F>lib/grp.gd</F> contains the following line of
 ##  code.
 ##  <Log><![CDATA[
 ##  InParentFOA( "Index", IsGroup, IsGroup, DeclareAttribute );

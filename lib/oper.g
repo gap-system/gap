@@ -458,7 +458,7 @@ end );
 ##  <#GAPDoc Label="InstallImmediateMethod">
 ##  <ManSection>
 ##  <Func Name="InstallImmediateMethod"
-##   Arg='opr[, info], filter, rank, method'/>
+##   Arg='opr[, info], filter[, rank], method'/>
 ##
 ##  <Description>
 ##  <Ref Func="InstallImmediateMethod"/> installs <A>method</A> as an
@@ -814,9 +814,9 @@ end );
 ##  <P/>
 ##  Note that the method selection for constructors works slightly differently
 ##  than for usual operations.
-##  As stated above, applicability to the first argument in an argument tuple
-##  is tested by determining whether the argument-filter is a <E>subset</E> of
-##  <A>args-filts</A><M>[1]</M>.
+##  Applicability to the first argument in an argument tuple
+##  is tested by determining whether <A>args-filts</A><M>[1]</M> of the
+##  method is a <E>subset</E> of the argument-filter.
 ##  <P/>
 ##  The rank of a method installed for a constructor is determined solely by
 ##  <A>args-filts</A><M>[1]</M> of the method.
@@ -1913,12 +1913,12 @@ end );
 ##  In the past the main application of this was to allow access to variables
 ##  before they were assigned. Starting with &GAP; 4.12 we recommend to use
 ##  <Ref Func="DeclareGlobalName"/>/<Ref Func="BindGlobal"/> instead of
-##  <Ref Func="DeclareGlobalVariable"/>/<Ref Func="InstallGlobalFunction"/>
+##  <Ref Func="DeclareGlobalFunction"/>/<Ref Func="InstallGlobalFunction"/>
 ##  whenever possible.
 ##  <P/>
 ##
 ##  If used at all, then
-##  <Ref Func="DeclareGlobalVariable"/> shall be used in the declaration part
+##  <Ref Func="DeclareGlobalFunction"/> shall be used in the declaration part
 ##  of the respective package
 ##  (see&nbsp;<Ref Sect="Declaration and Implementation Part"/>).
 ##  <P/>
