@@ -34,9 +34,28 @@
 ##  <Oper Name="Process" Arg='dir, prg, stream-in, stream-out, options'/>
 ##
 ##  <Description>
-##  <Ref Oper="Process"/> runs a new process and returns when the process terminates.
-##  It returns the return value of the process if the operating system
-##  supports such a concept.
+##  <Ref Oper="Process"/> runs a new process and returns when the process
+##  terminates.
+##  It returns <C>0</C> if the program terminated successfully, and some other
+##  value if it did not.
+##  In particular it returns <K>fail</K> if the program could not be started
+##  at all, for example because its interpreter line names a program which
+##  does not exist.
+##  <P/>
+##  Which further values can occur depends on the operating system.
+##  On POSIX-like systems, such as Linux, macOS, or Windows using Cygwin,
+##  they are as follows:
+##  <List>
+##  <Mark>a positive integer</Mark>
+##  <Item>
+##    the exit code of the program.
+##  </Item>
+##  <Mark>a negative integer <M>-s</M></Mark>
+##  <Item>
+##    the program was killed by the signal <M>s</M>;
+##    for example <M>-9</M> for <C>SIGKILL</C>.
+##  </Item>
+##  </List>
 ##  <P/>
 ##  The first argument <A>dir</A> is a directory object (see&nbsp;<Ref Sect="Directories"/>)
 ##  which will be the current directory (in the usual UNIX or MS-DOS sense)
@@ -223,13 +242,12 @@ DeclareGlobalFunction( "Exec" );
 ##  <Ref Func="Exec"/> one cannot use redirections such as
 ##  <C>&gt;/dev/null</C>, pipes, or wildcard expansion.
 ##  <P/>
-##  The returned record always has the component <C>status</C>: the exit code
-##  of the program, or <K>fail</K> if it could not be executed at all.
-##  A nonzero exit code is not treated as an error by
+##  The returned record always has the component <C>status</C>, which is the
+##  value returned by <Ref Oper="Process"/>: <C>0</C> if the program terminated
+##  successfully, <K>fail</K> if it could not be started at all, and some other
+##  value if it failed in another way; see <Ref Oper="Process"/> for details.
+##  A nonzero status is not treated as an error by
 ##  <Ref Func="RunProcess"/>; it is up to the caller to check it.
-##  Note that <Ref Oper="Process"/>, and hence <Ref Func="RunProcess"/>, reports
-##  <K>fail</K> also for a program that exits with the code 255, and thus
-##  cannot tell the two apart.
 ##  <P/>
 ##  <Log><![CDATA[
 ##  gap> res := RunProcess("echo", "GAP is great!");
