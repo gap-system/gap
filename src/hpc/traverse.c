@@ -325,6 +325,8 @@ Obj CopyReachableObjectsFrom(Obj obj, int delimited, int asList, int imm)
             Obj original = traversed[i];
             Obj copy;
             copy = NewBag(TNUM_BAG(original), SIZE_BAG(original));
+            if (TEST_BAG_FLAG(original, OBJ_FLAG_IMMUTABLE))
+                SET_BAG_FLAG(copy, OBJ_FLAG_IMMUTABLE);
             SET_ELM_PLIST(traversal.copyMap, loc, copy);
             copies[i] = copy;
         }
@@ -366,6 +368,8 @@ Obj CopyTraversed(Obj traversedList)
         UInt loc = FindTraversedObj(&traversal, original);
         Obj  copy;
         copy = NewBag(TNUM_BAG(original), SIZE_BAG(original));
+        if (TEST_BAG_FLAG(original, OBJ_FLAG_IMMUTABLE))
+            SET_BAG_FLAG(copy, OBJ_FLAG_IMMUTABLE);
         SET_ELM_PLIST(traversal.copyMap, loc, copy);
         copies[i] = copy;
     }

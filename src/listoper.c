@@ -331,8 +331,7 @@ static Obj ZeroListDefault(Obj list)
 
     if (IS_PLIST( list ))
       {
-        if (TNUM_OBJ(list) == T_PLIST_FFE ||
-            TNUM_OBJ(list) == T_PLIST_FFE+IMMUTABLE)
+        if (TNUM_OBJ(list) == T_PLIST_FFE)
           RetypeBag(res, TNUM_OBJ(list));
         else if (TNUM_OBJ(list) >= T_PLIST_CYC &&
                  TNUM_OBJ(list) < T_PLIST_FFE)
@@ -393,8 +392,7 @@ static Obj ZeroListMutDefault(Obj list)
 
     if (IS_PLIST( list ))
       {
-        if (TNUM_OBJ(list) == T_PLIST_FFE ||
-            TNUM_OBJ(list) == T_PLIST_FFE+IMMUTABLE)
+        if (TNUM_OBJ(list) == T_PLIST_FFE)
           RetypeBag(res, T_PLIST_FFE);
         else if (TNUM_OBJ(list) >= T_PLIST_CYC &&
                  TNUM_OBJ(list) < T_PLIST_FFE)
@@ -488,8 +486,7 @@ static Obj AInvMutListDefault(Obj list)
     // Now adjust the result TNUM info
 
     if (IS_PLIST(list)) {
-        if (TNUM_OBJ(list) == T_PLIST_FFE ||
-            TNUM_OBJ(list) == T_PLIST_FFE+IMMUTABLE)
+        if (TNUM_OBJ(list) == T_PLIST_FFE)
           RetypeBag(res, T_PLIST_FFE);
         else if (TNUM_OBJ(list) >= T_PLIST_CYC &&
                  TNUM_OBJ(list) < T_PLIST_FFE)
@@ -542,8 +539,7 @@ static Obj AInvListDefault(Obj list)
     // Now adjust the result TNUM info
 
     if (IS_PLIST(list)) {
-        if (TNUM_OBJ(list) == T_PLIST_FFE ||
-            TNUM_OBJ(list) == T_PLIST_FFE+IMMUTABLE)
+        if (TNUM_OBJ(list) == T_PLIST_FFE)
           RetypeBag(res, TNUM_OBJ(list));
         else if (TNUM_OBJ(list) >= T_PLIST_CYC &&
                  TNUM_OBJ(list) < T_PLIST_FFE)
@@ -2138,11 +2134,11 @@ static Int InitKernel (
       }
 
     }
-    for (t1 = T_PLIST_CYC; t1 <= T_PLIST_FFE+IMMUTABLE; t1++) {
-      for (t2 = T_PLIST_CYC; t2 <= T_PLIST_FFE+IMMUTABLE; t2++) {
+    for (t1 = T_PLIST_CYC; t1 <= T_PLIST_FFE; t1++) {
+      for (t2 = T_PLIST_CYC; t2 <= T_PLIST_FFE; t2++) {
         SumFuncs[t1][t2] = SumListList;
       }
-      for (t2 = T_PLIST_TAB; t2 <= T_PLIST_TAB_RECT_SSORT+IMMUTABLE; t2++) {
+      for (t2 = T_PLIST_TAB; t2 <= T_PLIST_TAB_RECT_SSORT; t2++) {
         SumFuncs[t1][t2] = SumSclList;
         SumFuncs[t2][t1] = SumListScl;
       }
@@ -2156,11 +2152,11 @@ static Int InitKernel (
         DiffFuncs[t2][t1] = DiffSclList;
       }
     }
-    for (t1 = T_PLIST_CYC; t1 <= T_PLIST_FFE+IMMUTABLE; t1++) {
-      for (t2 = T_PLIST_CYC; t2 <= T_PLIST_FFE+IMMUTABLE; t2++) {
+    for (t1 = T_PLIST_CYC; t1 <= T_PLIST_FFE; t1++) {
+      for (t2 = T_PLIST_CYC; t2 <= T_PLIST_FFE; t2++) {
         DiffFuncs[t1][t2] = DiffListList;
       }
-      for (t2 = T_PLIST_TAB; t2 <= T_PLIST_TAB_RECT_SSORT+IMMUTABLE; t2++) {
+      for (t2 = T_PLIST_TAB; t2 <= T_PLIST_TAB_RECT_SSORT; t2++) {
         DiffFuncs[t1][t2] = DiffSclList;
         DiffFuncs[t2][t1] = DiffListScl;
       }
@@ -2181,8 +2177,8 @@ static Int InitKernel (
         ProdFuncs[t2][t1] = ProdSclList;
       }
     }
-    for (t1 = T_PLIST_CYC; t1 <= T_PLIST_FFE+IMMUTABLE; t1++) {
-      for (t2 = T_PLIST_CYC; t2 <= T_PLIST_FFE+IMMUTABLE; t2++) {
+    for (t1 = T_PLIST_CYC; t1 <= T_PLIST_FFE; t1++) {
+      for (t2 = T_PLIST_CYC; t2 <= T_PLIST_FFE; t2++) {
         ProdFuncs[t1][t2] = ProdListList;
       }
     }
