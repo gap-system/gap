@@ -273,8 +273,8 @@ DeclareInfoClass( "InfoCharacterTable" );
 ##  The &GAP; objects in <Ref Filt="IsCharacterTableInProgress"/> represent
 ##  incomplete ordinary character tables.
 ##  This means that not all irreducible characters, not all power maps are
-##  known, and perhaps even the number of classes and the centralizer orders
-##  are known.
+##  known, and perhaps not even the number of classes and the centralizer
+##  orders are known.
 ##  Such tables occur when the character table of a group <M>G</M> is
 ##  constructed using character tables of related groups and information
 ##  about <M>G</M> but for example without explicitly computing the conjugacy
@@ -609,9 +609,10 @@ DeclareAttributeSuppCT( "IdentificationOfConjugacyClasses", IsOrdinaryTable,
 ##  <A>tbl</A>.
 ##  <P/>
 ##  If this identification is unique up to automorphisms of <A>tbl</A>
-##  (see&nbsp;<Ref Attr="AutomorphismsOfTable"/>) then <A>tbl</A> is stored
-##  as <Ref Oper="CharacterTable" Label="for a group"/> value of <A>G</A>,
-##  and a new character table is returned that is equivalent to <A>tbl</A>,
+##  (see&nbsp;<Ref Attr="AutomorphismsOfTable"/>) then a new character table
+##  is returned and stored as
+##  <Ref Attr="OrdinaryCharacterTable" Label="for a group"/> value of
+##  <A>G</A>; this table is equivalent to <A>tbl</A>,
 ##  is sorted in the same way as <A>tbl</A>, and has the values of
 ##  <Ref Attr="UnderlyingGroup" Label="for character tables"/>,
 ##  <Ref Attr="ConjugacyClasses" Label="for character tables"/>, and
@@ -989,9 +990,9 @@ DeclareAttributeSuppCT( "Irr", IsNearlyCharacterTable,
 ##  (i.e., degree <M>1</M>) characters in the
 ##  <Ref Attr="Irr" Label="for a group"/> list of the group
 ##  <A>G</A> or the character table <A>tbl</A>, respectively.
-##  In the second form,
-##  <Ref Attr="LinearCharacters" Label="for a character table"/> returns the
-##  <A>p</A>-modular linear characters of the group <A>G</A>.
+##  Called with a group <A>G</A> and a prime <A>p</A>,
+##  <Ref Attr="LinearCharacters" Label="for a group"/> returns the
+##  <A>p</A>-modular linear characters of <A>G</A>.
 ##  <P/>
 ##  For a character table <A>tbl</A> with underlying group,
 ##  <Ref Attr="LinearCharacters" Label="for a character table"/> may delegate
@@ -3918,7 +3919,7 @@ DeclareOperation( "CharacterTableFactorGroup",
 ##  <Description>
 ##  Let <A>tbl</A> be the (ordinary or modular) character table of a group
 ##  <M>H</M> with the structure <M>p.G.p</M> for some prime <M>p</M>,
-##  that is, <M>H/Z</M> has a normal subgroup <M>N</M> of index <M>p</M>
+##  that is, <M>H</M> has a normal subgroup <M>N</M> of index <M>p</M>
 ##  and a central subgroup <M>Z</M> of order <M>p</M> contained in <M>N</M>.
 ##  <P/>
 ##  Then <Ref Oper="CharacterTableIsoclinic"/> returns
@@ -4413,8 +4414,8 @@ DeclareOperation( "CharacterTableWithSortedClasses",
 ##  stored in <Ref Var="SupportedCharacterTableInfo"/> and do not depend on
 ##  the ordering of classes and characters.
 ##  <P/>
-##  The <Ref Attr="ClassPermutation"/> value of <A>tbl</A> is changed if
-##  necessary, see&nbsp;<Ref Attr="ClassPermutation"/>.
+##  The <Ref Attr="ClassPermutation"/> value of the result is set,
+##  see&nbsp;<Ref Attr="ClassPermutation"/>.
 ##  <P/>
 ##  <Ref Func="SortedCharacterTable" Label="w.r.t. a normal subgroup"/>
 ##  uses <Ref Oper="CharacterTableWithSortedClasses"/> and
@@ -4536,7 +4537,7 @@ DeclareAttributeSuppCT( "ClassPermutation", IsNearlyCharacterTable,
 ##  But other questions require the computation of <M>N</M> or
 ##  even more information, like the character table of <M>N</M>.
 ##  <P/>
-##  In order to do these computations only once, one stores in the group a
+##  In order to do these computations only once, one stores in the table a
 ##  record with components to store normal subgroups, the corresponding lists
 ##  of conjugacy classes, and (if necessary) the factor groups, namely
 ##  <P/>
@@ -4616,9 +4617,9 @@ DeclareGlobalFunction( "ClassPositionsOfNormalSubgroup" );
 ##  <P/>
 ##  If <C>NormalSubgroupClassesInfo( <A>tbl</A> ).nsg</C> does not yet
 ##  contain the required normal subgroup,
-##  and if <C>NormalSubgroupClassesInfo( <A>tbl</A> ).normalSubgroups</C> is
-##  bound then the result will be identical to the group in
-##  <C>NormalSubgroupClassesInfo( <A>tbl</A> ).normalSubgroups</C>.
+##  and if <M>G</M> stores its <Ref Attr="NormalSubgroups"/> value
+##  then the result will be identical to the group in
+##  <C>NormalSubgroups( </C><M>G</M><C> )</C>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

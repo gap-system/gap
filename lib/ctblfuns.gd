@@ -1982,9 +1982,9 @@ DeclareSynonym( "Inflated", Restricted );
 ##
 ##  <Description>
 ##  Let <A>chi</A> be a class function of a group <M>G</M>
-##  and let <A>target</A> be either a supergroup <M>H</M> of <M>G</M>
-##  or an injective homomorphism from <M>H</M> to <M>G</M>
-##  or the character table of <A>H</A>.
+##  and let the last argument be either a supergroup <A>H</A> of <M>G</M>
+##  or an injective homomorphism <A>hom</A> from <M>G</M> to <M>H</M>
+##  or the character table <A>suptbl</A> of <M>H</M>.
 ##  Then <Ref Oper="InducedClassFunction" Label="for a supergroup"/>
 ##  returns the class function of <M>H</M> obtained by inducing <A>chi</A>
 ##  to <M>H</M>.
@@ -2682,7 +2682,7 @@ DeclareGlobalFunction( "SymplecticComponents" );
 ##  are in the ring <M>&ZZ;_{<A>p</A>}</M> of <A>p</A>-local numbers,
 ##  where <A>p</A> is a prime integer.
 ##  Assume that <A>value</A> lies in <M>&ZZ;_{<A>p</A>}[\zeta]</M>
-##  for <M>\zeta = \exp(<A>p</A>^n-1)</M>,
+##  for <M>\zeta = \exp(2 \pi i / (<A>p</A>^n-1))</M>,
 ##  for some positive integer <M>n</M>.
 ##  <P/>
 ##  <Ref Func="FrobeniusCharacterValue"/> returns the image of <A>value</A>
@@ -2848,8 +2848,8 @@ DeclareGlobalFunction( "ZevDataValue" );
 ##  via the function <Ref Func="FrobeniusCharacterValue"/>.
 ##  Note that the reduction map is defined as in&nbsp;<Cite Key="JLPW95"/>,
 ##  that is, the complex <M>(<A>p</A>^d-1)</M>-th root of unity
-##  <M>\exp(<A>p</A>^d-1)</M> is mapped to the residue class of the
-##  indeterminate, modulo the ideal spanned by the Conway polynomial
+##  <M>\exp(2 \pi i / (<A>p</A>^d-1))</M> is mapped to the residue class of
+##  the indeterminate, modulo the ideal spanned by the Conway polynomial
 ##  (see&nbsp;<Ref Func="ConwayPolynomial"/>) of degree <M>d</M> over the
 ##  field with <M>p</M> elements.
 ##  <P/>

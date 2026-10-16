@@ -248,7 +248,7 @@ DeclareAttributeSuppCT( "ComputedPowerMaps",
 ##    For each character <M>\chi</M> of <M>G</M>,
 ##    the symmetrization <M>\psi</M> defined by
 ##    <M>\psi(g) = (\chi(g)^p - \chi(g^p))/p</M> is a character.
-##    This condition is checked for the kernels of all characters
+##    This condition is checked for all characters
 ##    <M>\chi</M> specified below,
 ##    the corresponding function is
 ##    <Ref Func="PowerMapsAllowedBySymmetrizations"/>.
@@ -789,7 +789,7 @@ DeclareGlobalFunction( "GetFusionMap" );
 ##  <A>source</A> to <A>destination</A> in the
 ##  <Ref Attr="ComputedClassFusions"/> list of <A>source</A>,
 ##  and adds the <Ref Attr="Identifier" Label="for character tables"/> string
-##  of <A>destination</A> to the <Ref Attr="NamesOfFusionSources"/> list of
+##  of <A>source</A> to the <Ref Attr="NamesOfFusionSources"/> list of
 ##  <A>destination</A>.
 ##  <P/>
 ##  <A>fusion</A> can either be a fusion map (that is, the list of positions
@@ -1541,8 +1541,8 @@ DeclareGlobalFunction( "CommutativeDiagram" );
 ##  (that is, <A>inside1</A><C>[</C><M>i</M><C>] = </C><M>i</M>)
 ##  to a fixed point of <A>inside2</A>
 ##  (that is, <A>between</A><C>[</C><M>i</M><C>]</C> is either an integer
-##  that is fixed by <A>inside2</A> or a list that has nonempty intersection
-##  with the union of its images under <A>inside2</A>).
+##  that is fixed by <A>inside2</A> or a list containing a point that
+##  <A>inside2</A> may fix).
 ##  <Ref Func="CheckFixedPoints"/> changes <A>between</A> and <A>inside2</A>
 ##  by removing all entries that violate this condition.
 ##  <P/>
@@ -2005,7 +2005,7 @@ DeclareGlobalFunction( "InitPowerMap" );
 ##
 ##  <#GAPDoc Label="Congruences">
 ##  <ManSection>
-##  <Func Name="Congruences" Arg='tbl, chars, approxmap, prime, quick'
+##  <Func Name="Congruences" Arg='tbl, chars, approxmap, prime[, quick]'
 ##  Label="for character tables"/>
 ##
 ##  <Description>
@@ -2041,17 +2041,18 @@ DeclareGlobalFunction( "Congruences" );
 ##
 ##  <#GAPDoc Label="ConsiderKernels">
 ##  <ManSection>
-##  <Func Name="ConsiderKernels" Arg='tbl, chars, approxmap, prime, quick'/>
+##  <Func Name="ConsiderKernels" Arg='tbl, chars, approxmap, prime[, quick]'/>
 ##
 ##  <Description>
 ##  <Ref Func="ConsiderKernels"/> replaces the entries of <A>approxmap</A> by
 ##  improved values, according to condition 4.&nbsp;listed in the description
 ##  of <Ref Oper="PossiblePowerMaps"/>.
 ##  <P/>
-##  <Ref Func="Congruences" Label="for character tables"/>
+##  <Ref Func="ConsiderKernels"/>
 ##  returns <K>true</K> if the orders of the
 ##  kernels of all characters in <A>chars</A> divide the order of the group
-##  of <A>tbl</A>, and <K>false</K> otherwise.
+##  of <A>tbl</A> and images remain for all classes,
+##  and <K>false</K> otherwise.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> t:= CharacterTable( "A7.2" );;  init:= InitPowerMap( t, 2 );
@@ -2076,7 +2077,7 @@ DeclareGlobalFunction( "ConsiderKernels" );
 ##  <#GAPDoc Label="ConsiderSmallerPowerMaps">
 ##  <ManSection>
 ##  <Func Name="ConsiderSmallerPowerMaps"
-##   Arg='tbl, approxmap, prime, quick'/>
+##   Arg='tbl, approxmap, prime[, quick]'/>
 ##
 ##  <Description>
 ##  <Ref Func="ConsiderSmallerPowerMaps"/> replaces the entries of
@@ -2383,11 +2384,11 @@ DeclareGlobalFunction( "ConsiderTableAutomorphisms" );
 ##  optional components of the <A>parameters</A> record are
 ##  <C>testdec</C> (the function that tests the decomposability,
 ##  the default is <Ref Func="NonnegIntScalarProducts"/>),
-##  <C>powermaps</C> (the power paps of <A>subtbl</A> that shall be used for
+##  <C>powermaps</C> (the power maps of <A>tbl</A> that shall be used for
 ##  compatibility checks, the default is the <Ref Attr="ComputedPowerMaps"/>
 ##  value),
-##  <C>subpowermaps</C> (the power paps of <A>tbl</A> that shall be used for
-##  compatibility checks, the default is the <Ref Attr="ComputedPowerMaps"/>
+##  <C>subpowermaps</C> (the power maps of <A>subtbl</A> that shall be used
+##  for compatibility checks, the default is the <Ref Attr="ComputedPowerMaps"/>
 ##  value).
 ##  <P/>
 ##  <Ref Func="FusionsAllowedByRestrictions"/> replaces the entries of
@@ -2411,7 +2412,7 @@ DeclareGlobalFunction( "ConsiderTableAutomorphisms" );
 ##    inspect.
 ##  </Item>
 ##  <Item>
-##    Otherwise if <C>Indeterminateness( minus )</C> is smaller than
+##    Otherwise if <C>Indeterminateness( restricted )</C> is smaller than
 ##    <C><A>parameters</A>.minamb</C> then <M>\chi</M> is deleted from the
 ##    list of characters.
 ##  </Item>
