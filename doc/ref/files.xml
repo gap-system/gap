@@ -178,7 +178,7 @@ The  special filename <C>"*errin*"</C> denotes the stream connected to the
 UNIX <C>stderr</C> output.
 This stream is usually connected to the terminal, even if the standard input
 was redirected, unless the standard error stream was also redirected,
-in which case opening of <C>"*errin*"</C> fails.
+in which case <C>"*errin*"</C> reads from the standard input.
 <P/>
 The special filename <C>"*stdout*"</C> can be used to print to the standard
 output.
