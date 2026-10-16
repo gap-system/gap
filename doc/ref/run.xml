@@ -130,13 +130,17 @@ Obviously, this is a debugging option and most users will not need it.
 </Item>
 <Mark><Index Key="-E"><C>-E</C></Index>
 <C>-E</C></Mark>
+<Item></Item>
+<Mark><Index Key="--readline"><C>--readline</C></Index>
+<C>--readline</C></Mark>
 <Item>
 If your &GAP; installation uses the <C>readline</C> library for command line
 editing (see <Ref Sect="sec:readline"/>), this may be disabled by using
 <C>-E</C> option. This option may be repeated to toggle this behavior on and
-off. If your &GAP; installation does not use the <C>readline</C> library
-(you can check by <C>IsBound(GAPInfo.UseReadline);</C> if this is the case),
-this option will have no effect at all.
+off; <C>--readline</C> enables it. If your &GAP; installation does not use
+the <C>readline</C> library (you can check by
+<C>IsBound(GAPInfo.UseReadline);</C> if this is the case), this option will
+have no effect at all.
 </Item>
 <Mark><Index Key="-e"><C>-e</C></Index>
 <C>-e</C></Mark>
@@ -430,8 +434,8 @@ redirect the output to a printer, you may want to increase this value.
 <Mark><Index Key="-y"><C>-y</C></Index>
 <C>-y </C><A>length</A></Mark>
 <Item></Item>
-<Mark><Index Key="--line"><C>--line</C></Index>
-<C>--line </C><A>length</A></Mark>
+<Mark><Index Key="--lines"><C>--lines</C></Index>
+<C>--lines </C><A>length</A></Mark>
 <Item>
 With this option you can tell &GAP; how  many  lines  your  screen  has.
 &GAP; uses this value to decide after how many lines of on-line help  it
