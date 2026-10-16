@@ -134,7 +134,7 @@ DeclareCategoryFamily( "IsPadicExtensionNumber" );
 ##  <Oper Name="Valuation" Arg='obj'/>
 ##
 ##  <Description>
-##  The valuation is the <M>p</M>-part of the <M>p</M>-adic number.
+##  The valuation is the exponent of <M>p</M> in the <M>p</M>-adic number.
 ##  See also <Ref Func="PValuation"/>.
 ##  </Description>
 ##  </ManSection>
@@ -241,7 +241,8 @@ DeclareOperation( "ShiftedPadicNumber", [ IsPadicNumber, IsInt ] );
 ##  <Description>
 ##  returns the family of pure <M>p</M>-adic numbers over the
 ##  prime <A>p</A> with <A>precision</A> <Q>digits</Q>. That is to say, the approximate value
-##  will differ from the correct value by a multiple of <M>p^{digits}</M>.
+##  will differ from the correct value by a multiple of
+##  <M>p^{{v+precision}}</M>, where <M>v</M> is the valuation.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -266,7 +267,8 @@ DeclareGlobalFunction( "PurePadicNumberFamily" );
 ##  This function takes the prime number <A>p</A> and the two coefficient
 ##  lists <A>unram</A> and <A>ram</A> for the two polynomials.
 ##  The polynomial given by the coefficients in <A>unram</A> must be a
-##  cyclotomic polynomial and the polynomial given by <A>ram</A> must be
+##  cyclotomic polynomial that is irreducible modulo <A>p</A>,
+##  and the polynomial given by <A>ram</A> must be
 ##  either an Eisenstein polynomial or <M>1+x</M>.
 ##  <E>This is not checked by &GAP;.</E>
 ##  <P/>
@@ -280,14 +282,13 @@ DeclareGlobalFunction( "PurePadicNumberFamily" );
 ##  <P/>
 ##  The polynomials with which <Ref Func="PadicExtensionNumberFamily"/> is
 ##  called define an extension of <M>Q_p</M>.
-##  It must be ensured that both polynomials are really irreducible over
-##  <M>Q_p</M>!
-##  For example <M>x^2+x+1</M> is <E>not</E> irreducible over <M>Q_p</M>.
+##  It must be ensured that both polynomials satisfy the above conditions!
+##  For example <M>x^2+x+1</M> is <E>not</E> irreducible modulo <M>3</M>.
 ##  Therefore the <Q>extension</Q>
 ##  <C>PadicExtensionNumberFamily(3, 4, [1,1,1], [1,1])</C> contains
 ##  non-invertible <Q>pseudo-p-adic numbers</Q>.
 ##  Conversely, if an <Q>extension</Q> contains noninvertible elements
-##  then one of the defining polynomials was not irreducible.
+##  then one of the defining polynomials violates these conditions.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
