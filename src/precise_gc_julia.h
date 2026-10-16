@@ -46,8 +46,7 @@ extern "C++" {
 // a chain of out-of-line calls. If Julia's TLS slot is in the static TLS
 // block of the executable (julia has it there, and so does gap, see main.c),
 // Julia records its offset from the thread pointer in jl_tls_offset, and the
-// slot can be read inline, as Julia's own codegen does. The thread pointer
-// is read anew each time, as a task may resume on another thread.
+// slot can be read inline, as Julia's own codegen does.
 #if defined(GAP_GC_PRECISE) && defined(__ELF__) &&                           \
     (defined(__x86_64__) || defined(__aarch64__)) &&                         \
     !defined(__clang_gcanalyzer__) && !defined(__clang_safetyanalysis__)
@@ -61,13 +60,19 @@ EXPORT_INLINE jl_gcframe_t ** GAP_GetPgcstack(void) GAP_GC_NOTSAFEPOINT
     if (GAP_JuliaTLSOffset == -1)
         return jl_get_pgcstack();
 
-    char * tp;
+    // The result belongs to the task, so the compiler may reuse it, as it may
+    // reuse that of jl_get_pgcstack(), declared JL_CONST_FUNC. The thread
+    // pointer does not: after a call the task may run on another thread. One
+    // asm statement for both keeps it from reusing the thread pointer alone.
+    jl_gcframe_t ** pgcstack;
 #if defined(__x86_64__)
-    __asm__ volatile("movq %%fs:0, %0" : "=r"(tp));
+    __asm__("movq %%fs:(%1), %0" : "=r"(pgcstack) : "r"(GAP_JuliaTLSOffset));
 #else
-    __asm__ volatile("mrs %0, tpidr_el0" : "=r"(tp));
+    __asm__("mrs %0, tpidr_el0\n\tldr %0, [%0, %1]"
+            : "=&r"(pgcstack)
+            : "r"(GAP_JuliaTLSOffset));
 #endif
-    return *(jl_gcframe_t ***)(tp + GAP_JuliaTLSOffset);
+    return pgcstack;
 }
 
 #undef jl_pgcstack
@@ -94,6 +99,64 @@ void GAP_GC_LedgerUnwind(void * frame);
 // cannot carry.
 #define GAP_GC_ROOT_(a) ((void *)(a))
 
+#ifdef GAP_GC_INLINE_PGCSTACK
+
+// JL_GC_PUSH and JL_GC_POP look the frame stack up twice; these do it once.
+// The frames are laid out as Julia's.
+EXPORT_INLINE void GAP_GC_LinkFrame(void ** frame) GAP_GC_NOTSAFEPOINT
+{
+    jl_gcframe_t ** pgcstack = GAP_GetPgcstack();
+    frame[1] = *pgcstack;
+    *pgcstack = (jl_gcframe_t *)frame;
+}
+
+EXPORT_INLINE void GAP_GC_UnlinkFrame(void) GAP_GC_NOTSAFEPOINT
+{
+    jl_gcframe_t ** pgcstack = GAP_GetPgcstack();
+    *pgcstack = (*pgcstack)->prev;
+}
+
+// A name per line, as frames may nest and -Wshadow is on.
+#define GAP_GC_CAT_(a, b) a##b
+#define GAP_GC_FRAME_(line) GAP_GC_CAT_(gap_gc_frame_, line)
+#define GAP_GC_PUSH_(n, ...)                                                 \
+    void * GAP_GC_FRAME_(__LINE__)[] = { (void *)JL_GC_ENCODE_PUSH(n), 0,    \
+                                         __VA_ARGS__ };                      \
+    GAP_GC_LinkFrame(GAP_GC_FRAME_(__LINE__))
+
+#define GAP_GC_PUSH1(arg1) GAP_GC_PUSH_(1, GAP_GC_ROOT_(arg1))
+#define GAP_GC_PUSH2(arg1, arg2)                                             \
+    GAP_GC_PUSH_(2, GAP_GC_ROOT_(arg1), GAP_GC_ROOT_(arg2))
+#define GAP_GC_PUSH3(arg1, arg2, arg3)                                       \
+    GAP_GC_PUSH_(3, GAP_GC_ROOT_(arg1), GAP_GC_ROOT_(arg2),                  \
+                 GAP_GC_ROOT_(arg3))
+#define GAP_GC_PUSH4(arg1, arg2, arg3, arg4)                                 \
+    GAP_GC_PUSH_(4, GAP_GC_ROOT_(arg1), GAP_GC_ROOT_(arg2),                  \
+                 GAP_GC_ROOT_(arg3), GAP_GC_ROOT_(arg4))
+#define GAP_GC_PUSH5(arg1, arg2, arg3, arg4, arg5)                           \
+    GAP_GC_PUSH_(5, GAP_GC_ROOT_(arg1), GAP_GC_ROOT_(arg2),                  \
+                 GAP_GC_ROOT_(arg3), GAP_GC_ROOT_(arg4), GAP_GC_ROOT_(arg5))
+#define GAP_GC_PUSH6(arg1, arg2, arg3, arg4, arg5, arg6)                     \
+    GAP_GC_PUSH_(6, GAP_GC_ROOT_(arg1), GAP_GC_ROOT_(arg2),                  \
+                 GAP_GC_ROOT_(arg3), GAP_GC_ROOT_(arg4), GAP_GC_ROOT_(arg5), \
+                 GAP_GC_ROOT_(arg6))
+#define GAP_GC_PUSH7(arg1, arg2, arg3, arg4, arg5, arg6, arg7)               \
+    GAP_GC_PUSH_(7, GAP_GC_ROOT_(arg1), GAP_GC_ROOT_(arg2),                  \
+                 GAP_GC_ROOT_(arg3), GAP_GC_ROOT_(arg4), GAP_GC_ROOT_(arg5), \
+                 GAP_GC_ROOT_(arg6), GAP_GC_ROOT_(arg7))
+#define GAP_GC_PUSH8(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8)         \
+    GAP_GC_PUSH_(8, GAP_GC_ROOT_(arg1), GAP_GC_ROOT_(arg2),                  \
+                 GAP_GC_ROOT_(arg3), GAP_GC_ROOT_(arg4), GAP_GC_ROOT_(arg5), \
+                 GAP_GC_ROOT_(arg6), GAP_GC_ROOT_(arg7), GAP_GC_ROOT_(arg8))
+#define GAP_GC_PUSH9(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9)   \
+    GAP_GC_PUSH_(9, GAP_GC_ROOT_(arg1), GAP_GC_ROOT_(arg2),                  \
+                 GAP_GC_ROOT_(arg3), GAP_GC_ROOT_(arg4), GAP_GC_ROOT_(arg5), \
+                 GAP_GC_ROOT_(arg6), GAP_GC_ROOT_(arg7), GAP_GC_ROOT_(arg8), \
+                 GAP_GC_ROOT_(arg9))
+#define GAP_GC_POP() GAP_GC_UnlinkFrame()
+
+#else
+
 #define GAP_GC_PUSH1(arg1) JL_GC_PUSH1(GAP_GC_ROOT_(arg1))
 #define GAP_GC_PUSH2(arg1, arg2) JL_GC_PUSH2(GAP_GC_ROOT_(arg1), GAP_GC_ROOT_(arg2))
 #define GAP_GC_PUSH3(arg1, arg2, arg3) \
@@ -119,8 +182,11 @@ void GAP_GC_LedgerUnwind(void * frame);
     JL_GC_PUSH9(GAP_GC_ROOT_(arg1), GAP_GC_ROOT_(arg2), GAP_GC_ROOT_(arg3), \
                 GAP_GC_ROOT_(arg4), GAP_GC_ROOT_(arg5), GAP_GC_ROOT_(arg6), \
                 GAP_GC_ROOT_(arg7), GAP_GC_ROOT_(arg8), GAP_GC_ROOT_(arg9))
-#define GAP_GC_PUSHARGS(rts, n) JL_GC_PUSHARGS(rts, n)
 #define GAP_GC_POP() JL_GC_POP()
+
+#endif
+
+#define GAP_GC_PUSHARGS(rts, n) JL_GC_PUSHARGS(rts, n)
 
 #ifdef GAP_MEM_CHECK
 #undef GAP_GC_PUSH1
