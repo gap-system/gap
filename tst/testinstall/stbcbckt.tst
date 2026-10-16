@@ -60,5 +60,16 @@ gap> N := NormalizerPermGroup(SymmetricGroup(24), M);;
 gap> N = M;
 true
 
+# once the fixpoints contain a base, images of elements are determined
+gap> G := PSL(2,11);;
+gap> c := PermList(Concatenation([13..24], [1..12]));;
+gap> G := Group(Concatenation(List(GeneratorsOfGroup(G), g -> g * g^c), [c]));;
+gap> Size(NormalizerPermGroup(SymmetricGroup(24), G));
+2640
+gap> H := G^(1,5,7)(2,24)(3,13,9,20);;
+gap> r := ConjugatorPermGroup(SymmetricGroup(24), G, H);;
+gap> G^r = H;
+true
+
 #
 gap> STOP_TEST("stbcbckt.tst");
