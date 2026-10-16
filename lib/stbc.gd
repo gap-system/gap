@@ -377,8 +377,8 @@ DeclareGlobalFunction( "StrongGeneratorsStabChain" );
 ##
 ##  <Description>
 ##  constructs a permutation group with stabilizer chain <A>S</A>, i.e.,
-##  a group with generators <C>Generators( <A>S</A>  )</C> to which <A>S</A>
-##  is assigned as component <C>stabChain</C>.
+##  a group with generators <C><A>S</A>.generators</C> whose
+##  <Ref Attr="StabChainMutable" Label="for a group"/> value is <A>S</A>.
 ##  If the  optional argument <A>G</A> is given, the result will have the
 ##  parent <A>G</A>.
 ##  </Description>

@@ -2275,8 +2275,9 @@ DeclareGlobalFunction( "EmptyMatrix" );
 ##  normal form. (In other words: it triangulizes the product of <A>bas</A> with
 ##  <A>mat</A>.)
 ##  <P/>
-##  <A>bas</A> must be given in Hermite normal form,
-##  otherwise an error is triggered (see&nbsp;<Ref Sect="Action on canonical representatives"/>).
+##  <A>bas</A> must be given in Hermite normal form, otherwise
+##  orbit and stabilizer computations signal an error
+##  (see&nbsp;<Ref Sect="Action on canonical representatives"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

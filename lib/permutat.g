@@ -23,7 +23,7 @@
 ##  if it fixes&nbsp;<M>d</M>.
 ##  The images are stored all as <M>16</M>-bit integers or all as
 ##  <M>32</M>-bit integers, depending on whether <M>d \leq 65536</M> or not.
-##  For example, if <M>m\geq 65536</M>, the permutation
+##  For example, if <M>m &gt; 65536</M>, the permutation
 ##  <M>(1, 2, \ldots, m)</M> has internal degree <M>d=m</M> and takes
 ##  <M>4m</M> bytes of memory for storage. But --- since the internal degree
 ##  is not reduced  --- this
@@ -37,10 +37,6 @@
 ##  On 64-bit systems, it is <M>2^{32}-1</M> because only a 32-bit integer
 ##  is used to represent each image internally. Error messages should be given
 ##  if any command would require creating a permutation exceeding this limit.
-##  <P/>
-##  The operation <Ref Oper="RestrictedPerm"/> reduces the storage degree of
-##  its result and therefore can be used to save memory if intermediate
-##  calculations in large degree result in a small degree result.
 ##  <P/>
 ##  Permutations do not belong to a specific group.
 ##  That means that one can work with permutations without defining
@@ -538,9 +534,7 @@ end );
 ##  <Ref Oper="RestrictedPerm"/> returns the new permutation
 ##  that acts on the points in the list <A>list</A> in the same way as
 ##  the permutation <A>perm</A>,
-##  and that fixes those points that are not in <A>list</A>. The resulting
-##  permutation is stored internally of degree given by the maximal entry of
-##  <A>list</A>.
+##  and that fixes those points that are not in <A>list</A>.
 ##  <A>list</A> must be a list of positive integers such that for each
 ##  <M>i</M> in <A>list</A> the image <M>i</M><C>^</C><A>perm</A> is also in
 ##  <A>list</A>,
