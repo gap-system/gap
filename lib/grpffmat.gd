@@ -137,12 +137,12 @@ DeclareGlobalFunction("Phi2_Md");
 ##  <Func Name="NrConjugacyClassesSUIsogeneous" Arg='n, q, f'/>
 ##
 ##  <Description>
-##  The first of these functions compute for given positive integer <A>n</A>
+##  The first eight of these functions compute for given positive integer <A>n</A>
 ##  and prime power <A>q</A> the number of conjugacy classes in the classical
 ##  groups GL( <A>n</A>, <A>q</A> ), GU( <A>n</A>, <A>q</A> ),
 ##  SL( <A>n</A>, <A>q</A> ), SU( <A>n</A>, <A>q</A> ),
 ##  PGL( <A>n</A>, <A>q</A> ), PGU( <A>n</A>, <A>q</A> ),
-##  PSL( <A>n</A>, <A>q</A> ), PSL( <A>n</A>, <A>q</A> ), respectively.
+##  PSL( <A>n</A>, <A>q</A> ), PSU( <A>n</A>, <A>q</A> ), respectively.
 ##  (See also <Ref Attr="ConjugacyClasses" Label="attribute"/>  and
 ##  Section&nbsp;<Ref Sect="Classical Groups"/>.)
 ##  <P/>
