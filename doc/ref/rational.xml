@@ -62,10 +62,10 @@ gap> 121/11;  # rationals with denominator 1 (when canceled) are integers
 <#Include Label="Rat">
 
 <ManSection>
-<Oper Name="Random" Arg='Rationals' Label="for rationals"/>
+<Meth Name="Random" Arg='Rationals' Label="for rationals"/>
 
 <Description>
-<Ref Oper="Random" Label="for rationals"/> for rationals returns
+<Ref Meth="Random" Label="for rationals"/> for rationals returns
 pseudo random rationals which are the quotient of two random integers.
 See the description of <Ref Meth="Random" Label="for integers"/> for details.
 (Also see&nbsp;<Ref Oper="Random" Label="for a list or collection"/>.)
