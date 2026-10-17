@@ -558,6 +558,7 @@ DeclareOperation( "ProductSpace", [ IsFreeLeftModule, IsFreeLeftModule ] );
 ##
 #O  DirectSumOfAlgebras( <A1>, <A2> )
 #O  DirectSumOfAlgebras( <list> )
+#O  DirectSumOfAlgebrasByGenerators( <A1>, <A2> )
 ##
 ##  <#GAPDoc Label="DirectSumOfAlgebras">
 ##  <ManSection>
@@ -598,6 +599,7 @@ DeclareOperation( "ProductSpace", [ IsFreeLeftModule, IsFreeLeftModule ] );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "DirectSumOfAlgebras", [ IsDenseList ] );
+DeclareOperation( "DirectSumOfMatrixAlgebras", [ IsAlgebra, IsAlgebra ] );
 
 
 #############################################################################
