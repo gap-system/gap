@@ -315,8 +315,6 @@ local hashfun,obj,dom,lookup,maxblist,forcesort;
 
   maxblist:=ValueOption("blistlimit");
   if not IsInt(maxblist) then
-    #2^25 plist (for the lookup list that will hold e.g. positions)
-    # is 128MB size on a 32-bit system.
     maxblist:=DICT_BLISTLIMIT;
   fi;
 

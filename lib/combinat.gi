@@ -208,7 +208,7 @@ end);
 BindGlobal("ElementNumber_Combinations_set", function(enum, num)
   local set, n, r, comb, c, i, lo, hi, mid;
   if num > enum!.size then
-    Error("Index ", num, " not bound.");
+    Error("Index ", num, " not bound, expected at most ", enum!.size);
   fi;
   set := enum!.set;
   n := Length(set);
@@ -261,7 +261,7 @@ end);
 BindGlobal("ElementNumber_Combinations_mset", function(enum, num)
   local els, max, nr, r, comb, i, a;
   if num > enum!.size then
-    Error("Index ", num, " not bound.");
+    Error("Index ", num, " not bound, expected at most ", enum!.size);
   fi;
   els := enum!.els;
   max := enum!.max;
@@ -362,7 +362,12 @@ end);
 
 InstallGlobalFunction(EnumeratorOfCombinations, function(mset, arg...)
   local c, max, l, mods, size, els, ElementNumber, NumberElement;
-  if Length(arg) > 0 then
+  if Length(arg) > 1 then
+    Error("usage: EnumeratorOfCombinations( <mset>[, <k>] )");
+  elif Length(arg) = 1 then
+    if not (IsInt(arg[1]) and arg[1] >= 0) then
+      Error("EnumeratorOfCombinations: <k> must be a non-negative integer");
+    fi;
     return EnumeratorOfCombinations_k(mset, arg[1]);
   fi;
   c := Collected(mset);

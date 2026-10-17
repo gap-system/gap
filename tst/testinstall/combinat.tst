@@ -162,6 +162,18 @@ gap> AsList( enum );
 gap> List( [ [ 1, 2, 1 ], [ 1, 2, 2 ], [ 1, 1, 4 ], [ 1, 1 ] ],
 >          c -> Position( enum, c ) );
 [ fail, fail, fail, fail ]
+gap> enum[ 5 ];
+Error, Index 5 not bound, expected at most 4
+gap> EnumeratorOfCombinations( [ 1 .. 3 ], 2 )[ 4 ];
+Error, Index 4 not bound, expected at most 3
+gap> EnumeratorOfCombinations( [ 1 .. 3 ], -1 );
+Error, EnumeratorOfCombinations: <k> must be a non-negative integer
+gap> EnumeratorOfCombinations( [ 1 .. 3 ], infinity );
+Error, EnumeratorOfCombinations: <k> must be a non-negative integer
+gap> EnumeratorOfCombinations( [ 1 .. 3 ], "a" );
+Error, EnumeratorOfCombinations: <k> must be a non-negative integer
+gap> EnumeratorOfCombinations( [ 1 .. 3 ], 1, 2 );
+Error, usage: EnumeratorOfCombinations( <mset>[, <k>] )
 
 #F  Arrangements( <mset> )  . . . . set of ordered combinations of a multiset
 gap> Arrangements( [] );

@@ -131,7 +131,8 @@ DeclareCategory( "IsHash", IsLookupDictionary );
 DeclareGlobalFunction("NewDictionary");
 
 ##  default for the option blistlimit of NewDictionary: the largest domain
-##  that gets a position dictionary
+##  that gets a position dictionary. Its bit list then takes 4 MB, but the
+##  value list of a lookup dictionary up to 2^25 words, i.e. 256 MB.
 BindGlobal("DICT_BLISTLIMIT", 2^25);
 
 #############################################################################
