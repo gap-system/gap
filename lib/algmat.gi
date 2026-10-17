@@ -1407,7 +1407,7 @@ InstallOtherMethod( DirectSumOfAlgebras,
 
     A := DirectSumOfMatrixAlgebras( A1, A2 );
     SetIsLieAlgebra( A, true );
-    return A; 
+    return A;
     end );
 
 
