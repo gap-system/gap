@@ -1312,25 +1312,24 @@ end );
 
 #############################################################################
 ##
-#M  DirectSumOfAlgebras( <A1>, <A2> ) . .  for two associative matrix FLMLORs
+#M  DirectSumOfMatrixAlgebras( <A1>, <A2> )
 ##
-##  Construct an associative matrix FLMLOR.
+##  this is the special method for sirect sum used for matrix algebras
 ##
-#T embeddings/projections should be provided!
-##
-InstallOtherMethod( DirectSumOfAlgebras,
-    "for two associative matrix FLMLORs",
+InstallMethod( DirectSumOfMatrixAlgebras,
+    "for two matrix algebras",
     IsIdenticalObj,
-    [ IsMatrixFLMLOR and IsAssociative,
-      IsMatrixFLMLOR and IsAssociative ], 0,
+    [ IsAlgebra, IsAlgebra ],
     function( A1, A2 )
 
-    local b1,   # Basis vectors of `A1'.
-          b2,   # Basis vectors of `A2'.
+    local b1,   # Generators of `A1'.
+          d1,   # Length of `b1'.
+          b2,   # Generators of `A2'.
+          d2,   # Length of `b2'.
           p1,   # Length of the matrices of `b1'.
           p2,   # Length of the matrices of `b2'.
           B,    # A basis of `A1 \oplus A2'.
-          i,    # Loop variable.
+          i,j,  # Loop variables.
           Q,    # A matrix.
           A;    # result
 
@@ -1338,17 +1337,10 @@ InstallOtherMethod( DirectSumOfAlgebras,
       Error( "<A1> and <A2> must be written over the same domain" );
     fi;
 
-    # We do not really need a basis for the arguments
-    # but if we have one then we use it.
-#T Do we really have so many algebra generators? (distinguish from basis?)
-    if HasBasis( A1 ) and HasBasis( A2 ) then
-      b1:= BasisVectors( Basis( A1 ) );
-      b2:= BasisVectors( Basis( A2 ) );
-    else
-      b1:= GeneratorsOfAlgebra( A1 );
-      b2:= GeneratorsOfAlgebra( A2 );
-    fi;
-
+    b1:= GeneratorsOfAlgebra( A1 );
+    b2:= GeneratorsOfAlgebra( A2 );
+    d1:= Length( b1 );
+    d2:= Length( b2 );
     p1:= DimensionOfVectors( A1 )[1];
     p2:= DimensionOfVectors( A2 )[1];
 
@@ -1368,10 +1360,32 @@ InstallOtherMethod( DirectSumOfAlgebras,
     if HasBasis( A1 ) and HasBasis( A2 ) then
       UseBasis( A, B );
     fi;
+    SetDirectSumInfo( A, rec( algebras := [A1,A2],
+                              first := [0,d1,d1+d2],
+                              type := "generators",
+                              embeddings := [],
+                              projections := [] ) );
+    return A;
+    end );
 
+
+#############################################################################
+##
+#M  DirectSumOfAlgebras( <A1>, <A2> ) . .  for two associative matrix FLMLORs
+##
+##  Construct an associative matrix FLMLOR.
+##
+InstallOtherMethod( DirectSumOfAlgebras,
+    "for two associative matrix FLMLORs",
+    IsIdenticalObj,
+    [ IsMatrixFLMLOR and IsAssociative,
+      IsMatrixFLMLOR and IsAssociative ], 0,
+    function( A1, A2 )
+
+    local A;    # result
+
+    A := DirectSumOfMatrixAlgebras( A1, A2 );
     SetIsAssociative( A, true );
-#T nec. ?
-
     return A;
     end );
 
@@ -1382,8 +1396,6 @@ InstallOtherMethod( DirectSumOfAlgebras,
 ##
 ##  Construct a matrix Lie FLMLOR.
 ##
-#T embeddings/projections should be provided!
-##
 InstallOtherMethod( DirectSumOfAlgebras,
     "for two matrix Lie FLMLORs",
     IsIdenticalObj,
@@ -1391,51 +1403,10 @@ InstallOtherMethod( DirectSumOfAlgebras,
       IsMatrixFLMLOR and IsLieAlgebra ], 0,
     function( A1, A2 )
 
-    local b1,   # Basis vectors of `A1'.
-          b2,   # Basis vectors of `A2'.
-          p1,   # Length of the matrices of `b1'.
-          p2,   # Length of the matrices of `b2'.
-          B,    # A basis of `A1 \oplus A2'.
-          i,    # Loop variable.
-          Q,    # A matrix.
-          A;    # result
+    local A;     # result
 
-    if LeftActingDomain( A1 ) <> LeftActingDomain( A2 ) then
-      Error( "<A1> and <A2> must be written over the same domain" );
-    fi;
-
-    # We do not really need a basis for the arguments
-    # but if we have one then we use it.
-#T Do we really have so many algebra generators? (distinguish from basis?)
-    if HasBasis( A1 ) and HasBasis( A2 ) then
-      b1:= BasisVectors( Basis( A1 ) );
-      b2:= BasisVectors( Basis( A2 ) );
-    else
-      b1:= GeneratorsOfAlgebra( A1 );
-      b2:= GeneratorsOfAlgebra( A2 );
-    fi;
-
-    p1:= DimensionOfVectors( A1 )[1];
-    p2:= DimensionOfVectors( A2 )[1];
-
-    B:= [];
-    for i in b1 do
-      Q:= NullMat( p1+p2, p1+p2, LeftActingDomain( A1 ) );
-      Q{ [ 1 .. p1 ] }{ [ 1 .. p1 ] }:= i;
-      Add( B, LieObject( Q ) );
-    od;
-    for i in b2 do
-      Q:= NullMat( p1+p2, p1+p2, LeftActingDomain( A1 ) );
-      Q{ [ p1+1 .. p1+p2 ] }{ [ p1+1 .. p1+p2 ] }:= i;
-      Add( B, LieObject( Q ) );
-    od;
-
-    A:= AlgebraByGenerators( LeftActingDomain( A1 ), B );
-    if HasBasis( A1 ) and HasBasis( A2 ) then
-      UseBasis( A, B );
-    fi;
+    A := DirectSumOfMatrixAlgebras( A1, A2 );
     SetIsLieAlgebra( A, true );
-
     return A;
     end );
 
