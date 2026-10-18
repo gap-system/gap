@@ -258,7 +258,9 @@ Feit-Thompson  theorem allows us to set
 this group.   &GAP; utilizes   this  celebrated  theorem  by  having  an
 <E>immediate  method</E> for <Ref Func="IsSolvableGroup" BookName="ref"/>
 with required filter <C>HasSize</C>
-which checks parity of the size and either sets
+which checks whether the size is divisible by&nbsp;4
+(if not, the group has a normal subgroup of odd order and index at most&nbsp;2)
+and either sets
 <Ref Func="IsSolvableGroup" BookName="ref"/> or does
 nothing, i.e.,   calls <C>TryNextMethod()</C>.   These immediate  methods  are
 executed  automatically for an  object  whenever the   value of a  filter
@@ -357,51 +359,53 @@ with a list of these operations as arguments.
 <Log><![CDATA[
 gap> TraceMethods( [ Size ] );
 gap> g:= Group( (1,2,3), (1,2) );;  Size( g );
-#I  Size: for a permutation group
-#I  Setter(Size): system setter
-#I  Size: system getter
-#I  Size: system getter
+#I  Size at GAPROOT/lib/coll.gi:164
+#I Trying next: Size: for a permutation group at GAPROOT/lib/grpperm.gi:536
+#I  SetSize at GAPROOT/lib/coll.gi:2860
 6
 ]]></Log>
 <P/>
-The system getter is called once to fetch  the freshly computed value for
-returning  to the user.  The  second  call is  triggered by  an immediate
-method. To  find out  by which,  we can trace   the immediate  methods by
+The first method, installed for collections that know whether they are
+finite, returns <Ref Var="infinity" BookName="ref"/> for infinite ones.
+As <C>g</C> is finite, it calls <C>TryNextMethod()</C>,
+and the method for permutation groups computes the size.
+Then a method for the setter <C>SetSize</C> stores the value.
+To see the immediate methods, we can trace them by
 saying <C>TraceImmediateMethods( true )</C>.
 <P/>
 <Log><![CDATA[
 gap> TraceImmediateMethods( true );
 gap> g:= Group( (1,2,3), (1,2) );;
-#I  immediate: Size
-#I  immediate: IsCyclic
-#I  immediate: IsCommutative
-#I  immediate: IsTrivial
+#I RunImmediateMethods
 gap> Size( g );
-#I  Size: for a permutation group
-#I  immediate: IsNonTrivial
-#I  immediate: Size
-#I  immediate: IsFreeAbelian
-#I  immediate: IsTorsionFree
-#I  immediate: IsNonTrivial
-#I  immediate: GeneralizedPcgs
-#I  Setter(Size): system setter
-#I  Size: system getter
-#I  immediate: IsPerfectGroup
-#I  Size: system getter
-#I  immediate: IsEmpty
+#I  Size at GAPROOT/lib/coll.gi:164
+#I Trying next: Size: for a permutation group at GAPROOT/lib/grpperm.gi:536
+#I RunImmediateMethods
+#I RunImmediateMethods
+#I  SetSize at GAPROOT/lib/coll.gi:2860
+#I RunImmediateMethods
 6
+gap> h:= Group( (1,2,3), (1,2) );;
+#I RunImmediateMethods
+gap> SetSize( h, 6 );
+#I RunImmediateMethods
+#I  Size: system getter at GAPROOT/lib/coll.gd:1540
+#I  immediate: IsSolvableGroup at GAPROOT/lib/grp.gi:807
 gap> TraceImmediateMethods( false );
 gap> UntraceMethods( [ Size ] );
 ]]></Log>
 <P/>
 The last two lines switch off tracing  again.
-We now  see that the system getter was called by the immediate method for
-<Ref Func="IsPerfectGroup" BookName="ref"/>.
-Also the above-mentioned immediate method for
+A line <C>#I RunImmediateMethods</C> means that the filters of an object
+have changed and &GAP; looked for applicable immediate methods;
+the lines starting with <C>#I  immediate:</C> show those that were called.
+For <C>g</C>, the above-mentioned immediate method for
 <Ref Func="IsSolvableGroup" BookName="ref"/>
 was not used because the solvability of <C>g</C> was already found out during
 the size calculation
 (cf.&nbsp;the example in Section&nbsp;<Ref Sect="Properties and Filters"/>).
+For <C>h</C>, whose size we have set directly, it was called,
+and it fetched the size with the system getter.
 <P/>
 <E>Summary.</E>  In this section  and the  last we have  looked some  more
 behind the  scenes and seen  that &GAP; automatically executes immediate
