@@ -176,7 +176,10 @@ function(m)
   fi;
   SetGeneratorsOfMagma(out, gens);
 
-  inj:=MappingByFunction(m, out, inj, x-> x!.elt);
+  # the zero is not in the image, so <inj> is not bijective
+  inj:=MappingByFunction(m, out, inj, false, x-> x!.elt);
+  SetIsInjective(inj, true);
+  SetIsSurjective(inj, false);
   SetUnderlyingInjectionZeroMagma(out, inj);
 
   return inj;
