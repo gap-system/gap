@@ -538,27 +538,75 @@ InstallMethod( AdditiveInverseOp,
 
 InstallMethod( \+,
     "for `infinity' and cyclotomic",
-    IsIdenticalObj, [ IsInfinity, IsCyc ], function(x,y) return infinity; end );
+    IsIdenticalObj, [ IsInfinity, IsCyc ], {x,y} -> infinity );
 
 InstallMethod( \+,
     "for cyclotomic and `infinity'",
-    IsIdenticalObj, [ IsCyc, IsInfinity ], function(x,y) return infinity; end );
+    IsIdenticalObj, [ IsCyc, IsInfinity ], {x,y} -> infinity );
 
 InstallMethod( \+,
     "for `infinity' and `infinity'",
-    IsIdenticalObj, [ IsInfinity, IsInfinity ], function(x,y) return infinity; end );
+    IsIdenticalObj, [ IsInfinity, IsInfinity ], {x,y} -> infinity );
 
 InstallMethod( \+,
     "for `-infinity' and cyclotomic",
-    IsIdenticalObj, [ IsNegInfinity, IsCyc ], function(x,y) return -infinity; end );
+    IsIdenticalObj, [ IsNegInfinity, IsCyc ], {x,y} -> -infinity );
 
 InstallMethod( \+,
     "for cyclotomic and `-infinity'",
-    IsIdenticalObj, [ IsCyc, IsNegInfinity ], function(x,y) return -infinity; end );
+    IsIdenticalObj, [ IsCyc, IsNegInfinity ], {x,y} -> -infinity );
 
 InstallMethod( \+,
     "for `-infinity' and `-infinity'",
-    IsIdenticalObj, [ IsNegInfinity, IsNegInfinity ], function(x,y) return -infinity; end );
+    IsIdenticalObj, [ IsNegInfinity, IsNegInfinity ], {x,y} -> -infinity );
+
+InstallMethod( \*,
+    "for positive rational and `infinity'",
+    IsIdenticalObj, [ IsPosRat, IsInfinity ], {x,y} -> infinity );
+
+InstallMethod( \*,
+    "for `infinity' and positive rational",
+    IsIdenticalObj, [ IsInfinity, IsPosRat ], {x,y} -> infinity );
+
+InstallMethod( \*,
+    "for `infinity' and `infinity'",
+    IsIdenticalObj, [ IsInfinity, IsInfinity ], {x,y} -> infinity );
+
+InstallMethod( \*,
+    "for negative rational and `infinity'",
+    IsIdenticalObj, [ IsNegRat, IsInfinity ], {x,y} -> -infinity );
+
+InstallMethod( \*,
+    "for `infinity' and negative rational",
+    IsIdenticalObj, [ IsInfinity, IsNegRat ], {x,y} -> -infinity );
+
+InstallMethod( \*,
+    "for positive rational and `-infinity'",
+    IsIdenticalObj, [ IsPosRat, IsNegInfinity ], {x,y} -> -infinity );
+
+InstallMethod( \*,
+    "for `-infinity' and positive rational",
+    IsIdenticalObj, [ IsNegInfinity, IsPosRat ], {x,y} -> -infinity );
+
+InstallMethod( \*,
+    "for negative rational and `-infinity'",
+    IsIdenticalObj, [ IsNegRat, IsNegInfinity ], {x,y} -> infinity );
+
+InstallMethod( \*,
+    "for `-infinity' and negative rational",
+    IsIdenticalObj, [ IsNegInfinity, IsNegRat ], {x,y} -> infinity );
+
+InstallMethod( \*,
+    "for `infinity' and `-infinity'",
+    IsIdenticalObj, [ IsInfinity, IsNegInfinity ], {x,y} -> -infinity );
+
+InstallMethod( \*,
+    "for `-infinity' and `infinity'",
+    IsIdenticalObj, [ IsNegInfinity, IsInfinity ], {x,y} -> -infinity );
+
+InstallMethod( \*,
+    "for `-infinity' and `-infinity'",
+    IsIdenticalObj, [ IsNegInfinity, IsNegInfinity ], {x,y} -> infinity );
 
 
 #############################################################################

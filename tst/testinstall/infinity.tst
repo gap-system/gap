@@ -41,6 +41,36 @@ gap> -infinity - (-infinity);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `+' on 2 arguments
 
+# multiplication
+gap> 2 * infinity;
+infinity
+gap> infinity * 2;
+infinity
+gap> 1/2 * infinity;
+infinity
+gap> infinity * (1/2);
+infinity
+gap> infinity * infinity;
+infinity
+gap> (-1/2) * infinity;
+-infinity
+gap> infinity * (-1/2);
+-infinity
+gap> 1/2 * (-infinity);
+-infinity
+gap> (-infinity) * (1/2);
+-infinity
+gap> (-1/2) * (-infinity);
+infinity
+gap> (-infinity) * (-1/2);
+infinity
+gap> infinity * (-infinity);
+-infinity
+gap> (-infinity) * infinity;
+-infinity
+gap> (-infinity) * (-infinity);
+infinity
+
 # comparison
 gap> cycls := [ -infinity, -10, 0, 42, E(5), infinity ];
 [ -infinity, -10, 0, 42, E(5), infinity ]
