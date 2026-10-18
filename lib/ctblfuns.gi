@@ -2899,7 +2899,7 @@ InstallMethod( InducedClassFunction,
     function( chi, hom )
     local tbl, suptbl, fus;
     tbl:= UnderlyingCharacterTable( chi );
-    suptbl:= OrdinaryCharacterTable(Image( hom ));
+    suptbl:= OrdinaryCharacterTable( Range( hom ) );
     if UnderlyingCharacteristic( tbl ) <> 0 then
       suptbl:= suptbl mod UnderlyingCharacteristic( tbl );
     fi;
@@ -2912,7 +2912,7 @@ InstallMethod( InducedClassFunction,
     [ IsCharacterTable, IsHomogeneousList, IsGeneralMapping ],
     function( tbl, chi, hom )
     local suptbl, fus;
-    suptbl:= OrdinaryCharacterTable(Image( hom ));
+    suptbl:= OrdinaryCharacterTable( Range( hom ) );
     if UnderlyingCharacteristic( tbl ) <> 0 then
       suptbl:= suptbl mod UnderlyingCharacteristic( tbl );
     fi;
@@ -2975,7 +2975,7 @@ InstallMethod( InducedClassFunctions,
     [ IsCharacterTable, IsHomogeneousList, IsGeneralMapping ],
     function( tbl, chars, hom )
     local suptbl, fus;
-    suptbl:= Image( hom );
+    suptbl:= OrdinaryCharacterTable( Range( hom ) );
     if UnderlyingCharacteristic( tbl ) <> 0 then
       suptbl:= suptbl mod UnderlyingCharacteristic( tbl );
     fi;
