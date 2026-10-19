@@ -1391,6 +1391,7 @@ BindGlobal("RPSquareHensel",function(f,t,opt)
       max,     # maximum absolute coefficient of <f>
       res,     # result
       gcd,     # used in gcd representation
+      alldegs, # whether the last search tried factors of all degrees
       i, j;    # loop
 
   # get <l> and <p>
@@ -1470,15 +1471,18 @@ BindGlobal("RPSquareHensel",function(f,t,opt)
                    q);
       od;
 
-      # try to find true factors
-      if max <= q then
-        Info(InfoPoly,2,"searching for factors: ",Runtime());
-        fcn:=TryCombinations(f,lc,l,q,t,bounds,opt,false,false);
-      elif ofb < q  then
+      # try to find true factors; the one factor bound bounds only one
+      # factor of a pair, possibly the one of larger degree, so it proves
+      # irreducibility only after a search of all degrees
+      alldegs:=ofb < q;
+      if alldegs then
         Info(InfoPoly,2,"searching for factors: ",Runtime());
         fcn:=TryCombinations(f,lc,l,q,t,bounds,opt,false,true);
 
         #Info(InfoPoly,2,"finishing search:    ",Runtime());
+      elif max <= q then
+        Info(InfoPoly,2,"searching for factors: ",Runtime());
+        fcn:=TryCombinations(f,lc,l,q,t,bounds,opt,false,false);
       else
         fcn:=rec(irreducibles:=[], reducibles:=[]);
       fi;
@@ -1506,7 +1510,7 @@ BindGlobal("RPSquareHensel",function(f,t,opt)
 
         # degree arguments or OFB arguments prove f irreducible
         if (ForAll(t.degrees,i->i=0 or 2*i>=DegreeOfLaurentPolynomial(f))
-           or ofb<q) and DegreeOfLaurentPolynomial(f)>0 then
+           or (alldegs and ofb<q)) and DegreeOfLaurentPolynomial(f)>0 then
           Add(fcn.irrFactors,f);
           Add(res.irrFactors,f);
           f:=f^0;
