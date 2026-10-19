@@ -535,6 +535,14 @@ static void GapTaskScanner(jl_task_t * task, int root_task)
     }
 }
 
+// Scan from the frame of this function, which lies below that of its
+// caller, to <stackend>.
+static NOINLINE void ScanStackFromHere(jl_ptls_t ptls, char * stackend)
+{
+    char * top = (char *)&top;
+    TryMarkRange(ptls, top, stackend);
+}
+
 #endif // DISABLE_STACK_SCAN
 
 // Julia callback
@@ -571,12 +579,22 @@ static void GapRootScanner(int full)
 #endif
 
     // We scan the stack of the current task from the stack pointer
-    // towards the stack bottom, ensuring that we also scan any
-    // references stored in registers.
-    jmp_buf registers;
-    GAP_SETJMP(registers);
-    TryMarkRange(ptls, registers, (char *)registers + sizeof(jmp_buf));
-    TryMarkRange(ptls, (char *)registers + sizeof(jmp_buf), stackend);
+    // towards the stack bottom. References of our callers held in
+    // callee-saved registers must end up in this frame: setjmp stores
+    // them in a local jmp_buf, but C libraries mangle the frame pointer,
+    // so where available __builtin_unwind_init also spills all of them.
+    // The scan starts in a callee, which must not be a tail call, as the
+    // compiler may place the spilled registers below our locals.
+#ifdef HAVE___BUILTIN_UNWIND_INIT
+    __builtin_unwind_init();
+#endif
+    // jmp_buf can be an int array (macOS); align it for the word-wise scan
+    union {
+        jmp_buf buf;
+        void *  align;
+    } registers;
+    GAP_SETJMP(registers.buf);
+    ScanStackFromHere(ptls, stackend);
 #endif // DISABLE_STACK_SCAN
 
     // Allow installing a custom marking function. This is used for

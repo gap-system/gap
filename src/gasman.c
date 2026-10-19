@@ -1753,21 +1753,15 @@ UInt ResizeBag (
 **  the values on the stack,  which is supposed to extend  from <stack-start>
 **  (see  "InitBags") to the address of  a local variable of   the  function.
 **  Note that some local variables may  not  be stored on the  stack, because
-**  they are  still in the processors registers.    'GenStackFuncBags' uses a
-**  jump buffer 'RegsBags', filled by the C library function 'setjmp', marking
-**  all bags  whose  identifiers appear in 'RegsBags'.  This  is a dirty hack,
-**  that need not work, but actually works on a  surprisingly large number of
-**  machines.  But it will not work on Sun  Sparc machines, which have larger
-**  register  files, of which  only the part  visible to the current function
-**  will be saved  by  'setjmp'.  For those machines 'GenStackFuncBags' first
-**  calls the operating system to flush the whole register file.  Note that a
-**  compiler may save  a register  somewhere else  if   it wants to  use this
-**  register for something else.  Usually  this register is saved  further up
-**  the  stack,  i.e.,   beyond the   address  of  the  local variable,   and
-**  'GenStackFuncBags' would not see this value any more.   To deal with this
-**  problem, 'setjmp' must be called *before* 'GenStackFuncBags'  is entered,
-**  i.e.,  before the  registers may have been saved  elsewhere.   Thus it is
-**  called from 'CollectBags'.
+**  they are  still in the processors registers.  'CollectBags_Mark' stores
+**  them with 'setjmp' in 'RegsBags', which 'GenStackFuncBags' marks.  That can
+**  miss one: C libraries store the frame pointer register mangled, and code
+**  compiled without frame pointers keeps data in it.  So where available,
+**  'CollectBags_Mark' also calls '__builtin_unwind_init', which makes its
+**  prologue save all callee-saved registers, the only ones holding values
+**  across a call, in its frame, which 'GenStackFuncBags' scans.  On Sun Sparc
+**  machines 'CollectBags_Mark' also calls the operating system to flush the
+**  register windows.
 **
 **  Next 'CollectBags' marks all young bags that are directly accessible from
 **  old bags, i.e.,  it marks all young bags  whose identifiers appear in the
@@ -1903,7 +1897,11 @@ UInt ResizeBag (
 **  identifiers can exist, and so 'CollectBags' frees these masterpointers.
 */
 
-static jmp_buf RegsBags;
+// jmp_buf can be an int array (macOS); align it for the word-wise scan
+static union {
+    jmp_buf buf;
+    void *  align;
+} RegsBags;
 
 #if defined(SYS_IS_SPARC)
 static void SparcStackFuncBags(void)
@@ -1948,7 +1946,6 @@ static NOINLINE void ScanRange(void * vpA, void * vpB)
 static NOINLINE void GenStackFuncBags(void)
 {
     Bag * top; // top of stack
-    Bag * p;   // loop variable
 
 #ifdef DEBUG_GASMAN_MARKING
     DisableMarkBagValidation = 1;
@@ -1968,8 +1965,8 @@ static NOINLINE void GenStackFuncBags(void)
     // as a sequence of Bag values. Note that sizeof(jmp_buf) need not
     // be a multiple of sizeof(Bag), hence the end condition looks
     // slightly. unusual.
-    for (p = (Bag *)RegsBags;
-         p < (Bag *)((char *)RegsBags + sizeof(RegsBags)); p++)
+    for (Bag * p = (Bag *)RegsBags.buf;
+         p < (Bag *)((char *)RegsBags.buf + sizeof(RegsBags.buf)); p++)
         MarkBag(*p, 0);
 
 #ifdef DEBUG_GASMAN_MARKING
@@ -2006,7 +2003,12 @@ static UInt CollectBags_Mark(UInt FullBags)
     }
 
     // mark from the stack
-    GAP_SETJMP(RegsBags);
+#ifdef HAVE___BUILTIN_UNWIND_INIT
+    // spill the callee-saved registers into this frame, which
+    // GenStackFuncBags scans
+    __builtin_unwind_init();
+#endif
+    GAP_SETJMP(RegsBags.buf);
 #if defined(SYS_IS_SPARC)
     SparcStackFuncBags();
 #endif
