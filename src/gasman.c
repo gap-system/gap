@@ -1914,36 +1914,33 @@ static void SparcStackFuncBags(void)
 #endif
 
 
+// Only pointer-aligned words are scanned: the ABIs of all supported
+// platforms require compilers to keep pointers on the stack aligned.
 static NOINLINE void ScanRange(void * vpA, void * vpB)
 {
-    UInt  i;
     Bag * p;
 
-    Bag * pA = (Bag *)vpA;
+    Bag * pA = (Bag *)((UInt)vpA / sizeof(Bag) * sizeof(Bag));
     Bag * pB = (Bag *)vpB;
 
     if (pA < pB) {
-        for (i = 0; i < sizeof(Bag *); i += C_STACK_ALIGN) {
-            for (p = (Bag *)((char *)pA + i); p < pB; p++) {
-                Bag * pcpy = p;
+        for (p = pA; p < pB; p++) {
+            Bag * pcpy = p;
 #if defined(GAP_MEMORY_CANARY)
-                // Need to mark this pointer as readable for valgrind
-                VALGRIND_MAKE_MEM_DEFINED(&pcpy, sizeof(pcpy));
+            // Need to mark this pointer as readable for valgrind
+            VALGRIND_MAKE_MEM_DEFINED(&pcpy, sizeof(pcpy));
 #endif
-                MarkBag(*pcpy, 0);
-            }
+            MarkBag(*pcpy, 0);
         }
     }
     else {
-        for (i = 0; i < sizeof(Bag *); i += C_STACK_ALIGN) {
-            for (p = (Bag *)((char *)pA - i); pB < p; p--) {
-                Bag * pcpy = p;
+        for (p = pA; pB < p; p--) {
+            Bag * pcpy = p;
 #if defined(GAP_MEMORY_CANARY)
-                // Need to mark this pointer as readable for valgrind
-                VALGRIND_MAKE_MEM_DEFINED(&pcpy, sizeof(pcpy));
+            // Need to mark this pointer as readable for valgrind
+            VALGRIND_MAKE_MEM_DEFINED(&pcpy, sizeof(pcpy));
 #endif
-                MarkBag(*pcpy, 0);
-            }
+            MarkBag(*pcpy, 0);
         }
     }
 }
