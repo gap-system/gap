@@ -4414,8 +4414,7 @@ DeclareOperation( "CharacterTableWithSortedClasses",
 ##  stored in <Ref Var="SupportedCharacterTableInfo"/> and do not depend on
 ##  the ordering of classes and characters.
 ##  <P/>
-##  The <Ref Attr="ClassPermutation"/> value of the result is set,
-##  see&nbsp;<Ref Attr="ClassPermutation"/>.
+##  The <Ref Attr="ClassPermutation"/> value of the result is set.
 ##  <P/>
 ##  <Ref Func="SortedCharacterTable" Label="w.r.t. a normal subgroup"/>
 ##  uses <Ref Oper="CharacterTableWithSortedClasses"/> and
