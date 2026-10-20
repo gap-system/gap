@@ -215,7 +215,7 @@ gap> Unpack( a );
 gap> AddMatrixRowsLeft( a, 1, 3, 1 );
 Error, List Element: <list>[3] must have an assigned value
 gap> MultMatrixColumnLeft( M, 3, Z(9) );
-Error, List Element: <list>[3] must have an assigned value
+Error, column index 3 exceeds 2, the number of columns
 gap> MultMatrixRowLeft( MakeImmutable( M ), 1, Z(9) );
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `MultMatrixRowLeft' on 3 arguments
