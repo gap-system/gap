@@ -24,7 +24,7 @@ Chapters&nbsp;<Ref Chap="Groups and Homomorphisms"/>
 and&nbsp;<Ref Chap="Vector Spaces and Algebras"/>:
 the groups <C>s8</C> and <C>a8</C> in
 Section&nbsp;<Ref Sect="Permutation groups"/> are domains,
-likewise the field <C>f</C> and the vector space <C>v</C> in
+likewise the field <C>F</C> and the vector space <C>V</C> in
 Section&nbsp;<Ref Sect="Vector Spaces"/> are domains.
 They were constructed by functions such as
 <Ref Func="Group" BookName="ref"/> and <Ref Func="GF" BookName="ref"/>,

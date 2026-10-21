@@ -127,8 +127,8 @@ not know which identifier(s) point  to it, in fact  there can be several.
 In order to    give a name  to  the  group  itself (rather   than  to the
 identifier),
 you can use the function <Ref Func="SetName" BookName="ref"/>.
-We do this with the
-name <C>2^3</C> here which reflects  the mathematical properties of the group.
+We do this with a
+name containing <C>2^3</C> here which reflects  the mathematical properties of the group.
 From now on,  &GAP; will use  this name when  printing the group for us,
 but we still cannot use this name to specify the group to &GAP;, because
 the name does  not know to which group   it was assigned (after  all, you
@@ -332,13 +332,14 @@ false
 gap> blocks := Blocks( op, [ 1 .. 112 ] );;
 ]]></Example>
 <P/>
-Note that we  must specify the domain  of the action. You  might think
-that the   functions <Ref Func="IsPrimitive" BookName="ref"/> and
-<Ref Func="Blocks" BookName="ref"/> could use <C>[ 1 .. 112 ]</C> as
-default  domain if no  domain was  given. But  this  is not so  easy,
-for example would the default domain of <C>Group(  (2,3,4)  )</C> be
+Note that we  must specify the domain  of the action for
+<Ref Func="Blocks" BookName="ref"/>.
+Some action functions, such as <Ref Func="IsPrimitive" BookName="ref"/>,
+use the moved points of a permutation group as
+default  domain if no  domain is  given. But  this  is not always what you
+want, for example would the domain of <C>Group(  (2,3,4)  )</C> be
 <C>[ 1 .. 4 ]</C> or <C>[ 2 .. 4 ]</C>?
-To avoid confusion, all action  functions  require that you
+To avoid confusion, it is best to
 specify  the domain of action.
 If we had specified <C>[ 1 .. 113 ]</C> in the
 primitivity test above,  point&nbsp;113  would have been  a fixed point
@@ -653,7 +654,8 @@ false
 <P/>
 Remember that we can leave out the function if we mean
 <Ref Func="OnPoints" BookName="ref"/>
-but that we have to specify the action domain for all action functions.
+but that some action functions, such as
+<Ref Func="Blocks" BookName="ref"/>, need the action domain.
 <P/>
 We see that <C>a8_56</C>   is not primitive. This  means  of course   that the
 action of <C>a8</C> on <C>orbs[2]</C> is not primitive, because those two
@@ -710,7 +712,7 @@ gap> Index( a8, u28 );
 ]]></Example>
 <P/>
 We know that  the subgroup <C>u28</C> of index  28 is maximal, because we know
-that  <C>a8</C> has no  subgroups  of index 2,  4,  or 7.  However we can also
+that  <C>a8</C> has no  subgroups  of index 2,  4,  7, or 14.  However we can also
 quickly verify this by checking  that <C>a8_56</C> acts primitively on the
 28 blocks.
 <P/>
@@ -754,7 +756,8 @@ Just as we did in the  case of the  action on the  pairs above, we now
 construct a new permutation group that acts on <C>[ 1 .. 336 ]</C>
 in the same way that <C>a8</C> acts on the cosets of <C>u336</C>.
 But this time we let <C>a8</C> operate on a right transversal,
-just like <C>norm</C> did in the natural homomorphism above.
+just like we did with <C>RightTransversal( a8, norm )</C> in
+Section&nbsp;<Ref Sect="Actions of Groups"/>.
 <P/>
 <Example><![CDATA[
 gap> t := RightTransversal( a8, u336 );;
@@ -769,7 +772,7 @@ gap> blocks := Blocks( a8_336, [1..336] );; blocks[1];
 ]]></Example>
 <P/>
 We see that the union of <C>u336</C> with its 43rd and its 85th coset
-is a subgroup in <C>a8_336</C>, its index is 112.
+is a subgroup of <C>a8</C>, its index is 112.
 We can obtain it as the closure of <C>u336</C> with a representative
 of the  43rd coset, which can be found as the 43rd element
 of the transversal&nbsp;<C>t</C>.
@@ -931,7 +934,7 @@ gap> PreImage( hom, (1,2,3) );
 Error, <map> must be an injective and surjective mapping
 Stack trace:
 *[1] ErrorNoReturn( "<map> must be an injective and surjective ", "mapping" );
-   @ GAPROOT/lib/mapping.gi:262
+   @ GAPROOT/lib/mapping.gi:264
 <function "PreImage">( <arguments> )
  called from read-eval loop at *stdin*:7
 you can enter 'quit;' to quit to outer loop
@@ -1140,9 +1143,7 @@ gap> List( gcls, Size );
 ]]></Example>
 <P/>
 All the steps we have made above are automatically performed by &GAP;
-if you simply ask for <C>ConjugacyClasses( grp )</C>,
-provided that &GAP; already knows that <C>grp</C> is finite
-(e.g., because you asked <C>IsFinite( grp )</C> before).
+if you simply ask for <C>ConjugacyClasses( grp )</C>.
 The reason for this is that a finite matrix group like <C>grp</C> is
 <Q>handled by a nice monomorphism</Q>.
 For such groups, &GAP; uses the command

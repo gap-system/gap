@@ -122,8 +122,7 @@ position of the list.  This list may be the empty list <C>[ ]</C>.
 <Log><![CDATA[
 gap> lll[1]:= 2;
 Error, Variable: 'lll' must have a value
-
-
+not in any function at *stdin*:1
 gap> lll:= []; lll[1]:= 2;
 [  ]
 2
@@ -790,8 +789,7 @@ This  is  also an allowed scalar   operation.  The expression <C>v/3</C> would
 result in  the same value.
 <P/>
 Such arithmetical operations (if the results are again vectors)
-result in <E>mutable</E> vectors except if the operation is binary
-and both operands are immutable;
+result in <E>mutable</E> vectors unless all operands are immutable;
 thus the vectors shown in the examples above are all mutable.
 <P/>
 So if you want to produce a mutable list with 100&nbsp;entries equal to&nbsp;25,
@@ -859,8 +857,8 @@ z = Z(4)
 <P/>
 Submatrices    can  easily     be    extracted  using    the   expression
 <C><A>mat</A>{<A>rows</A>}{<A>columns</A>}</C>. They   can also be  assigned to, provided
-the big matrix  is mutable (which  it is not if it  is  the result of  an
-arithmetical operation, see above).
+the big matrix  is mutable (which  it is if it  is  the result of  an
+arithmetical operation with a mutable operand, see above).
 <P/>
 <Example><![CDATA[
 gap> sm := m{ [ 1, 2 ] }{ [ 2, 3 ] };
