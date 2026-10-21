@@ -377,14 +377,20 @@ local   filter,  hom,pcgs,mapi,l,obj_args,p;
     Range, H,
     MappingGeneratorsImages, mapi ];
 
+  # `Immutable' copies mutable lists, so identity alone misses lists
+  # equal to the generators
   if HasGeneratorsOfGroup(G)
-     and IsIdenticalObj(GeneratorsOfGroup(G),mapi[1]) then
+     and ( IsIdenticalObj(GeneratorsOfGroup(G),mapi[1])
+           or ( CanEasilyCompareElements(G)
+                and GeneratorsOfGroup(G) = mapi[1] ) ) then
     Append(obj_args, [PreImagesRange, G]);
     filter := filter and IsTotal and HasPreImagesRange;
   fi;
 
   if HasGeneratorsOfGroup(H)
-     and IsIdenticalObj(GeneratorsOfGroup(H),mapi[2]) then
+     and ( IsIdenticalObj(GeneratorsOfGroup(H),mapi[2])
+           or ( CanEasilyCompareElements(H)
+                and GeneratorsOfGroup(H) = mapi[2] ) ) then
     Append(obj_args, [ImagesSource, H]);
     filter := filter and IsSurjective and HasImagesSource;
   elif pcgs <> false then
