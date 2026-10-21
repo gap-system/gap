@@ -454,8 +454,7 @@ local H,T,c,a,e,f,i,j,k,l,m,p,ch,el,ur,s,hom,gens,onc,G;
   G:=D.group;
   onc:=List([1..D.klanz],i->1);
   D.trivialCharacter:=onc;
-  H:=DerivedSubgroup(G);
-  hom:=NaturalHomomorphismByNormalSubgroup(G,H);
+  hom:=MaximalAbelianQuotient(G);
   H:=Image(hom,G);
   e:=ShallowCopy(AsList(H));
   s:=Length(e); # Size(H)
