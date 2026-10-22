@@ -967,7 +967,7 @@ This behaviour can be controlled using the following procedures.
 <Ref Func="GetRecursionDepth"/> returns the nesting level of the GAP
 interpreter. This is reset to 0 every time the break loop is entered.
 <Ref Func="SetRecursionTrapInterval"/> sets the depth of the stack at which
-GAP will enter the Break loop. <A>interval</A> must be a small integer
+GAP will enter the break loop. <A>interval</A> must be a small integer
 greater than 5.
 A very large <A>interval</A> effectively suppresses the monitoring of
 recursion. In this case excessive recursion may cause &GAP; to crash.

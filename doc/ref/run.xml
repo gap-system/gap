@@ -231,7 +231,7 @@ see <Ref Subsect="Garbage Collection"/>.)
 <Item>
 can be used to set or modify &GAP;'s list of root directories
 (see <Ref Sect="GAP Root Directories"/>).
-The default if no <C>-l </C> option is given is the directory containing
+The default if no <C>-l</C> option is given is the directory containing
 the &GAP; executable (or the installation directory of an installed &GAP;). This option can be used several times. Depending on the
 <C>-r</C> option a further user specific path is prepended to the
 list of root directories (the path in <C>GAPInfo.UserGapRoot</C>).

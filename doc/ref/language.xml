@@ -161,8 +161,8 @@ unit. The set of symbols consists of keywords, identifiers, strings,
 integers, and operator and delimiter symbols.
 <P/>
 A <E>keyword</E> is a reserved word (see <Ref Sect="Keywords"/>).
-An <E>identifier</E> is a sequence of letters, digits and underscores
-(or other characters escaped by backslashes) that contains at least one
+An <E>identifier</E> is a sequence of letters, digits, underscores and
+<C>@</C> characters (or other characters escaped by backslashes) that contains at least one
 non-digit and is not a keyword (see <Ref Sect="Identifiers"/>).
 An integer is a sequence of digits (see <Ref Chap="Integers"/>).
 A <E>string</E> is a sequence of arbitrary characters enclosed in
