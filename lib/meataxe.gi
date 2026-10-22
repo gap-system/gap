@@ -604,6 +604,14 @@ local module, sub, typ, matrices, dim, subdim, F,
     sr:=[1..subdim];qr:=[subdim+1..dim];
     for g in matrices do
       g:=sub*g*subi;
+
+      # sub spans a submodule iff the upper right block is zero
+      for i in sr do
+        if PositionNonZero(g[i], subdim) <= dim then
+          return fail;
+        fi;
+      od;
+
       if s then
         h:=ExtractSubMatrix(g,sr,sr);
         h:=ImmutableMatrix(F,h);
@@ -1799,7 +1807,8 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
 end;
 
 SMTX.DegreeFieldExt:=function(module)
-  if not IsBound(module.smashMeataxe.degreeFieldExt) then
+  if not IsBound(module.smashMeataxe) or
+     not IsBound(module.smashMeataxe.degreeFieldExt) then
     SMTX.AbsoluteIrreducibilityTest( module );
   fi;
   return module.smashMeataxe.degreeFieldExt;
