@@ -1793,8 +1793,8 @@ local invrep,  # function: word mapping a point of level <lev> back to <pnt>
     return fcache[n];
   end;
 
-  b:=ClosureSubgroup(RadicalGroup(G),PerfectResiduum(G));
-  cs:=Reversed(CompositionSeriesThrough(G,[RadicalGroup(G),b]));
+  b:=ClosureSubgroup(SolvableRadical(G),PerfectResiduum(G));
+  cs:=Reversed(CompositionSeriesThrough(G,[SolvableRadical(G),b]));
 
   d:=NewDictionary(pnt,true,dom);
   if gens=acts then
