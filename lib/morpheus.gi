@@ -2671,7 +2671,7 @@ InstallMethod( InnerAutomorphismGroup,
         return InnerAutomorphismsAutomorphismGroup( AutomorphismGroup( G ) );
     elif IsAbelian( G ) then
         A := Group(IdentityMapping( G ));
-    else 
+    else
         gens:= GeneratorsOfGroup( G );
         # get the non-central generators
         gens:= Filtered( gens, i -> not ForAll( gens, j -> i*j = j*i ) );
