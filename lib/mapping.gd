@@ -751,9 +751,13 @@ DeclareAttribute( "ImagesSource", IsGeneralMapping );
 ##  <Description>
 ##  is the set of preimages of the range of the general mapping <A>map</A>.
 ##  <P/>
-##  <Ref Attr="PreImagesRange"/> delegates to <Ref Oper="PreImagesSetNC"/>.
+##  <Ref Attr="PreImagesRange"/> may delegate to
+##  <Ref Oper="PreImagesSetNC"/>.
 ##  It is introduced only to store the preimage of <A>map</A> as an attribute
 ##  value.
+##  Note that if <A>map</A> is total, then its <Ref Attr="PreImagesRange"/>
+##  and <Ref Attr="Source"/> values may be identical,
+##  but this is not generally guaranteed.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
