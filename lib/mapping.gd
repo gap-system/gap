@@ -1447,17 +1447,25 @@ DeclareGlobalFunction( "GeneralMappingByElements" );
 ##  such that each element <M>s</M> of <A>S</A> is mapped to the element
 ##  <A>fun</A><M>( s )</M>, where <A>fun</A> is a &GAP; function.
 ##  <P/>
-##  If the argument <A>invfun</A> is bound then <C>map</C> is a bijection
-##  between <A>S</A> and <A>R</A>, and the preimage of each element <M>r</M>
-##  of <A>R</A> is given by <A>invfun</A><M>( r )</M>,
-##  where <A>invfun</A> is a &GAP;  function.
+##  If the argument <A>invfun</A> is bound then <C>map</C> is marked as
+##  bijective (see&nbsp;<Ref Prop="IsBijective"/>), and the preimage of each
+##  element <M>r</M> of <A>R</A> is given by <A>invfun</A><M>( r )</M>,
+##  where <A>invfun</A> is a &GAP; function.
+##  This is not checked: <A>fun</A> must be a bijection from <A>S</A> onto
+##  <A>R</A> and <A>invfun</A> its inverse, otherwise <C>map</C> reports
+##  wrong properties and preimages.
+##  For example, an injection of <A>S</A> into a strictly larger <A>R</A>
+##  must not be created this way.
 ##  <P/>
 ##  If five arguments are given and the fourth argument is <K>false</K> then
-##  the &GAP; function <A>prefun</A> can be used to compute a single preimage
-##  also if <C>map</C> is not bijective.
-##  <!-- what is <A>prefun</A> expected to return for <A>r</A> outside the image of <A>map</A>-->
-##  <!-- if <A>map</A> is not surjective?-->
-##  <!-- or must <A>map</A> be surjective in this case?-->
+##  <C>map</C> is only known to be single-valued and total, so set
+##  <Ref Prop="IsInjective"/> and <Ref Prop="IsSurjective"/> explicitly
+##  where they are known.
+##  The &GAP; function <A>prefun</A> must return one preimage of each
+##  element <M>r</M> in the image of <C>map</C>.
+##  <Ref Oper="PreImagesRepresentative"/> returns <K>fail</K> for other
+##  elements without calling <A>prefun</A>;
+##  <Ref Oper="PreImagesRepresentativeNC"/> calls it unchecked.
 ##  <P/>
 ##  The mapping returned by
 ##  <Ref Func="MappingByFunction" Label="by function (and inverse function) between two domains"/> lies in the
