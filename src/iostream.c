@@ -587,20 +587,28 @@ cleanup:
 
 #ifndef GAP_DISABLE_SUBPROCESS_CODE
 
+// How a child process ended. At most one of <termSignal> and <execError> is
+// nonzero, and <exitCode> is meaningful only if both are zero.
+typedef struct {
+    int exitCode;
+    int termSignal;    // signal that killed the child
+    int execError;     // errno if the child could not be started
+} SyProcessResult;
+
 /****************************************************************************
 **
 *F  SyExecuteProcess( <dir>, <prg>, <in>, <out>, <args> ) . . . . new process
 **
 **  Start  <prg> in  directory <dir>  with  standard input connected to <in>,
 **  standard  output  connected to <out>   and arguments.  No  path search is
-**  performed, the return  value of the process  is returned if the operation
-**  system supports such a concept.
+**  performed.
 */
 
 /****************************************************************************
 **
 *f  SyExecuteProcess( <dir>, <prg>, <in>, <out>, <args> )
 */
+
 #if defined(HAVE_FORK) || defined(HAVE_VFORK)
 
 #ifndef WEXITSTATUS
@@ -612,24 +620,29 @@ cleanup:
 
 #ifdef SYS_IS_CYGWIN32
 
-static UInt
+static SyProcessResult
 SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[])
 {
     int savestdin, savestdout;
     Int tin, tout;
     int res;
+    SyProcessResult result = { 0, 0, 0 };
 
     // change the working directory
-    if (chdir(dir) == -1)
-        return -1;
+    if (chdir(dir) == -1) {
+        result.execError = errno;
+        return result;
+    }
 
     // if <in> is -1 open "/dev/null"
     if (in == -1)
         tin = open("/dev/null", O_RDONLY);
     else
         tin = SyBufFileno(in);
-    if (tin == -1)
-        return -1;
+    if (tin == -1) {
+        result.execError = errno;
+        return result;
+    }
 
     // if <out> is -1 open "/dev/null"
     if (out == -1)
@@ -637,9 +650,10 @@ SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[])
     else
         tout = SyBufFileno(out);
     if (tout == -1) {
+        result.execError = errno;
         if (in == -1)
             close(tin);
-        return -1;
+        return result;
     }
 
     // set standard input to <in>, standard output to <out>
@@ -647,11 +661,12 @@ SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[])
     if (tin != 0) {
         savestdin = dup(0);
         if (savestdin == -1 || dup2(tin, 0) == -1) {
+            result.execError = errno;
             if (out == -1)
                 close(tout);
             if (in == -1)
                 close(tin);
-            return -1;
+            return result;
         }
         fcntl(0, F_SETFD, 0);
     }
@@ -659,6 +674,7 @@ SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[])
     if (tout != 1) {
         savestdout = dup(1);
         if (savestdout == -1 || dup2(tout, 1) == -1) {
+            result.execError = errno;
             if (tin != 0) {
                 close(0);
                 dup2(savestdin, 0);
@@ -668,7 +684,7 @@ SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[])
                 close(tout);
             if (in == -1)
                 close(tin);
-            return -1;
+            return result;
         }
         fcntl(1, F_SETFD, 0);
     }
@@ -677,6 +693,8 @@ SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[])
     // now try to execute the program
     res = spawnve(_P_WAIT, prg, (const char * const *)args,
                   (const char * const *)environ);
+    // remember why, before the repairs below overwrite errno
+    int spawnErrno = errno;
 
     // Now repair the open file descriptors:
     if (tout != 1) {
@@ -697,9 +715,16 @@ SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[])
     FreezeStdin = 0;
 
     // Report result:
-    if (res < 0)
-        return -1;
-    return WEXITSTATUS(res);
+    if (res < 0) {
+        result.execError = spawnErrno;
+        return result;
+    }
+    if (WIFSIGNALED(res)) {
+        result.termSignal = WTERMSIG(res);
+        return result;
+    }
+    result.exitCode = WEXITSTATUS(res);
+    return result;
 }
 
 #else
@@ -710,7 +735,17 @@ static void NullSignalHandler(int scratch)
 {
 }
 
-static UInt
+// In the child: tell the parent through <fd> why the program could not be
+// started. The parent goes by this, not by the exit code.
+static void SyChildFailed(int fd, int errorNumber)
+{
+    if (write(fd, &errorNumber, sizeof(errorNumber)) < 0) {
+        // nothing left to try
+    }
+    _exit(255);
+}
+
+static SyProcessResult
 SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[])
 {
     pid_t pid;    // process id
@@ -719,6 +754,8 @@ SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[])
     Int   tin;       // temp in
     Int   tout;      // temp out
     sig_handler_t * volatile func2;
+    int   execErrorPipe[2];
+    SyProcessResult result = { 0, 0, 0 };
 
 
     // turn off the SIGCHLD handling, so that we can be sure to collect this
@@ -734,14 +771,32 @@ SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[])
     if (func2 == SIG_ERR || func2 == SIG_DFL || func2 == SIG_IGN)
         func2 = &NullSignalHandler;
 
+    // The child reports a failure to start through this pipe. A successful
+    // execve closes the write end, leaving the pipe empty.
+    if (pipe(execErrorPipe) == -1) {
+        result.execError = errno;
+        return result;
+    }
+    fcntl(execErrorPipe[0], F_SETFD, FD_CLOEXEC);
+    fcntl(execErrorPipe[1], F_SETFD, FD_CLOEXEC);
+
+    // Never block on reading: a process forked by another thread before the
+    // flags above were set may hold the write end open indefinitely.
+    fcntl(execErrorPipe[0], F_SETFL, O_NONBLOCK);
+
     // clone the process
     pid = fork();
     if (pid == -1) {
-        return -1;
+        result.execError = errno;
+        close(execErrorPipe[0]);
+        close(execErrorPipe[1]);
+        return result;
     }
 
     // we are the parent
     if (pid != 0) {
+        close(execErrorPipe[1]);
+
         // Stop trying to read input
         FreezeStdin = 1;
 
@@ -759,21 +814,37 @@ SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[])
         FreezeStdin = 0;
         sigaction(SIGINT, &oldsa, NULL);
         (*func2)(SIGCHLD);
+
         if (wait_pid == -1) {
-            return -1;
+            result.execError = errno;
+            close(execErrorPipe[0]);
+            return result;
+        }
+
+        // the child is gone, so whatever it reported is in the pipe by now
+        int childError = 0;
+        ssize_t nread = read(execErrorPipe[0], &childError, sizeof(childError));
+        close(execErrorPipe[0]);
+
+        if (nread == sizeof(childError)) {
+            result.execError = childError;
+            return result;
         }
         if (WIFSIGNALED(status)) {
-            return -1;
+            result.termSignal = WTERMSIG(status);
+            return result;
         }
-        return WEXITSTATUS(status);
+        result.exitCode = WEXITSTATUS(status);
+        return result;
     }
 
     // we are the child
     else {
+        close(execErrorPipe[0]);
 
         // change the working directory
         if (chdir(dir) == -1) {
-            _exit(-1);
+            SyChildFailed(execErrorPipe[1], errno);
         }
 
         // if <in> is -1 open "/dev/null"
@@ -784,7 +855,7 @@ SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[])
             tin = SyBufFileno(in);
         }
         if (tin == -1) {
-            _exit(-1);
+            SyChildFailed(execErrorPipe[1], errno);
         }
 
         // if <out> is -1 open "/dev/null"
@@ -795,31 +866,32 @@ SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[])
             tout = SyBufFileno(out);
         }
         if (tout == -1) {
-            _exit(-1);
+            SyChildFailed(execErrorPipe[1], errno);
         }
 
         // set standard input to <in>, standard output to <out>
         if (tin != 0) {
             if (dup2(tin, 0) == -1) {
-                _exit(-1);
+                SyChildFailed(execErrorPipe[1], errno);
             }
         }
         fcntl(0, F_SETFD, 0);
 
         if (tout != 1) {
             if (dup2(tout, 1) == -1) {
-                _exit(-1);
+                SyChildFailed(execErrorPipe[1], errno);
             }
         }
         fcntl(1, F_SETFD, 0);
 
         // now try to execute the program
         execve(prg, args, environ);
-        _exit(-1);
+        SyChildFailed(execErrorPipe[1], errno);
     }
 
     // this should not happen
-    return -1;
+    result.execError = ECHILD;
+    return result;
 }
 #endif
 
@@ -1094,7 +1166,6 @@ FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
     Char * ExecCArgs[1024];
 
     Obj tmp;
-    Int res;
     Int i;
 
     RequireStringRep(SELF_NAME, dir);
@@ -1120,12 +1191,22 @@ FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
         syWinPut(INT_INTOBJ(out), "@z", "");
 
     // execute the process
-    res = SyExecuteProcess(CSTR_STRING(dir), CSTR_STRING(prg), iin, iout,
-                           ExecCArgs);
+    SyProcessResult res = SyExecuteProcess(CSTR_STRING(dir), CSTR_STRING(prg),
+                                           iin, iout, ExecCArgs);
 
     if (SyWindow && out == INTOBJ_INT(1))    // standard output
         syWinPut(INT_INTOBJ(out), "@mAgIc", "");
-    return res == 255 ? Fail : INTOBJ_INT(res);
+
+    // the program never ran
+    if (res.execError != 0)
+        return Fail;
+
+    // killed by a signal: report it as a negative value, so that it cannot be
+    // mistaken for an exit code
+    if (res.termSignal != 0)
+        return INTOBJ_INT(-res.termSignal);
+
+    return INTOBJ_INT(res.exitCode);
 }
 
 #else // !defined(GAP_DISABLE_SUBPROCESS_CODE) && !defined(SYS_IS_MINGW)
