@@ -388,9 +388,7 @@ local   filter,  hom,pcgs,mapi,l,obj_args,p;
   fi;
 
   if HasGeneratorsOfGroup(H)
-     and ( IsIdenticalObj(GeneratorsOfGroup(H),mapi[2])
-           or ( CanEasilyCompareElements(H)
-                and GeneratorsOfGroup(H) = mapi[2] ) ) then
+     and IsIdenticalObj(GeneratorsOfGroup(H),mapi[2]) then
     Append(obj_args, [ImagesSource, H]);
     filter := filter and IsSurjective and HasImagesSource;
   elif pcgs <> false then

@@ -13,10 +13,6 @@ true
 gap> r = ClassFunction( CharacterTable( S3 ), List( ConjugacyClasses( S3 ),
 >            c -> ( Representative( c )^hom ) ^ psi ) );
 true
-gap> iso:= GroupHomomorphismByImages( S4, S4,
->             [ (1,2,3,4), (1,2) ], [ (1,2,3,4), (1,2) ] );;
-gap> IsIdenticalObj( ImagesSource( iso ), S4 );
-true
 
 # a mapping that is not total restricts to its preimage
 gap> map:= GroupGeneralMappingByImages( S4, S4, [ (1,2,3) ], [ (1,2,3) ] );;
