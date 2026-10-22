@@ -13,10 +13,9 @@
 ##
 ##  In the hash tables, we hash by keys and also store a value.  Keys
 ##  cannot be removed from the table, but the corresponding value can be
-##  changed.  Fast access to last hash index allows you to efficiently store
-##  more than one array of values -- this facility should be used with care.
+##  changed.
 ##
-##  This code works for any kind of object, provided you have a KeyIntDense
+##  This code works for any kind of object, provided you have a DenseIntKey
 ##  method to convert the key into a positive integer.
 ##  This method should ideally be implemented efficiently in the core.
 ##
@@ -29,7 +28,7 @@
 ##      Representations IsDenseHashRep and IsSparseHashRep.
 ##      Operations PrintHashWithNames, Iterator, GetHashEntry, AddHashEntry,
 ##        GetHashEntryAtLastIndex, SetHashEntryAtLastIndex, SetHashEntry,
-##        [AddHashEntryAtLastIndex], HashFunct, KeyIntDense.
+##        [AddHashEntryAtLastIndex], HashFunct, DenseIntKey.
 ##      Functions DenseHash, SparseHash.
 ##      Variables MaxViewSize, LastHashIndex.
 ##
@@ -423,8 +422,8 @@ DeclareFilter( "TableHasIntKeyFun" );
 ##
 ##  Used for hashing dense sets without collisions, in particular integers.
 ##  Stores keys as an unordered list and values as an
-##  array with holes.  The position of a value is given by
-##  KeyIntDense of the key, and so KeyIntDense must be one-to-one.
+##  array with holes.  The position of a value is given by the function
+##  returned by DenseIntKey, and so this function must be one-to-one.
 ##
 #############################################################################
 #############################################################################
