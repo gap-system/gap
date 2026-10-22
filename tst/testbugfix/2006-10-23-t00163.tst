@@ -6,6 +6,6 @@ gap> f := InputTextFile(fnam);;
 gap> a := [0..255];; if ARCH_IS_WINDOWS() then a[14]:=10; fi;
 gap> List([0..255], i-> ReadByte(f)) = a;
 true
+gap> CloseStream(f);
 gap> RemoveFile(fnam);
 true
-gap> CloseStream(f);
