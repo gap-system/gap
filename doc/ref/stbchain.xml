@@ -344,7 +344,7 @@ The list numbers below refer to the line numbers of the code above.
   <Mark>7.</Mark>
   <Item>
     For every point <M>p \in fix</M>, if we know the image
-    <M>p</M><C>^</C><M>g</M> under  <M>c \in C_G(e)</M>,
+    <M>p</M><C>^</C><M>g</M> under  <M>c \in C_G(g)</M>,
     we also know <M>( p</M><C>^</C><M>g )</M><C>^</C><M>c
     = ( p</M><C>^</C><M>c )</M><C>^</C><M>g</M>.
     We therefore want to isolate these extra points in <M>\Pi</M>.
@@ -386,9 +386,9 @@ The list numbers below refer to the line numbers of the code above.
     but corresponding to the current <Q>image  partition</Q>
     (hence  it  is  an <Q>R-image</Q> in analogy to the R-base).
     Then &GAP; will call the function
-    <C>Refinements.Centralizer( R, I, Pi.cellno[ p ], p, where )</C>,
+    <C>Refinements.Centralizer( R, I, Pi.cellno[ p ], q, where )</C>,
     with  the  then  current  values  of  <M>R</M>  and  <M>I</M>,
-    but   where <M>\Pi</M><C>.cellno</C><M>[ p ]</M>, <M>p</M>,
+    but   where <M>\Pi</M><C>.cellno</C><M>[ p ]</M>, <M>q</M>,
     <C>where</C> still have the values  they  have  at the time of this
     <C>AddRefinement</C> command.
     This function call will further refine <M>I</M><C>.partition</C>
@@ -401,7 +401,7 @@ The list numbers below refer to the line numbers of the code above.
   <Item>
     If the cell from which <M>q</M> was taken out had only two points,
     we now have an additional one-point cell.
-    This condition is checked in line&nbsp;13 and if it is true,
+    This condition is checked in line&nbsp;14 and if it is true,
     this extra fixpoint <M>p</M> is taken  (line&nbsp;15),
     processed  like <M>q</M> before (line&nbsp;16) and is then (line&nbsp;17)
     passed to  another  refinement function
@@ -506,15 +506,15 @@ did above for the R-base black box <M>R</M>. Most of the components change as
 <P/>
 As declared in the above code for <Ref Oper="Centralizer" Label="for a magma and a submagma"/>,
 the refinement is performed by the function
-<C>Refinement.Centralizer</C><M>( R, I, \Pi</M><C>.cellno</C><M>[p], p, where )</M>.
+<C>Refinements.Centralizer</C><M>( R, I, \Pi</M><C>.cellno</C><M>[p], q, where )</M>.
 The  functions in the  record
-<C>Refinement</C> always   take two  additional   arguments  before  the  ones
+<C>Refinements</C> always   take two  additional   arguments  before  the  ones
 specified  in  the <C>AddRefinement</C>  call (in  line&nbsp;13 above),  namely the
 R-base  <M>R</M> and  the  current  value  <M>I</M>  of the <Q>R-image</Q>.
 In our example, <M>p</M> is a fixpoint of
 <M>\Pi = \Pi_i \wedge (\{ a_{{i+1}} \}, \Omega \setminus \{ a_{{i+1}} \})</M>
 such that <M>where = \Pi</M><C>.cellno</C><M>[ p^g ]</M>.
-The <C>Refinement</C> functions must return <K>false</K> if the refinement is
+The <C>Refinements</C> functions must return <K>false</K> if the refinement is
 unsuccessful (e.g., because it  leads to <M>\Sigma_{{i+1}}</M> having  different
 cell   sizes from  <M>\Pi_{{i+1}}</M>)  and  <K>true</K>  otherwise.
 Our particular function looks like this.
@@ -602,7 +602,7 @@ efficiently, &GAP; uses the following two functions.
 <P/>
 <C>StratMeetPartition( </C><M>R</M>, <M>\Pi</M>, <M>\Lambda</M> <C>[</C>, <M>g</M> <C>] )</C>
 <P/>
-<C>MeetPartitionStrat( </C><M>R</M>, <M>I</M><C>{, </C><M>\Lambda'</M><C>}[, {</C><M>g'</M><C>}]</C>, <M>strat</M> <C>)</C>
+<C>MeetPartitionStrat( </C><M>R</M>, <M>I</M>, <M>\Lambda'</M>, <M>g'</M>, <M>strat</M> <C>)</C>
 <P/>
 <Index>meet strategy</Index>
 Such a  <C>StratMeetPartition</C>   command would   typically appear in    the
@@ -713,7 +713,7 @@ group <M>G</M>, given by generators,  and we would like  to know its order. Of
 course we  could   follow the strategy  of  the   Schreier-Sims algorithm
 (described  in <Ref Sect="Stabilizer Chains"/>) for <M>A</M>
 acting   on   <M>G</M>. This would    involve   a  call  of
-<C>StabChainStrong( EmptyStabChain( [], One( <A>A</A> ) ), GroupGenerators( <A>A</A> ) )</C>  where
+<C>StabChainStrong( EmptyStabChain( [], One( <A>A</A> ) ), GeneratorsOfGroup( <A>A</A> ) )</C>  where
 <C>StabChainStrong</C>  is a function as the  one described in the pseudo-code
 below:
 <P/>
@@ -780,7 +780,7 @@ which is the disjoint union of
 as a whole. Enumerating it  as a whole would result  in basic orbits like
 <C>orbit</C><M> \subseteq \{ 1001, \ldots, 1100 \}</M>
 with a  <C>transversal</C> list whose
-first 1000 entries would be unbound, but  still require 4&nbsp;bytes of memory
+first 1000 entries would be unbound, but  still require 4&nbsp;or 8&nbsp;bytes of memory
 each (see&nbsp;<Ref Sect="Stabilizer Chain Records"/>).
 <P/>
 Identifying each coset <M>g_i N_{{j-1}} / N_j</M> into
@@ -917,7 +917,7 @@ InstallMethod( PermOnEnumerator,
     [ IsEnumerator, IsObject ],
     function( enum, a )
     SetFilterObj( a, IsMultiplicativeElementWithInverse );
-    a := Objectify( NewKind( PermutationsOnEnumeratorsFamily,
+    a := Objectify( NewType( PermutationsOnEnumeratorsFamily,
                  IsPermOnEnumeratorDefaultRep ),
                  rec( perm := a ) );
     SetEnumerator( a, enum );
