@@ -118,6 +118,7 @@ creation, an info class has level 0. By default, all built-in GAP info classes
 have level 0, except for the following info classes, which have level 1:
 <List>
   <Item><Ref InfoClass="InfoWarning"/>,</Item>
+  <Item><Ref InfoClass="InfoObsolete"/>,</Item>
   <Item><Ref InfoClass="InfoPackageLoading"/>,</Item>
   <Item><C>InfoDebug</C>,</Item>
   <Item><C>InfoPerformance</C>,</Item>
@@ -198,7 +199,7 @@ arguments, <A>info</A>, and possibly <A>moreinfo</A> and so on, are evaluated.
 (Technically, <Ref Func="Info"/> is a keyword and not a function.)
 <P/>
 By default, the results of these evaluations are
-viewed, preceded by the string <C>"#I  "</C> and followed by a newline.
+printed, preceded by the string <C>"#I  "</C> and followed by a newline.
 <P/>
 If the info level of <A>infoclass</A> is strictly less than <A>level</A>, then
 the third and subsequent arguments are not evaluated.
@@ -298,7 +299,7 @@ is an info class to which general warnings are sent at level 1,
 which is its default level.
 More specialised warnings are shown via calls of <Ref Func="Info"/> at
 <Ref InfoClass="InfoWarning"/> level 2,
-e.g.&nbsp;information about the autoloading of &GAP; packages and the
+e.g.&nbsp;the message that the options stack has been reset and the
 initial line matched when displaying an on-line help topic.
 </Description>
 </ManSection>
@@ -401,7 +402,7 @@ time components:
 gap> Runtimes(); # after startup
 rec( user_time := 3980, system_time := 60, user_time_children := 0,
   system_time_children := 0 )
-gap> Exec("cat /usr/bin/*||wc"); # child process with a lot of file access
+gap> Exec("cat /usr/bin/* | wc"); # child process with a lot of file access
  893799 7551659 200928302
 gap> Runtimes();
 rec( user_time := 3990, system_time := 60, user_time_children := 1590,
@@ -528,9 +529,10 @@ how much time has been spent and how much memory has been allocated
 during runtime.
 
 GAP has two different methods of profiling. GAP can either profile by
-function, or line-by-line. Line by line profiling is currently only
-used for code coverage, while function profiling tracks memory and time
-usage.
+function, or line-by-line. Line by line profiling records which lines
+are executed (code coverage) and optionally the time or memory spent on
+each line, while function profiling tracks memory and time usage per
+function.
 
 <Subsection Label="FunctionProfiling">
 <Heading>Function Profiling</Heading>
@@ -965,10 +967,10 @@ This behaviour can be controlled using the following procedures.
 <Ref Func="GetRecursionDepth"/> returns the nesting level of the GAP
 interpreter. This is reset to 0 every time the break loop is entered.
 <Ref Func="SetRecursionTrapInterval"/> sets the depth of the stack at which
-GAP will enter the Break loop. <A>interval</A> must be a non-negative small
-integer (between 0 and <M>2^{28}</M>).
-An <A>interval</A> of 0 suppresses the monitoring of recursion
-altogether. In this case excessive recursion may cause &GAP; to crash.
+GAP will enter the break loop. <A>interval</A> must be a small integer
+greater than 5.
+A very large <A>interval</A> effectively suppresses the monitoring of
+recursion. In this case excessive recursion may cause &GAP; to crash.
 <P/>
 <Log><![CDATA[
 gap> GetRecursionDepth();

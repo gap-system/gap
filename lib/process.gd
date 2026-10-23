@@ -246,6 +246,8 @@ DeclareGlobalFunction( "Exec" );
 ##  value returned by <Ref Oper="Process"/>: <C>0</C> if the program terminated
 ##  successfully, <K>fail</K> if it could not be started at all, and some other
 ##  value if it failed in another way; see <Ref Oper="Process"/> for details.
+##  If <A>cmd</A> is not a path and cannot be found in the system path,
+##  an error is signalled.
 ##  A nonzero status is not treated as an error by
 ##  <Ref Func="RunProcess"/>; it is up to the caller to check it.
 ##  <P/>

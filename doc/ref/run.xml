@@ -48,7 +48,7 @@ Some options require an argument, this must follow the option
 and  must be separated by whitespace, e.g.,  <C>gap -m 256m</C>,
 it is not correct to say <C>gap -m256m</C> instead.
 Certain boolean options (<C>-b</C>, <C>-q</C>, <C>-e</C>, <C>-r</C>,
-<C>-A</C>, <C>-D</C>, <C>-M</C>, <C>-T</C>, <C>-X</C>, <C>-Y</C>)
+<C>-A</C>, <C>-D</C>, <C>-M</C>, <C>-T</C>)
 toggle the current value so that <C>gap -b -b</C> is equivalent to <C>gap</C>
 and to <C>gap -b -q -b -q</C> etc.
 <P/>
@@ -231,8 +231,8 @@ see <Ref Subsect="Garbage Collection"/>.)
 <Item>
 can be used to set or modify &GAP;'s list of root directories
 (see <Ref Sect="GAP Root Directories"/>).
-The default if no <C>-l </C> option is given is the current directory
-<F>./</F>. This option can be used several times. Depending on the
+The default if no <C>-l</C> option is given is the directory containing
+the &GAP; executable (or the installation directory of an installed &GAP;). This option can be used several times. Depending on the
 <C>-r</C> option a further user specific path is prepended to the
 list of root directories (the path in <C>GAPInfo.UserGapRoot</C>).
 <P/>

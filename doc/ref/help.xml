@@ -56,8 +56,9 @@ This is explained below in Section&nbsp;<Ref Sect="Changing the Help Viewer"/>.
 Here is a precise description how the search strings <A>book</A> and
 <A>topic</A> are
 normalized before a search starts:
-backslashes and double or single quotes are removed,
-parentheses and braces are substituted by blanks,
+backslashes, backquotes and double or single quotes are removed,
+parentheses and the characters <C>#$%,;@|</C> are substituted by blanks,
+letters are converted to lower case,
 non-ASCII characters are considered as ISO-latin1 characters
 and the accented letters are substituted by their non-accented counterpart.
 Finally white space is normalized.

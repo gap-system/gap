@@ -161,11 +161,10 @@ unit. The set of symbols consists of keywords, identifiers, strings,
 integers, and operator and delimiter symbols.
 <P/>
 A <E>keyword</E> is a reserved word (see <Ref Sect="Keywords"/>).
-An <E>identifier</E> is a sequence of letters, digits and underscores
-(or other characters escaped by backslashes) that contains at least one
+An <E>identifier</E> is a sequence of letters, digits, underscores and
+<C>@</C> characters (or other characters escaped by backslashes) that contains at least one
 non-digit and is not a keyword (see <Ref Sect="Identifiers"/>).
-An integer is a sequence of digits (see <Ref Chap="Integers"/>),
-possibly prepended by <C>-</C> and <C>+</C> sign characters.
+An integer is a sequence of digits (see <Ref Chap="Integers"/>).
 A <E>string</E> is a sequence of arbitrary characters enclosed in
 double quotes (see <Ref Chap="Strings and Characters"/>).
 <P/>
@@ -294,10 +293,8 @@ assigned to other variables or passed to functions. These keywords are
 <Ref Func="Unbind" Label="unbind a variable"/>,
 <Ref Func="Info"/> and <Ref Func="TryNextMethod"/>.
 <P/>
-<!-- Update the next paragraph to reference HPC-GAP suitably -->
-Keywords <C>atomic</C>, <C>readonly</C>, <C>readwrite</C> are not used
-at the moment. They are reserved for the future version of GAP to prevent
-their accidental use as identifiers.
+Keywords <C>atomic</C>, <C>readonly</C>, <C>readwrite</C> are used by
+HPC-GAP; &GAP; accepts the same syntax and ignores it.
 </Section>
 
 
@@ -340,8 +337,7 @@ is an identifier, not a call to a function <C>G</C>.
 An identifier that starts with a backslash is never a keyword, so for
 example <C>\*</C> and <C>\mod</C> are identifiers.
 <P/>
-The length of identifiers is not limited,
-however only the first <M>1023</M> characters are significant.
+Identifiers may consist of at most <M>1023</M> characters.
 The escape sequence <C>\</C><B>newline</B> is ignored,
 making it possible to split long identifiers over multiple lines.
 
@@ -459,7 +455,7 @@ left-to-right) or right associative (aka right-to-left) or neither.
 </Row>
 <Row>
   <Item>&nbsp;&nbsp;&nbsp;&nbsp;unary <C>+</C>, unary <C>-</C></Item>
-  <Item>right-to-left</Item>
+  <Item>none</Item>
 </Row>
 <Row>
   <Item>&nbsp;&nbsp;&nbsp;&nbsp;<C>*</C>, <C>/</C>, <K>mod</K></Item>
@@ -1157,11 +1153,11 @@ to the newly created variables corresponding to the formal arguments. Of
 course the first value is assigned to the new variable corresponding to
 the first formal argument, the second  value  is assigned to the new
 variable corresponding  to  the second  formal argument, and  so on.
-An exception again occurs if the last formal argument has
-the name <C>arg</C>. In this case the values of all the actual
+An exception again occurs if the function has a variable length argument
+list. In this case the values of all the actual
 arguments not assigned to the other formal parameters are
 stored in  a list and this  list is assigned to the  new variable
-corresponding to the formal argument <C>arg</C>.
+corresponding to the final formal argument.
 <P/>
 The new variables corresponding to the formal locals are initially not
 bound to any  value.  So trying  to evaluate those  variables before
@@ -1438,8 +1434,8 @@ to clarify your intention.
 The <E>associativity</E> of the arithmetic operators is as follows.
 <C>^</C> is not associative, i.e., it is invalid to write <C>2^3^4</C>,
 use parentheses to clarify whether you mean <C>(2^3)^4</C> or <C>2^(3^4)</C>.
-The unary operators <C>+</C> and <C>-</C> are right associative,
-because they are written to the left of their operands.
+The unary operators <C>+</C> and <C>-</C> cannot be repeated,
+write <C>-(-2)</C> instead of <C>- -2</C>.
 <C>*</C>, <C>/</C>, <K>mod</K>, <C>+</C>, and <C>-</C> are all left
 associative,
 i.e., <C>1-2-3</C> is interpreted as <C>(1-2)-3</C> not as <C>1-(2-3)</C>.
@@ -1498,7 +1494,7 @@ Using expressions as statements is treated as syntax error.
 <Log><![CDATA[
 gap> i := 7;;
 gap> if i <> 0 then k = 16/i; fi;
-Syntax error: := expected
+Syntax error: found an expression when a statement was expected
 if i <> 0 then k = 16/i; fi;
                  ^
 gap>
@@ -1577,9 +1573,6 @@ In the above example, the function <C>f2</C> calls <C>f1</C> with argument
 and since <C>f1</C> does not return a value (but only prints a line
 <Q><C>value: ...</C></Q>),
 the <K>return</K> statement of <C>f2</C> cannot be executed.
-The error message says that it is possible to return an appropriate value,
-and the returned string <C>"hello"</C> is used by <C>f2</C> instead of the
-missing return value of <C>f1</C>.
 
 </Subsection>
 
@@ -1685,12 +1678,6 @@ If one of the expressions <A>bool-expr1</A>, <A>bool-expr2</A> is evaluated
 and its value is neither <K>true</K> nor <K>false</K> an error is signalled
 and a break loop (see <Ref Sect="Break Loops"/>) is entered.
 As usual you can leave  the break loop with <C>quit;</C>.
-If you enter <C>return true;</C>,
-execution of the <K>if</K> statement continues as if the expression whose
-evaluation  failed had evaluated to <K>true</K>.
-Likewise, if you enter <C>return false;</C>,
-execution of the <K>if</K> statement continues as if the expression
-whose evaluation failed had evaluated to <K>false</K>.
 <P/>
 <Example><![CDATA[
 gap> i := 10;;
@@ -1736,11 +1723,6 @@ iteration.
 If <A>bool-expr</A> does not evaluate to <K>true</K> or <K>false</K> an error
 is signalled and a break loop (see <Ref Sect="Break Loops"/>) is entered.
 As usual you can leave the break loop with <C>quit;</C>.
-If you enter <C>return false;</C>,
-execution continues with the next statement immediately following the
-<K>while</K> loop.
-If you enter <C>return true;</C>, execution continues at <A>statements</A>,
-after which the next evaluation of <A>bool-expr</A> may cause another error.
 <P/>
 The following example shows a <K>while</K> loop that sums up the squares
 <M>1^2, 2^2, \ldots</M> until the sum exceeds <M>200</M>.
@@ -1790,11 +1772,6 @@ If <A>bool-expr</A> does not evaluate to <K>true</K> or <K>false</K>
 an error is signalled and a break loop (see <Ref Sect="Break Loops"/>)
 is entered.
 As usual you can leave the break loop with <C>quit;</C>.
-If you enter <C>return true;</C>,
-execution continues with the next statement immediately following the
-<K>repeat</K> loop.
-If you enter <C>return false;</C>, execution continues at <A>statements</A>,
-after which the next evaluation of <A>bool-expr</A> may cause another error.
 <P/>
 The <K>repeat</K> loop in the following example has the same purpose as the
 <K>while</K> loop in the preceding example, namely to sum up the squares
@@ -2044,12 +2021,10 @@ is currently executing, and returns the value of the expression <A>expr</A>.
 Control returns to the calling function. An error is signalled if no
 function is currently executing.
 <P/>
-Both statements can also be used in break loops
+<C>return;</C> can also be used in break loops
 (see <Ref Sect="Break Loops"/>).
-<C>return;</C> has the effect that the computation continues where it was
+It has the effect that the computation continues where it was
 interrupted by an error or the user hitting <B>Ctrl-C</B>.
-<C>return <A>expr</A>;</C> can be used to continue execution after an error.
-What happens with the value <A>expr</A> depends on the particular error.
 <P/>
 For examples of <K>return</K> statements, see the functions <C>fib</C> and
 <C>Stack</C> in Section&nbsp;<Ref Sect="Function"/>.

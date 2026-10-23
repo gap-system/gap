@@ -93,14 +93,14 @@ DeclareGlobalFunction("CollectGarbage");
 ##  <P/>
 ##  The <C>partial</C> component will be present if there has been a
 ##  partial garbage collection since the last full one. It is also a
-##  record with the same six components as <C>full</C>. In this case
+##  record with the same eight components as <C>full</C>. In this case
 ##  <C>deadbags</C> and <C>deadkb</C> refer only to the number and total size of
 ##  the garbage bags reclaimed in this partial garbage collection and
 ##  <C>livebags</C>and <C>livekb</C> only to the numbers and total size of the
 ##  young bags that were considered for garbage collection, and survived.
 ##  <P/>
 ##  The <C>npartial</C> and <C>nfull</C> components will contain the number
-##  of full and partial garbage collections performed since &GAP; started.
+##  of partial and full garbage collections performed since &GAP; started.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
