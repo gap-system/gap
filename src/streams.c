@@ -153,10 +153,8 @@ static UInt OpenInputFileOrStream(const char *   funcname,
 **  - The fifth entry contains the captured output as a string, if <capture>
 **    is 'true'.
 **
-**  This function is currently used in interactive tools such as the GAP
-**  Jupyter kernel to execute cells and is likely to be replaced by a function
-**  that can read a single command from a stream without losing the rest of
-**  its content.
+**  'READ_EVAL_COMMANDS' gives more control, such as stopping at the first
+**  error.
 */
 Obj READ_ALL_COMMANDS(Obj instream, Obj echo, Obj capture, Obj resultCallback)
 {
@@ -248,6 +246,197 @@ static Obj FuncREAD_ALL_COMMANDS(
     Obj self, Obj instream, Obj echo, Obj capture, Obj resultCallback)
 {
     return READ_ALL_COMMANDS(instream, echo, capture, resultCallback);
+}
+
+
+/****************************************************************************
+**
+*F  FuncREAD_EVAL_COMMANDS( <self>, <instream>, <options>, <callback> )
+**
+**  Reads and executes the statements in <instream> one at a time. After each
+**  statement, <callback> is called with a record with these components:
+**
+**  - 'status': "ok", "error", "quit" or "QUIT"; after "quit" or "QUIT",
+**    nothing more is read.
+**  - 'value': the value of the statement, if it is "ok" and has one.
+**  - 'dualSemicolon': whether an "ok" statement ended in ';;'.
+**  - 'output': if <options>.captureOutput is 'true', what the statement
+**    printed.
+**  - 'errors': if <options>.captureErrors is 'true', what the statement
+**    printed to 'ERROR_OUTPUT', which includes error messages.
+**
+**  <callback> returns 'true' to continue, or 'false' to stop. Captures cover
+**  the statement only, not <callback>, and are not broken into lines. If
+**  <options>.echo is 'true', the statements are echoed as for
+**  'READ_ALL_COMMANDS'.
+**
+**  Returns 'fail' if <instream> cannot be opened, and 'true' otherwise.
+*/
+static BOOL ReadEvalCommandsOption(Obj options, const char * name)
+{
+    UInt rnam = RNamName(name);
+    if (!IsbPRec(options, rnam))
+        return FALSE;
+    Obj val = ElmPRec(options, rnam);
+    if (val != True && val != False) {
+        char argname[40];
+        snprintf(argname, sizeof(argname), "<options>.%s", name);
+        RequireArgumentEx("READ_EVAL_COMMANDS", val, argname,
+                          "must be 'true' or 'false'");
+    }
+    return val == True;
+}
+
+// Read and evaluate one command, with its output and ERROR_OUTPUT redirected
+// to <outStream> and <errStream> where these are non-zero. The redirections
+// are undone however the command ends.
+static ExecStatus ReadEvalCaptured(TypInputFile * input,
+                                   Obj            outStream,
+                                   Obj            errStream,
+                                   Obj *          evalResult,
+                                   BOOL *         dualSemicolon)
+{
+    TypOutputFile output;
+    if (outStream && !OpenOutputStream(&output, outStream))
+        ErrorQuit("READ_EVAL_COMMANDS: cannot open output capture", 0, 0);
+    UInt         errGVar = GVarName("ERROR_OUTPUT");
+    volatile Obj savedErr = ValGVar(errGVar);
+    if (errStream)
+        AssGVarWithoutReadOnlyCheck(errGVar, errStream);
+
+    volatile ExecStatus status = STATUS_END;
+    volatile Obj        result = 0;
+    volatile BOOL       dual = FALSE;
+    BOOL                thrown = FALSE;
+    GAP_TRY
+    {
+        Obj  res;
+        BOOL d;
+        status = ReadEvalCommand(0, input, &res, &d);
+        result = res;
+        dual = d;
+    }
+    GAP_CATCH
+    {
+        thrown = TRUE;
+    }
+    if (outStream) {
+        Pr("\03", 0, 0);
+        CloseOutput(&output);
+    }
+    if (errStream)
+        AssGVarWithoutReadOnlyCheck(errGVar, savedErr);
+    if (thrown)
+        GAP_THROW();
+
+    *evalResult = result;
+    *dualSemicolon = dual;
+    return status;
+}
+
+static Obj
+FuncREAD_EVAL_COMMANDS(Obj self, Obj instream, Obj options, Obj callback)
+{
+    RequireInputStream(SELF_NAME, instream);
+    RequireArgumentCondition(SELF_NAME, options, IS_PREC(options),
+                             "must be a plain record");
+    RequireFunction(SELF_NAME, callback);
+
+    for (UInt i = 1; i <= LEN_PREC(options); i++) {
+        const char * name =
+            CONST_CSTR_STRING(NAME_RNAM(labs(GET_RNAM_PREC(options, i))));
+        if (strcmp(name, "echo") != 0 && strcmp(name, "captureOutput") != 0 &&
+            strcmp(name, "captureErrors") != 0)
+            ErrorQuit("READ_EVAL_COMMANDS: unknown option '%s'", (Int)name,
+                      0);
+    }
+    BOOL echo = ReadEvalCommandsOption(options, "echo");
+    BOOL captureOutput = ReadEvalCommandsOption(options, "captureOutput");
+    BOOL captureErrors = ReadEvalCommandsOption(options, "captureErrors");
+
+    TypInputFile input;
+    if (!OpenInputStream(&input, instream, echo)) {
+        return Fail;
+    }
+
+    volatile Obj outString = 0;
+    volatile Obj outStream = 0;
+    volatile Obj errString = 0;
+    volatile Obj errStream = 0;
+    // Captured text is for programs, so no line breaking at the screen width.
+    Obj setFormatting = ValGVar(GVarName("SetPrintFormattingStatus"));
+    if (captureOutput) {
+        outString = NEW_STRING(0);
+        outStream = DoOperation2Args(ValGVar(GVarName("OutputTextString")),
+                                     outString, True);
+        DoOperation2Args(setFormatting, outStream, False);
+    }
+    if (captureErrors) {
+        errString = NEW_STRING(0);
+        errStream = DoOperation2Args(ValGVar(GVarName("OutputTextString")),
+                                     errString, True);
+        DoOperation2Args(setFormatting, errStream, False);
+    }
+    BOOL rethrow = FALSE;
+    GAP_TRY
+    {
+        while (1) {
+            if (outStream)
+                SET_LEN_STRING(outString, 0);
+            if (errStream)
+                SET_LEN_STRING(errString, 0);
+            Obj        evalResult;
+            BOOL       dualSemicolon;
+            ExecStatus status = ReadEvalCaptured(&input, outStream, errStream,
+                                                 &evalResult, &dualSemicolon);
+
+            if (status == STATUS_EOF)
+                break;
+
+            Obj          record = NEW_PREC(5);
+            const char * statusName;
+            if (status == STATUS_ERROR)
+                statusName = "error";
+            else if (status == STATUS_QUIT)
+                statusName = "quit";
+            else if (status == STATUS_QQUIT)
+                statusName = "QUIT";
+            else
+                statusName = "ok";
+            AssPRec(record, RNamName("status"), MakeImmString(statusName));
+            if (status == STATUS_END || status == STATUS_RETURN) {
+                if (evalResult)
+                    AssPRec(record, RNamName("value"), evalResult);
+                AssPRec(record, RNamName("dualSemicolon"),
+                        dualSemicolon ? True : False);
+            }
+            if (outStream)
+                AssPRec(record, RNamName("output"),
+                        CopyToStringRep(outString));
+            if (errStream)
+                AssPRec(record, RNamName("errors"),
+                        CopyToStringRep(errString));
+
+            Obj cont = CALL_1ARGS(callback, record);
+            if (cont != True && cont != False)
+                RequireArgumentEx("READ_EVAL_COMMANDS", cont, "<callback>",
+                                  "must return 'true' or 'false'");
+            if (cont == False || status == STATUS_QUIT ||
+                status == STATUS_QQUIT)
+                break;
+        }
+    }
+    GAP_CATCH
+    {
+        rethrow = TRUE;
+    }
+
+    CloseInput(&input);
+
+    if (rethrow)
+        GAP_THROW();
+
+    return True;
 }
 
 
@@ -1780,6 +1969,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_1ARGS(READ, input),
     GVAR_FUNC_4ARGS(
         READ_ALL_COMMANDS, instream, echo, capture, resultCallback),
+    GVAR_FUNC_3ARGS(READ_EVAL_COMMANDS, instream, options, callback),
     GVAR_FUNC_2ARGS(READ_COMMAND_REAL, stream, echo),
     GVAR_FUNC_3ARGS(READ_STREAM_LOOP, stream, catchstderrout, context),
     GVAR_FUNC_1ARGS(READ_AS_FUNC, input),
