@@ -2670,7 +2670,7 @@ InstallMethod( InnerAutomorphismGroup,
     if HasAutomorphismGroup( G ) or IsTrivial( G ) then
         return InnerAutomorphismsAutomorphismGroup( AutomorphismGroup( G ) );
     elif IsAbelian( G ) then
-        A := Group(IdentityMapping( G ));
+        A := Group([], IdentityMapping(G));
     else
         gens:= GeneratorsOfGroup( G );
         # get the non-central generators
