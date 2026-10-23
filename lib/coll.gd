@@ -1000,11 +1000,6 @@ InstallMethod( UseFactorRelation,
 ##  <A>denom_req</A> <C>= IsCollection</C>,
 ##  and <A>factor_req</A> <C>= IsCollection</C>.
 ##  <P/>
-##  For the other direction, if <A>numer_req</A> involves the filter
-##  <A>opr</A> then a known <K>false</K> value of <A>opr</A> for <M>F</M>
-##  implies a <K>false</K> value for <M>D</M> provided that <M>D</M> lies in
-##  the filter obtained from <A>numer_req</A> by removing <A>opr</A>.
-##  <P/>
 ##  Note that an implication of a factor relation holds in particular for the
 ##  case of isomorphisms.
 ##  So one need <E>not</E> install an isomorphism maintained method when
@@ -1060,7 +1055,7 @@ end );
 ##  <#GAPDoc Label="Iterator">
 ##  <ManSection>
 ##  <Oper Name="Iterator" Arg='listorcoll'/>
-##  <Filt Name="IsStandardIterator" Arg='listorcoll'/>
+##  <Filt Name="IsStandardIterator" Arg='iter'/>
 ##
 ##  <Description>
 ##  Iterators provide a possibility to loop over the elements of a
@@ -2215,7 +2210,7 @@ DeclareOperation( "SortedListBy", [ IsListOrCollection, IsFunction ] );
 ##  <#GAPDoc Label="SSortedList">
 ##  <ManSection>
 ##  <Oper Name="SSortedList" Arg='listorcoll[, fun]'/>
-##  <Oper Name="Set" Arg='C[, fun]'/>
+##  <Oper Name="Set" Arg='listorcoll[, fun]'/>
 ##
 ##  <Description>
 ##  <Ref Oper="SSortedList"/> (<Q>strictly sorted list</Q>) returns a new

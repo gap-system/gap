@@ -117,7 +117,7 @@ rec(
 The record assignment assigns the object <A>obj</A>,
 which may be an object of arbitrary type,
 to the record component with the name <A>name</A>,
-which must be an identifier, of the record <A>r</A>.
+which must be an identifier or a sequence of digits, of the record <A>r</A>.
 That means that accessing the element with name <A>name</A> of the record
 <A>r</A> will return <A>obj</A> after this assignment.
 If the record <A>r</A> has no component with the name <A>name</A>,
@@ -370,7 +370,7 @@ true
 <Description>
 <Ref Oper="IsBound" Label="for a record component"/> returns <K>true</K>
 if the record <A>r</A> has a component with the name <A>name</A>
-(which must be an identifier) and <K>false</K> otherwise.
+(which must be an identifier or a sequence of digits) and <K>false</K> otherwise.
 <A>r</A> must evaluate to a record, otherwise an error is signalled.
 <P/>
 <Example><![CDATA[

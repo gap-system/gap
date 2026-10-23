@@ -18,7 +18,7 @@
 ##  <E>Domain</E> is &GAP;'s name for structured sets.
 ##  The ring of Gaussian integers <M>&ZZ;[\sqrt{{-1}}]</M> is an example of a
 ##  domain,
-##  the group <M>D_{12}</M> of symmetries of a regular hexahedron is another.
+##  the group <M>D_{12}</M> of symmetries of a regular hexagon is another.
 ##  <P/>
 ##  The &GAP; library predefines some domains.
 ##  For example the ring of Gaussian integers is predefined as
@@ -52,7 +52,7 @@
 ##  <Ref Oper="Factors"/>, and many other functions as well,
 ##  accept this domain as optional first argument.
 ##  Thus <C>Factors( GaussianIntegers, 10 )</C> yields the desired result
-##  <C>[ 1+E(4), 1-E(4), 2+E(4), 2-E(4) ]</C>.
+##  <C>[ -1-E(4), 1+E(4), 1+2*E(4), 2+E(4) ]</C>.
 ##  (The imaginary unit <M>\sqrt{{-1}}</M> is written as <C>E(4)</C>
 ##  in &GAP;, see <Ref Oper="E"/>.)
 ##  <#/GAPDoc>
