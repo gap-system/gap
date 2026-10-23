@@ -628,12 +628,6 @@ SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[])
     int res;
     SyProcessResult result = { 0, 0, 0 };
 
-    // change the working directory
-    if (chdir(dir) == -1) {
-        result.execError = errno;
-        return result;
-    }
-
     // if <in> is -1 open "/dev/null"
     if (in == -1)
         tin = open("/dev/null", O_RDONLY);
@@ -671,6 +665,7 @@ SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[])
         fcntl(0, F_SETFD, 0);
     }
 
+    savestdout = -1;
     if (tout != 1) {
         savestdout = dup(1);
         if (savestdout == -1 || dup2(tout, 1) == -1) {
@@ -690,9 +685,25 @@ SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[])
     }
 
     FreezeStdin = 1;
-    // now try to execute the program
-    res = spawnve(_P_WAIT, prg, (const char * const *)args,
-                  (const char * const *)environ);
+
+    // spawnve cannot set the child's working directory, so change GAP's own
+    // just for the call
+    int oldwd = open(".", O_RDONLY | O_DIRECTORY | O_CLOEXEC);
+    if (oldwd == -1 || chdir(dir) == -1)
+        res = -1;
+    else
+        res = spawnve(_P_WAIT, prg, (const char * const *)args,
+                      (const char * const *)environ);
+
+    // restore it, keeping errno from chdir or spawnve
+    if (oldwd != -1) {
+        int savedErrno = errno;
+        if (fchdir(oldwd) == -1)
+            PErr("SyExecuteProcess: cannot restore working directory");
+        close(oldwd);
+        errno = savedErrno;
+    }
+
     // remember why, before the repairs below overwrite errno
     int spawnErrno = errno;
 
