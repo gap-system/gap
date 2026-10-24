@@ -1312,24 +1312,22 @@ end );
 
 #############################################################################
 ##
-#M  DirectSumOfMatrixAlgebras( <A1>, <A2> )
+#F  DirectSumOfMatrixAlgebras( <A1>, <A2> )
 ##
-##  this is the special method for sirect sum used for matrix algebras
+##  is the direct sum of the matrix algebras <A1> and <A2>,
+##  used by the methods for associative and for Lie matrix algebras.
 ##
-InstallMethod( DirectSumOfMatrixAlgebras,
-    "for two matrix algebras",
-    IsIdenticalObj,
-    [ IsAlgebra, IsAlgebra ],
-    function( A1, A2 )
+BindGlobal( "DirectSumOfMatrixAlgebras", function( A1, A2 )
 
-    local b1,   # Generators of `A1'.
+    local b1,   # Basis vectors or generators of `A1'.
           d1,   # Length of `b1'.
-          b2,   # Generators of `A2'.
+          b2,   # Basis vectors or generators of `A2'.
           d2,   # Length of `b2'.
+          type, # "basis vectors" or "generators".
           p1,   # Length of the matrices of `b1'.
           p2,   # Length of the matrices of `b2'.
-          B,    # A basis of `A1 \oplus A2'.
-          i,j,  # Loop variables.
+          B,    # Generators of `A1 \oplus A2'.
+          i,    # Loop variable.
           Q,    # A matrix.
           A;    # result
 
@@ -1337,8 +1335,15 @@ InstallMethod( DirectSumOfMatrixAlgebras,
       Error( "<A1> and <A2> must be written over the same domain" );
     fi;
 
-    b1:= GeneratorsOfAlgebra( A1 );
-    b2:= GeneratorsOfAlgebra( A2 );
+    if HasBasis( A1 ) and HasBasis( A2 ) then
+      b1:= BasisVectors( Basis( A1 ) );
+      b2:= BasisVectors( Basis( A2 ) );
+      type:= "basis vectors";
+    else
+      b1:= GeneratorsOfAlgebra( A1 );
+      b2:= GeneratorsOfAlgebra( A2 );
+      type:= "generators";
+    fi;
     d1:= Length( b1 );
     d2:= Length( b2 );
     p1:= DimensionOfVectors( A1 )[1];
@@ -1355,6 +1360,9 @@ InstallMethod( DirectSumOfMatrixAlgebras,
       Q{ [ p1+1 .. p1+p2 ] }{ [ p1+1 .. p1+p2 ] }:= i;
       Add( B, Q );
     od;
+    if IsLieObjectCollection( A1 ) then
+      B:= List( B, LieObject );
+    fi;
 
     A:= AlgebraByGenerators( LeftActingDomain( A1 ), B );
     if HasBasis( A1 ) and HasBasis( A2 ) then
@@ -1362,7 +1370,7 @@ InstallMethod( DirectSumOfMatrixAlgebras,
     fi;
     SetDirectSumInfo( A, rec( algebras := [A1,A2],
                               first := [0,d1,d1+d2],
-                              type := "generators",
+                              type := type,
                               embeddings := [],
                               projections := [] ) );
     return A;

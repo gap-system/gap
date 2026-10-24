@@ -80,7 +80,7 @@ gap> # A56 has type "basis vectors" and A12 has type "generators"
 gap> # so A5612 has type "basis vectors"
 gap> A5612 := DirectSumOfAlgebras( A56, A12 );;
 gap> info5612 := DirectSumInfo( A5612 );
-rec( algebras := [ A5(+)A6, A12 ], embeddings := [  ], first := [ 0, 11, 24 ],
+rec( algebras := [ A56, A12 ], embeddings := [  ], first := [ 0, 11, 24 ], 
   projections := [  ], type := "basis vectors" )
 gap> A51 := DirectSumOfAlgebras( A5, A1 );;
 gap> info51 := DirectSumInfo( A51 );
@@ -116,33 +116,50 @@ gap> ForAll( BasisVectors( Basis( A2 ) ), x -> ( x ^ e ) ^ p = x );
 true
 gap> ForAll( BasisVectors( Basis( A6 ) ), y -> IsZero( ( y ^ Embedding( A26, 2 ) ) ^ p ) );
 true
-gap> ## the following fails because internal DirectSumOfAlgebras( A1, A2 )
-gap> ## has a basis with 4 matrices instead of 12 (which A12 has)
+gap> # A1 and A2 know their bases by now
 gap> A125 := DirectSumOfAlgebras( [ A1, A2, A5 ] );;
-Error, the module of the basis <B> must be closed under multiplication
+gap> Dimension( A125 );
+18
+gap> DirectSumInfo( A125 ).first;
+[ 0, 13, 18 ]
+gap> e := Embedding( A125, 2 );;  p := Projection( A125, 2 );;
+gap> ForAll( BasisVectors( Basis( A5 ) ), x -> ( x ^ e ) ^ p = x );
+true
 gap> ## Lie algebra example
 gap> L := FullMatrixLieAlgebra( Rationals, 2 );
 <Lie algebra over Rationals, with 3 generators>
 gap> SetName( L, "L" );
 gap> L2 := DirectSumOfAlgebras( L, L );
 <Lie algebra over Rationals, with 6 generators>
+gap> x := GeneratorsOfAlgebra( L2 )[1];;  y := GeneratorsOfAlgebra( L2 )[2];;
+gap> x * y = - ( y * x );
+true
 gap> DirectSumInfo(L2);
 rec( algebras := [ L, L ], embeddings := [  ], first := [ 0, 3, 6 ], 
   projections := [  ], type := "generators" )
 gap> Embedding( L2, 1 );
 [ LieObject( [ [ 1, 0 ], [ 0, 0 ] ] ), LieObject( [ [ 0, 1 ], [ 0, 0 ] ] ), 
   LieObject( [ [ 0, 0 ], [ 1, 0 ] ] ) ] -> 
-[ [ [ 1, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] ], 
-  [ [ 0, 1, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] ], 
-  [ [ 0, 0, 0, 0 ], [ 1, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] ] ]
+[ LieObject( [ [ 1, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] 
+     ] ), 
+  LieObject( [ [ 0, 1, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] 
+     ] ), 
+  LieObject( [ [ 0, 0, 0, 0 ], [ 1, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] 
+     ] ) ]
 gap> Projection( L2, 2 );
-[ [ [ 1, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] ], 
-  [ [ 0, 1, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] ], 
-  [ [ 0, 0, 0, 0 ], [ 1, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] ], 
-  [ [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 0 ] ], 
-  [ [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 1 ], [ 0, 0, 0, 0 ] ], 
-  [ [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 1, 0 ] ] ] -> 
-[ LieObject( [ [ 0, 0 ], [ 0, 0 ] ] ), LieObject( [ [ 0, 0 ], [ 0, 0 ] ] ), 
-  LieObject( [ [ 0, 0 ], [ 0, 0 ] ] ), LieObject( [ [ 1, 0 ], [ 0, 0 ] ] ), 
-  LieObject( [ [ 0, 1 ], [ 0, 0 ] ] ), LieObject( [ [ 0, 0 ], [ 1, 0 ] ] ) ]
+[ LieObject( [ [ 1, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] 
+     ] ), 
+  LieObject( [ [ 0, 1, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] 
+     ] ), 
+  LieObject( [ [ 0, 0, 0, 0 ], [ 1, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] 
+     ] ), 
+  LieObject( [ [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 0 ] 
+     ] ), 
+  LieObject( [ [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 1 ], [ 0, 0, 0, 0 ] 
+     ] ), 
+  LieObject( [ [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 1, 0 ] 
+     ] ) ] -> [ LieObject( [ [ 0, 0 ], [ 0, 0 ] ] ), 
+  LieObject( [ [ 0, 0 ], [ 0, 0 ] ] ), LieObject( [ [ 0, 0 ], [ 0, 0 ] ] ), 
+  LieObject( [ [ 1, 0 ], [ 0, 0 ] ] ), LieObject( [ [ 0, 1 ], [ 0, 0 ] ] ), 
+  LieObject( [ [ 0, 0 ], [ 1, 0 ] ] ) ]
 gap> STOP_TEST("alg-dsum.tst");

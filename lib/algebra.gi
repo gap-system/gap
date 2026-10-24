@@ -3187,9 +3187,6 @@ InstallOtherMethod( DirectSumOfAlgebras,
        and IsAssociative( A1 ) and IsAssociative( A2 ) then
       SetIsAssociative( L, true );
     fi;
-    if HasName( A1 ) and HasName( A2 ) then
-        SetName( L, Concatenation( Name(A1), "(+)", Name(A2 ) ) );
-    fi;
 
     # Return the result.
     return L;
@@ -3228,7 +3225,7 @@ InstallMethod( DirectSumOfAlgebras,
 
 #############################################################################
 ##
-#A Embedding
+#M  Embedding( <D>, <i> )
 ##
 InstallMethod( Embedding, "algebra direct sum and integer",
     [ IsAlgebra and HasDirectSumInfo, IsPosInt ],
@@ -3258,8 +3255,6 @@ InstallMethod( Embedding, "algebra direct sum and integer",
     fi;
     map := AlgebraHomomorphismByImagesNC( A, D, gens, imgs );
     SetIsInjective( map, true );
-    SetIsTotal( map, true );
-    SetIsSingleValued( map, true );
 
     # store information
     info.embeddings[i] := map;
@@ -3268,7 +3263,7 @@ end );
 
 #############################################################################
 ##
-#A  Projection
+#M  Projection( <D>, <i> )
 ##
 InstallMethod( Projection, "algebra direct sum and integer",
     [ IsAlgebra and HasDirectSumInfo, IsPosInt ],
