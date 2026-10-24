@@ -207,31 +207,6 @@ DeclareGlobalFunction("SmallRing");
 ##
 DeclareGlobalFunction( "DirectSum" );
 DeclareOperation( "DirectSumOp", [ IsList, IsRing ] );
-
-#############################################################################
-##
-#A  DirectSumInfo( <R> )
-##
-##  <#GAPDoc Label="DirectSumInfo:rings">
-##  <ManSection>
-##  <Attr Name="DirectSumInfo" Arg='R'/>
-##
-##  <Description>
-##  A direct sum of rings comes equipped with an information record
-##  having fields <A>rings</A>; <A>first</A>;
-##  <A>embeddings</A> and <A>projections</A>.
-##  <P/>
-##  As embeddings and projections are created (see below)
-##  they are stored in the fields <A>embeddings</A> and <A>projections</A>.
-##  <P/>
-##  <Example><![CDATA[
-##  gap> DirectSumInfo( R57 );
-##  rec( embeddings := [  ], first := [ 0, 1, 2 ], projections := [  ],
-##    rings := [ R5, R7 ] )
-##  ]]></Example>
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
 DeclareAttribute( "DirectSumInfo", IsRing, "mutable" );
 
 #############################################################################

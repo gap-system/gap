@@ -558,7 +558,6 @@ DeclareOperation( "ProductSpace", [ IsFreeLeftModule, IsFreeLeftModule ] );
 ##
 #O  DirectSumOfAlgebras( <A1>, <A2> )
 #O  DirectSumOfAlgebras( <list> )
-#O  DirectSumOfAlgebrasByGenerators( <A1>, <A2> )
 ##
 ##  <#GAPDoc Label="DirectSumOfAlgebras">
 ##  <ManSection>
@@ -570,8 +569,8 @@ DeclareOperation( "ProductSpace", [ IsFreeLeftModule, IsFreeLeftModule ] );
 ##  <Description>
 ##  This is the direct sum of the two algebras <A>A1</A> and <A>A2</A>
 ##  or of the algebras in the list <A>list</A>.
-##  In the latter case, <C>DirectSumOfAlgebras(A1,A2,A3,...,An)</C>
-##  returns <M>(...((A_1 \oplus A_2) \oplus A3)...) \oplus A_n</M>.
+##  In the latter case, <C>DirectSumOfAlgebras( [ A1, A2, ..., An ] )</C>
+##  returns <M>(\ldots((A_1 \oplus A_2) \oplus A_3) \ldots) \oplus A_n</M>.
 ##  <P/>
 ##  If all involved algebras are associative algebras then the result is also
 ##  known to be associative.
@@ -599,7 +598,6 @@ DeclareOperation( "ProductSpace", [ IsFreeLeftModule, IsFreeLeftModule ] );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "DirectSumOfAlgebras", [ IsDenseList ] );
-DeclareOperation( "DirectSumOfMatrixAlgebras", [ IsAlgebra, IsAlgebra ] );
 
 
 #############################################################################
