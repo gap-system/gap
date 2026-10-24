@@ -276,8 +276,8 @@ DeclareGlobalFunction("ApproximateSuborbitsStabilizerPermGroup");
 ##  gap> g:=Group((1,2,3,4,5,6,7,8),(1,2));;
 ##  gap> bs:=[[1,2,3,4],[5,6,7,8]];;
 ##  gap> Stabilizer(g,bs,OnSetsDisjointSets);
-##  Group([ (6,7), (5,6), (5,8), (2,3), (3,4)(5,7), (1,4),
-##    (1,5,4,8)(2,6,3,7) ])
+##  Group([ (6,7), (7,8), (5,8), (2,3), (3,4)(6,8), (1,4),
+##    (1,5)(2,6)(3,7)(4,8) ])
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
