@@ -1826,7 +1826,7 @@ end;
 ##
 ## FieldGenCentMat( ) should only be applied to modules that have already
 ## been proved irreducible using IsIrreducible. It then tests for absolute
-## irreducibility (if not already known) and does nothing if module is
+## irreducibility (if not already known) and raises an error if the module is
 ## absolutely irreducible. Otherwise, it returns a matrix that generates
 ## (multiplicatively) the centralizing field (i.e. its multiplicative order
 ## is q^e - 1, where e is the degree of the centralizing field. This is not
@@ -1846,10 +1846,10 @@ SMTX.FieldGenCentMat:=function(module)
       Error("GModule is not irreducible.");
     fi;
 
-    # enforce absirred knowledge as well.
-    #if not SMTX.IsAbsolutelyIrreducible(module) then
-    #  Error("GModule is not absolutely irreducible.");
-    #fi;
+    # enforce knowledge of absolute irreducibility as well.
+    if SMTX.IsAbsolutelyIrreducible(module) then
+      Error("GModule is absolutely irreducible.");
+    fi;
 
     if SMTX.CentMat(module)=fail then
       Error("No CentMat component!");

@@ -353,5 +353,16 @@ gap> M2:= GModuleByMats( [
 gap> Length( MTX.BasisModuleHomomorphisms( M, M2 ) );
 4
 
+# Test for MTX.FieldGenCentMat
+gap> mats := [ [ [ 0*Z(5), Z(5) ], [ Z(5)^2, 0*Z(5) ] ] ];;
+gap> M := GModuleByMats(mats, GF(5));;
+gap> mat := MTX.FieldGenCentMat(M);;
+gap> ForAll(mats, x -> x * mat = mat * x);
+true
+gap> Order(mat);
+24
+gap> MTX.FieldGenCentMat(GModuleByMats([ [ [ Z(5) ] ] ], GF(5)));
+Error, GModule is absolutely irreducible.
+
 #
 gap> STOP_TEST("meataxe.tst");
