@@ -316,9 +316,6 @@ DeclareGlobalFunction("PcClassFactorCentralityTest");
 ##  The attribute <Ref Attr="EANormalSeriesByPcgs"/> must return an
 ##  appropriate series of normal subgroups with elementary abelian factors
 ##  among them. The algorithm will step down this series.
-##  In the case of
-##  the calculation of rational classes, it must be a pcgs refining a
-##  central series.
 ##  </Item>
 ##  <Mark><C>candidates</C></Mark>
 ##  <Item>
