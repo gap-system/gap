@@ -350,7 +350,7 @@ DeclareAttribute( "GeneratorsOfRightOperatorAdditiveGroup",
 ##  <Attr Name="GeneratorsOfRightModule" Arg='M'/>
 ##
 ##  <Description>
-##  returns a list of elements of <A>M</A> that generate <A>M</A> as a left module.
+##  returns a list of elements of <A>M</A> that generate <A>M</A> as a right module.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
