@@ -139,9 +139,6 @@ DeclareCategoryFamily( "IsElementOfFpSemigroup" );
 ##  <P/>
 ##  Users should be aware that much of the code described in this chapter
 ##  is in need of substantial revision.
-##  In particular, the two functions described here are <E>not</E>
-##  called by the operation <C>\/</C> of the previous subsection,
-##  and so are liable to be removed in due course.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> fm := FreeMonoid( 3 );;

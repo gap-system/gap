@@ -275,7 +275,7 @@ gap> AllTransitiveGroups(NrMovedPoints,[10..15],
 ]]></Log>
 <P/>
 returns a list of all transitive groups with degree between 10 and 15 and
-size less than 100 that are not abelian.
+size at most 100 that are not abelian.
 <P/>
 Thus <C>AllTransitiveGroups</C> behaves as if it was implemented by a
 function similar to the one defined below,
@@ -291,8 +291,8 @@ local    groups, g, i;
   groups := [];
   for i  in [ 1 .. Length( TransitiveGroupsList ) ] do
     g := TransitiveGroupsList[i];
-    if      fun1(g) = val1  or IsList(val1) and fun1(g) in val1
-        and fun2(g) = val2  or IsList(val2) and fun2(g) in val2
+    if      ( fun1(g) = val1  or IsList(val1) and fun1(g) in val1 )
+        and ( fun2(g) = val2  or IsList(val2) and fun2(g) in val2 )
      then
       Add( groups, g );
     fi;
@@ -886,7 +886,7 @@ to the permutation induced by its action on <M>S</M>.
 <P/>
 Note that in case of a large orbit the construction of <M>\varphi</M> may be
 space and time consuming.
-Fortunately, there are only six <M>&QQ;</M>-classes in the library for which
+Fortunately, there are only six <M>&ZZ;</M>-classes in the library for which
 the smallest orbit of short vectors is of size greater than <M>20000</M>,
 the worst case being the orbit of size <M>196560</M>
 for the Leech lattice (<A>dim</A> <M>= 24</M>, <A>q</A> <M>= 3</M>).

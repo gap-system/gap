@@ -554,7 +554,8 @@ DeclareConstructor( "SpecialOrthogonalGroupCons",
 ##  Also interesting is the group Omega( <A>e</A>, <A>d</A>, <A>q</A> ),
 ##  see <Ref Oper="Omega" Label="construct an orthogonal group"/>,
 ##  which is of index <M>2</M> in SO( <A>e</A>, <A>d</A>, <A>q</A> ),
-##  except in the case <M><A>d</A> = 1</M>.
+##  except if <M><A>d</A> = 1</M> or if <A>d</A> is odd and <A>q</A> is
+##  even; then the two groups are equal.
 ##  <P/>
 ##  If <A>filt</A> is not given it defaults to <Ref Filt="IsMatrixGroup"/>,
 ##  and the returned group is the special orthogonal group itself.
@@ -784,7 +785,7 @@ DeclareConstructor( "SymplecticGroupCons", [ IsGroup, IsPosInt, IsRing ] );
 ##  and the entries of <Ref Var="ConstructingFiltersForMatrixGroupElements"/>.
 ##  <P/>
 ##  At the moment finite fields or residue class rings
-##  <C>Integers mod <A>q</A></C>, with <A>q</A> an odd prime power, are
+##  <C>Integers mod <A>q</A></C>, with <A>q</A> a prime power, are
 ##  supported.
 ##  <P/>
 ##  If version at least 1.2.6 of the <Package>Forms</Package> package is
