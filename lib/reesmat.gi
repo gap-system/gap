@@ -1306,7 +1306,7 @@ end);
 
 BindGlobal("_InjectionPrincipalFactor",
 function(D, constructor)
-  local map, inv, G, mat, rep, R, L, x, RR, LL, rms, iso, hom, i, j;
+  local map, inv, G, mat, rep, R, L, x, RR, LL, rms, iso, prefun, hom, i, j;
 
   map := IsomorphismPermGroup(GroupHClassOfGreensDClass(D));
   inv := InverseGeneralMapping(map);
@@ -1366,15 +1366,21 @@ function(D, constructor)
                      [i, (rep * RR[i] * x * LL[j]) ^ map, j, mat]);
   end;
 
-  hom := MappingByFunction(D, rms, iso,
-                           function(x)
-                             if x![1] = 0 then
-                               return fail;
-                             fi;
-                             return R[x![1]] * (x![2] ^ inv) * L[x![3]];
-                           end);
-  SetIsInjective(hom, true);
-  SetIsTotal(hom, true);
+  prefun := function(x)
+    if x![1] = 0 then
+      return fail;
+    fi;
+    return R[x![1]] * (x![2] ^ inv) * L[x![3]];
+  end;
+
+  if IsReesZeroMatrixSemigroup(rms) then
+    # the zero of <rms> is not in the image
+    hom := MappingByFunction(D, rms, iso, false, prefun);
+    SetIsInjective(hom, true);
+    SetIsSurjective(hom, false);
+  else
+    hom := MappingByFunction(D, rms, iso, prefun);
+  fi;
   return hom;
 end);
 
@@ -1431,7 +1437,7 @@ function(S)
     if x = MultiplicativeZero(Range(map)) then
       return MultiplicativeZero(S);
     fi;
-    return x ^ InverseGeneralMapping(map);
+    return PreImagesRepresentativeNC(map, x);
   end;
 
   return MagmaIsomorphismByFunctionsNC(S,
