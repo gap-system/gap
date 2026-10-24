@@ -22,16 +22,15 @@ rec( algebras := [ A5, A6 ], embeddings := [  ], first := [ 0, 5, 11 ],
   projections := [  ], type := "basis vectors" )
 gap> SetName( A56, "A56" );
 gap> emb5 := Embedding( A56, 1 );
-[ (1)*(), (1)*(5,6,7,8,9), (1)*(5,7,9,6,8), (1)*(5,8,6,9,7), (1)*(5,9,8,7,6) 
- ] -> [ v.1, v.2, v.3, v.4, v.5 ]
+CanonicalBasis( A5 ) -> [ v.1, v.2, v.3, v.4, v.5 ]
 gap> g := ImageElm( embc5, (5,7,9,6,8) );
 (1)*(5,7,9,6,8)
 gap> ImageElm( emb5, g );
 v.3
 gap> pro6 := Projection( A56, 2 );
-[ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8, v.9, v.10, v.11 ] -> 
-[ <zero> of ..., <zero> of ..., <zero> of ..., <zero> of ..., <zero> of ..., 
-  (1)*(), (1)*(2,3), (1)*(1,2), (1)*(1,2,3), (1)*(1,3,2), (1)*(1,3) ]
+CanonicalBasis( A56 ) -> [ <zero> of ..., <zero> of ..., <zero> of ..., 
+  <zero> of ..., <zero> of ..., (1)*(), (1)*(2,3), (1)*(1,2), (1)*(1,2,3), 
+  (1)*(1,3,2), (1)*(1,3) ]
 gap> bas56 := BasisVectors( Basis( A56 ) );
 [ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8, v.9, v.10, v.11 ]
 gap> ImageElm( pro6, bas56[9] );
@@ -87,20 +86,20 @@ gap> info51 := DirectSumInfo( A51 );
 rec( algebras := [ A5, A1 ], embeddings := [  ], first := [ 0, 5, 9 ], 
   projections := [  ], type := "basis vectors" )
 gap> Embedding( A51, 2 );
+Basis( A1, 
 [ [ [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ], [ 1, 0, 0, 0 ] ], 
   [ [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ], [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ] ], 
   [ [ 0, 0, 0, 1 ], [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ] ], 
-  [ [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ] ] ] -> 
+  [ [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ] ] ] ) -> 
 [ v.6, v.7, v.8, v.9 ]
 gap> Embedding( A51, 1 );
-[ (1)*(), (1)*(5,6,7,8,9), (1)*(5,7,9,6,8), (1)*(5,8,6,9,7), (1)*(5,9,8,7,6) 
- ] -> [ v.1, v.2, v.3, v.4, v.5 ]
+CanonicalBasis( A5 ) -> [ v.1, v.2, v.3, v.4, v.5 ]
 gap> Projection( A51, 1 );
-[ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8, v.9 ] -> 
+CanonicalBasis( <algebra of dimension 9 over Rationals> ) -> 
 [ (1)*(), (1)*(5,6,7,8,9), (1)*(5,7,9,6,8), (1)*(5,8,6,9,7), (1)*(5,9,8,7,6), 
   <zero> of ..., <zero> of ..., <zero> of ..., <zero> of ... ]
 gap> Projection( A51, 2 );
-[ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8, v.9 ] -> 
+CanonicalBasis( <algebra of dimension 9 over Rationals> ) -> 
 [ [ [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] ], 
   [ [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] ], 
   [ [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] ], 

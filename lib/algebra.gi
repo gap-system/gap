@@ -3239,15 +3239,15 @@ InstallMethod( Embedding, "algebra direct sum and integer",
     fi;
     type := info.type;
     first := info.first;
-    if not ( i < Length(first) ) then
+    if i >= Length( first ) then
         Error( "value of second parameter is too large" );
     fi;
     # compute embedding
     A := info.algebras[i];
-    if ( type = "basis vectors" ) then
-        gens := BasisVectors( Basis( A ) );
+    if type = "basis vectors" then
+        gens := Basis( A );
         imgs := BasisVectors( Basis( D ) ){[first[i]+1 .. first[i+1]]};
-    elif ( type = "generators" ) then
+    elif type = "generators" then
         gens := GeneratorsOfAlgebra( A );
         imgs := GeneratorsOfAlgebra( D ){[first[i]+1 .. first[i+1]]};
     else
@@ -3278,16 +3278,16 @@ InstallMethod( Projection, "algebra direct sum and integer",
     type := infoD.type;
     first := infoD.first;
     len := Length( first );
-    if not ( i < len ) then
+    if i >= len then
         Error( "value of second parameter is too large" );
     fi;
     # compute projection
     A := infoD.algebras[i];
     zA := Zero( A );
-    if ( type = "basis vectors" ) then
+    if type = "basis vectors" then
         genA := BasisVectors( Basis( A ) );
-        genD := BasisVectors( Basis( D ) );
-    elif ( type = "generators" ) then
+        genD := Basis( D );
+    elif type = "generators" then
         genA := GeneratorsOfAlgebra( A );
         genD := GeneratorsOfAlgebra( D );
     else

@@ -615,8 +615,7 @@ DeclareOperation( "DirectSumOfAlgebras", [ IsDenseList ] );
 ##  homomorphism mapping <M>A_i</M> into <A>A</A>.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> emb1 := Embedding( A35, 1 );
-##  [ (1)*(), (1)*(1,2,3), (1)*(1,3,2) ] -> [ v.1, v.2, v.3 ]
+##  gap> emb1 := Embedding( A35, 1 );;
 ##  gap> ec3 := Embedding( c3, A3 );;
 ##  gap> ( (1,3,2)^ec3 )^emb1;
 ##  v.3
@@ -641,10 +640,9 @@ DeclareOperation( "DirectSumOfAlgebras", [ IsDenseList ] );
 ##  homomorphism mapping <A>A</A> onto <M>A_i</M>.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> pro2 := Projection( A35, 2 );
-##  [ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8 ] -> [ <zero> of ..., <zero> of ...,
-##    <zero> of ..., (1)*(), (1)*(5,6,7,8,9), (1)*(5,7,9,6,8), (1)*(5,8,6,9,7),
-##    (1)*(5,9,8,7,6) ]
+##  gap> pro2 := Projection( A35, 2 );;
+##  gap> ImageElm( pro2, Basis( A35 )[5] );
+##  (1)*(5,6,7,8,9)
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
