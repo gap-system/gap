@@ -14,6 +14,18 @@
 #include "sysstr.h"
 #include "system.h"
 
+#ifdef USE_JULIA_GC
+#include <julia.h>
+
+// Give Julia's TLS slot a place in gap's static TLS block, so that it can be
+// read inline; see GAP_GetPgcstack. Declared first for
+// -Wmissing-variable-declarations.
+JL_DLLEXPORT extern _Atomic(char) jl_pgcstack_static_semaphore;
+JL_DLLEXPORT jl_gcframe_t ** jl_get_pgcstack_static(void);
+JL_DLLEXPORT jl_gcframe_t *** jl_pgcstack_addr_static(void);
+JULIA_DEFINE_FAST_TLS
+#endif
+
 #ifdef HPCGAP
 #include "hpc/thread.h"
 #endif

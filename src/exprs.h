@@ -27,7 +27,7 @@
 **  'OBJ_REF_LVAR' returns the value of the reference to a local variable
 **  <expr>.
 */
-EXPORT_INLINE Obj OBJ_REF_LVAR(Expr expr)
+EXPORT_INLINE Obj OBJ_REF_LVAR(Expr expr) GAP_GC_CANSAFEPOINT
 {
     Int lvar = LVAR_REF_LVAR(expr);
     if (OBJ_LVAR(lvar) != 0) {
@@ -86,7 +86,7 @@ extern EvalExprFunc EvalExprFuncs[256];
 **  two special cases that 'TNUM_EXPR' handles.
 */
 
-EXPORT_INLINE Obj EVAL_EXPR(Expr expr)
+EXPORT_INLINE Obj EVAL_EXPR(Expr expr) GAP_GC_CANSAFEPOINT
 {
     if (IS_REF_LVAR(expr)) {
         return OBJ_REF_LVAR(expr);
