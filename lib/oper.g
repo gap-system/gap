@@ -1229,11 +1229,11 @@ end );
 ##
 ##  <#GAPDoc Label="NewAttribute">
 ##  <ManSection>
-##  <Func Name="NewAttribute" Arg='name, filter[, "mutable"][, rank]'/>
+##  <Func Name="NewAttribute" Arg='name, filter[, mutable][, rank]'/>
 ##
 ##  <Description>
 ##  <Ref Func="NewAttribute"/> returns a new attribute getter with name
-##  <A>name</A> that is applicable to objects with the property
+##  <A>name</A> that is applicable to objects in the filter
 ##  <A>filter</A>.
 ##  <P/>
 ##  Contrary to the situation with categories and representations,
@@ -1359,11 +1359,11 @@ end );
 
 #############################################################################
 ##
-#F  DeclareAttribute( <name>, <filter>[, "mutable"][, <rank>] ) new attribute
+#F  DeclareAttribute( <name>, <filter>[, <mutable>][, <rank>] ) new attribute
 ##
 ##  <#GAPDoc Label="DeclareAttribute">
 ##  <ManSection>
-##  <Func Name="DeclareAttribute" Arg='name, filter[, "mutable"][, rank]'/>
+##  <Func Name="DeclareAttribute" Arg='name, filter[, mutable][, rank]'/>
 ##
 ##  <Description>
 ##  does the same as <Ref Func="NewAttribute"/> and then binds
