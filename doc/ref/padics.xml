@@ -102,9 +102,8 @@ extension of the <M>p</M>-adic numbers and <M>L/K</M> is purely ramified.
 or another book on algebraic number theory.
 Essentially, an extension <M>L</M> of the <M>p</M>-adic numbers generated
 by a rational polynomial <M>f</M> is unramified if <M>f</M> remains
-squarefree modulo <M>p</M> and is completely ramified if modulo <M>p</M> the
-polynomial <M>f</M> is a power of a linear factor while remaining irreducible
-over the <M>p</M>-adic numbers.)
+squarefree modulo <M>p</M> and is completely ramified if <M>f</M> is an
+Eisenstein polynomial.)
 <P/>
 The representation of extensions of <M>p</M>-adic numbers in &GAP; uses the
 subfield <M>K</M>.
