@@ -1050,7 +1050,7 @@ check: all
 citests: all
 	SRCDIR=$(abs_srcdir) dev/ci.sh testmockpkg testspecial test-compile testlibgap testkernel testworkspace
 
-LIBGAPTESTS := $(addprefix tst/testlibgap/,basic api wscreate wsload trycatch)
+LIBGAPTESTS := $(addprefix tst/testlibgap/,basic api wscreate wsload trycatch enterstack)
 
 build-testlibgap: ${LIBGAPTESTS}
 
