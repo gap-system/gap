@@ -59,6 +59,15 @@ positional object, if <A>data</A> is a record then
 <Ref Func="Objectify"/> turns it into a component object
 (for examples, see&nbsp;<Ref Sect="Component Objects"/>
 and&nbsp;<Ref Sect="Positional Objects"/>).
+The resulting object lies in <Ref Filt="IsPositionalObjectRep"/>
+resp.&nbsp;<Ref Filt="IsComponentObjectRep"/>:
+if <A>type</A> does not imply this representation then the object gets
+the subtype of <A>type</A> that does,
+which is slower than putting the representation into <A>type</A>.
+An error is signalled if <A>type</A> implies another one of the
+representations <Ref Filt="IsInternalRep"/>, <Ref Filt="IsDataObjectRep"/>,
+<Ref Filt="IsPositionalObjectRep"/>, <Ref Filt="IsComponentObjectRep"/>
+instead.
 <P/>
 <Ref Func="Objectify"/> does also return the object that it made out of
 <A>data</A>.
