@@ -40,8 +40,10 @@ and about saving and loading a &GAP; workspace
 
 When you start &GAP; from a command line or from a script you may
 specify a number of  options on
-the command-line to change  the default behaviour  of &GAP;.  All  these
-options  start with a  hyphen <C>-</C>, followed by a  single letter.
+the command-line to change  the default behaviour  of &GAP;.  Most of these
+options consist of a hyphen <C>-</C> followed by a single letter;
+many have a long form as well, such as <C>--quiet</C> for <C>-q</C>,
+and some exist only in a long form.
 Options must not be grouped, e.g., <C>gap -gq</C> is invalid,
 use <C>gap -g -q</C> instead.
 Some options require an argument, this must follow the option
@@ -51,6 +53,7 @@ Certain boolean options (<C>-b</C>, <C>-q</C>, <C>-e</C>, <C>-r</C>,
 <C>-A</C>, <C>-D</C>, <C>-M</C>, <C>-T</C>)
 toggle the current value so that <C>gap -b -b</C> is equivalent to <C>gap</C>
 and to <C>gap -b -q -b -q</C> etc.
+Repeating the long form of a boolean option does not toggle it.
 <P/>
 &GAP; for UNIX will distinguish between upper and lower case options.
 <P/>
@@ -80,13 +83,30 @@ which can be useful for debugging or testing.
 The needed packages (and their needed packages, and so on)
 are loaded in any case.
 </Item>
+<Mark><Index Key="--alwaystrace"><C>--alwaystrace</C></Index>
+<C>--alwaystrace</C></Mark>
+<Item>
+tells &GAP; to print the traceback of an error also if the break loop is
+disabled by <C>-T</C> or <C>--nointeract</C>.
+</Item>
 <Mark><Index Key="-b"><C>-b</C></Index>
 <C>-b</C></Mark>
+<Item></Item>
+<Mark><Index Key="--banner"><C>--banner</C></Index>
+<C>--banner</C></Mark>
 <Item>
 tells &GAP; to suppress the banner. That means that  &GAP;  immediately
 prints the prompt. This is useful when, after a while, you get  tired  of
 the banner. This option can be repeated to enable the banner; each <C>-b</C>
 toggles the state of banner display.
+The banners of packages loaded later are suppressed as well, even if
+<Ref Func="LoadPackage"/> is called with <A>banner</A> equal to <K>true</K>.
+</Item>
+<Mark><Index Key="--bare"><C>--bare</C></Index>
+<C>--bare</C></Mark>
+<Item>
+tells &GAP; not to load any package at startup, not even the needed ones
+(see <C>-A</C>). This is intended for testing &GAP; itself.
 </Item>
 <Mark><Index Key="-c"><C>-c</C></Index>
 <C>-c </C><A>gapcode</A></Mark>
@@ -95,6 +115,13 @@ tells &GAP; to execute the given &GAP; code as if it was entered into
 a temporary file which then is processed together with the other files
 given to GAP (see the explanation at the end of this list for further
 details on how filenames are processed).
+</Item>
+<Mark><Index Key="--cover"><C>--cover</C></Index>
+<C>--cover </C><A>filename</A></Mark>
+<Item>
+tells &GAP; to record from the start which lines of &GAP; code are executed,
+as <Ref Func="CoverageLineByLine"/> does, writing the data to
+<A>filename</A>.
 </Item>
 <Mark><Index Key="-D"><C>-D</C></Index>
 <C>-D</C></Mark>
@@ -160,6 +187,9 @@ toggle; you must use <C>-n</C> to disable line editing.
 </Item>
 <Mark><Index Key="-g"><C>-g</C></Index>
 <C>-g</C></Mark>
+<Item></Item>
+<Mark><Index Key="--gasinfo"><C>--gasinfo</C></Index>
+<C>--gasinfo</C></Mark>
 <Item>
 tells &GAP; to print a message every  time  a  full  garbage
 collection is performed.
@@ -178,8 +208,9 @@ reclaimed by it, and that 734 kilobytes from a  total  allocated  memory  of
 <Mark><Index Key="-g -g"><C>-g -g</C></Index>
 <C>-g -g</C></Mark>
 <Item>
-If you give the option <C>-g</C> twice, &GAP; prints  a  information  message
-every time a  partial  or  full  garbage  collection  is  performed.
+If you give the option <C>-g</C> or <C>--gasinfo</C> twice, &GAP; prints
+an information message every time a partial or full garbage collection is
+performed.
 (This is available only if the <C>GASMAN</C> garbage collector is used,
 see <Ref Subsect="Garbage Collection"/>.)
 The message,
@@ -316,6 +347,12 @@ require too many garbage  collections.  On  the  other  hand,  if  &GAP;
 allocates more memory than is physically available, it will spend
 most of the time paging.
 </Item>
+<Mark><Index Key="--memprof"><C>--memprof</C></Index>
+<C>--memprof </C><A>filename</A></Mark>
+<Item>
+is like <C>--prof</C>, but also records memory allocations,
+as <Ref Func="ProfileLineByLine"/> does with the option <C>recordMem</C>.
+</Item>
 <Mark><Index Key="-n"><C>-n</C></Index>
 <C>-n</C></Mark>
 <Item>
@@ -327,6 +364,19 @@ another program that is used to run &GAP;.  For example if &GAP; is run
 from inside a GNU Emacs shell window, <C>-n</C> should be used since otherwise
 every input line will be echoed twice, once by Emacs and once by &GAP;.
 This option does not toggle; you must use <C>-f</C> to enable line editing.
+</Item>
+<Mark><Index Key="--nointeract"><C>--nointeract</C></Index>
+<C>--nointeract</C></Mark>
+<Item>
+starts &GAP; in non-interactive mode; this implies <C>-T</C> and
+<C>--norepl</C>.
+</Item>
+<Mark><Index Key="--norepl"><C>--norepl</C></Index>
+<C>--norepl</C></Mark>
+<Item>
+tells &GAP; not to start the read-evaluate-print loop:
+&GAP; exits after processing the files and <C>-c</C> options
+given on the command line.
 </Item>
 <Mark><Index Key="-O"><C>-O</C></Index>
 <C>-O</C></Mark>
@@ -352,14 +402,37 @@ If more than this amount is required during the &GAP; session,
 enter <C>return;</C> which implicitly doubles the amount given with this
 option.
 </Item>
+<Mark><Index Key="--print-gaproot"><C>--print-gaproot</C></Index>
+<C>--print-gaproot</C></Mark>
+<Item>
+tells &GAP; to print its primary root directory
+(see <Ref Sect="GAP Root Directories"/>) and then exit immediately.
+</Item>
+<Mark><Index Key="--prof"><C>--prof</C></Index>
+<C>--prof </C><A>filename</A></Mark>
+<Item>
+tells &GAP; to profile from the start how often each line of &GAP; code is
+executed and how long it takes, as <Ref Func="ProfileLineByLine"/> does,
+writing the data to <A>filename</A>.
+</Item>
 <Mark><Index Key="-q"><C>-q</C></Index>
 <C>-q</C></Mark>
+<Item></Item>
+<Mark><Index Key="--quiet"><C>--quiet</C></Index>
+<C>--quiet</C></Mark>
 <Item>
 tells &GAP; to be quiet. This means that  &GAP;  displays  neither  the
 banner nor the prompt <C>gap></C>. This is useful if you want to run &GAP; as
 a filter with input and output redirection and want to avoid  the  banner
 and the prompts appearing in the output file. This option may be repeated
 to disable quiet mode; each <C>-q</C> toggles quiet mode.
+As with <C>-b</C>, the banners of packages loaded later are suppressed.
+</Item>
+<Mark><Index Key="--quitonbreak"><C>--quitonbreak</C></Index>
+<C>--quitonbreak</C></Mark>
+<Item>
+tells &GAP; to exit with a non-zero exit status instead of entering a
+break loop.
 </Item>
 <Mark><Index Key="-R"><C>-R</C></Index>
 <C>-R</C></Mark>
@@ -396,8 +469,18 @@ modules which allocate a lot of memory with <C>malloc</C>.
 The option argument <A>memory</A> is specified as with the <C>-m</C>
 option.
 </Item>
+<Mark><Index Key="--systemfile"><C>--systemfile</C></Index>
+<C>--systemfile </C><A>filename</A></Mark>
+<Item>
+tells &GAP; to read <A>filename</A> right after <F>lib/system.g</F>,
+that is, early during startup, before the rest of the library.
+If the file cannot be read then &GAP; exits.
+</Item>
 <Mark><Index Key="-T"><C>-T</C></Index>
 <C>-T</C></Mark>
+<Item></Item>
+<Mark><Index Key="--nobreakloop"><C>--nobreakloop</C></Index>
+<C>--nobreakloop</C></Mark>
 <Item>
 suppresses the usual break loop behaviour of  &GAP;.  With  this  option
 &GAP; behaves as if the user <K>quit</K> immediately from every  break  loop,

@@ -809,6 +809,8 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 ##  If the optional argument <A>banner</A> is present then it must be either
 ##  <K>true</K> or <K>false</K>;
 ##  in the latter case, the effect is that no package banner is printed.
+##  No banner is printed either if &GAP; was started with the command line
+##  option <C>-b</C> or <C>-q</C>, even if <A>banner</A> is <K>true</K>.
 ##  <P/>
 ##  <Index Key="OnlyNeeded" Subkey="option"><C>OnlyNeeded</C></Index>
 ##  If the global option <C>OnlyNeeded</C> is given, as in
