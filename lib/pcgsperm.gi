@@ -1119,7 +1119,15 @@ local   tail,  i,ins,pins,ran,filt,attr;
   tail!.permpcgsNormalSteps:=ins;
 
   SetRelativeOrders(tail,RelativeOrders(pcgs){[from..Length(pcgs)]});
-  tail!.stabChain := StabChainMutable( EANormalSeriesByPcgs( pcgs )[ i ] );
+  if HasEANormalSeriesByPcgs(pcgs) then
+    tail!.stabChain := StabChainMutable( EANormalSeriesByPcgs( pcgs )[ i ] );
+  else
+    # the normal series of <pcgs> need not be elementary abelian, e.g. for
+    # the pcgs of `SolvableNormalClosurePermGroup'
+    tail!.stabChain := ShallowCopy( pcgs!.generatingSeries[ i ] );
+    Unbind( tail!.stabChain.relativeOrders );
+    Unbind( tail!.stabChain.base );
+  fi;
   if from < pins[ i ]  then
     tail := ExtendedPcgs( tail,
                     pcgs{ [ from .. pins[ i ] - 1 ] } );
