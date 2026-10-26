@@ -51,6 +51,7 @@ gap> List( [ [1], [100], [64], [65], [0], [101], [1,2,4,8,16,32,64,100] ],
 gap> List( [ [1,2,4,8,16,32,64,101], [0,1], [99,100,101], [50,51,200] ],
 >          x -> IS_SUBSET_SET( s, x ) );
 [ false, false, false, false ]
+#@if GAPInfo.BytesPerVariable = 8
 gap> IS_SUBSET_SET( [-2^50..2^50], [ 0, 2^40 ] );
 true
 gap> IS_SUBSET_SET( [-2^50..2^50], [-2^40..2^40] );
@@ -60,6 +61,11 @@ false
 gap> IS_SUBSET_SET( [2^50,2^50-2..-2^50], [-2^40,-2^40+4..2^40] );
 true
 gap> IS_SUBSET_SET( [1,2,3], [-2^50..2^50] );
+false
+#@fi
+gap> IS_SUBSET_SET( [20,18..-20], [-8,-4..12] );
+true
+gap> IS_SUBSET_SET( [20,18..-20], [-8,-5..13] );
 false
 gap> IS_SUBSET_SET( [1,3..99], [1..10] );
 false

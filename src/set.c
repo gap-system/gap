@@ -247,10 +247,11 @@ static Obj FuncIS_EQUAL_SET(Obj self, Obj list1, Obj list2)
 **
 *F  IsSubsetPlainSet( <set1>, <set2> ) . . . . subset test for two plain sets
 **
-**  For each element of <set2>, find the first entry of <set1> from <i1> on
-**  that is not smaller: probe i1, i1+1, i1+3, i1+7, ... until one is, then
-**  search between the last two probes. This needs O(len2 * log(len1/len2))
-**  comparisons, and one per entry for equal sets.
+**  Each element of <set2> is found in <set1> by galloping: starting at the
+**  position <i1> after the previous match, probe the entries of <set1> at
+**  i1, i1+1, i1+3, i1+7, ... until one is not smaller than the element,
+**  then binary-search between the last two probes. This needs
+**  O(len2 * log(len1/len2)) comparisons, and one per entry for equal sets.
 */
 static BOOL IsSubsetPlainSet(Obj set1, Obj set2)
 {
@@ -259,6 +260,9 @@ static BOOL IsSubsetPlainSet(Obj set1, Obj set2)
     Int i1 = 1;
     Int i2, lo, hi, step;
     Obj e1, e2;
+
+    GAP_ASSERT(IsPlainSet(set1));
+    GAP_ASSERT(IsPlainSet(set2));
 
     for (i2 = 1; i2 <= len2; i2++, i1++) {
         if (len1 - i1 < len2 - i2)
@@ -271,7 +275,7 @@ static BOOL IsSubsetPlainSet(Obj set1, Obj set2)
         if (!LT(e1, e2))
             return FALSE;
 
-        // invariant: set1[lo] < e2, and set1[hi] >= e2 or hi = len1 + 1
+        // gallop until set1[hi] >= e2 or hi > len1
         lo = i1;
         step = 1;
         hi = lo + step;
@@ -282,6 +286,9 @@ static BOOL IsSubsetPlainSet(Obj set1, Obj set2)
         }
         if (hi > len1)
             hi = len1 + 1;
+
+        // binary search, keeping set1[lo] < e2 <= set1[hi], where
+        // set1[len1 + 1] counts as larger than everything
         while (hi - lo > 1) {
             Int mid = lo + (hi - lo) / 2;
             if (LT(ELM_PLIST(set1, mid), e2))
