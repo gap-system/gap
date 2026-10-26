@@ -1469,6 +1469,55 @@ end );
 
 #############################################################################
 ##
+#M  Projection
+##
+##  <S> consists of the affine matrices [[A,0],[v,1]], which map to A.
+##
+InstallOtherMethod( Projection, "vectorspace semidirect products",
+    true, [ IsGroup and HasSemidirectProductInfo ], 0,
+function( S )
+    local info, d, F, hom;
+
+    info := SemidirectProductInfo( S );
+    if not IsBound(info.vectorspace) then
+      TryNextMethod();
+    fi;
+
+    if not IsBool( info.projections ) then
+      return info.projections;
+    fi;
+
+    d := info.dimension;
+    F := info.field;
+    hom := GroupHomomorphismByFunction( S, info.group,
+      function( a )
+        a := a{[1..d]}{[1..d]};
+        if IsPermGroup( info.group ) then
+          # undo `PermutationMat'
+          return PermList( List( a, PositionNonZero ) );
+        fi;
+        return ImmutableMatrix( F, a );
+      end,
+      false,
+      function( g )
+        local m;
+        if IsPermGroup( info.group ) then
+          g := PermutationMat( g, d, F );
+        fi;
+        m := IdentityMat( d+1, F );
+        m{[1..d]}{[1..d]} := g;
+        return ImmutableMatrix( F, m );
+      end );
+
+    SetIsSurjective( hom, true );
+    SetImagesSource( hom, info.group );
+    SetKernelOfMultiplicativeGeneralMapping( hom, Image( Embedding( S, 2 ) ) );
+    info.projections := hom;
+    return hom;
+end );
+
+#############################################################################
+##
 #F  FreeProduct( arg )                                       Robert F, Morse
 ##
 ##
