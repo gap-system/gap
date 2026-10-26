@@ -47,10 +47,10 @@ GAP_STATIC_ASSERT(sizeof(StatHeader) == 8, "StatHeader has wrong size");
 #ifdef HPCGAP
 struct CodeModuleState {
 #endif
-DECL_MODULE_STATE Bag StackStat;
+DECL_MODULE_STATE Bag StackStat GAP_GC_GLOBALLY_ROOTED;
 DECL_MODULE_STATE Int CountStat;
 
-DECL_MODULE_STATE Bag StackExpr;
+DECL_MODULE_STATE Bag StackExpr GAP_GC_GLOBALLY_ROOTED;
 DECL_MODULE_STATE Int CountExpr;
 #ifdef HPCGAP
 };
@@ -58,7 +58,7 @@ DECL_MODULE_STATE Int CountExpr;
 static ModuleStateOffset CodeStateOffset = -1;
 
 // for debugging from GDB / lldb, we mark this as extern inline
-extern inline struct CodeModuleState * CShelper(void)
+extern inline struct CodeModuleState * CShelper(void) GAP_GC_NOTSAFEPOINT
 {
     return (struct CodeModuleState *)StateSlotsAtOffset(CodeStateOffset);
 }
@@ -151,14 +151,14 @@ static Int TNUM_STAT_OR_EXPR(CodeState * cs, Expr expr)
 #define SET_ARGI_INFO(info, i, x) WRITE_STAT(cs, info, (i)-1, x)
 
 
-static inline void PushOffsBody(CodeState * cs)
+static inline void PushOffsBody(CodeState * cs) GAP_GC_CANSAFEPOINT
 {
     if (!cs->OffsBodyStack)
         cs->OffsBodyStack = NEW_PLIST(T_PLIST, 4);
     PushPlist(cs->OffsBodyStack, ObjInt_UInt(cs->OffsBody));
 }
 
-static inline void PopOffsBody(CodeState * cs)
+static inline void PopOffsBody(CodeState * cs) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(cs->OffsBodyStack != 0);
     cs->OffsBody = UInt_ObjInt(PopPlist(cs->OffsBodyStack));
@@ -166,7 +166,7 @@ static inline void PopOffsBody(CodeState * cs)
 
 // filename
 
-Obj GET_FILENAME_BODY(Obj body)
+Obj GET_FILENAME_BODY(Obj body GAP_GC_PROPAGATES_ROOT) GAP_GC_NOTSAFEPOINT
 {
     Obj val = BODY_HEADER(body)->filename_or_id;
     if (IS_INTOBJ(val)) {
@@ -177,7 +177,7 @@ Obj GET_FILENAME_BODY(Obj body)
     return val;
 }
 
-void SET_FILENAME_BODY(Obj body, Obj val)
+void SET_FILENAME_BODY(Obj body, Obj val GAP_GC_ROOTED_BY_ARG(0))
 {
     GAP_ASSERT(IS_STRING_REP(val));
     MakeImmutable(val);
@@ -187,7 +187,7 @@ void SET_FILENAME_BODY(Obj body, Obj val)
 
 // gapnameid
 
-UInt GET_GAPNAMEID_BODY(Obj body)
+UInt GET_GAPNAMEID_BODY(Obj body) GAP_GC_NOTSAFEPOINT
 {
     Obj gapnameid = BODY_HEADER(body)->filename_or_id;
     return IS_POS_INTOBJ(gapnameid) ? INT_INTOBJ(gapnameid) : 0;
@@ -200,13 +200,13 @@ void SET_GAPNAMEID_BODY(Obj body, UInt val)
 
 // location
 
-Obj GET_LOCATION_BODY(Obj body)
+Obj GET_LOCATION_BODY(Obj body GAP_GC_PROPAGATES_ROOT) GAP_GC_NOTSAFEPOINT
 {
     Obj location = BODY_HEADER(body)->startline_or_location;
     return (location && IS_STRING_REP(location)) ? location : 0;
 }
 
-void SET_LOCATION_BODY(Obj body, Obj val)
+void SET_LOCATION_BODY(Obj body, Obj val GAP_GC_ROOTED_BY_ARG(0))
 {
     GAP_ASSERT(IS_STRING_REP(val));
     MakeImmutable(val);
@@ -216,7 +216,7 @@ void SET_LOCATION_BODY(Obj body, Obj val)
 
 // startline
 
-UInt GET_STARTLINE_BODY(Obj body)
+UInt GET_STARTLINE_BODY(Obj body) GAP_GC_NOTSAFEPOINT
 {
     Obj line = BODY_HEADER(body)->startline_or_location;
     return IS_POS_INTOBJ(line) ? INT_INTOBJ(line) : 0;
@@ -229,7 +229,7 @@ void SET_STARTLINE_BODY(Obj body, UInt val)
 
 // endline
 
-UInt GET_ENDLINE_BODY(Obj body)
+UInt GET_ENDLINE_BODY(Obj body) GAP_GC_NOTSAFEPOINT
 {
     Obj line = BODY_HEADER(body)->endline;
     return IS_POS_INTOBJ(line) ? INT_INTOBJ(line) : 0;
@@ -280,7 +280,7 @@ Stat NewStatOrExpr(CodeState * cs, UInt type, UInt size, UInt line)
     return stat;
 }
 
-static Stat NewStat(CodeState * cs, UInt type, UInt size)
+static Stat NewStat(CodeState * cs, UInt type, UInt size) GAP_GC_CANSAFEPOINT
 {
     return NewStatOrExpr(cs, type, size,
                          GetInputLineNumber(GetCurrentInput()));
@@ -295,7 +295,7 @@ static Stat NewStat(CodeState * cs, UInt type, UInt size)
 **  'NewExpr' allocates a new expression memory block of  the type <type> and
 **  <size> bytes.  'NewExpr' returns the identifier of the new expression.
 */
-static Expr NewExpr(CodeState * cs, UInt type, UInt size)
+static Expr NewExpr(CodeState * cs, UInt type, UInt size) GAP_GC_CANSAFEPOINT
 {
     return NewStat(cs, type, size);
 }
@@ -362,7 +362,7 @@ static Stat PopStat ( void )
     return stat;
 }
 
-static Stat PopSeqStat(CodeState * cs, UInt nr)
+static Stat PopSeqStat(CodeState * cs, UInt nr) GAP_GC_CANSAFEPOINT
 {
     Stat                body;           // sequence, result
     Stat                stat;           // single statement
@@ -400,6 +400,7 @@ static Stat PopSeqStat(CodeState * cs, UInt nr)
 
 static inline Stat
 PopLoopStat(CodeState * cs, UInt baseType, UInt extra, UInt nr)
+    GAP_GC_CANSAFEPOINT
 {
     // fix up the case of no statements
     if (0 == nr) {
@@ -450,7 +451,7 @@ static inline UInt CapacityStackExpr(void)
     return SIZE_BAG(CS(StackExpr)) / sizeof(Expr) - 1;
 }
 
-static void PushExpr(Expr expr)
+static void PushExpr(Expr expr) GAP_GC_CANSAFEPOINT
 {
     // there must be a stack, it must not be underfull or overfull
     GAP_ASSERT(CS(StackExpr) != 0);
@@ -494,7 +495,7 @@ static Expr PopExpr(void)
 **  'PushUnaryOp' pushes a   unary  operator expression onto the   expression
 **  stack.  <type> is the type of the operator (currently only 'EXPR_NOT').
 */
-static void PushUnaryOp(CodeState * cs, UInt type)
+static void PushUnaryOp(CodeState * cs, UInt type) GAP_GC_CANSAFEPOINT
 {
     Expr                unop;           // unary operator, result
     Expr                op;             // operand
@@ -518,7 +519,7 @@ static void PushUnaryOp(CodeState * cs, UInt type)
 **  'PushBinaryOp' pushes a binary   operator expression onto  the expression
 **  stack.  <type> is the type of the operator.
 */
-static void PushBinaryOp(CodeState * cs, UInt type)
+static void PushBinaryOp(CodeState * cs, UInt type) GAP_GC_CANSAFEPOINT
 {
     Expr                binop;          // binary operator, result
     Expr                opL;            // left operand
@@ -645,6 +646,12 @@ void CodeBegin(CodeState * cs)
     // the stacks must be empty
     GAP_ASSERT(CS(CountStat) == 0);
     GAP_ASSERT(CS(CountExpr) == 0);
+
+#if defined(GAP_KERNEL_DEBUG) && defined(GAP_GC_PRECISE)
+    // A CodeState on the C stack is invisible to a precise collector unless its
+    // creator rooted it; see CODE_STATE_ROOTS in code.h.
+    GAP_ASSERT(GAP_IsRootedSlot(&cs->currBody));
+#endif
 
     // remember the current frame
     cs->CodeLVars = STATE(CurrLVars);
@@ -779,10 +786,12 @@ void CodeFuncExprBegin(CodeState * cs,
                        UInt        gapnameid,
                        Int         startLine)
 {
-    Obj                 fexp;           // function expression bag
-    Bag                 body;           // function body
+    Obj                 fexp = 0;       // function expression bag
+    Bag                 body = 0;       // function body
     Obj                 lvars;
     LVarsHeader         * hdr;
+
+    GAP_GC_PUSH2(&fexp, &body);
 
     // remember the current offset
     PushOffsBody(cs);
@@ -827,6 +836,8 @@ void CodeFuncExprBegin(CodeState * cs,
 
     // allocate the top level statement sequence
     NewStat(cs, STAT_SEQ_STAT, 8 * sizeof(Stat));
+
+    GAP_GC_POP();
 }
 
 #ifdef HPCGAP
@@ -840,11 +851,15 @@ Expr CodeFuncExprEnd(CodeState * cs, UInt nr, BOOL pushExpr, Int endLine)
 {
     Expr                expr;           // function expression, result
     Stat                stat1;          // single statement of body
-    Obj                 fexp;           // function expression bag
+    Obj                 fexp = 0;       // function expression bag
     UInt                len;            // length of func. expr. list
     UInt                i;              // loop variable
 
     // get the function expression
+    // <fexp> is reachable through cs->CodeLVars only until that is
+    // reassigned below; after that this frame is what keeps it alive, and
+    // both AddValueToBody and MakeFunction allocate.
+    GAP_GC_PUSH1(&fexp);
     fexp = FUNC_LVARS(cs->CodeLVars);
 
     // get the body of the function
@@ -916,6 +931,7 @@ Expr CodeFuncExprEnd(CodeState * cs, UInt nr, BOOL pushExpr, Int endLine)
         if (pushExpr) {
             PushExpr(expr);
         }
+        GAP_GC_POP();
         return expr;
     }
 
@@ -924,6 +940,7 @@ Expr CodeFuncExprEnd(CodeState * cs, UInt nr, BOOL pushExpr, Int endLine)
         cs->CodeResult = MakeFunction(fexp);
     }
 
+    GAP_GC_POP();
     return 0;
 }
 
@@ -1827,7 +1844,7 @@ enum {
 };
 static UInt NextFloatExprNumber = 3;
 
-static Obj CONVERT_FLOAT_LITERAL_EAGER;
+static Obj CONVERT_FLOAT_LITERAL_EAGER GAP_GC_GLOBALLY_ROOTED;
 
 
 static UInt getNextFloatExprNumber(void)
@@ -1906,14 +1923,18 @@ Expr CodeLazyFloatExpr(CodeState * cs, Obj str, UInt pushExpr)
 }
 
 static void CodeEagerFloatExpr(CodeState * cs, Obj str, Char mark)
+    GAP_GC_CANSAFEPOINT
 {
     // Eager case, do the conversion now
     Expr fl = NewExpr(cs, EXPR_FLOAT_EAGER, sizeof(UInt) * 3);
-    Obj v = CALL_2ARGS(CONVERT_FLOAT_LITERAL_EAGER, str, ObjsChar[(Int)mark]);
+    Obj v = 0;
+    GAP_GC_PUSH1(&v);
+    v = CALL_2ARGS(CONVERT_FLOAT_LITERAL_EAGER, str, ObjsChar[(Int)mark]);
     WRITE_EXPR(cs, fl, 0, AddValueToBody(cs, v));
     WRITE_EXPR(cs, fl, 1, AddValueToBody(cs, str));    // store for printing
     WRITE_EXPR(cs, fl, 2, (UInt)mark);
     PushExpr(fl);
+    GAP_GC_POP();
 }
 
 void CodeFloatExpr(CodeState * cs, Obj s)
@@ -2298,6 +2319,7 @@ void CodeIsbGVar(CodeState * cs, UInt gvar)
 *F  CodeAsssListLevel( <level> )  . code multiple assignment to several lists
 */
 static void CodeAssListUniv(CodeState * cs, Stat ass, Int narg)
+    GAP_GC_CANSAFEPOINT
 {
     Expr                list;           // list expression
     Expr                pos;            // position expression
@@ -2411,6 +2433,7 @@ void CodeUnbList(CodeState * cs, Int narg)
 *F  CodeElmsListLevel( <level> )  .  code multiple selection of several lists
 */
 static void CodeElmListUniv(CodeState * cs, Expr ref, Int narg)
+    GAP_GC_CANSAFEPOINT
 {
     Expr                list;           // list expression
     Expr                pos;            // position expression
@@ -3206,7 +3229,7 @@ static Int InitKernel (
 *F  PostRestore( <module> ) . . . . . . .  recover
 */
 static Int PostRestore (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
   NextFloatExprNumber = INT_INTOBJ(ValGVar(GVarName("SavedFloatIndex")));
   return 0;
@@ -3218,7 +3241,7 @@ static Int PostRestore (
 *F  PreSave( <module> ) . . . . . . .  clean up before saving
 */
 static Int PreSave (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
   // Can't save in mid-parsing
   if (CS(CountExpr) || CS(CountStat))
@@ -3235,7 +3258,7 @@ static Int PreSave (
   return 0;
 }
 
-static Int InitModuleState(void)
+static Int InitModuleState(void) GAP_GC_CANSAFEPOINT
 {
     // allocate the statements and expressions stacks
     CS(StackStat) = NewKernelBuffer(sizeof(Obj) + 64 * sizeof(Stat));

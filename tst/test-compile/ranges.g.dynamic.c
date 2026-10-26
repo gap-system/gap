@@ -4,21 +4,21 @@
 
 /* global variables used in handlers */
 static GVar G_CALL__WITH__CATCH;
-static Obj  GF_CALL__WITH__CATCH;
+static Obj  GF_CALL__WITH__CATCH GAP_GC_GLOBALLY_ROOTED;
 static GVar G_range2;
-static Obj  GC_range2;
+static Obj  GC_range2 GAP_GC_GLOBALLY_ROOTED;
 static GVar G_range3;
-static Obj  GC_range3;
+static Obj  GC_range3 GAP_GC_GLOBALLY_ROOTED;
 static GVar G_runtest;
 static GVar G_BreakOnError;
 static GVar G_Display;
-static Obj  GF_Display;
+static Obj  GF_Display GAP_GC_GLOBALLY_ROOTED;
 
 /* record names used in handlers */
 
 /* information for the functions */
-static Obj  NameFunc[5];
-static Obj FileName;
+static Obj NameFunc[5] GAP_GC_GLOBALLY_ROOTED;
+static Obj FileName GAP_GC_GLOBALLY_ROOTED;
 
 /* handler for function 2 */
 static Obj  HdlrFunc2 (
@@ -28,6 +28,7 @@ static Obj  HdlrFunc2 (
 {
  Obj t_1 = 0;
  Bag oldFrame;
+ GAP_GC_PUSH3(&a_a, &a_b, &t_1);
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
@@ -35,6 +36,7 @@ static Obj  HdlrFunc2 (
  /* return [ a .. b ]; */
  t_1 = Range2Check( a_a, a_b );
  SWITCH_TO_OLD_FRAME(oldFrame);
+ GAP_GC_POP();
  return t_1;
 }
 
@@ -47,6 +49,7 @@ static Obj  HdlrFunc3 (
 {
  Obj t_1 = 0;
  Bag oldFrame;
+ GAP_GC_PUSH4(&a_a, &a_b, &a_c, &t_1);
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
@@ -54,6 +57,7 @@ static Obj  HdlrFunc3 (
  /* return [ a, b .. c ]; */
  t_1 = Range3Check( a_a, a_b, a_c );
  SWITCH_TO_OLD_FRAME(oldFrame);
+ GAP_GC_POP();
  return t_1;
 }
 
@@ -67,6 +71,7 @@ static Obj  HdlrFunc4 (
  Obj t_4 = 0;
  Obj t_5 = 0;
  Bag oldFrame;
+ GAP_GC_PUSH5(&t_1, &t_2, &t_3, &t_4, &t_5);
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
@@ -88,7 +93,8 @@ static Obj  HdlrFunc4 (
   CALL_2ARGS( t_1, t_2, t_3 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+  t_4 = NewPlistFromArgs( t_2, t_3 );
+  DoOperation2Args( CallFuncListOper, t_1, t_4 );
  }
  
  /* CALL_WITH_CATCH( range2, [ - 2 ^ 80, 0 ] ); */
@@ -105,7 +111,8 @@ static Obj  HdlrFunc4 (
   CALL_2ARGS( t_1, t_2, t_3 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+  t_4 = NewPlistFromArgs( t_2, t_3 );
+  DoOperation2Args( CallFuncListOper, t_1, t_4 );
  }
  
  /* CALL_WITH_CATCH( range3, [ 1, 2, 2 ^ 80 ] ); */
@@ -122,7 +129,8 @@ static Obj  HdlrFunc4 (
   CALL_2ARGS( t_1, t_2, t_3 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+  t_4 = NewPlistFromArgs( t_2, t_3 );
+  DoOperation2Args( CallFuncListOper, t_1, t_4 );
  }
  
  /* CALL_WITH_CATCH( range3, [ - 2 ^ 80, 0, 1 ] ); */
@@ -140,7 +148,8 @@ static Obj  HdlrFunc4 (
   CALL_2ARGS( t_1, t_2, t_3 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+  t_4 = NewPlistFromArgs( t_2, t_3 );
+  DoOperation2Args( CallFuncListOper, t_1, t_4 );
  }
  
  /* CALL_WITH_CATCH( range3, [ 0, 2 ^ 80, 2 ^ 81 ] ); */
@@ -158,7 +167,8 @@ static Obj  HdlrFunc4 (
   CALL_2ARGS( t_1, t_2, t_3 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+  t_4 = NewPlistFromArgs( t_2, t_3 );
+  DoOperation2Args( CallFuncListOper, t_1, t_4 );
  }
  
  /* Display( [ 1, 2 .. 2 ] ); */
@@ -168,7 +178,8 @@ static Obj  HdlrFunc4 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* CALL_WITH_CATCH( range3, [ 2, 2, 2 ] ); */
@@ -184,7 +195,8 @@ static Obj  HdlrFunc4 (
   CALL_2ARGS( t_1, t_2, t_3 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+  t_4 = NewPlistFromArgs( t_2, t_3 );
+  DoOperation2Args( CallFuncListOper, t_1, t_4 );
  }
  
  /* Display( [ 2, 4 .. 6 ] ); */
@@ -194,7 +206,8 @@ static Obj  HdlrFunc4 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* CALL_WITH_CATCH( range3, [ 2, 4, 7 ] ); */
@@ -210,7 +223,8 @@ static Obj  HdlrFunc4 (
   CALL_2ARGS( t_1, t_2, t_3 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+  t_4 = NewPlistFromArgs( t_2, t_3 );
+  DoOperation2Args( CallFuncListOper, t_1, t_4 );
  }
  
  /* Display( [ 2, 4 .. 2 ] ); */
@@ -220,7 +234,8 @@ static Obj  HdlrFunc4 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* Display( [ 2, 4 .. 0 ] ); */
@@ -230,7 +245,8 @@ static Obj  HdlrFunc4 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* CALL_WITH_CATCH( range3, [ 4, 2, 1 ] ); */
@@ -246,7 +262,8 @@ static Obj  HdlrFunc4 (
   CALL_2ARGS( t_1, t_2, t_3 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
+  t_4 = NewPlistFromArgs( t_2, t_3 );
+  DoOperation2Args( CallFuncListOper, t_1, t_4 );
  }
  
  /* Display( [ 4, 2 .. 0 ] ); */
@@ -256,7 +273,8 @@ static Obj  HdlrFunc4 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* Display( [ 4, 2 .. 8 ] ); */
@@ -266,11 +284,13 @@ static Obj  HdlrFunc4 (
   CALL_1ARGS( t_1, t_2 );
  }
  else {
-  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
+  t_3 = NewPlistFromArgs( t_2 );
+  DoOperation2Args( CallFuncListOper, t_1, t_3 );
  }
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
+ GAP_GC_POP();
  return 0;
 }
 
@@ -281,6 +301,7 @@ static Obj  HdlrFunc1 (
  Obj t_1 = 0;
  Obj t_2 = 0;
  Bag oldFrame;
+ GAP_GC_PUSH2(&t_1, &t_2);
  
  /* allocate new stack frame */
  SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
@@ -288,7 +309,11 @@ static Obj  HdlrFunc1 (
  /* range2 := function ( a, b )
       return [ a .. b ];
   end; */
- t_1 = NewFunction( NameFunc[2], 2, NewPlistFromArgs(MakeImmString("a"), MakeImmString("b")), HdlrFunc2 );
+ t_2 = NEW_PLIST( T_PLIST, 2 );
+ SET_LEN_PLIST( t_2, 2 );
+ SET_ELM_PLIST( t_2, 1, MakeImmString("a") );
+ SET_ELM_PLIST( t_2, 2, MakeImmString("b") );
+ t_1 = NewFunction( NameFunc[2], 2, t_2, HdlrFunc2 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 1);
@@ -300,7 +325,12 @@ static Obj  HdlrFunc1 (
  /* range3 := function ( a, b, c )
       return [ a, b .. c ];
   end; */
- t_1 = NewFunction( NameFunc[3], 3, NewPlistFromArgs(MakeImmString("a"), MakeImmString("b"), MakeImmString("c")), HdlrFunc3 );
+ t_2 = NEW_PLIST( T_PLIST, 3 );
+ SET_LEN_PLIST( t_2, 3 );
+ SET_ELM_PLIST( t_2, 1, MakeImmString("a") );
+ SET_ELM_PLIST( t_2, 2, MakeImmString("b") );
+ SET_ELM_PLIST( t_2, 3, MakeImmString("c") );
+ t_1 = NewFunction( NameFunc[3], 3, t_2, HdlrFunc3 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 2);
@@ -338,6 +368,7 @@ static Obj  HdlrFunc1 (
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
+ GAP_GC_POP();
  return 0;
 }
 
@@ -394,8 +425,9 @@ static Int InitKernel ( StructInitInfo * module )
 /* 'InitLibrary' sets up gvars, rnams, functions */
 static Int InitLibrary ( StructInitInfo * module )
 {
- Obj func1;
- Obj body1;
+ Obj func1 = 0;
+ Obj body1 = 0;
+ GAP_GC_PUSH2(&func1, &body1);
  
  /* Complete Copy/Fopy registration */
  UpdateCopyFopyInfo();
@@ -408,6 +440,7 @@ static Int InitLibrary ( StructInitInfo * module )
  body1 = NewFunctionBody();
  SET_BODY_FUNC( func1, body1 );
  CALL_0ARGS( func1 );
+ GAP_GC_POP();
  
  return 0;
  

@@ -29,17 +29,17 @@ enum {
     MODULE_DYNAMIC = GAP_KERNEL_API_VERSION * 10 + 2,
 };
 
-EXPORT_INLINE BOOL IS_MODULE_BUILTIN(UInt type)
+EXPORT_INLINE BOOL IS_MODULE_BUILTIN(UInt type) GAP_GC_NOTSAFEPOINT
 {
     return type % 10 == 0;
 }
 
-EXPORT_INLINE BOOL IS_MODULE_STATIC(UInt type)
+EXPORT_INLINE BOOL IS_MODULE_STATIC(UInt type) GAP_GC_NOTSAFEPOINT
 {
     return type % 10 == 1;
 }
 
-EXPORT_INLINE BOOL IS_MODULE_DYNAMIC(UInt type)
+EXPORT_INLINE BOOL IS_MODULE_DYNAMIC(UInt type) GAP_GC_NOTSAFEPOINT
 {
     return type % 10 == 2;
 }
@@ -426,35 +426,35 @@ void InitResetFiltListTNumsFromTable(const Int * tab);
 **
 *F  InitGVarFiltsFromTable( <tab> ) . . . . . . . . . . . . . . . new filters
 */
-void InitGVarFiltsFromTable(const StructGVarFilt * tab);
+void InitGVarFiltsFromTable(const StructGVarFilt * tab) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  InitGVarAttrsFromTable( <tab> ) . . . . . . . . . . . . .  new attributes
 */
-void InitGVarAttrsFromTable(const StructGVarAttr * tab);
+void InitGVarAttrsFromTable(const StructGVarAttr * tab) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  InitGVarPropsFromTable( <tab> ) . . . . . . . . . . . . .  new properties
 */
-void InitGVarPropsFromTable(const StructGVarProp * tab);
+void InitGVarPropsFromTable(const StructGVarProp * tab) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  InitGVarOpersFromTable( <tab> ) . . . . . . . . . . . . .  new operations
 */
-void InitGVarOpersFromTable(const StructGVarOper * tab);
+void InitGVarOpersFromTable(const StructGVarOper * tab) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  InitGVarFuncsFromTable( <tab> ) . . . . . . . . . . . . . .  new function
 */
-void InitGVarFuncsFromTable(const StructGVarFunc * tab);
+void InitGVarFuncsFromTable(const StructGVarFunc * tab) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -539,7 +539,7 @@ void LoadModules(void);
 **
 *F  ActivateModule( <info> )
 */
-Int ActivateModule(StructInitInfo * info);
+Int ActivateModule(StructInitInfo * info) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
