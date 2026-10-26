@@ -84,7 +84,10 @@ static inline int GAP_Error_Postjmp_(int JumpRet)
 // We use the canonical frame address, the top of the caller's stack frame;
 // __builtin_frame_address(0) is not enough, as e.g. on 32-bit ARM in Thumb
 // mode it points to the bottom of the frame.
-#if defined(__has_builtin)
+#if defined(_WIN32) || defined(__CYGWIN__)
+// keep using __builtin_frame_address(0), as clang's __builtin_dwarf_cfa() is
+// wrong on Windows, see https://github.com/llvm/llvm-project/issues/227606
+#elif defined(__has_builtin)
 #if __has_builtin(__builtin_dwarf_cfa) && !defined(__EMSCRIPTEN__)
 #define GAP_STACK_FRAME_TOP_() __builtin_dwarf_cfa()
 #endif
