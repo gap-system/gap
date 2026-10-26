@@ -365,18 +365,18 @@ from inside a GNU Emacs shell window, <C>-n</C> should be used since otherwise
 every input line will be echoed twice, once by Emacs and once by &GAP;.
 This option does not toggle; you must use <C>-f</C> to enable line editing.
 </Item>
-<Mark><Index Key="--nointeract"><C>--nointeract</C></Index>
-<C>--nointeract</C></Mark>
-<Item>
-starts &GAP; in non-interactive mode; this implies <C>-T</C> and
-<C>--norepl</C>.
-</Item>
 <Mark><Index Key="--norepl"><C>--norepl</C></Index>
 <C>--norepl</C></Mark>
 <Item>
 tells &GAP; not to start the read-evaluate-print loop:
 &GAP; exits after processing the files and <C>-c</C> options
 given on the command line.
+</Item>
+<Mark><Index Key="--nointeract"><C>--nointeract</C></Index>
+<C>--nointeract</C></Mark>
+<Item>
+starts &GAP; in non-interactive mode; this implies <C>-T</C> and
+<C>--norepl</C>.
 </Item>
 <Mark><Index Key="-O"><C>-O</C></Index>
 <C>-O</C></Mark>
