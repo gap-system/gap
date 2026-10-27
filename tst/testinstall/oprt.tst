@@ -97,5 +97,41 @@ Error, <G> must act transitively on <D>
 gap> Blocks( Group( (1,2), (3,4,5) ), [1..5], [1,2] : check := false );
 [ [ 1, 2 ], [ 3 ], [ 4 ], [ 5 ] ]
 
+# DomainForAction for permutations on lists of integers
+gap> DomainForAction( [ 1, 3 ], [ (1,2,3) ], OnSets );
+EnumeratorOfCombinations( [ 1 .. 3 ], 2 )
+gap> DomainForAction( [ 4, 1, 4 ], [ (1,2,3) ], OnTuples );
+EnumeratorOfTuples( [ 1 .. 4 ], 3 )
+gap> DomainForAction( [ 3, 1 ], [ (1,2,3) ], OnPairs );
+EnumeratorOfTuples( [ 1 .. 3 ], 2 )
+gap> DomainForAction( [ 3, 1 ], [ (1,2,3) ], OnSets );
+fail
+gap> G := SymmetricGroup( 10 );;
+gap> res := OrbitStabilizer( G, [ 2, 5, 7 ], OnSets );;
+gap> [ Length( res.orbit ), Size( res.stabilizer ) ];
+[ 120, 30240 ]
+gap> res := OrbitStabilizer( G, [ 2, 5, 7 ], OnSets : blistlimit := 10 );;
+gap> [ Length( res.orbit ), Size( res.stabilizer ) ];
+[ 120, 30240 ]
+gap> res := OrbitStabilizer( G, [ 7, 2, 7 ], OnTuples );;
+gap> [ Length( res.orbit ), Size( res.stabilizer ) ];
+[ 90, 40320 ]
+gap> res := OrbitStabilizer( G, [ 7, 2, 7 ], OnTuples : blistlimit := 10 );;
+gap> [ Length( res.orbit ), Size( res.stabilizer ) ];
+[ 90, 40320 ]
+gap> Length( Orbit( G, [ 2, 5, 7 ], OnSets ) );
+120
+
+# an orbit much smaller than its domain is hashed
+gap> SetInfoLevel( InfoHash, 1 );
+gap> res := OrbitStabilizer( Group( CycleFromList( [ 1 .. 30 ] ) ),
+>                            [ 1, 2, 4, 8, 16 ], OnTuples );;
+#I   Hash dictionary
+gap> [ Length( res.orbit ), Size( res.stabilizer ) ];
+[ 30, 1 ]
+gap> res := OrbitStabilizer( G, [ 2, 5, 7 ], OnSets );;
+#I  [ 2, 5, 7 ] Position dictionary
+gap> SetInfoLevel( InfoHash, 0 );
+
 ##
 gap> STOP_TEST( "oprt.tst" );

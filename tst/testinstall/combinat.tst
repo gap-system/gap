@@ -2,7 +2,7 @@
 ##
 ##  This  file  tests  the functions that  mainly  deal  with  combinatorics.
 ##
-#@local n,mset,comb1,comb2,comb3,it,pn1,pn2,s,k,x,y
+#@local n,mset,comb1,comb2,comb3,it,pn1,pn2,s,k,x,y,enum
 
 gap> START_TEST("combinat.tst");
 
@@ -120,7 +120,7 @@ gap> NrCombinations( [1,2,3,3,4,4,5,5,5,6,6,6,7,7,7,7,8,8,8,8], 8 );
 1558
 
 #F  IteratorOfCombinations( <mset>[, <k>] )
-#F  EnumeratorOfCombinations( <mset> )
+#F  EnumeratorOfCombinations( <mset>[, <k>] )
 gap> for n in [ 0 .. 10 ] do
 >      mset:= Union( [ 1 .. n ], [ 1 .. n ] );
 >      comb1:= Combinations( mset );
@@ -130,6 +130,50 @@ gap> for n in [ 0 .. 10 ] do
 >        Error( "different elements" );
 >      fi;
 >    od;
+gap> for mset in [ [], [ 1 .. 7 ], [ 5, 3, 1 ], [ 1, 1, 2, 3, 3, 3, 4 ],
+>                  "abracadabra", [ (1,2), (), (1,2), (1,2,3) ] ] do
+>      for k in [ 0 .. Length( mset ) + 1 ] do
+>        comb1:= Set( Combinations( mset, k ) );
+>        enum:= EnumeratorOfCombinations( mset, k );
+>        if not ( HasIsSSortedList( enum ) and IsSSortedList( enum )
+>                 and Length( enum ) = Length( comb1 )
+>                 and AsList( enum ) = comb1
+>                 and List( comb1, c -> Position( enum, c ) )
+>                     = [ 1 .. Length( comb1 ) ] ) then
+>          Error( "wrong enumerator for ", mset, " and ", k );
+>        fi;
+>      od;
+>    od;
+gap> enum:= EnumeratorOfCombinations( [ 1 .. 30 ], 6 );
+EnumeratorOfCombinations( [ 1 .. 30 ], 6 )
+gap> Length( enum );
+593775
+gap> enum[ 300000 ];
+[ 4, 5, 7, 8, 24, 25 ]
+gap> Position( enum, last );
+300000
+gap> List( [ [ 1, 2, 3, 4, 5, 31 ], [ 1, 2, 3, 4, 6, 5 ], [ 1, 1, 2, 3, 4, 5 ],
+>            [ 1, 2, 3, 4, 5 ], 1 ], c -> Position( enum, c ) );
+[ fail, fail, fail, fail, fail ]
+gap> enum:= EnumeratorOfCombinations( [ 3, 1, 1, 2, 1 ], 3 );
+EnumeratorOfCombinations( [ 1, 1, 1, 2, 3 ], 3 )
+gap> AsList( enum );
+[ [ 1, 1, 1 ], [ 1, 1, 2 ], [ 1, 1, 3 ], [ 1, 2, 3 ] ]
+gap> List( [ [ 1, 2, 1 ], [ 1, 2, 2 ], [ 1, 1, 4 ], [ 1, 1 ] ],
+>          c -> Position( enum, c ) );
+[ fail, fail, fail, fail ]
+gap> enum[ 5 ];
+Error, Index 5 not bound, expected at most 4
+gap> EnumeratorOfCombinations( [ 1 .. 3 ], 2 )[ 4 ];
+Error, Index 4 not bound, expected at most 3
+gap> EnumeratorOfCombinations( [ 1 .. 3 ], -1 );
+Error, EnumeratorOfCombinations: <k> must be a non-negative integer
+gap> EnumeratorOfCombinations( [ 1 .. 3 ], infinity );
+Error, EnumeratorOfCombinations: <k> must be a non-negative integer
+gap> EnumeratorOfCombinations( [ 1 .. 3 ], "a" );
+Error, EnumeratorOfCombinations: <k> must be a non-negative integer
+gap> EnumeratorOfCombinations( [ 1 .. 3 ], 1, 2 );
+Error, usage: EnumeratorOfCombinations( <mset>[, <k>] )
 
 #F  Arrangements( <mset> )  . . . . set of ordered combinations of a multiset
 gap> Arrangements( [] );
