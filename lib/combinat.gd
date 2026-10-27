@@ -341,11 +341,10 @@ DeclareGlobalFunction("Combinations");
 ##  all combinations.
 ##  <P/>
 ##  <Ref Func="EnumeratorOfCombinations"/> returns an <Ref Attr="Enumerator" />
-##  for the same combinations.
-##  With second argument <A>k</A>, it is strictly sorted.
-##  <P/>
-##  The ordering of combinations from these functions can be different and also
-##  different from the list returned by <Ref Func="Combinations"/>.
+##  for the same combinations; it is equal to the strictly sorted list
+##  <C>Combinations( <A>mset</A>[, <A>k</A>] )</C>.
+##  <Ref Func="IteratorOfCombinations"/> produces them in a different order,
+##  without <A>k</A> by increasing size.
 ##  <P/>
 ##  <Example>
 ##  gap> m:=[1..15];; Add(m, 15);
@@ -356,9 +355,9 @@ DeclareGlobalFunction("Combinations");
 ##  49152
 ##  gap> cm := EnumeratorOfCombinations(m);;
 ##  gap> cm[1000];
-##  [ 1, 2, 3, 6, 7, 8, 9, 10 ]
+##  [ 1, 2, 3, 4, 5, 7, 9, 10, 12, 13, 15, 15 ]
 ##  gap> Position(cm, [1,13,15,15]);
-##  36866
+##  24572
 ##  gap> cm := EnumeratorOfCombinations([1..30], 6);
 ##  EnumeratorOfCombinations( [ 1 .. 30 ], 6 )
 ##  gap> Length(cm);

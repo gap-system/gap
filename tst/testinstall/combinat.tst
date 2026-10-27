@@ -130,6 +130,52 @@ gap> for n in [ 0 .. 10 ] do
 >        Error( "different elements" );
 >      fi;
 >    od;
+gap> for mset in Concatenation( [ [ 1 .. 10 ], [ 5, 3, 1 ], "abracadabra",
+>                  [ (1,2), (), (1,2,3) ], [ (1,2), (), (1,2), (1,2,3) ] ],
+>                  List( [ 0 .. 12 ],
+>                        n -> List( [ 1 .. n ], i -> Random( [ 1 .. n ] ) ) ) ) do
+>      comb1:= Combinations( mset );
+>      enum:= EnumeratorOfCombinations( mset );
+>      if not ( HasIsSSortedList( enum ) and IsSSortedList( enum )
+>               and Length( enum ) = Length( comb1 )
+>               and AsList( enum ) = comb1 and enum = comb1
+>               and List( comb1, c -> Position( enum, c ) )
+>                   = [ 1 .. Length( comb1 ) ] ) then
+>        Error( "wrong enumerator for ", mset );
+>      fi;
+>    od;
+gap> enum:= EnumeratorOfCombinations( [ 2, 1, 1 ] );
+EnumeratorOfCombinations( [ 1, 1, 2 ] )
+gap> AsList( enum );
+[ [  ], [ 1 ], [ 1, 1 ], [ 1, 1, 2 ], [ 1, 2 ], [ 2 ] ]
+gap> IsEnumeratorOfSmallIntLists( enum );
+true
+gap> List( [ [ 2, 1 ], [ 1, 1, 1 ], [ 3 ], [ 1, 1, 2, 2 ], 1 ],
+>          c -> Position( enum, c ) );
+[ fail, fail, fail, fail, fail ]
+gap> enum[ 7 ];
+Error, Index 7 not bound, expected at most 6
+gap> enum:= EnumeratorOfCombinations( [ 1 .. 100 ] );
+EnumeratorOfCombinations( [ 1 .. 100 ] )
+gap> enum[ 2^99 + 1 ];
+[ 1, 100 ]
+gap> enum[ 2^100 ];
+[ 100 ]
+gap> Position( enum, [ 2 ] ) = 2^99 + 2;
+true
+gap> List( [ [ 2, 1 ], [ 1, 1 ], [ 101 ], [ 1 .. 101 ], 1 ],
+>          c -> Position( enum, c ) );
+[ fail, fail, fail, fail, fail ]
+gap> mset:= Concatenation( [ 1 .. 50 ], [ 1 .. 50 ] );;
+gap> enum:= EnumeratorOfCombinations( mset );;
+gap> Length( enum ) = 3^50;
+true
+gap> enum[ 3^50 ];
+[ 50, 50 ]
+gap> Position( enum, [ 1, 2, 2, 50 ] ) = 3^49 + 3^48 + 2;
+true
+gap> enum[ 3^49 + 3^48 + 2 ];
+[ 1, 2, 2, 50 ]
 gap> for mset in [ [], [ 1 .. 7 ], [ 5, 3, 1 ], [ 1, 1, 2, 3, 3, 3, 4 ],
 >                  "abracadabra", [ (1,2), (), (1,2), (1,2,3) ] ] do
 >      for k in [ 0 .. Length( mset ) + 1 ] do
