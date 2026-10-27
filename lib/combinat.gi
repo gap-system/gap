@@ -255,40 +255,40 @@ BindGlobal("NumberElement_Combinations_set", function(enum, comb)
   return num;
 end);
 
-# For a multiset, nr[i][r+1] is the number of combinations with r entries
-# from els{[i..Length(els)]}. Of two combinations, the one with more copies
-# of the first element in which they differ comes first.
+# For a multiset, cum[i][r+1] is the number of combinations with fewer than
+# r entries from els{[i..Length(els)]}. Of two combinations, the one with
+# more copies of the first element in which they differ comes first.
 BindGlobal("ElementNumber_Combinations_mset", function(enum, num)
-  local els, max, nr, r, comb, i, a;
+  local els, max, cum, r, comb, i, base, t;
   if num > enum!.size then
     Error("Index ", num, " not bound, expected at most ", enum!.size);
   fi;
   els := enum!.els;
   max := enum!.max;
-  nr := enum!.nr;
+  cum := enum!.cum;
   num := num-1;
   r := enum!.k;
   comb := [];
   for i in [1..Length(els)] do
-    a := Minimum(max[i], r);
-    while num >= nr[i+1][r-a+1] do
-      num := num - nr[i+1][r-a+1];
-      a := a-1;
-    od;
-    Append(comb, ListWithIdenticalEntries(a, els[i]));
-    r := r-a;
+    # the combinations with a copies of els[i] form consecutive blocks,
+    # a = Minimum(max[i], r) first; find the block containing num
+    base := cum[i+1][r-Minimum(max[i], r)+1];
+    t := PositionSorted(cum[i+1], num+base+1) - 1;
+    num := num - (cum[i+1][t] - base);
+    Append(comb, ListWithIdenticalEntries(r-t+1, els[i]));
+    r := t-1;
   od;
   return comb;
 end);
 
 BindGlobal("NumberElement_Combinations_mset", function(enum, comb)
-  local els, max, nr, d, prev, x, p, num, r, i;
+  local els, max, cum, d, prev, x, p, num, r, i;
   if not IsDenseList(comb) or Length(comb) <> enum!.k then
     return fail;
   fi;
   els := enum!.els;
   max := enum!.max;
-  nr := enum!.nr;
+  cum := enum!.cum;
   d := 0*max;
   prev := 1;
   for x in comb do
@@ -302,14 +302,14 @@ BindGlobal("NumberElement_Combinations_mset", function(enum, comb)
   num := 1;
   r := enum!.k;
   for i in [1..Length(els)] do
-    num := num + Sum([d[i]+1 .. Minimum(max[i], r)], a -> nr[i+1][r-a+1]);
+    num := num + cum[i+1][r-d[i]+1] - cum[i+1][r-Minimum(max[i], r)+1];
     r := r-d[i];
   od;
   return num;
 end);
 
 BindGlobal("EnumeratorOfCombinations_k", function(mset, k)
-  local els, c, max, l, nr, i, enum;
+  local els, c, max, l, cum, i, r, enum;
   if k > Length(mset) then
     return Immutable([]);
   fi;
@@ -331,11 +331,14 @@ BindGlobal("EnumeratorOfCombinations_k", function(mset, k)
     c := Collected(mset);
     max := List(c, a -> a[2]);
     l := Length(els);
-    nr := [];
-    nr[l+1] := Concatenation([1], ListWithIdenticalEntries(k, 0));
+    cum := [];
+    cum[l+1] := Concatenation([0], ListWithIdenticalEntries(k+1, 1));
     for i in [l, l-1 .. 1] do
-      nr[i] := List([0..k], r -> Sum([0..Minimum(max[i], r)],
-                                     a -> nr[i+1][r-a+1]));
+      cum[i] := [0];
+      for r in [0..k] do
+        cum[i][r+2] := cum[i][r+1] + cum[i+1][r+2]
+                       - cum[i+1][r-Minimum(max[i], r)+1];
+      od;
     od;
     enum := EnumeratorByFunctions(CollectionsFamily(FamilyObj(els)), rec(
               ElementNumber := ElementNumber_Combinations_mset,
@@ -349,9 +352,9 @@ BindGlobal("EnumeratorOfCombinations_k", function(mset, k)
               end,
               els := els,
               max := max,
-              nr := nr,
+              cum := cum,
               k := k,
-              size := nr[1][k+1]));
+              size := cum[1][k+2] - cum[1][k+1]));
   fi;
   SetIsSSortedList(enum, true);
   if IsRange(els) or ForAll(els, IsSmallIntRep) then
