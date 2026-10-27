@@ -31,6 +31,7 @@
 #include "lists.h"
 #include "modules.h"
 #include "plist.h"
+#include "range.h"
 #include "sysfiles.h"
 #include "sysopt.h"    // for SyInitializing
 
@@ -244,6 +245,102 @@ static Obj FuncIS_EQUAL_SET(Obj self, Obj list1, Obj list2)
 
 /****************************************************************************
 **
+*F  IsSubsetPlainSet( <set1>, <set2> ) . . . . subset test for two plain sets
+**
+**  Each element of <set2> is found in <set1> by galloping: starting at the
+**  position <i1> after the previous match, probe the entries of <set1> at
+**  i1, i1+1, i1+3, i1+7, ... until one is not smaller than the element,
+**  then binary-search between the last two probes. This needs
+**  O(len2 * log(len1/len2)) comparisons, and one per entry for equal sets.
+*/
+static BOOL IsSubsetPlainSet(Obj set1, Obj set2)
+{
+    Int len1 = LEN_PLIST(set1);
+    Int len2 = LEN_PLIST(set2);
+    Int i1 = 1;
+    Int i2, lo, hi, step;
+    Obj e1, e2;
+
+    GAP_ASSERT(IsPlainSet(set1));
+    GAP_ASSERT(IsPlainSet(set2));
+
+    for (i2 = 1; i2 <= len2; i2++, i1++) {
+        if (len1 - i1 < len2 - i2)
+            return FALSE;
+
+        e1 = ELM_PLIST(set1, i1);
+        e2 = ELM_PLIST(set2, i2);
+        if (EQ(e1, e2))
+            continue;
+        if (!LT(e1, e2))
+            return FALSE;
+
+        // gallop until set1[hi] >= e2 or hi > len1
+        lo = i1;
+        step = 1;
+        hi = lo + step;
+        while (hi <= len1 && LT(ELM_PLIST(set1, hi), e2)) {
+            lo = hi;
+            step *= 2;
+            hi = lo + step;
+        }
+        if (hi > len1)
+            hi = len1 + 1;
+
+        // binary search, keeping set1[lo] < e2 <= set1[hi], where
+        // set1[len1 + 1] counts as larger than everything
+        while (hi - lo > 1) {
+            Int mid = lo + (hi - lo) / 2;
+            if (LT(ELM_PLIST(set1, mid), e2))
+                lo = mid;
+            else
+                hi = mid;
+        }
+
+        if (hi > len1 || !EQ(ELM_PLIST(set1, hi), e2))
+            return FALSE;
+        i1 = hi;
+    }
+
+    return TRUE;
+}
+
+
+/****************************************************************************
+**
+*F  IsSubsetRange( <range>, <list> ) . . . . . . subset test for a range
+**
+**  Membership in a range is arithmetic, so <range> is not copied.
+*/
+static BOOL IsSubsetRange(Obj range, Obj list)
+{
+    Int len, low, inc, i;
+    Obj elm;
+
+    // a range <list> lies in <range> iff both its ends do and its step is a
+    // multiple of that of <range>
+    if (IS_RANGE(list)) {
+        len = GET_LEN_RANGE(list);
+        low = GET_LOW_RANGE(list);
+        inc = GET_INC_RANGE(list);
+        return PosRange(range, INTOBJ_INT(low), INTOBJ_INT(0)) != Fail &&
+               PosRange(range, INTOBJ_INT(low + (len - 1) * inc),
+                        INTOBJ_INT(0)) != Fail &&
+               inc % GET_INC_RANGE(range) == 0;
+    }
+
+    len = LEN_LIST(list);
+    for (i = 1; i <= len; i++) {
+        elm = ELM0_LIST(list, i);
+        if (elm && PosRange(range, elm, INTOBJ_INT(0)) == Fail)
+            return FALSE;
+    }
+    return TRUE;
+}
+
+
+/****************************************************************************
+**
 *F  FuncIS_SUBSET_SET(<self>,<s1>,<s2>) test if a set is a subset of another
 **
 **  'FuncIS_SUBSET_SET' implements the internal function 'IsSubsetSet'.
@@ -257,43 +354,19 @@ static Obj FuncIS_EQUAL_SET(Obj self, Obj list1, Obj list2)
 */
 static Obj FuncIS_SUBSET_SET(Obj self, Obj set1, Obj set2)
 {
-    UInt                len1;           // length of  the left  set
-    UInt                len2;           // length of  the right set
-    UInt                i1;             // index into the left  set
-    UInt                i2;             // index into the right set
-    Obj                 e1;             // element of left  set
-    Obj                 e2;             // element of right set
-
     RequireSmallList(SELF_NAME, set1);
     RequireSmallList(SELF_NAME, set2);
+
+    if (IS_RANGE(set1))
+        return IsSubsetRange(set1, set2) ? True : False;
+
     if (!IsPlainSet(set1)) set1 = SetList(set1);
+    // a range has no duplicates, so a longer one cannot be a subset
+    if (IS_RANGE(set2) && GET_LEN_RANGE(set2) > LEN_PLIST(set1))
+        return False;
     if (!IsPlainSet(set2)) set2 = SetList(set2);
 
-    // get the logical lengths and get the pointer
-    len1 = LEN_PLIST(set1);
-    len2 = LEN_PLIST(set2);
-    i1 = 1;
-    i2 = 1;
-
-    // now compare the two sets
-    while (i1 <= len1 && i2 <= len2 && len2 - i2 <= len1 - i1) {
-        e1 = ELM_PLIST(set1, i1);
-        e2 = ELM_PLIST(set2, i2);
-        if (EQ(e1, e2)) {
-            i1++;
-            i2++;
-        }
-        else if (LT(e1, e2)) {
-            i1++;
-        }
-        else {
-            break;
-        }
-    }
-
-
-    // return 'true' if every element of <set2> appeared in <set1>
-    return ((i2 == len2 + 1) ? True : False);
+    return IsSubsetPlainSet(set1, set2) ? True : False;
 }
 
 
