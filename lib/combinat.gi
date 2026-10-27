@@ -309,13 +309,31 @@ BindGlobal("NumberElement_Combinations_mset", function(enum, comb)
 end);
 
 BindGlobal("EnumeratorOfCombinations_k", function(mset, k)
-  local els, c, max, l, cum, i, r, enum;
+  local els, fams, fam, c, max, l, cum, i, r, enum;
   if k > Length(mset) then
     return Immutable([]);
   fi;
   els := Set(mset);
+  # = needs the family of Combinations( mset, k ). GAP puts a list into
+  # CollectionsFamily(F) if all its entries lie in F, else into
+  # ListsFamily, which also holds [ ]. If mset mixes families and none of
+  # them has k entries, every combination mixes families; otherwise some
+  # combinations lie in one family and others do not.
+  if k = 0 then
+    fam := CollectionsFamily(ListsFamily);
+  elif IsHomogeneousList(els) then
+    fam := CollectionsFamily(FamilyObj(els));
+  else
+    fams := List(mset, FamilyObj);
+    if ForAll(DuplicateFreeList(fams),
+              f -> Number(fams, g -> IsIdenticalObj(f, g)) < k) then
+      fam := CollectionsFamily(ListsFamily);
+    else
+      fam := ListsFamily;
+    fi;
+  fi;
   if Length(els) = Length(mset) then
-    enum := EnumeratorByFunctions(CollectionsFamily(FamilyObj(els)), rec(
+    enum := EnumeratorByFunctions(fam, rec(
               ElementNumber := ElementNumber_Combinations_set,
               NumberElement := NumberElement_Combinations_set,
               Length := enum -> enum!.size,
@@ -340,7 +358,7 @@ BindGlobal("EnumeratorOfCombinations_k", function(mset, k)
                        - cum[i+1][r-Minimum(max[i], r)+1];
       od;
     od;
-    enum := EnumeratorByFunctions(CollectionsFamily(FamilyObj(els)), rec(
+    enum := EnumeratorByFunctions(fam, rec(
               ElementNumber := ElementNumber_Combinations_mset,
               NumberElement := NumberElement_Combinations_mset,
               Length := enum -> enum!.size,

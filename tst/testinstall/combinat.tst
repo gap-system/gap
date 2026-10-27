@@ -131,13 +131,14 @@ gap> for n in [ 0 .. 10 ] do
 >      fi;
 >    od;
 gap> for mset in [ [], [ 1 .. 7 ], [ 5, 3, 1 ], [ 1, 1, 2, 3, 3, 3, 4 ],
->                  "abracadabra", [ (1,2), (), (1,2), (1,2,3) ] ] do
+>                  "abracadabra", [ (1,2), (), (1,2), (1,2,3) ],
+>                  [ 1, 'a' ], [ 1, 'a', 'a' ], [ 1, 2, 'a', 'b', 'b' ] ] do
 >      for k in [ 0 .. Length( mset ) + 1 ] do
 >        comb1:= Set( Combinations( mset, k ) );
 >        enum:= EnumeratorOfCombinations( mset, k );
 >        if not ( HasIsSSortedList( enum ) and IsSSortedList( enum )
 >                 and Length( enum ) = Length( comb1 )
->                 and AsList( enum ) = comb1
+>                 and AsList( enum ) = comb1 and enum = comb1
 >                 and List( comb1, c -> Position( enum, c ) )
 >                     = [ 1 .. Length( comb1 ) ] ) then
 >          Error( "wrong enumerator for ", mset, " and ", k );
