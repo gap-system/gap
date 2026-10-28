@@ -203,17 +203,27 @@ void SySetGapRootPath(const Char * string)
     // TODO; instead of iterating over all entries each time, just
     // do this for the new entries
     char * userhome = getenv("HOME");
-    if (!userhome || !*userhome)
-        return;
-    const UInt userhomelen = strlen(userhome);
+    if (userhome && *userhome) {
+        const UInt userhomelen = strlen(userhome);
+        for (i = 0; i < MAX_GAP_DIRS && SyGapRootPaths[i][0]; i++) {
+            const UInt pathlen = strlen(SyGapRootPaths[i]);
+            if (SyGapRootPaths[i][0] == '~' &&
+                userhomelen + pathlen < sizeof(SyGapRootPaths[i])) {
+                SyMemmove(SyGapRootPaths[i] + userhomelen,
+                          // don't copy the ~ but the trailing '\0'
+                          SyGapRootPaths[i] + 1, pathlen);
+                memcpy(SyGapRootPaths[i], userhome, userhomelen);
+            }
+        }
+    }
+
+    // make all paths absolute; paths that do not exist are left as is
     for (i = 0; i < MAX_GAP_DIRS && SyGapRootPaths[i][0]; i++) {
-        const UInt pathlen = strlen(SyGapRootPaths[i]);
-        if (SyGapRootPaths[i][0] == '~' &&
-            userhomelen + pathlen < sizeof(SyGapRootPaths[i])) {
-            SyMemmove(SyGapRootPaths[i] + userhomelen,
-                      // don't copy the ~ but the trailing '\0'
-                      SyGapRootPaths[i] + 1, pathlen);
-            memcpy(SyGapRootPaths[i], userhome, userhomelen);
+        char buf[GAP_PATH_MAX];
+        if (SyRealpath(SyGapRootPaths[i], buf)) {
+            strxcpy(SyGapRootPaths[i], buf, sizeof(SyGapRootPaths[i]));
+            if (SyGapRootPaths[i][strlen(SyGapRootPaths[i]) - 1] != '/')
+                strxcat(SyGapRootPaths[i], "/", sizeof(SyGapRootPaths[i]));
         }
     }
 }
