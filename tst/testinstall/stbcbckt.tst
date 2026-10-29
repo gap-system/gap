@@ -82,5 +82,14 @@ gap> r := ConjugatorPermGroup(SymmetricGroup(26), G, H);;
 gap> G^r = H;
 true
 
+# transitive subgroups of a symmetric group are left to the backtrack
+gap> Size(Normalizer(SymmetricGroup(26), G)) = Size(G);
+true
+gap> IsConjugate(SymmetricGroup(26), G, H);
+true
+gap> r := RepresentativeAction(SymmetricGroup(26), G, H);;
+gap> G^r = H;
+true
+
 #
 gap> STOP_TEST("stbcbckt.tst");
