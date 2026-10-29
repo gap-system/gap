@@ -486,7 +486,7 @@ gap> m := [v,v,v,v];; ConvertToMatrixRep(m,GF(3));; m;
 All compressed matrices over GF(2) are viewed as
 <C>&lt;a <A>n</A>x<A>m</A> matrix over GF2></C>,
 while over fields GF(q) for q between 3 and 256, matrices
-with 25 or more entries are viewed in this way, and smaller ones as
+with more than 25 entries are viewed in this way, and smaller ones as
 lists of lists.
 <P/>
 Matrices can be converted to this special representation via
@@ -541,7 +541,7 @@ if all arguments are compressed matrices written over the same field and
 the result is a matrix then also the result is a compressed matrix
 written over this field.
 <P/>
-There are also two operations that are only available for matrices
+The following operations are mainly intended for matrices
 written over finite fields.
 
 <#Include Label="ImmutableMatrix">
