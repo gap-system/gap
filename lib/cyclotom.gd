@@ -667,7 +667,7 @@ DeclareGlobalFunction( "NK" );
 ##    <Item><C>4qN&amp;3&amp;5&amp;7-3&amp;4</C></Item>
 ##    <Item>means</Item>
 ##    <Item><M>4 (q_N + q_N^{{*3}} + q_N^{{*5}} + q_N^{{*7}})
-##    - 3 q_N^{{*11}}</M></Item>
+##    - 3 q_N^{{*4}}</M></Item>
 ##  </Row>
 ##  <Row>
 ##    <Item><C>4qN*3&amp;5+&amp;7</C></Item>
