@@ -97,6 +97,8 @@ gap> G := Group( gens );;
 gap> H := Group( [ (4,5,6,7,8,9), (5,9)(6,8) ] );;
 gap> imgs := [ (5,9)(6,8), (4,6,8)(5,7,9) ];;
 gap> hom := GroupHomomorphismByImages( G, H, gens, imgs );;
+gap> IsIdenticalObj( G, PreImagesRange( hom ) );
+true
 gap> PreImagesSet( hom, [ (4,6)(7,9) ] );
 [ (2,3), (1,2,4,3), (1,3,4,2), (1,4) ]
 gap> PreImagesSet( hom, [ (4,5,6,7,8,9) ] );
