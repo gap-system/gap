@@ -31,7 +31,7 @@
 ##  <E>mutable</E> &GAP; objects,
 ##  hence these objects are unable to store attribute values.
 ##  <P/>
-##  Basic operations for immutable bases are
+##  Basic operations for mutable bases are
 ##  <Ref Oper="NrBasisVectors"/>, <Ref Oper="IsContainedInSpan"/>,
 ##  <Ref Oper="CloseMutableBasis"/>,
 ##  <Ref Oper="ImmutableBasis"/>,
@@ -158,7 +158,7 @@ DeclareGlobalFunction( "MutableBasisViaNiceMutableBasisMethod3" );
 ##  Note that this operation is <E>not</E> an attribute, as it makes no sense to
 ##  store the value.
 ##  <C>NrBasisVectors</C> is used mainly as an equivalent of <C>Dimension</C> for the
-##  underlying left module in the case of immutable bases.
+##  underlying left module in the case of mutable bases.
 ##  <Example><![CDATA[
 ##  gap> MB:= MutableBasis( Rationals, [ [ 1, 1], [ 2, 2 ] ] );;
 ##  gap> NrBasisVectors( MB );

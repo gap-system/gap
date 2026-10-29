@@ -96,7 +96,7 @@ DeclareOperation( "LeftModuleGeneralMappingByImages",
 ##  exist (i.e., if mapping the generators describes only a multi-valued
 ##  mapping) then <K>fail</K> is returned.
 ##  For creating a possibly multi-valued mapping from <A>V</A> to <A>W</A>
-##  that respects addition, multiplication, and scalar multiplication,
+##  that respects addition and scalar multiplication,
 ##  <Ref Oper="LeftModuleGeneralMappingByImages"/> can be used.
 ##  <P/>
 ##  <Ref Oper="LeftModuleHomomorphismByImagesNC"/> does the same as
