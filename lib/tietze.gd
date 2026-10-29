@@ -207,19 +207,13 @@ DeclareGlobalFunction("AddRelator");
 ##
 ##  <Description>
 ##  assumes that <A>P</A> is a subgroup presentation provided by the Reduced
-##  Reidemeister-Schreier or by the Modified Todd-Coxeter method (see
+##  Reidemeister-Schreier method (see
 ##  <Ref Func="PresentationSubgroupRrs"
 ##  Label="for two groups (and a string)"/>,
-##  <Ref Func="PresentationNormalClosureRrs"/>,
-##  <Ref Func="PresentationSubgroupMtc"/>).
+##  <Ref Func="PresentationNormalClosureRrs"/>).
 ##  It eliminates the secondary generators of <A>P</A>
 ##  (see Section <Ref Sect="Subgroup Presentations"/>) by applying the
 ##  so called <Q>decoding tree</Q> procedure.
-##  <P/>
-##  <Ref Func="DecodeTree"/> is called automatically by the command
-##  <Ref Func="PresentationSubgroupMtc"/> where it
-##  reduces <A>P</A> to a presentation on the given (primary) subgroup
-##  generators.
 ##  <Index>secondary subgroup generators</Index>
 ##  <P/>
 ##  In order to explain the effect of this command we need to insert a few
@@ -290,8 +284,7 @@ DeclareGlobalFunction("AddRelator");
 ##  i.e., as soon as all secondary generators have been eliminated,
 ##  it provides a presentation <M>P = P_1</M>,
 ##  say, which defines a group isomorphic to <A>H</A>. In fact, it is this
-##  presentation which is returned by the command <Ref Func="DecodeTree"/>
-##  and hence by the command <Ref Func="PresentationSubgroupMtc"/>.
+##  presentation which is returned by the command <Ref Func="DecodeTree"/>.
 ##  <P/>
 ##  If, in the other case, the presentation <M>P_0</M> has been constructed
 ##  by the Reduced Reidemeister-Schreier algorithm,
@@ -729,9 +722,9 @@ DeclareGlobalFunction("TzCheckRecord");
 ##  and the length of the substituting word is minimal,
 ##  and then it eliminates this generator from the presentation,
 ##  provided that the resulting total length of the relators does not exceed
-##  the associated Tietze option parameter <C>spaceLimit</C>
+##  the associated Tietze option parameter <C>lengthLimit</C>
 ##  (see <Ref Sect="Tietze Options"/>). The default value of that parameter
-##  is <Ref Var="infinity"/>, but you may alter it appropriately.
+##  is <M>2^{31}-1</M>, but you may alter it appropriately.
 ##  <P/>
 ##  If a generator <A>gen</A> has been specified,
 ##  <Ref Func="TzEliminate" Label="for a presentation (and a generator)"/>
@@ -1020,8 +1013,8 @@ SimplifyPresentation := TzGo;
 ##  group of order 40320 given by a presentation due to B.&nbsp;H. Neumann.
 ##  First we construct a presentation of the subgroup, and then we apply to
 ##  it the command <Ref Func="TzGoGo"/> for different
-##  values of the parameter <C>eliminationsLimit</C>
-##  (including the default value 100). In fact, we also alter the
+##  values of the parameter <C>eliminationsLimit</C>.
+##  In fact, we also alter the
 ##  <C>printLevel</C> parameter, but this is only done in order to suppress
 ##  most of the output.  In all cases the resulting presentations cannot be
 ##  improved any more by applying the command <Ref Func="TzGoGo"/> again,
@@ -1504,7 +1497,7 @@ DeclareGlobalFunction("TzPrintLengths");
 ##    The Tietze transformation commands will never eliminate  a
 ##    generator of a presentation <A>P</A>, if they cannot exclude the
 ##    possibility that the resulting total length of the relators
-##    exceeds the maximal &GAP; list length of <M>2^{31}-1</M> or the value
+##    exceeds <M>2^{31}-1</M> or the value
 ##    of the option <C>lengthLimit</C>.
 ##    The default value of <C>lengthLimit</C> is <M>2^{31}-1</M>.
 ##  </Item>

@@ -331,9 +331,9 @@ DeclareGlobalFunction("LargerQuotientBySubgroupAbelianization");
 ##
 #F  ProcessEpimorphismToNewFpGroup( <hom> )
 ##
-##  <#GAPDoc Label="ProcessHomomorphismToNewFpGroup">
+##  <#GAPDoc Label="ProcessEpimorphismToNewFpGroup">
 ##  <ManSection>
-##  <Func Name="LargerQuotientBySubgroupAbelianization" Arg='hom'/>
+##  <Func Name="ProcessEpimorphismToNewFpGroup" Arg='hom'/>
 ##
 ##  <Description>
 ##  Let <A>hom</A> be a homomorphism from a group <A>G</A> to a newly created

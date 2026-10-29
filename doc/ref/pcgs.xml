@@ -114,7 +114,8 @@ In a number of situations it might be useful to supply a pcgs to a group.
 Note that the elementary operations for such a pcgs might be rather
 inefficient, since &GAP; has to use generic methods in this case.
 It might be helpful to supply the relative orders of the self-defined
-pcgs as well by <C>SetRelativeOrder</C>.
+pcgs as well by <C>SetRelativeOrders</C>
+(see&nbsp;<Ref Attr="RelativeOrders"/>).
 See also&nbsp;<Ref Prop="IsPrimeOrdersPcgs"/>.
 
 <#Include Label="PcgsByPcSequence">
