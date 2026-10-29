@@ -100,8 +100,8 @@ EXPORT_INLINE UInt1 CHAR_SINT(Int n)
 */
 EXPORT_INLINE BOOL IS_STRING_REP(Obj list)
 {
-    return (T_STRING <= TNUM_OBJ(list) &&
-            TNUM_OBJ(list) <= T_STRING_SSORT + IMMUTABLE);
+    UInt tnum = TNUM_OBJ(list);
+    return (T_STRING <= tnum && tnum <= T_STRING_SSORT);
 }
 
 
