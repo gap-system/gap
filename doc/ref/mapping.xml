@@ -202,8 +202,8 @@ described here and should not be confused.)
 
 Also see Sections&nbsp;<Ref Sect="Mappings that Respect Multiplication"/>,
 <Ref Sect="Mappings that Respect Addition"/>,
-and <Ref Attr="KernelOfMultiplicativeGeneralMapping"/>,
-<Ref Attr="CoKernelOfMultiplicativeGeneralMapping"/>.
+and <Ref Attr="KernelOfAdditiveGeneralMapping"/>,
+<Ref Attr="CoKernelOfAdditiveGeneralMapping"/>.
 
 <#Include Label="RespectsScalarMultiplication">
 <#Include Label="IsLeftModuleGeneralMapping">

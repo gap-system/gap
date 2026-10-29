@@ -80,7 +80,8 @@
 ##     [LetterRepAssocWord(i[1]),LetterRepAssocWord(i[2])]),
 ##    pairs2check:=CantorList(Length(r)),
 ##    ordering:=wordord,
-##    freefam:=freefam));
+##    freefam:=freefam,
+##    generators:=gens));
 ##  ]]></Log>
 ##  <P/>
 ##  In particular, since we don't use the filter
@@ -461,7 +462,7 @@ DeclareProperty(
 ##
 ##  <Description>
 ##  A rewriting system is reduced if for each rule <M>(l, r)</M>,
-##  <M>l</M> and <M>r</M> are both reduced.
+##  <M>l</M> and <M>r</M> are both reduced with respect to the other rules.
 ##  <P/>
 ##  </Description>
 ##  </ManSection>
