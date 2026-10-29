@@ -92,8 +92,8 @@ such that either <M>v_{k+1}=v_{k}^f</M> or <M>v_{k}=v_{k+1}^f</M> for
 all <M>k</M>.  A <E>cycle</E> of a transformation is defined as a cycle
 (or strongly connected component) of the corresponding functional
 digraph.  More specifically, <C>i</C> belongs to a cycle of <A>f</A> if
-there are <M>i=v_0, v_1, \ldots, v_n=i</M> such that either
-<M>v_{k+1}=v_{k}^f</M> or <M>v_{k}=v_{k+1}^f</M> for all <M>k</M>.
+there are <M>i=v_0, v_1, \ldots, v_n=i</M> with <M>n \geq 1</M> such that
+<M>v_{k+1}=v_{k}^f</M> for all <M>k</M>.
 <P/>
 
 Internally, &GAP; stores a transformation <C>f</C> as a list consisting
@@ -121,8 +121,7 @@ stored using 32-bit integers.
     <Ref Attr="ImageSetOfTransformation"/>,
     <Ref Attr="KernelOfTransformation"/>,
     <Ref Attr="FlatKernelOfTransformation"/>,
-    <Ref Attr="RankOfTransformation"
-      Label="for a transformation and a list"/>,
+    <Ref Attr="RankOfTransformation"/>,
     <Ref Func="DegreeOfTransformation"/>,
     multiplication of two transformations via <K>*</K>, and
     exponentiation with the first argument a positive integer <C>i</C>
@@ -445,7 +444,8 @@ Transformation( [ 4, 4, 4, 4, 4, 4 ] )
   converting other types of objects into transformations.
 
   <ManSection>
-  <Attr Name="AsTransformation" Arg="f[, n]"/>
+  <Attr Name="AsTransformation" Arg="f"/>
+  <Oper Name="AsTransformation" Arg="f, n" Label="with a degree"/>
   <Returns>A transformation.</Returns>
   <Description>
   <C>AsTransformation</C>
@@ -491,7 +491,7 @@ Transformation( [ 4, 4, 4, 4, 4, 4 ] )
       <A>f</A> on the domain of <A>f</A> and maps the points in
       <C>[ 1 .. m ]</C>, which are not in the domain of <A>f</A> to
       <C>n</C>, i.e.  <C>i ^ g = i ^ <A>f</A></C> for all <C>i</C> in the
-      domain of <A>f</A>, <C>i ^ g = n</C> for all <C>i</C> in
+      domain of <A>f</A>, <C>i ^ g = n</C> for all other <C>i</C> in
       <C>[ 1 .. n ]</C>, and <C>i ^ g = i</C> for all <C>i</C> greater
       than <A>n</A>.  <C>AsTransformation( <A>f</A> )</C> returns the
       transformation <C>g</C> defined in the previous sentences. <P/>
@@ -738,7 +738,7 @@ true
     If <A>f</A> is a transformation and <A>n</A> is a positive integer,
     then <C>ComponentTransformationInt</C> returns those elements
     <C>i</C> such that <C><A>n</A> ^ <A>f</A> ^ j = i</C> for some
-    positive integer <C>j</C>, i.e. the elements of the component of
+    non-negative integer <C>j</C>, i.e. the elements of the component of
     <A>f</A> containing <A>n</A> that can be obtained by applying powers
     of <A>f</A> to <A>n</A>.
 <Example><![CDATA[
@@ -787,7 +787,7 @@ gap> PreImagesOfTransformation( f, 100 );
   <ManSection>
     <Func Name="DegreeOfTransformation" Arg="f"/>
     <Attr Name="DegreeOfTransformationCollection" Arg="coll"/>
-    <Returns>A positive integer.</Returns>
+    <Returns>A non-negative integer.</Returns>
     <Description>
       The <E>degree</E> of a transformation <A>f</A> is the largest
       value such that <C>n ^ <A>f</A> &lt;> n</C> or
@@ -839,7 +839,9 @@ gap> ImageListOfTransformation( f, 10 );
 <!-- *************************************************************** -->
 
   <ManSection>
-    <Attr Name="ImageSetOfTransformation" Arg="f[, n]"/>
+    <Attr Name="ImageSetOfTransformation" Arg="f"/>
+    <Oper Name="ImageSetOfTransformation" Arg="f, n"
+      Label="for a transformation and a positive integer"/>
     <Returns>The set of images of the transformation.</Returns>
     <Description>
       Returns the set of points in the list of images of
@@ -861,9 +863,10 @@ gap> ImageSetOfTransformation( f, 10 );
 <!-- *************************************************************** -->
 
   <ManSection>
-    <Attr Name="RankOfTransformation" Arg="f[, n]"
+    <Attr Name="RankOfTransformation" Arg="f"/>
+    <Oper Name="RankOfTransformation" Arg="f, n"
       Label="for a transformation and a positive integer"/>
-    <Attr Name="RankOfTransformation" Arg="f[, list]"
+    <Oper Name="RankOfTransformation" Arg="f, list"
       Label="for a transformation and a list"/>
     <Returns>The rank of a transformation.</Returns>
     <Description>
@@ -926,7 +929,7 @@ gap> MovedPoints( f );
     <Attr Name="NrMovedPoints" Arg="f" Label="for a transformation"/>
     <Attr Name="NrMovedPoints" Arg="coll"
       Label="for a transformation coll"/>
-    <Returns>A positive integer.</Returns>
+    <Returns>A non-negative integer.</Returns>
     <Description>
       When the argument is a transformation,<C>NrMovedPoints</C> returns
       the number of positive integers <C>i</C> such that
@@ -986,7 +989,7 @@ gap> SmallestMovedPoint( f );
     Label="for a transformation"/>
   <Meth Name="LargestMovedPoint" Arg="coll"
     Label="for a transformation coll"/>
-  <Returns>A positive integer.</Returns>
+  <Returns>A non-negative integer.</Returns>
   <Description>
     <C>LargestMovedPoint</C> returns the largest positive integer
     <C>i</C> such that <C>i ^ <A>f</A> &lt;> i</C> if such an <C>i</C>
@@ -1058,7 +1061,7 @@ gap> SmallestImageOfMovedPoint( f );
     Label="for a transformation"/>
   <Meth Name="LargestImageOfMovedPoint" Arg="coll"
     Label="for a transformation coll"/>
-  <Returns>A positive integer.</Returns>
+  <Returns>A non-negative integer.</Returns>
   <Description>
     <C>LargestImageOfMovedPoint</C> returns the largest positive integer
     <C>i ^ <A>f</A></C> such that <C>i ^ <A>f</A> &lt;> i</C> if such an
@@ -1089,7 +1092,9 @@ gap> LargestImageOfMovedPoint( f );
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
   <ManSection>
-    <Attr Name="FlatKernelOfTransformation" Arg="f[, n]"/>
+    <Attr Name="FlatKernelOfTransformation" Arg="f"/>
+    <Oper Name="FlatKernelOfTransformation" Arg="f, n"
+      Label="for a transformation and a positive integer"/>
     <Returns>The flat kernel of a transformation.</Returns>
     <Description>
       If the kernel classes of the transformation <A>f</A> on
@@ -1113,7 +1118,11 @@ gap> FlatKernelOfTransformation( f );
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
   <ManSection>
-    <Attr Name="KernelOfTransformation" Arg="f[, n, bool]"/>
+    <Attr Name="KernelOfTransformation" Arg="f"/>
+    <Oper Name="KernelOfTransformation" Arg="f, n[, bool]"
+      Label="for a transformation and a positive integer"/>
+    <Oper Name="KernelOfTransformation" Arg="f, bool"
+      Label="for a transformation and a boolean"/>
     <Returns>The kernel of a transformation.</Returns>
     <Description>
       When the arguments are a transformation <A>f</A>, a positive
@@ -1261,7 +1270,7 @@ gap> ComponentsOfTransformation( f );
 
 <ManSection>
   <Attr Name="NrComponentsOfTransformation" Arg="f" />
-  <Returns>A positive integer.</Returns>
+  <Returns>A non-negative integer.</Returns>
   <Description>
     <C>NrComponentsOfTransformation</C> returns the number of components
     of the transformation <A>f</A> on the range
@@ -1290,8 +1299,8 @@ gap> NrComponentsOfTransformation( f );
     the following sense, of the components of the transformation
     <A>f</A>.  For every <C>i</C> in
     <C>[ 1 .. DegreeOfTransformation( f ) ]</C> there exists a
-    representative <C>j</C> and a positive integer <C>k</C> such that
-    <C>i ^ (<A>f</A> ^ k) = j</C>. The representatives returned by
+    representative <C>j</C> and a non-negative integer <C>k</C> such that
+    <C>j ^ (<A>f</A> ^ k) = i</C>. The representatives returned by
     <C>ComponentRepsOfTransformation</C> are partitioned according to
     the component they belong to.  <C>ComponentRepsOfTransformation</C>
     returns the least number of representatives.
@@ -1312,7 +1321,9 @@ gap> ComponentRepsOfTransformation( f );
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
 <ManSection>
-  <Attr Name="CyclesOfTransformation" Arg="f[, list]" />
+  <Attr Name="CyclesOfTransformation" Arg="f" />
+  <Oper Name="CyclesOfTransformation" Arg="f, list"
+    Label="for a transformation and a list"/>
   <Returns>A list of lists of positive integers.</Returns>
   <Description>
     When the arguments of this function are a transformation <A>f</A>
@@ -1702,10 +1713,13 @@ true
   will return the right regular representation of <A>S</A>.
   <P/>
 
-  As exceptions, if <A>S</A> is a permutation group or a partial perm
-  semigroup, then the elements of <A>S</A> act naturally and faithfully
-  by transformations on the values from <C>1</C> to the largest moved
-  point of <A>S</A>.
+  As exceptions, if <A>S</A> is a permutation group, then the elements of
+  <A>S</A> act naturally and faithfully by transformations on the values
+  from <C>1</C> to the largest moved point of <A>S</A>. If <A>S</A> is a
+  partial perm semigroup, then they act on <C>[ 1 .. n + 1 ]</C>, where
+  <C>n</C> is the maximum of the degree and codegree of <A>S</A>, and
+  <C>n + 1</C> is the image of every point where a partial perm is
+  undefined.
   <P/>
 
   If <A>S</A> is a finitely presented semigroup, then the Todd-Coxeter
