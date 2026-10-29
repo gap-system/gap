@@ -567,8 +567,10 @@ DeclareOperation( "ProductSpace", [ IsFreeLeftModule, IsFreeLeftModule ] );
 ##   Label="for a list of algebras"/>
 ##
 ##  <Description>
-##  is the direct sum of the two algebras <A>A1</A> and <A>A2</A>
-##  respectively of the algebras in the list <A>list</A>.
+##  This is the direct sum of the two algebras <A>A1</A> and <A>A2</A>
+##  or of the algebras in the list <A>list</A>.
+##  In the latter case, <C>DirectSumOfAlgebras( [ A1, A2, ..., An ] )</C>
+##  returns <M>(\ldots((A_1 \oplus A_2) \oplus A_3) \ldots) \oplus A_n</M>.
 ##  <P/>
 ##  If all involved algebras are associative algebras then the result is also
 ##  known to be associative.
@@ -582,15 +584,72 @@ DeclareOperation( "ProductSpace", [ IsFreeLeftModule, IsFreeLeftModule ] );
 ##  algebras or both are associative then the result is again a
 ##  matrix algebra of the appropriate type.
 ##  <Example><![CDATA[
-##  gap> A:= QuaternionAlgebra( Rationals );;
-##  gap> DirectSumOfAlgebras( [A, A, A] );
+##  gap> QA := QuaternionAlgebra( Rationals );;
+##  gap> OA := OctaveAlgebra( Rationals );;
+##  gap> D := DirectSumOfAlgebras( QA, OA );
 ##  <algebra of dimension 12 over Rationals>
+##  gap> D3 := DirectSumOfAlgebras( [ QA, OA, QA ] );
+##  <algebra of dimension 16 over Rationals>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "DirectSumOfAlgebras", [ IsDenseList ] );
+
+
+#############################################################################
+##
+#O  Embedding( <A>, <i> )
+##
+##  <#GAPDoc Label="Embedding:algebras">
+##  <ManSection>
+##  <Oper Name="Embedding" Arg='A, i'
+##    Label="for a direct sum of algebras and a positive integer"/>
+##
+##  <Description>
+##  If algebra <A>A</A> is the direct sum of algebras <M>[A_1,\ldots,A_k]</M>
+##  then <C>Embedding(A,i)</C> for <M>1 \leq i \leq k</M> returns an algebra
+##  homomorphism mapping <M>A_i</M> into <A>A</A>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> basQ := BasisVectors( Basis( QA ) );
+##  [ e, i, j, k ]
+##  gap> emb1 := Embedding( D, 1 );
+##  CanonicalBasis( QA ) -> [ v.1, v.2, v.3, v.4 ]
+##  gap> ImageElm, emb1, ( basQ[2] * basQ[3] );
+##  v.4
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+
+
+#############################################################################
+##
+#O  Projection( <A>, <i> )
+##
+##  <#GAPDoc Label="Projection:algebras">
+##  <ManSection>
+##  <Oper Name="Projection" Arg='A, i'
+##    Label="for a direct sum of algebras and a positive integer"/>
+##
+##  <Description>
+##  If algebra <A>A</A> is the direct sum of algebras <M>[A_1,\ldots,A_k]</M>
+##  then <C>Projection(A,i)</C> for <M>1 \leq i \leq k</M> returns an algebra
+##  homomorphism mapping <A>A</A> onto <M>A_i</M>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> basD := BasisVectors( Basis( D ) );;
+##  gap> pro2 := Projection( D, 2 );
+##  CanonicalBasis( <algebra of dimension 12 over Rationals> ) -> 
+##  [ 0*s1, 0*s1, 0*s1, 0*s1, s1, t1, s2, t2, s3, t3, s4, t4 ]
+##  gap> ImageElm( pro2, 5*basD[8] + 6*basD[9] );
+##  (5)*t2+(6)*s3
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 
 
 #############################################################################
