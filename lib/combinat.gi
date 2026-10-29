@@ -314,11 +314,14 @@ BindGlobal("EnumeratorOfCombinations_k", function(mset, k)
     return Immutable([]);
   fi;
   els := Set(mset);
-  # = needs the family of Combinations( mset, k ). GAP puts a list into
-  # CollectionsFamily(F) if all its entries lie in F, else into
+  # List equality methods require both lists to lie in the same family, so
+  # the enumerator needs the family of Combinations( mset, k ). GAP puts a
+  # list into CollectionsFamily(F) if all its entries lie in F, else into
   # ListsFamily, which also holds [ ]. If mset mixes families and none of
-  # them has k entries, every combination mixes families; otherwise some
-  # combinations lie in one family and others do not.
+  # them has k entries, every combination lies in ListsFamily, hence
+  # Combinations( mset, k ) lies in CollectionsFamily(ListsFamily);
+  # otherwise the combinations lie in two or more families, hence it lies
+  # in ListsFamily.
   if k = 0 then
     fam := CollectionsFamily(ListsFamily);
   elif IsHomogeneousList(els) then
