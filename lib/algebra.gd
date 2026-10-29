@@ -584,14 +584,12 @@ DeclareOperation( "ProductSpace", [ IsFreeLeftModule, IsFreeLeftModule ] );
 ##  algebras or both are associative then the result is again a
 ##  matrix algebra of the appropriate type.
 ##  <Example><![CDATA[
-##  gap> c3 := Group( (1,2,3) );;
-##  gap> A3 := GroupRing( Rationals, c3 );;
-##  gap> c5 := Group( (5,6,7,8,9) );;
-##  gap> A5 := GroupRing( Rationals, c5 );;
-##  gap> A35 := DirectSumOfAlgebras( A3, A5 );
-##  <algebra of dimension 8 over Rationals>
-##  gap> A353 := DirectSumOfAlgebras( [ A3, A5, A3 ] );
-##  <algebra of dimension 11 over Rationals>
+##  gap> QA := QuaternionAlgebra( Rationals );;
+##  gap> OA := OctaveAlgebra( Rationals );;
+##  gap> D := DirectSumOfAlgebras( QA, OA );
+##  <algebra of dimension 12 over Rationals>
+##  gap> D3 := DirectSumOfAlgebras( [ QA, OA, QA ] );
+##  <algebra of dimension 16 over Rationals>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -615,10 +613,12 @@ DeclareOperation( "DirectSumOfAlgebras", [ IsDenseList ] );
 ##  homomorphism mapping <M>A_i</M> into <A>A</A>.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> emb1 := Embedding( A35, 1 );;
-##  gap> ec3 := Embedding( c3, A3 );;
-##  gap> ( (1,3,2)^ec3 )^emb1;
-##  v.3
+##  gap> basQ := BasisVectors( Basis( QA ) );
+##  [ e, i, j, k ]
+##  gap> emb1 := Embedding( D, 1 );
+##  CanonicalBasis( QA ) -> [ v.1, v.2, v.3, v.4 ]
+##  gap> ImageElm, emb1, ( basQ[2] * basQ[3] );
+##  v.4
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -640,9 +640,12 @@ DeclareOperation( "DirectSumOfAlgebras", [ IsDenseList ] );
 ##  homomorphism mapping <A>A</A> onto <M>A_i</M>.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> pro2 := Projection( A35, 2 );;
-##  gap> ImageElm( pro2, Basis( A35 )[5] );
-##  (1)*(5,6,7,8,9)
+##  gap> basD := BasisVectors( Basis( D ) );;
+##  gap> pro2 := Projection( D, 2 );
+##  CanonicalBasis( <algebra of dimension 12 over Rationals> ) -> 
+##  [ 0*s1, 0*s1, 0*s1, 0*s1, s1, t1, s2, t2, s3, t3, s4, t4 ]
+##  gap> ImageElm( pro2, 5*basD[8] + 6*basD[9] );
+##  (5)*t2+(6)*s3
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

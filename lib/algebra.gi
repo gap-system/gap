@@ -3007,6 +3007,45 @@ InstallMethod( GeneratorsOfLeftOperatorRingWithOne,
 
 #############################################################################
 ##
+#M  DirectSumOfGroupAlgebras( <A1>, <A2> ) . . . . . . for two group algebras
+##
+##  Construct the group ring of the direct product
+##
+BindGlobal( "DirectSumOfGroupAlgebras", function( A1, A2 )
+
+    local dom, G1, gen1, n1, e1, G2, gen2, n2, e2, G, RG;
+
+    if not IsGroupRing( A1 ) and IsGroupRing( A2 ) then
+        Error( "A1,A2 are not group rings" );
+    fi;
+
+    dom := LeftActingDomain( A1 );
+    if ( dom <> LeftActingDomain( A2 ) ) then
+      Error( "<A1> and <A2> must be written over the same field" );
+    fi;
+
+    G1 := UnderlyingMagma( A1 );
+    gen1 := GeneratorsOfAlgebra( A1 );
+    n1 := Length( gen1 );
+    e1 := Embedding( G1, A1 );
+    G2 := UnderlyingMagma( A2 );
+    gen2 := GeneratorsOfAlgebra( A2 );
+    n2 := Length( gen2 );
+    e2 := Embedding( G2, A2 );
+    G := DirectProduct( G1, G2 );
+    RG := GroupRing( dom, G );
+
+    SetDirectSumInfo( RG, rec( algebras := [A1,A2],
+                               first := [0,n1,n1+n2-1],
+                               type := "group rings",
+                               embeddings := [],
+                               projections := [] ) );
+    return RG;
+    end );
+
+
+#############################################################################
+##
 #M  DirectSumOfAlgebras( <A1>, <A2> )
 ##
 ##  Construct a s.c. algebra.
@@ -3034,6 +3073,10 @@ InstallOtherMethod( DirectSumOfAlgebras,
 
     if LeftActingDomain( A1 ) <> LeftActingDomain( A2 ) then
       Error( "<A1> and <A2> must be written over the same field" );
+    fi;
+    if ( HasIsGroupRing( A1 ) and IsGroupRing( A1 ) ) and
+       ( HasIsGroupRing( A2 ) and IsGroupRing( A2 ) ) then
+      return DirectSumOfGroupAlgebras( A1, A2 );
     fi;
 
     n1:= Dimension( A1 );
@@ -3230,7 +3273,7 @@ InstallMethod( DirectSumOfAlgebras,
 InstallMethod( Embedding, "algebra direct sum and integer",
     [ IsAlgebra and HasDirectSumInfo, IsPosInt ],
     function( D, i )
-    local info, type, first, A, gens, imgs, map;
+    local info, type, first, A, gensA, imgs, gensD, map;
 
     # check
     info := DirectSumInfo( D );
@@ -3245,15 +3288,17 @@ InstallMethod( Embedding, "algebra direct sum and integer",
     # compute embedding
     A := info.algebras[i];
     if type = "basis vectors" then
-        gens := Basis( A );
+        gensA := Basis( A );
         imgs := BasisVectors( Basis( D ) ){[first[i]+1 .. first[i+1]]};
     elif type = "generators" then
-        gens := GeneratorsOfAlgebra( A );
+        gensA := GeneratorsOfAlgebra( A );
         imgs := GeneratorsOfAlgebra( D ){[first[i]+1 .. first[i+1]]};
+    elif type = "group rings" then
+        Error( "working on this, so no answer yet" );
     else
         Error( "unknown type" );
     fi;
-    map := AlgebraHomomorphismByImagesNC( A, D, gens, imgs );
+    map := AlgebraHomomorphismByImagesNC( A, D, gensA, imgs );
     SetIsInjective( map, true );
 
     # store information
@@ -3287,17 +3332,25 @@ InstallMethod( Projection, "algebra direct sum and integer",
     if type = "basis vectors" then
         genA := BasisVectors( Basis( A ) );
         genD := Basis( D );
-    elif type = "generators" then
+    elif ( type = "generators" ) or ( type = "group rings" ) then
         genA := GeneratorsOfAlgebra( A );
         genD := GeneratorsOfAlgebra( D );
     else
         Error( "unknown type" );
     fi;
     imgs := ListWithIdenticalEntries( first[len], zA );
-    j := first[i];
-    for k in [j+1..first[i+1]] do
-        imgs[k] := genA[k-j];
-    od;
+    if ( type = "group rings" ) and ( i > 1 ) then
+        imgs[1] := genA[1];
+        j := first[i];
+        for k in [j+1..first[i+1]] do
+            imgs[k] := genA[k-j+1];
+        od;
+    else
+        j := first[i];
+        for k in [j+1..first[i+1]] do
+            imgs[k] := genA[k-j];
+        od;
+    fi;
     map := AlgebraHomomorphismByImagesNC( D, A, genD, imgs );
 
     # store information
