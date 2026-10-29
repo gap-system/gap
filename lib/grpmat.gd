@@ -116,7 +116,7 @@ DeclareGlobalFunction("ProjectiveActionHomomorphismMatrixGroup");
 ##
 ##  <#GAPDoc Label="DefaultFieldOfMatrixGroup">
 ##  <ManSection>
-##  <Attr Name="DefaultFieldOfMatrixGroup" Arg='mat-grp'/>
+##  <Attr Name="DefaultFieldOfMatrixGroup" Arg='matgrp'/>
 ##
 ##  <Description>
 ##  Is a field containing all the matrix entries. It is not guaranteed to be
@@ -138,7 +138,7 @@ InstallSubsetMaintenance( DefaultFieldOfMatrixGroup,
 ##
 ##  <#GAPDoc Label="DimensionOfMatrixGroup">
 ##  <ManSection>
-##  <Attr Name="DimensionOfMatrixGroup" Arg='mat-grp'/>
+##  <Attr Name="DimensionOfMatrixGroup" Arg='matgrp'/>
 ##
 ##  <Description>
 ##  The dimension of the matrix group.
