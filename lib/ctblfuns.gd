@@ -2353,7 +2353,22 @@ DeclareGlobalFunction( "IrreducibleDifferences" );
 ##  <P/>
 ##  <E>Note</E> that the returned list may contain zero class functions,
 ##  and duplicates are not deleted.
-##  <!-- describe the succession!!-->
+##  For each entry of <A>characters</A> in turn, it contains the
+##  symmetrizations with all irreducibles of the symmetric group,
+##  ordered as <Ref Attr="Irr" Label="for a character table"/> of the given
+##  table.
+##  For an integer <A>n</A>, they are labelled by
+##  <C>Partitions( <A>n</A> )</C>, in this order,
+##  where <C>[ <A>n</A> ]</C> labels the trivial character.
+##  <P/>
+##  If <M>\chi</M> is afforded by a representation <M>\rho</M> of degree
+##  <M>m</M> and <M>\lambda</M> is labelled by a partition with at most
+##  <M>m</M> parts then <M>\chi^{[\lambda]}</M> is afforded by
+##  <M>V_\lambda \circ \rho</M>, where <M>V_\lambda</M> is the irreducible
+##  representation of <M>GL(m)</M> over the complex numbers with this
+##  partition as its highest weight.
+##  For a partition with more than <M>m</M> parts,
+##  <M>\chi^{[\lambda]}</M> is zero.
 ##  <P/>
 ##  For special kinds of symmetrizations,
 ##  see&nbsp;<Ref Func="SymmetricParts"/>, <Ref Func="AntiSymmetricParts"/>,
