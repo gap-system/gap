@@ -121,5 +121,55 @@ true
 gap> ExteriorPower( Sum( Irr( t ) ), 8 )[1] = Binomial( 16, 8 );
 true
 
+# SchurPower agrees with Symmetrizations for partitions,
+# also for reducible and virtual characters
+gap> ForAll( l, c -> ForAll( [ 1 .. 6 ], k ->
+>        Symmetrizations( [ c ], k ) =
+>        List( Partitions( k ), p -> SchurPower( c, p ) ) ) );
+true
+
+#
+gap> chi:= First( Irr( t ), x -> x[1] = 3 );;
+gap> IsCharacter( SchurPower( chi, [ 2, 1 ] ) );
+true
+gap> SchurPower( chi, [ 1, 1, 1, 1 ] );
+VirtualCharacter( CharacterTable( Alt( [ 1 .. 5 ] ) ), [ 0, 0, 0, 0, 0 ] )
+gap> ForAll( [ [ ], [ 0 ], [ 0, 0, 0 ] ],
+>            p -> SchurPower( chi, p ) = TrivialCharacter( t ) );
+true
+gap> ForAll( [ [ 1 ], [ 1, 0, 0 ], [ 1, 0, 0, 0, 0 ] ],
+>            p -> SchurPower( chi, p ) = chi );
+true
+
+# weights with more than a few boxes; degrees by the Weyl dimension formula
+gap> SchurPower( chi, [ 30, 20, 10 ] )[1];
+1331
+gap> SchurPower( chi, [ 200, 100 ] )[1];
+1030301
+
+# negative weights, for a character that is not real
+gap> t:= CharacterTable( CyclicGroup( 3 ) );;
+gap> chi:= Irr( t )[1] + First( Irr( t ), x -> x <> ComplexConjugate( x ) );;
+gap> SchurPower( chi, [ 0, -1 ] ) = ComplexConjugate( chi );
+true
+gap> SchurPower( chi, [ -1, -1 ] ) = ComplexConjugate( DeterminantOfCharacter( chi ) );
+true
+gap> SchurPower( chi, [ 1, -1 ] ) = chi * ComplexConjugate( chi ) - TrivialCharacter( t );
+true
+gap> SchurPower( chi, [ 2, 1 ] ) = chi * DeterminantOfCharacter( chi );
+true
+gap> IsCharacter( SchurPower( chi, [ 1, -1 ] ) );
+true
+
+#
+gap> SchurPower( chi, [ 1, 2 ] );
+Error, <lambda> must be a weakly decreasing list of integers
+gap> SchurPower( chi, [ 1/2 ] );
+Error, <lambda> must be a weakly decreasing list of integers
+gap> SchurPower( chi, [ 0, 0, -1 ] );
+Error, <lambda> with a negative entry must have length 2
+gap> SchurPower( chi, [ -1 ] );
+Error, <lambda> with a negative entry must have length 2
+
 #
 gap> STOP_TEST("ctblfuns.tst");
