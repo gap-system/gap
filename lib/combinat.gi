@@ -364,12 +364,14 @@ BindGlobal("EnumeratorOfCombinations_k", function(mset, k)
 end);
 
 # All combinations are numbered in lexicographic order, in which a list
-# comes before its extensions. Let S[i] = Product(max{[i..l]} + 1) be the
-# number of sub-multisets of els{[i..l]}. A combination with d[i] copies
-# of els[i], the last nonzero one d[t], comes after its Sum_i d[i] proper
-# prefixes and, for each i < t, after the (max[i] - d[i]) * S[i+1]
-# combinations that agree with it below els[i] and have more copies of
-# els[i]. For a set of size n, S[i] = 2^(n+1-i).
+# comes before its extensions. Let els = Set(mset), l = Length(els), let
+# max[i] be the multiplicity of els[i] in mset, and let
+# S[i] = Product(max{[i..l]} + 1) be the number of sub-multisets of mset
+# with entries in els{[i..l]}. A combination with d[i] copies of els[i],
+# the last nonzero one d[t], comes after its Sum_i d[i] proper prefixes
+# and, for each i < t, after the (max[i] - d[i]) * S[i+1] combinations
+# that agree with it below els[i] and have more copies of els[i]. For a
+# set of size n, S[i] = 2^(n+1-i).
 BindGlobal("ElementNumber_AllCombinations_set", function(enum, num)
   local set, s, r, comb, i;
   if num > enum!.size then

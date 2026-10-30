@@ -341,8 +341,8 @@ DeclareGlobalFunction("Combinations");
 ##  all combinations.
 ##  <P/>
 ##  <Ref Func="EnumeratorOfCombinations"/> returns an <Ref Attr="Enumerator" />
-##  for the same combinations; it is equal to the strictly sorted list
-##  <C>Combinations( <A>mset</A>[, <A>k</A>] )</C>.
+##  for the same combinations; the enumerator is equal to the strictly sorted
+##  list <C>Combinations( <A>mset</A>[, <A>k</A>] )</C>.
 ##  <Ref Func="IteratorOfCombinations"/> produces them in a different order,
 ##  without <A>k</A> by increasing size.
 ##  <P/>

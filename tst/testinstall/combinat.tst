@@ -155,6 +155,8 @@ gap> List( [ [ 2, 1 ], [ 1, 1, 1 ], [ 3 ], [ 1, 1, 2, 2 ], 1 ],
 [ fail, fail, fail, fail, fail ]
 gap> enum[ 7 ];
 Error, Index 7 not bound, expected at most 6
+gap> EnumeratorOfCombinations( [ 1 .. 3 ] )[ 9 ];
+Error, Index 9 not bound, expected at most 8
 gap> enum:= EnumeratorOfCombinations( [ 1 .. 100 ] );
 EnumeratorOfCombinations( [ 1 .. 100 ] )
 gap> enum[ 2^99 + 1 ];
