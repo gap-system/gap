@@ -1,5 +1,7 @@
-#@local centre,img,m,membrm,r,rembrm,rm
+#@local centre,img,m,membrm,r,rembrm,rm,M,rmgens,preimgs
 gap> START_TEST("mgmring.tst");
+
+#
 gap> r:= GF(3);;
 gap> m:= Group( (1,2,3), (1,2) );;
 gap> rm:= FreeMagmaRing( r, m );
@@ -25,4 +27,46 @@ gap> img:= Image( rembrm, Z(3) );
 (Z(3))*()
 gap> PreImagesRepresentative( rembrm, img );
 Z(3)
+
+# infinite group and ring
+gap> r:= Rationals;;
+gap> M:= GL( 2, Integers );;
+gap> m:= SL( 2, Integers );;
+gap> rm:= GroupRing( r, m );;
+
+# embedding of the group
+gap> membrm:= Embedding( m, rm );;
+gap> rmgens:= GeneratorsOfAlgebra( rm );;
+gap> preimgs:= List( rmgens, x -> PreImagesRepresentative( membrm, x ) );;
+gap> IsSubset( m, preimgs );
+true
+gap> Concatenation( List( rmgens, x -> PreImagesElm( membrm, x ) ) ) = preimgs;
+true
+gap> PreImagesRepresentative( membrm, 2 * One( rm ) );
+fail
+gap> PreImagesElm( membrm, 2 * One( rm ) );
+[  ]
+gap> M.1 in m;
+false
+gap> PreImagesRepresentative( membrm, M.1 * One( rm ) );
+Error, <elm> is not in the range of the mapping <emb>
+gap> PreImagesElm( membrm, M.1 * One( rm ) );
+Error, <elm> is not in the range of mapping <emb>
+
+# embedding of the ring
+gap> rembrm:= Embedding( r, rm );;
+gap> PreImagesElm( rembrm, 2 * One( rm ) );
+[ 2 ]
+gap> PreImagesRepresentative( rembrm, 2 * One( rm ) );
+2
+gap> PreImagesRepresentative( rembrm, 2 * rmgens[2] );
+fail
+gap> PreImagesElm( rembrm, 2 * rmgens[2] );
+[  ]
+gap> PreImagesRepresentative( rembrm, E(4) * One( rm ) );
+Error, <elm> is not in the range of the mapping <emb>
+gap> PreImagesElm( rembrm, E(4) * rmgens[2] );
+Error, <elm> is not in the range of mapping <emb>
+
+#
 gap> STOP_TEST("mgmring.tst");
