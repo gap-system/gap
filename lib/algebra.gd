@@ -580,9 +580,13 @@ DeclareOperation( "ProductSpace", [ IsFreeLeftModule, IsFreeLeftModule ] );
 ##  All involved algebras must have the same left acting domain.
 ##  <P/>
 ##  The default case is that the result is a structure constants algebra.
+##  <P/>
 ##  If all involved algebras are matrix algebras, and either both are Lie
 ##  algebras or both are associative then the result is again a
 ##  matrix algebra of the appropriate type.
+##  <P/>
+##  If <A>A1</A> and <A>A2</A> are both group rings, then their direct sum is
+##  returned as the group ring of the direct product of the underlying groups.
 ##  <Example><![CDATA[
 ##  gap> QA := QuaternionAlgebra( Rationals );;
 ##  gap> OA := OctaveAlgebra( Rationals );;
@@ -609,8 +613,8 @@ DeclareOperation( "DirectSumOfAlgebras", [ IsDenseList ] );
 ##    Label="for a direct sum of algebras and a positive integer"/>
 ##
 ##  <Description>
-##  If algebra <A>A</A> is the direct sum of algebras <M>[A_1,\ldots,A_k]</M>
-##  then <C>Embedding(A,i)</C> for <M>1 \leq i \leq k</M> returns an algebra
+##  If algebra <A>A</A> is the direct sum of algebras <A>A1</A> and <A>A2</A>
+##  then <C>Embedding(A,i)</C> for <M>i \in \{1,2\}</M> returns an algebra
 ##  homomorphism mapping <M>A_i</M> into <A>A</A>.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -636,8 +640,8 @@ DeclareOperation( "DirectSumOfAlgebras", [ IsDenseList ] );
 ##    Label="for a direct sum of algebras and a positive integer"/>
 ##
 ##  <Description>
-##  If algebra <A>A</A> is the direct sum of algebras <M>[A_1,\ldots,A_k]</M>
-##  then <C>Projection(A,i)</C> for <M>1 \leq i \leq k</M> returns an algebra
+##  If algebra <A>A</A> is the direct sum of algebras <A>A1</A> and <A>A2</A>
+##  then <C>Projection(A,i)</C> for <M>i \in \{1,2\}</M> returns an algebra
 ##  homomorphism mapping <A>A</A> onto <M>A_i</M>.
 ##  <P/>
 ##  <Example><![CDATA[
