@@ -25,6 +25,8 @@ gap> ImageElm( proO, 6*basD[8]+7*basD[9] );
 (6)*t2+(7)*s3
 gap> #---------------------------------
 gap> # direct sums of type "generators"
+gap> # in these examples the generating set of the direct sum
+gap> # is the concatenation of the generators of the summands
 gap> m1 := [ [0,1,0,0], [0,0,1,0], [0,0,0,1], [1,0,0,0] ];;
 gap> A1 := Algebra( Rationals, [m1] );;
 gap> SetName( A1, "A1" );;
@@ -112,7 +114,66 @@ gap> DirectSumInfo( A12Q ).first;
 gap> e := Embedding( A12Q, 2 );;  p := Projection( A12Q, 2 );;
 gap> ForAll( BasisVectors( Basis( QA ) ), x -> ( x ^ e ) ^ p = x );
 true
-gap> ## Lie algebra example
+gap> # ---------------------------------
+gap> # direct sums of type "group rings"
+gap> # here the generators of the summands may be mixed together
+gap> gend8 := [ (5,6,7,8), (6,8) ];;
+gap> d8 := Group( gend8 );;
+gap> SetName( d8, "d8" );;
+gap> Ad8 := GroupRing( Rationals, d8 );;
+gap> SetName( Ad8, "Ad8" );;
+gap> ed8 := Embedding( d8, Ad8 );;
+gap> gens3 := [ (1,2), (2,3) ];;
+gap> s3 := Group( gens3 );;
+gap> SetName( s3, "s3" );;
+gap> As3 := GroupRing( Rationals, s3 );;
+gap> SetName( As3, "As3" );;
+gap> es3 := Embedding( s3, As3 );;
+gap> A83 := DirectSumOfAlgebras( Ad8, As3 );;
+gap> gen83 := GeneratorsOfAlgebra( A83 );
+[ (1)*(), (1)*(1,2,3,4), (1)*(2,4), (1)*(5,6), (1)*(6,7) ]
+gap> info83 := DirectSumInfo( A83 );
+rec( algebras := [ Ad8, As3 ], embeddings := [  ], first := [ 0, 3, 5 ], 
+  projections := [  ], type := "group rings" )
+gap> SetName( A83, "A83" );
+gap> embd8 := Embedding( A83, 1 );
+[ (1)*(), (1)*(5,6,7,8), (1)*(6,8) ] -> [ (1)*(), (1)*(1,2,3,4), (1)*(2,4) ]
+gap> g := ImageElm( ed8, (5,8)(6,7) );
+(1)*(5,8)(6,7)
+gap> ImageElm( embd8, g );
+(1)*(1,4)(2,3)
+gap> embs3 := Embedding( A83, 2 );
+[ (1)*(), (1)*(1,2), (1)*(2,3) ] -> [ (1)*(), (1)*(5,6), (1)*(6,7) ]
+gap> prod8 := Projection( A83, 1 );
+[ (1)*(), (1)*(1,2,3,4), (1)*(2,4), (1)*(5,6), (1)*(6,7) ] -> 
+[ (1)*(), (1)*(5,6,7,8), (1)*(6,8), <zero> of ..., <zero> of ... ]
+gap> pros3 := Projection( A83, 2 );
+[ (1)*(), (1)*(1,2,3,4), (1)*(2,4), (1)*(5,6), (1)*(6,7) ] -> 
+[ (1)*(), <zero> of ..., <zero> of ..., (1)*(1,2), (1)*(2,3) ]
+gap> ImageElm( pros3, gen83[4]*gen83[5] );
+(1)*(1,3,2)
+gap> # with free groups the generators get really mixed up
+gap> # so the value [0,5,11] of first is only useful for the 11
+gap> f2 := FreeGroup( 2 );;
+gap> SetName( f2, "f2" );
+gap> Af2 := GroupRing( GF(5), f2 );;
+gap> SetName( Af2, "Af2" );
+gap> f3 := FreeGroup( 3 );;
+gap> SetName( f3, "f3" );
+gap> Af3 := GroupRing( GF(5), f3 );;
+gap> SetName( Af3, "Af3" );
+gap> Af23 := DirectSumOfAlgebras( Af2, Af3 );
+<algebra-with-one over GF(5), with 10 generators>
+gap> gen23 := GeneratorsOfAlgebra( Af23 );
+[ (Z(5)^0)*<identity ...>, (Z(5)^0)*f1, (Z(5)^0)*f2, (Z(5)^0)*f3, 
+  (Z(5)^0)*f4, (Z(5)^0)*f5, (Z(5)^0)*f1^-1, (Z(5)^0)*f2^-1, (Z(5)^0)*f3^-1, 
+  (Z(5)^0)*f4^-1, (Z(5)^0)*f5^-1 ]
+gap> info23 := DirectSumInfo( Af23 );
+rec( algebras := [ Af2, Af3 ], embeddings := [  ], first := [ 0, 5, 11 ], 
+  projections := [  ], type := "group rings" )
+gap> # Embedding & Projection fail for now - waiting for PR6798 to be merged
+gap> # ---------------------------------
+gap> # Lie algebra example
 gap> L := FullMatrixLieAlgebra( Rationals, 2 );
 <Lie algebra over Rationals, with 3 generators>
 gap> SetName( L, "L" );
@@ -149,33 +210,4 @@ gap> Projection( L2, 2 );
   LieObject( [ [ 0, 0 ], [ 0, 0 ] ] ), LieObject( [ [ 0, 0 ], [ 0, 0 ] ] ), 
   LieObject( [ [ 1, 0 ], [ 0, 0 ] ] ), LieObject( [ [ 0, 1 ], [ 0, 0 ] ] ), 
   LieObject( [ [ 0, 0 ], [ 1, 0 ] ] ) ]
-gap> # ---------------------------------
-gap> # direct sums of type "group rings"
-gap> gend8 := [ (5,6,7,8), (6,8) ];;
-gap> d8 := Group( gend8 );;
-gap> SetName( d8, "d8" );;
-gap> Ad8 := GroupRing( Rationals, d8 );;
-gap> SetName( Ad8, "Ad8" );;
-gap> ed8 := Embedding( d8, Ad8 );;
-gap> gens3 := [ (1,2), (2,3) ];;
-gap> s3 := Group( gens3 );;
-gap> SetName( s3, "s3" );;
-gap> As3 := GroupRing( Rationals, s3 );;
-gap> SetName( As3, "As3" );;
-gap> es3 := Embedding( s3, As3 );;
-gap> A83 := DirectSumOfAlgebras( Ad8, As3 );;
-gap> gen83 := GeneratorsOfAlgebra( A83 );
-[ (1)*(), (1)*(1,2,3,4), (1)*(2,4), (1)*(5,6), (1)*(6,7) ]
-gap> info83 := DirectSumInfo( A83 );
-rec( algebras := [ Ad8, As3 ], embeddings := [  ], first := [ 0, 3, 5 ], 
-  projections := [  ], type := "group rings" )
-gap> SetName( A83, "A83" );
-gap> # emb8 := Embedding( A83, 1 );
-gap> # g := ImageElm( ed8, (5,8)(6,7) );
-gap> # ImageElm( emb8, g );
-gap> pro3 := Projection( A83, 2 );
-[ (1)*(), (1)*(1,2,3,4), (1)*(2,4), (1)*(5,6), (1)*(6,7) ] -> 
-[ (1)*(), <zero> of ..., <zero> of ..., (1)*(1,2), (1)*(2,3) ]
-gap> ImageElm( pro3, gen83[4]*gen83[5] );
-(1)*(1,3,2)
 gap> STOP_TEST("alg-dsum.tst");

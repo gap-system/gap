@@ -3273,36 +3273,46 @@ InstallMethod( DirectSumOfAlgebras,
 InstallMethod( Embedding, "algebra direct sum and integer",
     [ IsAlgebra and HasDirectSumInfo, IsPosInt ],
     function( D, i )
-    local info, type, first, A, gensA, imgs, gensD, map;
+    local infoD, type, first, Ai, geni, imgs, gensD, map,
+          G, eG, infoG, Gi, ei, eGi;
 
     # check
-    info := DirectSumInfo( D );
-    if IsBound( info.embeddings[i] ) then
-        return info.embeddings[i];
+    infoD := DirectSumInfo( D );
+    if IsBound( infoD.embeddings[i] ) then
+        return infoD.embeddings[i];
     fi;
-    type := info.type;
-    first := info.first;
+    type := infoD.type;
+    first := infoD.first;
     if i >= Length( first ) then
         Error( "value of second parameter is too large" );
     fi;
     # compute embedding
-    A := info.algebras[i];
+    Ai := infoD.algebras[i];
     if type = "basis vectors" then
-        gensA := Basis( A );
+        geni := Basis( Ai );
         imgs := BasisVectors( Basis( D ) ){[first[i]+1 .. first[i+1]]};
     elif type = "generators" then
-        gensA := GeneratorsOfAlgebra( A );
+        geni := GeneratorsOfAlgebra( Ai );
         imgs := GeneratorsOfAlgebra( D ){[first[i]+1 .. first[i+1]]};
     elif type = "group rings" then
-        Error( "working on this, so no answer yet" );
+        G := UnderlyingMagma( D );
+        eG := Embedding( G, D );
+        infoG := DirectProductInfo( G );
+        Gi := UnderlyingMagma( Ai );
+        ei := Embedding( Gi, Ai );
+        geni := GeneratorsOfAlgebra( Ai );
+        imgs := List( geni, a -> PreImagesElm( ei, a )[1] );
+        eGi := Embedding( G, i );
+        imgs := List( imgs, g -> ImageElm( eGi, g ) );
+        imgs := List( imgs, g -> ImageElm( eG, g ) );
     else
         Error( "unknown type" );
     fi;
-    map := AlgebraHomomorphismByImagesNC( A, D, gensA, imgs );
+    map := AlgebraHomomorphismByImagesNC( Ai, D, geni, imgs );
     SetIsInjective( map, true );
 
     # store information
-    info.embeddings[i] := map;
+    infoD.embeddings[i] := map;
     return map;
 end );
 
@@ -3313,7 +3323,8 @@ end );
 InstallMethod( Projection, "algebra direct sum and integer",
     [ IsAlgebra and HasDirectSumInfo, IsPosInt ],
     function( D, i )
-    local infoD, type, first, len, A, zA, genA, genD, imgs, j, k, map;
+    local infoD, type, first, len, Ai, zAi, imgs, genAi, genD,
+          ei, j, k, a, L, map;
 
     # check
     infoD := DirectSumInfo( D );
@@ -3327,31 +3338,36 @@ InstallMethod( Projection, "algebra direct sum and integer",
         Error( "value of second parameter is too large" );
     fi;
     # compute projection
-    A := infoD.algebras[i];
-    zA := Zero( A );
-    if type = "basis vectors" then
-        genA := BasisVectors( Basis( A ) );
-        genD := Basis( D );
-    elif ( type = "generators" ) or ( type = "group rings" ) then
-        genA := GeneratorsOfAlgebra( A );
+    Ai := infoD.algebras[i];
+    zAi := Zero( Ai );
+    imgs := ListWithIdenticalEntries( first[len], zAi );
+    if ( type = "group rings" ) then
         genD := GeneratorsOfAlgebra( D );
-    else
-        Error( "unknown type" );
-    fi;
-    imgs := ListWithIdenticalEntries( first[len], zA );
-    if ( type = "group rings" ) and ( i > 1 ) then
-        imgs[1] := genA[1];
-        j := first[i];
-        for k in [j+1..first[i+1]] do
-            imgs[k] := genA[k-j+1];
+        ei := Embedding( D, i );
+        for j in [1..first[len]] do
+            a := genD[j];
+            L := Elements( PreImagesElm( ei, a ) );
+            if ( L <> [ ] ) then
+                imgs[j] := L[1];
+            fi;
         od;
     else
+        if type = "basis vectors" then
+            genAi := BasisVectors( Basis( Ai ) );
+            genD := Basis( D );
+        elif ( type = "generators" ) or ( type = "group rings" ) then
+            genAi := GeneratorsOfAlgebra( Ai );
+            genD := GeneratorsOfAlgebra( D );
+        else
+            Error( "unknown type" );
+        fi;
         j := first[i];
         for k in [j+1..first[i+1]] do
-            imgs[k] := genA[k-j];
+            imgs[k] := genAi[k-j];
         od;
     fi;
-    map := AlgebraHomomorphismByImagesNC( D, A, genD, imgs );
+
+    map := AlgebraHomomorphismByImagesNC( D, Ai, genD, imgs );
 
     # store information
     infoD.projections[i] := map;
