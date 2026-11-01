@@ -642,7 +642,7 @@ DeclareOperation( "DirectSumOfAlgebras", [ IsDenseList ] );
 ##  <Example><![CDATA[
 ##  gap> basD := BasisVectors( Basis( D ) );;
 ##  gap> pro2 := Projection( D, 2 );
-##  CanonicalBasis( <algebra of dimension 12 over Rationals> ) -> 
+##  CanonicalBasis( <algebra of dimension 12 over Rationals> ) ->
 ##  [ 0*s1, 0*s1, 0*s1, 0*s1, s1, t1, s2, t2, s3, t3, s4, t4 ]
 ##  gap> ImageElm( pro2, 5*basD[8] + 6*basD[9] );
 ##  (5)*t2+(6)*s3

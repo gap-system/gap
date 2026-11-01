@@ -3273,8 +3273,7 @@ InstallMethod( DirectSumOfAlgebras,
 InstallMethod( Embedding, "algebra direct sum and integer",
     [ IsAlgebra and HasDirectSumInfo, IsPosInt ],
     function( D, i )
-    local infoD, type, first, Ai, geni, imgs, gensD, map,
-          G, eG, infoG, Gi, ei, eGi;
+    local infoD, type, first, Ai, geni, imgs, G, eG, Gi, ei, eGi, map;
 
     # check
     infoD := DirectSumInfo( D );
