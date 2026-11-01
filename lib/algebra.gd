@@ -586,6 +586,7 @@ DeclareOperation( "ProductSpace", [ IsFreeLeftModule, IsFreeLeftModule ] );
 ##  <Example><![CDATA[
 ##  gap> QA := QuaternionAlgebra( Rationals );;
 ##  gap> OA := OctaveAlgebra( Rationals );;
+##  gap> SetName( QA, "QA" );  SetName( OA, "OA" );
 ##  gap> D := DirectSumOfAlgebras( QA, OA );
 ##  <algebra of dimension 12 over Rationals>
 ##  gap> D3 := DirectSumOfAlgebras( [ QA, OA, QA ] );
@@ -617,7 +618,7 @@ DeclareOperation( "DirectSumOfAlgebras", [ IsDenseList ] );
 ##  [ e, i, j, k ]
 ##  gap> emb1 := Embedding( D, 1 );
 ##  CanonicalBasis( QA ) -> [ v.1, v.2, v.3, v.4 ]
-##  gap> ImageElm, emb1, ( basQ[2] * basQ[3] );
+##  gap> ImageElm( emb1, basQ[2] * basQ[3] );
 ##  v.4
 ##  ]]></Example>
 ##  </Description>

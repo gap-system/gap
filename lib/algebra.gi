@@ -3296,7 +3296,6 @@ InstallMethod( Embedding, "algebra direct sum and integer",
     elif type = "group rings" then
         G := UnderlyingMagma( D );
         eG := Embedding( G, D );
-        infoG := DirectProductInfo( G );
         Gi := UnderlyingMagma( Ai );
         ei := Embedding( Gi, Ai );
         geni := GeneratorsOfAlgebra( Ai );
