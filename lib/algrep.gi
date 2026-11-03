@@ -2058,7 +2058,7 @@ InstallMethod( TensorProductOfAlgebraModules,
             if not ForAll( list, V ->
                        IsLeftAlgebraModuleElementCollection(V) and
                        IsRightAlgebraModuleElementCollection(V)) then
-              Error("for all modules the algebra must act om the same side");
+              Error("for all modules the algebra must act on the same side");
             fi;
 
             A:= LeftActingAlgebra( list[1] );
@@ -2082,32 +2082,33 @@ InstallMethod( TensorProductOfAlgebraModules,
             fi;
 
             Tprod:= BiAlgebraModule( A, B, lefta, righta, VT );
-        fi;
-
-        if not ForAll( list, IsLeftAlgebraModuleElementCollection ) then
-            Error( "for all modules the algebra must act om the same side" );
-        fi;
-
-        A:= LeftActingAlgebra( list[1] );
-        if not ForAll( list, V -> IsIdenticalObj( LeftActingAlgebra(V), A ) )
-           then Error( "all modules must have the same left acting algebra" );
-        fi;
-        if HasIsLieAlgebra( A ) and IsLieAlgebra( A ) then
-            lefta:= left_lie_action;
         else
-            TryNextMethod();
-        fi;
 
-        Tprod:= LeftAlgebraModule( A, lefta, VT );
+            if not ForAll( list, IsLeftAlgebraModuleElementCollection ) then
+                Error( "for all modules the algebra must act on the same side" );
+            fi;
+
+            A:= LeftActingAlgebra( list[1] );
+            if not ForAll( list, V -> IsIdenticalObj( LeftActingAlgebra(V), A ) )
+               then Error( "all modules must have the same left acting algebra" );
+            fi;
+            if HasIsLieAlgebra( A ) and IsLieAlgebra( A ) then
+                lefta:= left_lie_action;
+            else
+                TryNextMethod();
+            fi;
+
+            Tprod:= LeftAlgebraModule( A, lefta, VT );
+        fi;
     else
 
         if not ForAll( list, IsRightAlgebraModuleElementCollection ) then
-            Error( "for all modules the algebra must act om the same side" );
+            Error( "for all modules the algebra must act on the same side" );
         fi;
 
         A:= RightActingAlgebra( list[1] );
         if not ForAll( list, V -> IsIdenticalObj( RightActingAlgebra(V), A ) )
-           then Error( "all modules must have the same left acting algebra" );
+           then Error( "all modules must have the same right acting algebra" );
         fi;
 
         if HasIsLieAlgebra( A ) and IsLieAlgebra( A ) then
@@ -3479,7 +3480,7 @@ InstallMethod( DirectSumOfAlgebraModules,
             if not ForAll( list, V ->
                        IsLeftAlgebraModuleElementCollection(V) and
                        IsRightAlgebraModuleElementCollection(V)) then
-              Error("for all modules the algebra must act om the same side");
+              Error("for all modules the algebra must act on the same side");
             fi;
 
             A:= LeftActingAlgebra( list[1] );
@@ -3487,32 +3488,33 @@ InstallMethod( DirectSumOfAlgebraModules,
             if not ForAll( list, V ->
                        IsIdenticalObj( LeftActingAlgebra(V), A ) and
                        IsIdenticalObj( RightActingAlgebra(V), B ) )
-             then Error("all modules must have the same left acting algebra" );
+             then Error("all modules must have the same acting algebras" );
             fi;
 
             V:= BiAlgebraModuleByGenerators( A, B, left_action, right_action,
                            gens );
-        fi;
+        else
 
-        if not ForAll( list, IsLeftAlgebraModuleElementCollection ) then
-            Error( "for all modules the algebra must act om the same side" );
-        fi;
+            if not ForAll( list, IsLeftAlgebraModuleElementCollection ) then
+                Error( "for all modules the algebra must act on the same side" );
+            fi;
 
-        A:= LeftActingAlgebra( list[1] );
-        if not ForAll( list, V -> IsIdenticalObj( LeftActingAlgebra(V), A ) )
-           then Error( "all modules must have the same left acting algebra" );
-        fi;
+            A:= LeftActingAlgebra( list[1] );
+            if not ForAll( list, V -> IsIdenticalObj( LeftActingAlgebra(V), A ) )
+               then Error( "all modules must have the same left acting algebra" );
+            fi;
 
-        V:= LeftAlgebraModuleByGenerators( A, left_action, gens );
+            V:= LeftAlgebraModuleByGenerators( A, left_action, gens );
+        fi;
     else
 
         if not ForAll( list, IsRightAlgebraModuleElementCollection ) then
-            Error( "for all modules the algebra must act om the same side" );
+            Error( "for all modules the algebra must act on the same side" );
         fi;
 
         A:= RightActingAlgebra( list[1] );
         if not ForAll( list, V -> IsIdenticalObj( RightActingAlgebra(V), A ) )
-           then Error( "all modules must have the same left acting algebra" );
+           then Error( "all modules must have the same right acting algebra" );
         fi;
 
         V:= RightAlgebraModuleByGenerators( A, right_action, gens );
