@@ -78,16 +78,36 @@ static inline int GAP_Error_Postjmp_(int JumpRet)
 // entered recursively (you don't want the GAP error handling code to cause a
 // longjmp into the error callback itself since then the error callback will
 // never be returned from).
-#ifdef __GNUC__
+//
+// GASMAN scans the stack from the address passed to GAP_EnterStack_() down
+// to the stack pointer, so it must lie above the caller's local variables.
+// We use the canonical frame address, the top of the caller's stack frame;
+// __builtin_frame_address(0) is not enough, as e.g. on 32-bit ARM in Thumb
+// mode it points to the bottom of the frame.
+#if defined(_WIN32) || defined(__CYGWIN__)
+// keep using __builtin_frame_address(0), as clang's __builtin_dwarf_cfa() is
+// wrong on Windows, see https://github.com/llvm/llvm-project/issues/227606
+#elif defined(__has_builtin)
+#if __has_builtin(__builtin_dwarf_cfa) && !defined(__EMSCRIPTEN__)
+#define GAP_STACK_FRAME_TOP_() __builtin_dwarf_cfa()
+#endif
+#elif defined(__GNUC__)
+#define GAP_STACK_FRAME_TOP_() __builtin_dwarf_cfa()
+#endif
+#if !defined(GAP_STACK_FRAME_TOP_) && defined(__GNUC__)
+#define GAP_STACK_FRAME_TOP_() __builtin_frame_address(0)
+#endif
+
+#ifdef GAP_STACK_FRAME_TOP_
 #define GAP_EnterStack()                                                     \
     do {                                                                     \
         GAP_ENTER_DEBUG_MESSAGE("EnterStack", __FILE__, __LINE__);           \
-        GAP_EnterStack_(__builtin_frame_address(0));                         \
+        GAP_EnterStack_(GAP_STACK_FRAME_TOP_());                             \
     } while (0)
 #elif defined(USE_GASMAN)
-#error GASMAN requires a way to get the current stack frame base address     \
+#error GASMAN requires a way to get the top of the current stack frame       \
        for the GAP_EnterStack() macro; normally this uses the                \
-       __builtin_frame_address GNU extension so if this is not available     \
+       __builtin_dwarf_cfa GNU extension so if this is not available         \
        it is necessary to provide your own implementation here.
 #else
 // If we're not using GASMAN in the first place GAP_EnterStack_() is not
@@ -136,8 +156,8 @@ static inline int GAP_Error_Postjmp_(int JumpRet)
 // is the return value of GAP_Error_Setjmp).
 //
 // * GAP_EnterStack() defined and explained above must be a macro since it
-//   needs to figure out (to the extent possible) the base address of the
-//   stack frame from which it is called.
+//   needs to figure out (to the extent possible) the top of the stack frame
+//   from which it is called.
 //
 // * GAP_Error_Setjmp() effectively calls setjmp to the STATE(ReadJmpError)
 //   longjmp buffer, so that read errors which occur in GAP that are not
