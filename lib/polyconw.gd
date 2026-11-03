@@ -68,8 +68,8 @@ DeclareGlobalFunction( "ConwayPol" );
 ##  <P/>
 ##  First define an ordering of polynomials of degree <M>n</M> over
 ##  <M>GF(p)</M>, as follows.
-##  <M>f = \sum_{{i = 0}}^n (-1)^i f_i x^i</M> is smaller than
-##  <M>g = \sum_{{i = 0}}^n (-1)^i g_i x^i</M> if and only if there is an index
+##  <M>f = \sum_{{i = 0}}^n (-1)^{{n-i}} f_i x^i</M> is smaller than
+##  <M>g = \sum_{{i = 0}}^n (-1)^{{n-i}} g_i x^i</M> if and only if there is an index
 ##  <M>m \leq n</M> such that <M>f_i = g_i</M> for all <M>i > m</M>, and
 ##  <M>\tilde{{f_m}} &lt; \tilde{{g_m}}</M>,
 ##  where <M>\tilde{{c}}</M> denotes the integer value in
@@ -82,7 +82,7 @@ DeclareGlobalFunction( "ConwayPol" );
 ##  and is the minimal polynomial of a primitive root of <M>GF(p^n)</M>.
 ##  <P/>
 ##  For all divisors <M>d</M> of <M>n</M> the compatibility condition
-##  <M>\Phi_{{d,p}}( x^{{\frac{{p^n-1}}{{p^m-1}}}} ) \equiv 0
+##  <M>\Phi_{{d,p}}( x^{{\frac{{p^n-1}}{{p^d-1}}}} ) \equiv 0
 ##  \pmod{{\Phi_{{n,p}}(x)}}</M>
 ##  holds. (That is, the appropriate power of a zero of <M>\Phi_{{n,p}}</M>
 ##  is a zero of the Conway polynomial <M>\Phi_{{d,p}}</M>.)
@@ -92,7 +92,7 @@ DeclareGlobalFunction( "ConwayPol" );
 ##  <P/>
 ##  The computation of Conway polynomials can be time consuming. Therefore,
 ##  &GAP; comes with a list of precomputed polynomials. If a requested
-##  polynomial is not stored then &GAP; prints a warning and computes it by
+##  polynomial is not stored then &GAP; computes it by
 ##  checking all polynomials in the order defined above for the defining
 ##  conditions.
 ##  If <M>n</M> is not a prime this is probably a very long computation.
