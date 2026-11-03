@@ -727,7 +727,7 @@ end );
 ##  <Description>
 ##  <Ref Func="ResetFilterObj"/> sets the value of <A>filter</A> for
 ##  <A>obj</A> to <K>false</K>.
-##  (Implied filters of <A>filt</A> are not touched.
+##  (Implied filters of <A>filter</A> are not touched.
 ##  This might create inconsistent situations if applied carelessly).
 ##  </Description>
 ##  </ManSection>
