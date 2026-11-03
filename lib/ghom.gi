@@ -63,14 +63,32 @@ function( arg )
 
     hom:= GroupGeneralMappingByImages( G, H, Ggens, Hgens );
 
+    # Calling 'IsMapping' means to test 'IsTotal' and 'IsSingleValued'.
+    # In some cases, we know already part of this information.
+    if not HasIsTotal( hom ) then
+      if Length( arrgh ) < 4 then
+        SetIsTotal( hom, true );
+      elif not HasPreImagesRange( hom ) then
+        # Calling 'IsTotal' means to check whether the preimage contains 'G'.
+        # Do not call 'PreImagesRange' in order to store the object 'G' itself
+        # if applicable.
+        if not IsSubset( AttributeValueNotSet( PreImagesRange, hom ), G ) then
+          return fail;
+        fi;
+        SetIsTotal( hom, true );
+        SetPreImagesRange( hom, G );
+      fi;
+    fi;
     if IsMapping( hom ) then
+      if Length( arrgh ) = 2 then
+        SetIsSurjective( hom, true );
+      fi;
       return hom;
       # was GroupHomomorphismByImagesNC( G, H, Ggens, Hgens ), but why
       # should we create a new object again?;
     else
       return fail;
     fi;
-
   end );
 
 
