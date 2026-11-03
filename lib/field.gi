@@ -604,11 +604,15 @@ InstallMethod( AsDivisionRing,
     fi;
 
     # Construct the prime field.
+    # The generic field over itself cannot test membership of cyclotomics.
     one:= One( Representative( C ) );
     if one = fail then
       return fail;
+    elif IsCyclotomicCollection( C ) then
+      F:= Rationals;
+    else
+      F:= FieldOverItselfByGenerators( [ one ] );
     fi;
-    F:= FieldOverItselfByGenerators( [ one ] );
 
     # Delegate to the two-argument version.
     return AsDivisionRing( F, C );
