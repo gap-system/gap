@@ -2644,17 +2644,7 @@ InstallOtherMethod( SemiEchelonMatDestructive,
 InstallMethod( SemiEchelonMat,
     "generic method for matrices",
     [ IsMatrix ],
-    function( mat )
-    local copymat, v, vc, f;
-    copymat := [];
-    f := DefaultFieldOfMatrix(mat);
-    for v in mat do
-        vc := ShallowCopy(v);
-        ConvertToVectorRepNC(vc,f);
-        Add(copymat, vc);
-    od;
-    return SemiEchelonMatDestructive( copymat );
-end );
+    mat -> SemiEchelonMatDestructive( COPY_TO_COMMON_FIELD( mat ) ) );
 
 InstallOtherMethod( SemiEchelonMat,
     "generic method for list of vector objects",
@@ -2685,17 +2675,8 @@ end );
 InstallMethod( SemiEchelonMatTransformation,
     "generic method for matrices",
     [ IsMatrix ],
-    function( mat )
-    local copymat, v, vc, f;
-    copymat := [];
-    f := DefaultFieldOfMatrix(mat);
-    for v in mat do
-        vc := ShallowCopy(v);
-        ConvertToVectorRepNC(vc,f);
-        Add(copymat, vc);
-    od;
-    return SemiEchelonMatTransformationDestructive( copymat );
-end);
+    mat -> SemiEchelonMatTransformationDestructive(
+               COPY_TO_COMMON_FIELD( mat ) ) );
 
 InstallOtherMethod(SemiEchelonMatTransformation,"matrix objects",[IsMatrixObj],
 function( mat )
@@ -3203,7 +3184,6 @@ function( M1, M2 )
     local n,      # number of columns
           mat,    # matrix for Zassenhaus algorithm
           zero,   # zero vector
-          v,      # loop over 'M1' and 'M2'
           heads,  # list of leading positions
           sum,    # base of the sum
           i,      # loop over rows of 'mat'
@@ -3220,22 +3200,15 @@ function( M1, M2 )
     fi;
 
     n:= Length( M1[1] );
-    mat:= [];
-    zero:= Zero( M1[1] );
 
     # Set up the matrix for Zassenhaus' algorithm.
-    mat:= [];
-    for v in M1 do
-      v:= ShallowCopy( v );
-      Append( v, v );
-      ConvertToVectorRepNC( v );
-      Add( mat, v );
+    mat:= COPY_TO_COMMON_FIELD( Concatenation( M1, M2 ) );
+    zero:= ZeroMutable( mat[1] );
+    for i in [ 1 .. Length( M1 ) ] do
+      Append( mat[i], mat[i] );
     od;
-    for v in M2 do
-      v:= ShallowCopy( v );
-      Append( v, zero );
-      ConvertToVectorRepNC( v );
-      Add( mat, v );
+    for i in [ Length( M1 ) + 1 .. Length( mat ) ] do
+      Append( mat[i], zero );
     od;
 
     # Transform `mat' into semi-echelon form.

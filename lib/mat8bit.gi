@@ -269,24 +269,7 @@ InstallMethod( \-, "for two 8 bit matrices in same characteristic",
 
 InstallGlobalFunction(ConvertToMatrixRep,
         function( arg )
-    local m,qs, v,  q, givenq, q1, LeastCommonPower, lens, d;
-
-    LeastCommonPower := function(qs)
-        local p, d, x, i;
-        Assert(1, Length(qs) > 0);
-
-        x := Z(qs[1]);
-        p := Characteristic(x);
-        d := DegreeFFE(x);
-        for i in [2..Length(qs)] do
-            x := Z(qs[i]);
-            if p <> Characteristic(x) then
-                return fail;
-            fi;
-            d := Lcm(d, DegreeFFE(x));
-        od;
-        return p^d;
-    end;
+    local m,qs, v,  q, givenq, q1, lens, d;
 
     qs := [];
 
@@ -382,7 +365,11 @@ InstallGlobalFunction(ConvertToMatrixRep,
         #
         # Now work out the common field
         #
-        q := LeastCommonPower(qs);
+        if givenq then
+            q := COMMON_FIELD_VECTORS(m, q1);
+        else
+            q := COMMON_FIELD_VECTORS(m);
+        fi;
 
         if q = fail then
             return fail;
