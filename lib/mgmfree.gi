@@ -291,6 +291,7 @@ function(
         rank,    # Length( names )
         opt,
         init,
+        word,
         x, y1, y2;
 
   # Set up defaults.
@@ -339,13 +340,14 @@ function(
         MakeImmutable( names );
       elif ( IsList and IsFinite )( opt ) and rank <= Length( opt )
           and ForAll( [ 1 .. rank ],
-                      s -> IsString( opt[s] ) and not IsEmpty( opt[s] ) ) then
+                      s -> IsString( opt[s] ) and not IsEmpty( opt[s] ) )
+          and IsDuplicateFreeList( opt{[ 1 .. rank ]} ) then
         names := MakeImmutable( opt{[ 1 .. rank ]} );
       else
         ErrorNoReturn( Concatenation(
           "Cannot process the `generatorNames` option: ",
           "the value must be either a single string, or a list ",
-          "of sufficiently many nonempty strings ",
+          "of sufficiently many distinct nonempty strings ",
           "(at least ", String( rank ), ", in this case)" ) );
       fi;
 
@@ -378,6 +380,8 @@ function(
       err := "there must be only finitely many names";
     elif not ForAll( names, s -> IsString( s ) and not IsEmpty( s ) ) then
       err := "the names must be nonempty strings";
+    elif not IsDuplicateFreeList( names ) then
+      err := "the names must be distinct";
     fi;
 
   # Validate call of form: func( infinity[, <name>][, <init>] ).
@@ -404,8 +408,22 @@ function(
       err := "<name> must be a string";
     elif not ( IsList( init ) and IsFinite( init ) ) then
       err := "<init> must be a finite list";
+    elif not IsDuplicateFreeList( init ) then
+      err := "<init> must be duplicate-free";
     elif not ForAll( init, s -> IsString( s ) and not IsEmpty( s ) ) then
       err := "<init> must consist of nonempty strings";
+    else
+      for word in init do
+        if StartsWith( word, name ) then
+          x := word{[ Length( name ) + 1 .. Length( word ) ]};
+          if not IsEmpty( x ) and ForAll( x, IsDigitChar )
+              and Int( x ) > Length( init ) then
+            err := "no member of <init> may repeat any of the infinitely many ";
+            Append( err, "generators that begin with <name>" );
+            break;
+          fi;
+        fi;
+      od;
     fi;
     if IsEmpty( err ) then
       names := InfiniteListOfNames( name, init );
