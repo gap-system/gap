@@ -36,6 +36,7 @@ function( filter, fld, n )
     m[n,1] := o;
     m :=  [ ImmutableMatrix(fld,m,true) ];
     g := GroupByGenerators( m );
+    SetBaseDomain( g, fld );
     SetIsCyclic (g, true);
     SetMinimalGeneratingSet (g, m);
     SetSize( g, n );
@@ -64,6 +65,7 @@ function( filter, n )
     od;
     m[n,1] := 1;
     m := GroupByGenerators( [ ImmutableMatrix(Rationals,m,true) ] );
+    SetBaseDomain( m, Rationals );
     SetSize( m, n );
     return m;
 
@@ -108,6 +110,7 @@ function( filter, fld, n )
   then # XXX: regular rep is not minimal
     grp := DicyclicGroup( IsPermGroup, n );
     grp := Group( List( GeneratorsOfGroup( grp ), prm -> PermutationMat( prm, NrMovedPoints( grp ), fld ) ) );
+    SetBaseDomain( grp, fld );
     SetSize( grp, n );
     return grp;
   elif IsFFECollection( fld )
@@ -125,6 +128,7 @@ function( filter, fld, n )
   fi;
   grp := Group( List( [[[0,1],[-1,0]],[[cyc,0],[0,1/cyc]]]*one,
     mat -> ImmutableMatrix( fld, BlownUpMat( bas, mat )*One(fld), true ) ) );
+  SetBaseDomain( grp, fld );
   SetSize( grp, n );
   return grp;
 end);
@@ -173,6 +177,7 @@ function( filter, n, f )
     SetName( g, Concatenation("GL(",String(n),",",String(q),")") );
     SetDimensionOfMatrixGroup( g, n );
     SetFieldOfMatrixGroup( g, f );
+    SetBaseDomain( g, f );
     SetIsNaturalGL( g, true );
     SetIsFinite(g,true);
 
@@ -237,6 +242,7 @@ function( filter, n, f )
     SetName( g, Concatenation("SL(",String(n),",",String(q),")") );
     SetDimensionOfMatrixGroup( g, n );
     SetFieldOfMatrixGroup( g, f );
+    SetBaseDomain( g, f );
     SetIsFinite( g, true );
     if q = 2  then
         SetIsNaturalGL( g, true );
@@ -287,6 +293,7 @@ InstallMethod( GeneralSemilinearGroupCons,
     SetName( g, Concatenation( "GammaL(",String(d),",",String(q),")" ) );
     SetDimensionOfMatrixGroup( g, d*f );
     SetFieldOfMatrixGroup( g, GF(p) );
+    SetBaseDomain( g, GF(p) );
     SetIsFinite( g, true );
 
     SetSize( g, f * Size( gl ) );
@@ -328,6 +335,7 @@ InstallMethod( SpecialSemilinearGroupCons,
     SetName( g, Concatenation( "SigmaL(",String(d),",",String(q),")" ) );
     SetDimensionOfMatrixGroup( g, d*f );
     SetFieldOfMatrixGroup( g, GF(p) );
+    SetBaseDomain( g, GF(p) );
     SetIsFinite( g, true );
 
     SetSize( g, f * Size( sl ) );

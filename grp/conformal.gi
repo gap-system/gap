@@ -101,6 +101,7 @@ InstallMethod( ConformalSymplecticGroupCons,
 
     # 'mat1' contains a primitive root of 'F'.
     SetFieldOfMatrixGroup( g, F );
+    SetBaseDomain( g, F );
 
     # add the size
     size := 1;
