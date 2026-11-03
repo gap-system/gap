@@ -405,7 +405,7 @@ DeclareProperty( "IsTranslationInvariantOrdering" ,IsOrdering and
 ##
 ##  <#GAPDoc Label="IsReductionOrdering">
 ##  <ManSection>
-##  <Prop Name="IsReductionOrdering" Arg='ord'/>
+##  <Filt Name="IsReductionOrdering" Arg='ord'/>
 ##
 ##  <Description>
 ##  for an ordering <A>ord</A> on a family of associative words,
@@ -669,8 +669,8 @@ DeclareProperty("IsWeightLexOrdering",IsOrdering and
 ##  generators of <A>D</A>, in the desired order,
 ##  or a list of the positions of these generators,
 ##  in the desired order,
-##  and <Ref Oper="BasicWreathProductOrdering"/> returns the lexicographic
-##  ordering on the elements of <A>D</A> with the ordering on the
+##  and <Ref Oper="BasicWreathProductOrdering"/> returns the basic wreath
+##  product ordering on the elements of <A>D</A> with the ordering on the
 ##  generators as given.
 ##  </Description>
 ##  </ManSection>

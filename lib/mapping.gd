@@ -71,20 +71,20 @@
 ##  union of these two.)
 ##  <P/>
 ##  For general mappings of the first category, <Ref Oper="ImagesElm"/> and
-##  <Ref Oper="PreImagesElm"/> are basic operations.
+##  <Ref Oper="PreImagesElmNC"/> are basic operations.
 ##  (Note that in principle it is possible to delegate
-##  from <Ref Oper="PreImagesElm"/> to <Ref Oper="ImagesElm"/>.)
+##  from <Ref Oper="PreImagesElmNC"/> to <Ref Oper="ImagesElm"/>.)
 ##  Methods for the secondary operations <Ref Oper="ImageElm"/>,
 ##  <Ref Oper="PreImageElm"/>, <Ref Oper="ImagesSet"/>,
-##  <Ref Oper="PreImagesSet"/>, <Ref Oper="ImagesRepresentative"/>,
-##  and <Ref Oper="PreImagesRepresentative"/> may use
-##  <Ref Oper="ImagesElm"/> and <Ref Oper="PreImagesElm"/>, respectively,
-##  and methods for <Ref Oper="ImagesElm"/>, <Ref Oper="PreImagesElm"/>
+##  <Ref Oper="PreImagesSetNC"/>, <Ref Oper="ImagesRepresentative"/>,
+##  and <Ref Oper="PreImagesRepresentativeNC"/> may use
+##  <Ref Oper="ImagesElm"/> and <Ref Oper="PreImagesElmNC"/>, respectively,
+##  and methods for <Ref Oper="ImagesElm"/>, <Ref Oper="PreImagesElmNC"/>
 ##  must <E>not</E> call the secondary operations.
 ##  In particular, there are no generic methods for
-##  <Ref Oper="ImagesElm"/> and <Ref Oper="PreImagesElm"/>.
+##  <Ref Oper="ImagesElm"/> and <Ref Oper="PreImagesElmNC"/>.
 ##  <P/>
-##  Methods for <Ref Oper="ImagesSet"/> and <Ref Oper="PreImagesSet"/> must
+##  Methods for <Ref Oper="ImagesSet"/> and <Ref Oper="PreImagesSetNC"/> must
 ##  <E>not</E> use <Ref Attr="PreImagesRange"/> and
 ##  <Ref Attr="ImagesSource"/>, e.g.,
 ##  compute the intersection of the set in question with the preimage of the
@@ -185,8 +185,8 @@
 ##  Methods for the operations <Ref Oper="ImagesElm"/>,
 ##  <Ref Oper="ImagesRepresentative"/>,
 ##  <Ref Oper="ImagesSet"/>, <Ref Oper="ImageElm"/>,
-##  <Ref Oper="PreImagesElm"/>,
-##  <Ref Oper="PreImagesRepresentative"/>, <Ref Oper="PreImagesSet"/>,
+##  <Ref Oper="PreImagesElmNC"/>,
+##  <Ref Oper="PreImagesRepresentativeNC"/>, <Ref Oper="PreImagesSetNC"/>,
 ##  and <Ref Oper="PreImageElm"/> take two arguments, a general mapping
 ##  <A>map</A> and an element or collection of elements <A>elm</A>.
 ##  These methods must <E>not</E> check whether <A>elm</A> lies in the source
@@ -198,6 +198,8 @@
 ##  <Ref Func="Images" Label="set of images of the source of a general mapping"/>,
 ##  <Ref Func="PreImage" Label="set of preimages of the range of a general mapping"/>,
 ##  and <Ref Func="PreImages" Label="set of preimages of the range of a general mapping"/>,
+##  and by the operations <Ref Oper="PreImagesElm"/>,
+##  <Ref Oper="PreImagesRepresentative"/>, and <Ref Oper="PreImagesSet"/>,
 ##  which then delegate to the operations listed above.
 ##  <#/GAPDoc>
 ##
@@ -1208,8 +1210,8 @@ DeclareGlobalFunction("CompositionMapping2General");
 ##  <P/>
 ##  Additionally, the properties <Ref Prop="IsInjective"/> and
 ##  <Ref Prop="IsSingleValued"/> are maintained.
-##  If the range of the <M>i+1</M>-th argument is identical to
-##  the range of the <M>i</M>-th argument,
+##  If the source of the <M>i</M>-th argument is identical to
+##  the range of the <M>i+1</M>-th argument,
 ##  also <Ref Prop="IsTotal"/> and <Ref Prop="IsSurjective"/> are maintained.
 ##  (So one should not call <Ref Oper="CompositionMapping2"/> directly
 ##  if one wants to maintain these properties.)

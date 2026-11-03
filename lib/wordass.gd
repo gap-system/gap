@@ -168,14 +168,15 @@ DeclareCategory( "IsSyllableWordsFamily", IsAssocWordFamily );
 ##
 ##  <#GAPDoc Label="Is8BitsFamily">
 ##  <ManSection>
+##  <Filt Name="Is8BitsFamily" Arg='obj' Type='Category'/>
 ##  <Filt Name="Is16BitsFamily" Arg='obj' Type='Category'/>
 ##  <Filt Name="Is32BitsFamily" Arg='obj' Type='Category'/>
 ##  <Filt Name="IsInfBitsFamily" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
-##  Regardless of the internal representation used, it is possible to convert
-##  a word in a list of numbers in letter or syllable representation and vice
-##  versa.
+##  These subcategories of <Ref Filt="IsSyllableWordsFamily"/> indicate
+##  that the words of the family are stored with 8, 16, 32, or an unbounded
+##  number of bits per generator/exponent pair.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
