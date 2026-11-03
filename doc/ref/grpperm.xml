@@ -440,8 +440,9 @@ This structure is itself a record&nbsp;<A>S</A> and it has
 </List>
 <P/>
 This gives a recursive structure where the <Q>outermost</Q> record
-representing the <Q>topmost</Q> stabilizer is bound to
-the group record component <C>stabChain</C> and has the components
+representing the <Q>topmost</Q> stabilizer is the
+<Ref Attr="StabChainMutable" Label="for a group"/> value of the group
+and has the components
 explained below.
 Note: Since the structure is recursive, <E>never print a stabilizer chain!</E>
 (Unless you want to exercise the scrolling capabilities of your terminal.)
