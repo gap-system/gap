@@ -143,6 +143,11 @@ local modu, modus,gens,v,subs,sub,ser,i,j,a,si,dims,cf,mats,clos,bas,rad;
   fi;
 
   a:=Length(mats[1]);
+  if a=1 then
+    # a 1-dimensional factor means G = O_p(G), so the trivial module is
+    # the only irreducible one
+    return [gens,[TrivialModule(Length(gens),F)]];
+  fi;
   Info(InfoMeatAxe,1,"Work in factor dimension ",a);
   subs:=[];
   # It is quite likely that a vector [1,-1] spans a submodule
