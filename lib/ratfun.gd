@@ -191,7 +191,7 @@ DeclareAttribute( "CoefficientsFamily", IsFamily );
 ##  <Description>
 ##  returns the numerator of the rational function <A>ratfun</A>.
 ##  <P/>
-##  As no proper multivariate gcd has been implemented yet, numerators and
+##  As multivariate gcds are not computed automatically, numerators and
 ##  denominators are not guaranteed to be reduced!
 ##  </Description>
 ##  </ManSection>
@@ -210,7 +210,7 @@ DeclareAttribute( "NumeratorOfRationalFunction", IsPolynomialFunction);
 ##  <Description>
 ##  returns the denominator of the rational function <A>ratfun</A>.
 ##  <P/>
-##  As no proper multivariate gcd has been implemented yet, numerators and
+##  As multivariate gcds are not computed automatically, numerators and
 ##  denominators are not guaranteed to be reduced!
 ##  <Example><![CDATA[
 ##  gap> x:=Indeterminate(Rationals,1);;y:=Indeterminate(Rationals,2);;
@@ -1226,11 +1226,14 @@ DeclareOperation( "LeadingMonomial", [ IsPolynomialFunction ] );
 ##
 ##  <#GAPDoc Label="LeadingCoefficient">
 ##  <ManSection>
-##  <Oper Name="LeadingCoefficient" Arg='pol'/>
+##  <Oper Name="LeadingCoefficient" Arg='pol[, ind]'/>
 ##
 ##  <Description>
 ##  returns the leading coefficient (that is the coefficient of the leading
 ##  monomial, see&nbsp;<Ref Oper="LeadingMonomial"/>) of the polynomial <A>pol</A>.
+##  If the number <A>ind</A> of an indeterminate is given, it returns the
+##  leading coefficient of <A>pol</A> regarded as univariate polynomial in
+##  this indeterminate, with polynomial coefficients.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1342,11 +1345,11 @@ DeclareOperation("Derivative",[IsPolynomialFunction,IsPosInt]);
 
 #############################################################################
 ##
-#A  TaylorSeriesRationalFunction( <ratfun>, <at>, <deg> )
+#F  TaylorSeriesRationalFunction( <ratfun>, <at>, <deg> )
 ##
 ##  <#GAPDoc Label="TaylorSeriesRationalFunction">
 ##  <ManSection>
-##  <Attr Name="TaylorSeriesRationalFunction" Arg='ratfun, at, deg'/>
+##  <Func Name="TaylorSeriesRationalFunction" Arg='ratfun, at, deg'/>
 ##
 ##  <Description>
 ##  Computes the Taylor series up to degree <A>deg</A> of <A>ratfun</A> at
@@ -1465,7 +1468,7 @@ DeclareGlobalFunction("CIUnivPols");
 ##  This function tries to cancel common factors between the corresponding
 ##  polynomials and returns a list <M>[ a', b' ]</M> of
 ##  external representations of cancelled polynomials.
-##  As there is no proper multivariate GCD
+##  As no multivariate gcd is computed,
 ##  cancellation is not guaranteed to be optimal.
 ##  </Description>
 ##  </ManSection>
@@ -1591,8 +1594,9 @@ DeclareGlobalFunction("GcdCoeffs");
 ##  <Ref Attr="CoefficientsOfUnivariateRationalFunction"/> for <A>f</A>.
 ##  <P/>
 ##  Otherwise, each entry of the returned list is equal to <K>fail</K>.
-##  As there is no proper multivariate gcd, this may also happen for the
-##  rational function which may be reduced to univariate (see example).
+##  As multivariate gcds are not computed automatically, this may also
+##  happen for a rational function which may be reduced to univariate
+##  (see example).
 ##  <Example><![CDATA[
 ##  gap> UnivariatenessTestRationalFunction( 50-45*x-6*x^2+x^3 );
 ##  [ true, 1, true, [ [ 50, -45, -6, 1 ], 0 ] ]
