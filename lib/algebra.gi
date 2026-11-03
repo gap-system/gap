@@ -121,6 +121,8 @@ InstallOtherMethod( FLMLORWithOneByGenerators,
 InstallGlobalFunction( FLMLOR, function( arg )
     local A;
 
+    CheckAdditiveGenerators( "FLMLOR", arg );
+
     # ring and list of generators
     if Length( arg ) = 2 and IsRing( arg[1] )
                          and IsList( arg[2] ) and 0 < Length( arg[2] ) then
@@ -224,6 +226,8 @@ end );
 ##
 InstallGlobalFunction( FLMLORWithOne, function( arg )
     local A;
+
+    CheckAdditiveGenerators( "FLMLORWithOne", arg );
 
     # ring and list of generators
     if Length( arg ) = 2 and IsRing( arg[1] )
