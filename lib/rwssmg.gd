@@ -17,7 +17,9 @@
 ##
 ##  <#GAPDoc Label="ReducedConfluentRewritingSystem">
 ##  <ManSection>
-##  <Attr Name="ReducedConfluentRewritingSystem" Arg='S[, ordering]'/>
+##  <Attr Name="ReducedConfluentRewritingSystem" Arg='S'/>
+##  <Oper Name="ReducedConfluentRewritingSystem" Arg='S, ordering'
+##   Label="with an ordering"/>
 ##
 ##  <Description>
 ##  returns a reduced confluent rewriting system of

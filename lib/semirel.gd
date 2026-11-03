@@ -29,15 +29,15 @@
 ##  and <M>J</M>-related if and only if <M>S^1 xS^1 = S^1 yS^1</M>;
 ##  finally, <M>H = R \wedge L</M>, and <M>D = R \circ L</M>.
 ##  <P/>
-##  Recall that relations <M>R</M>, <M>L</M> and <M>J</M> induce a partial
-##  order among the elements of the semigroup <M>S</M>:
+##  Recall that relations <M>R</M>, <M>L</M> and <M>J</M> induce a
+##  preorder among the elements of the semigroup <M>S</M>:
 ##  for two elements <M>x</M>, <M>y</M> from <M>S</M>,
 ##  we say that <M>x</M> is less than or equal to <M>y</M> in the order on
 ##  <M>R</M> if <M>xS^1 \subseteq yS^1</M>;
 ##  similarly, <M>x</M> is less than or equal to <M>y</M> under <M>L</M> if
 ##  <M>S^1x \subseteq S^1y</M>;
 ##  finally <M>x</M> is less than or equal to <M>y</M> under <M>J</M> if
-##  <M>S^1 xS^1 \subseteq S^1 tS^1</M>.
+##  <M>S^1 xS^1 \subseteq S^1 yS^1</M>.
 ##  We extend this preorder to a partial order on equivalence classes in
 ##  the natural way.
 ##  <#/GAPDoc>
