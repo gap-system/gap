@@ -33,4 +33,10 @@ gap> List(Concatenation(funcs, ranks), NameFunction);
 [ "cheese method", "cheese for a list", "func3", 
   "Priority calculation for cheese", 
   "Priority calculation for cheese for a list", "rank3" ]
+
+# Check errors from InstallMethodWithRandomSource for a constructor
+gap> DeclareConstructor("TestCons", [IsRandomSource, IsObject]);
+gap> InstallMethodWithRandomSource(TestCons, "for a random source and",
+> [IsRandomSource, IsObject], ReturnFail);
+Error, First argument must not be a constructor
 gap> STOP_TEST("method.tst");

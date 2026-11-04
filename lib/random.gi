@@ -255,6 +255,11 @@ end );
         return function(args...)
             local filterpos, i, func, info;
 
+            if Length(args) < 2 then
+                ErrorNoReturn("Expected at least 2 arguments, found ", Length(args));
+            elif IS_CONSTRUCTOR(args[1]) then
+                ErrorNoReturn("First argument must not be a constructor");
+            fi;
             # Check we understand arguments
             # Second value must be an info string
             if not IsString(args[2]) then
@@ -263,7 +268,7 @@ end );
 
             # Info strings always tend to begin 'for ', and here we want
             # to be able to edit it, so we check.
-            if args[2]{[1..23]} <> "for a random source and" then
+            if Length(args[2]) < 23 or args[2]{[1..23]} <> "for a random source and" then
                 ErrorNoReturn("Info string must begin 'for a random source and'");
             fi;
 
