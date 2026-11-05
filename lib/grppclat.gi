@@ -1034,7 +1034,8 @@ Assert(1,ForAll(bs,i->ForAll(efunc,j->Image(j,i)=i)));
                     l:=z.cocycleToComplement(com[kp]);
                     # the projection on the complement
                     k:=ClosureSubgroup(b,l);
-                    if Length(s)=1 and IsOne(s[1]) then
+                    if Length(s)=1 and IsOne(s[1])
+                      and Dimension(z.oneCoboundaries)=0 then
                       # special case -- no conjugates
                       if ForAll(efunc,x->ForAll(GeneratorsOfGroup(l),
                            y->ImagesRepresentative(x,y) in k)) then
