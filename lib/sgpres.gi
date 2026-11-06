@@ -2962,7 +2962,7 @@ end );
 
 BindGlobal( "NEWTC_DoCosetEnum", function(freegens,freerels,subgens,aug,trace)
 local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,dr,
-  oldead,with,collapse,j,from,pp,PERCFACT,ap,ordertwo;
+  oldead,with,collapse,j,from,pp,PERCFACT,ap,ordertwo,isprefix,tracewords;
 
   # indicate at what change threshold display of coset Nr. should happen
   PERCFACT:=ValueOption("display");
@@ -2975,7 +2975,6 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,dr,
     Error("noncanonical generator order not yet possible");
   fi;
   offset:=m+1;
-  rels:=ShallowCopy(freerels);
   rels:=Filtered(freerels, x -> Length(x) > 0);
   SortBy(rels,Length);
   ri:=Union(rels,List(rels,x->x^-1));
@@ -3032,7 +3031,7 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,dr,
 
   i:=ValueOption("limit");
   if i<>fail and Int(i)<>fail then
-    DATA.limit:=i;
+    DATA.limit:=Int(i);
   fi;
   DATA.limtrigger:=Int(9/10*DATA.limit);
 
@@ -3083,17 +3082,18 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,dr,
   for w in [1..Length(subgens)] do
     if DATA.augmented then
       if DATA.isCyclicMtcTable then
-        NEWTC_ModifiedScanAndFill(DATA,1,DATA.subgword[w],1);
+        dr:=NEWTC_ModifiedScanAndFill(DATA,1,DATA.subgword[w],1);
       elif DATA.isAbelianizedMtcTable then
         i:=ShallowCopy(DATA.one);
         i[w]:=1;
-        NEWTC_ModifiedScanAndFill(DATA,1,DATA.subgword[w],i);
+        dr:=NEWTC_ModifiedScanAndFill(DATA,1,DATA.subgword[w],i);
       else
-        NEWTC_ModifiedScanAndFill(DATA,1,DATA.subgword[w],[w]);
+        dr:=NEWTC_ModifiedScanAndFill(DATA,1,DATA.subgword[w],[w]);
       fi;
     else
-      NEWTC_ScanAndFill(DATA,1,DATA.subgword[w]);
+      dr:=NEWTC_ScanAndFill(DATA,1,DATA.subgword[w]);
     fi;
+    if dr=fail then return fail;fi;
   od;
 
   NEWTC_ProcessDeductions(DATA);
@@ -3201,9 +3201,9 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,dr,
 
     # conditions for compression: Over half the table used, and
     if 2*DATA.n>DATA.limit and
-      # at least 33% trash (4=1+1/0.33)
+      # more than 25% trash
       ( 4*DATA.dead>DATA.n or
-      # over limtrigger and at least 2% (55=1+1/0.02) trash
+      # over limtrigger and about 2% (1/51) trash
       (51*DATA.dead>DATA.n and DATA.n>DATA.limtrigger) )  then
 
       Info( InfoFpGroup, 2, "\t", DATA.defcount, "\t\t", DATA.dead,
@@ -3231,12 +3231,20 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,dr,
   if Length(collapse)>0 then
     Info(InfoFpGroup,3,DATA.defcount," definitions");
     # which collapses gave at least 1%
-    collapse:=Filtered(collapse,x->x[2]*PERCFACT>DATA.n and not x in trace and
-               # not prefix of any trace
-               not ForAny(trace,y->y[1]{[1..Minimum(Length(x),Length(y[1]))]}=x
-               # or proper prefix of another in collapse
-               and not ForAny(collapse,y->Length(y)>Length(x) and
-                y{[1..Length(x)]}=x)));
+
+    # entries of collapse are pairs [word, count]; so are those of trace,
+    # but the tracing code above also accepts plain words there
+    isprefix:={u,v}->Length(u)<=Length(v) and v{[1..Length(u)]}=u;
+    tracewords:=List(trace,function(y)
+         if Length(y)>0 and IsList(y[1]) then return y[1]; fi;
+         return y;
+       end);
+    collapse:=Filtered(collapse,x->x[2]*PERCFACT>DATA.n
+               # not a prefix of (or equal to) any trace word
+               and not ForAny(tracewords,y->isprefix(x[1],y))
+               # nor a proper prefix of another word in collapse
+               and not ForAny(collapse,y->Length(y[1])>Length(x[1])
+                                          and isprefix(x[1],y[1])));
     if Length(collapse)>0 then
       # give list for improvement
       # type is c_ollapse
