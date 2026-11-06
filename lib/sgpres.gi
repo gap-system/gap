@@ -1469,6 +1469,9 @@ InstallGlobalFunction( RelatorMatrixAbelianizedSubgroupRrs, function ( G, H )
     # apply the Reduced Reidemeister-Schreier method to construct an
     # augmented coset table of H.
     aug := AugmentedCosetTableRrs( G, table, 0, "_x" );
+    if aug = fail then
+      return fail;
+    fi;
 
     # determine a set of abelianized subgroup relators.
     aug.subgroupRelators := RewriteAbelianizedSubgroupRelators( aug,
@@ -1546,13 +1549,10 @@ InstallGlobalFunction( RenumberTree, function ( aug )
 
         # change the factor table entries accordingly.
         for i in [1..numcols] do
-# --------------
-# obsolete condition: columns should never be equal.
-#            if i mod 2 = 1 or
-#                not IsIdenticalObj( coFacTable[i], coFacTable[i-1] ) then
-if i > 1 and IsIdenticalObj( coFacTable[i], coFacTable[i-1] ) then
-Error( "there is a bug in RenumberTree" ); fi;
-# --------------
+
+        # columns must not be shared, as they are changed in place
+        Assert( 1, i = 1 or
+          not IsIdenticalObj( coFacTable[i], coFacTable[i-1] ) );
             column := coFacTable[i];
             for j in [1..index] do
                 column[j] := convert[null+column[j]];
