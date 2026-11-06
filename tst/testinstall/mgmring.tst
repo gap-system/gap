@@ -34,6 +34,20 @@ gap> M:= GL( 2, Integers );;
 gap> m:= SL( 2, Integers );;
 gap> rm:= GroupRing( r, m );;
 
+# arithmetics (vs. list arithmetics)
+gap> M.1 + One( rm );
+(1)*[ [ 0, 1 ], [ 1, 0 ] ]+(1)*[ [ 1, 0 ], [ 0, 1 ] ]
+gap> M.1 - One( rm );
+(1)*[ [ 0, 1 ], [ 1, 0 ] ]+(-1)*[ [ 1, 0 ], [ 0, 1 ] ]
+gap> M.1 * One( rm );
+(1)*[ [ 0, 1 ], [ 1, 0 ] ]
+gap> One( rm ) + M.1;
+(1)*[ [ 0, 1 ], [ 1, 0 ] ]+(1)*[ [ 1, 0 ], [ 0, 1 ] ]
+gap> One( rm ) - M.1;
+(-1)*[ [ 0, 1 ], [ 1, 0 ] ]+(1)*[ [ 1, 0 ], [ 0, 1 ] ]
+gap> One( rm ) * M.1;
+(1)*[ [ 0, 1 ], [ 1, 0 ] ]
+
 # embedding of the group
 gap> membrm:= Embedding( m, rm );;
 gap> rmgens:= GeneratorsOfAlgebra( rm );;
@@ -50,10 +64,6 @@ gap> M.1 in m;
 false
 gap> elm:= M.1 * One( rm );
 (1)*[ [ 0, 1 ], [ 1, 0 ] ]
-gap> meth:= ApplicableMethod( \in, [ elm, Range( membrm ) ] );
-function( r, RM ) ... end
-gap> Reversed( SplitString( FilenameFunc( meth ), '/' ) ){ [ 1, 2 ] };
-[ "mgmring.gi", "lib" ]
 gap> elm in Range( membrm );
 false
 gap> PreImagesRepresentative( membrm, elm );
