@@ -3451,13 +3451,20 @@ local p,new,start,half;
     fi;
   fi;
 
-  p:=PositionSublist(new,r{[1..half-1]});
-  if p<>fail and p>=Length(new)-Length(r)+1
-    and new{[p..Length(new)]}=r{[1..Length(new)-p+1]}
-    and p>Length(new)+p-1 and
-    new{[1..Length(r)-Length(new)+p-1]}=r{[Length(new)-p+2..Length(r)]} then
+  # Otherwise, the end of new is a proper prefix of r and the start of new
+  # is the matching suffix of r.
+  if Length(new)>=Length(r) then
+    p:=PositionSublist(new,r{[1..half-1]},Length(new)-Length(r)+1);
+    while p<>fail do
+      if new{[p..Length(new)]}=r{[1..Length(new)-p+1]} and
+        new{[1..Length(r)-Length(new)+p-1]}=r{[Length(new)-p+2..Length(r)]}
+        then
+        new:=new{[Length(r)-Length(new)+p..p-1]};
+        break;
+      fi;
+      p:=PositionSublist(new,r{[1..half-1]},p);
+    od;
 
-    new:=new{[Length(r)-Length(new)+p..p-1]};
   fi;
 
   return new;
