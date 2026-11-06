@@ -1,4 +1,4 @@
-#@local centre,img,m,membrm,r,rembrm,rm,M,rmgens,preimgs
+#@local centre,img,m,membrm,r,rembrm,rm,M,rmgens,preimgs,elm,meth
 gap> START_TEST("mgmring.tst");
 
 #
@@ -48,9 +48,17 @@ gap> PreImagesElm( membrm, 2 * One( rm ) );
 [  ]
 gap> M.1 in m;
 false
-gap> PreImagesRepresentative( membrm, M.1 * One( rm ) );
+gap> elm:= M.1 * One( rm );
+(1)*[ [ 0, 1 ], [ 1, 0 ] ]
+gap> meth:= ApplicableMethod( \in, [ elm, Range( membrm ) ] );
+function( r, RM ) ... end
+gap> Reversed( SplitString( FilenameFunc( meth ), '/' ) ){ [ 1, 2 ] };
+[ "mgmring.gi", "lib" ]
+gap> elm in Range( membrm );
+false
+gap> PreImagesRepresentative( membrm, elm );
 Error, <elm> is not in the range of the mapping <emb>
-gap> PreImagesElm( membrm, M.1 * One( rm ) );
+gap> PreImagesElm( membrm, elm );
 Error, <elm> is not in the range of mapping <emb>
 
 # embedding of the ring
@@ -63,9 +71,13 @@ gap> PreImagesRepresentative( rembrm, 2 * rmgens[2] );
 fail
 gap> PreImagesElm( rembrm, 2 * rmgens[2] );
 [  ]
-gap> PreImagesRepresentative( rembrm, E(4) * One( rm ) );
+gap> elm:= E(4) * One( rm );
+(E(4))*[ [ 1, 0 ], [ 0, 1 ] ]
+gap> elm in Range( rembrm );
+false
+gap> PreImagesRepresentative( rembrm, elm );
 Error, <elm> is not in the range of the mapping <emb>
-gap> PreImagesElm( rembrm, E(4) * rmgens[2] );
+gap> PreImagesElm( rembrm, elm );
 Error, <elm> is not in the range of mapping <emb>
 
 #
