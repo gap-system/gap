@@ -26,7 +26,14 @@ InstallGlobalFunction( AbelianInvariantsNormalClosureFpGroupRrs,
 function ( G, H )
 local M;
   M:=RelatorMatrixAbelianizedNormalClosureRrs( G, H );
-  if Length(M)=0 then
+  if M=fail then
+    if ValueOption("cheap")=true then return fail;fi;
+    Info(InfoWarning,1,
+      "exponent too large, abelianized coset enumeration aborted");
+    Info(InfoWarning,1,"calculation will be slow");
+    M:=MaximalAbelianQuotient(NormalClosure(G,H));
+    return AbelianInvariants(Range(M));
+  elif Length(M)=0 then
     return [];
   else
     M:=ReducedRelationMat(M);
@@ -39,7 +46,7 @@ end );
 #############################################################################
 ##
 #M  AbelianInvariantsSubgroupFpGroupMtc( <G>, <H> ) . . . . . . . . . . . . .
-#M  . . . . . abelian invariants of the normal closure of the subgroup H of G
+#M  . . . . . abelian invariants of the subgroup H of G
 ##
 ##  uses the Modified Todd-Coxeter method to compute the abelian
 ##  invariants of a subgroup <H> of a finitely presented group <G>.
@@ -63,7 +70,7 @@ end );
 ##
 #M  AbelianInvariantsSubgroupFpGroupRrs( <G>, <H> ) . . . . . . . . . . . . .
 #M  AbelianInvariantsSubgroupFpGroupRrs( <G>, <costab> ) . . .  . . . . . . .
-+#M  . . . . . . . . . . . . . . . . . . . abelian invariants of the subgroup H
+#M  . . . . . . . . . . . . . . . . . . . abelian invariants of the subgroup H
 ##
 ##  uses the Reduced Reidemeister-Schreier method to compute the abelian
 ##  invariants of a subgroup <H> of a finitely presented group <G>.
@@ -1289,6 +1296,7 @@ InstallGlobalFunction( PresentationSubgroupRrs, function ( arg )
                   "standardized, a standardized copy will be used instead" );
             table := StructuralCopy( table );
             StandardizeTable( table );
+        fi;
 
         # apply the Reduced Reidemeister-Schreier method to construct an
         # augmented RRS coset table of H.
@@ -1408,6 +1416,9 @@ InstallGlobalFunction( RelatorMatrixAbelianizedNormalClosureRrs,
     # apply the Reduced Reidemeister-Schreier method to construct a coset
     # table presentation of N.
     aug := AugmentedCosetTableRrs( G, cosTable, 0, "_x" );
+    if aug = fail then
+      return fail;
+    fi;
 
     # determine a set of abelianized subgroup relators.
     aug.subgroupRelators := RewriteAbelianizedSubgroupRelators( aug,
@@ -2841,7 +2852,7 @@ local c,offset,f,b,r,i,j;
       NEWTC_AddDeduction(DATA.deductions,[f,w[i]]);
       return true;
     else
-      if NEWTC_Define(DATA,f,w[i])=fail
+      if NEWTC_Define(DATA,f,w[i])=fail then
         return fail;
       fi;
     fi;
