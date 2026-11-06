@@ -49,7 +49,8 @@ function ( G, H )
 local M;
   M:=RelatorMatrixAbelianizedSubgroupMtc( G, H );
   if Length(M)=0 then
-    return [];
+    # no relators: free abelian on the subgroup generators
+    return ListWithIdenticalEntries( Length( GeneratorsOfGroup( H ) ), 0 );
   else
     M:=ReducedRelationMat(M);
     DiagonalizeMat( Integers, M );
