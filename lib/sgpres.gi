@@ -98,24 +98,33 @@ end );
 ##
 InstallGlobalFunction(AugmentedCosetTableInWholeGroup,
 function(arg)
-local aug,H,wor,w;
+local aug,H,wor,w,covers;
   H:=arg[1];
   if Length(arg)=1 then
     return AugmentedCosetTableRrsInWholeGroup(H);
   fi;
   wor:=List(arg[2],UnderlyingElement); # words for given elements
+
+  # does the table have the words among its subgroup generators?
+  covers:=function(aug)
+    if IsBound(aug.isNewAugmentedTable) then
+      # NEWTC format: only the primary generators are available as words
+      return IsSubset(List(aug.subgens,UnderlyingElement),wor);
+    fi;
+    return ForAll(wor,x->x in aug.primaryGeneratorWords or
+       x in SecondaryGeneratorWordsAugmentedCosetTable(aug));
+  end;
+
   # is there an MTc table we can use?
   if HasAugmentedCosetTableMtcInWholeGroup(H) then
     aug := AugmentedCosetTableMtcInWholeGroup( H );
-    if IsSubset(aug.primaryGeneratorWords,wor) or
-       IsSubset(SecondaryGeneratorWordsAugmentedCosetTable(aug),wor) then
+    if covers(aug) then
       return aug;
     fi;
   fi;
   # try the Rrs table
   aug := AugmentedCosetTableRrsInWholeGroup( H );
-  if IsSubset(aug.primaryGeneratorWords,wor) or
-      IsSubset(SecondaryGeneratorWordsAugmentedCosetTable(aug),wor) then
+  if covers(aug) then
     return aug;
   fi;
 
