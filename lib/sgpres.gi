@@ -2642,8 +2642,9 @@ local MRep,MMerge,ct,offset,l,q,i,c,x,d,p,pp,mu,nu,aug,v,Sekundant;
   od;
 end );
 
-# superseded by kernel function TC_QUICK_SCAN, left here for debugging purposes.
-BindGlobal( "NEWTC_QuickScanLibraryVersion", function(c,offset,alpha,w)
+# superseded by kernel function TC_QUICK_SCAN (same arguments), left here
+# for debugging purposes.
+BindGlobal( "NEWTC_QuickScanLibraryVersion", function(c,offset,alpha,w,result)
 local f,b,r,i,j;
   f:=alpha;i:=1;
   r:=Length(w);
@@ -2654,7 +2655,7 @@ local f,b,r,i,j;
   od;
   if i>r then
     if f<>alpha then
-      w[1]:=i;w[2]:=f;
+      result[1]:=i;result[2]:=f;
       return true;
     fi;
     return false;
@@ -2667,7 +2668,7 @@ local f,b,r,i,j;
     j:=j-1;
   od;
   if j<=i then
-    w[1]:=i;w[2]:=f;w[3]:=j;w[4]:=b;
+    result[1]:=i;result[2]:=f;result[3]:=j;result[4]:=b;
     return true;
   fi;
   return false;
@@ -2822,7 +2823,7 @@ local c,offset,f,b,r,i,j;
       if f<>alpha then
         NEWTC_Coincidence(DATA,f,alpha);
       fi;
-      return;
+      return true;
     fi;
 
     #backward scan
@@ -2838,11 +2839,14 @@ local c,offset,f,b,r,i,j;
       c[w[i]+offset][f]:=b;
       c[-w[i]+offset][b]:=f;
       NEWTC_AddDeduction(DATA.deductions,[f,w[i]]);
-      return;
+      return true;
     else
-      NEWTC_Define(DATA,f,w[i]);
+      if NEWTC_Define(DATA,f,w[i])=fail
+        return fail;
+      fi;
     fi;
   od;
+  return true;
 end );
 
 BindGlobal( "NEWTC_ModifiedScanAndFill", function(DATA,alpha,w,y)
@@ -2874,7 +2878,7 @@ local c,offset,f,b,r,i,j,fp,bp;
             WordProductLetterRep(-Reversed(fp),y));
         fi;
       fi;
-      return;
+      return true;
     fi;
 
     #backward scan
@@ -2905,11 +2909,14 @@ local c,offset,f,b,r,i,j,fp,bp;
         DATA.aug[-w[i]+offset][b]:=WordProductLetterRep(-Reversed(bp),fp);
       fi;
       NEWTC_AddDeduction(DATA.deductions,[f,w[i]]);
-      return;
+      return true;
     else
-      NEWTC_Define(DATA,f,w[i]);
+      if NEWTC_Define(DATA,f,w[i])=fail then
+        return fail;
+      fi;
     fi;
   od;
+  return true;
 end );
 
 BindGlobal( "NEWTC_ProcessDeductions", function(DATA)
