@@ -316,7 +316,6 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
       return fail; # rewriting failed b/c too large exponent
     fi;
     factors := app2[7];
-#if Length(factors)>0 then Print(Length(factors)," ",Maximum(factors)," ",Minimum(factors),"\n");fi;
 
     # ensure that the scan provided a deduction.
     # if app2[1] - 1 <> app2[3]
@@ -338,6 +337,7 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
     deductions[nrdeds] := [ triple[1][app2[1]], app2[2] ];
     treelength := tree[3];
     count := count - 2;
+    return true;
   end;
 
   LoopOverAllCosets:=function()
@@ -408,9 +408,11 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
                             # a deduction has been found: compute the
                             # corresponding factor and enter the deduction to
                             # the tables and to the deductions lists.
-                            EnterDeduction( );
+                            if EnterDeduction( )=fail then
+                              return fail;
+                            fi;
                             if count <= 0 then
-                              return;
+                              return true;
                             fi;
                         fi;
                     od;
@@ -421,6 +423,7 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
             fi;
         od;
     od;
+    return true;
   end;
 
 
@@ -567,7 +570,9 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
                 # a deduction has been found: compute the corresponding
                 # factor and enter the deduction to the tables and to the
                 # deductions lists.
-                EnterDeduction( );
+                if EnterDeduction( ) = fail then
+                  return fail;
+                fi;
             fi;
         od;
 
@@ -588,7 +593,9 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
     defs := [ ];
 
     # loop over cosets
-    LoopOverAllCosets();
+    if LoopOverAllCosets() = fail then
+      return fail;
+    fi;
     CompletionBar(InfoFpGroup,2,"Coset Loop: ",false);
 
     # save the number of primary subgroup generators and the number of all
