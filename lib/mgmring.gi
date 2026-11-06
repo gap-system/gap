@@ -496,14 +496,10 @@ InstallOtherMethod( InverseOp,
 
 #############################################################################
 ##
-#M  \* <m>, <x> )  . . . . . . . .  for magma element and magma ring element
+#M  \*( <m>, <x> )  . . . . . . . .  for magma element and magma ring element
 #M  \*( <x>, <m> )  . . . . . . . .  for magma ring element and magma element
 ##
-InstallMethod( \*,
-    "for magma element and magma ring element",
-    IsMagmasMagmaRings,
-    [ IsMultiplicativeElement, IsElementOfMagmaRingModuloRelations ],
-    function( m, x )
+BindGlobal( "MagmaElmTimesMagmaRingElm", function( m, x )
     local F, z;
     F:= FamilyObj( x );
     z:= ZeroCoefficient( x );
@@ -516,10 +512,19 @@ InstallMethod( \*,
     end );
 
 InstallMethod( \*,
-    "for magma ring element and magma element",
-    IsMagmaRingsMagmas,
-    [ IsElementOfMagmaRingModuloRelations, IsMultiplicativeElement ],
-    function( x, m )
+    "for magma element and magma ring element",
+    IsMagmasMagmaRings,
+    [ IsMultiplicativeElement, IsElementOfMagmaRingModuloRelations ],
+    MagmaElmTimesMagmaRingElm );
+
+# HACK: This method must be ranked above '<list> * <nonlist>'.
+InstallMethod( \*,
+    "for magma element & list and magma ring element",
+    IsMagmasMagmaRings,
+    [ IsMultiplicativeElement and IsListDefault, IsElementOfMagmaRingModuloRelations ],
+    MagmaElmTimesMagmaRingElm );
+
+BindGlobal( "MagmaRingElmTimesMagmaElm", function( x, m )
     local F, z;
     F:= FamilyObj( x );
     z:= ZeroCoefficient( x );
@@ -532,17 +537,26 @@ InstallMethod( \*,
     return Objectify( F!.defaultType, x );
     end );
 
+InstallMethod( \*,
+    "for magma ring element and magma element",
+    IsMagmaRingsMagmas,
+    [ IsElementOfMagmaRingModuloRelations, IsMultiplicativeElement ],
+    MagmaRingElmTimesMagmaElm );
+
+# HACK: This method must be ranked above '<nonlist> * <list>'.
+InstallMethod( \*,
+    "for magma ring element and magma element & list",
+    IsMagmaRingsMagmas,
+    [ IsElementOfMagmaRingModuloRelations, IsMultiplicativeElement and IsListDefault ],
+    MagmaRingElmTimesMagmaElm );
+
 
 #############################################################################
 ##
 #M  \+( <m>, <x> )  . . . . . . . .  for magma element and magma ring element
 #M  \+( <x>, <m> )  . . . . . . . .  for magma ring element and magma element
 ##
-InstallOtherMethod( \+,
-    "for magma element and magma ring element",
-    IsMagmasMagmaRings,
-    [ IsMultiplicativeElement, IsElementOfMagmaRingModuloRelations ],
-    function( m, x )
+BindGlobal( "MagmaElmPlusMagmaRingElm", function( m, x )
     local F, z;
     F:= FamilyObj( x );
     z:= ZeroCoefficient( x );
@@ -554,10 +568,19 @@ InstallOtherMethod( \+,
     end );
 
 InstallOtherMethod( \+,
-    "for magma ring element and magma element",
-    IsMagmaRingsMagmas,
-    [ IsElementOfMagmaRingModuloRelations, IsMultiplicativeElement ],
-    function( x, m )
+    "for magma element and magma ring element",
+    IsMagmasMagmaRings,
+    [ IsMultiplicativeElement, IsElementOfMagmaRingModuloRelations ],
+    MagmaElmPlusMagmaRingElm );
+
+# HACK: This method must be ranked above '<list> + <nonlist>'.
+InstallOtherMethod( \+,
+    "for magma element & list and magma ring element",
+    IsMagmasMagmaRings,
+    [ IsMultiplicativeElement and IsListDefault, IsElementOfMagmaRingModuloRelations ],
+    MagmaElmPlusMagmaRingElm );
+
+BindGlobal( "MagmaRingElmPlusMagmaElm", function( x, m )
     local F, z;
     F:= FamilyObj( x );
     z:= ZeroCoefficient( x );
@@ -568,17 +591,46 @@ InstallOtherMethod( \+,
     return Objectify( F!.defaultType, x );
     end );
 
-
-#############################################################################
-##
-#M  \-( <x>, <m> )  . . . . . . . .  for magma ring element and magma element
-#M  \-( <m>, <x> )  . . . . . . . .  for magma ring element and magma element
-##
-InstallOtherMethod( \-,
+InstallOtherMethod( \+,
     "for magma ring element and magma element",
     IsMagmaRingsMagmas,
     [ IsElementOfMagmaRingModuloRelations, IsMultiplicativeElement ],
-    function( x, m )
+    MagmaRingElmPlusMagmaElm );
+
+# HACK: This method must be ranked above '<nonlist> + <list>'.
+InstallOtherMethod( \+,
+    "for magma ring element and magma element & list",
+    IsMagmaRingsMagmas,
+    [ IsElementOfMagmaRingModuloRelations, IsMultiplicativeElement and IsListDefault ],
+    MagmaRingElmPlusMagmaElm );
+
+
+#############################################################################
+##
+#M  \-( <m>, <x> )  . . . . . . . .  for magma element and magma ring element
+#M  \-( <x>, <m> )  . . . . . . . .  for magma ring element and magma element
+##
+BindGlobal( "MagmaElmMinusMagmaRingElm", function( m, x )
+    local F, z;
+    F:= FamilyObj( x );
+    z:= ZeroCoefficient( x );
+    return ElementOfMagmaRing( F, z, [ One( z ) ], [ m ] ) - x;
+    end );
+
+InstallOtherMethod( \-,
+    "for magma element and magma ring element",
+    IsMagmasMagmaRings,
+    [ IsMultiplicativeElement, IsElementOfMagmaRingModuloRelations ],
+    MagmaElmMinusMagmaRingElm );
+
+# HACK: This method must be ranked above '<list> - <nonlist>'.
+InstallOtherMethod( \-,
+    "for magma element and magma ring element",
+    IsMagmasMagmaRings,
+    [ IsMultiplicativeElement and IsListDefault, IsElementOfMagmaRingModuloRelations ],
+    MagmaElmMinusMagmaRingElm );
+
+BindGlobal( "MagmaRingElmMinusMagmaElm", function( x, m )
     local F, z;
     F:= FamilyObj( x );
     z:= ZeroCoefficient( x );
@@ -587,14 +639,16 @@ InstallOtherMethod( \-,
 
 InstallOtherMethod( \-,
     "for magma ring element and magma element",
-    IsMagmasMagmaRings,
-    [ IsMultiplicativeElement, IsElementOfMagmaRingModuloRelations ],
-    function( m, x )
-    local F, z;
-    F:= FamilyObj( x );
-    z:= ZeroCoefficient( x );
-    return ElementOfMagmaRing( F, z, [ One( z ) ], [ m ] ) - x;
-    end );
+    IsMagmaRingsMagmas,
+    [ IsElementOfMagmaRingModuloRelations, IsMultiplicativeElement ],
+    MagmaRingElmMinusMagmaElm );
+
+# HACK: This method must be ranked above '<nonlist> - <list>'.
+InstallOtherMethod( \-,
+    "for magma ring element and magma element",
+    IsMagmaRingsMagmas,
+    [ IsElementOfMagmaRingModuloRelations, IsMultiplicativeElement and IsListDefault ],
+    MagmaRingElmMinusMagmaElm );
 
 
 #############################################################################
@@ -1221,15 +1275,8 @@ InstallMethod( PreImagesElmNC,
     FamRangeEqFamElm,
     [ IsEmbeddingRingMagmaRing, IsElementOfFreeMagmaRing ],
     function ( emb, elm )
-    local R, extrep;
-    R:= Range( emb );
-    extrep:= CoefficientsAndMagmaElements( elm );
-    if     Length( extrep ) = 2
-       and extrep[1] = One( UnderlyingMagma( R ) ) then
-      return [ extrep[2] ];
-    else
-      return [];
-    fi;
+    # Assume that 'elm' is in the image of 'emb'.
+    return [ CoefficientsAndMagmaElements( elm )[2] ];
     end );
 
 InstallMethod( PreImagesElm,
@@ -1237,15 +1284,31 @@ InstallMethod( PreImagesElm,
     FamRangeEqFamElm,
     [ IsEmbeddingRingMagmaRing, IsElementOfFreeMagmaRing ],
     function ( emb, elm )
-    if not ( elm in Range( emb ) ) then
-      Error( "<elm> is not in the range of mapping <emb>" );
-    elif not ( elm in Image( emb ) ) then
+    local R, extrep;
+    R:= Range( emb );
+    extrep:= CoefficientsAndMagmaElements( elm );
+    if     Length( extrep ) = 2
+       and extrep[1] = One( UnderlyingMagma( R ) )
+       and extrep[2] in LeftActingDomain( R ) then
+      # 'elm' is in the image of 'emb'; do not call 'Image( emb )'
+      return [ extrep[2] ];
+    elif elm in Range( emb ) then
       return [];
+    else
+      Error( "<elm> is not in the range of mapping <emb>" );
     fi;
-    return PreImagesElmNC( emb, elm );
     end );
 
 InstallMethod( PreImagesRepresentativeNC,
+    "for embedding of ring into magma ring, and free magma ring element",
+    FamRangeEqFamElm,
+    [ IsEmbeddingRingMagmaRing, IsElementOfFreeMagmaRing ],
+    function ( emb, elm )
+    # Assume that 'elm' is in the image of 'emb'.
+    return CoefficientsAndMagmaElements( elm )[2];
+    end );
+
+InstallMethod( PreImagesRepresentative,
     "for embedding of ring into magma ring, and free magma ring element",
     FamRangeEqFamElm,
     [ IsEmbeddingRingMagmaRing, IsElementOfFreeMagmaRing ],
@@ -1254,24 +1317,15 @@ InstallMethod( PreImagesRepresentativeNC,
     R:= Range( emb );
     extrep:= CoefficientsAndMagmaElements( elm );
     if     Length( extrep ) = 2
-       and extrep[1] = One( UnderlyingMagma( R ) ) then
+       and extrep[1] = One( UnderlyingMagma( R ) )
+       and extrep[2] in LeftActingDomain( R ) then
+      # 'elm' is in the image of 'emb'; do not call 'Image( emb )'
       return extrep[2];
+    elif elm in Range( emb ) then
+      return fail;
     else
-      return fail;
-    fi;
-    end );
-
-InstallMethod( PreImagesRepresentative,
-    "for embedding of ring into magma ring, and free magma ring element",
-    FamRangeEqFamElm,
-    [ IsEmbeddingRingMagmaRing, IsElementOfFreeMagmaRing ],
-    function ( emb, elm )
-    if not ( elm in Range( emb ) ) then
       Error( "<elm> is not in the range of the mapping <emb>" );
-    elif not ( elm in Image( emb ) ) then
-      return fail;
     fi;
-    return PreImagesRepresentativeNC( emb, elm );
     end );
 
 
@@ -1350,15 +1404,8 @@ InstallMethod( PreImagesElmNC,
     FamRangeEqFamElm,
     [ IsEmbeddingMagmaMagmaRing, IsElementOfFreeMagmaRing ],
     function ( emb, elm )
-    local R, extrep;
-    R:= Range( emb );
-    extrep:= CoefficientsAndMagmaElements( elm );
-    if     Length( extrep ) = 2
-       and extrep[2] = One( LeftActingDomain( R ) ) then
-      return [ extrep[1] ];
-    else
-      return [];
-    fi;
+    # Assume that 'elm' is in the image of 'emb'.
+    return [ CoefficientsAndMagmaElements( elm )[1] ];
     end );
 
 InstallMethod( PreImagesElm,
@@ -1366,15 +1413,31 @@ InstallMethod( PreImagesElm,
     FamRangeEqFamElm,
     [ IsEmbeddingMagmaMagmaRing, IsElementOfFreeMagmaRing ],
     function ( emb, elm )
-    if not ( elm in Range( emb ) ) then
-      Error( "<elm> is not in the range of mapping <emb>" );
-    elif not ( elm in Image( emb ) ) then
+    local R, extrep;
+    R:= Range( emb );
+    extrep:= CoefficientsAndMagmaElements( elm );
+    if     Length( extrep ) = 2
+       and extrep[1] in UnderlyingMagma( R )
+       and extrep[2] = One( LeftActingDomain( R ) ) then
+      # 'elm' is in the image of 'emb'; do not call 'Image( emb )'
+      return [ extrep[1] ];
+    elif elm in Range( emb ) then
       return [];
+    else
+      Error( "<elm> is not in the range of mapping <emb>" );
     fi;
-    return PreImagesElmNC( emb, elm );
     end );
 
 InstallMethod( PreImagesRepresentativeNC,
+    "for embedding of magma into magma ring, and free magma ring element",
+    FamRangeEqFamElm,
+    [ IsEmbeddingMagmaMagmaRing, IsElementOfFreeMagmaRing ],
+    function ( emb, elm )
+    # Assume that 'elm' is in the image of 'emb'.
+    return CoefficientsAndMagmaElements( elm )[1];
+    end );
+
+InstallMethod( PreImagesRepresentative,
     "for embedding of magma into magma ring, and free magma ring element",
     FamRangeEqFamElm,
     [ IsEmbeddingMagmaMagmaRing, IsElementOfFreeMagmaRing ],
@@ -1383,24 +1446,15 @@ InstallMethod( PreImagesRepresentativeNC,
     R:= Range( emb );
     extrep:= CoefficientsAndMagmaElements( elm );
     if     Length( extrep ) = 2
+       and extrep[1] in UnderlyingMagma( R )
        and extrep[2] = One( LeftActingDomain( R ) ) then
+      # 'elm' is in the image of 'emb'; do not call 'Image( emb )'
       return extrep[1];
+    elif elm in Range( emb ) then
+      return fail;
     else
-      return fail;
+      Error( "<elm> is not in the range of the mapping <emb>" );
     fi;
-    end );
-
-InstallMethod( PreImagesRepresentative,
-    "for embedding of magma into magma ring, and free magma ring element",
-    FamRangeEqFamElm,
-    [ IsEmbeddingMagmaMagmaRing, IsElementOfFreeMagmaRing ],
-    function ( emb, elm )
-    if not ( elm in Range( emb ) ) then
-      Error( "<elm> is not in the range of mapping <emb>" );
-    elif not ( elm in Image( emb ) ) then
-      return fail;
-    fi;
-    return PreImagesRepresentativeNC( emb, elm );
     end );
 
 #############################################################################
