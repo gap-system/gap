@@ -1452,10 +1452,11 @@ InstallGlobalFunction( RelatorMatrixAbelianizedSubgroupRrs, function ( G, H )
         table := H;
         CheckCosetTableFpGroup( G, table );
         # ensure that it is standardized.
-        if not IsStandardized( table) then Print(
-            "#I  Warning: the given coset table is not standardized,\n",
-            "#I           a standardized copy will be used instead.\n" );
-            StandardizeTable( StructuralCopy( table ) );
+        if not IsStandardized( table ) then
+            Info( InfoWarning, 1, "the given coset table is not ",
+                  "standardized, a standardized copy will be used instead" );
+            table := StructuralCopy( table );
+            StandardizeTable( table );
         fi;
     else
         # construct the coset table of H in G if it is not yet available.
