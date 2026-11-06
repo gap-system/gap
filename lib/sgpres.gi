@@ -63,12 +63,12 @@ end );
 ##
 #M  AbelianInvariantsSubgroupFpGroupRrs( <G>, <H> ) . . . . . . . . . . . . .
 #M  AbelianInvariantsSubgroupFpGroupRrs( <G>, <costab> ) . . .  . . . . . . .
-#M  . . . . . abelian invariants of the normal closure of the subgroup H of G
++#M  . . . . . . . . . . . . . . . . . . . abelian invariants of the subgroup H
 ##
 ##  uses the Reduced Reidemeister-Schreier method to compute the abelian
 ##  invariants of a subgroup <H> of a finitely presented group <G>.
 ##
-##  Alternatively to the subgroup <H>, its coset table <table> in <G> may be
+##  Alternatively to the subgroup <H>, its coset table <costab> in <G> may be
 ##  given as second argument.
 ##
 InstallGlobalFunction( AbelianInvariantsSubgroupFpGroupRrs,
@@ -1021,13 +1021,15 @@ Error("still record access");
 
 #############################################################################
 ##
-#M  PresentationAugmentedCosetTable( <aug>, <string> [,<print level>] ) . . .
+#M  PresentationAugmentedCosetTable( <aug>, <string> [,<print level>] 
+#M                                     [,<init images>]] ) . . . . . . . . .
 #M                                                     create a Tietze record
 ##
 ##  'PresentationAugmentedCosetTable'  creates a presentation,  i.e. a Tietze
 ##  record, from the given augmented coset table. It assumes that <aug> is an
 ##  augmented coset table of type 2.  The generators will be named <string>1,
-##  <string>2, ... .
+##  <string>2, ... . If <init images> is `true', generator images are
+##  tracked from the start (see `TzInitGeneratorImages').
 ##
 InstallGlobalFunction( PresentationAugmentedCosetTable,
     function ( arg )
