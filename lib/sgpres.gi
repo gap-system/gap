@@ -3765,7 +3765,7 @@ end);
 ##  the default string is `\"_x\"'.
 ##
 InstallGlobalFunction( PresentationSubgroupMtc,function ( arg )
-  local G,H,string,DATA,i;
+local G,H,string,printlevel,DATA,T,i;
 
   # check the first two arguments to be a finitely presented group and a
   # subgroup of that group.
@@ -3780,11 +3780,13 @@ InstallGlobalFunction( PresentationSubgroupMtc,function ( arg )
 
   # initialize the generators name string and the print level.
   string := "_x";
+  printlevel := fail;
 
   # get the optional parameters.
   for i in [ 3 .. 4 ] do
       if Length( arg ) >= i then
-          if IsString( arg[i] ) then string := arg[i];
+          if IsInt( arg[i] ) then printlevel := arg[i];
+          elif IsString( arg[i] ) then string := arg[i];
           else
               Error( "optional parameter must be a string or an integer" );
           fi;
@@ -3798,7 +3800,11 @@ InstallGlobalFunction( PresentationSubgroupMtc,function ( arg )
           # for compatibility, do not try the optimization
           false);
 
-  return NEWTC_PresentationMTC(DATA,0,string);
+  T:=NEWTC_PresentationMTC(DATA,0,string);
+  if printlevel <> fail then
+    TzOptions(T).printLevel:=printlevel;
+  fi;
+  return T;
 end);
 
 
