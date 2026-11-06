@@ -2333,7 +2333,7 @@ local ct,c,a,b,offset,x,to,p,dw,doa,aug;
       to[a]:=c;
       if c<>a then
         for x in DATA.A do
-          if ct[x+offset][a]<>0 then;
+          if ct[x+offset][a]<>0 then
             b:=ct[x+offset][a];
             if b=a then b:=c;fi;
             ct[x+offset][c]:=b;
@@ -2352,11 +2352,7 @@ local ct,c,a,b,offset,x,to,p,dw,doa,aug;
         od;
         if dw then
           DATA.with[c]:=DATA.with[a];
-          b:=DATA.from[a];
-          while b<>to[b] do
-            b:=to[b];
-          od;
-          DATA.from[c]:=b;
+          DATA.from[c]:=to[DATA.from[a]];
         fi;
       fi;
     else
@@ -2364,7 +2360,8 @@ local ct,c,a,b,offset,x,to,p,dw,doa,aug;
       while p[b]<>b do
         b:=p[b];
       od;
-      to[a]:=b;
+      # b<a is alive and already renumbered; store its *new* number
+      to[a]:=to[b];
     fi;
   od;
   if purge then
@@ -2386,11 +2383,7 @@ local ct,c,a,b,offset,x,to,p,dw,doa,aug;
 
   if IsBound(DATA.ds) then
     for x in DATA.ds do
-      a:=to[x[1]];
-        while x[1]<>a do
-        x[1]:=a;
-        a:=to[a];
-      od;
+      x[1]:=to[x[1]];
     od;
     Assert(2,Maximum(List(DATA.ds,x->x[1]))<=c);
   fi;
@@ -2435,7 +2428,7 @@ local c,o,n,j,au;
   #if IsBound(DATA.ds) then Add(DATA.ds,[i,a]); fi;
   DATA.defcount:=DATA.defcount+1;
   if IsBound(DATA.with) then
-    if DATA.with[i]=-a then Error("bleh!");fi;
+    Assert(1,DATA.with[i]<>-a);
     DATA.with[n]:=a;
     DATA.from[n]:=i;
   fi;
