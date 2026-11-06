@@ -1181,7 +1181,6 @@ InstallGlobalFunction( PresentationNormalClosureRrs,
             krels,      # relators of normal closure <N>
             K,          # factor group of F isomorphic to G/N
             cosTable,   # coset table of <G> by <N>
-            i,          # loop variable
             aug,        # auxiliary coset table of <G> by <N>
             T;          # resulting Tietze record
 
@@ -1235,18 +1234,9 @@ InstallGlobalFunction( PresentationNormalClosureRrs,
     # determine a set of subgroup relators.
     aug.subgroupRelators := RewriteSubgroupRelators( aug, aug.groupRelators);
 
-    # create a Tietze record for the resulting presentation.
+    # create a Tietze record for the resulting presentation (this also
+    # handles relators of length 1 or 2 and sorts the relators).
     T := PresentationAugmentedCosetTable( aug, string );
-
-    # handle relators of length 1 or 2, but do not eliminate any primary
-    # generators.
-    TzOptions(T).protected := T!.tree[TR_PRIMARY];
-    TzHandleLength1Or2Relators( T );
-    T!.hasRun1Or2:=true;
-    TzOptions(T).protected := 0;
-
-    # sort the relators.
-    TzSort( T );
 
     return T;
 end );
