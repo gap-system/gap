@@ -1284,11 +1284,11 @@ InstallGlobalFunction( PresentationSubgroupRrs, function ( arg )
         table := H;
         CheckCosetTableFpGroup( G, table );
         # ensure that it is standardized.
-        if not IsStandardized( table) then Print(
-            "#I  Warning: the given coset table is not standardized,\n",
-            "#I           a standardized copy will be used instead.\n" );
-            StandardizeTable( StructuralCopy( table ) );
-        fi;
+        if not IsStandardized( table ) then
+            Info( InfoWarning, 1, "the given coset table is not ",
+                  "standardized, a standardized copy will be used instead" );
+            table := StructuralCopy( table );
+            StandardizeTable( table );
 
         # apply the Reduced Reidemeister-Schreier method to construct an
         # augmented RRS coset table of H.
