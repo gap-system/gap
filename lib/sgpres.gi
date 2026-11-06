@@ -3589,7 +3589,8 @@ local DATA,rels,i,j,k,w,f,r,s,fam,ri,a,offset,rset,re,stack,pres,
     for i in [1..DATA.n] do
       CompletionBar(InfoFpGroup,2,"Coset Loop: ",i/DATA.n);
       for w in DATA.rels do
-        r:=NEWTC_Rewrite(DATA,i,w);
+        # copy, as the result can be identical to an entry of DATA.aug
+        r:=ShallowCopy(NEWTC_Rewrite(DATA,i,w));
         MakeCanonical(r);
 
         ri:=Length(r);
@@ -3610,14 +3611,14 @@ local DATA,rels,i,j,k,w,f,r,s,fam,ri,a,offset,rset,re,stack,pres,
             j:=1;
             while j<=Length(rels) do
               s:=rels[j];
-              for re in rset do;
+              for re in rset do
                 s:=NEWTC_ReplacedStringCyclic(s,re,true);
               od;
               if not IsIdenticalObj(s,rels[j]) then
                 if Length(s)>0 then
                   Add(stack,s);
                 fi;
-                rels:=WordProductLetterRep(rels{[1..j-1]},rels{[j+1..Length(rels)]});
+                Remove(rels,j);
               else
                 j:=j+1;
               fi;
