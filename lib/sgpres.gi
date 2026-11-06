@@ -498,12 +498,6 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
     relsGen := RelsSortedByStartGen( fgens, rels, negTable, true );
     SortRelsSortedByStartGen( relsGen );
 
-    # check the number of columns to be twice the number of generators of
-    # the parent group G.
-    if numcols <> 2 * Length( fgens ) then
-        Error( "parent group and coset table are inconsistent" );
-    fi;
-
     # initialize the tree of secondary generators.
     tree1 := ListWithIdenticalEntries( 100, 0 );
     if type = 0 then
@@ -716,7 +710,7 @@ InstallMethod( AugmentedCosetTableNormalClosure,
     true,
     [ IsSubgroupFpGroup and IsGroupOfFamily, IsSubgroupFpGroup ],
     0,
-function( G, H );
+function( G, H )
 
     if G <> FamilyObj( H )!.wholeGroup then
         Error( "<H> must be a subgroup of <G>" );
@@ -1028,7 +1022,7 @@ Error("still record access");
 
 #############################################################################
 ##
-#M  PresentationAugmentedCosetTable( <aug>, <string> [,<print level>] 
+#M  PresentationAugmentedCosetTable( <aug>, <string> [,<print level>
 #M                                     [,<init images>]] ) . . . . . . . . .
 #M                                                     create a Tietze record
 ##
@@ -1378,7 +1372,6 @@ InstallGlobalFunction( RelatorMatrixAbelianizedNormalClosureRrs,
             krels,      # relators of normal closure <N>
             K,          # factor group of F isomorphic to G/N
             cosTable,   # coset table of <G> by <N>
-            i,          # loop variable
             aug;        # auxiliary coset table of <G> by <N>
 
     # check the arguments to be a finitely presented group and a subgroup of
