@@ -908,17 +908,34 @@ end );
 
 #############################################################################
 ##
-#M  IsStandardized( <costab> ) . . . . .  test if coset table is standardized
+#M  IsStandardized( <costab>[, <standard>] ) . . . . . . . . . . . . . . . . .
+#M  . . . . . . . . . . . . . . . . . . . test if coset table is standardized
 ##
-InstallGlobalFunction( IsStandardized, function ( table )
+##  <standard> is "lenlex" or "semilenlex", as for `StandardizeTable'; the
+##  default is the value of `CosetTableStandard'.
+##
+InstallGlobalFunction( IsStandardized, function ( table, standard... )
 
-    local i, index, j, next;
+    local cols, i, index, j, next;
+
+    if Length( standard ) > 0 then
+        standard := standard[1];
+    else
+        standard := CosetTableStandard;
+    fi;
+    if standard = "lenlex" then
+        cols := [ 1 .. Length( table ) ];
+    elif standard = "semilenlex" then
+        cols := [ 1, 3 .. Length( table ) - 1 ];
+    else
+        Error( "unknown coset table standard" );
+    fi;
 
     index := IndexCosetTab( table );
     j := 1;
     next := 2;
     while next < index do
-        for i in [ 1, 3 .. Length( table ) - 1 ] do
+        for i in cols do
             if table[i][j] >= next then
                 if table[i][j] > next then  return false;  fi;
                 next := next + 1;
