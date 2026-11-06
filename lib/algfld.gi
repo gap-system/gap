@@ -1169,17 +1169,18 @@ local coeffring, basring, theta, xind, yind, x, y, coeffs, G, c, val, k, T,
     # Set $G(X,Y) = \sum_{i=0}^m g_i(Y) X^i \in \Q[X,Y]$.
     coeffs:= CoefficientsOfUnivariatePolynomial( U );
 
+    # (coeffs[i] is the coefficient of X^(i-1))
     G:= Zero( basring );
     for i in [ 1 .. Length( coeffs ) ] do
       if IsAlgBFRep( coeffs[i] ) then
-        G:= G + coeffs[i]![1] * x^i;
+        G:= G + coeffs[i]![1] * x^(i-1);
       else
         c:= coeffs[i]![1];
         val:= c[1];
         for j in [ 2 .. Length( c ) ] do
           val:= val + c[j] * y^(j-1);
         od;
-        G:= G + val * x^i;
+        G:= G + val * x^(i-1);
       fi;
     od;
 
