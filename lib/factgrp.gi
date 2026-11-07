@@ -729,7 +729,7 @@ totalcnt, interrupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i,hard;
   # what is a good degree:
   goodi:=Minimum(Int(knowi*9/10),LogInt(IndexNC(G,N),2)^2);
 
-  simple:=HasIsNonabelianSimpleGroup(G) and IsNonabelianSimpleGroup(G) and Size(N)=2;
+  simple:=HasIsNonabelianSimpleGroup(G) and IsNonabelianSimpleGroup(G) and Size(N)=1;
   uc:=TrivialSubgroup(G);
   # look if it is worth looking at action on N
   # if not abelian: later replace by abelian Normal subgroup
@@ -927,7 +927,10 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,bl,
 
   cheap:=cheap=true;
 
-  if Length(GeneratorsOfGroup(G))>7 then
+  # reducing the generators is expensive in large degree, and is done again
+  # in the recursive calls once the degree has been reduced
+  if Length(GeneratorsOfGroup(G))>7 and
+    (NrMovedPoints(G)<=10000 or not IsTransitive(G,MovedPoints(G))) then
     s:=SmallGeneratingSet(G);
     if Length(s)=0 then s:=[One(G)];fi;
     if Length(s)<Length(GeneratorsOfGroup(G))-1 then
@@ -961,7 +964,7 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,bl,
 
   # known simple?
   if HasIsSimpleGroup(G) and IsSimpleGroup(G)
-      and NrMovedPoints(G)>=SufficientlySmallDegreeSimpleGroupOrder(Size(G))
+      and NrMovedPoints(G)<=SufficientlySmallDegreeSimpleGroupOrder(Size(G))
         then return IdentityMapping(G);
   fi;
 
@@ -1035,6 +1038,9 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,bl,
     if HasBaseOfGroup(G) then
       SetBaseOfGroup(H,BaseOfGroup(G));
     fi;
+    if HasIsNonabelianSimpleGroup(G) then
+      SetIsNonabelianSimpleGroup(H,IsNonabelianSimpleGroup(G));
+    fi;
   else
     H:=G;
   fi;
@@ -1047,20 +1053,37 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,bl,
   # cheap initial block reduction?
   if IsTransitive(H,MovedPoints(H)) then
     improve:=true;
-    while improve and (cheap or NrMovedPoints(H)*5>Size(H)) do
+    while improve and NrMovedPoints(H)>1 and
+        (cheap or NrMovedPoints(H)*5>Size(H)) do
       improve:=false;
-      bl:=Blocks(H,MovedPoints(H));
-      map:=ActionHomomorphism(G,bl,OnSets,"surjective");
-      ImagesSource(map:onlyimage); #`onlyimage' forces same generators
-      bl:=KernelOfMultiplicativeGeneralMapping(map);
-      AddNaturalHomomorphismsPool(G,bl,map);
-      if Size(bl)=1 then
-        hom:=hom*map;
-        H:=Image(map);
-        change:=true;
-        Info(InfoFactor,2," quickblocks improved to degree ",NrMovedPoints(H));
-      fi;
+      # Try the coarsest block system first, as it gives the smallest
+      # degree; if its action is not faithful, try the finest one.
+      for k in [MaximalBlocks,Blocks] do
+        if not improve then
+          bl:=k(H,MovedPoints(H));
+          if Length(bl)>1 and Length(bl)<NrMovedPoints(H) then
+            map:=ActionHomomorphism(H,bl,OnSets,"surjective");
+            ImagesSource(map:onlyimage); #`onlyimage' forces same generators
+            bl:=KernelOfMultiplicativeGeneralMapping(map);
+            AddNaturalHomomorphismsPool(H,bl,map);
+            if Size(bl)=1 then
+              hom:=hom*map;
+              H:=Image(map);
+              change:=true;
+              improve:=true;
+              Info(InfoFactor,2," quickblocks improved to degree ",
+                NrMovedPoints(H));
+            fi;
+          fi;
+        fi;
+      od;
     od;
+  fi;
+
+  if Length(GeneratorsOfGroup(H))>7 and NrMovedPoints(H)<=10000
+    and NrMovedPoints(H)<NrMovedPoints(G) then
+    # degree was reduced by blocks, now reduce generators and continue
+    return hom*SmallerDegreePermutationRepresentation(H);
   fi;
 
   b:=NaturalHomomorphismsPool(H);
