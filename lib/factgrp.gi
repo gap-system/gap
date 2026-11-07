@@ -658,8 +658,18 @@ local dom, o, bl, j, b, allb,newb;
   dom:=MovedPoints(G);
   # orbits
   o:=OrbitsDomain(G,dom);
-  o:=Set(o,Set);
+  o:=List(o,Set);
+  SortBy(o,Length);
 
+  if Length(dom)*10>Size(G) then
+    # close to regular -- try just one
+    b:=Blocks(G,o[Length(o)]);
+    if Size(Core(mustfaithful,Stabilizer(mustfaithful,b[1],OnSets)))=1 then
+      return b;
+    else
+      return fail;
+    fi;
+  fi;
 
   # all good blocks
   bl:=dom;
