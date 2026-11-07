@@ -345,6 +345,8 @@ DeclareGlobalFunction("Combinations");
 ##  list <C>Combinations( <A>mset</A>[, <A>k</A>] )</C>.
 ##  <Ref Func="IteratorOfCombinations"/> produces them in a different order,
 ##  without <A>k</A> by increasing size.
+##  Before &GAP; 4.17, <Ref Func="EnumeratorOfCombinations"/> took only one
+##  argument and listed the combinations in a different order.
 ##  <P/>
 ##  <Example>
 ##  gap> m:=[1..15];; Add(m, 15);
