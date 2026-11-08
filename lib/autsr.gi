@@ -16,6 +16,10 @@
 # call as big,perm,aut (the latter two can be groups or generator lists,
 # optional permiso.
 # returns two groups with corresponding generators
+# If permiso (an isomorphism from the automorphism group to the perm group)
+# is given, both groups are isomorphic. Otherwise the automorphisms only
+# need to map onto the permutations (e.g. lifts of automorphisms of a factor
+# group), so the automorphism group can be larger and its size is not set.
 BindGlobal( "AGSRReducedGens", function(arg)
 local
   # -- inputs (from arg) --
@@ -74,6 +78,8 @@ local
     if Length(arg)>3 then
       i:=InverseGeneralMapping(arg[4]);
     else
+      # Without permiso this map need not be well-defined. Its images of
+      # `s` are then just some automorphisms mapping to `s`.
       i:=GroupHomomorphismByImagesNC(big,Group(auts),permgens,auts);
     fi;
     auts:=List(s,x->ImagesRepresentative(i,x));
@@ -85,7 +91,10 @@ local
   fi;
   SetIsGroupOfAutomorphismsFiniteGroup(auts,true);
   SetIsFinite(auts,true);
-  SetSize(auts,Size(bp));
+  if Length(arg)>3 then
+    # only with an isomorphism the orders agree
+    SetSize(auts,Size(bp));
+  fi;
   if A<>fail then
     if HasInnerAutomorphismsAutomorphismGroup(A) then
       SetInnerAutomorphismsAutomorphismGroup(auts,
