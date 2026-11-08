@@ -480,6 +480,11 @@ local
              # contributed an element
   pp,        # false, or the smallest prime dividing the representative's
              # order
+  cpos,      # position of an earlier class containing a coprime power of
+             # the current representative (or fail)
+  ppos,      # position of the class of the prime order power of the
+             # current representative
+  o,         # loop variable over exponents coprime to the element order
   t,         # NOTE: two roles -- an orbit of a class representative, and
              # a right transversal
   new,       # a preimage element being tested by the condition
@@ -500,8 +505,13 @@ local
     c:=Filtered(c,x->not Representative(x)^
       (Order(Representative(x))/SmallestPrimeDivisor(Order(Representative(x))))
       in ups);
-    # this also implies prime powers after the respective primes
-    SortBy(c,Size);
+    # Sort by class size, ties broken by element order. As C(x)<=C(x^k),
+    # the class of a proper power x^k is never larger than the class of x
+    # and has smaller order, so this guarantees that the classes of all
+    # powers of x are processed before the class of x. (Sorting by size
+    # alone does not, as classes of equal size -- e.g. in abelian
+    # factors -- come in arbitrary order.)
+    SortBy(c,x->[Size(x),Order(Representative(x))]);
 
     Info(InfoMorph,3,Length(c)," classes with ",Sum(c,Size)," subgroups");
   end;
@@ -615,25 +625,40 @@ local
       fi;
     fi;
 
-    # if prime powers, the primes must have worked
+    # `worked[k]` records whether class k meets S (after processing).
     a:=Representative(c[i]);
 
-    # no coprime power in earlier class?
-    have:=worked<>fail and
-      ForAll(Filtered([2..Order(a)-1],o->Gcd(o,Order(a))=1),
-        o->PositionProperty(c{[1..i-1]},x->a^o in x)=fail);
+    # Coprime power in an earlier class? Then both classes generate the same
+    # cyclic subgroups, so class i meets S exactly if that class does.
+    cpos:=fail;
+    if worked<>fail then
+      for o in Filtered([2..Order(a)-1],o->Gcd(o,Order(a))=1) do
+        if cpos=fail then
+          cpos:=PositionProperty(c{[1..i-1]},x->a^o in x);
+        fi;
+      od;
+    fi;
+    have:=worked<>fail and cpos=fail;
 
+    # if prime powers, the class of prime order powers must meet S
     pp:=false;
     if have and not IsPrimeInt(Order(a)) then
       pp:=SmallestPrimeDivisor(Order(a));
       a:=a^(Order(a)/pp);
-      have:=worked[PositionProperty(c,x->a in x)];
+      # by the sorting, this class has been processed already
+      ppos:=PositionProperty(c{[1..i-1]},x->a in x);
+      if ppos<>fail then
+        have:=worked[ppos];
+      fi; # otherwise (should not happen) simply test the class
     fi;
 
     if have then
-      have:=false;
       a:=Representative(c[i]);
       t:=Orbit(q,a);
+      # Elements already tested in the `SubgroupProperty` phase are not
+      # tested again. Those that lie in S still show that the class meets S.
+      have:=ForAny(Filtered(t,x->x in havetest),
+              x->PreImagesRepresentativeNC(hom,x) in S);
       t:=Filtered(t,x->not x in havetest);
 
       cnt:=0;
@@ -649,7 +674,13 @@ local
             ", len=",Size(c[i])," newtest=", Length(t),
             " found ",cnt,": ",Size(S));
     fi;
-    if worked<>fail then Add(worked,have);fi;
+    if worked<>fail then
+      if cpos<>fail then
+        Add(worked,worked[cpos]); # same cyclic subgroups as class cpos
+      else
+        Add(worked,have);
+      fi;
+    fi;
     i:=i+1;
   od;
 
