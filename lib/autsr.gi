@@ -1710,7 +1710,14 @@ local
         A:=AQ;
       fi;
     else
-      A!.makeaqiso:=makeaqiso;
+      # Delay building the permutation representation. The caller invokes
+      # this function when it is needed. `makeaqiso` only sets the local
+      # variables `AQiso`, `AQP` (and possibly replaces `AQ`), so the
+      # isomorphism must be returned for the caller to store.
+      A!.makeaqiso:=function()
+        makeaqiso();
+        return AQiso;
+      end;
     fi;
 
     # do we use induced radical automorphisms to help next step?
@@ -2334,7 +2341,19 @@ local
   local map,as;
     if not HasIsomorphismPermGroup(origa) then
       if IsBound(origa!.makeaqiso) then
-        origa!.makeaqiso();
+        map:=origa!.makeaqiso();
+        Unbind(origa!.makeaqiso); # closure is not needed any longer
+        if not IsIdenticalObj(Source(map),origa) then
+          # `makeaqiso` may have changed to a group with different
+          # generators (but the same elements). Use that group, as the
+          # isomorphism is defined on it.
+          if IsIdenticalObj(a,origa) then
+            a:=Source(map);
+          fi;
+          origa:=Source(map);
+          SetIsGroupOfAutomorphismsFiniteGroup(origa,true);
+        fi;
+        SetIsomorphismPermGroup(origa,map);
       else
         as:=NiceMonomorphism(origa:autactbase:=aab,someCharacteristics:=somechar,
           directs:=aab,
