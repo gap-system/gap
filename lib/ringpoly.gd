@@ -197,7 +197,7 @@ DeclareAttribute( "CoefficientsRing", IsPolynomialRing );
 ##  long as  no other names have been assigned, this indeterminate will be
 ##  displayed as
 ##  <Q><C>x_<A>nr</A></C></Q>. Indeterminate numbers can be arbitrary
-##  nonnegative integers.
+##  positive integers.
 ##  <P/>
 ##  It is possible to assign names to indeterminates; these names are
 ##  strings and only provide a means for printing the indeterminates in a
@@ -288,7 +288,7 @@ DeclareAttribute( "CoefficientsRing", IsPolynomialRing );
 ##  may be given.
 ##  The function will return an indeterminate that is guaranteed to be
 ##  different from all the indeterminates in the list <A>avoid</A>.
-##  The third usage returns an indeterminate called <A>name</A>
+##  The second usage returns an indeterminate called <A>name</A>
 ##  (also avoiding the indeterminates in <A>avoid</A> if given).
 ##  <P/>
 ##  <Ref Oper="X" Label="for a ring (and a number)"/> is simply a synonym for

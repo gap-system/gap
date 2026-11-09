@@ -867,7 +867,7 @@ DeclareAttribute( "ClassTypesTom", IsTableOfMarks );
 ##  For classes of cyclic subgroups, the parentheses round the order and the
 ##  type are omitted.
 ##  Hence the most general form of their generic names is
-##  <C>"<A>o</A>,<A>l</A>"</C>.
+##  <C>"<A>o</A><A>l</A>"</C>.
 ##  Again, the letter is omitted if there is only one class of cyclic
 ##  subgroups of that order.
 ##  <P/>
