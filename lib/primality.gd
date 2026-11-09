@@ -197,6 +197,10 @@ DeclareGlobalFunction( "IsProbablyPrimeInt" );
 ##  discriminant, P ]</C> indicates a successful Lucas pseudoprimality test,
 ##  for a quadratic form of given <K>discriminant</K> and middle term <K>P</K>
 ##  with an extra check at <M>(<A>n</A>+1)/divisor</M>.
+##  <P/>
+##  If <A>n</A> is at most <M>2</M>, the result is <K>fail</K>.
+##  If <A>n</A> is shown to be composite, the result is <K>false</K>.
+##  The result is also <K>fail</K> if no proof is found.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
