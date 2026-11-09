@@ -525,15 +525,13 @@ DeclareGlobalFunction( "RootsMod" );
 ##  If only the argument <A>m</A> is given,
 ##  the default value for <A>k</A> is <M>2</M>.
 ##  <P/>
-##  In general there are <M><A>k</A>^n</M> such roots if the modulus <A>m</A>
-##  has  <M>n</M> different prime factors <M>p</M> such that
+##  For a prime <A>k</A> there are <M><A>k</A>^n</M> such roots
+##  if the modulus <A>m</A> has <M>n</M> different prime factors <M>p</M> such that
 ##  <M>p \equiv 1 \pmod{<A>k</A>}</M>.
 ##  If <M><A>k</A>^2</M> divides <A>m</A> then there are
 ##  <M><A>k</A>^{{n+1}}</M> such roots;
 ##  and especially if <M><A>k</A> = 2</M> and 8 divides <A>m</A>
 ##  there are <M>2^{{n+2}}</M> such roots.
-##  <P/>
-##  In the current implementation <A>k</A> must be a prime.
 ##  <Example><![CDATA[
 ##  gap> RootsUnityMod( 7*31 );  RootsUnityMod( 3, 7*31 );
 ##  [ 1, 92, 125, 216 ]

@@ -1,4 +1,4 @@
-#@local JACOBI_INT_GAP,c,d,jac,m,n,oldLevel,t
+#@local JACOBI_INT_GAP,c,d,jac,k,m,n,oldLevel,t
 gap> START_TEST("numtheor.tst");
 
 # RootMod, RootsMod
@@ -13,6 +13,30 @@ gap> RootMod(c,d);
 fail
 gap> n:=2^2203-1;; RootMod(39,n);
 fail
+
+#
+# RootsUnityMod, also for composite k and moduli where p divides k
+gap> RootsUnityMod( 4, 15 );
+[ 1, 2, 4, 7, 8, 11, 13, 14 ]
+gap> RootsUnityMod( 6, 7 );
+[ 1, 2, 3, 4, 5, 6 ]
+gap> RootsUnityMod( 6, 9 );
+[ 1, 2, 4, 5, 7, 8 ]
+gap> RootsUnityMod( 1, 1 );
+[ 0 ]
+gap> ForAll( [ 1 .. 130 ], m -> ForAll( [ 1 .. 66 ], k -> RootsUnityMod( k, m )
+>      = Filtered( [ 0 .. m - 1 ], r -> PowerModInt( r, k, m ) = 1 mod m ) ) );
+true
+gap> ForAll( [ 2^9, 3^5, 5^4, 7^3, 2^4 * 3^3 * 5 ], m -> ForAll( [ 1 .. 50 ],
+>      k -> RootsUnityMod( k, m )
+>      = Filtered( [ 0 .. m - 1 ], r -> PowerModInt( r, k, m ) = 1 ) ) );
+true
+gap> RootsUnityMod( 2^100, 3^50 ) = [ 1, 3^50 - 1 ];
+true
+gap> Length( RootsUnityMod( 8, 2^100 ) );
+16
+gap> Length( RootsUnityMod( 12, 1009 * 2^20 ) );
+96
 
 #
 # PValuation
