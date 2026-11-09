@@ -384,19 +384,17 @@ DeclareOperation("BisectInterval", [IsFloatInterval]);
 ##
 ##     <P/> If <A>obj</A> is a rational number, the created number is created
 ##     with sufficient precision so that the number can (usually) be converted
-##     back to the original number (see <Ref Attr="Rat" Label="for floats"/>). For an integer, the precision, if unspecified, is
-##     chosen sufficient so that <C>Int(Float(obj))=obj</C> always holds, but
-##     at least 64 bits.
+##     back to the original number (see <Ref Attr="Rat" Label="for floats"/>).
 ##
 ##     <P/> <A>obj</A> may also be a string, which may be of the form
-##     <C>"3.14e0"</C> or <C>".314e1"</C> or <C>".314@1"</C> etc.
+##     <C>"3.14e0"</C> or <C>".314e1"</C> etc.
 ##
 ##     <P/> An option may be passed to specify the desired precision in bits.
-##     The format is <C>Float("3.14":PrecisionFloat:=1000)</C> to create
+##     The format is <C>Float("3.14":bits:=1000)</C> to create
 ##     a 1000-bit approximation of <M>3.14</M>.
 ##
 ##     <P/> In particular, if <A>obj</A> is already a floating-point number,
-##     then <C>Float(obj:PrecisionFloat:=prec)</C> creates a copy of
+##     then <C>Float(obj:bits:=prec)</C> creates a copy of
 ##     <A>obj</A> with a new precision.
 ##   </Description>
 ## </ManSection>
@@ -416,7 +414,8 @@ DeclareOperation("BisectInterval", [IsFloatInterval]);
 ##     returned is such that the denominator is at most <A>md</A> and the
 ##     partials in its continued fraction expansion are at most <A>mp</A>.
 ##     The default values are <C>maxpartial:=10000</C> and
-##     <C>maxdenom:=2^(precision/2)</C>.
+##     <C>maxdenom:=2^(precision/2)</C>, or <C>10^8</C> for the built-in
+##     floats.
 ##   </Description>
 ## </ManSection>
 ##
