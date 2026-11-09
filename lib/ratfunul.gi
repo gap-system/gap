@@ -1577,8 +1577,9 @@ function(l,r)
 local lc,rc;
   lc:=CoefficientsOfUnivariateRationalFunction(l);
   rc:=CoefficientsOfUnivariateRationalFunction(r);
-  # is the indeterminate important?
-  if (Length(lc[1])>1 or (Length(lc[1])>0 and lc[3]<>0))
+  # is the indeterminate important? It is, unless l is constant (in which
+  # case the comparison of coefficients below is valid for any r)
+  if (Length(lc[1])>1 or Length(lc[2])>1 or (Length(lc[1])>0 and lc[3]<>0))
     and IndeterminateNumberOfUnivariateRationalFunction(l)<>
      IndeterminateNumberOfUnivariateRationalFunction(r) then
     return false;
