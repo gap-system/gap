@@ -557,7 +557,7 @@ In such cases, the following guidelines may be useful.
 Conversely, do <E>not</E> use functions for vector and matrix objects
 when you want to create an object that shall be used just as a list.
 For example, use <C>ListWithIdenticalEntries( n, Zero( R ) )</C>
-not <C>Vector( R, n )</C> in this case.
+not <C>ZeroVector( R, n )</C> in this case.
 For creating a list with <C>n</C> entries, you can also first call
 <Ref Func="EmptyPlist"/> for creating a big enough list,
 and then enter the values.
