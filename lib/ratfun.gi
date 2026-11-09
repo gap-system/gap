@@ -1057,6 +1057,13 @@ local   fam,  i, extnum,pol;
     extnum[i] := coef * extnum[i];
   od;
 
+  # with zero divisors, products of nonzero elements may be zero
+  i:=[ 2, 4 .. Length(extnum) ];
+  if fam!.zeroCoefficient in extnum{i} then
+    extnum:=Concatenation(List(Filtered(i,j->not IsZero(extnum[j])),
+              j->extnum{[j-1,j]}));
+  fi;
+
   # We can do this because a/b is cancelled <=> c*a/b is cancelled
   # where c is a constant.
   if pol then

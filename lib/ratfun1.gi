@@ -448,6 +448,11 @@ local   mons,  cofs,  i,  j,  c,  prd;
     cofs:=[2,4..Length(prd)];
     if not IsOne(c) then
       prd{cofs}:=c*prd{cofs};
+      # with zero divisors, products of nonzero elements may be zero
+      if zero in prd{cofs} then
+        prd:=Concatenation(List(Filtered(cofs,i->prd[i]<>zero),
+               i->prd{[i-1,i]}));
+      fi;
     fi;
     return prd;
   elif Length(z2)=2 and IsList(z2[1]) and Length(z2[1])=0 then
@@ -456,6 +461,11 @@ local   mons,  cofs,  i,  j,  c,  prd;
     cofs:=[2,4..Length(prd)];
     if not IsOne(c) then
       prd{cofs}:=c*prd{cofs};
+      # with zero divisors, products of nonzero elements may be zero
+      if zero in prd{cofs} then
+        prd:=Concatenation(List(Filtered(cofs,i->prd[i]<>zero),
+               i->prd{[i-1,i]}));
+      fi;
     fi;
     return prd;
   fi;

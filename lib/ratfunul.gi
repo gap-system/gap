@@ -410,7 +410,7 @@ InstallMethod( \-, "laurent - laurent", IsIdenticalObj,
 ##
 ##
 BindGlobal("ProdCoeffLaurpol",function( coef, laur )
-local   fam, tmp;
+local   fam, tmp, val;
 
   # multiply by zero gives the zero polynomial
   if IsZero(coef) then return Zero(laur);
@@ -420,7 +420,13 @@ local   fam, tmp;
 
   # construct the product and check the valuation in case zero divisors
   tmp := CoefficientsOfLaurentPolynomial(laur);
-  return LaurentPolynomialByExtRepNC(fam,coef*tmp[1], tmp[2],
+  val := tmp[2];
+  tmp := coef*tmp[1];
+  if Length(tmp)>0 and (IsZero(tmp[1]) or IsZero(Last(tmp))) then
+    tmp := ShallowCopy(tmp);
+    val := val+RemoveOuterCoeffs(tmp,fam!.zeroCoefficient);
+  fi;
+  return LaurentPolynomialByExtRepNC(fam,tmp,val,
            IndeterminateNumberOfUnivariateRationalFunction(laur));
 end );
 
@@ -1593,7 +1599,7 @@ end);
 ##
 ##
 BindGlobal("ProdCoeffUnivfunc",function( coef, univ )
-local   fam, tmp;
+local   fam, tmp, num, val;
 
   # multiply by zero gives the zero polynomial
   if IsZero(coef) then return Zero(univ);
@@ -1609,7 +1615,17 @@ local   fam, tmp;
   else
     # Here we use ShallowCopy to avoid access errors later when CLONE_OBJ
     # will be called from coef*tmp[1] and will try to modify tmp
-    return UnivariateRationalFunctionByExtRepNC(fam,coef*ShallowCopy(tmp[1]), tmp[2],tmp[3],
+    num:=coef*ShallowCopy(tmp[1]);
+    val:=tmp[3];
+    # with zero divisors, products of nonzero elements may be zero
+    if IsZero(num[1]) or IsZero(Last(num)) then
+      num:=ShallowCopy(num);
+      val:=val+RemoveOuterCoeffs(num,fam!.zeroCoefficient);
+      if Length(num)=0 then
+        return Zero(univ);
+      fi;
+    fi;
+    return UnivariateRationalFunctionByExtRepNC(fam,num, tmp[2],val,
             IndeterminateNumberOfUnivariateRationalFunction(univ));
   fi;
 end );
