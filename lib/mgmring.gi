@@ -625,7 +625,7 @@ InstallOtherMethod( \-,
 
 # HACK: This method must be ranked above '<list> - <nonlist>'.
 InstallOtherMethod( \-,
-    "for magma element and magma ring element",
+    "for magma element & list and magma ring element",
     IsMagmasMagmaRings,
     [ IsMultiplicativeElement and IsListDefault, IsElementOfMagmaRingModuloRelations ],
     MagmaElmMinusMagmaRingElm );
@@ -645,7 +645,7 @@ InstallOtherMethod( \-,
 
 # HACK: This method must be ranked above '<nonlist> - <list>'.
 InstallOtherMethod( \-,
-    "for magma ring element and magma element",
+    "for magma ring element and magma element & list",
     IsMagmaRingsMagmas,
     [ IsElementOfMagmaRingModuloRelations, IsMultiplicativeElement and IsListDefault ],
     MagmaRingElmMinusMagmaElm );
@@ -1270,28 +1270,33 @@ InstallMethod( ImagesRepresentative,
     end );
 
 
+# The inverse mapping calls the NC variants for arbitrary elements of the
+# range, so they return '[ ]' or 'fail' for those that are not of the
+# form '<r> * One( <RM> )'.
 InstallMethod( PreImagesElmNC,
     "for embedding of ring into magma ring, and free magma ring element",
     FamRangeEqFamElm,
     [ IsEmbeddingRingMagmaRing, IsElementOfFreeMagmaRing ],
     function ( emb, elm )
-    # Assume that 'elm' is in the image of 'emb'.
-    return [ CoefficientsAndMagmaElements( elm )[2] ];
+    local pre;
+    pre:= PreImagesRepresentativeNC( emb, elm );
+    if pre = fail then
+      return [];
+    fi;
+    return [ pre ];
     end );
 
+# Test membership in the source, which may be a proper subring of the
+# coefficient ring, instead of calling 'Image( emb )'.
 InstallMethod( PreImagesElm,
     "for embedding of ring into magma ring, and free magma ring element",
     FamRangeEqFamElm,
     [ IsEmbeddingRingMagmaRing, IsElementOfFreeMagmaRing ],
     function ( emb, elm )
-    local R, extrep;
-    R:= Range( emb );
-    extrep:= CoefficientsAndMagmaElements( elm );
-    if     Length( extrep ) = 2
-       and extrep[1] = One( UnderlyingMagma( R ) )
-       and extrep[2] in LeftActingDomain( R ) then
-      # 'elm' is in the image of 'emb'; do not call 'Image( emb )'
-      return [ extrep[2] ];
+    local pre;
+    pre:= PreImagesRepresentativeNC( emb, elm );
+    if pre <> fail and pre in Source( emb ) then
+      return [ pre ];
     elif elm in Range( emb ) then
       return [];
     else
@@ -1304,8 +1309,15 @@ InstallMethod( PreImagesRepresentativeNC,
     FamRangeEqFamElm,
     [ IsEmbeddingRingMagmaRing, IsElementOfFreeMagmaRing ],
     function ( emb, elm )
-    # Assume that 'elm' is in the image of 'emb'.
-    return CoefficientsAndMagmaElements( elm )[2];
+    local extrep;
+    extrep:= CoefficientsAndMagmaElements( elm );
+    if IsEmpty( extrep ) then
+      return Zero( Source( emb ) );
+    elif     Length( extrep ) = 2
+         and extrep[1] = One( UnderlyingMagma( Range( emb ) ) ) then
+      return extrep[2];
+    fi;
+    return fail;
     end );
 
 InstallMethod( PreImagesRepresentative,
@@ -1313,14 +1325,10 @@ InstallMethod( PreImagesRepresentative,
     FamRangeEqFamElm,
     [ IsEmbeddingRingMagmaRing, IsElementOfFreeMagmaRing ],
     function ( emb, elm )
-    local R, extrep;
-    R:= Range( emb );
-    extrep:= CoefficientsAndMagmaElements( elm );
-    if     Length( extrep ) = 2
-       and extrep[1] = One( UnderlyingMagma( R ) )
-       and extrep[2] in LeftActingDomain( R ) then
-      # 'elm' is in the image of 'emb'; do not call 'Image( emb )'
-      return extrep[2];
+    local pre;
+    pre:= PreImagesRepresentativeNC( emb, elm );
+    if pre <> fail and pre in Source( emb ) then
+      return pre;
     elif elm in Range( emb ) then
       return fail;
     else
@@ -1399,28 +1407,33 @@ InstallMethod( ImagesRepresentative,
     end );
 
 
+# The inverse mapping calls the NC variants for arbitrary elements of the
+# range, so they return '[ ]' or 'fail' for those that are not of the
+# form 'One( <R> ) * <m>'.
 InstallMethod( PreImagesElmNC,
     "for embedding of magma into magma ring, and free magma ring element",
     FamRangeEqFamElm,
     [ IsEmbeddingMagmaMagmaRing, IsElementOfFreeMagmaRing ],
     function ( emb, elm )
-    # Assume that 'elm' is in the image of 'emb'.
-    return [ CoefficientsAndMagmaElements( elm )[1] ];
+    local pre;
+    pre:= PreImagesRepresentativeNC( emb, elm );
+    if pre = fail then
+      return [];
+    fi;
+    return [ pre ];
     end );
 
+# Test membership in the source, which may be a proper submagma of the
+# underlying magma, instead of calling 'Image( emb )'.
 InstallMethod( PreImagesElm,
     "for embedding of magma into magma ring, and free magma ring element",
     FamRangeEqFamElm,
     [ IsEmbeddingMagmaMagmaRing, IsElementOfFreeMagmaRing ],
     function ( emb, elm )
-    local R, extrep;
-    R:= Range( emb );
-    extrep:= CoefficientsAndMagmaElements( elm );
-    if     Length( extrep ) = 2
-       and extrep[1] in UnderlyingMagma( R )
-       and extrep[2] = One( LeftActingDomain( R ) ) then
-      # 'elm' is in the image of 'emb'; do not call 'Image( emb )'
-      return [ extrep[1] ];
+    local pre;
+    pre:= PreImagesRepresentativeNC( emb, elm );
+    if pre <> fail and pre in Source( emb ) then
+      return [ pre ];
     elif elm in Range( emb ) then
       return [];
     else
@@ -1433,8 +1446,13 @@ InstallMethod( PreImagesRepresentativeNC,
     FamRangeEqFamElm,
     [ IsEmbeddingMagmaMagmaRing, IsElementOfFreeMagmaRing ],
     function ( emb, elm )
-    # Assume that 'elm' is in the image of 'emb'.
-    return CoefficientsAndMagmaElements( elm )[1];
+    local extrep;
+    extrep:= CoefficientsAndMagmaElements( elm );
+    if     Length( extrep ) = 2
+       and extrep[2] = One( LeftActingDomain( Range( emb ) ) ) then
+      return extrep[1];
+    fi;
+    return fail;
     end );
 
 InstallMethod( PreImagesRepresentative,
@@ -1442,20 +1460,50 @@ InstallMethod( PreImagesRepresentative,
     FamRangeEqFamElm,
     [ IsEmbeddingMagmaMagmaRing, IsElementOfFreeMagmaRing ],
     function ( emb, elm )
-    local R, extrep;
-    R:= Range( emb );
-    extrep:= CoefficientsAndMagmaElements( elm );
-    if     Length( extrep ) = 2
-       and extrep[1] in UnderlyingMagma( R )
-       and extrep[2] = One( LeftActingDomain( R ) ) then
-      # 'elm' is in the image of 'emb'; do not call 'Image( emb )'
-      return extrep[1];
+    local pre;
+    pre:= PreImagesRepresentativeNC( emb, elm );
+    if pre <> fail and pre in Source( emb ) then
+      return pre;
     elif elm in Range( emb ) then
       return fail;
     else
       Error( "<elm> is not in the range of the mapping <emb>" );
     fi;
     end );
+
+
+#############################################################################
+##
+#M  PreImagesSet( <emb>, <elms> ) . . . . . . . for embedding into magma ring
+##
+##  The default method needs 'Image( <emb> )', which is not available for
+##  infinite sources.
+##
+BindGlobal( "PreImagesSetEmbeddingIntoMagmaRing", function( emb, elms )
+    local preimgs;
+    if not ( IsList( elms ) or IsFinite( elms ) ) then
+      TryNextMethod();
+    elif not IsSubset( Range( emb ), elms ) then
+      Error( "<elms> is not a subset of the range of <map>" );
+    fi;
+    preimgs:= List( AsList( elms ),
+                    elm -> PreImagesRepresentativeNC( emb, elm ) );
+    return Set( Filtered( preimgs,
+                          pre -> pre <> fail and pre in Source( emb ) ) );
+    end );
+
+InstallMethod( PreImagesSet,
+    "for embedding of ring into magma ring, and list or collection",
+    CollFamRangeEqFamElms,
+    [ IsEmbeddingRingMagmaRing, IsListOrCollection ],
+    PreImagesSetEmbeddingIntoMagmaRing );
+
+InstallMethod( PreImagesSet,
+    "for embedding of magma into magma ring, and list or collection",
+    CollFamRangeEqFamElms,
+    [ IsEmbeddingMagmaMagmaRing, IsListOrCollection ],
+    PreImagesSetEmbeddingIntoMagmaRing );
+
 
 #############################################################################
 ##
