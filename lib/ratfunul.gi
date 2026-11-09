@@ -1053,12 +1053,8 @@ local d,i,ind,one,iF;
   fi;
   f:=d;
   d:=[];
-  iF:=Zero(one);
-  if f[2]>0 then
-    for i in [1..f[2]] do iF:=iF+one; od;
-  elif f[2]<0 then
-    for i in [1..-f[2]] do iF:=iF+one; od;
-  fi;
+  # the exponent of the first term, this may be negative
+  iF:=f[2]*one;
   for i in [1..Length(f[1])]  do
     d[i] := iF*f[1][i];
     iF:=iF+one;
@@ -1072,18 +1068,20 @@ RedispatchOnCondition(Derivative,true,
 InstallOtherMethod(Derivative,"uratfun",true,
   [IsUnivariateRationalFunction],0,
 function(ratfun)
-local num,den,R,cf,pow,dr;
+local num,den,R,cf,pow,dr,lc,fac,d,res;
   # try to be good for the case of iterated derivatives by using if the
   # denominator is a power
   num:=NumeratorOfRationalFunction(ratfun);
   den:=DenominatorOfRationalFunction(ratfun);
   R:=CoefficientsRing(DefaultRing([den]));
-  cf:=Collected(Factors(den));
+  # write den=lc*dr^pow with dr monic. Use monic irreducible factors, as
+  # `Factors' puts the leading coefficient into the first factor.
+  lc:=LeadingCoefficient(den);
+  cf:=Collected(List(Factors(den),x->x*Inverse(LeadingCoefficient(x))));
   pow:=Gcd(List(cf,x->x[2]));
-  if pow>1 then
-    dr:=Product(List(cf,x->x[1]^(x[2]/pow))); # root
-  else
-    dr:=den;
+  dr:=Product(List(cf,x->x[1]^(x[2]/pow))); # root
+  if not IsOne(lc) then
+    num:=num*Inverse(lc);
   fi;
   #cf:=(Derivative(num)*dr-num*pow*Derivative(dr))/dr^(pow+1);
   num:=Derivative(num)*dr-num*pow*Derivative(dr);
@@ -1091,17 +1089,23 @@ local num,den,R,cf,pow,dr;
   if IsOne(Gcd(num,dr)) then
     # avoid cancellation
     num:=CoefficientsOfUnivariateLaurentPolynomial(num);
-    den:=CoefficientsOfUnivariateLaurentPolynomial(den);
-    cf:=UnivariateRationalFunctionByExtRepNC(FamilyObj(ratfun),
-      num[1],den[1],num[2]-den[2],
+    d:=CoefficientsOfUnivariateLaurentPolynomial(den);
+    res:=UnivariateRationalFunctionByExtRepNC(FamilyObj(ratfun),
+      num[1],d[1],num[2]-d[2],
         IndeterminateNumberOfUnivariateRationalFunction(ratfun));
-    # maintain factorization of denominator
-    StoreFactorsPol(R,DenominatorOfRationalFunction(cf),
-      ListWithIdenticalEntries(pow+1,dr));
+    # maintain factorization of denominator: these are the irreducible
+    # factors of dr, each with its multiplicity in dr^(pow+1)
+    d:=DenominatorOfRationalFunction(res);
+    if d=den then
+      fac:=Concatenation(List(cf,x->ListWithIdenticalEntries(
+             x[2]/pow*(pow+1),x[1])));
+      Sort(fac);
+      StoreFactorsPol(R,d,fac);
+    fi;
   else
-    cf:=num/den; # cancellation
+    res:=num/den; # cancellation
   fi;
-  return cf;
+  return res;
   #return (Derivative(num)*den-num*Derivative(den))/(den^2);
 end);
 
