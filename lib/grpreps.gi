@@ -189,7 +189,7 @@ InstallMethod(IrreducibleModules,
   "permutation group, finite field, Burnside-Brauer",
     true, [ IsPermGroup, IsField and IsFinite, IsInt ], 2,
 function(G,field,dim)
-local n,mats,mo,moduln,i,j,k,t,cnt,p,ext,emo,hom;
+local n,mats,mo,moduln,i,j,k,t,cnt,p,ext,emo,hom,words;
   if dim=1 then TryNextMethod();fi; # special abelian case
 
   p:=Characteristic(field);
@@ -201,13 +201,16 @@ local n,mats,mo,moduln,i,j,k,t,cnt,p,ext,emo,hom;
     i:=IrreducibleModules(Group(t),field,dim);
     if i[1]=t then return [GeneratorsOfGroup(G),i[2]];fi;
 
-    # the modules are given w.r.t. other generators of the factor
+    # the modules are given w.r.t. other generators of the factor;
+    # write t as words in these once, for all modules
+    hom:=EpimorphismFromFreeGroup(Group(i[1]));
+    words:=List(t,x->PreImagesRepresentative(hom,x));
     moduln:=[];
     for j in i[2] do
-      hom:=GroupHomomorphismByImagesNC(Image(n),Group(j.generators),
-             i[1],j.generators);
-      Add(moduln,GModuleByMats(List(t,x->ImagesRepresentative(hom,x)),field));
+      Add(moduln,GModuleByMats(List(words,x->MappedWord(x,
+        GeneratorsOfGroup(Source(hom)),j.generators)),field));
     od;
+    SortBy(moduln,x->x.dimension);
     return [GeneratorsOfGroup(G),moduln];
   fi;
 
