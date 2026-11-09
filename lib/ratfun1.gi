@@ -1361,6 +1361,10 @@ local c,d,i,p;
         # remaining monomial with coefficient
         Append(c,[e[i]{Difference([1..Length(e[i])],[p,p+1])},e[i+1]]);
       fi;
+    elif d=0 then
+      # the monomial does not involve the indeterminate, so it is part of
+      # the leading coefficient as long as no positive degree occurred
+      Append(c,[e[i],e[i+1]]);
     fi;
   od;
   return c;
