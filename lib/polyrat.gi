@@ -492,6 +492,13 @@ end);
 ##
 ##  cf. JSC 13 (1992),463-472
 ##
+##  Bounds the coefficients of the gcd of <f> and <g>, scaled to have the gcd
+##  of the leading coefficients of <f> and <g> as leading coefficient.
+##  The bound of Theorem 3 in the paper relies on integer coefficients and
+##  nonzero constant term, so it cannot be applied to the monic polynomials
+##  used here. For monic polynomials Theorems 1 and 2 give a bound larger by
+##  a factor sqrt(2), namely 3^{3/4}*3^{n/2}/sqrt(2*pi*n)*[f]_2.
+##
 BindGlobal("BeauzamyBoundGcd",function(f,g)
 local   n, A, B,lf,lg;
 
@@ -506,15 +513,15 @@ local   n, A, B,lf,lg;
   fi;
   n := DegreeOfLaurentPolynomial(f);
   # the   strange   number  in   the   next line  is   an  (upper) rational
-  # approximation for 3^{3/4}/2/\sqrt(\pi)
-  A := Int(643038/1000000
+  # approximation for 3^{3/4}/\sqrt(2\pi)
+  A := Int(909392/1000000
         * ApproximateRoot(3^n,2)/ApproximateRoot(n,2)
         * BombieriNorm(f))+1;
 
   # the   strange  number   in  the   next   line is  an   (upper) rational
-  # approximation for 3^{3/4}/2/\sqrt(\pi)
+  # approximation for 3^{3/4}/\sqrt(2\pi)
   n := DegreeOfLaurentPolynomial(g);
-  B := Int(643038/1000000
+  B := Int(909392/1000000
         * ApproximateRoot(3^n,2)/ApproximateRoot(n,2)
         * BombieriNorm(g))+1;
   B:=Minimum(A,B);
