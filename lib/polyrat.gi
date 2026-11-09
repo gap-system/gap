@@ -259,7 +259,7 @@ end);
 #F  RootBound(<f>) . . . . bound for absolute value of (complex) roots of f
 ##
 InstallGlobalFunction(RootBound,function(f)
-local a,b,c,d;
+local a,b,c,d,sc;
   # valuation gives only 0 as zero, this can be neglected
   f:=CoefficientsOfLaurentPolynomial(f)[1];
   # normieren
@@ -269,15 +269,18 @@ local a,b,c,d;
   a:=ApproxRootBound(f);
   # did the numerical part fail?
   if a=fail then
-    c:=CoefficientsOfLaurentPolynomial(f)[1];
-    c:=List(c,AbsInt);
+    sc:=CoefficientsOfLaurentPolynomial(f)[1];
+    c:=List(sc,AbsInt);
     d:=Length(c);
     a:=Maximum(1,Sum(c{[1..d-1]}));
     b:=1+Maximum(c);
     if b<a then
       a:=b;
     fi;
-    b:=Maximum(List([1..d-1],i->RootInt(d*Int(AbsInt(c[d-i])+1/2),i)+1));
+    # all roots satisfy |z|<=(n*|c_{n-i}|)^(1/i) for some i, where n=d-1
+    # (using d only enlarges the bound). Take an integer upper bound for
+    # d*|c_{n-i}| before taking the root.
+    b:=Maximum(List([1..d-1],i->RootInt(Int(d*AbsInt(c[d-i]))+1,i)+1));
     if b<a then
       a:=b;
     fi;
@@ -289,7 +292,8 @@ local a,b,c,d;
         a:=b;
       fi;
     fi;
-    b:=Sum([1..d-1],i->AbsInt(c[i]-c[i+1]))+AbsInt(c[1]);
+    # Cauchy's bound for (x-1)*f, this needs the signed coefficients
+    b:=Sum([1..d-1],i->AbsInt(sc[i]-sc[i+1]))+AbsInt(sc[1]);
     if b<a then
       a:=b;
     fi;
@@ -496,7 +500,7 @@ local   n, A, B,lf,lg;
     f:=f/lf;
   fi;
 
-  lg:=LeadingCoefficient(f);
+  lg:=LeadingCoefficient(g);
   if not IsOne(lg) then
     g:=g/lg;
   fi;
