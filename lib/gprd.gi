@@ -1445,6 +1445,10 @@ function( S, i )
         Add(n,ImmutableMatrix(info.field,m));
       od;
       n:=SubgroupNC(S,n);
+      SetSize(n,Size(info.vectorspace));
+      # n acts regularly on the affine points (v,1); the generic nice
+      # monomorphism needs over a minute for GF(9)^3
+      SetSeedFaithfulAction(n,rec(points:=[One(S)[d+1]],ops:=[OnRight]));
       hom:=MappingByFunction(info.vectorspace,n,function(v)
         local m;
         m:=IdentityMat(d+1,info.field);
