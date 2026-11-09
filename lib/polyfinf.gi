@@ -51,7 +51,8 @@ local   c,  ind,  br,  g,  h,  k,  i,dou;
       g := CoefficientsOfLaurentPolynomial(g);
       h := ShiftedCoeffs(g[1],g[2]);
       k := ShiftedCoeffs(c[1],c[2]);
-      g := g[1];
+      # square <g> itself, not <g> divided by its lowest power of x
+      g := ShallowCopy(h);
       for i  in [1..DegreeOverPrimeField(br)*d-1]  do
           g := ProductCoeffs(g,g);
           ReduceCoeffs(g,k);
