@@ -51,7 +51,8 @@ InstallMethod(SetName,"set name of indeterminate",
 function(indet,name)
 local c;
   c:=CoefficientsOfLaurentPolynomial(indet);
-  if not Length(c[1])=1 and One(c[1][1])=c[1][1] and c[2]=1 then
+  # only indeterminates get their name set in the family
+  if not (Length(c[1])=1 and IsOne(c[1][1]) and c[2]=1) then
     TryNextMethod();
   fi;
   SetIndeterminateName(FamilyObj(indet),
