@@ -398,7 +398,12 @@ EXPORT_INLINE void CHANGED_BAG(Bag bag)
 
 BOOL IsGapObj(void *);
 
-#elif defined(GAP_MEMORY_CANARY)
+#elif defined(USE_GASMAN)
+
+extern Bag * YoungBags;
+extern Bag   ChangedBags;
+
+#if defined(GAP_MEMORY_CANARY)
 
 /****************************************************************************
 **
@@ -412,10 +417,7 @@ BOOL IsGapObj(void *);
 
 void CHANGED_BAG(Bag b);
 
-#elif defined(USE_GASMAN)
-
-extern Bag * YoungBags;
-extern Bag   ChangedBags;
+#else
 
 #ifdef GAP_KERNEL_DEBUG
 BOOL         InWorkspaceRestore(void);
@@ -429,6 +431,8 @@ EXPORT_INLINE void CHANGED_BAG(Bag bag)
         ChangedBags = bag;
     }
 }
+
+#endif
 
 #else
 
