@@ -1508,8 +1508,11 @@ BindGlobal("RPSquareHensel",function(f,t,opt)
         ofb:=2*AbsInt(lc)*OneFactorBound(f);
         Info(InfoPoly,2,"new one factor bound = ",ofb);
 
-        # degree arguments or OFB arguments prove f irreducible
-        if (ForAll(t.degrees,i->i=0 or 2*i>=DegreeOfLaurentPolynomial(f))
+        # degree arguments or OFB arguments prove f irreducible. A
+        # reducible f has a factor of degree at most half its degree, and
+        # f may split into two factors of exactly half its degree, so all
+        # possible degrees must exceed half the degree of f.
+        if (ForAll(t.degrees,i->i=0 or 2*i>DegreeOfLaurentPolynomial(f))
            or (alldegs and ofb<q)) and DegreeOfLaurentPolynomial(f)>0 then
           Add(fcn.irrFactors,f);
           Add(res.irrFactors,f);
