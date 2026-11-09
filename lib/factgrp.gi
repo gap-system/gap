@@ -1048,7 +1048,7 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,bl,
     if HasBaseOfGroup(G) then
       SetBaseOfGroup(H,BaseOfGroup(G));
     fi;
-    if HasIsNonabelianSimpleGroup(G) then
+    if HasIsNonabelianSimpleGroup(G) and IsNonabelianSimpleGroup(G) then
       SetIsNonabelianSimpleGroup(H,IsNonabelianSimpleGroup(G));
     fi;
   else
