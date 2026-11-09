@@ -40,6 +40,11 @@ InstallMethod( IsSingleValued,
 function(hom)
 local m, fp, s, sg, o, gi;
   m:=MappingGeneratorsImages(hom);
+  # map on the trivial group; IsomorphismFpGroupByGenerators would run a
+  # coset enumeration over the whole group, which may be infinite
+  if Length(m[1])=0 then
+    return true;
+  fi;
   fp:=IsomorphismFpGroupByGenerators(Source(hom),m[1]);
   s:=Image(fp);
   sg:=FreeGeneratorsOfFpGroup(s);

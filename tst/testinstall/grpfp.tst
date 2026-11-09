@@ -190,5 +190,13 @@ true
 gap> IsomorphismPermGroup( H ) <> fail;
 true
 
+# trivial subgroup of an infinite group
+gap> F:= FreeGroup( 2 );;
+gap> G:= TrivialSubgroup( F / [ Comm( F.1, F.2 ) ] );;
+gap> GroupHomomorphismByImages( G, G, [], [] ) <> fail;
+true
+gap> LowerCentralSeriesOfGroup( G ) = [ G ];
+true
+
 #
 gap> STOP_TEST( "grpfp.tst" );
