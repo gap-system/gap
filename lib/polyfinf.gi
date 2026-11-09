@@ -807,6 +807,12 @@ local c,b,l;
   b:=DefaultField(c);
   l:=List(Factors(PolynomialRing(b),f),DegreeOfLaurentPolynomial);
   l:=Filtered(l,i->i>0); # lcm otherwise returns 0
-  l:=Lcm(l);
+  if IsEmpty(l) then
+    # nonzero constant polynomial, its splitting field is the field of
+    # its coefficient
+    l:=1;
+  else
+    l:=Lcm(l);
+  fi;
   return GF(Characteristic(f)^(l*DegreeOverPrimeField(b)));
 end);
