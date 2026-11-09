@@ -1950,7 +1950,7 @@ end );
 MAXTRYGCDHEU:=6;
 
 InstallGlobalFunction(HeuGcdIntPolsExtRep,function(fam,d,e)
-local x,xd,er,i,j,k,m,p,sel,xi,gamma,G,g,loop,zero,add;
+local x,xd,er,i,j,k,m,p,sel,xi,gamma,G,g,loop,zero,add,cd,ce,cont;
 
   # find the indeterminates and their degrees:
   x:=[];
@@ -1993,6 +1993,19 @@ local x,xd,er,i,j,k,m,p,sel,xi,gamma,G,g,loop,zero,add;
   x:=x[1];
   xd:=[xd[1][1],xd[2][1]];
 
+  # remove the integer contents, their gcd is a factor of the result
+  cd:=Gcd(d{[2,4..Length(d)]});
+  ce:=Gcd(e{[2,4..Length(e)]});
+  cont:=GcdInt(cd,ce);
+  if cd<>1 then
+    d:=ShallowCopy(d);
+    d{[2,4..Length(d)]}:=d{[2,4..Length(d)]}/cd;
+  fi;
+  if ce<>1 then
+    e:=ShallowCopy(e);
+    e{[2,4..Length(e)]}:=e{[2,4..Length(e)]}/ce;
+  fi;
+
   xi:=2*Minimum(Maximum(List(d{[2,4..Length(d)]},AbsInt)),
                 Maximum(List(e{[2,4..Length(e)]},AbsInt)))+2;
 
@@ -2023,7 +2036,10 @@ local x,xd,er,i,j,k,m,p,sel,xi,gamma,G,g,loop,zero,add;
             g:=g-xi; # symmetric rep.
           fi;
           gamma:=(gamma-g)/xi;
-          if i=0 then
+          if g=0 then
+            # ZippedSum assumes there are no zero coefficients
+            add:=[];
+          elif i=0 then
             add:=[[],g];
           else
             add:=[[x,i],g];
@@ -2047,17 +2063,32 @@ local x,xd,er,i,j,k,m,p,sel,xi,gamma,G,g,loop,zero,add;
           gamma:=ZippedSum(gamma,add,0,fam!.zippedSum); # gamma-g
           gamma{[2,4..Length(gamma)]}:=gamma{[2,4..Length(gamma)]}/xi; # /xi
           #add:=g*xp^i; in extrep
-          add:=ZippedProduct(g,[[x,i],1],0,fam!.zippedProduct);
+          if i=0 then
+            # avoid monomials with exponent zero
+            add:=g;
+          else
+            add:=ZippedProduct(g,[[x,i],1],0,fam!.zippedProduct);
+          fi;
         fi;
         # G:=G+add in extrep
         G:=ZippedSum(G,add,0,fam!.zippedSum);
         i:=i+1;
       od;
 
-      if Length(G)>0 and Length(G[1])>0 and
-         QuotientPolynomialsExtRep(fam,d,G)<>fail and
-         QuotientPolynomialsExtRep(fam,e,G)<>fail then
-        return G;
+      # G is the gcd if its primitive part divides both polynomials. Note
+      # that G may well have a constant term, or be constant.
+      if Length(G)>0 then
+        g:=Gcd(G{[2,4..Length(G)]})*SignInt(Last(G));
+        if g<>1 then
+          G{[2,4..Length(G)]}:=G{[2,4..Length(G)]}/g;
+        fi;
+        if QuotientPolynomialsExtRep(fam,d,G)<>fail and
+           QuotientPolynomialsExtRep(fam,e,G)<>fail then
+          if cont<>1 then
+            G{[2,4..Length(G)]}:=G{[2,4..Length(G)]}*cont;
+          fi;
+          return G;
+        fi;
       fi;
     fi;
     xi:=QuoInt(xi*73794,27011); #square of golden ratio
