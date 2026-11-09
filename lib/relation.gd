@@ -32,7 +32,7 @@
 ##  <P/>
 ##  In &GAP;, a relation is conceptually represented as a general mapping
 ##  from <M>X</M> to itself.
-##  The category <Ref Prop="IsBinaryRelation"/> is a synonym for
+##  The property <Ref Prop="IsBinaryRelation"/> is a synonym for
 ##  <Ref Prop="IsEndoGeneralMapping"/>.
 ##  Attributes and properties of relations in &GAP; are supported for
 ##  relations, via considering relations as a subset of <M>X \times X</M>,
@@ -70,7 +70,7 @@
 ##  <Prop Name="IsBinaryRelation" Arg='R'/>
 ##
 ##  <Description>
-##  is   exactly   the   same   category   as   (i.e.    a    synonym    for)
+##  is exactly the same property as (i.e. a synonym for)
 ##  <Ref Prop="IsEndoGeneralMapping"/>.
 ##  </Description>
 ##  </ManSection>
@@ -434,7 +434,8 @@ DeclareProperty("IsTransitiveBinaryRelation", IsBinaryRelation);
 ##  <E>antisymmetric</E> if <M>(x,y), (y,x) \in R</M> implies <M>x = y</M>.
 ##  Alternatively, <M>R</M> as a mapping is antisymmetric if for all
 ##  <M>x \in X</M>, the intersection of the preimage set of <M>x</M>
-##  under <M>R</M> and the image set <M>R(x)</M> is <M>\{ x \}</M>.
+##  under <M>R</M> and the image set <M>R(x)</M> is a subset of
+##  <M>\{ x \}</M>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -941,7 +942,7 @@ DeclareAttribute("EquivalenceClasses", IsEquivalenceRelation);
 ##  <Description>
 ##  return the equivalence class of <A>elt</A> in the binary relation
 ##  <A>rel</A>,
-##  where <A>elt</A> is an element (i.e. a pair) of the domain of <A>rel</A>.
+##  where <A>elt</A> is an element of the domain of <A>rel</A>.
 ##  In the <C>NC</C> form, it is not checked that <A>elt</A> is in the domain
 ##  over which <A>rel</A> is defined.
 ##  <Example><![CDATA[
