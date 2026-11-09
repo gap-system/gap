@@ -162,19 +162,29 @@ local   r,  br,  nu,  ind,  p,  d,  z,  v,  o,  i,  e;
 
   p := Characteristic(br);
   d := DegreeOverPrimeField(br);
-  z := PrimitiveRoot(br);
   f := CoefficientsOfLaurentPolynomial(f);
   v := f[2];
   f := f[1];
-  o := p^d-1;
-  for i  in [0..(Length(f)-1)/n] do
-      e := f[i*n+1];
-      if e = nu then
-          r[i+1] := nu;
-      else
-          r[i+1] := z ^ ((LogFFE(e,z) / n) mod o);
-      fi;
-  od;
+  if n = p then
+      # the p-th root is the inverse of the Frobenius automorphism, that
+      # is, the p^(d-1)-th power. This avoids computing discrete
+      # logarithms, which is infeasible in large fields.
+      o := p^(d-1);
+      for i  in [0..(Length(f)-1)/n] do
+          r[i+1] := f[i*n+1]^o;
+      od;
+  else
+      z := PrimitiveRoot(br);
+      o := p^d-1;
+      for i  in [0..(Length(f)-1)/n] do
+          e := f[i*n+1];
+          if e = nu then
+              r[i+1] := nu;
+          else
+              r[i+1] := z ^ ((LogFFE(e,z) / n) mod o);
+          fi;
+      od;
+  fi;
   return LaurentPolynomialByCoefficients(
               FamilyObj(nu), r, v/n, ind );
 
