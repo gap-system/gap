@@ -2058,7 +2058,7 @@ InstallMethod( TensorProductOfAlgebraModules,
             if not ForAll( list, V ->
                        IsLeftAlgebraModuleElementCollection(V) and
                        IsRightAlgebraModuleElementCollection(V)) then
-              Error("for all modules the algebra must act om the same side");
+              Error("for all modules the algebra must act on the same side");
             fi;
 
             A:= LeftActingAlgebra( list[1] );
@@ -2085,7 +2085,7 @@ InstallMethod( TensorProductOfAlgebraModules,
         fi;
 
         if not ForAll( list, IsLeftAlgebraModuleElementCollection ) then
-            Error( "for all modules the algebra must act om the same side" );
+            Error( "for all modules the algebra must act on the same side" );
         fi;
 
         A:= LeftActingAlgebra( list[1] );
@@ -2102,7 +2102,7 @@ InstallMethod( TensorProductOfAlgebraModules,
     else
 
         if not ForAll( list, IsRightAlgebraModuleElementCollection ) then
-            Error( "for all modules the algebra must act om the same side" );
+            Error( "for all modules the algebra must act on the same side" );
         fi;
 
         A:= RightActingAlgebra( list[1] );
@@ -3479,7 +3479,7 @@ InstallMethod( DirectSumOfAlgebraModules,
             if not ForAll( list, V ->
                        IsLeftAlgebraModuleElementCollection(V) and
                        IsRightAlgebraModuleElementCollection(V)) then
-              Error("for all modules the algebra must act om the same side");
+              Error("for all modules the algebra must act on the same side");
             fi;
 
             A:= LeftActingAlgebra( list[1] );
@@ -3495,7 +3495,7 @@ InstallMethod( DirectSumOfAlgebraModules,
         fi;
 
         if not ForAll( list, IsLeftAlgebraModuleElementCollection ) then
-            Error( "for all modules the algebra must act om the same side" );
+            Error( "for all modules the algebra must act on the same side" );
         fi;
 
         A:= LeftActingAlgebra( list[1] );
@@ -3507,7 +3507,7 @@ InstallMethod( DirectSumOfAlgebraModules,
     else
 
         if not ForAll( list, IsRightAlgebraModuleElementCollection ) then
-            Error( "for all modules the algebra must act om the same side" );
+            Error( "for all modules the algebra must act on the same side" );
         fi;
 
         A:= RightActingAlgebra( list[1] );
