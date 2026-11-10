@@ -1533,9 +1533,9 @@ DeclareGlobalFunction( "BlownUpMat" );
 ##  <P/>
 ##  So <Ref Func="BlownUpVector"/> and <Ref Func="BlownUpMat"/> are compatible
 ##  in the sense that for a matrix <A>mat</A> over <M>F</M>,
-##  <C>BlownUpVector( <A>B</A>, <A>mat</A> * <A>vector</A> )</C>
+##  <C>BlownUpVector( <A>B</A>, <A>vector</A> * <A>mat</A> )</C>
 ##  is equal to
-##  <C>BlownUpMat( <A>B</A>, <A>mat</A> ) * BlownUpVector( <A>B</A>, <A>vector</A> )</C>.
+##  <C>BlownUpVector( <A>B</A>, <A>vector</A> ) * BlownUpMat( <A>B</A>, <A>mat</A> )</C>.
 ##  <Example><![CDATA[
 ##  gap> B:= Basis( CF(4), [ 1, E(4) ] );;
 ##  gap> mat:= [ [ 1, E(4) ], [ 0, 1 ] ];;  vec:= [ 1, E(4) ];;
@@ -2275,8 +2275,9 @@ DeclareGlobalFunction( "EmptyMatrix" );
 ##  normal form. (In other words: it triangulizes the product of <A>bas</A> with
 ##  <A>mat</A>.)
 ##  <P/>
-##  <A>bas</A> must be given in Hermite normal form,
-##  otherwise an error is triggered (see&nbsp;<Ref Sect="Action on canonical representatives"/>).
+##  <A>bas</A> must be given in Hermite normal form, otherwise
+##  orbit and stabilizer computations signal an error
+##  (see&nbsp;<Ref Sect="Action on canonical representatives"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

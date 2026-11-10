@@ -422,7 +422,7 @@ InstallOtherMethod( Embedding,
     fi;
 
     # Make the mapping object.
-    emb := Objectify( TypeOfDefaultGeneralMapping( Fam, LieFam,
+    emb := Objectify( NewType( GeneralMappingsFamily( Fam, LieFam ),
                               IsLieEmbeddingRep
                           and IsNonSPGeneralMapping
                           and IsMapping
@@ -455,18 +455,24 @@ InstallMethod( PreImagesElmNC,
     return [ elm![1] ];
     end );
 
+# The embedding is a bijection of families, so every element of the
+# range family has a preimage, and there is no range domain to test.
 InstallMethod( PreImagesElm,
     "for Lie embedding and Lie object in default representation",
     FamRangeEqFamElm,
     [ IsGeneralMapping and IsLieEmbeddingRep,
       IsLieObject and IsPackedElementDefaultRep ], 0,
     function( emb, elm )
-    if not ( elm in Range(emb) ) then
-        Error( "<elm> is not in the range of mapping <emb>" );
-    elif not ( elm in Image(emb) ) then
-        return [];
-    fi;
-    return PreImagesElmNC( emb, elm );
+    return [ elm![1] ];
+    end );
+
+InstallMethod( PreImagesRepresentative,
+    "for Lie embedding and Lie object in default representation",
+    FamRangeEqFamElm,
+    [ IsGeneralMapping and IsLieEmbeddingRep,
+      IsLieObject and IsPackedElementDefaultRep ], 0,
+    function( emb, elm )
+    return elm![1];
     end );
 
 #############################################################################

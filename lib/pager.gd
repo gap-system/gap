@@ -37,7 +37,8 @@
 ##  <P/>
 ##  Which pager is used can be controlled by setting the user preference
 ##  <C>"Pager"</C>.
-##  The default value is <C>"builtin"</C>
+##  The default value is the program given by the environment variable
+##  <C>PAGER</C> if this is set, and <C>"builtin"</C> otherwise,
 ##  which means that the internal pager is used.
 ##  <P/>
 ##  On UNIX systems you probably want to set the user preference

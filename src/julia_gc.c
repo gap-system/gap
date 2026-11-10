@@ -428,14 +428,14 @@ static void FindLiveRangeReverse(PtrArray * arr, void * start, void * end)
         }
     }
     char * p = (char *)(align_ptr(start));
-    char * q = (char *)end - sizeof(void *);
+    char * q = (char *)align_ptr((char *)end - sizeof(void *));
     while (!lt_ptr(q, p)) {
         void * addr = *(void **)q;
         if (addr && jl_gc_internal_obj_base_ptr(addr) == addr &&
             jl_typeis(addr, DatatypeGapObj)) {
             PtrArrayAdd(arr, addr);
         }
-        q -= C_STACK_ALIGN;
+        q -= sizeof(void *);
     }
 }
 
@@ -493,8 +493,8 @@ static NOINLINE void TryMarkRange(jl_ptls_t ptls, void * start, void * end)
         SWAP(void *, start, end);
     }
     char * p = (char *)align_ptr(start);
-    char * q = (char *)end - sizeof(void *) + C_STACK_ALIGN;
-    while (lt_ptr(p, q)) {
+    char * q = (char *)end - sizeof(void *);
+    while (!lt_ptr(q, p)) {
         void * addr = *(void **)p;
         if (addr) {
             TryMark(ptls, addr);
@@ -505,7 +505,7 @@ static NOINLINE void TryMarkRange(jl_ptls_t ptls, void * start, void * end)
             }
 #endif
         }
-        p += C_STACK_ALIGN;
+        p += sizeof(void *);
     }
 }
 
@@ -533,6 +533,14 @@ static void GapTaskScanner(jl_task_t * task, int root_task)
         // or a guard page.
         ScanTaskStack(task, active_start, active_end);
     }
+}
+
+// Scan from the frame of this function, which lies below that of its
+// caller, to <stackend>.
+static NOINLINE void ScanStackFromHere(jl_ptls_t ptls, char * stackend)
+{
+    char * top = (char *)&top;
+    TryMarkRange(ptls, top, stackend);
 }
 
 #endif // DISABLE_STACK_SCAN
@@ -571,12 +579,22 @@ static void GapRootScanner(int full)
 #endif
 
     // We scan the stack of the current task from the stack pointer
-    // towards the stack bottom, ensuring that we also scan any
-    // references stored in registers.
-    jmp_buf registers;
-    GAP_SETJMP(registers);
-    TryMarkRange(ptls, registers, (char *)registers + sizeof(jmp_buf));
-    TryMarkRange(ptls, (char *)registers + sizeof(jmp_buf), stackend);
+    // towards the stack bottom. References of our callers held in
+    // callee-saved registers must end up in this frame: setjmp stores
+    // them in a local jmp_buf, but C libraries mangle the frame pointer,
+    // so where available __builtin_unwind_init also spills all of them.
+    // The scan starts in a callee, which must not be a tail call, as the
+    // compiler may place the spilled registers below our locals.
+#ifdef HAVE___BUILTIN_UNWIND_INIT
+    __builtin_unwind_init();
+#endif
+    // jmp_buf can be an int array (macOS); align it for the word-wise scan
+    union {
+        jmp_buf buf;
+        void *  align;
+    } registers;
+    GAP_SETJMP(registers.buf);
+    ScanStackFromHere(ptls, stackend);
 #endif // DISABLE_STACK_SCAN
 
     // Allow installing a custom marking function. This is used for

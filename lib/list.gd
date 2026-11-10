@@ -1521,9 +1521,9 @@ DeclareOperation( "Flat", [ IsList ] );
 ##  The elements of that list however are identical to the corresponding
 ##  elements of the argument list (see&nbsp;<Ref Sect="Identical Lists"/>).
 ##  <P/>
-##  <Ref Func="Reversed"/> implements a special case of list assignment,
+##  <Ref Func="Reversed"/> implements a special case of sublist access,
 ##  which can also be formulated in terms of the <C>{}</C> operator
-##  (see&nbsp;<Ref Sect="List Assignment"/>).
+##  (see&nbsp;<Ref Sect="List Elements"/>).
 ##  <P/>
 ##  Developers who wish to adapt this for custom list types need to
 ##  install suitable methods for the operation <C>ReversedOp</C>.
@@ -1585,7 +1585,7 @@ DeclareOperation( "Shuffle", [IsDenseList and IsMutable] );
 ##  <Oper Name="Sort" Arg='list[, func]'/>
 ##  <Oper Name="SortBy" Arg='list, func'/>
 ##  <Oper Name="StableSort" Arg='list[, func]'/>
-##  <Oper Name="StableSortBy" Arg='list, [func]'/>
+##  <Oper Name="StableSortBy" Arg='list, func'/>
 ##  <Description>
 ##  <Ref Oper="Sort"/> sorts the list <A>list</A> in increasing order.
 ##  In the one argument form <Ref Oper="Sort"/> uses the operator <C>&lt;</C>
@@ -2305,7 +2305,7 @@ DeclareGlobalFunction( "ListWithIdenticalEntries" );
 ##  <Description>
 ##  For a list <A>list</A> and an object <A>val</A>,
 ##  <Ref Oper="PositionNot"/> returns the smallest
-##  nonnegative integer <M>n</M> such that <M><A>list</A>[n]</M>
+##  positive integer <M>n</M> such that <M><A>list</A>[n]</M>
 ##  is either unbound or not equal to <A>val</A>.
 ##  If a starting index <A>from</A> is given, it
 ##  returns the first position with this property

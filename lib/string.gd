@@ -186,7 +186,7 @@ DeclareGlobalFunction( "DayDMY" );
 ##  <C>[ day, month, year, hour, minute, second ]</C>.
 ##  The remarks on the Gregorian calendar in the section on
 ##  <Ref Func="DayDMY"/> apply here as well.
-##  The last three arguments must lie in the appropriate ranges.
+##  The last three entries must lie in the appropriate ranges.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

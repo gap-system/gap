@@ -99,9 +99,9 @@ fi;
 ##  At this point, a <K>break</K>-loop
 ##  (see Section&nbsp;<Ref Sect="Break Loops"/>) has been entered.
 ##  The line beginning <C>Error</C> tells you why this occurred.
-##  The next seven lines occur if <Ref Func="OnBreak"/> has its default value
+##  The stack trace that follows occurs if <Ref Func="OnBreak"/> has its default value
 ##  <Ref Func="Where"/>.
-##  They explain, in this case,
+##  It explains, in this case,
 ##  how &GAP; came to be doing a coset enumeration.
 ##  Then you are given a number of options of how to escape the
 ##  <K>break</K>-loop:
@@ -548,7 +548,7 @@ DeclareGlobalFunction("IndexCosetTab");
 ##
 ##  <#GAPDoc Label="StandardizeTable">
 ##  <ManSection>
-##  <Func Name="StandardizeTable" Arg='table, standard'/>
+##  <Func Name="StandardizeTable" Arg='table[, standard]'/>
 ##
 ##  <Description>
 ##  standardizes the given coset table <A>table</A>. The second argument is

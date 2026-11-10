@@ -831,8 +831,9 @@ gap> ForAll(S, s -> (s ^ iso) ^ inv = s);
 true
 gap> D := GreensDClassOfElement(S, S.1);;
 gap> iso := _InjectionPrincipalFactor(D, ReesZeroMatrixSemigroup);;
-gap> inv := InverseGeneralMapping(iso);;
-gap> MultiplicativeZero(Range(iso)) ^ inv;
+gap> IsSurjective(iso);
+false
+gap> PreImagesRepresentative(iso, MultiplicativeZero(Range(iso)));
 fail
 
 # AssociatedReesMatrixSemigroupOfDClass: for a D-class of a finite semigroup

@@ -59,6 +59,15 @@ positional object, if <A>data</A> is a record then
 <Ref Func="Objectify"/> turns it into a component object
 (for examples, see&nbsp;<Ref Sect="Component Objects"/>
 and&nbsp;<Ref Sect="Positional Objects"/>).
+The resulting object lies in <Ref Filt="IsPositionalObjectRep"/>
+resp.&nbsp;<Ref Filt="IsComponentObjectRep"/>:
+if <A>type</A> does not imply this representation then the object gets
+the subtype of <A>type</A> that does,
+which is slower than putting the representation into <A>type</A>.
+An error is signalled if <A>type</A> implies another one of the
+representations <Ref Filt="IsInternalRep"/>, <Ref Filt="IsDataObjectRep"/>,
+<Ref Filt="IsPositionalObjectRep"/>, <Ref Filt="IsComponentObjectRep"/>
+instead.
 <P/>
 <Ref Func="Objectify"/> does also return the object that it made out of
 <A>data</A>.
@@ -134,6 +143,7 @@ InstallMethod( Iterator,
     function( Integers )
     return Objectify( NewType( IteratorsFamily,
                                    IsIterator
+                               and IsMutable
                                and IsIntegersIteratorCompRep ),
                       rec( counter := 0 ) );
     end );
@@ -146,7 +156,7 @@ the filter <Ref Filt="IsIntegers"/>.
 <P/>
 By the call to <Ref Func="NewType"/>, the returned object lies in the family
 containing all iterators, which is <C>IteratorsFamily</C>,
-it lies in the category <Ref Filt="IsIterator"/>
+it lies in the categories <Ref Filt="IsIterator"/> and <Ref Filt="IsMutable"/>,
 and in the representation <C>IsIntegersIteratorCompRep</C>;
 furthermore, it has the component <C>counter</C> with value <C>0</C>.
 <P/>
@@ -167,7 +177,7 @@ InstallMethod( IsDoneIterator,
 
 InstallMethod( NextIterator,
     "method for iterator of `Integers'",
-    [ IsIntegersIteratorCompRep ],
+    [ IsIterator and IsMutable and IsIntegersIteratorCompRep ],
     function( iter )
     iter!.counter:= iter!.counter + 1;
     if iter!.counter mod 2 = 0 then
@@ -236,6 +246,7 @@ InstallMethod( Iterator,
     function( Integers )
     return Objectify( NewType( IteratorsFamily,
                                    IsIterator
+                               and IsMutable
                                and IsIntegersIteratorPosRep ),
                       [ 0 ] );
     end );
@@ -248,7 +259,7 @@ the filter <Ref Filt="IsIntegers"/>.
 <P/>
 By the call to <Ref Func="NewType"/>, the returned object lies in the family
 containing all iterators, which is <C>IteratorsFamily</C>,
-it lies in the category <Ref Filt="IsIterator"/>
+it lies in the categories <Ref Filt="IsIterator"/> and <Ref Filt="IsMutable"/>,
 and in the representation <C>IsIntegersIteratorPosRep</C>;
 furthermore, the first position has value <C>0</C>.
 <P/>
@@ -269,7 +280,7 @@ InstallMethod( IsDoneIterator,
 
 InstallMethod( NextIterator,
     "method for iterator of `Integers'",
-    [ IsIntegersIteratorPosRep ],
+    [ IsIterator and IsMutable and IsIntegersIteratorPosRep ],
     function( iter )
     iter![1]:= iter![1] + 1;
     if iter![1] mod 2 = 0 then
@@ -492,19 +503,18 @@ function ( set, k )
                 return nn;
             end,
           NumberElement := function ( enum, elm )
-                local  n, i;
-                if not IsList( elm )  then
-                    return fail;
-                fi;
-                elm := List( elm, function ( x )
-                        return Position( enum!.set, x );
-                    end );
-                if fail in elm or Length( elm ) <> enum!.k  then
+                local  n, i, p;
+                if not IsDenseList( elm ) or Length( elm ) <> enum!.k
+                    then
                     return fail;
                 fi;
                 n := 0;
                 for i  in [ 1 .. enum!.k ]  do
-                    n := Length( enum!.set ) * n + elm[i] - 1;
+                    p := Position( enum!.set, elm[i] );
+                    if p = fail  then
+                        return fail;
+                    fi;
+                    n := Length( enum!.set ) * n + p - 1;
                 od;
                 return n + 1;
             end,
@@ -519,6 +529,9 @@ function ( set, k )
           set := Set( set ),
           k := k ) );
     SetIsSSortedList( enum, true );
+    if IsRange( enum!.set ) or ForAll( enum!.set, IsSmallIntRep )  then
+        SetFilterObj( enum, IsEnumeratorOfSmallIntLists );
+    fi;
     return enum;
 end
 ]]></Example>
@@ -526,7 +539,7 @@ end
 We see that the enumerator is a homogeneous list that stores individual
 functions <C>ElementNumber</C>, <C>NumberElement</C>,
 <C>Length</C>, and <C>PrintObj</C>;
-besides that, the data components <M>S</M> and <M>k</M> are contained.
+besides that, the data components <C>set</C> and <C>k</C> are contained.
 
 </Section>
 

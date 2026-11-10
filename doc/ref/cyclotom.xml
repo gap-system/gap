@@ -214,7 +214,7 @@ For example, take a prime integer <M>p</M> and suppose that we want to work
 with a matrix group over the field <M>&QQ;(\sqrt{{p}})</M>.
 Then each matrix entry could be described by two rational coefficients,
 whereas the representation in the smallest cyclotomic field requires
-<M>p-1</M> rational coefficients for each entry.
+at least <M>p-1</M> rational coefficients for each entry.
 So it is worth thinking about using elements in a field constructed with
 <Ref Oper="AlgebraicExtension"/> when natural embeddings
 of cyclotomic fields are not needed.

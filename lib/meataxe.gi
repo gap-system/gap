@@ -70,7 +70,7 @@ end);
 InstallGlobalFunction(TrivialGModule, function(g, F)
 local mats;
   mats:=List(GeneratorsOfGroup(g),i->[[One(F)]]);
-  return GModuleByMats(mats,F);
+  return GModuleByMats(mats,1,F);
 end);
 
 #############################################################################
@@ -604,6 +604,14 @@ local module, sub, typ, matrices, dim, subdim, F,
     sr:=[1..subdim];qr:=[subdim+1..dim];
     for g in matrices do
       g:=sub*g*subi;
+
+      # sub spans a submodule iff the upper right block is zero
+      for i in sr do
+        if PositionNonZero(g[i], subdim) <= dim then
+          return fail;
+        fi;
+      od;
+
       if s then
         h:=ExtractSubMatrix(g,sr,sr);
         h:=ImmutableMatrix(F,h);
@@ -1799,7 +1807,8 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
 end;
 
 SMTX.DegreeFieldExt:=function(module)
-  if not IsBound(module.smashMeataxe.degreeFieldExt) then
+  if not IsBound(module.smashMeataxe) or
+     not IsBound(module.smashMeataxe.degreeFieldExt) then
     SMTX.AbsoluteIrreducibilityTest( module );
   fi;
   return module.smashMeataxe.degreeFieldExt;
@@ -1817,7 +1826,7 @@ end;
 ##
 ## FieldGenCentMat( ) should only be applied to modules that have already
 ## been proved irreducible using IsIrreducible. It then tests for absolute
-## irreducibility (if not already known) and does nothing if module is
+## irreducibility (if not already known) and raises an error if the module is
 ## absolutely irreducible. Otherwise, it returns a matrix that generates
 ## (multiplicatively) the centralizing field (i.e. its multiplicative order
 ## is q^e - 1, where e is the degree of the centralizing field. This is not
@@ -1837,10 +1846,10 @@ SMTX.FieldGenCentMat:=function(module)
       Error("GModule is not irreducible.");
     fi;
 
-    # enforce absirred knowledge as well.
-    #if not SMTX.IsAbsolutelyIrreducible(module) then
-    #  Error("GModule is not absolutely irreducible.");
-    #fi;
+    # enforce knowledge of absolute irreducibility as well.
+    if SMTX.IsAbsolutelyIrreducible(module) then
+      Error("GModule is absolutely irreducible.");
+    fi;
 
     if SMTX.CentMat(module)=fail then
       Error("No CentMat component!");

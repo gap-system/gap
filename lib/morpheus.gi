@@ -1350,7 +1350,7 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
     size:=Size(params.to);
     action:=action-4;
     if Index(range,DerivedSubgroup(range))>1 then
-      derhom:=NaturalHomomorphismByNormalSubgroup(range,DerivedSubgroup(range));
+      derhom:=MaximalAbelianQuotient(range);
     fi;
   fi;
   tinj:=action>1; # test injective
@@ -2669,11 +2669,14 @@ InstallMethod( InnerAutomorphismGroup,
     local gens, A;
     if HasAutomorphismGroup( G ) or IsTrivial( G ) then
         return InnerAutomorphismsAutomorphismGroup( AutomorphismGroup( G ) );
+    elif IsAbelian( G ) then
+        A := Group([], IdentityMapping(G));
+    else
+        gens:= GeneratorsOfGroup( G );
+        # get the non-central generators
+        gens:= Filtered( gens, i -> not ForAll( gens, j -> i*j = j*i ) );
+        A := Group( List( gens, i -> InnerAutomorphism( G, i ) ) );
     fi;
-    gens:= GeneratorsOfGroup( G );
-    # get the non-central generators
-    gens:= Filtered( gens, i -> not ForAll( gens, j -> i*j = j*i ) );
-    A := Group( List( gens, i -> InnerAutomorphism( G, i ) ) );
     SetIsGroupOfAutomorphismsFiniteGroup( A, true );
     return A;
     end );
@@ -3147,8 +3150,7 @@ local Fgens,    # generators of F
   bestval:=infinity;
   if Size(F)<10000000 and Length(Fgens)>2 then
     len:=Maximum(2,Length(SmallGeneratingSet(
-                 Image(NaturalHomomorphismByNormalSubgroup(F,
-                   DerivedSubgroup(F))))));
+                 Image(MaximalAbelianQuotient(F)))));
   else
     len:=2;
   fi;

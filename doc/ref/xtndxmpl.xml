@@ -364,7 +364,7 @@ gap> InstallGlobalFunction( MyZmodnZ, function( n )
 ]]></Example>
 <P/>
 Note that the modulus <C>n</C> is stored in the component <C>modulus</C> of the
-family, as is assumed by <C>MyZmodnZ</C>.
+family, as is assumed by <C>MyZmodnZObj</C>.
 Thus it is not necessary to store the modulus in each element.
 When storing <C>n</C> with the <C>!.</C> operator as value of the component
 <C>modulus</C>, we used that all families are in fact represented as
@@ -1221,8 +1221,7 @@ gap> InstallMethod( \<,
 <P/>
 Now we install the same methods for the arithmetic operations
 <Ref Oper="\+"/>, <Ref Oper="ZeroOp"/>,
-<Ref Oper="AdditiveInverseOp"/>,
-<C>\-</C>, <Ref Oper="\*"/>,
+<Ref Oper="AdditiveInverseOp"/>, <Ref Oper="\*"/>,
 and <Ref Oper="OneOp"/>
 as in the previous section, without listing them below.
 Also the same <Ref Attr="Int"/> method is installed
@@ -1234,8 +1233,7 @@ And of course the same method for <Ref Oper="\mod"/> is
 installed.
 <P/>
 We have to be careful, however, with the methods for
-<Ref Oper="InverseOp"/>,
-<Ref Oper="\/"/>, and <Ref Oper="\^"/>.
+<Ref Oper="InverseOp"/>.
 These methods and the missing methods for arithmetic operations with
 one argument in <C>IsMyModulusRep</C> and the other in
 <Ref Filt="IsInternalRep"/>
@@ -1372,13 +1370,6 @@ The solution for this problem is to keep a global list of all results of
 whenever possible.
 Note that this approach would admit <Ref Oper="PrintObj"/>
 methods that produce &GAP; readable output.
-<P/>
-One can improve the <Ref Attr="Units"/> method for the full
-ring in such a way
-that a group is returned and not only a list of its elements;
-then the result of <Ref Attr="Units"/> can be used,
-e.&nbsp;g., as input for the operation
-<Ref Oper="SylowSubgroup"/>.
 <P/>
 To make computations more efficient,
 one can install methods for <C>\-</C>,

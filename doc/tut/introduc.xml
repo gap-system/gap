@@ -37,7 +37,8 @@ Since the printing routines of &GAP; are in some sense machine dependent
 you will for instance encounter a different layout of the printed objects
 in different environments.  But the  contents should always be the  same.
 In case you encounter serious nonsense  it is highly recommended that you
-send a bug report to <Email>support@gap-system.org</Email>.
+report it at <URL>https://github.com/gap-system/gap/issues</URL>
+or send a bug report to <Email>support@gap-system.org</Email>.
 <P/>
 The  examples in this  tutorial should explain  everything you have to
 know in order  to be able  to use &GAP;.   The reference  manual then
@@ -97,8 +98,8 @@ to press the <B>D</B> key while you hold down the <B>Ctrl</B> key.
 <P/>
 On some systems minor changes might be
 necessary. This is explained in &GAP; installation instructions (see the
-<F>INSTALL</F> file in the &GAP; root directory, or the &GAP; website).
-<!-- TODO: put URL -->
+<F>INSTALL.md</F> file in the &GAP; root directory, or
+<URL>https://www.gap-system.org/install/</URL>).
 <P/>
 <Index>whitespace</Index>
 In most places <E>whitespace</E> characters (i.e. <B>Space</B>s, <B>Tab</B>s
@@ -240,7 +241,7 @@ computer program  cannot know what your  intentions really were,  this is
 only  a hint. But in this  case &GAP;  is  right by  claiming that there
 should be a closing  parenthesis before the  semicolon. Now you  can type
 <B>Ctrl-P</B> to recover the last line of input. It will be written after the
-prompt with the cursor in the first  position. Type <B>Ctrl-E</B> to take the
+prompt. Type <B>Ctrl-E</B> to take the
 cursor to the end of the line, then <B>Ctrl-B</B> to move the cursor one
 character back. The cursor is now on the position of the semicolon. Enter
 the missing parenthesis by simply typing <C>)</C>. Now the line is correct and
@@ -253,8 +254,9 @@ pressing <B>Return</B> regardless of the position of  the cursor in that line.
 We will no longer mention the <B>Return</B> key from now on.
 <P/>
 <Index>break loops</Index>
-Sometimes a syntax error will cause &GAP; to enter a <E>break loop</E>.  This
-is indicated by the special prompt <C>brk></C>. If another syntax error occurs
+An error at run time, for example <C>1/0;</C>, causes &GAP; to enter a
+<E>break loop</E>.  This
+is indicated by the special prompt <C>brk></C>. If another error occurs
 while  &GAP; is in  a break loop, the prompt  will  change to <C>brk_2></C>,
 <C>brk_3></C> and so on. You can leave the current break loop and exit to the
 next outer one by either typing <C>quit;</C> or by hitting <B>Ctrl-D</B>.
@@ -499,12 +501,13 @@ you can enter <C>NamesUserGVars()</C>.
 <P/>
 <Log><![CDATA[
 gap> NamesUserGVars();
-[ "a", "w" ]
+[ "ProcessInitFiles", "a", "w" ]
 ]]></Log>
 <P/>
 This seems to be the  right place to state the  following rule:
-The name of every global variable in the &GAP; library starts with a
-<E>capital letter</E>.
+The name of almost every global variable in the &GAP; library starts with a
+<E>capital letter</E>; exceptions such as <C>fail</C>, <C>infinity</C>,
+<C>last</C> and <C>time</C> are read-only.
 Thus if you choose only names starting with a small letter for your own
 variables you will not attempt to overwrite any predefined variable.
 (Note that most of the predefined variables are read-only,
@@ -665,8 +668,9 @@ gap> cubed(5);
 125
 ]]></Example>
 <P/>
-More complicated  functions,  especially  functions with   more  than one
-argument cannot be defined in this way.
+Functions with several arguments can be written as
+<C>{x, y} -> x + y</C>.
+More complicated  functions cannot be defined in this way.
 You will see how to write your own &GAP; functions in
 Section&nbsp;<Ref Sect="Writing Functions"/>.
 <P/>
@@ -705,9 +709,11 @@ Help: several entries match this topic - type ?2 to get match [2]
 
 [1] Tutorial: Sets
 [2] Reference: Sets
-[3] Reference: sets
-[4] Reference: Sets of Subgroups
-[5] Reference: setstabilizer
+[3] Reference: Sets
+[4] Reference: sets
+[5] Reference: Sets of Subgroups
+[6] Francy (not loaded): SetShowLegend for IsChart, IsBool
+...
 ]]></Log>
 <P/>
 &GAP;'s manuals consist of several  <E>books</E>, which are indicated before the
@@ -744,7 +750,7 @@ manual.  In  particular  there  are  commands to  browse  through  the  help
 sections, see&nbsp;<C>?Ref:  Browsing through the Sections</C>  and there is a  way to
 influence  the  way  <E>how</E>  the  help  sections  are  displayed,  see&nbsp;<C>?Ref:
 SetHelpViewer</C>. For  example you can  use an  external pager program,  a Web
-browser,  <C>dvi</C>-previewer and/or  <C>pdf</C>-viewer for  reading &GAP;'s  online
+browser and/or  <C>pdf</C>-viewer for  reading &GAP;'s  online
 help.
 
 </Section>

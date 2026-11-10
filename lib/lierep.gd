@@ -766,7 +766,7 @@ DeclareGlobalFunction( "CollectUEALatticeElement" );
 ##  If <C>v</C> is a <C>WeightRepElement</C>, then <C>ExtRepOfObj( v )</C>
 ##  returns the corresponding list, and if <C>list</C> is such a list and
 ##  <A>fam</A> a <C>WeightRepElementFamily</C>, then
-##  <C>ObjByExtRep( <A>list</A>, <A>fam</A> )</C> returns the corresponding
+##  <C>ObjByExtRep( <A>fam</A>, <A>list</A> )</C> returns the corresponding
 ##  <C>WeightRepElement</C>.
 ##  </Description>
 ##  </ManSection>
@@ -817,10 +817,6 @@ DeclareCategory( "IsBasisOfWeightRepElementSpace", IsBasis );
 ##  lie in the category <Ref Filt="IsWeightRepElement"/>). However, if
 ##  <C>v</C> is an element of such a module, then <C>ExtRepOfObj( v )</C>
 ##  is a <C>WeightRepElement</C>.
-##  <P/>
-##  Note that for the following examples of this chapter we increase the line
-##  length limit from its default value 80 to 81 in order to make some long
-##  output expressions fit into the lines.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> K1:= SimpleLieAlgebra( "G", 2, Rationals );;

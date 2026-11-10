@@ -394,6 +394,8 @@ gap> a:= MyObject( Z(7) );
 <Z(7)>
 gap> b:= MyObject( 0*Z(7) );  g:= Group( a, b );
 <0*Z(7)>
+#I  default `IsGeneratorsOfMagmaWithInverses' method returns `true' for
+[ MyObject( Z(7) ), MyObject( 0*Z(7) ) ]
 <group with 2 generators>
 gap> Size( g );
 6
@@ -427,7 +429,7 @@ InstallMethod( ZeroOp,
 InstallMethod( AdditiveInverseOp,
     "for an object in `IsMyObject'",
     [ IsMyObject and IsMyObjectListRep ],
-    a -> MyObject( a![1] / ( a![1] - One( a![1] ) ) ) );
+    a -> MyObject( 2 * One( a![1] ) - a![1] ) );
 ]]></Log>
 <P/>
 Let us try whether the addition works.

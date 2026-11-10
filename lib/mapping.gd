@@ -71,20 +71,20 @@
 ##  union of these two.)
 ##  <P/>
 ##  For general mappings of the first category, <Ref Oper="ImagesElm"/> and
-##  <Ref Oper="PreImagesElm"/> are basic operations.
+##  <Ref Oper="PreImagesElmNC"/> are basic operations.
 ##  (Note that in principle it is possible to delegate
-##  from <Ref Oper="PreImagesElm"/> to <Ref Oper="ImagesElm"/>.)
+##  from <Ref Oper="PreImagesElmNC"/> to <Ref Oper="ImagesElm"/>.)
 ##  Methods for the secondary operations <Ref Oper="ImageElm"/>,
 ##  <Ref Oper="PreImageElm"/>, <Ref Oper="ImagesSet"/>,
-##  <Ref Oper="PreImagesSet"/>, <Ref Oper="ImagesRepresentative"/>,
-##  and <Ref Oper="PreImagesRepresentative"/> may use
-##  <Ref Oper="ImagesElm"/> and <Ref Oper="PreImagesElm"/>, respectively,
-##  and methods for <Ref Oper="ImagesElm"/>, <Ref Oper="PreImagesElm"/>
+##  <Ref Oper="PreImagesSetNC"/>, <Ref Oper="ImagesRepresentative"/>,
+##  and <Ref Oper="PreImagesRepresentativeNC"/> may use
+##  <Ref Oper="ImagesElm"/> and <Ref Oper="PreImagesElmNC"/>, respectively,
+##  and methods for <Ref Oper="ImagesElm"/>, <Ref Oper="PreImagesElmNC"/>
 ##  must <E>not</E> call the secondary operations.
 ##  In particular, there are no generic methods for
-##  <Ref Oper="ImagesElm"/> and <Ref Oper="PreImagesElm"/>.
+##  <Ref Oper="ImagesElm"/> and <Ref Oper="PreImagesElmNC"/>.
 ##  <P/>
-##  Methods for <Ref Oper="ImagesSet"/> and <Ref Oper="PreImagesSet"/> must
+##  Methods for <Ref Oper="ImagesSet"/> and <Ref Oper="PreImagesSetNC"/> must
 ##  <E>not</E> use <Ref Attr="PreImagesRange"/> and
 ##  <Ref Attr="ImagesSource"/>, e.g.,
 ##  compute the intersection of the set in question with the preimage of the
@@ -185,8 +185,8 @@
 ##  Methods for the operations <Ref Oper="ImagesElm"/>,
 ##  <Ref Oper="ImagesRepresentative"/>,
 ##  <Ref Oper="ImagesSet"/>, <Ref Oper="ImageElm"/>,
-##  <Ref Oper="PreImagesElm"/>,
-##  <Ref Oper="PreImagesRepresentative"/>, <Ref Oper="PreImagesSet"/>,
+##  <Ref Oper="PreImagesElmNC"/>,
+##  <Ref Oper="PreImagesRepresentativeNC"/>, <Ref Oper="PreImagesSetNC"/>,
 ##  and <Ref Oper="PreImageElm"/> take two arguments, a general mapping
 ##  <A>map</A> and an element or collection of elements <A>elm</A>.
 ##  These methods must <E>not</E> check whether <A>elm</A> lies in the source
@@ -198,6 +198,8 @@
 ##  <Ref Func="Images" Label="set of images of the source of a general mapping"/>,
 ##  <Ref Func="PreImage" Label="set of preimages of the range of a general mapping"/>,
 ##  and <Ref Func="PreImages" Label="set of preimages of the range of a general mapping"/>,
+##  and by the operations <Ref Oper="PreImagesElm"/>,
+##  <Ref Oper="PreImagesRepresentative"/>, and <Ref Oper="PreImagesSet"/>,
 ##  which then delegate to the operations listed above.
 ##  <#/GAPDoc>
 ##
@@ -1208,8 +1210,8 @@ DeclareGlobalFunction("CompositionMapping2General");
 ##  <P/>
 ##  Additionally, the properties <Ref Prop="IsInjective"/> and
 ##  <Ref Prop="IsSingleValued"/> are maintained.
-##  If the range of the <M>i+1</M>-th argument is identical to
-##  the range of the <M>i</M>-th argument,
+##  If the source of the <M>i</M>-th argument is identical to
+##  the range of the <M>i+1</M>-th argument,
 ##  also <Ref Prop="IsTotal"/> and <Ref Prop="IsSurjective"/> are maintained.
 ##  (So one should not call <Ref Oper="CompositionMapping2"/> directly
 ##  if one wants to maintain these properties.)
@@ -1447,17 +1449,25 @@ DeclareGlobalFunction( "GeneralMappingByElements" );
 ##  such that each element <M>s</M> of <A>S</A> is mapped to the element
 ##  <A>fun</A><M>( s )</M>, where <A>fun</A> is a &GAP; function.
 ##  <P/>
-##  If the argument <A>invfun</A> is bound then <C>map</C> is a bijection
-##  between <A>S</A> and <A>R</A>, and the preimage of each element <M>r</M>
-##  of <A>R</A> is given by <A>invfun</A><M>( r )</M>,
-##  where <A>invfun</A> is a &GAP;  function.
+##  If the argument <A>invfun</A> is bound then <C>map</C> is marked as
+##  bijective (see&nbsp;<Ref Prop="IsBijective"/>), and the preimage of each
+##  element <M>r</M> of <A>R</A> is given by <A>invfun</A><M>( r )</M>,
+##  where <A>invfun</A> is a &GAP; function.
+##  This is not checked: <A>fun</A> must be a bijection from <A>S</A> onto
+##  <A>R</A> and <A>invfun</A> its inverse, otherwise <C>map</C> reports
+##  wrong properties and preimages.
+##  For example, an injection of <A>S</A> into a strictly larger <A>R</A>
+##  must not be created this way.
 ##  <P/>
 ##  If five arguments are given and the fourth argument is <K>false</K> then
-##  the &GAP; function <A>prefun</A> can be used to compute a single preimage
-##  also if <C>map</C> is not bijective.
-##  <!-- what is <A>prefun</A> expected to return for <A>r</A> outside the image of <A>map</A>-->
-##  <!-- if <A>map</A> is not surjective?-->
-##  <!-- or must <A>map</A> be surjective in this case?-->
+##  <C>map</C> is only known to be single-valued and total, so set
+##  <Ref Prop="IsInjective"/> and <Ref Prop="IsSurjective"/> explicitly
+##  where they are known.
+##  The &GAP; function <A>prefun</A> must return one preimage of each
+##  element <M>r</M> in the image of <C>map</C>.
+##  <Ref Oper="PreImagesRepresentative"/> returns <K>fail</K> for other
+##  elements without calling <A>prefun</A>;
+##  <Ref Oper="PreImagesRepresentativeNC"/> calls it unchecked.
 ##  <P/>
 ##  The mapping returned by
 ##  <Ref Func="MappingByFunction" Label="by function (and inverse function) between two domains"/> lies in the

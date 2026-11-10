@@ -180,9 +180,8 @@ In order to handle a few special cases
 (currently <Ref Oper="Blocks" Label="for a group, an action domain, etc."/>
 and
 <Ref Oper="MaximalBlocks" Label="for a group, an action domain, etc."/>),
-also the following form of <Ref Func="OrbitishFO"/> is supported.
-<P/>
-<C>OrbitishFO( <A>name</A>, <A>reqs</A>, <A>famrel</A>, <A>attr</A> )</C>
+the fourth argument of <Ref Func="OrbitishFO"/> can be an attribute
+<A>attr</A>.
 <P/>
 The functions in question depend upon an argument <A>seed</A>,
 so they cannot be regarded as attributes.
@@ -193,8 +192,7 @@ In this case, the result can be stored as the value of the attribute
 <Ref Func="OrbitishFO"/>.
 This attribute is considered by a call
 <C>Blocks( <A>G</A>, <A>D</A>, <A>opr</A> )</C>
-(i.e., without <A>seed</A>) in the same way as
-<Ref Attr="Orbits" Label="attribute"/> considers <C>OrbitsAttr</C>.
+(i.e., without <A>seed</A>).
 <P/>
 To set this up,
 the declaration file <F>lib/oprt.gd</F> contains the following lines:
@@ -204,7 +202,9 @@ OrbitishFO( "Blocks",
     [ IsGroup, IsList, IsList,
       IsList,
       IsList,
-      IsFunction ], IsIdenticalObj, BlocksAttr, true );
+      IsFunction ], IsIdenticalObj, BlocksAttr, true,
+    Concatenation( "usage: Blocks(<xset>[,<seed>])\n",
+      "or Blocks(<G>,<Omega>[,<seed>][,<gens>,<acts>][,<act>])" ) );
 ]]></Log>
 And this extraordinary FOA triple works as follows:
 <Example><![CDATA[

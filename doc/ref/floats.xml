@@ -216,7 +216,7 @@ A package must create a record with fields (all optional) <List>
 
 The package must install methods <C>Int</C>, <C>Rat</C>, <C>String</C>
 for its objects, and
-creators <C>NewFloat(filter,IsRat)</C>, <C>NewFloat(IsString)</C>.
+creators <C>NewFloat(filter,IsRat)</C>, <C>NewFloat(filter,IsString)</C>.
 <P/>
 
 It must then install methods for all arithmetic and numerical

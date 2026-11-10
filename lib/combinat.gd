@@ -325,13 +325,13 @@ DeclareGlobalFunction("Combinations");
 #############################################################################
 ##
 #F  IteratorOfCombinations( mset[, k ] )
-#F  EnumeratorOfCombinations( mset )
+#F  EnumeratorOfCombinations( mset[, k ] )
 ##
 ##  <#GAPDoc Label="IteratorOfCombinations">
 ##  <ManSection>
 ##  <Heading>Iterator and enumerator of combinations</Heading>
 ##  <Func Name="IteratorOfCombinations" Arg='mset[, k]'/>
-##  <Func Name="EnumeratorOfCombinations" Arg='mset'/>
+##  <Func Name="EnumeratorOfCombinations" Arg='mset[, k]'/>
 ##
 ##  <Description>
 ##  <Ref Func="IteratorOfCombinations" /> returns an <Ref Oper="Iterator" />
@@ -341,11 +341,12 @@ DeclareGlobalFunction("Combinations");
 ##  all combinations.
 ##  <P/>
 ##  <Ref Func="EnumeratorOfCombinations"/> returns an <Ref Attr="Enumerator" />
-##  of the given multiset <A>mset</A>. Currently only a variant without second
-##  argument <A>k</A> is implemented.
-##  <P/>
-##  The ordering of combinations from these functions can be different and also
-##  different from the list returned by <Ref Func="Combinations"/>.
+##  for the same combinations; the enumerator is equal to the strictly sorted
+##  list <C>Combinations( <A>mset</A>[, <A>k</A>] )</C>.
+##  <Ref Func="IteratorOfCombinations"/> produces them in a different order,
+##  without <A>k</A> by increasing size.
+##  Before &GAP; 4.17, <Ref Func="EnumeratorOfCombinations"/> took only one
+##  argument and listed the combinations in a different order.
 ##  <P/>
 ##  <Example>
 ##  gap> m:=[1..15];; Add(m, 15);
@@ -356,9 +357,15 @@ DeclareGlobalFunction("Combinations");
 ##  49152
 ##  gap> cm := EnumeratorOfCombinations(m);;
 ##  gap> cm[1000];
-##  [ 1, 2, 3, 6, 7, 8, 9, 10 ]
+##  [ 1, 2, 3, 4, 5, 7, 9, 10, 12, 13, 15, 15 ]
 ##  gap> Position(cm, [1,13,15,15]);
-##  36866
+##  24572
+##  gap> cm := EnumeratorOfCombinations([1..30], 6);
+##  EnumeratorOfCombinations( [ 1 .. 30 ], 6 )
+##  gap> Length(cm);
+##  593775
+##  gap> Position(cm, [1,2,3,4,5,7]);
+##  2
 ##  </Example>
 ##  </Description>
 ##  </ManSection>
@@ -638,6 +645,10 @@ DeclareGlobalFunction("Tuples");
 ##  also for other functions that are declared in <F>lib/combinat.gd</F>.
 ##
 DeclareGlobalFunction( "EnumeratorOfTuples" );
+
+##  Set for the enumerators above if their elements are lists of small
+##  integers, so that dictionaries can hash these lists by their contents.
+DeclareFilter( "IsEnumeratorOfSmallIntLists" );
 
 
 #############################################################################

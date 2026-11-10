@@ -659,7 +659,7 @@ DeclareOperation( "AdjointMatrix", [ IsBasis, IsRingElement ] );
 ##  is the orthogonal complement of the subspace <A>U</A> of the Lie algebra
 ##  <A>L</A> with respect to the Killing form <M>\kappa</M>, that is,
 ##  the set <M>U^{{\perp}} = \{ x \in L; \kappa( x, y ) = 0 \hbox{ for all }
-##  y \in L \}</M>.
+##  y \in U \}</M>.
 ##  <P/>
 ##  <M>U^{{\perp}}</M> is a subspace of <A>L</A>, and if <A>U</A> is an ideal
 ##  of <A>L</A> then <M>U^{{\perp}}</M> is a subalgebra of <A>L</A>.

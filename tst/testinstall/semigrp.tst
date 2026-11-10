@@ -125,7 +125,7 @@ gap> g := f/[f.1^4];;
 gap> phi := InjectionZeroMagma(g);
 MappingByFunction( <fp group on the generators 
 [ a ]>, <<fp group on the generators 
-[ a ]> with 0 adjoined>, function( elt ) ... end, function( x ) ... end )
+[ a ]> with 0 adjoined>, function( elt ) ... end )
 gap> m := Range(phi);
 <<fp group on the generators [ a ]> with 0 adjoined>
 gap> el := Elements(m);;

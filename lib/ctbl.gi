@@ -1135,7 +1135,7 @@ InstallMethod( LinearCharacters,
       return Irr( G, 0 );
     fi;
 
-    pi:= NaturalHomomorphismByNormalSubgroupNC( G, DerivedSubgroup( G ) );
+    pi:= MaximalAbelianQuotient( G );
     img:= ImagesSource( pi );
     SetIsAbelian( img, true );
 #   return RestrictedClassFunctions( CharacterTable( img ),
@@ -4680,7 +4680,7 @@ InstallGlobalFunction( ConvertToCharacterTable, function( record )
         Info( InfoCharacterTable, 1,
               "group stored but no conjugacy classes!" );
         return fail;
-      elif not IsBound( record!.IdentificationOfClasses ) then
+      elif not IsBound( record!.IdentificationOfConjugacyClasses ) then
         Info( InfoCharacterTable, 1,
               "group stored but no identification of classes!" );
         return fail;

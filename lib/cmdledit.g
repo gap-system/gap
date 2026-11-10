@@ -222,14 +222,14 @@ GAPInfo.UseReadline := true;
 ##  <A>fname</A>. If the optional argument <A>app</A> is true the lines
 ##  are appended to the history, else it <Emph>prepends</Emph> them.
 ##  <P/>
-##  By  default, the command line history stores up to 1000 input lines.
-##  command  line  history. This number may be restricted or enlarged via
+##  By default, the command line history stores up to 10000 input lines.
+##  This number may be restricted or enlarged
 ##  via <C>SetUserPreference("HistoryMaxLines", num);</C> which may be set
 ##  to a non negative number <C>num</C> to store up to <C>num</C> input
 ##  lines or to <K>infinity</K> to store arbitrarily many lines.
-##  An automatic storing and restoring  of the command line history can
-##  be configured via
-##  <C>SetUserPreference("SaveAndRestoreHistory", true);</C>.
+##  By default, the command line history is stored and restored
+##  automatically; this can be switched off via
+##  <C>SetUserPreference("SaveAndRestoreHistory", false);</C>.
 ##  <P/>
 ##  Note that these functions are only available if your &GAP; is configured
 ##  to use the <C>readline</C> library.

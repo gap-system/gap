@@ -47,7 +47,7 @@ end);
 InstallMethod(IrreducibleModules,"generic method for groups and finite field",
     true, [ IsGroup, IsField and IsFinite, IsInt ], 0,
 function( G, F, dim )
-local modu, modus,gens,v,subs,sub,ser,i,j,a,si,dims,cf,mats,clos,bas,rad;
+local modu, modus,gens,v,subs,sub,ser,i,j,a,si,dims,cf,mats,hom;
 
   if dim=1 then
     # linear representations come from G/G'
@@ -92,56 +92,24 @@ local modu, modus,gens,v,subs,sub,ser,i,j,a,si,dims,cf,mats,clos,bas,rad;
 
   fi;
 
-  modu := RegularModule( G, F );
-  gens:=modu[1];
-  modu:=modu[2];
+  gens:=GeneratorsOfGroup(G);
 
-  # The augmentation ideal of a P-normal subgroup lies in the radical
-  if Characteristic(F)=0 then
-    si:=TrivialSubgroup(G);
+  # O_p(G) acts trivially on every irreducible module in characteristic p,
+  # so all of them are constituents of the regular module of G/O_p(G)
+  si:=PCore(G,Characteristic(F));
+  if Size(si)=Size(G) then
+    return [gens,[TrivialModule(Length(gens),F)]];
+  elif Size(si)>1 then
+    hom:=NaturalHomomorphismByNormalSubgroup(G,si);
+    modu:=RegularModuleByGens(Image(hom),
+            List(gens,x->ImagesRepresentative(hom,x)),F);
   else
-    si:=PCore(G,Characteristic(F));
+    modu:=RegularModule(G,F);
+    gens:=modu[1];
+    modu:=modu[2];
   fi;
 
   mats:=modu.generators;
-  bas:=One(modu.generators[1]);
-  rad:=0;
-
-  if Size(si)>1 then
-
-    # get augmentation ideal of subgroup, at least approximate from
-    # generators
-    a:=Enumerator(G);
-    cf:=Set(GeneratorsOfGroup(si),x->Position(a,x));
-
-    for i in cf do
-      v:=ShallowCopy(Zero(modu.generators[1][1]));
-      Assert(0, Position(a,One(si)) = 1);
-      v[1]:=One(F);v[i]:=-One(F);
-      v:=SolutionMat(bas,v){[rad+1..Length(bas)]};
-      if not IsZero(v) then
-        sub:=MTX.SpinnedBasis(v,mats,modu.field);
-
-        # extend to full basis
-        clos:=BaseSteinitzVectors(One(mats[1]),sub).factorspace;
-        j:=ImmutableMatrix(modu.field,Concatenation(sub,clos))^-1;
-        # cut out factor bit
-        mats:=List(mats,x->x^j);
-        j:=[Length(sub)+1..Length(mats[1])];
-        mats:=List(mats,x->ImmutableMatrix(modu.field,x{j}{j}));
-
-        # translate in old basis
-        j:=bas{[rad+1..Length(bas)]};
-        sub:=List(sub,x->x*j);
-        clos:=List(clos,x->x*j);
-
-        bas:=Concatenation(bas{[1..rad]},sub,clos);
-        rad:=rad+Length(sub);
-
-      fi;
-    od;
-  fi;
-
   a:=Length(mats[1]);
   Info(InfoMeatAxe,1,"Work in factor dimension ",a);
   subs:=[];
@@ -151,13 +119,10 @@ local modu, modus,gens,v,subs,sub,ser,i,j,a,si,dims,cf,mats,clos,bas,rad;
   for i in [1..First([1..a],n->n*(n+1)/2>j)] do
     v:=ShallowCopy(Zero(modu.generators[1][1]));
     v[1]:=One(F);v[Random([2..a])]:=-One(F);
-    v:=SolutionMat(bas,v){[rad+1..Length(bas)]};
-    if not IsZero(v) then
-      sub:=MTX.SpinnedBasis(v,mats,modu.field);
-      sub:=ImmutableMatrix(modu.field,TriangulizedMat(sub));
-      if not sub in subs then
-        Add(subs,sub);
-      fi;
+    sub:=MTX.SpinnedBasis(v,mats,modu.field);
+    sub:=ImmutableMatrix(modu.field,TriangulizedMat(sub));
+    if not sub in subs then
+      Add(subs,sub);
     fi;
   od;
 
@@ -224,7 +189,7 @@ InstallMethod(IrreducibleModules,
   "permutation group, finite field, Burnside-Brauer",
     true, [ IsPermGroup, IsField and IsFinite, IsInt ], 2,
 function(G,field,dim)
-local n,mats,mo,moduln,i,j,k,t,cnt,p,ext,emo;
+local n,mats,mo,moduln,i,j,k,t,cnt,p,ext,emo,hom,words;
   if dim=1 then TryNextMethod();fi; # special abelian case
 
   p:=Characteristic(field);
@@ -235,6 +200,18 @@ local n,mats,mo,moduln,i,j,k,t,cnt,p,ext,emo;
     t:=List(GeneratorsOfGroup(G),x->ImagesRepresentative(n,x));
     i:=IrreducibleModules(Group(t),field,dim);
     if i[1]=t then return [GeneratorsOfGroup(G),i[2]];fi;
+
+    # the modules are given w.r.t. other generators of the factor;
+    # write t as words in these once, for all modules
+    hom:=EpimorphismFromFreeGroup(Group(i[1]));
+    words:=List(t,x->PreImagesRepresentative(hom,x));
+    moduln:=[];
+    for j in i[2] do
+      Add(moduln,GModuleByMats(List(words,x->MappedWord(x,
+        GeneratorsOfGroup(Source(hom)),j.generators)),field));
+    od;
+    SortBy(moduln,x->x.dimension);
+    return [GeneratorsOfGroup(G),moduln];
   fi;
 
 

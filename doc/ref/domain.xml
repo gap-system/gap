@@ -87,7 +87,8 @@ closure under multiplication.
 If it is discovered that the inverses of all its elements
 also do (by chance) lie in this domain,
 being closed under taking inverses is <E>not</E> added to the operational
-structure.
+structure, unless it follows from the categories of the elements
+(see&nbsp;<Ref Sect="Domain Categories"/>).
 But a domain with operational structure of multiplication,
 taking the identity, and taking inverses
 will be treated as a group as soon as the multiplication is found out to
@@ -148,10 +149,10 @@ This is done by calling the operation
 <P/>
 <Index Key="IsGeneratorsOfStruct"><C>IsGeneratorsOf<A>Struct</A></C></Index>
 <P/>
-where <A>arglist</A> is the list of given generators and <A>info</A> an argument
+where <A>gens</A> is the list of given generators and <A>info</A> an argument
 of <A>Struct</A>, for example the field of scalars in the case that a
 vector space shall be constructed.
-If the check failed then <A>Struct</A> returns <K>fail</K>,
+If the check failed then <A>Struct</A> signals an error,
 otherwise it returns the result of <C><A>Struct</A>ByGenerators</C> (see below).
 (So if one wants to omit the check then one should call
 <C><A>Struct</A>ByGenerators</C> directly.)
@@ -313,12 +314,16 @@ the operational structure of a domain is fixed when the domain is
 constructed.
 For example, if <A>D</A> was constructed by
 <Ref Func="Monoid" Label="for various generators"/>
-then <A>D</A> is in general not regarded as a group in &GAP;,
+from transformations
+then <A>D</A> is not regarded as a group in &GAP;,
 even if <A>D</A> is in fact closed under taking inverses.
 In this case, <Ref Filt="IsGroup"/> returns <K>false</K> for <A>D</A>.
 The operational structure determines which operations are applicable for
 a domain, so for example <Ref Oper="SylowSubgroup"/> is not defined for
 <A>D</A> and therefore will signal an error.
+(A monoid of elements known to have finite order, such as permutations,
+is a group from the start,
+see&nbsp;<Ref Filt="IsFiniteOrderElementCollection"/>.)
 <P/>
 <Index Key="IsStruct"><C>Is<A>Struct</A></C></Index>
 <C>Is<A>Struct</A>( <A>D</A> )</C>

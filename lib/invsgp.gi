@@ -21,6 +21,13 @@ InstallMethod(GeneratorsOfInverseMonoid,
 [IsGroup and HasGeneratorsOfGroup],
 GeneratorsOfGroup);
 
+# elements of a group have unique semigroup inverses
+InstallMethod(IsGeneratorsOfInverseSemigroup,
+"for a collection of associative elements with inverses",
+[IsMultiplicativeElementWithInverseCollection
+ and IsAssociativeElementCollection],
+IsGeneratorsOfMagmaWithInverses);
+
 InstallImmediateMethod(GeneratorsOfSemigroup,
 IsInverseSemigroup and HasGeneratorsOfInverseSemigroup, 0,
 function(S)

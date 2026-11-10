@@ -35,7 +35,7 @@
 ##  <Index>possible permutation characters</Index>
 ##  <Index Subkey="possible">permutation characters</Index>
 ##  For groups <M>H</M> and <M>G</M> with <M>H \leq G</M>,
-##  the induced character <M>(1_G)^H</M> is called the
+##  the induced character <M>(1_H)^G</M> is called the
 ##  <E>permutation character</E> of the operation of <M>G</M>
 ##  on the right cosets of <M>H</M>.
 ##  If only the character table of <M>G</M> is available and not the group
@@ -712,7 +712,7 @@ DeclareGlobalFunction( "Permut" );
 ##
 ##  <Description>
 ##  Let <A>tbl</A> be the ordinary character table of the group <M>G</M>.
-##  All <M>G</M>-characters <M>\pi</M> satisfying <M>\pi(g) > 0</M> and
+##  All <M>G</M>-characters <M>\pi</M> satisfying <M>\pi(g) \geq 0</M> and
 ##  <M>\pi(1) = <A>d</A></M>,
 ##  for a given degree <A>d</A>, lie in a simplex described by these
 ##  conditions.

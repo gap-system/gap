@@ -41,11 +41,15 @@ rec( status := 0 )
 gap> out;
 "hi\n"
 
-# the working directory can be chosen
+# the working directory can be chosen, without changing GAP's own (ask the
+# kernel, as DirectoryCurrent() is cached)
+gap> cwd := GAP_getcwd();;
 gap> dir := DirectoryTemporary();;
 gap> PrintTo(Filename(dir, "marker"), "");
 gap> RunProcess("ls", rec(directory := dir)).output;
 "marker\n"
+gap> GAP_getcwd() = cwd;
+true
 
 # error cases
 gap> RunProcess();

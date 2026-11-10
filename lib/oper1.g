@@ -950,9 +950,9 @@ end);
 ##  If a method is installed with <Ref Func="InstallMethod"/>
 ##  for a wrapper operation such as
 ##  <Ref Oper="SylowSubgroup"/> then a warning is signalled
-##  provided the <Ref InfoClass="InfoWarning"/> level
+##  provided the <C>InfoDebug</C> level
 ##  is at least <C>1</C>.
-##  (Use <Ref Func="InstallMethod"/> in order to suppress the
+##  (Use <Ref Func="InstallOtherMethod"/> in order to suppress the
 ##  warning.)
 ##  </Description>
 ##  </ManSection>

@@ -1300,7 +1300,7 @@ DeclareOperation("RestrictedExternalSet",[IsExternalSet,IsGroup]);
 ##
 ##  <#GAPDoc Label="ExternalSubset">
 ##  <ManSection>
-##  <Oper Name="ExternalSubset" Arg='G,Omega,start,[gens,acts,]act'/>
+##  <Oper Name="ExternalSubset" Arg='G, Omega, start[, gens, acts][, act]'/>
 ##
 ##  <Description>
 ##  constructs the external subset of <A>Omega</A> on the union of orbits of
@@ -1326,7 +1326,7 @@ OrbitishFO( "ExternalSubset",
 ##
 ##  <#GAPDoc Label="ExternalOrbit">
 ##  <ManSection>
-##  <Oper Name="ExternalOrbit" Arg='G, Omega, pnt, [gens,acts,] act'/>
+##  <Oper Name="ExternalOrbit" Arg='G, Omega, pnt[, gens, acts][, act]'/>
 ##
 ##  <Description>
 ##  constructs the external subset on the orbit of <A>pnt</A>. The
@@ -1688,8 +1688,9 @@ OrbitsishOperation( "ExternalOrbitsStabilizers", OrbitsishReq,
 ##  <M>k</M>-transitive.
 ##  If the action is not transitive <C>0</C> is returned.
 ##  <P/>
-##  An action is <E><M>k</M>-transitive</E> if every <M>k</M>-tuple of points
-##  can be mapped simultaneously to every other <M>k</M>-tuple.
+##  An action is <E><M>k</M>-transitive</E> if every <M>k</M>-tuple of
+##  pairwise distinct points can be mapped simultaneously to every other
+##  such <M>k</M>-tuple.
 ##  <P/>
 ##  For a permutation group <A>G</A>, one may also invoke this as
 ##  <C>Transitivity(<A>G</A>)</C>, which returns the degree of transitivity
@@ -2184,6 +2185,7 @@ DeclareOperation( "PermutationOp", [ IsObject, IsList, IsFunction ] );
 ##  <#GAPDoc Label="PermutationCycle">
 ##  <ManSection>
 ##  <Func Name="PermutationCycle" Arg='g, Omega, pnt[, gens, acts][, act]'/>
+##  <Func Name="PermutationCycle" Arg='g, xset, pnt' Label="for an external set"/>
 ##
 ##  <Description>
 ##  computes the permutation that represents the cycle of <A>pnt</A> under
@@ -2218,6 +2220,7 @@ DeclareOperation( "PermutationCycleOp",
 ##  <#GAPDoc Label="Cycle">
 ##  <ManSection>
 ##  <Func Name="Cycle" Arg='g, Omega, pnt[, gens, acts][, act]'/>
+##  <Func Name="Cycle" Arg='g, xset, pnt' Label="for an external set"/>
 ##
 ##  <Description>
 ##  returns a list of the points in the cycle of <A>pnt</A> under the action
@@ -2243,6 +2246,7 @@ DeclareOperation( "CycleOp", [ IsObject, IsList, IsObject, IsFunction ] );
 ##  <#GAPDoc Label="Cycles">
 ##  <ManSection>
 ##  <Func Name="Cycles" Arg='g, Omega[, gens, acts][, act]'/>
+##  <Func Name="Cycles" Arg='g, xset' Label="for an external set"/>
 ##
 ##  <Description>
 ##  returns a list of the cycles (as lists of points) of the action of the
@@ -2268,6 +2272,7 @@ DeclareOperation( "CyclesOp", [ IsObject, IsList, IsFunction ] );
 ##  <#GAPDoc Label="CycleLength">
 ##  <ManSection>
 ##  <Func Name="CycleLength" Arg='g, Omega, pnt[, gens, acts][, act]'/>
+##  <Func Name="CycleLength" Arg='g, xset, pnt' Label="for an external set"/>
 ##
 ##  <Description>
 ##  returns the length of the cycle of <A>pnt</A> under the action of the
@@ -2294,6 +2299,7 @@ DeclareOperation( "CycleLengthOp",
 ##  <#GAPDoc Label="CycleLengths">
 ##  <ManSection>
 ##  <Func Name="CycleLengths" Arg='g, Omega[, gens, acts][, act]'/>
+##  <Func Name="CycleLengths" Arg='g, xset' Label="for an external set"/>
 ##
 ##  <Description>
 ##  returns the lengths of all the cycles under the action of the element
@@ -2512,7 +2518,7 @@ DeclareGlobalFunction( "StabilizerPcgs" );
 ##  <P/>
 ##  <Ref Oper="OrbitStabilizerAlgorithm"/> performs an orbit stabilizer
 ##  algorithm for the group <A>G</A> acting with the generators <A>gens</A>
-##  via the generator images <A>gens</A> and the group action <A>act</A> on
+##  via the generator images <A>acts</A> and the group action <A>act</A> on
 ##  the element <A>pnt</A>.
 ##  (For technical reasons <A>pnt</A> and <A>act</A> are put in one record
 ##  with components <C>pnt</C> and <C>act</C> respectively.)
@@ -2819,8 +2825,9 @@ DeclareOperation( "AbelianSubfactorAction",[IsGroup,IsGroup,IsGroup] );
 ##  This action corresponds to the projective action of a matrix group
 ##  on one-dimensional subspaces.
 ##  <P/>
-##  If <A>vec</A> is a zero vector or is not normed then
-##  an error is triggered
+##  If <A>vec</A> is not normed then
+##  <Ref Func="OnLines"/> does not define an action on it,
+##  and orbit and stabilizer computations signal an error
 ##  (see&nbsp;<Ref Sect="Action on canonical representatives"/>).
 ##  <P/>
 ##  <Example><![CDATA[

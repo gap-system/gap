@@ -487,9 +487,9 @@ InstallTrueMethod( IsSemigroup, IsSimpleSemigroup );
 ##  <Prop Name="IsZeroSimpleSemigroup" Arg='S'/>
 ##
 ##  <Description>
-##  is <K>true</K> if and only if the semigroup has no proper ideals except
-##  for 0, where <A>S</A> is a semigroup with zero.
-##  If the semigroup does not find its zero, then a break-loop is entered.
+##  is <K>true</K> if and only if <A>S</A> has a zero <M>0</M>,
+##  <M><A>S</A>^2 \neq \{ 0 \}</M>, and the only ideals of <A>S</A> are
+##  <M>\{ 0 \}</M> and <A>S</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

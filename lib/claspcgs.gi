@@ -1053,10 +1053,14 @@ local  G,home,  # the group and the home pcgs
       eas:=ChiefNormalSeriesByPcgs(home);
     fi;
 
-    # make steps larger if possible
+    # make steps larger if possible; `cent=ReturnTrue' requires the merged
+    # steps to stay central
     L:=[Length(eas)];
     for step in [Length(eas)-1,Length(eas)-2..1] do
-      if (Size(eas[step])/Size(eas[Last(L)])>2^15 and not step+1 in L) or not HasElementaryAbelianFactorGroup(eas[step],eas[Last(L)]) then
+      if (Size(eas[step])/Size(eas[Last(L)])>2^15 and not step+1 in L)
+        or not HasElementaryAbelianFactorGroup(eas[step],eas[Last(L)])
+        or (cent=ReturnTrue and
+            not IsSubset(eas[Last(L)],CommutatorSubgroup(eas[step],G))) then
         Add(L,step+1);
       fi;
     od;

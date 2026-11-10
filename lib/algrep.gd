@@ -21,7 +21,7 @@
 ##  algebra elements on elements of the vector space. When creating an
 ##  algebra module, the generators of the vector space are wrapped up and
 ##  given the category <C>IsLeftAlgebraModuleElement</C> or
-##  <C>IsRightModuleElement</C> if the algebra acts from the left, or right
+##  <C>IsRightAlgebraModuleElement</C> if the algebra acts from the left, or right
 ##  respectively. (So in the case of a bi-module the elements get
 ##  both categories.) Most linear algebra computations are delegated to
 ##  the original vector space.
@@ -697,7 +697,7 @@ DeclareOperation( "ModuleByRestriction", [ IsAlgebraModule, IsAlgebra ] );
 ##  <Oper Name="NaturalHomomorphismBySubAlgebraModule" Arg='V, W'/>
 ##
 ##  <Description>
-##  Here <A>V</A> must be a sub-algebra module of <A>V</A>. This function returns
+##  Here <A>W</A> must be a sub-algebra module of <A>V</A>. This function returns
 ##  the projection from <A>V</A> onto <C><A>V</A>/<A>W</A></C>. It is a linear map, that is
 ##  also a module homomorphism. As usual images can be formed with
 ##  <C>Image( f, v )</C> and pre-images with <C>PreImagesRepresentative( f, u )</C>.
@@ -1105,16 +1105,16 @@ DeclareCategoryFamily( "IsDirectSumElement" );
 ##  <#GAPDoc Label="DirectSumOfAlgebraModules">
 ##  <ManSection>
 ##  <Oper Name="DirectSumOfAlgebraModules" Arg='list'
-##   Label="for a list of Lie algebra modules"/>
+##   Label="for a list of algebra modules"/>
 ##  <Oper Name="DirectSumOfAlgebraModules" Arg='V, W'
-##   Label="for two Lie algebra modules"/>
+##   Label="for two algebra modules"/>
 ##
 ##  <Description>
 ##  Here <A>list</A> must be a list of algebra modules. This function returns the
 ##  direct sum of the elements in the list (as an algebra module).
 ##  The modules must be defined over the same algebras.
 ##  <P/>
-##  In the second form is short for <C>DirectSumOfAlgebraModules( [ <A>V</A>, <A>W</A> ] )</C>
+##  The second form is short for <C>DirectSumOfAlgebraModules( [ <A>V</A>, <A>W</A> ] )</C>
 ##  <Example><![CDATA[
 ##  gap> A:= FullMatrixAlgebra( Rationals, 3 );;
 ##  gap> V:= BiAlgebraModuleByGenerators( A, A, \*, \*, [ [1,0,0] ] );;

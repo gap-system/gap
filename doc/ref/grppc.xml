@@ -100,7 +100,8 @@ one may just write down a presentation on <M>n</M> abstract generators
 group <M>H</M> by this.
 Then the subgroups <M>C_i = \langle g_i, \ldots, g_n \rangle</M> of <M>H</M>
 form a subnormal series whose factors are cyclic or trivial.
-In the case that all factors are non-trivial,
+In the case that each factor <M>C_i/C_{{i+1}}</M> has order <M>r_i</M>
+for <M>i \in I</M> and is infinite for <M>i \not \in I</M>,
 we say that the pc presentation of <M>H</M> is <E>confluent</E>.
 Note that &GAP;&nbsp;4 can only work correctly with pc groups defined by a
 confluent pc presentation.

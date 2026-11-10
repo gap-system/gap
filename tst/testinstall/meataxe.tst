@@ -43,6 +43,7 @@ gap> Display(MTX.IsomorphismModules(M,M));
 #
 # Trivial module
 #
+gap> TrivialGModule( GroupByGenerators( [], () ), GF(2) );;
 gap> G:=SL(3,3);;
 gap> TrivialGModule(G, GF(2));
 rec( IsOverFiniteField := true, dimension := 1, field := GF(2), 
@@ -352,6 +353,17 @@ gap> M2:= GModuleByMats( [
 >  [ [ Z(23)^11, Z(23)^0 ], [ 0*Z(23), Z(23)^0 ] ] ],  GF(23) );;
 gap> Length( MTX.BasisModuleHomomorphisms( M, M2 ) );
 4
+
+# Test for MTX.FieldGenCentMat
+gap> mats := [ [ [ 0*Z(5), Z(5) ], [ Z(5)^2, 0*Z(5) ] ] ];;
+gap> M := GModuleByMats(mats, GF(5));;
+gap> mat := MTX.FieldGenCentMat(M);;
+gap> ForAll(mats, x -> x * mat = mat * x);
+true
+gap> Order(mat);
+24
+gap> MTX.FieldGenCentMat(GModuleByMats([ [ [ Z(5) ] ] ], GF(5)));
+Error, GModule is absolutely irreducible.
 
 #
 gap> STOP_TEST("meataxe.tst");

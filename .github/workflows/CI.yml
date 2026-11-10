@@ -232,12 +232,16 @@ jobs:
                python -m pip install gcovr
 
       # Setup ccache, to speed up repeated compilation of the same binaries
-      # (i.e., GAP and the packages)
+      # (i.e., GAP and the packages). Only branch runs store the cache: a PR
+      # or tag cache is restorable only by later runs of that same ref, which
+      # rarely exist. PRs restore their base branch's cache via the fallback
+      # key.
       - name: "Setup ccache"
         if: ${{ runner.os != 'Windows' }}
         uses: Chocobo1/setup-ccache-action@v1
         with:
           update_packager_index: false
+          store_cache: ${{ startsWith(github.ref, 'refs/heads/') }}
           override_cache_key: ${{ runner.os }}-${{ hashFiles('extra.flags') }}-${{ github.ref }}
           override_cache_key_fallback: ${{ runner.os }}-${{ hashFiles('extra.flags') }}
       - name: "Workaround GitHub security concerns" # see https://github.com/gap-system/gap/issues/4861

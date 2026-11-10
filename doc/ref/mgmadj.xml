@@ -49,7 +49,7 @@ gap> x:=Transformation( [ 7, 7, 7, 3, 7, 3, 7 ] );;
 gap> x^map;
 <monoid with 0 adjoined elt: Transformation( [ 7, 7, 7, 3, 7, 3, 7 ]
  )>
-gap> PreImage(map, x^map)=x;
+gap> PreImagesRepresentative(map, x^map)=x;
 true
 ]]></Example>
   </Description>
@@ -72,7 +72,7 @@ gap> T:=MagmaWithZeroAdjoined(S);
 gap> UnderlyingInjectionZeroMagma(T);
 MappingByFunction( <transformation monoid of degree 8 with 2
  generators>, <<transformation monoid of degree 8 with 2 generators>
-  with 0 adjoined>, function( elt ) ... end, function( x ) ... end )
+  with 0 adjoined>, function( elt ) ... end )
 ]]></Example>
   </Description>
 </ManSection>

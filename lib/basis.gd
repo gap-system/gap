@@ -663,7 +663,7 @@ DeclareOperation( "BasisNC", [ IsFreeLeftModule, IsHomogeneousList ] );
 ##  If additionally a list <A>vectors</A> of vectors in <A>V</A> is given
 ##  that forms a semi-echelonized basis of <A>V</A>
 ##  then <Ref Attr="SemiEchelonBasis"/> returns this basis;
-##  if <A>vectors</A> do not form a basis of <A>V</A>
+##  if <A>vectors</A> do not form a semi-echelonized basis of <A>V</A>
 ##  then <K>fail</K> is returned.
 ##  <P/>
 ##  <Ref Oper="SemiEchelonBasisNC"/> does the same as the two argument
@@ -785,7 +785,8 @@ DeclareOperation( "RelativeBasisNC", [ IsBasis, IsHomogeneousList ] );
 ##  that shall be handled via the mechanism of nice bases
 ##  (see&nbsp;<Ref Sect="Vector Spaces Handled By Nice Bases"/>).
 ##  <P/>
-##  <A>name</A> must be a string,
+##  <A>name</A> must be a string and <A>info</A> a string describing the
+##  new kind of modules,
 ##  a filter <M>f</M> with this name is created which implies
 ##  <Ref Filt="IsFreeLeftModule"/>, and
 ##  a logical implication from the join of <M>f</M> with
@@ -832,9 +833,9 @@ DeclareOperation( "RelativeBasisNC", [ IsBasis, IsHomogeneousList ] );
 ##  left modules handled by the mechanism of nice bases is to call
 ##  <Ref Func="DeclareHandlingByNiceBasis"/> and
 ##  <Ref Func="InstallHandlingByNiceBasis"/>,
-##  which causes the installation of the necessary methods and adds the pair
-##  <M>[ f, </M><A>record</A><C>.detect</C><M> ]</M> to the global list
-##  <Ref Var="NiceBasisFiltersInfo"/>.
+##  which causes the installation of the necessary methods and adds the triple
+##  <C>[ f, <A>info</A>, <A>record</A>.detect ]</C>
+##  to the global list <Ref Var="NiceBasisFiltersInfo"/>.
 ##  The <Ref Oper="LeftModuleByGenerators"/> methods call
 ##  <Ref Func="CheckForHandlingByNiceBasis"/>, which sets the appropriate filter
 ##  for the desired left module if applicable.

@@ -113,7 +113,7 @@ The same effect happens in the following example, in which we work with
 vectors: Indicating only a vector only enables sorted index, as it cannot be
 known whether all vectors will be defined over the prime field. On the other
 hand, providing the vector space (and thus limiting the domain) enables
-the use of hashing (which will be faster).
+direct indexing (which will be faster).
 <Example><![CDATA[
 gap> v:=GF(2)^7;;
 gap> d:=NewDictionary(Zero(v),true);;
@@ -174,8 +174,7 @@ functionality ought to use the dictionary interface described above.
 <P/>
 We hash by keys and also store a value.  Keys
 cannot be removed from the table, but the corresponding value can be
-changed.  Fast access to last hash index allows you to efficiently store
-more than one array of values &ndash; this facility should be used with care.
+changed.
 <P/>
 This code works for any kind of object, provided you have a
 <Ref Oper="DenseIntKey"/> method to convert the key into a positive integer.
@@ -211,7 +210,7 @@ in particular integers.
 Keys are stored as an unordered list and values as an
 array with holes. The position of a value is given by
 the function returned by <Ref Oper="DenseIntKey"/>,
-and so <C>KeyIntDense</C> must be one-to-one.
+and so this function must be one-to-one.
 
 <#Include Label="DenseHashTable">
 

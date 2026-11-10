@@ -311,7 +311,7 @@ DeclareOperation( "PositionStream", [ IsInputStream ] );
 ##  Otherwise, it reads as much input as it can from the stream without
 ##  blocking further and returns it to the user. If the stream is
 ##  already at end of file, so that no bytes are available, <K>fail</K> is
-##  returned. In the case of a file
+##  returned (for string streams the empty string). In the case of a file
 ##  stream connected to a normal file (not a pseudo-tty or named pipe
 ##  or similar), all the bytes should be immediately available and
 ##  this function will read the remainder of the file.
@@ -1225,14 +1225,14 @@ DeclareGlobalFunction( "UnInstallCharReadHookFunc" );
 
 #############################################################################
 ##
-#F  InputFromUser( <arg> )
+#F  InputFromUser( <obj1>, <obj2>, ... )
 ##
 ##  <#GAPDoc Label="InputFromUser">
 ##  <ManSection>
-##  <Func Name="InputFromUser" Arg='arg'/>
+##  <Func Name="InputFromUser" Arg='obj1, obj2, ...'/>
 ##
 ##  <Description>
-##  prints the <A>arg</A> as a prompt, then waits until a text is typed by the
+##  prints the arguments as a prompt (see <Ref Func="Print"/>), then waits until a text is typed by the
 ##  user (or from the standard input device if it has been redirected).
 ##  This text must be a <E>single</E> expression, followed by one <E>enter</E>.
 ##  This is evaluated (see <Ref Func="EvalString"/>) and the result is returned.
