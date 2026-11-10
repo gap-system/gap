@@ -1408,7 +1408,7 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
             if IsPlistRep(v) and  GcdInt(common,q) > 1  then
                 common := SMALLEST_FIELD_VECFFE(v);
             fi;
-            if common ^ LogInt(q, common) <> q then
+            if q < common or common ^ LogInt(q, common) <> q then
                 Error("ConvertToVectorRepNC: Vector cannot be written over GF(",q,")");
             fi;
         fi;
@@ -1505,7 +1505,8 @@ InstallGlobalFunction(CopyToVectorRep,function( v, q )
             if IsPlistRep(vc) and  GcdInt(common,q) > 1  then
                 common := SMALLEST_FIELD_VECFFE(vc);
             fi;
-            if common ^ LogInt(q, common) <> q then
+            # LogInt(1, common) = 0, so the power test alone accepts q = 1
+            if q < common or common ^ LogInt(q, common) <> q then
                 Error("CopyToVectorRep: Vector cannot be written over GF(",q,")");
             fi;
         fi;
