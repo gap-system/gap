@@ -70,7 +70,7 @@ end);
 InstallGlobalFunction(TrivialGModule, function(g, F)
 local mats;
   mats:=List(GeneratorsOfGroup(g),i->[[One(F)]]);
-  return GModuleByMats(mats,F);
+  return GModuleByMats(mats,1,F);
 end);
 
 #############################################################################
