@@ -43,6 +43,7 @@ gap> Display(MTX.IsomorphismModules(M,M));
 #
 # Trivial module
 #
+gap> TrivialGModule( GroupByGenerators( [], () ), GF(2) );;
 gap> G:=SL(3,3);;
 gap> TrivialGModule(G, GF(2));
 rec( IsOverFiniteField := true, dimension := 1, field := GF(2), 
