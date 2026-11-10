@@ -439,6 +439,17 @@ true
 gap> IsList( ImmutableVector( GF(5^6), v ) );
 true
 
+# CopyToVectorRepNC from compressed vectors to a larger field
+gap> v:= [ Z(2), 0*Z(2) ];;  ConvertToVectorRep( v, 2 );;
+gap> w:= CopyToVectorRepNC( v, 4 );;  Q_VEC8BIT( w );  w = v;
+4
+true
+gap> w:= CopyToVectorRepNC( w, 16 );;  Q_VEC8BIT( w );  w = v;
+16
+true
+gap> IsMutable( CopyToVectorRepNC( Immutable( v ), 4 ) );
+false
+
 # Check that the vector representations fit in the computation of the
 # nice monomorphism.
 gap> G:= Group([ [ [ Z(5^6)^6944, 0*Z(5) ], [ 0*Z(5), Z(5^2)^20 ] ] ]);;
