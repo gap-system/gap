@@ -1527,7 +1527,7 @@ end);
 ##  finite field, and all elements of v lie in this field.
 ##
 InstallGlobalFunction(CopyToVectorRepNC,function( v, q )
-    local common, res;
+    local common, res, q0;
 
     # Handle fast, certain cases where there is no work. Microseconds count here
 
@@ -1551,6 +1551,19 @@ InstallGlobalFunction(CopyToVectorRepNC,function( v, q )
                 return v;
             fi;
         fi;
+    fi;
+
+    # to a larger field: the kernel rewrites the bits, the code below handles
+    # only plain lists
+    if IsGF2VectorRep(v) then
+        q0 := 2;
+    elif Is8BitVectorRep(v) then
+        q0 := Q_VEC8BIT(v);
+    else
+        q0 := fail;
+    fi;
+    if q0 <> fail and q0 < q and q <= 256 and q0 ^ LogInt(q, q0) = q then
+        return COPY_VEC8BIT(v, q);
     fi;
 
     # Calling COMMON_FIELD_VECFFE may force a full inspection of the list.
