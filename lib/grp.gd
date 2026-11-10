@@ -4551,9 +4551,9 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##    (1,12)(2,11)(3,6)(4,8)(5,9)(7,10) ])
 ##  gap> gens := GeneratorsOfGroup( M12 );;
 ##  gap> iso := IsomorphismFpGroupByGenerators( M12, gens );;
-##  #I  the image group has 3 gens and 24 rels of total length 669
+##  #I  the image group has 3 gens and 19 rels of total length 391
 ##  gap> iso := IsomorphismFpGroupByGenerators( M12, gens );;
-##  #I  the image group has 3 gens and 20 rels of total length 414
+##  #I  the image group has 3 gens and 23 rels of total length 538
 ##  ]]></Example>
 ##  <P/>
 ##  Also in the case of a permutation group <A>G</A>, the function
@@ -4602,7 +4602,7 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##  #I  the image group has 3 gens and 11 rels of total length 92
 ##  gap> iso := IsomorphismFpGroupByGenerators( M12, gens :
 ##  >                                           method := "fast" );;
-##  #I  the image group has 3 gens and 136 rels of total length 3170
+##  #I  the image group has 3 gens and 137 rels of total length 3208
 ##  ]]></Example>
 ##  <P/>
 ##  Though the option <C>method := "regular"</C> is only checked in the case
@@ -4624,7 +4624,7 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##    [ [ 0, 1, 0, 0, 0 ], [ 0, 0, 1, 0, 0 ], [ 0, 0, 0, 1, 0 ],
 ##        [ 1, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 1 ] ] ]
 ##  gap> iso := IsomorphismFpGroupByGenerators( G, gens );;
-##  #I  the image group has 2 gens and 11 rels of total length 120
+##  #I  the image group has 2 gens and 7 rels of total length 72
 ##  gap> iso := IsomorphismFpGroupByGenerators( G, gens :
 ##  >                                           method := "regular");;
 ##  #I  the image group has 2 gens and 6 rels of total length 56
@@ -4636,7 +4636,15 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##  , 0, 0, 0, 1 ] ] ]->[ F1, F2 ]>
 ##  gap> ConstituentsCompositionMapping(iso);
 ##  [ <action isomorphism>,
-##    [ (2,3,4)(5,6)(8,9,10), (1,2,3,5)(6,7,8,9) ] -> [ F1, F2 ] ]
+##    [ (2,3)(4,6,10,17,7,12)(5,8,13,19,26,24)(9,15,23,35,31,43)(14,21,
+##          32)(16,25,38)(18,27,39,33,45,57)(20,30,36,48,28,40)(22,34,44,
+##          55,66,74)(29,41,51,61,60,47)(37,49,54,52,46,58)(42,53,65)(50,
+##          62,63,72,56,67)(59,69,77,78,64,73)(68,71,75)(76,79),
+##        (1,2,4,7)(3,5,9,16)(6,11,18,28)(8,14,22,30)(12,13,20,31)(15,24,
+##          37,50)(17,26,38,45)(19,29,42,27)(21,33,46,35)(23,36,25,39)(32,
+##          44,56,40)(34,47,59,70)(41,52,64,72)(43,54,65,66)(48,60)(49,61,
+##          71,55)(51,63,53,57)(58,68,76,62)(67,75,74,77)(73,78,80,79)
+##       ] -> [ F1, F2 ] ]
 ##  ]]></Example>
 ##  <P/>
 ##  Since &GAP; cannot decompose elements of a matrix group into generators,
