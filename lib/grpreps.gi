@@ -185,6 +185,7 @@ local modu, modus,gens,v,subs,sub,ser,i,j,a,si,dims,cf,mats,hom;
   return [gens,modus];
 end);
 
+
 InstallMethod(IrreducibleModules,
   "permutation group, finite field, Burnside-Brauer",
     true, [ IsPermGroup, IsField and IsFinite, IsInt ], 2,
@@ -214,33 +215,37 @@ local n,mats,mo,moduln,i,j,k,t,cnt,p,ext,emo,hom,words;
     return [GeneratorsOfGroup(G),moduln];
   fi;
 
+  n:=LargestMovedPoint(G);
+  if n = 0 then
+    # trivial group
+    return [ GeneratorsOfGroup( G ), [ TrivialGModule( G, field ) ] ];
+  fi;
 
-  # how many should we expect
-  t:=List(ConjugacyClasses(G),Representative);
-  t:=Filtered(t,x->Order(x) mod p<>0);
-  cnt:=Length(t);
+  # Count those absolutely irreducible representations
+  # that are not constituents of the 'F'-irreducibles we have already found.
+  cnt:= Number( ConjugacyClasses( G ),
+                C -> Order( Representative( C ) ) mod p <> 0 );
   Info(InfoMeatAxe,1,"Expect ",cnt," absolute irreps");
 
-  n:=LargestMovedPoint(G);
-  if n<=1 then
-    # trivial group
-    return [GeneratorsOfGroup(G),
-            [GModuleByMats(List(GeneratorsOfGroup(G),x->IdentityMat(1,field)),
-              field)]];
-  fi;
   mats:=List(GeneratorsOfGroup(G),x->PermutationMat(x,n,field));
   n:=Length(mats);
   mo:=GModuleByMats(mats,field);
   moduln:=List(MTX.CollectedFactors(mo),x->x[1]);
   for k in moduln do
-    if MTX.IsAbsolutelyIrreducible(k) then
-      cnt:=cnt-1;
-    else
-      ext:=GF(p^(LogInt(Size(field),p)*MTX.DegreeSplittingField(k)));
-      emo:=GModuleByMats(k.generators,ext);
-      emo:=MTX.CollectedFactors(emo);
-      cnt:=cnt-Length(emo);
-    fi;
+    # The number of pairwise nonequivalent absolutely irreducible
+    # constituents of 'k'
+    # is equal to the degree of the field extension 'E > F' where 'F' is
+    # the field over which 'k' is defined,
+    # and 'E' is the smallest field that contains 'F' and over which 'k'
+    # splits into absolutely irreducibles.
+    # (This degree is what 'MTX.DegreeFieldExt' returns.)
+    # Note that the character \chi of each absolutely irreducible constituent
+    # 'M' of 'k' satisfies 'F(\chi) = E' because \chi has values in 'E' and
+    # its values cannot be contained in a smaller field that contains 'F'.
+    # By \cite[(9.23)]{Isa76}, 'dim(k) = [F(\chi):F] dim(M)',
+    # and by \cite[(9.21)]{Isa76}, all absolutely irreducible constituents
+    # of 'k' are pairwise nonequivalent.
+    cnt:= cnt - MTX.DegreeFieldExt(k);
   od;
   i:=1;
   while i<=Length(moduln) and cnt>0 do
@@ -265,16 +270,12 @@ local n,mats,mo,moduln,i,j,k,t,cnt,p,ext,emo,hom,words;
       t:=List(MTX.CollectedFactors(t),x->x[1]);
       Info(InfoMeatAxe,1,i," ",j," yields  ",List(t,x->x.dimension));
       for k in t do
-        MTX.IsIrreducible(k);
-        if ForAll(moduln,x->MTX.Isomorphism(k,x)=fail) then
+        if ForAll(moduln,x-> not MTX.IsEquivalent(k,x)) then
           Add(moduln,k);
-          if MTX.IsAbsolutelyIrreducible(k) then
-            cnt:=cnt-1;
-          else
-            ext:=GF(p^(LogInt(Size(field),p)*MTX.DegreeSplittingField(k)));
-            emo:=GModuleByMats(k.generators,ext);
-            emo:=MTX.CollectedFactors(emo);
-            cnt:=cnt-Length(emo);
+          # see the comment above
+          cnt:= cnt - MTX.DegreeFieldExt(k);
+          if cnt = 0 then
+            break;
           fi;
         fi;
         Info(InfoMeatAxe,1,"left are ",cnt," irreps");
@@ -283,8 +284,8 @@ local n,mats,mo,moduln,i,j,k,t,cnt,p,ext,emo,hom,words;
     od;
     i:=i+1;
   od;
-  SortBy(moduln,x->x.dimension);
   if dim>0 then moduln:=Filtered(moduln,x->MTX.Dimension(x)<=dim);fi;
+  SortBy(moduln,MTX.Dimension);
   return [GeneratorsOfGroup(G),moduln];
 end);
 
