@@ -1264,35 +1264,6 @@ InstallMethod( SemidirectProduct,"group with fp",true,
 
 #############################################################################
 ##
-#A Embedding/Projection
-##
-InstallMethod( Embedding,"of semidirect product and integer",true,
-    [ IsGroup and HasSemidirectProductInfo, IsPosInt ], 0,
-function( P, i )
-local info;
-
-  info := SemidirectProductInfo( P );
-  if IsBound( info.embeddings[i] ) then
-    return info.embeddings[i];
-  else
-    TryNextMethod();
-  fi;
-end);
-
-InstallOtherMethod( Projection,"of semidirect product", true,
-    [ IsGroup and HasSemidirectProductInfo ], 0,
-function( P )
-local info;
-  info := SemidirectProductInfo( P );
-  if not IsBool( info.projections ) then
-    return info.projections;
-  else
-    TryNextMethod();
-  fi;
-end);
-
-#############################################################################
-##
 #M  SemidirectProduct: with vector space
 ##
 InstallOtherMethod( SemidirectProduct, "group with vector space: affine", true,
@@ -1413,14 +1384,16 @@ function( S, i )
     local  info, G, genG, imgs, hom,j,k,m,n,d,v,w;
 
     info := SemidirectProductInfo( S );
+    # maps stored by any constructor, e.g. `SemidirectFp'
+    if IsBound( info.embeddings[i] ) then
+      return info.embeddings[i];
+    fi;
+
     if not IsBound(info.vectorspace) then
       # it's not a vectorspace product
       TryNextMethod();
     fi;
 
-    if IsBound( info.embeddings[i] ) then
-      return info.embeddings[i];
-    fi;
     if i=1 then
       G := info.group;
       genG := GeneratorsOfGroup( G );
@@ -1479,12 +1452,12 @@ function( S )
     local info, d, F, hom;
 
     info := SemidirectProductInfo( S );
-    if not IsBound(info.vectorspace) then
-      TryNextMethod();
-    fi;
-
     if not IsBool( info.projections ) then
       return info.projections;
+    fi;
+
+    if not IsBound(info.vectorspace) then
+      TryNextMethod();
     fi;
 
     d := info.dimension;
