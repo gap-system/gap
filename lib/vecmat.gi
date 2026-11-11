@@ -1427,10 +1427,6 @@ InstallGlobalFunction(CopyToVectorRep,function( v, q )
 
     # Handle fast, certain cases where there is no work. Microseconds count here
 
-    if Length(v) = 0 then
-        return v;
-    fi;
-
     if IsGF2VectorRep(v) and q=2 then
         if IsMutable(v) then
           return(ShallowCopy(v));
@@ -1447,6 +1443,21 @@ InstallGlobalFunction(CopyToVectorRep,function( v, q )
                 return v;
             fi;
         fi;
+    fi;
+
+    # the code below cannot determine a field for an empty list
+    if Length(v) = 0 then
+        if q = 2 then
+            res := COPY_GF2VEC(v);
+        elif q > 256 then
+            return fail;
+        elif IsPrimePowerInt(q) then
+            res := COPY_VEC8BIT(v, q);
+        else
+            Error("CopyToVectorRep: Vector cannot be written over GF(",q,")");
+        fi;
+        if not IsMutable(v) then MakeImmutable(res); fi;
+        return res;
     fi;
 
     # Ask the kernel to check the list for us.
@@ -1529,10 +1540,6 @@ InstallGlobalFunction(CopyToVectorRepNC,function( v, q )
 
     # Handle fast, certain cases where there is no work. Microseconds count here
 
-    if Length(v) = 0 then
-        return v;
-    fi;
-
     if IsGF2VectorRep(v) and q=2 then
         if IsMutable(v) then
           return(ShallowCopy(v));
@@ -1562,6 +1569,16 @@ InstallGlobalFunction(CopyToVectorRepNC,function( v, q )
     fi;
     if q0 <> fail and q0 < q and q <= 256 and q0 ^ LogInt(q, q0) = q then
         return COPY_VEC8BIT(v, q);
+    fi;
+
+    if Length(v) = 0 then
+        if q = 2 then
+            res := COPY_GF2VEC(v);
+        else
+            res := COPY_VEC8BIT(v, q);
+        fi;
+        if not IsMutable(v) then MakeImmutable(res); fi;
+        return res;
     fi;
 
     # Calling COMMON_FIELD_VECFFE may force a full inspection of the list.

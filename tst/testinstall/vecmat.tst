@@ -466,5 +466,29 @@ gap> ConvertToVectorRep( w, 1 );
 Error, ConvertToVectorRepNC: Vector cannot be written over GF(1)
 gap> SetAssertionLevel( lev );
 
+# CopyToVectorRep(NC) must not return a mutable empty input as the copy
+gap> v:= [];;
+gap> w:= CopyToVectorRep( v, 2 );;
+gap> IsIdenticalObj( v, w );
+false
+gap> IsGF2VectorRep( w ) and IsMutable( w );
+true
+gap> Add( w, Z(2) );; v;
+[  ]
+gap> v:= [];;
+gap> w:= CopyToVectorRepNC( v, 4 );;
+gap> IsIdenticalObj( v, w );
+false
+gap> Is8BitVectorRep( w ) and Q_VEC8BIT( w ) = 4 and IsMutable( w );
+true
+gap> Add( w, Z(2) );; v;
+[  ]
+gap> IsMutable( CopyToVectorRep( Immutable( [] ), 3 ) );
+false
+gap> IsMutable( CopyToVectorRepNC( Immutable( [] ), 3 ) );
+false
+gap> CopyToVectorRep( [], 257 );
+fail
+
 #
 gap> STOP_TEST("vecmat.tst");
