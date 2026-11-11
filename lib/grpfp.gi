@@ -904,7 +904,11 @@ function(H)
 
   # Call the global function for subgroups of f.p. groups.
   mat:=RelatorMatrixAbelianizedSubgroupRrs(G,H);
-  if Length(mat)=0 then
+  if mat=fail then
+    # exponents too large for the abelianized rewriting
+    Info(InfoWarning,1,"Exponents are too large for abelianized rewriting");
+    TryNextMethod();
+  elif Length(mat)=0 then
     return false;
   fi;
 
@@ -3937,8 +3941,8 @@ local   fgens,      # generators of the free group
             cyclic:=true,limit:=1+max );
     e:=NEWTC_CyclicSubgroupOrder(T);
     SetCyclicSubgroupFpGroup(G, H);
-    # TODO is this correct?
-    SetAugmentedCosetTableMtcInWholeGroup(H, T);
+    # T stores exponents rather than words, so it must not be stored as
+    # AugmentedCosetTableMtcInWholeGroup(H)
     if e=0 then
       return infinity;
     else
