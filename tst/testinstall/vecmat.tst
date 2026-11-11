@@ -1,5 +1,5 @@
 #@local F,F9,TestReadMatEntry,dim,m,v,w,checkShift,testlens,types,vecs,i,j
-#@local v1,v2,G
+#@local v1,v2,G,lev
 gap> START_TEST("vecmat.tst");
 
 #
@@ -443,6 +443,17 @@ true
 # nice monomorphism.
 gap> G:= Group([ [ [ Z(5^6)^6944, 0*Z(5) ], [ 0*Z(5), Z(5^2)^20 ] ] ]);;
 gap> Size( G );;
+
+# CopyToVectorRep and ConvertToVectorRep with an invalid field size; at
+# assertion level 2 an Assert catches it first
+gap> v:= [ Z(2), 0*Z(2) ];;  ConvertToVectorRep( v, 2 );;
+gap> w:= ShallowCopy( v );;
+gap> lev:= AssertionLevel();;  SetAssertionLevel( 0 );
+gap> CopyToVectorRep( v, 1 );
+Error, CopyToVectorRep: Vector cannot be written over GF(1)
+gap> ConvertToVectorRep( w, 1 );
+Error, ConvertToVectorRepNC: Vector cannot be written over GF(1)
+gap> SetAssertionLevel( lev );
 
 #
 gap> STOP_TEST("vecmat.tst");
