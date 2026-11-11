@@ -15,6 +15,35 @@
 
 #############################################################################
 ##
+#F  SGPRES_AbelianInvariantsRelatorMatrix( <M>, <fallback> )
+##
+##  returns the abelian invariants given by the abelianized relator matrix
+##  <M>. If <M> is `fail', because the abelianized rewriting produced too
+##  large exponents, they are computed from the maximal abelian quotient of
+##  the group returned by `<fallback>()' instead, or `fail' is returned if
+##  the option `cheap' is set.
+##
+BindGlobal( "SGPRES_AbelianInvariantsRelatorMatrix", function( M, fallback )
+  if M=fail then
+    if ValueOption("cheap")=true then
+      return fail;
+    fi;
+    Info(InfoWarning,1,
+      "exponent too large, abelianized coset enumeration aborted");
+    Info(InfoWarning,1,"calculation will be slow");
+    # this is in the library, so no overflow
+    return AbelianInvariants(Range(MaximalAbelianQuotient(fallback())));
+  elif Length(M)=0 then
+    return [];
+  fi;
+  M:=ReducedRelationMat(M);
+  DiagonalizeMat( Integers, M );
+  return AbelianInvariantsOfList(DiagonalOfMat(M));
+end );
+
+
+#############################################################################
+##
 #M  AbelianInvariantsNormalClosureFpGroupRrs( <G>, <H> )  . . . . . . . . . .
 #M  . . . . . abelian invariants of the normal closure of the subgroup H of G
 ##
@@ -24,22 +53,9 @@
 ##
 InstallGlobalFunction( AbelianInvariantsNormalClosureFpGroupRrs,
 function ( G, H )
-local M;
-  M:=RelatorMatrixAbelianizedNormalClosureRrs( G, H );
-  if M=fail then
-    if ValueOption("cheap")=true then return fail;fi;
-    Info(InfoWarning,1,
-      "exponent too large, abelianized coset enumeration aborted");
-    Info(InfoWarning,1,"calculation will be slow");
-    M:=MaximalAbelianQuotient(NormalClosure(G,H));
-    return AbelianInvariants(Range(M));
-  elif Length(M)=0 then
-    return [];
-  else
-    M:=ReducedRelationMat(M);
-    DiagonalizeMat( Integers, M );
-    return AbelianInvariantsOfList(DiagonalOfMat(M));
-  fi;
+  return SGPRES_AbelianInvariantsRelatorMatrix(
+           RelatorMatrixAbelianizedNormalClosureRrs( G, H ),
+           {} -> NormalClosure( G, H ) );
 end );
 
 
@@ -80,22 +96,18 @@ end );
 ##
 InstallGlobalFunction( AbelianInvariantsSubgroupFpGroupRrs,
 function ( G, H )
-local M;
-  M:=RelatorMatrixAbelianizedSubgroupRrs( G, H );
-  if M=fail then
-    if ValueOption("cheap")=true then return fail;fi;
-    Info(InfoWarning,1,
-      "exponent too large, abelianized coset enumeration aborted");
-    Info(InfoWarning,1,"calculation will be slow");
-    M:=MaximalAbelianQuotient(H); # this is in the library, so no overflow
-    return AbelianInvariants(Range(M));
-  elif Length(M)=0 then
-    return [];
-  else
-    M:=ReducedRelationMat(M);
-    DiagonalizeMat( Integers, M );
-    return AbelianInvariantsOfList(DiagonalOfMat(M));
-  fi;
+  return SGPRES_AbelianInvariantsRelatorMatrix(
+           RelatorMatrixAbelianizedSubgroupRrs( G, H ),
+           function( )
+             local t;
+             if IsList( H ) then
+               # H is given by a coset table
+               t:=StructuralCopy( H );
+               StandardizeTable( t );
+               return SubgroupOfWholeGroupByCosetTable( FamilyObj( G ), t );
+             fi;
+             return H;
+           end );
 end );
 
 
@@ -115,6 +127,11 @@ local aug,H,wor,w,covers;
   # does the table have the words among its subgroup generators?
   covers:=function(aug)
     if IsBound(aug.isNewAugmentedTable) then
+      # tables for cyclic or abelianized subgroups store exponents, not
+      # words, and cannot be used by callers that rewrite words
+      if aug.isCyclicMtcTable or aug.isAbelianizedMtcTable then
+        return false;
+      fi;
       # NEWTC format: only the primary generators are available as words
       return IsSubset(List(aug.subgens,UnderlyingElement),wor);
     fi;
@@ -320,7 +337,10 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
     app2[3] := -1;
     app2[4] := app2[2];
     if not ApplyRel2( app2, triple[2], triple[1] ) then
-      return fail; # rewriting failed b/c too large exponent
+      # The factor has too large exponents. Do not enter the deduction; the
+      # entry then later gets its own Schreier generator, which gives a
+      # larger but still correct presentation.
+      return;
     fi;
     factors := app2[7];
 
@@ -344,7 +364,6 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
     deductions[nrdeds] := [ triple[1][app2[1]], app2[2] ];
     treelength := tree[3];
     count := count - 2;
-    return true;
   end;
 
   LoopOverAllCosets:=function()
@@ -415,11 +434,9 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
                             # a deduction has been found: compute the
                             # corresponding factor and enter the deduction to
                             # the tables and to the deductions lists.
-                            if EnterDeduction( )=fail then
-                              return fail;
-                            fi;
+                            EnterDeduction( );
                             if count <= 0 then
-                              return true;
+                              return;
                             fi;
                         fi;
                     od;
@@ -430,7 +447,6 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
             fi;
         od;
     od;
-    return true;
   end;
 
 
@@ -571,9 +587,7 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
                 # a deduction has been found: compute the corresponding
                 # factor and enter the deduction to the tables and to the
                 # deductions lists.
-                if EnterDeduction( ) = fail then
-                  return fail;
-                fi;
+                EnterDeduction( );
             fi;
         od;
 
@@ -594,9 +608,7 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
     defs := [ ];
 
     # loop over cosets
-    if LoopOverAllCosets() = fail then
-      return fail;
-    fi;
+    LoopOverAllCosets();
     CompletionBar(InfoFpGroup,2,"Coset Loop: ",false);
 
     # save the number of primary subgroup generators and the number of all
@@ -1284,13 +1296,8 @@ InstallGlobalFunction( PresentationSubgroupRrs, function ( arg )
         # check the given table to be a legal coset table.
         table := H;
         CheckCosetTableFpGroup( G, table );
-        # ensure that it is standardized.
-        if not IsStandardized( table ) then
-            Info( InfoWarning, 1, "the given coset table is not ",
-                  "standardized, a standardized copy will be used instead" );
-            table := StructuralCopy( table );
-            StandardizeTable( table );
-        fi;
+        # (the table need not be standardized, as the RRS method builds its
+        # own spanning tree)
 
         # apply the Reduced Reidemeister-Schreier method to construct an
         # augmented RRS coset table of H.
@@ -1409,9 +1416,6 @@ InstallGlobalFunction( RelatorMatrixAbelianizedNormalClosureRrs,
     # apply the Reduced Reidemeister-Schreier method to construct a coset
     # table presentation of N.
     aug := AugmentedCosetTableRrs( G, cosTable, 0, "_x" );
-    if aug = fail then
-      return fail;
-    fi;
 
     # determine a set of abelianized subgroup relators.
     aug.subgroupRelators := RewriteAbelianizedSubgroupRelators( aug,
@@ -1455,13 +1459,8 @@ InstallGlobalFunction( RelatorMatrixAbelianizedSubgroupRrs, function ( G, H )
         # check the given table to be a legal coset table.
         table := H;
         CheckCosetTableFpGroup( G, table );
-        # ensure that it is standardized.
-        if not IsStandardized( table ) then
-            Info( InfoWarning, 1, "the given coset table is not ",
-                  "standardized, a standardized copy will be used instead" );
-            table := StructuralCopy( table );
-            StandardizeTable( table );
-        fi;
+        # (the table need not be standardized, as the RRS method builds its
+        # own spanning tree)
     else
         # construct the coset table of H in G if it is not yet available.
         if not HasCosetTableInWholeGroup( H ) then
@@ -1473,9 +1472,6 @@ InstallGlobalFunction( RelatorMatrixAbelianizedSubgroupRrs, function ( G, H )
     # apply the Reduced Reidemeister-Schreier method to construct an
     # augmented coset table of H.
     aug := AugmentedCosetTableRrs( G, table, 0, "_x" );
-    if aug = fail then
-      return fail;
-    fi;
 
     # determine a set of abelianized subgroup relators.
     aug.subgroupRelators := RewriteAbelianizedSubgroupRelators( aug,
@@ -2966,7 +2962,7 @@ end );
 
 BindGlobal( "NEWTC_DoCosetEnum", function(freegens,freerels,subgens,aug,trace)
 local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,dr,
-  oldead,with,collapse,j,from,pp,PERCFACT,ap,ordertwo,isprefix,tracewords;
+  oldead,with,collapse,j,from,pp,PERCFACT,ap,ordertwo,isprefix;
 
   # indicate at what change threshold display of coset Nr. should happen
   PERCFACT:=ValueOption("display");
@@ -3106,9 +3102,7 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,dr,
   # definitions
   if trace<>false then
     for w in trace do
-      if IsList(w[1]) then
-        w:=w[1]; # get word from value
-      fi;
+      w:=w[1]; # entries are pairs [word, count]
       repeat
         i:=1;
         ap:=1;
@@ -3236,16 +3230,11 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,dr,
     Info(InfoFpGroup,3,DATA.defcount," definitions");
     # which collapses gave at least 1%
 
-    # entries of collapse are pairs [word, count]; so are those of trace,
-    # but the tracing code above also accepts plain words there
+    # entries of collapse and of trace are pairs [word, count]
     isprefix:={u,v}->Length(u)<=Length(v) and v{[1..Length(u)]}=u;
-    tracewords:=List(trace,function(y)
-         if Length(y)>0 and IsList(y[1]) then return y[1]; fi;
-         return y;
-       end);
     collapse:=Filtered(collapse,x->x[2]*PERCFACT>DATA.n
                # not a prefix of (or equal to) any trace word
-               and not ForAny(tracewords,y->isprefix(x[1],y))
+               and not ForAny(trace,y->isprefix(x[1],y[1]))
                # nor a proper prefix of another word in collapse
                and not ForAny(collapse,y->Length(y[1])>Length(x[1])
                                           and isprefix(x[1],y[1])));
@@ -3286,6 +3275,15 @@ local freegens,freerels,subgens,aug,trace,e,ldc,up,bastime,start,bl,bw,first,tim
     fi;
   elif trace<>false then
     trace:=arg[5];
+  fi;
+  if trace<>false then
+    # entries of trace are pairs [word, count]; also accept plain words
+    trace:=List(trace,function(x)
+      if Length(x)>0 and IsList(x[1]) then
+        return ShallowCopy(x);
+      fi;
+      return [x,0];
+    end);
   fi;
   start:=timerFunc();
 
@@ -3441,7 +3439,8 @@ local p,new,start,half;
   half:=QuoInt(Length(r),2)+1;
   p:=PositionSublist(new,r{[half..Length(r)]});
   if p<>fail and p<half then
-    if new{[1..p-1]}=r{[half-p+1..half-1]}
+    # r must fit into new without its two pieces overlapping
+    if Length(new)>=Length(r) and new{[1..p-1]}=r{[half-p+1..half-1]}
       and new{[Length(new)-half+p+1..Length(new)]}=r{[1..half-p]} then
 
       new:=new{[Length(r)-half+p+1..Length(new)-half+p]};
