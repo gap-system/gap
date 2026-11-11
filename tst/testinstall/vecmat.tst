@@ -347,6 +347,25 @@ gap> v * v;
 gap> m * m = m;
 true
 
+# GF(2) and GF(4) vectors written over a larger field
+gap> v := [ 1, 0, 1 ] * Z(2);;  ConvertToVectorRep( v, 2 );;
+gap> w := CopyToVectorRep( v, 4 );;  Q_VEC8BIT( w );  w = v;  IsGF2VectorRep( v );
+4
+true
+true
+gap> Q_VEC8BIT( CopyToVectorRep( w, 16 ) );  Q_VEC8BIT( CopyToVectorRep( w, 8 ) );
+16
+8
+gap> IsMutable( CopyToVectorRep( Immutable( v ), 4 ) );
+false
+gap> w := ShallowCopy( v );;  ConvertToVectorRep( w, 4 );  Q_VEC8BIT( w );  w = v;
+4
+4
+true
+gap> w := ShallowCopy( v );;  ConvertToVectorRep( w, GF(256) );  Q_VEC8BIT( w );
+256
+256
+
 # test greased matrix mult
 gap> m := ImmutableMatrix( F, IdentityMat( 150, F ) );
 <an immutable 150x150 matrix over GF2>
