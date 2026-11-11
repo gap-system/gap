@@ -190,7 +190,7 @@ InstallMethod(IrreducibleModules,
   "permutation group, finite field, Burnside-Brauer",
     true, [ IsPermGroup, IsField and IsFinite, IsInt ], 2,
 function(G,field,dim)
-local n,mats,mo,moduln,i,j,k,t,cnt,p,ext,emo,hom,words;
+local n,mats,mo,moduln,i,j,k,t,cnt,p,hom,words;
   if dim=1 then TryNextMethod();fi; # special abelian case
 
   p:=Characteristic(field);
