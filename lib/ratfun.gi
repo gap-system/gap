@@ -1615,8 +1615,8 @@ function(f,ind)
 local d,l;
   d:=DegreeIndeterminate(f,ind);
   l:=LeadingCoefficient(f,ind);
-  if IsZero(l) then
-    return l;
+  if IsZero(l) or d=0 then # degree 0
+    return Zero(l);
   fi;
   d:=(-1)^(d*(d-1)/2)*Resultant(f,Derivative(f,ind),ind)/l;
   return ConstantInBaseRingPol(d,ind);
