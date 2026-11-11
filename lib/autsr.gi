@@ -997,7 +997,6 @@ local
                  # should be reduced
   makeaqiso,     # helper: build the permutation representation AQiso/AQP of
                  # the current AQ
-#  stablim,       # helper: stabilizer computation with an index limit
   precond,       # the cheap pre-condition test for an automorphism (or fail)
   cond,          # the (expensive) condition testing whether a factor
                  # automorphism lifts
@@ -1185,51 +1184,6 @@ local
     fi;
 
   end;
-
-#  stablim:=function(gp,cond,lim)
-#  local
-#    no,    # the normalizer of Aperm in gp (or Aperm itself when the index is
-#           # small)
-#    same,  # flag: no improvement was made in the last pass (loop until true)
-#    sz,    # the size of Aperm at the start of a pass, to detect growth
-#    ac,    # an ascending chain from Aperm up towards gp
-#    sub,   # the intermediate subgroup on which SubgroupProperty is run
-#           # (return basis)
-#    i;     # index selecting a step of the ascending chain
-##    same:=true;
-#    repeat
-#      sz:=Size(Aperm);
-#      if Size(gp)/Size(Aperm)>lim then
-#        no:=Normalizer(gp,Aperm);
-#        if Size(no)>Size(Aperm) and Size(no)<Size(gp) then
-#          stablim(no,cond,lim);
-#        fi;
-#      else
-#        no:=Aperm;
-#      fi;
-#      if Size(gp)/Size(Aperm)>lim then
-#        ac:=AscendingChain(gp,Aperm);
-#        List(Union(List(ac,GeneratorsOfGroup)),cond); # try generators...
-#        if Size(Aperm)>sz then
-#          ac:=Unique(List(ac,x->ClosureGroup(Aperm,x)));
-#        fi;
-#
-#        i:=First([Length(ac),Length(ac)-1..1],x->Size(ac[x])/sz<=lim);
-#        sub:=ac[i];
-#      else
-#        sub:=gp;
-#      fi;
-#      if Size(sub)>Size(Aperm) and not IsSubset(no,sub) then
-#        SubgroupProperty(sub,cond,Aperm);
-#      fi;
-#      same:=Size(Aperm)=sz;
-#      if not same then
-#        Info(InfoMorph,3,"stablim improves by ",Size(Aperm)/sz,
-#        " remaining ",Size(gp)/Size(Aperm));
-#      fi;
-#    until same;
-#    return sub=gp;
-#  end;
 
   ff:=FittingFreeLiftSetup(G);
   r:=ff.radical;
