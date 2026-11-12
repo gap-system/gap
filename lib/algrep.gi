@@ -2058,7 +2058,7 @@ InstallMethod( TensorProductOfAlgebraModules,
             if not ForAll( list, V ->
                        IsLeftAlgebraModuleElementCollection(V) and
                        IsRightAlgebraModuleElementCollection(V)) then
-              Error("for all modules the algebra must act on the same side");
+              Error( "all modules must be bi-modules" );
             fi;
 
             A:= LeftActingAlgebra( list[1] );
@@ -3480,7 +3480,7 @@ InstallMethod( DirectSumOfAlgebraModules,
             if not ForAll( list, V ->
                        IsLeftAlgebraModuleElementCollection(V) and
                        IsRightAlgebraModuleElementCollection(V)) then
-              Error("for all modules the algebra must act on the same side");
+              Error( "all modules must be bi-modules" );
             fi;
 
             A:= LeftActingAlgebra( list[1] );
