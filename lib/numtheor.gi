@@ -888,92 +888,50 @@ end );
 #F  RootsUnityMod( <m> )  . . . . . . . . .  roots of unity modulo an integer
 #F  RootsUnityMod( <k>, <m> ) . . . . . . .  roots of unity modulo an integer
 ##
-BindGlobal( "RootsUnityModPrime", function ( k, p )
-    local   rr,                 # <k>th roots of 1 mod <p>, result
-            r,                  # <k>th root of unity mod <p>
-            t,                  # <k>th root of unity mod <p>
-            i;                  # loop variable
-
-    # reduce $n$ into the range $0..p-1$
-    Info( InfoNumtheor, 1, "RootsUnityModPrime(", k, ",", p, ")" );
-
-    # handle $p = 2$
-    if p = 2  then
-        rr := [ 1 ];
-
-    # it's easy if $k$ is invertible mod $p-1 = \phi(p)$
-    elif GcdInt( p-1, k ) = 1  then
-        rr := [ 1 ];
-
-    # check that $n$ has a $k$th root (Euler's criterium)
-    else
-
-        # find a generator $t$ of the subgroup of $k$-th roots of 1.
-        i:=2; t:=PowerModInt(i,(p-1)/k,p);
-        while t=1  do
-            i:=i+1; t:=PowerModInt(i,(p-1)/k,p);
-        od;
-
-        # combine $r$ (a particular root) with the powers of $t$
-        r := 1;
-        rr := [ 1 ];
-        for i  in [2..k]  do
-            r := r * t mod p;
-            AddSet( rr, r );
-        od;
-
-    fi;
-
-    # return the roots $rr$
-    Info( InfoNumtheor, 1, "RootsUnityModPrime returns ", rr );
-    return rr;
-end );
-
-DeclareGlobalName( "RootsUnityModPrimePower" );
 BindGlobal( "RootsUnityModPrimePower", function ( k, p, l )
-    local   rr,                 # <k>th roots of <n> mod <p>^<l>, result
-            r,                  # one element of <rr>
-            ss,                 # <k>th roots of <n> mod smaller power
-            s,                  # one element of <ss>
-            t;                  # temporary variable
+    local   q,                  # <p>^<l>
+            n,                  # order of the unit group mod <q>
+            g,                  # number of <k>th roots of 1 mod <q>
+            t,                  # generator of the <k>th roots of 1
+            r,                  # prime divisor of <g>
+            e,                  # <r>-part of <g>
+            i,                  # candidate unit
+            y,                  # element of order <e>
+            rr;                 # <k>th roots of 1 mod <q>, result
 
-    # delegate prime case
     Info( InfoNumtheor, 1,
           "RootsUnityModPrimePower(", k, ",", p, "^", l, ")" );
-    if l = 1  then
-        rr := RootsUnityModPrime( k, p );
+    q := p^l;
 
-    # if $k$ is invertible mod $\phi(p^l)$ then there is only one root
-    elif GcdInt(k,(p-1)*p) = 1  then
-        rr := [ 1 ];
+    # $(Z/2^l)^*$ is $<-1> \times <5>$ with $5$ of order $2^{l-2}$
+    if p = 2 then
+        if l = 1 or IsOddInt( k ) then
+            rr := [ 1 ];
+        elif l = 2 then
+            rr := [ 1, 3 ];
+        else
+            g := GcdInt( k, 2^(l-2) );
+            t := PowerModInt( 5, 2^(l-2) / g, q );
+            rr := List( [ 0 .. g-1 ], i -> PowerModInt( t, i, q ) );
+            rr := Set( Concatenation( rr, q - rr ) );
+        fi;
 
-    # if $p = k = 2$
-    elif p = 2  and k = 2  then
-        rr := Set( [ 1, p^(l-1)-1, p^(l-1)+1, p^l-1 ] );
-
-    # if $p = k$
-    elif p = k  then
-        rr := [0..k-1]*p^(l-1)+1;
-
-    # special case to speed up things a little bit
-    elif k = 2  then
-        rr := [ 1, p^l-1 ];
-
-    # otherwise lift the roots with Newton / Hensel
+    # $(Z/p^l)^*$ is cyclic of order $n$, the roots form its subgroup of
+    # order $g$; build a generator from elements of order $r^e$ for $r | g$
     else
-
-        # compute the root mod $p^{l/2}$
-        ss := RootsUnityModPrimePower( k, p, QuoInt(l+1,2) );
-
-        # lift the roots to $p^l$
-        rr := [];
-        for s  in ss  do
-            Info( InfoNumtheor, 2, " lift root with Newton / Hensel" );
-            t := PowerModInt( s, k-1, p^l );
-            r := (s + (1 - t * s) / (k * t)) mod p^l;
-            AddSet( rr, r );
+        n := (p-1) * p^(l-1);
+        g := GcdInt( k, n );
+        t := 1;
+        for r in PrimeDivisors( g ) do
+            e := r ^ PValuation( g, r );
+            i := 1;
+            repeat
+                i := i + 1;
+                y := PowerModInt( i, n / e, q );
+            until i mod p <> 0 and PowerModInt( y, e / r, q ) <> 1;
+            t := t * y mod q;
         od;
-
+        rr := Set( [ 0 .. g-1 ], i -> PowerModInt( t, i, q ) );
     fi;
 
     # return the roots $rr$
