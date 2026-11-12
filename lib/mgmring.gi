@@ -1270,9 +1270,6 @@ InstallMethod( ImagesRepresentative,
     end );
 
 
-# The inverse mapping calls the NC variants for arbitrary elements of the
-# range, so they return '[ ]' or 'fail' for those that are not of the
-# form '<r> * One( <RM> )'.
 InstallMethod( PreImagesElmNC,
     "for embedding of ring into magma ring, and free magma ring element",
     FamRangeEqFamElm,
@@ -1407,9 +1404,6 @@ InstallMethod( ImagesRepresentative,
     end );
 
 
-# The inverse mapping calls the NC variants for arbitrary elements of the
-# range, so they return '[ ]' or 'fail' for those that are not of the
-# form 'One( <R> ) * <m>'.
 InstallMethod( PreImagesElmNC,
     "for embedding of magma into magma ring, and free magma ring element",
     FamRangeEqFamElm,

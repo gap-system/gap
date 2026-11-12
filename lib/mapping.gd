@@ -992,7 +992,9 @@ DeclareGlobalFunction( "Images" );
 ##  If <A>elm</A> is not even in the range then an error is signalled.
 ##  <P/>
 ##  When using <C>PreImagesElmNC</C> anything may happen if <A>elm</A>
-##  is not an element of the image of <A>map</A>.
+##  is not an element of the range of <A>map</A>.
+##  For an element of the range that is not in the image,
+##  <C>PreImagesElmNC</C> returns the empty list.
 ##  <P/>
 ##  </Description>
 ##  </ManSection>
@@ -1050,7 +1052,9 @@ DeclareOperation( "PreImageElm",
 ##  If <A>elm</A> is not even in the range then an error is signalled.
 ##  <P/>
 ##  When using <C>PreImagesRepresentativeNC</C> anything may happen if
-##  <A>elm</A> is not an element of the image of <A>map</A>.
+##  <A>elm</A> is not an element of the range of <A>map</A>.
+##  For an element of the range that is not in the image,
+##  <C>PreImagesRepresentativeNC</C> returns <K>fail</K>.
 ##  <P/>
 ##  </Description>
 ##  </ManSection>
@@ -1085,7 +1089,8 @@ DeclareOperation( "PreImagesRepresentativeNC", [ IsGeneralMapping, IsObject ] );
 ##  If <A>elms</A> is not a subset of the range then an error is signalled.
 ##  <P/>
 ##  When using <C>PreImagesSetNC</C> anything may happen if <A>elms</A>
-##  is not a subset of the image of <A>map</A>.
+##  is not a subset of the range of <A>map</A>.
+##  Elements of <A>elms</A> that are not in the image contribute nothing.
 ##  <P/>
 ##  </Description>
 ##  </ManSection>
@@ -1464,10 +1469,11 @@ DeclareGlobalFunction( "GeneralMappingByElements" );
 ##  <Ref Prop="IsInjective"/> and <Ref Prop="IsSurjective"/> explicitly
 ##  where they are known.
 ##  The &GAP; function <A>prefun</A> must return one preimage of each
-##  element <M>r</M> in the image of <C>map</C>.
-##  <Ref Oper="PreImagesRepresentative"/> returns <K>fail</K> for other
-##  elements without calling <A>prefun</A>;
-##  <Ref Oper="PreImagesRepresentativeNC"/> calls it unchecked.
+##  element <M>r</M> in the image of <C>map</C>, and may return anything for
+##  the other elements of <A>R</A>.
+##  <Ref Oper="PreImagesRepresentative"/> and
+##  <Ref Oper="PreImagesRepresentativeNC"/> check its result and return
+##  <K>fail</K> for elements that are not in the image.
 ##  <P/>
 ##  The mapping returned by
 ##  <Ref Func="MappingByFunction" Label="by function (and inverse function) between two domains"/> lies in the
