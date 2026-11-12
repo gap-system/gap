@@ -2758,7 +2758,7 @@ static Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
   else {
      // large int case
      q = n / 32;
-     r = n - q * 32;
+     r = n % 32;
      // qoff = number of 32 bit words we need
      qoff = q + (r==0 ? 0:1);
      // len = number of limbs we need (limbs currently are either 32 or 64 bit wide)
