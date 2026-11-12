@@ -508,6 +508,10 @@ gap> IsMutable( CopyToVectorRepNC( Immutable( [] ), 3 ) );
 false
 gap> CopyToVectorRep( [], 257 );
 fail
+gap> CopyToVectorRep( [], 6 );
+Error, CopyToVectorRep: Vector cannot be written over GF(6)
+gap> IsGF2VectorRep( CopyToVectorRepNC( [], 2 ) );
+true
 
 #
 gap> STOP_TEST("vecmat.tst");
