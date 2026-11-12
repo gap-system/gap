@@ -5,6 +5,7 @@ gap> G:=DirectProduct(CyclicGroup(IsPcGroup,9),ElementaryAbelianGroup(IsPcGroup,
 gap> U:=Image(Embedding(G,1));;
 gap> SubgroupConditionAboveAux(G,x->x in U,TrivialSubgroup(G),TrivialSubgroup(G))=U;
 true
+
 # Classes of equal size (here: all of them, as the groups are
 # abelian) could come in an order with the class of an element before the
 # class of its prime power. This produced an error (unassigned entry in
@@ -23,6 +24,7 @@ gap> check:=function(gens,seed)
 >   return SubgroupConditionAboveAux(G,y->y in T,
 >     TrivialSubgroup(G),TrivialSubgroup(G))=T;
 > end;;
+
 # C9 x C9 x C3 x C3
 gap> gens:=[cyc(9,0),cyc(9,9),cyc(3,18),cyc(3,21)];;
 gap> ForAll([153,228,250,638,830,891,916,941,943,1150],s->check(gens,s));
