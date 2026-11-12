@@ -696,13 +696,14 @@ DeclareGlobalFunction( "LcmInt" );
 ##
 ##  <Description>
 ##  <Ref Func="LogInt"/> returns the integer part of the logarithm of the
-##  positive integer <A>n</A> with respect to the positive integer
-##  <A>base</A>, i.e.,
+##  positive integer <A>n</A> with respect to the integer
+##  <A>base</A> <M>&gt; 1</M>, i.e.,
 ##  the largest nonnegative integer <M>e</M> such that
 ##  <M><A>base</A>^e \leq <A>n</A></M>.
 ##  The function
 ##  <Ref Func="LogInt"/>
-##  will signal an error if either <A>n</A> or <A>base</A> is not positive.
+##  will signal an error if <A>n</A> is not positive or <A>base</A> is
+##  less than 2.
 ##  <P/>
 ##  For <A>base</A> <M>= 2</M> this is very efficient because the internal
 ##  binary representation of the integer is used.
