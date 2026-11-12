@@ -255,15 +255,25 @@ InstallMethod(FieldExtension,"generic",true,
 InstallMethod( PrintObj, "for algebraic extension", true,
 [IsNumberField and IsAlgebraicExtension], 0,
 function( F )
-    Print( "<algebraic extension over the Rationals of degree ",
-           DegreeOverPrimeField( F ), ">" );
+    Print( "<algebraic extension over " );
+    if IsRationals( LeftActingDomain( F ) ) then
+      Print( "the Rationals" );
+    else
+      Print( LeftActingDomain( F ) );
+    fi;
+    Print( " of degree ", Dimension( F ), ">" );
 end );
 
 InstallMethod( ViewObj, "for algebraic extension", true,
 [IsNumberField and IsAlgebraicExtension], 0,
 function( F )
-    Print("<algebraic extension over the Rationals of degree ",
-          DegreeOverPrimeField( F ), ">" );
+    Print( "<algebraic extension over " );
+    if IsRationals( LeftActingDomain( F ) ) then
+      Print( "the Rationals" );
+    else
+      View( LeftActingDomain( F ) );
+    fi;
+    Print( " of degree ", Dimension( F ), ">" );
 end );
 
 #############################################################################
