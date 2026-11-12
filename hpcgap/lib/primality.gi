@@ -627,9 +627,10 @@ function(N)
     D:=1;
     repeat
       D:=(D+1) mod N;
-      if(D=0) then Error(); return fail; fi;
+      # a prime N > 2 has a quadratic nonresidue in [2..N-1]
+      if(D=0) then return false; fi;
       J:=Jacobi(D,N);
-      if(J=0) then Error(); return false; fi;
+      if(J=0) then return false; fi;
     until J=-1;
   fi;
   certs:=[];
@@ -644,9 +645,9 @@ function(N)
         return fail;
       elif(ret[1]=false) then
         if 0 = N mod ret[2] and 1<ret[2] and ret[2]<N
-        then Error("# PrimalityProof: ",N," is composite (divisible by ",ret[2],").");
+        then Info(InfoPrimeInt,2,"PrimalityProof: ",N," is composite (divisible by ",ret[2],")");
         elif 0 <> ret[2] mod N and 1 <> PowerModInt(ret[2],N-1,N)
-        then Error("# PrimalityProof: ",N," is composite (",ret[2],"^",N-1," mod N is not 1).");
+        then Info(InfoPrimeInt,2,"PrimalityProof: ",N," is composite (",ret[2],"^",N-1," mod N is not 1)");
         else Error("# PrimalityProof: unknown error. N is supposedly composite.");
         fi;
         return false;
@@ -663,9 +664,9 @@ function(N)
         return fail;
       elif(ret[1]=false) then
         if 0 = N mod ret[2] and 1<ret[2] and ret[2]<N
-        then Error("# PrimalityProof: ",N," is composite (divisible by ",ret[2],").");
+        then Info(InfoPrimeInt,2,"PrimalityProof: ",N," is composite (divisible by ",ret[2],")");
         elif 0 <> LucasMod(ret[2],ret[3],N,N-1)[1] mod N
-        then Error("# PrimalityProof: ",N," is composite (Lucas(",ret[2],",",ret[3],",N-1) mod N is not 0).");
+        then Info(InfoPrimeInt,2,"PrimalityProof: ",N," is composite (Lucas(",ret[2],",",ret[3],",N-1) mod N is not 0)");
         else Error("# PrimalityProof: unknown error. N is supposedly composite.");
         fi;
         return false;
