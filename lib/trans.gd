@@ -125,9 +125,3 @@ BindGlobal("IdentityTransformation", TransformationNC([]));
 # for legacy reasons only!
 DeclareSynonym("BinaryRelationTransformation", AsBinaryRelation);
 DeclareOperation("InverseOp", [IsTransformation]);
-
-# not yet implemented
-DeclareGlobalFunction("TransformationAction");
-DeclareGlobalFunction("TransformationActionNC");
-DeclareGlobalFunction("TransformationActionHomomorphism");
-DeclareGlobalFunction("TransformationActionHomomorphismNC");
