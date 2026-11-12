@@ -1252,6 +1252,20 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
         return 2;
     fi;
 
+    # GF(2) to GF(2^k): the kernel rewrites the bits, the code below converts
+    # entry by entry
+    if IsGF2VectorRep(v) and not IsLockedRepresentationVector(v) then
+        if IsField(arg[2]) then
+            q := Size(arg[2]);
+        else
+            q := arg[2];
+        fi;
+        if q in [ 4, 8, 16, 32, 64, 128, 256 ] then
+            CONV_VEC8BIT(v, q);
+            return q;
+        fi;
+    fi;
+
     if Is8BitVectorRep(v) then
         q0 := Q_VEC8BIT(v);
         if Length(arg) = 1 then
@@ -1423,7 +1437,7 @@ end);
 #F  CopyToVectorRep( <v>, <q> )
 ##
 InstallGlobalFunction(CopyToVectorRep,function( v, q )
-    local vc, common, res;
+    local vc, common, res, q0;
 
     # Handle fast, certain cases where there is no work. Microseconds count here
 
@@ -1443,6 +1457,19 @@ InstallGlobalFunction(CopyToVectorRep,function( v, q )
                 return v;
             fi;
         fi;
+    fi;
+
+    # to a larger field: the kernel rewrites the bits, the code below
+    # converts entry by entry
+    if IsGF2VectorRep(v) then
+        q0 := 2;
+    elif Is8BitVectorRep(v) then
+        q0 := Q_VEC8BIT(v);
+    else
+        q0 := fail;
+    fi;
+    if q0 <> fail and q0 < q and q <= 256 and q0 ^ LogInt(q, q0) = q then
+        return COPY_VEC8BIT(v, q);
     fi;
 
     # the code below cannot determine a field for an empty list
