@@ -1163,11 +1163,7 @@ static Obj FuncGAP_realpath(Obj self, Obj path)
     RequireStringRep(SELF_NAME, path);
     char resolved_path[GAP_PATH_MAX];
 
-#ifdef SYS_IS_MINGW
-    if (NULL == _fullpath(resolved_path, CONST_CSTR_STRING(path), sizeof(resolved_path))) {
-#else
-    if (NULL == realpath(CONST_CSTR_STRING(path), resolved_path)) {
-#endif
+    if (NULL == SyRealpath(CONST_CSTR_STRING(path), resolved_path)) {
         SySetErrorNo();
         return Fail;
     }
