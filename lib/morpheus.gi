@@ -563,8 +563,11 @@ local hom, gens, c, ran, r, cen, img, u, orbs,
     fi;
     Info(InfoMorph,4,"Genclass orbit ",Length(of)," size ",Sum(of,Size));
     Append(o,of);
-    u:=ClosureGroup(u,List(of,Representative));
-    u:=NormalClosure(g,u);
+    # The classes in <o> are closed under conjugation, but the elements in
+    # <fix> are not: only <fix> itself is known to be fixed by <au>, not its
+    # conjugates. So we must not take the normal closure of <fix>.
+    u:=NormalClosure(g,SubgroupNC(g,List(o,Representative)));
+    u:=ClosureGroup(u,fix);
   od;
 
   bestdeg:=Sum(o,Size);
@@ -651,8 +654,8 @@ local hom, gens, c, ran, r, cen, img, u, orbs,
         of:=[c];
       fi;
       u:=List(of,x->rec(siz:=Size(x[1])*Length(x),clas:=x,reps:=[Representative(x[1])],
-        closure:=NormalClosure(g,SubgroupNC(g,
-          Concatenation(List(x,Representative),fix))) ));
+        closure:=ClosureGroup(NormalClosure(g,SubgroupNC(g,
+          List(x,Representative))),fix) ));
       of:=[];
       for j in u do
         if j.siz>1 and j.siz<bestdeg
