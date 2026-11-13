@@ -852,6 +852,7 @@ static void GapTaskScanner(jl_task_t * task, int root_task)
 // Scan from the frame of this function, which lies below that of its
 // caller, to <stackend>.
 static NOINLINE void ScanStackFromHere(jl_ptls_t ptls, char * stackend)
+    GAP_GC_NOTSAFEPOINT
 {
     char * top = (char *)&top;
     TryMarkRange(ptls, top, stackend);
