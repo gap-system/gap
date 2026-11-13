@@ -22,9 +22,11 @@ It is important to note that different extensions of the same field are
 entirely different (and its elements lie in different families), even if
 mathematically one could be embedded in the other one.
 <P/>
-Currently &GAP; does not support extension fields of fields <M>K</M>
-when <M>K</M> itself is an extension field: such fields can be created,
-but arithmetic in them fails.
+The field <M>K</M> may itself be an algebraic extension. In such a tower,
+elements of all fields in it, including rationals, can be combined
+arithmetically, and
+<Ref Oper="MinimalPolynomial" Label="over a field"/> works over each field
+below the one containing the element.
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
