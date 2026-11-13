@@ -653,8 +653,8 @@ local hom, gens, c, ran, r, cen, img, u, orbs,
         of:=[c];
       fi;
       u:=List(of,x->rec(siz:=Size(x[1])*Length(x),clas:=x,reps:=[Representative(x[1])],
-      closure:=ClosureGroup(NormalClosure(g,SubgroupNC(g,
-        List(x,Representative))),fix) ));
+        closure:=ClosureGroup(NormalClosure(g,SubgroupNC(g,
+          List(x,Representative))),fix) ));
       of:=[];
       for j in u do
         if j.siz>1 and j.siz<bestdeg
