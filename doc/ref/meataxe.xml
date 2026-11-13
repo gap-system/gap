@@ -731,8 +731,11 @@ called to obtain a random submodule.
 <Func Name="SMTX.AbsoluteIrreducibilityTest" Arg='module'/>
 
 <Description>
-Tests for absolute irreducibility and sets splitting field degree. It
-neither sets an absolute irreducibility flag, nor tests it.
+Tests for absolute irreducibility and sets splitting field degree.
+It sets the absolute irreducibility flag,
+but it does not simply return a stored absolute irreducibility flag
+because functions calling <Ref Func="SMTX.AbsoluteIrreducibilityTest"/>
+may expect that it sets other flags as well.
 </Description>
 </ManSection>
 

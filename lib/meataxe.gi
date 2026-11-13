@@ -291,7 +291,7 @@ SMTX.IsAbsolutelyIrreducible:=function(module)
     if not SMTX.IsIrreducible(module) then
       return false;
     fi;
-    module.IsAbsolutelyIrreducible:=SMTX.AbsoluteIrreducibilityTest(module);
+    SMTX.AbsoluteIrreducibilityTest(module);
   fi;
   return module.IsAbsolutelyIrreducible;
 end;
@@ -1356,10 +1356,8 @@ local matrices, M, mat,  N, newgenlist, coefflist,
    if not SMTX.IsMTXModule(module) or not SMTX.IsIrreducible(module) then
      ErrorNoReturn("Argument is not an irreducible module.");
    fi;
-   if not SMTX.HasIsAbsolutelyIrreducible(module) then
-      SMTX.IsAbsolutelyIrreducible(module);
-   fi;
    if  SMTX.IsAbsolutelyIrreducible(module) then
+     # The flag may be known without known 'DegreeFieldExt'.
      mindim:=1;
    else
      mindim:=SMTX.DegreeFieldExt(module);
@@ -1629,8 +1627,6 @@ end;
 #F SMTX.AbsoluteIrreducibilityTest( module ) . . decide if an irreducible
 ##                    module over a  finite field is absolutely irreducible
 ##
-## this function does the work for an absolute irreducibility test but does
-## not actually set the flags.
 ## The function calculates the centralizer of the module.
 ## The centralizer should be isomorphic to the multiplicative
 ## group of the field GF(q^e) for some e, or rather to the group of
@@ -1652,11 +1648,11 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
    fi;
 
    if not SMTX.IsIrreducible(module) then
-      Error("Argument of iIsAbsoluteIrreducible s not an irreducible module");
+      Error("Argument of IsAbsoluteIrreducible is not an irreducible module");
    fi;
 
    if not module.IsOverFiniteField then
-      return Error("Argument of IsAbsoluteIrreducible is not over a finite field.");
+      Error("Argument of IsAbsoluteIrreducible is not over a finite field.");
    fi;
    dim:=SMTX.Dimension(module);
    F:=SMTX.Field(module);
@@ -1681,6 +1677,7 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
    Info(InfoMeatAxe,4,"GCD of module and nullspace dimensions = ", gcd, ".");
    if gcd = 1 then
       SMTX.SetDegreeFieldExt(module,1);
+      SMTX.SetIsAbsolutelyIrreducible(module,true);
       return true;
    fi;
    div:=DivisorsInt(gcd);
@@ -1788,6 +1785,7 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
          if ForAll(newmatrices, x -> x * centmat = centmat * x) then
             Info(InfoMeatAxe,2,"It did!");
             SMTX.SetDegreeFieldExt(module, e);
+            SMTX.SetIsAbsolutelyIrreducible(module, false);
             SMTX.SetCentMat(module, Pinv * centmat * P); # get the base right
             # We will also record the minimal polynomial of C0 (and hence of
             # centmat) in case we need it at some future date.
@@ -1803,6 +1801,7 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
    Info(InfoMeatAxe,2,
      "Tried all divisors. Must be absolutely irreducible.");
    SMTX.SetDegreeFieldExt(module, 1);
+   SMTX.SetIsAbsolutelyIrreducible(module, true);
    return true;
 end;
 
