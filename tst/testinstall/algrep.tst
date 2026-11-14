@@ -136,5 +136,26 @@ gap> V:= BiAlgebraModuleByGenerators( A, A, \*, \*, [ [1,0,0] ], "basis" );
 <bi-module over ( Rationals^[ 3, 3 ] ) (left) and ( Rationals^
 [ 3, 3 ] ) (right)>
 
+# direct sum of bi-modules
+gap> W:= DirectSumOfAlgebraModules( V, V );
+<6-dimensional bi-module over ( Rationals^[ 3, 3 ] ) (left) and ( Rationals^
+[ 3, 3 ] ) (right)>
+gap> IsRightAlgebraModuleElementCollection( W );
+true
+gap> w:= Basis( W )[1];
+( [ 1, 0, 0 ] )(+)( [ 0, 0, 0 ] )
+gap> w^One( A ) = w;
+true
+
+# tensor product of bi-modules
+gap> L:= SimpleLieAlgebra( "A", 1, Rationals );;
+gap> V:= BiAlgebraModuleByGenerators( L, L, function( x, v ) return x*v; end,
+>      function( v, x ) return v*x; end, [ Basis( L )[1] ], "basis" );;
+gap> T:= TensorProductOfAlgebraModules( V, V );;
+gap> IsRightAlgebraModuleElementCollection( T );
+true
+gap> Dimension( T );
+9
+
 #
 gap> STOP_TEST("algrep.tst");

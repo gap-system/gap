@@ -1119,7 +1119,8 @@ DeclareCategoryFamily( "IsDirectSumElement" );
 ##  gap> A:= FullMatrixAlgebra( Rationals, 3 );;
 ##  gap> V:= BiAlgebraModuleByGenerators( A, A, \*, \*, [ [1,0,0] ] );;
 ##  gap> W:= DirectSumOfAlgebraModules( V, V );
-##  <6-dimensional left-module over ( Rationals^[ 3, 3 ] )>
+##  <6-dimensional bi-module over ( Rationals^
+##  [ 3, 3 ] ) (left) and ( Rationals^[ 3, 3 ] ) (right)>
 ##  gap> BasisVectors( Basis( W ) );
 ##  [ ( [ 1, 0, 0 ] )(+)( [ 0, 0, 0 ] ), ( [ 0, 1, 0 ] )(+)( [ 0, 0, 0 ] )
 ##      , ( [ 0, 0, 1 ] )(+)( [ 0, 0, 0 ] ),
