@@ -259,11 +259,22 @@ static inline int JMarkTyped(jl_ptls_t ptls, void * obj, jl_datatype_t * ty)
     return MarkQueueObj(ptls, obj);
 }
 
+// Return whether `v` is never freed, as indicated by bits in its header:
+// it lives in a system or package image, or (since Julia 1.15) was
+// allocated by `jl_gc_permobj`.
+static inline int IsPermanentObj(jl_value_t * v)
+{
+#if JULIA_VERSION_MAJOR == 1 && JULIA_VERSION_MINOR < 15
+    return jl_astaggedvalue(v)->bits.in_image;
+#else
+    return jl_astaggedvalue(v)->bits.perm;
+#endif
+}
+
 // Check that `obj` is still allocated and not on a free list already,
 // by verifying that its type is a valid datatype object. A datatype is
-// either a pool object, or lives in a system or package image (e.g. the
-// types of GAP.jl bags after loading it from a precompiled image), as
-// indicated by the `in_image` bit in its header.
+// either a pool object, or permanent (e.g. the types of GAP.jl bags after
+// loading it from a precompiled image).
 static inline int ValidTypeOfMarkedObj(void * obj)
 {
     jl_value_t * ty = jl_typeof(obj);
@@ -271,8 +282,7 @@ static inline int ValidTypeOfMarkedObj(void * obj)
     // pointer into a pool page; check before dereferencing it
     if (ty == NULL)
         return 0;
-    if (jl_gc_internal_obj_base_ptr(ty) != ty &&
-        !jl_astaggedvalue(ty)->bits.in_image)
+    if (jl_gc_internal_obj_base_ptr(ty) != ty && !IsPermanentObj(ty))
         return 0;
     return jl_typeis(ty, jl_datatype_type);
 }
