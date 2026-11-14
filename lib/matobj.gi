@@ -75,6 +75,9 @@ InstallMethod( \=,
     "for two matrix objects",
     [ IsMatrixObj, IsMatrixObj ],
     function( M1, M2 )
+    if IsList( M1 ) and IsList( M2 ) then
+      TryNextMethod();
+    fi;
     return ConstructingFilter( M1 ) = ConstructingFilter( M2 ) and
            BaseDomain( M1 ) = BaseDomain( M2 ) and
            NumberRows( M1 ) = NumberRows( M2 ) and
