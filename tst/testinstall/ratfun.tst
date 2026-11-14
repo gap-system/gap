@@ -262,5 +262,11 @@ gap> TryGcdCancelExtRepPolynomials(fam, ExtRepPolynomialRatFun(t*u), ExtRepPolyn
 gap> TryGcdCancelExtRepPolynomials(fam, ExtRepPolynomialRatFun(t), ExtRepPolynomialRatFun(u*t));
 [ [ [  ], 1 ], [ [ 101, 1 ], 1 ] ]
 
+# Discriminant
+gap> x:=Indeterminate(Rationals,"x");; y:=Indeterminate(Rationals,"y");;
+gap> z:=Indeterminate(Rationals,"z");;
+gap> Discriminant(y*z+1, x);
+0
+
 #
 gap> STOP_TEST("ratfun.tst");
