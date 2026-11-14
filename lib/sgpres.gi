@@ -15,6 +15,35 @@
 
 #############################################################################
 ##
+#F  SGPRES_AbelianInvariantsRelatorMatrix( <M>, <fallback> )
+##
+##  returns the abelian invariants given by the abelianized relator matrix
+##  <M>. If <M> is `fail', because the abelianized rewriting produced too
+##  large exponents, they are computed from the maximal abelian quotient of
+##  the group returned by `<fallback>()' instead, or `fail' is returned if
+##  the option `cheap' is set.
+##
+BindGlobal( "SGPRES_AbelianInvariantsRelatorMatrix", function( M, fallback )
+  if M=fail then
+    if ValueOption("cheap")=true then
+      return fail;
+    fi;
+    Info(InfoWarning,1,
+      "exponent too large, abelianized coset enumeration aborted");
+    Info(InfoWarning,1,"calculation will be slow");
+    # this is in the library, so no overflow
+    return AbelianInvariants(Range(MaximalAbelianQuotient(fallback())));
+  elif Length(M)=0 then
+    return [];
+  fi;
+  M:=ReducedRelationMat(M);
+  DiagonalizeMat( Integers, M );
+  return AbelianInvariantsOfList(DiagonalOfMat(M));
+end );
+
+
+#############################################################################
+##
 #M  AbelianInvariantsNormalClosureFpGroupRrs( <G>, <H> )  . . . . . . . . . .
 #M  . . . . . abelian invariants of the normal closure of the subgroup H of G
 ##
@@ -24,22 +53,16 @@
 ##
 InstallGlobalFunction( AbelianInvariantsNormalClosureFpGroupRrs,
 function ( G, H )
-local M;
-  M:=RelatorMatrixAbelianizedNormalClosureRrs( G, H );
-  if Length(M)=0 then
-    return [];
-  else
-    M:=ReducedRelationMat(M);
-    DiagonalizeMat( Integers, M );
-    return AbelianInvariantsOfList(DiagonalOfMat(M));
-  fi;
+  return SGPRES_AbelianInvariantsRelatorMatrix(
+           RelatorMatrixAbelianizedNormalClosureRrs( G, H ),
+           {} -> NormalClosure( G, H ) );
 end );
 
 
 #############################################################################
 ##
 #M  AbelianInvariantsSubgroupFpGroupMtc( <G>, <H> ) . . . . . . . . . . . . .
-#M  . . . . . abelian invariants of the normal closure of the subgroup H of G
+#M  . . . . . abelian invariants of the subgroup H of G
 ##
 ##  uses the Modified Todd-Coxeter method to compute the abelian
 ##  invariants of a subgroup <H> of a finitely presented group <G>.
@@ -49,7 +72,8 @@ function ( G, H )
 local M;
   M:=RelatorMatrixAbelianizedSubgroupMtc( G, H );
   if Length(M)=0 then
-    return [];
+    # no relators: free abelian on the subgroup generators
+    return ListWithIdenticalEntries( Length( GeneratorsOfGroup( H ) ), 0 );
   else
     M:=ReducedRelationMat(M);
     DiagonalizeMat( Integers, M );
@@ -62,32 +86,28 @@ end );
 ##
 #M  AbelianInvariantsSubgroupFpGroupRrs( <G>, <H> ) . . . . . . . . . . . . .
 #M  AbelianInvariantsSubgroupFpGroupRrs( <G>, <costab> ) . . .  . . . . . . .
-#M  . . . . . abelian invariants of the normal closure of the subgroup H of G
+#M  . . . . . . . . . . . . . . . . . . . abelian invariants of the subgroup H
 ##
 ##  uses the Reduced Reidemeister-Schreier method to compute the abelian
 ##  invariants of a subgroup <H> of a finitely presented group <G>.
 ##
-##  Alternatively to the subgroup <H>, its coset table <table> in <G> may be
+##  Alternatively to the subgroup <H>, its coset table <costab> in <G> may be
 ##  given as second argument.
 ##
 InstallGlobalFunction( AbelianInvariantsSubgroupFpGroupRrs,
 function ( G, H )
-local M;
-  M:=RelatorMatrixAbelianizedSubgroupRrs( G, H );
-  if M=fail then
-    if ValueOption("cheap")=true then return fail;fi;
-    Info(InfoWarning,1,
-      "exponent too large, abelianized coset enumeration aborted");
-    Info(InfoWarning,1,"calculation will be slow");
-    M:=MaximalAbelianQuotient(H); # this is in the library, so no overflow
-    return AbelianInvariants(Range(M));
-  elif Length(M)=0 then
-    return [];
-  else
-    M:=ReducedRelationMat(M);
-    DiagonalizeMat( Integers, M );
-    return AbelianInvariantsOfList(DiagonalOfMat(M));
-  fi;
+  return SGPRES_AbelianInvariantsRelatorMatrix(
+           RelatorMatrixAbelianizedSubgroupRrs( G, H ),
+           function( )
+             local t;
+             if IsList( H ) then
+               # H is given by a coset table
+               t:=StructuralCopy( H );
+               StandardizeTable( t );
+               return SubgroupOfWholeGroupByCosetTable( FamilyObj( G ), t );
+             fi;
+             return H;
+           end );
 end );
 
 
@@ -97,24 +117,38 @@ end );
 ##
 InstallGlobalFunction(AugmentedCosetTableInWholeGroup,
 function(arg)
-local aug,H,wor,w;
+local aug,H,wor,w,covers;
   H:=arg[1];
   if Length(arg)=1 then
     return AugmentedCosetTableRrsInWholeGroup(H);
   fi;
   wor:=List(arg[2],UnderlyingElement); # words for given elements
+
+  # does the table have the words among its subgroup generators?
+  covers:=function(aug)
+    if IsBound(aug.isNewAugmentedTable) then
+      # tables for cyclic or abelianized subgroups store exponents, not
+      # words, and cannot be used by callers that rewrite words
+      if aug.isCyclicMtcTable or aug.isAbelianizedMtcTable then
+        return false;
+      fi;
+      # NEWTC format: only the primary generators are available as words
+      return IsSubset(List(aug.subgens,UnderlyingElement),wor);
+    fi;
+    return ForAll(wor,x->x in aug.primaryGeneratorWords or
+       x in SecondaryGeneratorWordsAugmentedCosetTable(aug));
+  end;
+
   # is there an MTc table we can use?
   if HasAugmentedCosetTableMtcInWholeGroup(H) then
     aug := AugmentedCosetTableMtcInWholeGroup( H );
-    if IsSubset(aug.primaryGeneratorWords,wor) or
-       IsSubset(SecondaryGeneratorWordsAugmentedCosetTable(aug),wor) then
+    if covers(aug) then
       return aug;
     fi;
   fi;
   # try the Rrs table
   aug := AugmentedCosetTableRrsInWholeGroup( H );
-  if IsSubset(aug.primaryGeneratorWords,wor) or
-      IsSubset(SecondaryGeneratorWordsAugmentedCosetTable(aug),wor) then
+  if covers(aug) then
     return aug;
   fi;
 
@@ -303,10 +337,12 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
     app2[3] := -1;
     app2[4] := app2[2];
     if not ApplyRel2( app2, triple[2], triple[1] ) then
-      return fail; # rewriting failed b/c too large exponent
+      # The factor has too large exponents. Do not enter the deduction; the
+      # entry then later gets its own Schreier generator, which gives a
+      # larger but still correct presentation.
+      return;
     fi;
     factors := app2[7];
-#if Length(factors)>0 then Print(Length(factors)," ",Maximum(factors)," ",Minimum(factors),"\n");fi;
 
     # ensure that the scan provided a deduction.
     # if app2[1] - 1 <> app2[3]
@@ -477,12 +513,6 @@ InstallGlobalFunction( AugmentedCosetTableRrs,
     rels := RelatorRepresentatives( grels );
     relsGen := RelsSortedByStartGen( fgens, rels, negTable, true );
     SortRelsSortedByStartGen( relsGen );
-
-    # check the number of columns to be twice the number of generators of
-    # the parent group G.
-    if numcols <> 2 * Length( fgens ) then
-        Error( "parent group and coset table are inconsistent" );
-    fi;
 
     # initialize the tree of secondary generators.
     tree1 := ListWithIdenticalEntries( 100, 0 );
@@ -692,7 +722,7 @@ InstallMethod( AugmentedCosetTableNormalClosure,
     true,
     [ IsSubgroupFpGroup and IsGroupOfFamily, IsSubgroupFpGroup ],
     0,
-function( G, H );
+function( G, H )
 
     if G <> FamilyObj( H )!.wholeGroup then
         Error( "<H> must be a subgroup of <G>" );
@@ -891,17 +921,34 @@ end );
 
 #############################################################################
 ##
-#M  IsStandardized( <costab> ) . . . . .  test if coset table is standardized
+#M  IsStandardized( <costab>[, <standard>] ) . . . . . . . . . . . . . . . . .
+#M  . . . . . . . . . . . . . . . . . . . test if coset table is standardized
 ##
-InstallGlobalFunction( IsStandardized, function ( table )
+##  <standard> is "lenlex" or "semilenlex", as for `StandardizeTable'; the
+##  default is the value of `CosetTableStandard'.
+##
+InstallGlobalFunction( IsStandardized, function ( table, standard... )
 
-    local i, index, j, next;
+    local cols, i, index, j, next;
+
+    if Length( standard ) > 0 then
+        standard := standard[1];
+    else
+        standard := CosetTableStandard;
+    fi;
+    if standard = "lenlex" then
+        cols := [ 1 .. Length( table ) ];
+    elif standard = "semilenlex" then
+        cols := [ 1, 3 .. Length( table ) - 1 ];
+    else
+        Error( "unknown coset table standard" );
+    fi;
 
     index := IndexCosetTab( table );
     j := 1;
     next := 2;
     while next < index do
-        for i in [ 1, 3 .. Length( table ) - 1 ] do
+        for i in cols do
             if table[i][j] >= next then
                 if table[i][j] > next then  return false;  fi;
                 next := next + 1;
@@ -987,13 +1034,15 @@ Error("still record access");
 
 #############################################################################
 ##
-#M  PresentationAugmentedCosetTable( <aug>, <string> [,<print level>] ) . . .
+#M  PresentationAugmentedCosetTable( <aug>, <string> [,<print level>
+#M                                     [,<init images>]] ) . . . . . . . . .
 #M                                                     create a Tietze record
 ##
 ##  'PresentationAugmentedCosetTable'  creates a presentation,  i.e. a Tietze
 ##  record, from the given augmented coset table. It assumes that <aug> is an
 ##  augmented coset table of type 2.  The generators will be named <string>1,
-##  <string>2, ... .
+##  <string>2, ... . If <init images> is `true', generator images are
+##  tracked from the start (see `TzInitGeneratorImages').
 ##
 InstallGlobalFunction( PresentationAugmentedCosetTable,
     function ( arg )
@@ -1145,7 +1194,6 @@ InstallGlobalFunction( PresentationNormalClosureRrs,
             krels,      # relators of normal closure <N>
             K,          # factor group of F isomorphic to G/N
             cosTable,   # coset table of <G> by <N>
-            i,          # loop variable
             aug,        # auxiliary coset table of <G> by <N>
             T;          # resulting Tietze record
 
@@ -1199,18 +1247,9 @@ InstallGlobalFunction( PresentationNormalClosureRrs,
     # determine a set of subgroup relators.
     aug.subgroupRelators := RewriteSubgroupRelators( aug, aug.groupRelators);
 
-    # create a Tietze record for the resulting presentation.
+    # create a Tietze record for the resulting presentation (this also
+    # handles relators of length 1 or 2 and sorts the relators).
     T := PresentationAugmentedCosetTable( aug, string );
-
-    # handle relators of length 1 or 2, but do not eliminate any primary
-    # generators.
-    TzOptions(T).protected := T!.tree[TR_PRIMARY];
-    TzHandleLength1Or2Relators( T );
-    T!.hasRun1Or2:=true;
-    TzOptions(T).protected := 0;
-
-    # sort the relators.
-    TzSort( T );
 
     return T;
 end );
@@ -1257,12 +1296,8 @@ InstallGlobalFunction( PresentationSubgroupRrs, function ( arg )
         # check the given table to be a legal coset table.
         table := H;
         CheckCosetTableFpGroup( G, table );
-        # ensure that it is standardized.
-        if not IsStandardized( table) then Print(
-            "#I  Warning: the given coset table is not standardized,\n",
-            "#I           a standardized copy will be used instead.\n" );
-            StandardizeTable( StructuralCopy( table ) );
-        fi;
+        # (the table need not be standardized, as the RRS method builds its
+        # own spanning tree)
 
         # apply the Reduced Reidemeister-Schreier method to construct an
         # augmented RRS coset table of H.
@@ -1344,7 +1379,6 @@ InstallGlobalFunction( RelatorMatrixAbelianizedNormalClosureRrs,
             krels,      # relators of normal closure <N>
             K,          # factor group of F isomorphic to G/N
             cosTable,   # coset table of <G> by <N>
-            i,          # loop variable
             aug;        # auxiliary coset table of <G> by <N>
 
     # check the arguments to be a finitely presented group and a subgroup of
@@ -1425,12 +1459,8 @@ InstallGlobalFunction( RelatorMatrixAbelianizedSubgroupRrs, function ( G, H )
         # check the given table to be a legal coset table.
         table := H;
         CheckCosetTableFpGroup( G, table );
-        # ensure that it is standardized.
-        if not IsStandardized( table) then Print(
-            "#I  Warning: the given coset table is not standardized,\n",
-            "#I           a standardized copy will be used instead.\n" );
-            StandardizeTable( StructuralCopy( table ) );
-        fi;
+        # (the table need not be standardized, as the RRS method builds its
+        # own spanning tree)
     else
         # construct the coset table of H in G if it is not yet available.
         if not HasCosetTableInWholeGroup( H ) then
@@ -1519,13 +1549,10 @@ InstallGlobalFunction( RenumberTree, function ( aug )
 
         # change the factor table entries accordingly.
         for i in [1..numcols] do
-# --------------
-# obsolete condition: columns should never be equal.
-#            if i mod 2 = 1 or
-#                not IsIdenticalObj( coFacTable[i], coFacTable[i-1] ) then
-if i > 1 and IsIdenticalObj( coFacTable[i], coFacTable[i-1] ) then
-Error( "there is a bug in RenumberTree" ); fi;
-# --------------
+
+        # columns must not be shared, as they are changed in place
+        Assert( 1, i = 1 or
+          not IsIdenticalObj( coFacTable[i], coFacTable[i-1] ) );
             column := coFacTable[i];
             for j in [1..index] do
                 column[j] := convert[null+column[j]];
@@ -2306,7 +2333,7 @@ local ct,c,a,b,offset,x,to,p,dw,doa,aug;
       to[a]:=c;
       if c<>a then
         for x in DATA.A do
-          if ct[x+offset][a]<>0 then;
+          if ct[x+offset][a]<>0 then
             b:=ct[x+offset][a];
             if b=a then b:=c;fi;
             ct[x+offset][c]:=b;
@@ -2325,11 +2352,7 @@ local ct,c,a,b,offset,x,to,p,dw,doa,aug;
         od;
         if dw then
           DATA.with[c]:=DATA.with[a];
-          b:=DATA.from[a];
-          while b<>to[b] do
-            b:=to[b];
-          od;
-          DATA.from[c]:=b;
+          DATA.from[c]:=to[DATA.from[a]];
         fi;
       fi;
     else
@@ -2337,7 +2360,8 @@ local ct,c,a,b,offset,x,to,p,dw,doa,aug;
       while p[b]<>b do
         b:=p[b];
       od;
-      to[a]:=b;
+      # b<a is alive and already renumbered; store its *new* number
+      to[a]:=to[b];
     fi;
   od;
   if purge then
@@ -2359,11 +2383,7 @@ local ct,c,a,b,offset,x,to,p,dw,doa,aug;
 
   if IsBound(DATA.ds) then
     for x in DATA.ds do
-      a:=to[x[1]];
-        while x[1]<>a do
-        x[1]:=a;
-        a:=to[a];
-      od;
+      x[1]:=to[x[1]];
     od;
     Assert(2,Maximum(List(DATA.ds,x->x[1]))<=c);
   fi;
@@ -2408,7 +2428,7 @@ local c,o,n,j,au;
   #if IsBound(DATA.ds) then Add(DATA.ds,[i,a]); fi;
   DATA.defcount:=DATA.defcount+1;
   if IsBound(DATA.with) then
-    if DATA.with[i]=-a then Error("bleh!");fi;
+    Assert(1,DATA.with[i]<>-a);
     DATA.with[n]:=a;
     DATA.from[n]:=i;
   fi;
@@ -2622,8 +2642,9 @@ local MRep,MMerge,ct,offset,l,q,i,c,x,d,p,pp,mu,nu,aug,v,Sekundant;
   od;
 end );
 
-# superseded by kernel function TC_QUICK_SCAN, left here for debugging purposes.
-BindGlobal( "NEWTC_QuickScanLibraryVersion", function(c,offset,alpha,w)
+# superseded by kernel function TC_QUICK_SCAN (same arguments), left here
+# for debugging purposes.
+BindGlobal( "NEWTC_QuickScanLibraryVersion", function(c,offset,alpha,w,result)
 local f,b,r,i,j;
   f:=alpha;i:=1;
   r:=Length(w);
@@ -2634,7 +2655,7 @@ local f,b,r,i,j;
   od;
   if i>r then
     if f<>alpha then
-      w[1]:=i;w[2]:=f;
+      result[1]:=i;result[2]:=f;
       return true;
     fi;
     return false;
@@ -2647,7 +2668,7 @@ local f,b,r,i,j;
     j:=j-1;
   od;
   if j<=i then
-    w[1]:=i;w[2]:=f;w[3]:=j;w[4]:=b;
+    result[1]:=i;result[2]:=f;result[3]:=j;result[4]:=b;
     return true;
   fi;
   return false;
@@ -2802,7 +2823,7 @@ local c,offset,f,b,r,i,j;
       if f<>alpha then
         NEWTC_Coincidence(DATA,f,alpha);
       fi;
-      return;
+      return true;
     fi;
 
     #backward scan
@@ -2818,11 +2839,14 @@ local c,offset,f,b,r,i,j;
       c[w[i]+offset][f]:=b;
       c[-w[i]+offset][b]:=f;
       NEWTC_AddDeduction(DATA.deductions,[f,w[i]]);
-      return;
+      return true;
     else
-      NEWTC_Define(DATA,f,w[i]);
+      if NEWTC_Define(DATA,f,w[i])=fail then
+        return fail;
+      fi;
     fi;
   od;
+  return true;
 end );
 
 BindGlobal( "NEWTC_ModifiedScanAndFill", function(DATA,alpha,w,y)
@@ -2854,7 +2878,7 @@ local c,offset,f,b,r,i,j,fp,bp;
             WordProductLetterRep(-Reversed(fp),y));
         fi;
       fi;
-      return;
+      return true;
     fi;
 
     #backward scan
@@ -2885,11 +2909,14 @@ local c,offset,f,b,r,i,j,fp,bp;
         DATA.aug[-w[i]+offset][b]:=WordProductLetterRep(-Reversed(bp),fp);
       fi;
       NEWTC_AddDeduction(DATA.deductions,[f,w[i]]);
-      return;
+      return true;
     else
-      NEWTC_Define(DATA,f,w[i]);
+      if NEWTC_Define(DATA,f,w[i])=fail then
+        return fail;
+      fi;
     fi;
   od;
+  return true;
 end );
 
 BindGlobal( "NEWTC_ProcessDeductions", function(DATA)
@@ -2935,7 +2962,7 @@ end );
 
 BindGlobal( "NEWTC_DoCosetEnum", function(freegens,freerels,subgens,aug,trace)
 local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,dr,
-  oldead,with,collapse,j,from,pp,PERCFACT,ap,ordertwo;
+  oldead,with,collapse,j,from,pp,PERCFACT,ap,ordertwo,isprefix;
 
   # indicate at what change threshold display of coset Nr. should happen
   PERCFACT:=ValueOption("display");
@@ -2948,7 +2975,6 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,dr,
     Error("noncanonical generator order not yet possible");
   fi;
   offset:=m+1;
-  rels:=ShallowCopy(freerels);
   rels:=Filtered(freerels, x -> Length(x) > 0);
   SortBy(rels,Length);
   ri:=Union(rels,List(rels,x->x^-1));
@@ -3005,7 +3031,7 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,dr,
 
   i:=ValueOption("limit");
   if i<>fail and Int(i)<>fail then
-    DATA.limit:=i;
+    DATA.limit:=Int(i);
   fi;
   DATA.limtrigger:=Int(9/10*DATA.limit);
 
@@ -3056,17 +3082,18 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,dr,
   for w in [1..Length(subgens)] do
     if DATA.augmented then
       if DATA.isCyclicMtcTable then
-        NEWTC_ModifiedScanAndFill(DATA,1,DATA.subgword[w],1);
+        dr:=NEWTC_ModifiedScanAndFill(DATA,1,DATA.subgword[w],1);
       elif DATA.isAbelianizedMtcTable then
         i:=ShallowCopy(DATA.one);
         i[w]:=1;
-        NEWTC_ModifiedScanAndFill(DATA,1,DATA.subgword[w],i);
+        dr:=NEWTC_ModifiedScanAndFill(DATA,1,DATA.subgword[w],i);
       else
-        NEWTC_ModifiedScanAndFill(DATA,1,DATA.subgword[w],[w]);
+        dr:=NEWTC_ModifiedScanAndFill(DATA,1,DATA.subgword[w],[w]);
       fi;
     else
-      NEWTC_ScanAndFill(DATA,1,DATA.subgword[w]);
+      dr:=NEWTC_ScanAndFill(DATA,1,DATA.subgword[w]);
     fi;
+    if dr=fail then return fail;fi;
   od;
 
   NEWTC_ProcessDeductions(DATA);
@@ -3075,9 +3102,7 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,dr,
   # definitions
   if trace<>false then
     for w in trace do
-      if IsList(w[1]) then
-        w:=w[1]; # get word from value
-      fi;
+      w:=w[1]; # entries are pairs [word, count]
       repeat
         i:=1;
         ap:=1;
@@ -3174,9 +3199,9 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,dr,
 
     # conditions for compression: Over half the table used, and
     if 2*DATA.n>DATA.limit and
-      # at least 33% trash (4=1+1/0.33)
+      # more than 25% trash
       ( 4*DATA.dead>DATA.n or
-      # over limtrigger and at least 2% (55=1+1/0.02) trash
+      # over limtrigger and about 2% (1/51) trash
       (51*DATA.dead>DATA.n and DATA.n>DATA.limtrigger) )  then
 
       Info( InfoFpGroup, 2, "\t", DATA.defcount, "\t\t", DATA.dead,
@@ -3204,12 +3229,15 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,dr,
   if Length(collapse)>0 then
     Info(InfoFpGroup,3,DATA.defcount," definitions");
     # which collapses gave at least 1%
-    collapse:=Filtered(collapse,x->x[2]*PERCFACT>DATA.n and not x in trace and
-               # not prefix of any trace
-               not ForAny(trace,y->y[1]{[1..Minimum(Length(x),Length(y[1]))]}=x
-               # or proper prefix of another in collapse
-               and not ForAny(collapse,y->Length(y)>Length(x) and
-                y{[1..Length(x)]}=x)));
+
+    # entries of collapse and of trace are pairs [word, count]
+    isprefix:={u,v}->Length(u)<=Length(v) and v{[1..Length(u)]}=u;
+    collapse:=Filtered(collapse,x->x[2]*PERCFACT>DATA.n
+               # not a prefix of (or equal to) any trace word
+               and not ForAny(trace,y->isprefix(x[1],y[1]))
+               # nor a proper prefix of another word in collapse
+               and not ForAny(collapse,y->Length(y[1])>Length(x[1])
+                                          and isprefix(x[1],y[1])));
     if Length(collapse)>0 then
       # give list for improvement
       # type is c_ollapse
@@ -3247,6 +3275,15 @@ local freegens,freerels,subgens,aug,trace,e,ldc,up,bastime,start,bl,bw,first,tim
     fi;
   elif trace<>false then
     trace:=arg[5];
+  fi;
+  if trace<>false then
+    # entries of trace are pairs [word, count]; also accept plain words
+    trace:=List(trace,function(x)
+      if Length(x)>0 and IsList(x[1]) then
+        return ShallowCopy(x);
+      fi;
+      return [x,0];
+    end);
   fi;
   start:=timerFunc();
 
@@ -3402,7 +3439,8 @@ local p,new,start,half;
   half:=QuoInt(Length(r),2)+1;
   p:=PositionSublist(new,r{[half..Length(r)]});
   if p<>fail and p<half then
-    if new{[1..p-1]}=r{[half-p+1..half-1]}
+    # r must fit into new without its two pieces overlapping
+    if Length(new)>=Length(r) and new{[1..p-1]}=r{[half-p+1..half-1]}
       and new{[Length(new)-half+p+1..Length(new)]}=r{[1..half-p]} then
 
       new:=new{[Length(r)-half+p+1..Length(new)-half+p]};
@@ -3416,13 +3454,20 @@ local p,new,start,half;
     fi;
   fi;
 
-  p:=PositionSublist(new,r{[1..half-1]});
-  if p<>fail and p>=Length(new)-Length(r)+1
-    and new{[p..Length(new)]}=r{[1..Length(new)-p+1]}
-    and p>Length(new)+p-1 and
-    new{[1..Length(r)-Length(new)+p-1]}=r{[Length(new)-p+2..Length(r)]} then
+  # Otherwise, the end of new is a proper prefix of r and the start of new
+  # is the matching suffix of r.
+  if Length(new)>=Length(r) then
+    p:=PositionSublist(new,r{[1..half-1]},Length(new)-Length(r)+1);
+    while p<>fail do
+      if new{[p..Length(new)]}=r{[1..Length(new)-p+1]} and
+        new{[1..Length(r)-Length(new)+p-1]}=r{[Length(new)-p+2..Length(r)]}
+        then
+        new:=new{[Length(r)-Length(new)+p..p-1]};
+        break;
+      fi;
+      p:=PositionSublist(new,r{[1..half-1]},p);
+    od;
 
-    new:=new{[Length(r)-Length(new)+p..p-1]};
   fi;
 
   return new;
@@ -3547,7 +3592,8 @@ local DATA,rels,i,j,k,w,f,r,s,fam,ri,a,offset,rset,re,stack,pres,
     for i in [1..DATA.n] do
       CompletionBar(InfoFpGroup,2,"Coset Loop: ",i/DATA.n);
       for w in DATA.rels do
-        r:=NEWTC_Rewrite(DATA,i,w);
+        # copy, as the result can be identical to an entry of DATA.aug
+        r:=ShallowCopy(NEWTC_Rewrite(DATA,i,w));
         MakeCanonical(r);
 
         ri:=Length(r);
@@ -3568,14 +3614,14 @@ local DATA,rels,i,j,k,w,f,r,s,fam,ri,a,offset,rset,re,stack,pres,
             j:=1;
             while j<=Length(rels) do
               s:=rels[j];
-              for re in rset do;
+              for re in rset do
                 s:=NEWTC_ReplacedStringCyclic(s,re,true);
               od;
               if not IsIdenticalObj(s,rels[j]) then
                 if Length(s)>0 then
                   Add(stack,s);
                 fi;
-                rels:=WordProductLetterRep(rels{[1..j-1]},rels{[j+1..Length(rels)]});
+                Remove(rels,j);
               else
                 j:=j+1;
               fi;
@@ -3722,7 +3768,7 @@ end);
 ##  the default string is `\"_x\"'.
 ##
 InstallGlobalFunction( PresentationSubgroupMtc,function ( arg )
-  local G,H,string,DATA,i;
+local G,H,string,printlevel,DATA,T,i;
 
   # check the first two arguments to be a finitely presented group and a
   # subgroup of that group.
@@ -3737,11 +3783,13 @@ InstallGlobalFunction( PresentationSubgroupMtc,function ( arg )
 
   # initialize the generators name string and the print level.
   string := "_x";
+  printlevel := fail;
 
   # get the optional parameters.
   for i in [ 3 .. 4 ] do
       if Length( arg ) >= i then
-          if IsString( arg[i] ) then string := arg[i];
+          if IsInt( arg[i] ) then printlevel := arg[i];
+          elif IsString( arg[i] ) then string := arg[i];
           else
               Error( "optional parameter must be a string or an integer" );
           fi;
@@ -3755,7 +3803,11 @@ InstallGlobalFunction( PresentationSubgroupMtc,function ( arg )
           # for compatibility, do not try the optimization
           false);
 
-  return NEWTC_PresentationMTC(DATA,0,string);
+  T:=NEWTC_PresentationMTC(DATA,0,string);
+  if printlevel <> fail then
+    TzOptions(T).printLevel:=printlevel;
+  fi;
+  return T;
 end);
 
 
