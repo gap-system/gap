@@ -58,7 +58,7 @@ BIND_GLOBAL( "GAPInfo", rec(
       rec( short:= "h", long := "help", default := false, help := ["print this help and exit"] ),
       rec( long := "version", default := false, help := ["print the GAP version and exit"] ),
       rec( long := "print-gaproot", default := false, help := ["print the primary GAP root and exit"] ),
-      rec( short:= "b", long := "banner", default := false, help := ["disable/enable the banner"] ),
+      rec( short:= "b", long := "banner", default := false, help := ["disable/enable the GAP and package banners"] ),
       rec( short:= "c", default := "", arg := "<expr>", help := [ "execute the expression <expr>"] ),
       rec( long := "systemfile", default := "", arg := "<file>",
            help := [ "read this file after 'lib/system.g'" ] ),
