@@ -51,7 +51,8 @@ InstallMethod(SetName,"set name of indeterminate",
 function(indet,name)
 local c;
   c:=CoefficientsOfLaurentPolynomial(indet);
-  if not Length(c[1])=1 and One(c[1][1])=c[1][1] and c[2]=1 then
+  # only indeterminates get their name set in the family
+  if not (Length(c[1])=1 and IsOne(c[1][1]) and c[2]=1) then
     TryNextMethod();
   fi;
   SetIndeterminateName(FamilyObj(indet),
@@ -1032,7 +1033,7 @@ InstallMethod(\<,"rational functions",IsIdenticalObj,
 ##
 InstallGlobalFunction(ProdCoefRatfun,
 function( coef, ratfun)
-local   fam,  i, extnum,pol;
+local   fam,  i, extnum,pol,ran;
 
   if IsZero(coef) then
     return Zero(ratfun);
@@ -1052,9 +1053,17 @@ local   fam,  i, extnum,pol;
     extnum := ShallowCopy(ExtRepNumeratorRatFun(ratfun));
   fi;
 
-  for i  in [ 2, 4 .. Length(extnum) ]  do
+  flag:=false;
+  ran:=[ 2, 4 .. Length(extnum) ];
+  for i  in ran  do
     extnum[i] := coef * extnum[i];
   od;
+
+  # with zero divisors, products of nonzero elements may be zero
+  if not (IsCyc(coef) or IsFFE(coef)) and fam!.zeroCoefficient in extnum{ran} then
+    extnum:=Concatenation(List(Filtered(i,j->not IsZero(extnum[j])),
+              j->extnum{[j-1,j]}));
+  fi;
 
   # We can do this because a/b is cancelled <=> c*a/b is cancelled
   # where c is a constant.
@@ -1606,8 +1615,8 @@ function(f,ind)
 local d,l;
   d:=DegreeIndeterminate(f,ind);
   l:=LeadingCoefficient(f,ind);
-  if IsZero(l) then
-    return l;
+  if IsZero(l) or d=0 then # degree 0
+    return Zero(l);
   fi;
   d:=(-1)^(d*(d-1)/2)*Resultant(f,Derivative(f,ind),ind)/l;
   return ConstantInBaseRingPol(d,ind);

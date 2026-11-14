@@ -237,7 +237,7 @@ gap> (t^24-u^2)/(t^16-u^4);
 (t^24-u^2)/(t^16-u^4)
 gap> f:=u*(t^24-1);; g:=u^2*(t^16-1);;
 gap> f/g;
-(t^24*u-u)/(t^16*u^2-u^2)
+(t^16+t^8+1)/(t^8*u+u)
 gap> Factors(f);
 [ u, t-1, t+1, t^2+1, t^2-t+1, t^2+t+1, t^4+1, t^4-t^2+1, t^8-t^4+1 ]
 gap> Factors(t^4-u^4);
@@ -261,6 +261,12 @@ gap> TryGcdCancelExtRepPolynomials(fam, ExtRepPolynomialRatFun(t*u), ExtRepPolyn
 [ [ [ 100, 1 ], 1 ], [ [  ], 1 ] ]
 gap> TryGcdCancelExtRepPolynomials(fam, ExtRepPolynomialRatFun(t), ExtRepPolynomialRatFun(u*t));
 [ [ [  ], 1 ], [ [ 101, 1 ], 1 ] ]
+
+# Discriminant
+gap> x:=Indeterminate(Rationals,"x");; y:=Indeterminate(Rationals,"y");;
+gap> z:=Indeterminate(Rationals,"z");;
+gap> Discriminant(y*z+1, x);
+0
 
 #
 gap> STOP_TEST("ratfun.tst");

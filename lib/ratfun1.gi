@@ -448,6 +448,11 @@ local   mons,  cofs,  i,  j,  c,  prd;
     cofs:=[2,4..Length(prd)];
     if not IsOne(c) then
       prd{cofs}:=c*prd{cofs};
+      # with zero divisors, products of nonzero elements may be zero
+      if zero in prd{cofs} then
+        prd:=Concatenation(List(Filtered(cofs,i->prd[i]<>zero),
+               i->prd{[i-1,i]}));
+      fi;
     fi;
     return prd;
   elif Length(z2)=2 and IsList(z2[1]) and Length(z2[1])=0 then
@@ -456,6 +461,11 @@ local   mons,  cofs,  i,  j,  c,  prd;
     cofs:=[2,4..Length(prd)];
     if not IsOne(c) then
       prd{cofs}:=c*prd{cofs};
+      # with zero divisors, products of nonzero elements may be zero
+      if zero in prd{cofs} then
+        prd:=Concatenation(List(Filtered(cofs,i->prd[i]<>zero),
+               i->prd{[i-1,i]}));
+      fi;
     fi;
     return prd;
   fi;
@@ -1361,6 +1371,10 @@ local c,d,i,p;
         # remaining monomial with coefficient
         Append(c,[e[i]{Difference([1..Length(e[i])],[p,p+1])},e[i+1]]);
       fi;
+    elif d=0 then
+      # the monomial does not involve the indeterminate, so it is part of
+      # the leading coefficient as long as no positive degree occurred
+      Append(c,[e[i],e[i+1]]);
     fi;
   od;
   return c;

@@ -1594,9 +1594,10 @@ DeclareGlobalFunction("GcdCoeffs");
 ##  <Ref Attr="CoefficientsOfUnivariateRationalFunction"/> for <A>f</A>.
 ##  <P/>
 ##  Otherwise, each entry of the returned list is equal to <K>fail</K>.
-##  As multivariate gcds are not computed automatically, this may also
-##  happen for a rational function which may be reduced to univariate
-##  (see example).
+##  As the cancellation of multivariate rational functions only uses a
+##  heuristic gcd, this may also happen for a rational function which could
+##  be reduced to a univariate one, for example if its coefficients are very
+##  large (see example).
 ##  <Example><![CDATA[
 ##  gap> UnivariatenessTestRationalFunction( 50-45*x-6*x^2+x^3 );
 ##  [ true, 1, true, [ [ 50, -45, -6, 1 ], 0 ] ]
@@ -1604,7 +1605,8 @@ DeclareGlobalFunction("GcdCoeffs");
 ##  [ true, 2, false, [ [ -6, 1 ], [ 1, 1 ], 2 ] ]
 ##  gap> UnivariatenessTestRationalFunction( (-6*y^2+y^3) / (x+1));
 ##  [ false, fail, false, fail ]
-##  gap> UnivariatenessTestRationalFunction( ((y+2)*(x+1)) / ((y-1)*(x+1)) );
+##  gap> UnivariatenessTestRationalFunction(
+##  >      ((y+2)*(x+10^6000)) / ((y-1)*(x+10^6000)) );
 ##  [ fail, fail, fail, fail ]
 ##  ]]></Example>
 ##  </Description>

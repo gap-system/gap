@@ -178,6 +178,8 @@ DeclareGlobalFunction( "CyclotomicPolynomial" );
 ##  </Item>
 ##  </Enum>
 ##  and <K>false</K> otherwise.
+##  In particular, <K>false</K> is returned if <A>pol</A> is constant
+##  or not all its coefficients lie in <A>F</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

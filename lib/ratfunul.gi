@@ -410,7 +410,7 @@ InstallMethod( \-, "laurent - laurent", IsIdenticalObj,
 ##
 ##
 BindGlobal("ProdCoeffLaurpol",function( coef, laur )
-local   fam, tmp;
+local   fam, tmp, val;
 
   # multiply by zero gives the zero polynomial
   if IsZero(coef) then return Zero(laur);
@@ -420,7 +420,13 @@ local   fam, tmp;
 
   # construct the product and check the valuation in case zero divisors
   tmp := CoefficientsOfLaurentPolynomial(laur);
-  return LaurentPolynomialByExtRepNC(fam,coef*tmp[1], tmp[2],
+  val := tmp[2];
+  tmp := coef*tmp[1];
+  if Length(tmp)>0 and (IsZero(tmp[1]) or IsZero(Last(tmp))) then
+    tmp := ShallowCopy(tmp);
+    val := val+RemoveOuterCoeffs(tmp,fam!.zeroCoefficient);
+  fi;
+  return LaurentPolynomialByExtRepNC(fam,tmp,val,
            IndeterminateNumberOfUnivariateRationalFunction(laur));
 end );
 
@@ -1053,12 +1059,8 @@ local d,i,ind,one,iF;
   fi;
   f:=d;
   d:=[];
-  iF:=Zero(one);
-  if f[2]>0 then
-    for i in [1..f[2]] do iF:=iF+one; od;
-  elif f[2]<0 then
-    for i in [1..-f[2]] do iF:=iF+one; od;
-  fi;
+  # the exponent of the first term, this may be negative
+  iF:=f[2]*one;
   for i in [1..Length(f[1])]  do
     d[i] := iF*f[1][i];
     iF:=iF+one;
@@ -1072,18 +1074,20 @@ RedispatchOnCondition(Derivative,true,
 InstallOtherMethod(Derivative,"uratfun",true,
   [IsUnivariateRationalFunction],0,
 function(ratfun)
-local num,den,R,cf,pow,dr;
+local num,den,R,cf,pow,dr,lc,fac,d,res;
   # try to be good for the case of iterated derivatives by using if the
   # denominator is a power
   num:=NumeratorOfRationalFunction(ratfun);
   den:=DenominatorOfRationalFunction(ratfun);
   R:=CoefficientsRing(DefaultRing([den]));
-  cf:=Collected(Factors(den));
+  # write den=lc*dr^pow with dr monic. Use monic irreducible factors, as
+  # `Factors' puts the leading coefficient into the first factor.
+  lc:=LeadingCoefficient(den);
+  cf:=Collected(List(Factors(den),x->x*Inverse(LeadingCoefficient(x))));
   pow:=Gcd(List(cf,x->x[2]));
-  if pow>1 then
-    dr:=Product(List(cf,x->x[1]^(x[2]/pow))); # root
-  else
-    dr:=den;
+  dr:=Product(List(cf,x->x[1]^(x[2]/pow))); # root
+  if not IsOne(lc) then
+    num:=num*Inverse(lc);
   fi;
   #cf:=(Derivative(num)*dr-num*pow*Derivative(dr))/dr^(pow+1);
   num:=Derivative(num)*dr-num*pow*Derivative(dr);
@@ -1091,17 +1095,23 @@ local num,den,R,cf,pow,dr;
   if IsOne(Gcd(num,dr)) then
     # avoid cancellation
     num:=CoefficientsOfUnivariateLaurentPolynomial(num);
-    den:=CoefficientsOfUnivariateLaurentPolynomial(den);
-    cf:=UnivariateRationalFunctionByExtRepNC(FamilyObj(ratfun),
-      num[1],den[1],num[2]-den[2],
+    d:=CoefficientsOfUnivariateLaurentPolynomial(den);
+    res:=UnivariateRationalFunctionByExtRepNC(FamilyObj(ratfun),
+      num[1],d[1],num[2]-d[2],
         IndeterminateNumberOfUnivariateRationalFunction(ratfun));
-    # maintain factorization of denominator
-    StoreFactorsPol(R,DenominatorOfRationalFunction(cf),
-      ListWithIdenticalEntries(pow+1,dr));
+    # maintain factorization of denominator: these are the irreducible
+    # factors of dr, each with its multiplicity in dr^(pow+1)
+    d:=DenominatorOfRationalFunction(res);
+    if d=den then
+      fac:=Concatenation(List(cf,x->ListWithIdenticalEntries(
+             x[2]/pow*(pow+1),x[1])));
+      Sort(fac);
+      StoreFactorsPol(R,d,fac);
+    fi;
   else
-    cf:=num/den; # cancellation
+    res:=num/den; # cancellation
   fi;
-  return cf;
+  return res;
   #return (Derivative(num)*den-num*Derivative(den))/(den^2);
 end);
 
@@ -1573,8 +1583,9 @@ function(l,r)
 local lc,rc;
   lc:=CoefficientsOfUnivariateRationalFunction(l);
   rc:=CoefficientsOfUnivariateRationalFunction(r);
-  # is the indeterminate important?
-  if (Length(lc[1])>1 or (Length(lc[1])>0 and lc[3]<>0))
+  # is the indeterminate important? It is, unless l is constant (in which
+  # case the comparison of coefficients below is valid for any r)
+  if (Length(lc[1])>1 or Length(lc[2])>1 or (Length(lc[1])>0 and lc[3]<>0))
     and IndeterminateNumberOfUnivariateRationalFunction(l)<>
      IndeterminateNumberOfUnivariateRationalFunction(r) then
     return false;
@@ -1588,7 +1599,7 @@ end);
 ##
 ##
 BindGlobal("ProdCoeffUnivfunc",function( coef, univ )
-local   fam, tmp;
+local   fam, tmp, num, val;
 
   # multiply by zero gives the zero polynomial
   if IsZero(coef) then return Zero(univ);
@@ -1604,7 +1615,17 @@ local   fam, tmp;
   else
     # Here we use ShallowCopy to avoid access errors later when CLONE_OBJ
     # will be called from coef*tmp[1] and will try to modify tmp
-    return UnivariateRationalFunctionByExtRepNC(fam,coef*ShallowCopy(tmp[1]), tmp[2],tmp[3],
+    num:=coef*ShallowCopy(tmp[1]);
+    val:=tmp[3];
+    # with zero divisors, products of nonzero elements may be zero
+    if IsZero(num[1]) or IsZero(Last(num)) then
+      num:=ShallowCopy(num);
+      val:=val+RemoveOuterCoeffs(num,fam!.zeroCoefficient);
+      if Length(num)=0 then
+        return Zero(univ);
+      fi;
+    fi;
+    return UnivariateRationalFunctionByExtRepNC(fam,num, tmp[2],val,
             IndeterminateNumberOfUnivariateRationalFunction(univ));
   fi;
 end );
