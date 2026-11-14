@@ -141,13 +141,13 @@ Two rational functions <A>f</A> and <A>g</A> are equal if the product
 <C>Numerator(<A>g</A>) * Denominator(<A>f</A>)</C>.
 <P/>
 <Example><![CDATA[
-gap> x:=Indeterminate(Rationals,"x");;y:=Indeterminate(Rationals,"y");;
-gap> f:=3+x*y+x^5;;g:=5+x^2*y+x*y^2;;
-gap> a:=g/f;
-(x^2*y+x*y^2+5)/(x^5+x*y+3)
-gap> b:=(g*f)/(f^2);
-(x^2*y+x*y^2+5)/(x^5+x*y+3)
-gap> a=b;
+gap> x:=Indeterminate(Rationals,"x");; y:=Indeterminate(Rationals,"y");;
+gap> z:=Indeterminate(Rationals,"z");; w:=Indeterminate(Rationals,"w");;
+gap> c:=x^9+y^9+z^9+w^9+1;;
+gap> r:=(c*(x+y+z+w+2))/(c*(x-y+3));;
+gap> DenominatorOfRationalFunction(r) = (x-y+3)*c;
+true
+gap> r = (x+y+z+w+2)/(x-y+3);
 true
 ]]></Example>
 <P/>
