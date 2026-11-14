@@ -644,6 +644,14 @@ void RewriteGF2Vec(Obj vec, UInt q)
     // enlarge the bag
     ResizeWordSizedBag(vec, SIZE_VEC8BIT(len, els));
 
+    // the loop below starts at the last byte, which an empty vector lacks
+    if (len == 0) {
+        SET_FIELD_VEC8BIT(vec, q);
+        SET_LEN_VEC8BIT(vec, 0);
+        SET_TYPE_POSOBJ(vec, TypeVec8Bit(q, mut));
+        return;
+    }
+
     settab = SETELT_FIELDINFO_8BIT(info);
     convtab = FELT_FFE_FIELDINFO_8BIT(info);
     zero = convtab[0];

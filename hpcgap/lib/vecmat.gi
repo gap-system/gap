@@ -1339,7 +1339,10 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
     # elements of large finite fields
     #
 
-    if not IS_VECFFE(v) then
+    if IsGF2VectorRep(v) then
+        # the scan below fails for an empty vector
+        common := 2;
+    elif not IS_VECFFE(v) then
         if IsFFECollection(v) then
             # now we might have some elements in a large field representation
             # or possibly a totally bad list
