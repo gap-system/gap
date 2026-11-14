@@ -27,6 +27,9 @@ and sums up each family of cases. Options of `run.py`:
   takes the fastest run.
 - `--timeout SECONDS` is the time limit for each run, 120 by default.
 - `--jobs N` runs N cases at once.
+- `--check` exits with an error unless every case finishes with the result
+  recorded in `expected.json`. `--update` records the results of the run
+  there.
 - `--gaproot DIR --gap EXE` times the library of the GAP root `DIR` with
   the executable `EXE`. That root need neither be built nor contain these
   files, so one built checkout can time others whose kernel is the same.
@@ -87,15 +90,17 @@ which its time can depend a lot.
 
 Every case returns a result that would change if the answer were wrong: the
 order of the group found, or whether the element found does what it should.
-`compare.py` reports results that differ, so the cases are a regression
-test as well.
+`expected.json` holds the result of every case, so with `--check` the
+cases are a regression test as well. `compare.py` reports results that
+differ between two runs.
 
 ## Adding a case
 
 In `cases.g`, call `PBT_SubgroupCases( name, group )` with a function
 returning a permutation group to get the four cases above, or
 `PBT_AddCase( name, setup, run )` for anything else. The comments there
-say more.
+say more. Then run `run.py --filter <name> --update` and make sure that the
+results added to `expected.json` are right.
 
 ## fuzz.g
 

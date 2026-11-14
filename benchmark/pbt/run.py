@@ -26,6 +26,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
+EXPECTED = os.path.join(HERE, "expected.json")
 
 
 def runcase(args, variables, timeout=None):
@@ -61,6 +62,36 @@ def time_case(args, name):
     return case
 
 
+def load_expected():
+    with open(EXPECTED, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def update_expected(cases, names):
+    """Record the results of the cases that finished in expected.json."""
+    expected = load_expected()
+    for name, case in cases.items():
+        if case["status"] == "ok":
+            expected[name] = case["result"]
+    # in the order of cases.g, without cases that no longer exist
+    expected = {name: expected[name] for name in names if name in expected}
+    with open(EXPECTED, "w", encoding="utf-8") as f:
+        json.dump(expected, f, indent=1)
+        f.write("\n")
+
+
+def check_expected(cases):
+    """Print and count the cases whose outcome is not as in expected.json."""
+    expected = load_expected()
+    wrong = 0
+    for name, case in cases.items():
+        got = case["result"] if case["status"] == "ok" else case["status"]
+        if got != expected.get(name):
+            print(f"{name}: expected {expected.get(name)}, got {got}")
+            wrong += 1
+    return wrong
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--gap", default=os.path.join(ROOT, "gap"),
@@ -80,15 +111,20 @@ def main():
                    help="number of GAP processes to run at once (default: 1)")
     p.add_argument("-o", "--output", default="pbt.json", metavar="FILE",
                    help="where to write the results (default: %(default)s)")
+    p.add_argument("--check", action="store_true",
+                   help="fail unless every case finishes with its result in "
+                        "expected.json")
+    p.add_argument("--update", action="store_true",
+                   help="record the results of this run in expected.json")
     args = p.parse_args()
     args.gap = os.path.abspath(args.gap)
     args.gaproot = os.path.abspath(args.gaproot)
 
     out = runcase(args, "PBT_CASE := fail;;")
-    names = re.findall(r"^@CASE\t(.*)$", out, re.MULTILINE)
-    if not names:
+    allnames = re.findall(r"^@CASE\t(.*)$", out, re.MULTILINE)
+    if not allnames:
         sys.exit("cannot list the cases:\n" + out)
-    names = [name for name in names if re.search(args.filter, name)]
+    names = [name for name in allnames if re.search(args.filter, name)]
     if args.list:
         print("\n".join(names))
         return
@@ -115,6 +151,13 @@ def main():
         f.write("\n")
     notok = sum(case["status"] != "ok" for case in cases.values())
     print(f"\n{len(cases)} cases, {notok} not ok; written to {args.output}")
+
+    if args.update:
+        update_expected(cases, allnames)
+    if args.check:
+        wrong = check_expected(cases)
+        if wrong:
+            sys.exit(f"differences from expected.json: {wrong}")
 
 
 if __name__ == "__main__":
