@@ -661,8 +661,11 @@ local dom, o, bl, j, b, allb,newb;
   o:=List(o,Set);
   SortBy(o,Length);
 
-  if Length(dom)*10>Size(G) then
-    # close to regular -- try just one
+  # we want to avoid creating tons of blocks.
+  # number of stabilizer orbits can give an indication of number of blocks
+  b:=Stabilizer(G,o[Length(o)][1]);
+  if Length(Orbits(b,o[Length(o)])>20 then
+    # likely many blocks. Try just one
     b:=Blocks(G,o[Length(o)]);
     if Size(Core(mustfaithful,Stabilizer(mustfaithful,b[1],OnSets)))=1 then
       return b;
