@@ -2360,7 +2360,8 @@ DeclareGlobalFunction( "IrreducibleDifferences" );
 ##  <Ref Func="MinusCharacter"/> and <Ref Func="OrthogonalComponents"/>,
 ##  <Ref Func="SymplecticComponents"/>,
 ##  <Ref Oper="ExteriorPower" Label="for a character"/>,
-##  <Ref Oper="SymmetricPower" Label="for a character"/>.
+##  <Ref Oper="SymmetricPower" Label="for a character"/>,
+##  <Ref Oper="SchurPower"/>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> tbl:= CharacterTable( "A5" );;
@@ -2522,6 +2523,53 @@ DeclareOperation( "ExteriorPower", [ IsClassFunction, IsPosInt ] );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "SymmetricPower", [ IsClassFunction, IsPosInt ] );
+
+
+#############################################################################
+##
+#O  SchurPower( <chi>, <lambda> )
+##
+##  <#GAPDoc Label="SchurPower">
+##  <ManSection>
+##  <Oper Name="SchurPower" Arg='chi, lambda'/>
+##
+##  <Description>
+##  <Index>Schur functor</Index>
+##  <Index>highest weight</Index>
+##  Let <A>chi</A> be a character afforded by a representation <M>\rho</M> of
+##  degree <M>n</M>, and <A>lambda</A> a highest weight of <M>GL(n)</M> over
+##  the complex numbers, that is, a weakly decreasing list of integers.
+##  Zeros at the end of <A>lambda</A> may be omitted;
+##  a negative last entry requires <A>lambda</A> to have length <M>n</M>.
+##  <Ref Oper="SchurPower"/> returns the character afforded by
+##  <M>V_\lambda \circ \rho</M>, where <M>V_\lambda</M> is the irreducible
+##  representation of <M>GL(n)</M> with highest weight <A>lambda</A>.
+##  <P/>
+##  For a partition <A>lambda</A> of <M>k</M>, this is the symmetrization of
+##  <A>chi</A> with the irreducible character of the symmetric group of
+##  degree <M>k</M> labelled by <A>lambda</A>,
+##  see&nbsp;<Ref Oper="Symmetrizations"/>;
+##  it is zero if <A>lambda</A> has more than <M>n</M> nonzero entries.
+##  The computation uses the Jacobi-Trudi formula and does not need the
+##  irreducibles of that symmetric group, so <M>k</M> may be large.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> t:= CharacterTable( "A5" );;
+##  gap> chi:= Irr( t )[2];;
+##  gap> SchurPower( chi, [ 2, 1 ] );
+##  Character( CharacterTable( "A5" ),
+##  [ 8, 0, -1, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ] )
+##  gap> SchurPower( chi, [ 1, 0, -1 ] )
+##  >      = chi * ComplexConjugate( chi ) - TrivialCharacter( t );
+##  true
+##  gap> SchurPower( chi, [ 30, 20, 10 ] )[1];
+##  1331
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "SchurPower", [ IsClassFunction, IsHomogeneousList ] );
 
 
 #############################################################################

@@ -175,6 +175,7 @@ true
 <#Include Label="AntiSymmetricParts">
 <#Include Label="ExteriorPower_character">
 <#Include Label="SymmetricPower_character">
+<#Include Label="SchurPower">
 <#Include Label="OrthogonalComponents">
 <#Include Label="SymplecticComponents">
 
