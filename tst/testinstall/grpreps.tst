@@ -17,6 +17,7 @@ gap> List( res2[2], r -> [ r.field, r.dimension ] );
 [ [ GF(2), 1 ] ]
 
 # Test that the delegation between methods for 'IrreducibleModules' works.
+gap> IrreducibleModules( GroupByGenerators( [], () ), GF(2) );;
 gap> G1:= TrivialGroup();;
 gap> res1:= IrreducibleModules( G1, GF(2), 1 );;
 gap> res1[1] = Pcgs( G1 );
