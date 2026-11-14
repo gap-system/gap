@@ -612,6 +612,18 @@ gap> m;
 [ [ Z(2^2), 0*Z(2), Z(2^2), Z(2^2) ], [ 0*Z(2), Z(2^2), Z(2^2), Z(2^2) ], 
   [ 0*Z(2), Z(2^2), 0*Z(2), 0*Z(2) ], [ Z(2^2), Z(2^2), Z(2^2), Z(2^2) ] ]
 
+# rows compressed over GF(4) stay over GF(4), even with entries in GF(2)
+gap> m := IdentityMat(3, GF(4));;
+gap> List(SemiEchelonMat(m).vectors, ConvertToVectorRep);
+[ 4, 4, 4 ]
+gap> List(SemiEchelonMatTransformation(m).vectors, ConvertToVectorRep);
+[ 4, 4, 4 ]
+gap> mm := SumIntersectionMat(IdentityMat(3, GF(2)){[1, 2]}, m{[2, 3]});
+[ [ [ Z(2)^0, 0*Z(2), 0*Z(2) ], [ 0*Z(2), Z(2)^0, 0*Z(2) ], 
+      [ 0*Z(2), 0*Z(2), Z(2)^0 ] ], [ [ 0*Z(2), Z(2)^0, 0*Z(2) ] ] ]
+gap> List(Concatenation(mm), ConvertToVectorRep);
+[ 4, 4, 4, 4 ]
+
 # TriangulizeMat
 gap> m := [[1, 0, 1, 1], [0, 1, 1, 1], [0, 1, 0, 0], [1, 1, 1, 1]] * Z(4);;
 gap> ConvertToMatrixRepNC(m);;
