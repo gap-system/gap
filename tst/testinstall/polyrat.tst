@@ -12,5 +12,14 @@ gap> ApproximateRoot(2,2,20);
 gap> ApproximateRoot(2,2);
 779770732423810/551381172667677
 
+# scalar times polynomial over a ring with zero divisors
+gap> x:=Indeterminate(Integers mod 4,"x");;
+gap> p:=ZmodnZObj(2,4)*(2*x+1);
+ZmodnZObj(2,4)
+gap> DegreeOfLaurentPolynomial(p);
+0
+gap> R:=Integers mod 6;; x:=Indeterminate(R,"x");; y:=Indeterminate(R,"y");;
+gap> ZmodnZObj(3,6)*(2*x*y+One(R));
+ZmodnZObj(3,6)
 #
 gap> STOP_TEST("polyrat.tst");

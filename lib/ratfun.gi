@@ -1033,7 +1033,7 @@ InstallMethod(\<,"rational functions",IsIdenticalObj,
 ##
 InstallGlobalFunction(ProdCoefRatfun,
 function( coef, ratfun)
-local   fam,  i, extnum,pol,flag;
+local   fam,  i, extnum,pol,ran;
 
   if IsZero(coef) then
     return Zero(ratfun);
@@ -1054,13 +1054,13 @@ local   fam,  i, extnum,pol,flag;
   fi;
 
   flag:=false;
-  for i  in [ 2, 4 .. Length(extnum) ]  do
+  ran:=[ 2, 4 .. Length(extnum) ];
+  for i  in ran  do
     extnum[i] := coef * extnum[i];
-    flag:=flag or fam!.zeroCoefficient=extnum[i];
   od;
 
   # with zero divisors, products of nonzero elements may be zero
-  if flag then
+  if not (IsCyc(coef) or IsFFE(coef)) and fam!.zeroCoefficient in extnum{ran} then
     extnum:=Concatenation(List(Filtered(i,j->not IsZero(extnum[j])),
               j->extnum{[j-1,j]}));
   fi;
