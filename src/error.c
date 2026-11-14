@@ -588,10 +588,15 @@ void RequireArgumentEx(const char * funcname,
         gap_strlcat(msgbuf, " (not the value 'fail')", sizeof(msgbuf));
     else {
         const char * tnam = TNAM_OBJ(op);
+        UInt         tnum = TNUM_OBJ(op);
+        // the names of list and record tnums do not mention mutability
+        if (FIRST_IMM_MUT_TNUM <= tnum && tnum <= LAST_IMM_MUT_TNUM &&
+            !IS_MUTABLE_OBJ(op))
+            gap_strlcat(msgbuf, " (not an immutable %s)", sizeof(msgbuf));
         // heuristic to choose between 'a' and 'an': use 'an' before a vowel
         // and 'a' otherwise; however, that's not always correct, e.g. it is
         // "an FFE", so we add a special case for that as well
-        if (TNUM_OBJ(op) == T_FFE || tnam[0] == 'a' || tnam[0] == 'e' ||
+        else if (tnum == T_FFE || tnam[0] == 'a' || tnam[0] == 'e' ||
             tnam[0] == 'i' || tnam[0] == 'o' || tnam[0] == 'u')
             gap_strlcat(msgbuf, " (not an %s)", sizeof(msgbuf));
         else

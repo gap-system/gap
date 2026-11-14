@@ -28,7 +28,7 @@ Error, You can't make a component object from a boolean or fail
 gap> SET_TYPE_COMOBJ([], fail);
 Error, You can't make a component object from a empty plain list
 gap> SET_TYPE_COMOBJ(MakeImmutable(rec()), fail);
-Error, You can't make a component object from a record (plain,imm)
+Error, You can't make a component object from an immutable record (plain)
 gap> x:=rec();;
 gap> SET_TYPE_COMOBJ(x, t1c);
 <object>
@@ -113,6 +113,15 @@ gap> CLONE_OBJ(x, y);
 gap> x; IsMutable(x);
 [ 2 ]
 false
+#@if not IsHPCGAP
+gap> x := [ [ 1 ] ];;
+gap> CLONE_OBJ(y, x);
+gap> y; IsMutable(y); IsMutable(y[1]); IsIdenticalObj(x[1], y[1]);
+[ [ 1 ] ]
+true
+true
+false
+#@fi
 
 #
 gap> STOP_TEST("kernel/objects.tst");

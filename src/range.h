@@ -47,8 +47,8 @@ Obj NEW_RANGE(Int len, Int low, Int inc);
 */
 EXPORT_INLINE BOOL IS_RANGE(Obj val)
 {
-    return TNUM_OBJ(val) >= T_RANGE_NSORT &&
-           TNUM_OBJ(val) <= T_RANGE_SSORT + IMMUTABLE;
+    UInt tnum = TNUM_OBJ(val);
+    return T_RANGE_NSORT <= tnum && tnum <= T_RANGE_SSORT;
 }
 
 
