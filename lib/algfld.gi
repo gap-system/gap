@@ -122,6 +122,21 @@ function(f,p,check)
   red:=ImmutableMatrix(fam!.baseField,red);
   fam!.reductionMat:=red;
   fam!.prodlen:=Length(red);
+
+  # Over the rationals, products are computed with integer coefficients
+  # (see the multiplication method); for this store the reduction matrix
+  # as an integer matrix and its denominator.
+  fam!.clearDenominators:=IsRationals(f);
+  if fam!.clearDenominators then
+    c:=1;
+    for new in red do
+      for z in new do
+        c:=LcmInt(c,DenominatorRat(z));
+      od;
+    od;
+    fam!.reductionDen:=c;
+    fam!.reductionMatInt:=Immutable(c*red);
+  fi;
   fam!.entryrange:=MakeImmutable([1..deg]);
 
   red:=[];
@@ -480,14 +495,51 @@ end);
 ##
 InstallMethod(\*,"AlgElm*AlgElm",IsIdenticalObj,[IsKroneckerConstRep,IsKroneckerConstRep],0,
 function(x,y)
-local fam,b,i;
+local fam,b,i,u,v,du,dv,den;
   fam:=FamilyObj(x);
-  b:=ProductCoeffs(x![1],y![1]);
-  while Length(b)<fam!.deg do
-    Add(b,fam!.zeroCoefficient);
-  od;
-  b:=b{fam!.entryrange}+b{fam!.mulrange[Length(b)]}*fam!.reductionMat;
-  #d:=ReduceCoeffs(b,fam!.polCoeffs);
+  if fam!.clearDenominators then
+    # Multiplying rationals coefficient by coefficient is slow, as every
+    # product and sum needs a gcd. Instead, scale both factors to integer
+    # coefficients, compute product and reduction with integers, and divide
+    # by the denominator once at the end.
+    u:=x![1];
+    du:=1;
+    for i in u do
+      du:=LcmInt(du,DenominatorRat(i));
+    od;
+    if du<>1 then
+      u:=du*u;
+    fi;
+    v:=y![1];
+    dv:=1;
+    for i in v do
+      dv:=LcmInt(dv,DenominatorRat(i));
+    od;
+    if dv<>1 then
+      v:=dv*v;
+    fi;
+    den:=du*dv;
+    b:=ProductCoeffs(u,v);
+    while Length(b)<fam!.deg do
+      Add(b,0);
+    od;
+    if fam!.reductionDen=1 then
+      b:=b{fam!.entryrange}+b{fam!.mulrange[Length(b)]}*fam!.reductionMatInt;
+    else
+      b:=fam!.reductionDen*b{fam!.entryrange}
+         +b{fam!.mulrange[Length(b)]}*fam!.reductionMatInt;
+      den:=den*fam!.reductionDen;
+    fi;
+    if den<>1 then
+      b:=b/den;
+    fi;
+  else
+    b:=ProductCoeffs(x![1],y![1]);
+    while Length(b)<fam!.deg do
+      Add(b,fam!.zeroCoefficient);
+    od;
+    b:=b{fam!.entryrange}+b{fam!.mulrange[Length(b)]}*fam!.reductionMat;
+  fi;
 
   # check whether we are in the base field
   i:=2;
@@ -1117,17 +1169,18 @@ local coeffring, basring, theta, xind, yind, x, y, coeffs, G, c, val, k, T,
     # Set $G(X,Y) = \sum_{i=0}^m g_i(Y) X^i \in \Q[X,Y]$.
     coeffs:= CoefficientsOfUnivariatePolynomial( U );
 
+    # (coeffs[i] is the coefficient of X^(i-1))
     G:= Zero( basring );
     for i in [ 1 .. Length( coeffs ) ] do
       if IsAlgBFRep( coeffs[i] ) then
-        G:= G + coeffs[i]![1] * x^i;
+        G:= G + coeffs[i]![1] * x^(i-1);
       else
         c:= coeffs[i]![1];
         val:= c[1];
         for j in [ 2 .. Length( c ) ] do
           val:= val + c[j] * y^(j-1);
         od;
-        G:= G + val * x^i;
+        G:= G + val * x^(i-1);
       fi;
     od;
 
