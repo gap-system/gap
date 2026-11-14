@@ -373,11 +373,10 @@ DeclareGlobalFunction("CheckCosetTableFpGroup");
 
 #############################################################################
 ##
-##  <Func Name="IsStandardized" Arg='table[, standard]'/>
+#F  IsStandardized( <table>[, <standard>] )
 ##
 ##  <ManSection>
-##  <Func Name="IsStandardized" Arg='table'/>
-##
+##  <Func Name="IsStandardized" Arg='table[, standard]'/>
 ##  <Description>
 ##  tests whether the coset table <A>table</A> is standardized with respect
 ##  to <A>standard</A>, which is <C>"lenlex"</C> or <C>"semilenlex"</C>
