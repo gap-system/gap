@@ -106,7 +106,7 @@
 ** Store the current state of the profiler
 */
 
-static Obj OutputtedFilenameList;
+static Obj OutputtedFilenameList GAP_GC_GLOBALLY_ROOTED;
 
 struct StatementLocation
 {
@@ -162,7 +162,7 @@ static struct ProfileState
   // a longjmp.
   // We need to store the actual values, as RecursionDepth can increase
   // by more than one when a GAP function is called
-  Obj visitedDepths;
+  Obj visitedDepths GAP_GC_GLOBALLY_ROOTED;
 } profileState;
 
 // Some GAP functionality (such as syntaxtree) evaluates expressions, which makes
@@ -234,13 +234,14 @@ static void CheckLeaveFunctionsAfterLongjmp(void)
 
 // Escape a string for serialization in a JSON file, following the
 // escaping rules laid out at json.org.
-static Obj JsonEscapeString(Obj param)
+static Obj JsonEscapeString(Obj param) GAP_GC_CANSAFEPOINT
 {
     Int lenString = LEN_LIST(param);
 
     // Allocate an output string with twice the size of the input
     // string, as in the worst case every single has to be escaped.
     Obj     copy = NEW_STRING(lenString * 2);
+    GAP_GC_PUSH1(&copy);
     UChar * in = CHARS_STRING(param);
     UChar * base = CHARS_STRING(copy);
     UChar * out = base;
@@ -274,11 +275,12 @@ static Obj JsonEscapeString(Obj param)
 
     SET_LEN_STRING(copy, out - base);
     ResizeBag(copy, SIZEBAG_STRINGLEN(out - base));
+    GAP_GC_POP();
     return copy;
 }
 
 
-static inline void outputFilenameIdIfRequired(UInt id)
+static inline void outputFilenameIdIfRequired(UInt id) GAP_GC_CANSAFEPOINT
 {
     if (id == 0) {
         return;
@@ -302,26 +304,32 @@ static inline UInt getFilenameIdOfCurrentFunction(void)
 }
 
 
-static void HookedLineOutput(Obj func, char type)
+static void HookedLineOutput(Obj func, char type) GAP_GC_CANSAFEPOINT
 {
   HashLock(&profileState);
   if (profileState.status == Profile_Active && profileState.OutputRepeats)
   {
     Obj body = BODY_FUNC(func);
+    Obj name = 0;
+    Obj filename = 0;
+    GAP_GC_PUSH2(&name, &filename);
+
     UInt startline = GET_STARTLINE_BODY(body);
     UInt endline = GET_ENDLINE_BODY(body);
 
-    Obj name = NAME_FUNC(func);
+    name = NAME_FUNC(func);
     if (name) {
         name = JsonEscapeString(name);
     }
 
-    Obj         filename = GET_FILENAME_BODY(body);
+    filename = GET_FILENAME_BODY(body);
     UInt        fileid = GET_GAPNAMEID_BODY(body);
     outputFilenameIdIfRequired(fileid);
     const Char *filename_c = "<missing filename>";
-    if(filename != Fail && filename != NULL)
-        filename_c = CONST_CSTR_STRING(JsonEscapeString(filename));
+    if(filename != Fail && filename != NULL) {
+        filename = JsonEscapeString(filename);
+        filename_c = CONST_CSTR_STRING(filename);
+    }
 
     // Do this here to avoid GCs before string is used
     const Char * name_c = name ? CONST_CSTR_STRING(name) : "nameless";
@@ -341,11 +349,13 @@ static void HookedLineOutput(Obj func, char type)
                                  "\"FileId\":%d}\n",
             type, name_c, (int)startline, (int)endline, filename_c,
             (int)fileid);
+
+    GAP_GC_POP();
   }
   HashUnlock(&profileState);
 }
 
-static void enterFunction(Obj func)
+static void enterFunction(Obj func) GAP_GC_CANSAFEPOINT
 {
 #ifdef HPCGAP
     if (profileState.profiledThread != TLS(threadID))
@@ -356,7 +366,7 @@ static void enterFunction(Obj func)
     HookedLineOutput(func, 'I');
 }
 
-static void leaveFunction(Obj func)
+static void leaveFunction(Obj func) GAP_GC_CANSAFEPOINT
 {
 #ifdef HPCGAP
     if (profileState.profiledThread != TLS(threadID))
@@ -480,6 +490,7 @@ static inline Int8 getTicks(void)
 
 
 static inline void printOutput(int fileid, int line, BOOL exec, BOOL visited)
+    GAP_GC_CANSAFEPOINT
 {
     if (profileState.lastOutputted.line != line ||
         profileState.lastOutputted.fileid != fileid ||
@@ -537,6 +548,7 @@ static inline void printOutput(int fileid, int line, BOOL exec, BOOL visited)
 // visit: Was this statement previously visited (that is, executed)
 static inline void
 outputStat(Int fileid, int line, int type, BOOL exec, BOOL visited)
+    GAP_GC_CANSAFEPOINT
 {
     // Explicitly skip these two cases, as they are often specially handled
     // and also aren't really interesting statements (something else will
@@ -563,6 +575,7 @@ outputStat(Int fileid, int line, int type, BOOL exec, BOOL visited)
 }
 
 static inline void outputInterpretedStat(int fileid, int line, BOOL exec)
+    GAP_GC_CANSAFEPOINT
 {
     CheckLeaveFunctionsAfterLongjmp();
 
@@ -581,7 +594,7 @@ static inline void outputInterpretedStat(int fileid, int line, BOOL exec)
     printOutput(fileid, line, exec, 0);
 }
 
-static void visitStat(Stat stat)
+static void visitStat(Stat stat) GAP_GC_CANSAFEPOINT
 {
 #ifdef HPCGAP
   if (profileState.profiledThread != TLS(threadID))
@@ -602,7 +615,7 @@ static void visitStat(Stat stat)
   }
 }
 
-static void visitInterpretedStat(int fileid, int line)
+static void visitInterpretedStat(int fileid, int line) GAP_GC_CANSAFEPOINT
 {
 #ifdef HPCGAP
     if (profileState.profiledThread != TLS(threadID))
@@ -623,7 +636,7 @@ static void visitInterpretedStat(int fileid, int line)
 ** check we executed something on those lines!
 **/
 
-static void registerStat(int fileid, int line, int type)
+static void registerStat(int fileid, int line, int type) GAP_GC_CANSAFEPOINT
 {
     HashLock(&profileState);
     if (profileState.status == Profile_Active) {
@@ -632,7 +645,7 @@ static void registerStat(int fileid, int line, int type)
     HashUnlock(&profileState);
 }
 
-static void registerInterpretedStat(int fileid, int line)
+static void registerInterpretedStat(int fileid, int line) GAP_GC_CANSAFEPOINT
 {
     HashLock(&profileState);
     if (profileState.status == Profile_Active) {
@@ -719,7 +732,7 @@ static Obj FuncACTIVATE_PROFILING(Obj self,
                                   Obj coverage,
                                   Obj wallTime,
                                   Obj recordMem,
-                                  Obj resolution)
+                                  Obj resolution) GAP_GC_CANSAFEPOINT
 {
     if (profileState.status != Profile_Disabled) {
       return Fail;
@@ -869,7 +882,7 @@ static StructGVarFunc GVarFuncs[] = {
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
@@ -892,7 +905,7 @@ static Int InitKernel (
     return 0;
 }
 
-static Int PostRestore ( StructInitInfo * module )
+static Int PostRestore ( StructInitInfo * module ) GAP_GC_CANSAFEPOINT
 {
     /* When we restore a workspace, we start a new profile.
      * 'OutputtedFilenameList' is the only part of the profile which is

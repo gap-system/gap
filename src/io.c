@@ -48,22 +48,23 @@
 #include <limits.h>
 
 
-static Char GetLine(TypInputFile * input);
-static void PutLine2(TypOutputFile * output, const Char * line, UInt len);
+static Char GetLine(TypInputFile * input) GAP_GC_CANSAFEPOINT;
+static void PutLine2(TypOutputFile * output, const Char * line, UInt len)
+    GAP_GC_CANSAFEPOINT;
 
-static Obj ReadLineFunc;
-static Obj WriteAllFunc;
-static Obj IsInputStringStream;
-static Obj IsOutputStringStream;
-static Obj PositionStream;
-static Obj SeekPositionStream;
+static Obj ReadLineFunc GAP_GC_GLOBALLY_ROOTED;
+static Obj WriteAllFunc GAP_GC_GLOBALLY_ROOTED;
+static Obj IsInputStringStream GAP_GC_GLOBALLY_ROOTED;
+static Obj IsOutputStringStream GAP_GC_GLOBALLY_ROOTED;
+static Obj PositionStream GAP_GC_GLOBALLY_ROOTED;
+static Obj SeekPositionStream GAP_GC_GLOBALLY_ROOTED;
 
 // 'PrintPromptHook' is a GAP-level variable which can be set to a function
 // for printing the GAP prompt. If not bound, 'STATE(Prompt)' is printed.
-static Obj PrintPromptHook = 0;
+static Obj PrintPromptHook GAP_GC_GLOBALLY_ROOTED = 0;
 
-static Obj PrintFormattingStatus;
-static Obj SetPrintFormattingStatus;
+static Obj PrintFormattingStatus GAP_GC_GLOBALLY_ROOTED;
+static Obj SetPrintFormattingStatus GAP_GC_GLOBALLY_ROOTED;
 
 /****************************************************************************
 **
@@ -71,7 +72,7 @@ static Obj SetPrintFormattingStatus;
 **
 **  'FilenameCache' is a list of previously opened filenames.
 */
-static Obj FilenameCache;
+static Obj FilenameCache GAP_GC_GLOBALLY_ROOTED;
 static SymbolTable FilenameSymbolTable;
 
 enum {
@@ -105,8 +106,8 @@ struct IOModuleState {
     // this file.
     DECL_MODULE_STATE TypOutputFile * OutputLog;
 
-    DECL_MODULE_STATE TypOutputFile InputLogFileOrStream;
-    DECL_MODULE_STATE TypOutputFile OutputLogFileOrStream;
+    DECL_MODULE_STATE TypOutputFile InputLogFileOrStream GAP_GC_GLOBALLY_ROOTED;
+    DECL_MODULE_STATE TypOutputFile OutputLogFileOrStream GAP_GC_GLOBALLY_ROOTED;
 
     DECL_MODULE_STATE TypOutputFile DefaultOutput;
 
@@ -123,7 +124,7 @@ struct IOModuleState {
 };
 
 // for debugging from GDB / lldb, we mark this as extern inline
-extern inline struct IOModuleState * IOHelper(void)
+extern inline struct IOModuleState * IOHelper(void) GAP_GC_NOTSAFEPOINT
 {
     return (struct IOModuleState *)StateSlotsAtOffset(IOStateOffset);
 }
@@ -265,11 +266,12 @@ UInt GetInputFilenameID(TypInputFile * input)
 }
 
 static void AddCachedFilename(SymbolTable * symtab, UInt id, Obj name)
+    GAP_GC_CANSAFEPOINT
 {
     AssPlist(FilenameCache, id, name);
 }
 
-Obj GetCachedFilename(UInt id)
+Obj GetCachedFilename(UInt id) GAP_GC_NOTSAFEPOINT GAP_GC_GLOBALLY_ROOTED
 {
     return ELM_PLIST(FilenameCache, id);
 }
@@ -320,6 +322,29 @@ static UInt OpenDefaultOutput(TypOutputFile * output)
   return OpenOutputStream(output, stream);
 }
 #endif
+
+
+/****************************************************************************
+**
+*F  MarkOpenFiles() . . . . . mark the GAP objects held by open input/output
+**
+**  The TypInputFile and TypOutputFile structs almost always live on the C
+**  stack of whoever opened them, so a precise collector cannot find the
+**  objects they hold: a stream, and for input the line most recently read,
+**  which nothing else refers to. They are all reachable from the two stacks
+**  threaded through their prev pointers, so mark them from there. A struct is
+**  linked in only once its Obj fields are set, so walking is safe.
+*/
+void MarkOpenFiles(MarkBagFunc mark)
+{
+    for (TypInputFile * input = IO(Input); input; input = input->prev) {
+        mark(input->stream);
+        mark(input->sline);
+    }
+    for (TypOutputFile * output = IO(Output); output; output = output->prev) {
+        mark(output->stream);
+    }
+}
 
 
 /****************************************************************************
@@ -477,9 +502,12 @@ UInt CloseInput(TypInputFile * input)
         if (input->ptr[0] == '\377' && input->ptr[1] == '\0')
             offset = 0;
         if (offset) {
-            Obj pos = CALL_1ARGS(PositionStream, input->stream);
+            Obj pos = 0;
+            GAP_GC_PUSH1(&pos);
+            pos = CALL_1ARGS(PositionStream, input->stream);
             C_DIFF_FIA(pos, pos, INTOBJ_INT(offset));
             CALL_2ARGS(SeekPositionStream, input->stream, pos);
+            GAP_GC_POP();
         }
     } else {
         // close the input file
@@ -849,9 +877,11 @@ UInt OpenOutput(TypOutputFile * output, const Char * filename, BOOL append)
     memset(output, 0x47, sizeof(TypOutputFile));
 #endif
     output->prev = IO(Output);
-    IO(Output) = output;
     output->isstringstream = FALSE;
     output->stream = 0;
+    // Only now is the struct reachable from IO(Output), and MarkOpenFiles
+    // will read its stream field; it must be set before that, not after.
+    IO(Output) = output;
     output->file = file;
     output->line[0] = '\0';
     output->pos = 0;
@@ -889,9 +919,11 @@ UInt OpenOutputStream(TypOutputFile * output, Obj stream)
     memset(output, 0x47, sizeof(TypOutputFile));
 #endif
     output->prev = IO(Output);
+    output->stream = stream;
+    // See OpenOutput: publish only once stream is set. The call below is a
+    // safepoint, and by then this struct is already on the output stack.
     IO(Output) = output;
     output->isstringstream = (CALL_1ARGS(IsOutputStringStream, stream) == True);
-    output->stream = stream;
     output->file = -1;
     output->line[0] = '\0';
     output->pos = 0;
@@ -983,7 +1015,7 @@ void SetPrompt(const char * prompt)
 **
 *F  GetLine2( <input>, <buffer>, <length> ) . . . . . . . . get a line, local
 */
-static Int GetLine2(TypInputFile * input)
+static Int GetLine2(TypInputFile * input) GAP_GC_CANSAFEPOINT
 {
     Char * buffer = input->line + 1;
     UInt   length = sizeof(input->line) - 1;
@@ -1129,7 +1161,7 @@ static Char GetLine(TypInputFile * input)
 */
 static void PutLine2(TypOutputFile * output, const Char * line, UInt len)
 {
-    Obj str;
+    Obj str = 0;
 
     if (output->isstringstream) {
         // special handling of string streams, where we can copy directly
@@ -1139,8 +1171,10 @@ static void PutLine2(TypOutputFile * output, const Char * line, UInt len)
     }
     else if (output->stream) {
         // delegate to library level
+        GAP_GC_PUSH1(&str);
         str = MakeImmStringWithLen(line, len);
         CALL_2ARGS(WriteAllFunc, output->stream, str);
+        GAP_GC_POP();
     }
     else {
         SyFputs(line, output->file);
@@ -1160,7 +1194,7 @@ static void PutLine2(TypOutputFile * output, const Char * line, UInt len)
 **  'OutputLog' is not 0 and the output file is '*stdout*' or '*errout*'.
 **
 */
-static void PutLineTo(TypOutputFile * stream, UInt len)
+static void PutLineTo(TypOutputFile * stream, UInt len) GAP_GC_CANSAFEPOINT
 {
   PutLine2( stream, stream->line, len );
 
@@ -1236,7 +1270,7 @@ static Int nrLineBreak(TypOutputFile * stream)
 }
 
 
-static void PutChrTo(TypOutputFile * stream, Char ch)
+static void PutChrTo(TypOutputFile * stream, Char ch) GAP_GC_CANSAFEPOINT
 {
   Int                 i, hint, spos;
   Char                str [MAXLENOUTPUTLINE];
@@ -1409,7 +1443,7 @@ static Obj FuncToggleEcho(Obj self)
 **
 **  returns the current `Prompt' as GAP string.
 */
-static Obj FuncCPROMPT(Obj self)
+static Obj FuncCPROMPT(Obj self) GAP_GC_CANSAFEPOINT
 {
   Obj p;
   p = MakeString(STATE(Prompt));
@@ -1463,7 +1497,7 @@ static const char * AllKeywords[] = {
 *F  IsKeyword( )
 **
 */
-static BOOL IsKeyword(const char * str)
+static BOOL IsKeyword(const char * str) GAP_GC_NOTSAFEPOINT
 {
     for (UInt i = 0; i < ARRAY_SIZE(AllKeywords); i++) {
         if (streq(str, AllKeywords[i])) {
@@ -1479,17 +1513,20 @@ static BOOL IsKeyword(const char * str)
 *F  FuncALL_KEYWORDS( )
 **
 */
-static Obj FuncALL_KEYWORDS(Obj self)
+static Obj FuncALL_KEYWORDS(Obj self) GAP_GC_CANSAFEPOINT
 {
-    Obj l = NewEmptyPlist();
+    Obj l = 0, s = 0;
+    GAP_GC_PUSH2(&l, &s);
+    l = NewEmptyPlist();
     for (UInt i = 0; i < ARRAY_SIZE(AllKeywords); i++) {
-        Obj s = MakeImmString(AllKeywords[i]);
+        s = MakeImmString(AllKeywords[i]);
         ASS_LIST(l, i+1, s);
     }
     SortDensePlist(l);
     SET_FILT_LIST(l, FN_IS_HOMOG);
     SET_FILT_LIST(l, FN_IS_SSORT);
     MakeImmutable(l);
+    GAP_GC_POP();
     return l;
 }
 
@@ -1530,10 +1567,11 @@ static inline void FormatOutput(
     void *state, const Char *format, Int arg1, Int arg2 )
 {
   const Char *        p;
-  Obj                 arg1obj;
+  Obj                 arg1obj = 0;
   Int                 prec,  n;
   Char                fill;
 
+  GAP_GC_PUSH1(&arg1obj);
   // loop over the characters of the <format> string
   for ( p = format; *p != '\0'; p++ ) {
 
@@ -1731,6 +1769,7 @@ static inline void FormatOutput(
       // print the identifier
       if ( found_keyword ) {
         put_a_char(state, '\\');
+        arg1 = (Int)CONST_CSTR_STRING(arg1obj);
       }
 
       for ( Int i = 0; ((const Char *)arg1)[i] != '\0'; i++ ) {
@@ -1782,9 +1821,10 @@ static inline void FormatOutput(
 
   }
 
+  GAP_GC_POP();
 }
 
-static void putToTheStream(void *state, Char c)
+static void putToTheStream(void *state, Char c) GAP_GC_CANSAFEPOINT
 {
     PutChrTo((TypOutputFile *)state, c);
 }
@@ -1829,7 +1869,7 @@ void SPrTo(Char *buffer, UInt maxlen, const Char *format, Int arg1, Int arg2)
 }
 
 
-static Obj FuncINPUT_FILENAME(Obj self)
+static Obj FuncINPUT_FILENAME(Obj self) GAP_GC_CANSAFEPOINT
 {
     if (IO(Input) == 0)
         return MakeImmString("*defin*");
@@ -1887,6 +1927,7 @@ static Obj FuncPRINT_FORMATTING_ERROUT(Obj self)
 **  <status>, then call the function <func> with the arguments in <args>.
 */
 static Obj FuncCALL_WITH_FORMATTING_STATUS(Obj self, Obj status, Obj func, Obj args)
+    GAP_GC_CANSAFEPOINT
 {
     RequireTrueOrFalse(SELF_NAME, status);
     RequireSmallList(SELF_NAME, args);
@@ -1898,7 +1939,8 @@ static Obj FuncCALL_WITH_FORMATTING_STATUS(Obj self, Obj status, Obj func, Obj a
     BOOL old = output->format;
     output->format = (status != False);
 
-    Obj result;
+    Obj result = 0;
+    GAP_GC_PUSH1(&result);
     GAP_TRY
     {
         result = CallFuncList(func, args);
@@ -1906,10 +1948,12 @@ static Obj FuncCALL_WITH_FORMATTING_STATUS(Obj self, Obj status, Obj func, Obj a
     GAP_CATCH
     {
         output->format = old;
+        GAP_GC_POP();
         GAP_THROW();
     }
 
     output->format = old;
+    GAP_GC_POP();
     return result;
 }
 
@@ -1959,7 +2003,7 @@ static StructGVarFunc GVarFuncs [] = {
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     InitSymbolTableLibrary(&FilenameSymbolTable, 7079);
     FilenameCache = NEW_PLIST(T_PLIST, 0);
@@ -1971,7 +2015,7 @@ static Int InitLibrary (
 }
 
 static Int InitKernel (
-    StructInitInfo *    module )
+    StructInitInfo *    module ) GAP_GC_CANSAFEPOINT
 {
     IO(Input) = 0;
     IO(Output) = 0;

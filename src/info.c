@@ -33,14 +33,14 @@ enum {
     INFODATA_OUTPUT,
 };
 
-static Obj InfoDecision;
-static Obj IsInfoClassListRep;
-static Obj DefaultInfoHandler;
-static Obj ResetShowUsedInfoClassesHandler;
-static Obj ShowUsedInfoClassesHandler;
+static Obj InfoDecision GAP_GC_GLOBALLY_ROOTED;
+static Obj IsInfoClassListRep GAP_GC_GLOBALLY_ROOTED;
+static Obj DefaultInfoHandler GAP_GC_GLOBALLY_ROOTED;
+static Obj ResetShowUsedInfoClassesHandler GAP_GC_GLOBALLY_ROOTED;
+static Obj ShowUsedInfoClassesHandler GAP_GC_GLOBALLY_ROOTED;
 
 
-static Obj FuncShowUsedInfoClasses(Obj self, Obj choice)
+static Obj FuncShowUsedInfoClasses(Obj self, Obj choice) GAP_GC_CANSAFEPOINT
 {
     RequireTrueOrFalse(SELF_NAME, choice);
 
@@ -135,7 +135,7 @@ static Int InitKernel(StructInitInfo * module)
 **
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-static Int InitLibrary(StructInitInfo * module)
+static Int InitLibrary(StructInitInfo * module) GAP_GC_CANSAFEPOINT
 {
 
     InitGVarFuncsFromTable(GVarFuncs);

@@ -40,14 +40,14 @@
 **  'ObjsChar' contains all the character values.  That way we do not need to
 **  allocate new bags for new characters.
 */
-extern Obj ObjsChar[256];
+extern Obj ObjsChar[256] GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
 **
 *F  CHAR_VALUE( <charObj> )
 */
-EXPORT_INLINE UChar CHAR_VALUE(Obj charObj)
+EXPORT_INLINE UChar CHAR_VALUE(Obj charObj) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(TNUM_OBJ(charObj) == T_CHAR);
     return *(const UChar *)CONST_ADDR_OBJ(charObj);
@@ -58,7 +58,7 @@ EXPORT_INLINE UChar CHAR_VALUE(Obj charObj)
 **
 *F  SET_CHAR_VALUE( <charObj>, <c> )
 */
-EXPORT_INLINE void SET_CHAR_VALUE(Obj charObj, UChar c)
+EXPORT_INLINE void SET_CHAR_VALUE(Obj charObj, UChar c) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(TNUM_OBJ(charObj) == T_CHAR);
     *(UChar *)ADDR_OBJ(charObj) = c;
@@ -71,7 +71,7 @@ EXPORT_INLINE void SET_CHAR_VALUE(Obj charObj, UChar c)
 **
 **  'SINT_CHAR' converts the character a (a UInt1) into a signed (C) integer.
 */
-EXPORT_INLINE Int SINT_CHAR(UInt1 a)
+EXPORT_INLINE Int SINT_CHAR(UInt1 a) GAP_GC_NOTSAFEPOINT
 {
     return a < 128 ? (Int)a : (Int)a-256;
 }
@@ -83,7 +83,7 @@ EXPORT_INLINE Int SINT_CHAR(UInt1 a)
 **
 **  'CHAR_SINT' converts the signed (C) integer n into an (UInt1) character.
 */
-EXPORT_INLINE UInt1 CHAR_SINT(Int n)
+EXPORT_INLINE UInt1 CHAR_SINT(Int n) GAP_GC_NOTSAFEPOINT
 {
     return (UInt1)(n >= 0 ? n : n+256);
 }
@@ -98,7 +98,7 @@ EXPORT_INLINE UInt1 CHAR_SINT(Int n)
 **
 *F  IS_STRING_REP( <list> ) . . . . . . . .  check if <list> is in string rep
 */
-EXPORT_INLINE BOOL IS_STRING_REP(Obj list)
+EXPORT_INLINE BOOL IS_STRING_REP(Obj list) GAP_GC_NOTSAFEPOINT
 {
     return (T_STRING <= TNUM_OBJ(list) &&
             TNUM_OBJ(list) <= T_STRING_SSORT + IMMUTABLE);
@@ -110,7 +110,7 @@ EXPORT_INLINE BOOL IS_STRING_REP(Obj list)
 *F  SIZEBAG_STRINGLEN( <len> ) . . . . size of Bag for string of length <len>
 **
 */
-EXPORT_INLINE UInt SIZEBAG_STRINGLEN(UInt len)
+EXPORT_INLINE UInt SIZEBAG_STRINGLEN(UInt len) GAP_GC_NOTSAFEPOINT
 {
     return len + 1 + sizeof(UInt);
 }
@@ -129,25 +129,25 @@ EXPORT_INLINE UInt SIZEBAG_STRINGLEN(UInt len)
 **  GET_LEN_STRING.
 */
 
-EXPORT_INLINE Char * CSTR_STRING(Obj list)
+EXPORT_INLINE Char * CSTR_STRING(Obj list) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_STRING_REP(list));
     return (Char *)ADDR_OBJ(list) + sizeof(UInt);
 }
 
-EXPORT_INLINE const Char * CONST_CSTR_STRING(Obj list)
+EXPORT_INLINE const Char * CONST_CSTR_STRING(Obj list) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_STRING_REP(list));
     return (const Char *)CONST_ADDR_OBJ(list) + sizeof(UInt);
 }
 
-EXPORT_INLINE UChar * CHARS_STRING(Obj list)
+EXPORT_INLINE UChar * CHARS_STRING(Obj list) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_STRING_REP(list));
     return (UChar *)ADDR_OBJ(list) + sizeof(UInt);
 }
 
-EXPORT_INLINE const UChar * CONST_CHARS_STRING(Obj list)
+EXPORT_INLINE const UChar * CONST_CHARS_STRING(Obj list) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_STRING_REP(list));
     return (const UChar *)CONST_ADDR_OBJ(list) + sizeof(UInt);
@@ -160,7 +160,7 @@ EXPORT_INLINE const UChar * CONST_CHARS_STRING(Obj list)
 **  'GET_LEN_STRING' returns the length of the string <list>, as a C integer.
 */
 
-EXPORT_INLINE UInt GET_LEN_STRING(Obj list)
+EXPORT_INLINE UInt GET_LEN_STRING(Obj list) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_STRING_REP(list));
     return INT_INTOBJ(CONST_ADDR_OBJ(list)[0]);
@@ -173,7 +173,7 @@ EXPORT_INLINE UInt GET_LEN_STRING(Obj list)
 **  'SET_LEN_STRING' sets length of the string <list> to C integer <len>.
 */
 
-EXPORT_INLINE void SET_LEN_STRING(Obj list, Int len)
+EXPORT_INLINE void SET_LEN_STRING(Obj list, Int len) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_STRING_REP(list));
     GAP_ASSERT(len >= 0);
@@ -189,7 +189,7 @@ EXPORT_INLINE void SET_LEN_STRING(Obj list, Int len)
 **  sets its length to len.
 **
 */
-Obj NEW_STRING(Int len);
+Obj NEW_STRING(Int len) GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
@@ -200,9 +200,9 @@ Obj NEW_STRING(Int len);
 **
 */
 
-Int GrowString(Obj list, UInt need);
+Int GrowString(Obj list, UInt need) GAP_GC_CANSAFEPOINT;
 
-EXPORT_INLINE void GROW_STRING(Obj list, Int len)
+EXPORT_INLINE void GROW_STRING(Obj list, Int len) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(IS_STRING_REP(list));
     GAP_ASSERT(len >= 0);
@@ -217,7 +217,7 @@ EXPORT_INLINE void GROW_STRING(Obj list, Int len)
 **
 **  'SHRINK_STRING' gives back not needed memory allocated by string.
 */
-EXPORT_INLINE void SHRINK_STRING(Obj list)
+EXPORT_INLINE void SHRINK_STRING(Obj list) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(IS_STRING_REP(list));
     ResizeBag(list, SIZEBAG_STRINGLEN(GET_LEN_STRING((list))));
@@ -231,7 +231,7 @@ EXPORT_INLINE void SHRINK_STRING(Obj list)
 **  It assumes that the data area in <str> is large enough. It does not add
 **  a terminating null character and not change the length of the string.
 */
-EXPORT_INLINE void COPY_CHARS(Obj str, const UChar * pnt, Int n)
+EXPORT_INLINE void COPY_CHARS(Obj str, const UChar * pnt, Int n) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_STRING_REP(str));
     GAP_ASSERT(n >= 0);
@@ -293,7 +293,7 @@ BOOL IsString(Obj obj);
 **  'CopyToStringRep' copies the string <string> to a new mutable string in
 **  string representation.
 */
-Obj CopyToStringRep(Obj string);
+Obj CopyToStringRep(Obj string) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -304,7 +304,7 @@ Obj CopyToStringRep(Obj string);
 **  equal to <string>. This may return <string> if it already satisfies these
 **  criteria.
 */
-Obj ImmutableString(Obj string);
+Obj ImmutableString(Obj string) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -313,7 +313,7 @@ Obj ImmutableString(Obj string);
 **
 **  'ConvString' converts the string <string> to string representation.
 */
-void ConvString(Obj string);
+void ConvString(Obj string) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -324,7 +324,7 @@ void ConvString(Obj string);
 **  otherwise.   If <obj> is a  string it  changes  its representation to the
 **  string representation.
 */
-BOOL IsStringConv(Obj obj);
+BOOL IsStringConv(Obj obj) GAP_GC_CANSAFEPOINT;
 
 
 // Functions to create mutable and immutable GAP strings from C strings.
@@ -332,18 +332,19 @@ BOOL IsStringConv(Obj obj);
 // away for constant strings.
 
 EXPORT_INLINE Obj MakeStringWithLen(const char * buf, size_t len)
+    GAP_GC_CANSAFEPOINT
 {
     Obj result = NEW_STRING(len);
     memcpy(CHARS_STRING(result), buf, len);
     return result;
 }
 
-EXPORT_INLINE Obj MakeString(const char * cstr)
+EXPORT_INLINE Obj MakeString(const char * cstr) GAP_GC_CANSAFEPOINT
 {
     return MakeStringWithLen(cstr, strlen(cstr));
 }
 
-EXPORT_INLINE Obj MakeImmString(const char * cstr)
+EXPORT_INLINE Obj MakeImmString(const char * cstr) GAP_GC_CANSAFEPOINT
 {
     Obj result = MakeString(cstr);
     MakeImmutableNoRecurse(result);
@@ -351,6 +352,7 @@ EXPORT_INLINE Obj MakeImmString(const char * cstr)
 }
 
 EXPORT_INLINE Obj MakeImmStringWithLen(const char * buf, size_t len)
+    GAP_GC_CANSAFEPOINT
 {
     Obj result = MakeStringWithLen(buf, len);
     MakeImmutableNoRecurse(result);
@@ -365,7 +367,7 @@ EXPORT_INLINE Obj MakeImmStringWithLen(const char * buf, size_t len)
 **  'AppendCStr' appends <len> bytes of data taken from <buf> to <str>, where
 **  <str> must be a mutable GAP string object.
 */
-void AppendCStr(Obj str, const char * buf, UInt len);
+void AppendCStr(Obj str, const char * buf, UInt len) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -375,7 +377,7 @@ void AppendCStr(Obj str, const char * buf, UInt len);
 **  'AppendString' appends <str2> to the end of <str1>. Both <str1> and <str>
 **  must be a GAP string objects, and <str1> must be mutable.
 */
-void AppendString(Obj str1, Obj str2);
+void AppendString(Obj str1, Obj str2) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
