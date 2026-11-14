@@ -819,6 +819,63 @@ local m, fact, fg, reps, ma, idx, nm, embs, proj, kproj, k, ag, agl, ug,
   return m;
 end);
 
+# Twisted wreath
+BindGlobal("MaxesType5",function(w,g,a,t,n,donorm)
+local id,h,iso,ids,nr;
+  # special treatment for the transitive groups of degree 30, that have a
+  # a5^6 socle. Use pretabulated data about the subgroups
+  if n=6 and Size(Socle(a))=60 then
+    ids:=[ 5499, 5500, 5537, 5538, 5539, 5540, 5579, 5580, 5583, 5613,
+            5614, 5615, 5640, 5648, 5662, 5663, 5664, 5668, 5671, 5678,
+            5679, 5680, 5685 ];
+    if Length(Orbit(g,1))=30 and NrMovedPoints(g)=30 then
+      id:=TransitiveIdentification(g);
+      h:=TransitiveGroup(30,id);
+      if id in ids and not id in [5583,5613] then
+        iso:=IdentityMapping(h); # no groups, just some map
+      else
+        iso:=IsomorphismGroups(g,h);
+      fi;
+    else
+      iso:=fail;
+      nr:=0;
+      while iso=fail and nr<Length(ids) do
+        nr:=nr+1;
+        id:=ids[nr];
+        h:=TransitiveGroup(30,id);
+        iso:=IsomorphismGroups(g,h);
+      od;
+    fi;
+
+    if iso<>fail then
+      if id=5583 then
+        # 5583
+        h:=[ Group([ (1,3,5,4,2)(6,14,18,21,30)(7,12,20,22,29)(8,11,16,24,28)
+        (9,13,17,25,27)(10,15,19,23,26), (1,17,10,30)(2,19,9,28)(3,16,6,29)
+        (4,20,7,27)(5,18,8,26)(11,25,13,22)(12,21,15,24)(14,23) ]),
+    Group([ (1,8,2,9)(3,10,5,6)(4,7)(11,17,22,30)(12,16,21,28)(13,18,25,27)
+        (14,19,24,29)(15,20,23,26), (1,22,9,18,12)(2,21,10,16,15)(3,24,7,20,11)
+        (4,25,6,17,14)(5,23,8,19,13)(26,30,27,28,29) ]) ];
+      elif id=5613 then
+        #5613
+        h:=[ Group([ (1,15,16,29,9,22)(2,14,17,27,10,25)(3,12,20,30,8,23)
+        (4,11,19,28,6,21)(5,13,18,26,7,24), (1,23,14,8)(2,25,12,7)(3,24,11,9)
+        (4,22,15,6)(5,21,13,10)(16,28,18,30)(17,26,20,27)(19,29) ]),
+    Group([ (1,14,19,28,10,22)(2,12,18,26,7,25)(3,13,17,27,8,24)
+        (4,15,20,30,6,23)(5,11,16,29,9,21), (1,23,12,8)(2,24,13,7)(3,22,11,10)
+        (4,25,15,9)(5,21,14,6)(16,30,19,29)(17,26,20,28)(18,27) ]) ];
+      elif id in ids then
+        h:=[]; # the other groups in deg 30 don't have any type 5 maxes
+      else
+        Error("should not happen");
+      fi;
+      return List(h,x->PreImage(iso,x));
+    fi;
+
+  fi;
+  Error("Maxes type 5 not yet done");
+end);
+
 InstallGlobalFunction(DoMaxesTF,function(arg)
 local G,types,ff,maxes,lmax,q,d,dorb,dorbt,i,dorbc,dorba,dn,act,comb,smax,soc,
   a1emb,a2emb,anew,wnew,e1,e2,emb,a1,a2,mm;
@@ -940,9 +997,13 @@ local G,types,ff,maxes,lmax,q,d,dorb,dorbt,i,dorbc,dorba,dn,act,comb,smax,soc,
         if Length(dorb[dn])>5
            and not IsSolvableGroup(Action(q,d{dorb[dn]}))
            and "5" in types then
-          # Twisted wreath product (TW)
           if not ValueOption("cheap")=true then
-            Error("Type 5 not yet implemented");
+            # Twisted wreath product (TW)
+            lmax:=MaxesType5(act[1],Image(act[2],q),act[3],act[4],act[5],true);
+            Info(InfoLattice,1,Length(lmax)," type 3b maxes");
+            lmax:=List(lmax,x->PreImage(act[2],x));
+            for mm in lmax do mm!.type:="3b";od;
+            Append(maxes,lmax);
           fi;
         fi;
 
