@@ -71,5 +71,16 @@ gap> r := ConjugatorPermGroup(SymmetricGroup(24), G, H);;
 gap> G^r = H;
 true
 
+# the normalizer of the action on blocks restricts the images of the blocks
+gap> G := Group((1,2,3,4,5,6,7,8,9,10,11,12,13),
+>              (2,3,5,9,4,7,13,12,10,6,11,8));;
+gap> G := WreathProduct(Group((1,2)), G);;
+gap> Size(NormalizerPermGroup(SymmetricGroup(26), G)) = Size(G);
+true
+gap> H := G^(1,3,7)(2,25)(5,20,11,9);;
+gap> r := ConjugatorPermGroup(SymmetricGroup(26), G, H);;
+gap> G^r = H;
+true
+
 #
 gap> STOP_TEST("stbcbckt.tst");
