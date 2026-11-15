@@ -1326,6 +1326,9 @@ end;
 
 BindGlobal( "DEGREE_INDET_EXTREP_POL", function(e,ind)
 local d,i,j;
+  if IsEmpty(e) then
+    return DEGREE_ZERO_LAURPOL;
+  fi;
   e:=Filtered(e,IsList);
   d:=0; #the maximum degree so far
   for i in e do
