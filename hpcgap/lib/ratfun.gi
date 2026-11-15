@@ -57,6 +57,7 @@ InstallMethod(SetName,"set name of indeterminate",
 function(indet,name)
 local c;
   c:=CoefficientsOfLaurentPolynomial(indet);
+  # only indeterminates get their name set in the family
   if not (Length(c[1])=1 and IsOne(c[1][1]) and c[2]=1) then
     TryNextMethod();
   fi;
@@ -1619,8 +1620,8 @@ function(f,ind)
 local d,l;
   d:=DegreeIndeterminate(f,ind);
   l:=LeadingCoefficient(f,ind);
-  if IsZero(l) then
-    return l;
+  if IsZero(l) or d=0 then # degree 0
+    return Zero(l);
   fi;
   d:=(-1)^(d*(d-1)/2)*Resultant(f,Derivative(f,ind),ind)/l;
   return ConstantInBaseRingPol(d,ind);
