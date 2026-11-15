@@ -21,5 +21,13 @@ gap> DegreeOfLaurentPolynomial(p);
 gap> R:=Integers mod 6;; x:=Indeterminate(R,"x");; y:=Indeterminate(R,"y");;
 gap> ZmodnZObj(3,6)*(2*x*y+One(R));
 ZmodnZObj(3,6)
+
+# Discriminant of a polynomial not involving the indeterminate. Not over
+# Rationals: earlier tests mark its zero polynomial univariate, which hides
+# the bug.
+gap> x:=Indeterminate(GF(1009),1);; y:=Indeterminate(GF(1009),2);;
+gap> Discriminant(x*y+1, 3);
+0*Z(1009)
+
 #
 gap> STOP_TEST("polyrat.tst");

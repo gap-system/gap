@@ -142,7 +142,7 @@ Two rational functions <A>f</A> and <A>g</A> are equal if the product
 <P/>
 <Example><![CDATA[
 gap> x:=Indeterminate(Rationals,"x");; y:=Indeterminate(Rationals,"y");;
-gap> z:=Indeterminate(Rationals,"z");; w:=Indeterminate(Rationals,"w");;
+gap> z:=Indeterminate(Rationals,100);; w:=Indeterminate(Rationals,101);;
 gap> c:=x^9+y^9+z^9+w^9+1;;
 gap> r:=(c*(x+y+z+w+2))/(c*(x-y+3));;
 gap> DenominatorOfRationalFunction(r) = (x-y+3)*c;

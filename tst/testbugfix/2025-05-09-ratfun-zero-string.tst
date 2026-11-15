@@ -4,3 +4,7 @@ gap> a := (x1*x2)/(x1*x3) - x2/x3;
 0
 gap> String(a);
 "0"
+gap> b := RationalFunctionByExtRep(FamilyObj(x1), [], [[1,1],1]);
+0/x1
+gap> String(b);
+"0/x1"
