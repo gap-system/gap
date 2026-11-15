@@ -1053,7 +1053,6 @@ local   fam,  i, extnum,pol,ran;
     extnum := ShallowCopy(ExtRepNumeratorRatFun(ratfun));
   fi;
 
-  flag:=false;
   ran:=[ 2, 4 .. Length(extnum) ];
   for i  in ran  do
     extnum[i] := coef * extnum[i];
@@ -1061,7 +1060,7 @@ local   fam,  i, extnum,pol,ran;
 
   # with zero divisors, products of nonzero elements may be zero
   if not (IsCyc(coef) or IsFFE(coef)) and fam!.zeroCoefficient in extnum{ran} then
-    extnum:=Concatenation(List(Filtered(i,j->not IsZero(extnum[j])),
+    extnum:=Concatenation(List(Filtered(ran,j->not IsZero(extnum[j])),
               j->extnum{[j-1,j]}));
   fi;
 
