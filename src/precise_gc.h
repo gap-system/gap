@@ -34,13 +34,11 @@
  *
  *   __clang_gcanalyzer__      Julia's GCChecker plugin. It checks that a value
  *                             the GC manages is reachable from a root whenever
- *                             a collection could happen. Run it with
- *                             dev/run-julia-gc-analyzer.sh.
+ *                             a collection could happen.
  *
  *   __clang_safetyanalysis__  Clang Thread Safety Analysis, the counterpart to
  *                             Julia's `make -C src safesrc`. It checks the
- *                             safepoint annotations against each other. Run it
- *                             with dev/run-safepoint-check.sh.
+ *                             safepoint annotations against each other.
  *
  * The two have opposite defaults, which is the main thing to keep straight:
  *
@@ -55,9 +53,9 @@
  * The two must never appear on the same declaration: if the safety analysis
  * asks for GAP_GC_CANSAFEPOINT somewhere that already promises
  * GAP_GC_NOTSAFEPOINT, one of the two is wrong, and adding the second only
- * hides which. See the panic path in "system.h" for the third option: a
- * function that never returns can promise callers no safepoint while its own
- * body opts out of the analysis with GAP_GC_NO_SAFEPOINT_ANALYSIS.
+ * hides which. A third option suits a function that never returns: it can
+ * promise callers no safepoint while its own body opts out of the analysis
+ * with GAP_GC_NO_SAFEPOINT_ANALYSIS.
  *
  *
  *  Where an annotation goes
@@ -76,9 +74,8 @@
  * Put the annotation on a function's FIRST declaration, normally the one in
  * the header. Clang silently ignores an annotation that appears only on a
  * later declaration, so one written on the definition of a function declared
- * in a header does nothing at all, and the mistake is invisible. The
- * julia-first-decl-annotations clang-tidy check catches this; see
- * dev/julia-gc-handoff.md for how to run it.
+ * in a header does nothing at all, and the mistake is invisible. Julia's
+ * julia-first-decl-annotations clang-tidy check catches this.
  *
  *
  *  Rooting, in one example
