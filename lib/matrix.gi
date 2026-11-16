@@ -2730,7 +2730,8 @@ BindGlobal("DoSemiEchelonMatTransformationDestructive", function(f, mat )
 
     T         := IdentityMat( nrows, f );
     if IsMatrixObj(mat) then
-      T:=Matrix(f,T);
+      # 'Matrix(f,T)' would be compressed for small fields
+      T:=Matrix(T,mat);
     fi;
     coeffs    := [];
     relations := [];
