@@ -544,6 +544,8 @@ written over this field.
 The following operations are mainly intended for matrices
 written over finite fields.
 
+<#Include Label="IsGF2MatrixRep">
+<#Include Label="Is8BitMatrixRep">
 <#Include Label="ImmutableMatrix">
 <#Include Label="ConvertToMatrixRep">
 <#Include Label="ProjectiveOrder">

@@ -980,7 +980,7 @@ end);
 ##
 #M  ZeroVector( len, <vector> )
 ##
-InstallMethod( ZeroVector, "for an int and an 8bit vector",
+InstallOtherMethod( ZeroVector, "for an int and an 8bit vector",
   [IsInt, Is8BitVectorRep],
   function( len, v )
     local w;
@@ -1002,7 +1002,7 @@ InstallMethod( ZeroVector, "for an int and an 8bit matrix",
 ##
 ##  Stuff to adhere to new vector/matrix interface:
 ##
-InstallMethod( BaseDomain, "for an 8bit vector",
+InstallOtherMethod( BaseDomain, "for an 8bit vector",
   [ Is8BitVectorRep ], function( v ) return GF(Q_VEC8BIT(v)); end );
 InstallMethod( BaseDomain, "for an 8bit matrix",
   [ Is8BitMatrixRep ], function( m ) return GF(Q_VEC8BIT(m[1])); end );
@@ -1012,7 +1012,7 @@ InstallMethod( NumberRows, "for an 8bit matrix",
 InstallMethod( NumberColumns, "for an 8bit matrix",
   [ Is8BitMatrixRep ], function( m ) return Length(m[1]); end );
 # FIXME: this breaks down for matrices with 0 rows
-InstallMethod( Vector, "for a plist of finite field elements and an 8bitvector",
+InstallOtherMethod( Vector, "for a plist of finite field elements and an 8bitvector",
   [ IsList and IsFFECollection, Is8BitVectorRep ],
   function( l, v )
     local r;
@@ -1021,7 +1021,24 @@ InstallMethod( Vector, "for a plist of finite field elements and an 8bitvector",
     return r;
   end );
 
-InstallMethodWithRandomSource( Randomize,
+# The generic methods for these require 'IsVectorObj'.
+InstallOtherMethod( Vector, "for a list and an 8bit vector",
+  [ IsList, Is8BitVectorRep ],
+  { l, v } -> NewVector( Is8BitVectorRep, BaseDomain( v ), l ) );
+
+InstallOtherMethod( Vector, "for a vector object and an 8bit vector",
+  [ IsVectorObj, Is8BitVectorRep ],
+  { w, v } -> NewVector( Is8BitVectorRep, BaseDomain( v ), Unpack( w ) ) );
+
+InstallOtherMethod( StandardBasisVector,
+  "for a length, an 8bit vector, and a position",
+  [ IsPosInt, Is8BitVectorRep, IsPosInt ],
+  { len, v, i } -> StandardBasisVector( Is8BitVectorRep, BaseDomain( v ), len, i ) );
+
+# 'List( v )' is a plain list, as for a plain list <v>
+InstallOtherMethod( ListOp, "for an 8bit vector", [ Is8BitVectorRep ], Unpack );
+
+InstallOtherMethodWithRandomSource( Randomize,
     "for a random source and a mutable 8bit vector",
     [ IsRandomSource, Is8BitVectorRep and IsMutable ],
   function( rs, v )
@@ -1090,7 +1107,7 @@ InstallMethodWithRandomSource( Randomize,
 InstallMethod( Unpack, "for an 8bit matrix",
   [Is8BitMatrixRep],
   m -> List( m, Unpack ) );
-InstallMethod( Unpack, "for an 8bit vector",
+InstallOtherMethod( Unpack, "for an 8bit vector",
   [Is8BitVectorRep],
   function( v )
     # converting a copy in the kernel is much faster than 'PlainListCopy',
@@ -1124,7 +1141,7 @@ InstallOtherMethod( KroneckerProduct, "for two 8bit matrices",
     return kroneckerproduct;
   end );
 
-InstallMethod( ConstructingFilter, "for an 8bit vector",
+InstallOtherMethod( ConstructingFilter, "for an 8bit vector",
   [ Is8BitVectorRep ], function(v) return Is8BitVectorRep; end );
 InstallMethod( ConstructingFilter, "for an 8bit matrix",
   [ Is8BitMatrixRep ], function(v) return Is8BitMatrixRep; end );
@@ -1209,7 +1226,7 @@ InstallTagBasedMethod( NewZeroMatrix,
     return m;
   end );
 
-InstallMethod( ChangedBaseDomain, "for an 8bit vector and a finite field",
+InstallOtherMethod( ChangedBaseDomain, "for an 8bit vector and a finite field",
   [ Is8BitVectorRep, IsField and IsFinite ],
   function( v, f )
     local w;
@@ -1242,13 +1259,13 @@ InstallMethod( CompatibleVectorFilter,
     [ Is8BitMatrixRep ],
     M -> Is8BitVectorRep );
 
-InstallMethod( WeightOfVector, "for an 8bit vector",
+InstallOtherMethod( WeightOfVector, "for an 8bit vector",
   [ Is8BitVectorRep ],
   function( v )
     return WeightVecFFE(v);
   end );
 
-InstallMethod( DistanceOfVectors, "for two 8bit vectors",
+InstallOtherMethod( DistanceOfVectors, "for two 8bit vectors",
   [ Is8BitVectorRep, Is8BitVectorRep ],
   function( v, w )
     return DistanceVecFFE(v,w);

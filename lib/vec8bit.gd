@@ -32,13 +32,14 @@ MakeImmutable(PRIMES_COMPACT_FIELDS);
 ##
 ##  <Description>
 ##  An object <A>obj</A> in <Ref Filt="Is8BitVectorRep"/> describes
-##  a vector object (see <Ref Filt="IsVectorObj"/>) with entries in a
-##  finite field with <M>q</M> elements, for <M>3 \leq q \leq 256</M>.
+##  a compressed row vector (see <Ref Filt="IsRowVector"/>) with entries
+##  in a finite field with <M>q</M> elements, for <M>3 \leq q \leq 256</M>.
+##  It is a list, not a vector object (see <Ref Filt="IsVectorObj"/>).
 ##  The base domain of <A>obj</A> is not necessarily the smallest field that
 ##  contains all vector entries.
 ##  <P/>
 ##  <Ref Filt="Is8BitVectorRep"/> implies <Ref Filt="IsCopyable"/>,
-##  thus vector objects in this representation can be mutable.
+##  thus vectors in this representation can be mutable.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -47,7 +48,7 @@ MakeImmutable(PRIMES_COMPACT_FIELDS);
 ##  <Ref Filt="IsDataObjectRep"/>, the entries are packed into bytes.
 ##
 DeclareRepresentation( "Is8BitVectorRep",
-        IsDataObjectRep and IsVectorObj and IsList
+        IsDataObjectRep and IsList
     and IsCopyable
     and IsNoImmediateMethodsObject
     and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain);

@@ -37,11 +37,12 @@ BIND_GLOBAL( "GF2Zero", 0*Z(2) );
 ##
 ##  <Description>
 ##  An object <A>obj</A> in <Ref Filt="IsGF2VectorRep"/> describes
-##  a vector object (see <Ref Filt="IsVectorObj"/>) with entries in the
-##  finite field with <M>2</M> elements.
+##  a compressed row vector (see <Ref Filt="IsRowVector"/>) with entries
+##  in the finite field with <M>2</M> elements.
+##  It is a list, not a vector object (see <Ref Filt="IsVectorObj"/>).
 ##  <P/>
 ##  <Ref Filt="IsGF2VectorRep"/> implies <Ref Filt="IsCopyable"/>,
-##  thus vector objects in this representation can be mutable.
+##  thus vectors in this representation can be mutable.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -50,7 +51,7 @@ BIND_GLOBAL( "GF2Zero", 0*Z(2) );
 ##  <Ref Filt="IsDataObjectRep"/>, the entries are packed into bits.
 ##
 DeclareRepresentation( "IsGF2VectorRep",
-        IsDataObjectRep and IsVectorObj and IsList
+        IsDataObjectRep and IsList
     and IsCopyable
     and IsNoImmediateMethodsObject
     and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain);
@@ -235,13 +236,14 @@ DeclareGlobalFunction( "ConvertToMatrixRep" );
 ##
 ##  <Description>
 ##  An object <A>obj</A> in <Ref Filt="IsGF2MatrixRep"/> describes
-##  a matrix object (see <Ref Filt="IsMatrixObj"/>) with entries in the
-##  finite field with <M>2</M> elements, which behaves like the
-##  list of its rows (see <Ref Filt="IsRowListMatrix"/>).
+##  a compressed matrix (see <Ref Filt="IsMatrix"/>) with entries in the
+##  finite field with <M>2</M> elements,
+##  whose rows are in <Ref Filt="IsGF2VectorRep"/>.
+##  It is a list of rows, not a matrix object (see <Ref Filt="IsMatrixObj"/>).
 ##  The base domain of <A>obj</A> is the field with <M>2</M> elements.
 ##  <P/>
 ##  <Ref Filt="IsGF2MatrixRep"/> implies <Ref Filt="IsCopyable"/>,
-##  thus matrix objects in this representation can be mutable.
+##  thus matrices in this representation can be mutable.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -254,7 +256,7 @@ DeclareGlobalFunction( "ConvertToMatrixRep" );
 ##  <M>i+1</M>.
 ##
 DeclareRepresentation( "IsGF2MatrixRep",
-        IsPositionalObjectRep and IsRowListMatrix and IsMatrix
+        IsPositionalObjectRep and IsMatrix
     and IsCopyable
     and IsNoImmediateMethodsObject
     and HasNumberRows and HasNumberColumns

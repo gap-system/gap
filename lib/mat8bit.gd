@@ -22,15 +22,16 @@
 ##
 ##  <Description>
 ##  An object <A>obj</A> in <Ref Filt="Is8BitMatrixRep"/> describes
-##  a matrix object (see <Ref Filt="IsMatrixObj"/>) that behaves like the
-##  list of its rows (see <Ref Filt="IsRowListMatrix"/>).
+##  a compressed matrix (see <Ref Filt="IsMatrix"/>)
+##  whose rows are in <Ref Filt="Is8BitVectorRep"/>.
+##  It is a list of rows, not a matrix object (see <Ref Filt="IsMatrixObj"/>).
 ##  The base domain of <A>obj</A> is a field that contains all matrix
 ##  entries (but not necessarily the smallest such field),
 ##  it must be a finite field with <M>q</M> elements,
 ##  for <M>3 \leq q \leq 256</M>.
 ##  <P/>
 ##  <Ref Filt="Is8BitMatrixRep"/> implies <Ref Filt="IsCopyable"/>,
-##  thus matrix objects in this representation can be mutable.
+##  thus matrices in this representation can be mutable.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -45,7 +46,7 @@
 ##  but is determined by the common base domain of the rows of the matrix.
 ##
 DeclareRepresentation( "Is8BitMatrixRep",
-        IsPositionalObjectRep and IsRowListMatrix and IsMatrix
+        IsPositionalObjectRep and IsMatrix
     and IsCopyable
     and IsNoImmediateMethodsObject
     and HasNumberRows and HasNumberColumns

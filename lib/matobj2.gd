@@ -71,6 +71,13 @@
 ##  matrix objects as arguments of its functions, or it may try to support
 ##  also objects in <Ref Filt="IsMatrix"/> as far as this is possible.)
 ##  <P/>
+##  The compressed vectors and matrices over finite fields with at most
+##  <M>256</M> elements (see <Ref Filt="IsGF2VectorRep"/>,
+##  <Ref Filt="Is8BitVectorRep"/>, <Ref Filt="IsGF2MatrixRep"/>,
+##  <Ref Filt="Is8BitMatrixRep"/>) are lists, not vector or matrix objects.
+##  The constructors in this chapter return them when no filter is given
+##  and the base domain is such a field.
+##  <P/>
 ##  We want to be able to write (efficient) code that is independent of the
 ##  actual representation (in the sense of &GAP;'s representation filters,
 ##  see Section <Ref Sect="Representation"/>)
