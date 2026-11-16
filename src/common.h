@@ -15,6 +15,7 @@
 #include <stdint.h>
 
 #include "debug.h"
+#include "precise_gc.h"
 
 // check if we are on a 64 or 32 bit machine; in the former
 // case, define SYS_IS_64_BIT.
@@ -297,6 +298,5 @@ typedef ExecStatus (*ExecStatFunc)(Stat);
 typedef void (*PrintStatFunc)(Stat);
 typedef void (*PrintExprFunc)(Expr);
 
-#include "precise_gc_julia.h"
 
 #endif // GAP_COMMON_H

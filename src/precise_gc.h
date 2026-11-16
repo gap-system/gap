@@ -8,8 +8,8 @@
 **  SPDX-License-Identifier: GPL-2.0-or-later
 **
 **  This header provides GAP-owned wrappers for precise-GC static analysis
-**  annotations. Runtime rooting macros live in "precise_gc_julia.h", so that
-**  low-level headers can use the annotations without pulling in julia.h.
+**  annotations; "common.h" includes it. The runtime rooting macros need
+**  julia.h, so they live in "precise_gc_julia.h", which "gasman.h" includes.
 */
 
 #ifndef GAP_PRECISE_GC_H
