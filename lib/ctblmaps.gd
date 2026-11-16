@@ -1174,10 +1174,9 @@ DeclareGlobalFunction( "CompositionMaps" );
 ##  For a parametrized map <A>paramap</A>,
 ##  <Ref Func="InverseMap"/> returns a mutable parametrized map whose
 ##  <M>i</M>-th entry is unbound if <M>i</M> is not in the image of
-##  <A>paramap</A>, equal to <M>j</M> if <M>i</M> is (in) the image of
-##  <C><A>paramap</A>[<A>j</A>]</C> exactly for <M>j</M>,
-##  and equal to the set of all preimages of <M>i</M> under <A>paramap</A>
-##  otherwise.
+##  <A>paramap</A>, equal to <M>j</M> if <M>j</M> is the only position
+##  where <A>paramap</A> has <M>i</M> as (possible) image,
+##  and equal to the set of all such positions otherwise.
 ##  <P/>
 ##  We have
 ##  <C>CompositionMaps( <A>paramap</A>, InverseMap( <A>paramap</A> ) )</C>
@@ -1492,20 +1491,13 @@ DeclareGlobalFunction( "ImproveMaps" );
 ##  The return value is <K>fail</K> if an inconsistency was found.
 ##  Otherwise a record with the components <C>imp1</C>, <C>imp2</C>,
 ##  <C>imp3</C>, <C>imp4</C> is returned, each bound to the list of positions
-##  where the corresponding parametrized map was changed,
+##  where the corresponding parametrized map was changed.
 ##  <P/>
 ##  The optional argument <A>improvements</A> must be a record with
 ##  components <C>imp1</C>, <C>imp2</C>, <C>imp3</C>, <C>imp4</C>.
 ##  If such a record is specified then only diagrams are considered where
 ##  entries of the <M>i</M>-th component occur as preimages of the
 ##  <M>i</M>-th parametrized map.
-##  <P/>
-##  When an inconsistency is detected,
-##  <Ref Func="CommutativeDiagram"/> immediately returns <K>fail</K>.
-##  Otherwise a record is returned that contains four lists <C>imp1</C>,
-##  <M>\ldots</M>, <C>imp4</C>:
-##  The <M>i</M>-th component is the list of classes where the <M>i</M>-th
-##  argument was changed.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> map1:= [[ 1, 2, 3 ], [ 1, 3 ]];; map2:= [[ 1, 2 ], 1, [ 1, 3 ]];;
@@ -1994,7 +1986,8 @@ DeclareGlobalFunction( "InitPowerMap" );
 ##  and <A>quick</A> a Boolean.
 ##  <P/>
 ##  The <A>quick</A> value <K>true</K> means that only those classes are
-##  considered for which <A>approxmap</A> lists more than one possible image.
+##  considered for which <A>approxmap</A> lists more than one possible image;
+##  the default is <K>false</K>.
 ##  <#/GAPDoc>
 ##
 
@@ -2180,7 +2173,9 @@ DeclareGlobalFunction( "MinusCharacter" );
 ##  <Ref Func="PowerMapsAllowedBySymmetrizations"/> replaces the entries of
 ##  <A>approxmap</A> by improved values,
 ##  according to condition 6.&nbsp;listed in the description of
-##  <Ref Oper="PossiblePowerMaps"/>.
+##  <Ref Oper="PossiblePowerMaps"/>,
+##  and returns the list of allowed power maps, which may still be
+##  parametrized; the list is empty if an inconsistency is found.
 ##  <P/>
 ##  More precisely, the strategy used is as follows.
 ##  <P/>
@@ -2394,7 +2389,9 @@ DeclareGlobalFunction( "ConsiderTableAutomorphisms" );
 ##  <Ref Func="FusionsAllowedByRestrictions"/> replaces the entries of
 ##  <A>approxmap</A> by improved values,
 ##  according to condition 5.&nbsp;listed in the description of
-##  <Ref Oper="PossibleClassFusions"/>.
+##  <Ref Oper="PossibleClassFusions"/>,
+##  and returns the list of allowed fusion maps, which may still be
+##  parametrized; the list is empty if an inconsistency is found.
 ##  <P/>
 ##  More precisely, the strategy used is as follows.
 ##  <P/>
