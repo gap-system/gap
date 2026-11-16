@@ -7,55 +7,68 @@
 **
 **  SPDX-License-Identifier: GPL-2.0-or-later
 **
-**  This header provides GAP-owned wrappers for precise-GC static analysis
-**  annotations; "common.h" includes it. The runtime rooting macros need
-**  julia.h, so they live in "precise_gc_julia.h", which "gasman.h" includes.
+**  Annotations that describe to Julia's static analyzers how a function
+**  interacts with the Julia GC: whether it may trigger a collection, and how
+**  the values it takes and returns are rooted. They matter to GAP with the
+**  Julia GC in precise mode (see "precise_gc_julia.h"), which can only be
+**  trusted with the analyzers' help.
 */
 
 #ifndef GAP_PRECISE_GC_H
 #define GAP_PRECISE_GC_H
 
 /*
- * These annotation spellings match Julia's static analysis tooling. We define
- * GAP-local wrapper macros instead of depending on Julia's internal analyzer
- * header so that GAP can control how these are exposed.
+ *  What the annotations are
+ *  ------------------------
  *
- * Nothing here affects a normal build: without one of the defines below every
- * macro expands to nothing, so GASMAN and Boehm builds are unchanged. The
- * runtime rooting macros in "precise_gc_julia.h" behave the same way, and
- * expand to `((void)0)` unless GAP_GC_PRECISE is defined: the Julia GC
- * without its conservative stack scan.
+ * The annotations change nothing in compiled code: each expands to nothing
+ * unless one of the two analyzers below processes the file, and then to an
+ * attribute that analyzer reads. The attributes are those behind Julia's own
+ * annotations (JL_NOTSAFEPOINT and the others in its analyzer_annotations.h);
+ * GAP defines its own names so that it controls what they expand to, and so
+ * that every header can use them without including julia.h.
+ *
+ * There are two kinds:
+ *
+ *   - Safepoint annotations say whether a function may reach a safepoint, a
+ *     point at which a collection can run: GAP_GC_CANSAFEPOINT on one that
+ *     may, for instance because it allocates a bag, and GAP_GC_NOTSAFEPOINT
+ *     on one that never does, such as a marking function.
+ *   - Rooting annotations say how a callee roots its arguments and return
+ *     value, so that its callers need no GC frame of their own; for example,
+ *     GAP_GC_ROOTED_BY_ARG on a parameter that the function stores into
+ *     another argument.
  *
  *
  *  The two analyses
  *  ----------------
  *
- * Two independent checks are modelled, each selected by its own define:
+ * Each is selected by its own define:
  *
- *   __clang_gcanalyzer__      Julia's GCChecker plugin. It checks that a value
- *                             the GC manages is reachable from a root whenever
- *                             a collection could happen.
+ *   __clang_gcanalyzer__      Julia's GCChecker, a plugin for the Clang
+ *                             static analyzer in Julia's src/clangsa. It
+ *                             checks that a value the GC manages is rooted
+ *                             whenever a collection could happen, and that a
+ *                             function promising no safepoint keeps it.
  *
- *   __clang_safetyanalysis__  Clang Thread Safety Analysis, the counterpart to
+ *   __clang_safetyanalysis__  Clang's Thread Safety Analysis, set up as in
  *                             Julia's `make -C src safesrc`. It checks the
  *                             safepoint annotations against each other.
  *
- * The two have opposite defaults, which is the main thing to keep straight:
+ * They take opposite views of an unannotated function:
  *
- *   - To the GCChecker an unannotated function may safepoint. Promising it
- *     does not is opting out, and it verifies the promise.
- *   - To the safety analysis an unannotated function may NOT safepoint. Every
- *     function that can must say so, and it is flagged as soon as it calls one
- *     that does without saying so itself.
+ *   - To the GCChecker it may safepoint. GAP_GC_NOTSAFEPOINT opts out, and
+ *     the checker verifies the promise.
+ *   - To the safety analysis it may NOT safepoint. Every function that can
+ *     must say so with GAP_GC_CANSAFEPOINT, and is flagged as soon as it
+ *     calls one that does without saying so itself.
  *
- * So a function that allocates needs GAP_GC_CANSAFEPOINT, and one that must
- * never allocate -- a marking function, say -- needs GAP_GC_NOTSAFEPOINT.
- * The two must never appear on the same declaration: if the safety analysis
- * asks for GAP_GC_CANSAFEPOINT somewhere that already promises
- * GAP_GC_NOTSAFEPOINT, one of the two is wrong, and adding the second only
- * hides which. A third option suits a function that never returns: it can
- * promise callers no safepoint while its own body opts out of the analysis
- * with GAP_GC_NO_SAFEPOINT_ANALYSIS.
+ * The two annotations must never appear on the same declaration: if the
+ * safety analysis asks for GAP_GC_CANSAFEPOINT somewhere that already
+ * promises GAP_GC_NOTSAFEPOINT, one of the two is wrong, and adding the
+ * second only hides which. A third option suits a function that never
+ * returns: it can promise callers no safepoint while its own body opts out
+ * of the analysis with GAP_GC_NO_SAFEPOINT_ANALYSIS.
  *
  *
  *  Where an annotation goes
@@ -67,56 +80,20 @@
  *   void AddList(Obj list, Obj obj GAP_GC_ROOTED_BY_ARG(0)) GAP_GC_CANSAFEPOINT;
  *                          ^ on the parameter                ^ on the function
  *
- * A parameter annotation is about the parameter it is on; an index in it names
- * another parameter, counted from zero over all parameters, not just the
- * `Obj` ones. Above, `obj` is rooted by argument 0, `list`.
+ * A parameter annotation is about the parameter it is on; an index in it
+ * names another parameter, counted from zero over all parameters, not just
+ * the `Obj` ones. Here `obj` is stored into argument 0, `list`, so whatever
+ * roots `list` roots `obj` too.
  *
  * Put the annotation on a function's FIRST declaration, normally the one in
  * the header. Clang silently ignores an annotation that appears only on a
  * later declaration, so one written on the definition of a function declared
  * in a header does nothing at all, and the mistake is invisible. Julia's
  * julia-first-decl-annotations clang-tidy check catches this.
- *
- *
- *  Rooting, in one example
- *  -----------------------
- *
- * The GCChecker cares about values held in C locals across a possible
- * collection. A local is not a root by itself, so this is wrong:
- *
- *     Obj list = NEW_PLIST(T_PLIST, 2);
- *     Obj elm  = NEW_STRING(10);      // may collect, and may move `list`
- *     SET_ELM_PLIST(list, 1, elm);
- *
- * Rooting `list` with a frame fixes it. Note that the frame stores the
- * ADDRESS of the local, so every rooted local must be initialised before the
- * frame is pushed -- the collector reads it immediately:
- *
- *     Obj list = 0, elm = 0;
- *     GAP_GC_PUSH2(&list, &elm);
- *     list = NEW_PLIST(T_PLIST, 2);
- *     elm  = NEW_STRING(10);
- *     SET_ELM_PLIST(list, 1, elm);
- *     GAP_GC_POP();
- *
- * Use the fixed-arity `GAP_GC_PUSH1`,...,`GAP_GC_PUSH9` for GAP `Obj` locals,
- * and `GAP_GC_PUSHARGS` for an array of them; the latter stores the values
- * themselves, in a frame it allocates on the C stack and assigns to its first
- * argument, which must be a `jl_value_t **` as for JL_GC_PUSHARGS. Both kinds
- * may hold GAP's tagged immediates: Julia's root scanner skips those since
- * JuliaLang/julia#62889, hence precise mode needs Julia 1.14.
- *
- * The annotations below let a callee describe its rooting to the analyzer, so
- * that callers need no frame of their own: AddList stores `obj` into `list`,
- * so whatever roots `list` roots `obj` too.
  */
 #if defined(__clang_gcanalyzer__)
 
-/*
- * Rooting annotations. Argument indices are zero-based positions in the
- * parameter list. Note that the placement differs per annotation: some belong
- * on a parameter, others on the function itself.
- */
+// Rooting annotations.
 
 // On a parameter: the root protecting it also protects the return value.
 #define GAP_GC_PROPAGATES_ROOT \
