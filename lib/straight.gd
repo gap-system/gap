@@ -642,6 +642,11 @@ DeclareGlobalFunction("StraightLineProgGens");
 ##  <[ [ 1, -1, 2, 3, 1, 1 ] ]|(1,2,4,3)>
 ##  gap> Size(g);
 ##  24
+##  gap> x:=(gens[1]^3*gens[2])^70;
+##  <[ [ 2, 3, 1, 1 ], [ 3, 70 ] ]|(1,4,3)>
+##  gap> StretchImportantSLPElement(x);
+##  gap> x;
+##  <[ [ 3, 1 ] ]|(1,4,3)>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

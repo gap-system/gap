@@ -214,12 +214,13 @@ for the meaning of the arguments).
 InstallMethod( CyclicGroupCons,
     "regular perm group",
     true,
-    [ IsPermGroup and IsRegularProp and IsFinite, IsInt and IsPosRat ], 0,
-    function( filter, n )
+    [ IsPermGroup and IsRegular and IsCyclic,
+      IsInt and IsPosRat ],
+    0,
 
+function( filter, n )
     ...
-
-    end );
+end );
 ]]></Log>
 
 </Section>

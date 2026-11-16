@@ -646,7 +646,7 @@ DeclareGlobalFunction( "DirectoriesPackagePrograms" );
 ##  <P/>
 ##  <Log><![CDATA[
 ##  gap> DirectoriesPackageLibrary( "Example" );
-##  [ Directory("/home/werner/gap/4.0/pkg/example/lib/") ]
+##  [ dir("/home/user/gap/pkg/example/lib/") ]
 ##  ]]></Log>
 ##  <P/>
 ##  For any subdirectory other than <F>lib</F>, such as the <F>tst</F>
@@ -664,7 +664,7 @@ DeclareGlobalFunction( "DirectoriesPackagePrograms" );
 ##  <P/>
 ##  <Log><![CDATA[
 ##  gap> DirectoriesPackageLibrary( "somepackage", "data/m11" );
-##  [ Directory("/home/werner/gap/4.0/pkg/somepackage/data/m11/") ]
+##  [ dir("/home/user/gap/pkg/somepackage/data/m11/") ]
 ##  ]]></Log>
 ##  </Description>
 ##  </ManSection>

@@ -588,36 +588,21 @@ end );
 ##  (There is no facility to trace <E>specific</E> immediate methods.)
 ##  <Log><![CDATA[
 ##  gap> TraceImmediateMethods( );
-##  gap> g:= Group( (1,2,3), (1,2) );;
+##  gap> g:= SymmetricGroup( 3 );;
 ##  #I RunImmediateMethods
-##  #I  immediate: Size
-##  #I  immediate: IsCyclic
-##  #I  immediate: IsCommutative
-##  #I  immediate: IsTrivial
-##  gap> Size( g );
-##  #I  immediate: IsPerfectGroup
-##  #I  immediate: IsNonTrivial
-##  #I  immediate: Size
-##  #I  immediate: IsFreeAbelian
-##  #I  immediate: IsTorsionFree
-##  #I  immediate: IsNonTrivial
-##  #I  immediate: IsPerfectGroup
-##  #I  immediate: GeneralizedPcgs
-##  #I  immediate: IsEmpty
-##  6
+##  #I RunImmediateMethods
+##  #I  immediate: IsSolvableGroup at GAPROOT/lib/grp.gi:807
+##  gap> HasIsSolvableGroup( g );
+##  true
 ##  gap> UntraceImmediateMethods( );
-##  gap> UntraceMethods( [ Size ] );
 ##  ]]></Log>
 ##  <P/>
-##  This example gives an explanation for the two calls of the
-##  <Q>system getter</Q> for <Ref Attr="Size"/>.
-##  Namely, there are immediate methods that access the known size
-##  of the group.
-##  Note that the group <C>g</C> was known to be finitely generated already
-##  before the size was computed,
-##  the calls of the immediate method for
-##  <Ref Prop="IsFinitelyGeneratedGroup"/> after the call of
-##  <Ref Attr="Size"/> have other arguments than <C>g</C>.
+##  Each <C>#I RunImmediateMethods</C> line marks a point where &GAP; looks
+##  for applicable immediate methods, because an object was created or new
+##  information about it was stored.
+##  Once the size of <C>g</C> is known, the immediate method for
+##  <Ref Prop="IsSolvableGroup"/> applies and sets this property,
+##  because a group whose order is not divisible by <M>4</M> is solvable.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1845,10 +1830,9 @@ end );
 ##  gap> TraceMethods( [ Size ] );
 ##  gap> g:= Group( (1,2,3), (1,2) );;
 ##  gap> Size( g );
-##  #I  Size: for a permutation group at /gap5/lib/grpperm.gi:487
-##  #I  Setter(Size): system setter
-##  #I  Size: system getter
-##  #I  Size: system getter
+##  #I  Size at GAPROOT/lib/coll.gi:164
+##  #I Trying next: Size: for a permutation group at GAPROOT/lib/grpperm.gi:536
+##  #I  SetSize at GAPROOT/lib/coll.gi:2860
 ##  6
 ##  gap> UntraceMethods( [ Size ] );
 ##  ]]></Log>

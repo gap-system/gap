@@ -493,7 +493,7 @@ memory it allocated).
 <Description>
 These functions make GAP stop execution for a given period of time. The time
 to stop is given to <Ref Func="Sleep"/> in seconds and <Ref Func="MicroSleep"/>
-in microseconds.
+in microseconds, as a small integer.
 </Description>
 </ManSection>
 
@@ -886,12 +886,12 @@ found in the <F>tst</F> directory of the &GAP; distribution.
 <#Include Label="[1]{testinstall.g}">
 
 <Log><![CDATA[
-test file         time(msec)
--------------------------------------------
-testing: ................/gap4r5/tst/zlattice.tst
-zlattice.tst               0
-testing: ................/gap4r5/tst/gaussian.tst
-gaussian.tst              10
+Architecture: aarch64-apple-darwin25-default64-kv12
+
+testing: GAPROOT/tst/testinstall/ConjNatSym.tst
+       8 ms (0 ms GC) and 20.5MB allocated for ConjNatSym.tst
+testing: GAPROOT/tst/testinstall/DirectProductElement.tst
+      33 ms (31 ms GC) and 696KB allocated for DirectProductElement.tst
 [ further lines deleted ]
 ]]></Log>
 
@@ -914,7 +914,7 @@ The &GAP; interpreter monitors the level of nesting of &GAP;
 functions during execution.
 By default, whenever this nesting reaches a multiple of <M>5000</M>,
 &GAP; enters a break loop (<Ref Sect="Break Loops"/>) allowing you
-to terminate the calculation, or enter <B>Return</B><C>;</C> to continue it.
+to terminate the calculation, or enter <C>return;</C> to continue it.
 <P/>
 <Log><![CDATA[
 gap> dive:= function(depth) if depth>1 then dive(depth-1); fi; return; end;

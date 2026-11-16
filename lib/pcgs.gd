@@ -244,6 +244,8 @@ DeclareAttribute(
 ##    Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]),
 ##    Group([ (1,4)(2,3), (1,3)(2,4) ]), Group([ (1,3)(2,4) ]), Group(())
 ##   ]
+##  gap> OneOfPcgs(p);
+##  ()
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -992,11 +994,8 @@ DeclareOperation( "DepthAndLeadingExponentOfPcElement",
 ##  returns the element corresponding to the exponent vector <A>list</A>
 ##  with respect to <A>pcgs</A>.
 ##  The exponents in <A>list</A> must be in the range of permissible
-##  exponents for <A>pcgs</A>.
-##  <E>It is not guaranteed that <Ref Func="PcElementByExponents"/> will
-##  reduce the exponents modulo the relative orders</E>.
-##  (You should use the operation <Ref Func="LinearCombinationPcgs"/>
-##  for this purpose.)
+##  exponents for <A>pcgs</A>, otherwise an error is signalled.
+##  (Use <Ref Func="LinearCombinationPcgs"/> for other exponents.)
 ##  The <C>NC</C> version does not check that the lengths of the lists
 ##  fit together and does not check the exponent range.
 ##  <P/>
@@ -1032,6 +1031,10 @@ DeclareOperation( "PcElementByExponentsNC",
 ##  (1,2,3)
 ##  gap> ExponentsOfPcElement(P, g);
 ##  [ 0, 1, 1, 1 ]
+##  gap> PcElementByExponents(P, [0,-1,1,1]);
+##  Error, Exponent out of range!
+##  gap> LinearCombinationPcgs(P, [0,-1,1,1]);
+##  (1,2,4)
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

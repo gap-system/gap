@@ -1437,6 +1437,23 @@ DeclareGlobalFunction( "NilpotentQuotientOfFpLieAlgebra" );
 ##  attribute.
 ##  A Lie algebra created by <Ref Attr="JenningsLieAlgebra"/> is naturally
 ##  graded. The attribute <Ref Attr="Grading"/> is set.
+##  <Example><![CDATA[
+##  gap> G:= SmallGroup( 3^6, 123 );
+##  <pc group of size 729 with 6 generators>
+##  gap> L:= JenningsLieAlgebra( G );
+##  <Lie algebra of dimension 6 over GF(3)>
+##  gap> HasPthPowerImages( Basis( L ) );
+##  true
+##  gap> PthPowerImages( Basis( L ) );
+##  [ v.6, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1 ]
+##  gap> g:= Grading( L );
+##  rec( hom_components := function( d ) ... end, max_degree := 3,
+##    min_degree := 1, source := Integers )
+##  gap> List( [1,2,3], g.hom_components );
+##  [ <vector space over GF(3), with 3 generators>,
+##    <vector space over GF(3), with 2 generators>,
+##    <vector space over GF(3), with 1 generator> ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1460,21 +1477,13 @@ DeclareAttribute( "JenningsLieAlgebra", IsGroup );
 ##  (see&nbsp;<Ref Oper="PCentralSeries"/>). This function also returns
 ##  a graded Lie algebra. However, it is not necessarily restricted.
 ##  <Example><![CDATA[
-##  gap> G:= SmallGroup( 3^6, 123 );
-##  <pc group of size 729 with 6 generators>
-##  gap> L:= JenningsLieAlgebra( G );
+##  gap> G:= SmallGroup( 3^6, 123 );;
+##  gap> L:= PCentralLieAlgebra( G );
 ##  <Lie algebra of dimension 6 over GF(3)>
-##  gap> HasPthPowerImages( Basis( L ) );
-##  true
-##  gap> PthPowerImages( Basis( L ) );
-##  [ v.6, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1 ]
-##  gap> g:= Grading( L );
-##  rec( hom_components := function( d ) ... end, max_degree := 3,
-##    min_degree := 1, source := Integers )
-##  gap> List( [1,2,3], g.hom_components );
+##  gap> g:= Grading( L );;
+##  gap> List( [ 1 .. g.max_degree ], g.hom_components );
 ##  [ <vector space over GF(3), with 3 generators>,
-##    <vector space over GF(3), with 2 generators>,
-##    <vector space over GF(3), with 1 generator> ]
+##    <vector space over GF(3), with 3 generators> ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
