@@ -1,4 +1,4 @@
-#@local F, matobj, mat
+#@local F, matobj, mat, q, M, v, r
 gap> START_TEST( "arith.tst" );
 
 # Multiplying non-list 'IsMatrixObj' with 'IsMatrix' and v. v. are not defined.
@@ -23,6 +23,21 @@ true
 gap> mat:= Matrix( Rationals, [ [ 1, 1 ], [ 0, 1 ] ] );;
 gap> Unpack( mat^2 ) = Unpack( mat )^2;
 true
+
+# Matrix objects act on compressed vectors.
+gap> for q in [ 2, 4 ] do
+>      M:= Matrix( IsPlistMatrixRep, GF(q), Z(q)^0 * [ [ 1, 1 ], [ 0, 1 ] ] );
+>      v:= ImmutableVector( GF(q), Z(q) * [ 1, 0 ] );
+>      for r in [ v * M, M * v, v ^ M ] do
+>        if not ( IsDataObjectRep( r ) and Length( r ) = 2 ) then
+>          Error( "wrong result" );
+>        fi;
+>      od;
+>      if v * M <> Unpack( v ) * Unpack( M ) or
+>         M * v <> Unpack( M ) * Unpack( v ) then
+>        Error( "wrong product" );
+>      fi;
+>    od;
 
 #
 gap> STOP_TEST( "arith.tst" );

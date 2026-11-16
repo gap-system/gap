@@ -1282,6 +1282,17 @@ InstallOtherMethod( \^,
     [ IsVectorObj, IsMatrixObj ],
     \* );
 
+# Compressed vectors are lists, not vector objects, but library code
+# creates them for the natural module of any matrix group over GF(q),
+# q <= 256.
+Perform( [ IsGF2VectorRep, Is8BitVectorRep ], function( filt )
+  InstallOtherMethod( \*, [ filt, IsMatrixObj ],
+    { v, M } -> Vector( Unpack( v ) * Unpack( M ), v ) );
+  InstallOtherMethod( \*, [ IsMatrixObj, filt ],
+    { M, v } -> Vector( Unpack( M ) * Unpack( v ), v ) );
+  InstallOtherMethod( \^, [ filt, IsMatrixObj ], \* );
+end );
+
 
 #############################################################################
 ##
