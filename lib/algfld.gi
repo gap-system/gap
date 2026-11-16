@@ -462,6 +462,43 @@ end);
 
 #############################################################################
 ##
+#F  IsElmsCoeffsTower( <F1>, <F2> )
+##
+##  In a tower of extensions, elements of a field further down than the base
+##  field, such as rationals, are not in the coefficients family. The methods
+##  using this predicate embed them into the base field first.
+##
+BindGlobal( "IsElmsCoeffsTower", function( F1, F2 )
+local c;
+  if not IsAlgebraicElementFamily( F1 ) then
+    return false;
+  fi;
+  c := CoefficientsFamily( F1 );
+  while IsAlgebraicElementFamily( c ) do
+    c := CoefficientsFamily( c );
+    if IsIdenticalObj( c, F2 ) then
+      return true;
+    fi;
+  od;
+  return false;
+end );
+
+BindGlobal( "IsCoeffsElmsTower", {F1, F2} -> IsElmsCoeffsTower( F2, F1 ) );
+
+InstallMethod(\+,"AlgElm+tower elm",IsElmsCoeffsTower,
+  [IsAlgebraicElement,IsRingElement],0,
+function(a,b)
+  return a+b*FamilyObj(a)!.oneCoefficient;
+end);
+
+InstallMethod(\+,"tower elm+AlgElm",IsCoeffsElmsTower,
+  [IsRingElement,IsAlgebraicElement],0,
+function(a,b)
+  return a*FamilyObj(b)!.oneCoefficient+b;
+end);
+
+#############################################################################
+##
 #M  AdditiveInverseOp
 ##
 InstallMethod( AdditiveInverseOp, "AlgElm",true,[IsKroneckerConstRep],0,
@@ -548,6 +585,18 @@ local fam;
   fam:=FamilyObj(b);
   a:=b![1]*(a*fam!.oneCoefficient);
   return AlgExtElm(fam,a);
+end);
+
+InstallMethod(\*,"AlgElm*tower elm",IsElmsCoeffsTower,
+  [IsAlgebraicElement,IsRingElement],0,
+function(a,b)
+  return a*(b*FamilyObj(a)!.oneCoefficient);
+end);
+
+InstallMethod(\*,"tower elm*AlgElm",IsCoeffsElmsTower,
+  [IsRingElement,IsAlgebraicElement],0,
+function(a,b)
+  return (a*FamilyObj(b)!.oneCoefficient)*b;
 end);
 
 InstallOtherMethod(\*,"Alg*List",true,[IsAlgebraicElement,IsList],0,
@@ -814,22 +863,37 @@ end);
 InstallMethod(MinimalPolynomial,"AlgElm",true,
   [IsField,IsAlgebraicElement,IsPosInt],0,
 function(f,e,inum)
-local fam,c,m;
+local fam,fams,flat,c,m;
   fam:=FamilyObj(e);
-  if ElementsFamily(FamilyObj(f))<>CoefficientsFamily(FamilyObj(e))
-    or fam!.baseField<>f then
-    TryNextMethod();
-  fi;
+
+  # in a tower, <f> may lie further down than the base field
+  fams:=[fam];
+  while Last(fams)!.baseField<>f do
+    if not IsAlgebraicExtension(Last(fams)!.baseField) then
+      TryNextMethod();
+    fi;
+    Add(fams,Last(fams)!.baseField!.extFam);
+  od;
+
+  # coefficients of <x> over <f>, for <x> in the field of fams[i]
+  flat:=function(x,i)
+    x:=ExtRepOfObj(x);
+    if i=Length(fams) then
+      return x;
+    fi;
+    return Concatenation(List(x,y->flat(y,i+1)));
+  end;
+
   c:=One(e);
   m:=[];
   repeat
-    Add(m,ShallowCopy(ExtRepOfObj(c)));
+    Add(m,ShallowCopy(flat(c,1)));
     c:=c*e;
   until RankMat(m)<Length(m);
   m:=NullspaceMat(m)[1];
   # make monic
   m:=m/Last(m);
-  return UnivariatePolynomialByCoefficients(FamilyObj(fam!.zeroCoefficient),m,inum);
+  return UnivariatePolynomialByCoefficients(FamilyObj(Zero(f)),m,inum);
 end);
 
 #T  The method might be installed since it avoids the computations with
