@@ -259,7 +259,7 @@ end);
 #F  RootBound(<f>) . . . . bound for absolute value of (complex) roots of f
 ##
 InstallGlobalFunction(RootBound,function(f)
-local a,b,c,d;
+local a,b,c,d,sc;
   # valuation gives only 0 as zero, this can be neglected
   f:=CoefficientsOfLaurentPolynomial(f)[1];
   # normieren
@@ -269,15 +269,18 @@ local a,b,c,d;
   a:=ApproxRootBound(f);
   # did the numerical part fail?
   if a=fail then
-    c:=CoefficientsOfLaurentPolynomial(f)[1];
-    c:=List(c,AbsInt);
+    sc:=CoefficientsOfLaurentPolynomial(f)[1];
+    c:=List(sc,AbsInt);
     d:=Length(c);
     a:=Maximum(1,Sum(c{[1..d-1]}));
     b:=1+Maximum(c);
     if b<a then
       a:=b;
     fi;
-    b:=Maximum(List([1..d-1],i->RootInt(d*Int(AbsInt(c[d-i])+1/2),i)+1));
+    # all roots satisfy |z|<=(n*|c_{n-i}|)^(1/i) for some i, where n=d-1
+    # (using d only enlarges the bound). Take an integer upper bound for
+    # d*|c_{n-i}| before taking the root.
+    b:=Maximum(List([1..d-1],i->RootInt(Int(d*AbsInt(c[d-i]))+1,i)+1));
     if b<a then
       a:=b;
     fi;
@@ -289,7 +292,8 @@ local a,b,c,d;
         a:=b;
       fi;
     fi;
-    b:=Sum([1..d-1],i->AbsInt(c[i]-c[i+1]))+AbsInt(c[1]);
+    # Cauchy's bound for (x-1)*f, this needs the signed coefficients
+    b:=Sum([1..d-1],i->AbsInt(sc[i]-sc[i+1]))+AbsInt(sc[1]);
     if b<a then
       a:=b;
     fi;
@@ -488,6 +492,13 @@ end);
 ##
 ##  cf. JSC 13 (1992),463-472
 ##
+##  Bounds the coefficients of the gcd of <f> and <g>, scaled to have the gcd
+##  of the leading coefficients of <f> and <g> as leading coefficient.
+##  The bound of Theorem 3 in the paper relies on integer coefficients and
+##  nonzero constant term, so it cannot be applied to the monic polynomials
+##  used here. For monic polynomials Theorems 1 and 2 give a bound larger by
+##  a factor sqrt(2), namely 3^{3/4}*3^{n/2}/sqrt(2*pi*n)*[f]_2.
+##
 BindGlobal("BeauzamyBoundGcd",function(f,g)
 local   n, A, B,lf,lg;
 
@@ -496,21 +507,21 @@ local   n, A, B,lf,lg;
     f:=f/lf;
   fi;
 
-  lg:=LeadingCoefficient(f);
+  lg:=LeadingCoefficient(g);
   if not IsOne(lg) then
     g:=g/lg;
   fi;
   n := DegreeOfLaurentPolynomial(f);
   # the   strange   number  in   the   next line  is   an  (upper) rational
-  # approximation for 3^{3/4}/2/\sqrt(\pi)
-  A := Int(643038/1000000
+  # approximation for 3^{3/4}/\sqrt(2\pi)
+  A := Int(909392/1000000
         * ApproximateRoot(3^n,2)/ApproximateRoot(n,2)
         * BombieriNorm(f))+1;
 
   # the   strange  number   in  the   next   line is  an   (upper) rational
-  # approximation for 3^{3/4}/2/\sqrt(\pi)
+  # approximation for 3^{3/4}/\sqrt(2\pi)
   n := DegreeOfLaurentPolynomial(g);
-  B := Int(643038/1000000
+  B := Int(909392/1000000
         * ApproximateRoot(3^n,2)/ApproximateRoot(n,2)
         * BombieriNorm(g))+1;
   B:=Minimum(A,B);
@@ -1508,8 +1519,11 @@ BindGlobal("RPSquareHensel",function(f,t,opt)
         ofb:=2*AbsInt(lc)*OneFactorBound(f);
         Info(InfoPoly,2,"new one factor bound = ",ofb);
 
-        # degree arguments or OFB arguments prove f irreducible
-        if (ForAll(t.degrees,i->i=0 or 2*i>=DegreeOfLaurentPolynomial(f))
+        # degree arguments or OFB arguments prove f irreducible. A
+        # reducible f has a factor of degree at most half its degree, and
+        # f may split into two factors of exactly half its degree, so all
+        # possible degrees must exceed half the degree of f.
+        if (ForAll(t.degrees,i->i=0 or 2*i>DegreeOfLaurentPolynomial(f))
            or (alldegs and ofb<q)) and DegreeOfLaurentPolynomial(f)>0 then
           Add(fcn.irrFactors,f);
           Add(res.irrFactors,f);
@@ -1947,7 +1961,7 @@ end );
 MAXTRYGCDHEU:=6;
 
 InstallGlobalFunction(HeuGcdIntPolsExtRep,function(fam,d,e)
-local x,xd,er,i,j,k,m,p,sel,xi,gamma,G,g,loop,zero,add;
+local x,xd,er,i,j,k,m,p,sel,xi,gamma,G,g,loop,zero,add,cd,ce,cont;
 
   # find the indeterminates and their degrees:
   x:=[];
@@ -1990,6 +2004,19 @@ local x,xd,er,i,j,k,m,p,sel,xi,gamma,G,g,loop,zero,add;
   x:=x[1];
   xd:=[xd[1][1],xd[2][1]];
 
+  # remove the integer contents, their gcd is a factor of the result
+  cd:=Gcd(d{[2,4..Length(d)]});
+  ce:=Gcd(e{[2,4..Length(e)]});
+  cont:=GcdInt(cd,ce);
+  if cd<>1 then
+    d:=ShallowCopy(d);
+    d{[2,4..Length(d)]}:=d{[2,4..Length(d)]}/cd;
+  fi;
+  if ce<>1 then
+    e:=ShallowCopy(e);
+    e{[2,4..Length(e)]}:=e{[2,4..Length(e)]}/ce;
+  fi;
+
   xi:=2*Minimum(Maximum(List(d{[2,4..Length(d)]},AbsInt)),
                 Maximum(List(e{[2,4..Length(e)]},AbsInt)))+2;
 
@@ -2020,7 +2047,10 @@ local x,xd,er,i,j,k,m,p,sel,xi,gamma,G,g,loop,zero,add;
             g:=g-xi; # symmetric rep.
           fi;
           gamma:=(gamma-g)/xi;
-          if i=0 then
+          if g=0 then
+            # ZippedSum assumes there are no zero coefficients
+            add:=[];
+          elif i=0 then
             add:=[[],g];
           else
             add:=[[x,i],g];
@@ -2044,17 +2074,32 @@ local x,xd,er,i,j,k,m,p,sel,xi,gamma,G,g,loop,zero,add;
           gamma:=ZippedSum(gamma,add,0,fam!.zippedSum); # gamma-g
           gamma{[2,4..Length(gamma)]}:=gamma{[2,4..Length(gamma)]}/xi; # /xi
           #add:=g*xp^i; in extrep
-          add:=ZippedProduct(g,[[x,i],1],0,fam!.zippedProduct);
+          if i=0 then
+            # avoid monomials with exponent zero
+            add:=g;
+          else
+            add:=ZippedProduct(g,[[x,i],1],0,fam!.zippedProduct);
+          fi;
         fi;
         # G:=G+add in extrep
         G:=ZippedSum(G,add,0,fam!.zippedSum);
         i:=i+1;
       od;
 
-      if Length(G)>0 and Length(G[1])>0 and
-         QuotientPolynomialsExtRep(fam,d,G)<>fail and
-         QuotientPolynomialsExtRep(fam,e,G)<>fail then
-        return G;
+      # G is the gcd if its primitive part divides both polynomials. Note
+      # that G may well have a constant term, or be constant.
+      if Length(G)>0 then
+        g:=Gcd(G{[2,4..Length(G)]})*SignInt(Last(G));
+        if g<>1 then
+          G{[2,4..Length(G)]}:=G{[2,4..Length(G)]}/g;
+        fi;
+        if QuotientPolynomialsExtRep(fam,d,G)<>fail and
+           QuotientPolynomialsExtRep(fam,e,G)<>fail then
+          if cont<>1 then
+            G{[2,4..Length(G)]}:=G{[2,4..Length(G)]}*cont;
+          fi;
+          return G;
+        fi;
       fi;
     fi;
     xi:=QuoInt(xi*73794,27011); #square of golden ratio

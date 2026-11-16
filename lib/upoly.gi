@@ -251,7 +251,10 @@ InstallMethod( IsPrimitivePolynomial,
 
     coeffs:= CoefficientsOfUnivariatePolynomial( pol );
     one:= One( F );
-    if IsZero( coeffs[1] ) or Last(coeffs) <> one then
+    # a primitive polynomial has positive degree and coefficients in <F>
+    if Length( coeffs ) < 2 or not ForAll( coeffs, c -> c in F ) then
+      return false;
+    elif IsZero( coeffs[1] ) or Last(coeffs) <> one then
       return false;
     fi;
 
