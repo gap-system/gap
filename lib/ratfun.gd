@@ -1300,7 +1300,8 @@ DeclareOperation( "PolynomialCoefficientsOfPolynomial",
 ##
 ##  <Description>
 ##  returns the degree of the polynomial <A>pol</A> in the indeterminate
-##  (or indeterminate number) <A>ind</A>.
+##  (or indeterminate number) <A>ind</A>. The degree of a zero polynomial is
+##  <C>-infinity</C>.
 ##  <Example><![CDATA[
 ##  gap> f:=x^5+3*x*y+9*y^7+4*y^5*x+3*y+2;
 ##  9*y^7+4*x*y^5+x^5+3*x*y+3*y+2

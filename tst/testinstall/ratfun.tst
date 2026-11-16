@@ -1,4 +1,4 @@
-#@local det,mat,p0,p1,p2,q0,q1,q2,t,y1,y2,y3,u,f,g,data,fam,helper,data2
+#@local det,mat,p0,p1,p2,q0,q1,q2,t,y1,y2,y3,u,f,g,data,fam,helper,data2,a,b,h,zero
 gap> START_TEST("ratfun.tst");
 
 #
@@ -250,6 +250,26 @@ gap> Gcd(f,g);
 t^8*u-u
 gap> Gcd(t, u/3);
 1
+
+#
+# the zero polynomial has degree -infinity, also while IsUnivariatePolynomial
+# is unknown for it; over GF(1009) because earlier tests compute that for the
+# shared zero polynomial over Rationals
+#
+gap> a:=Indeterminate(GF(1009),100);; b:=Indeterminate(GF(1009),101);;
+gap> h:=a*b+1;; zero:=Derivative(h,102);;
+gap> HasIsUnivariatePolynomial(zero);
+false
+gap> DegreeIndeterminate(zero,102);
+-infinity
+gap> Resultant(h,zero,102);
+0*Z(1009)
+gap> DegreeIndeterminate(PolynomialByExtRep(FamilyObj(a),[]),100);
+-infinity
+gap> IsUnivariatePolynomial(zero);
+true
+gap> DegreeIndeterminate(zero,102);
+-infinity
 
 #
 # TryGcdCancelExtRepPolynomials
