@@ -296,8 +296,8 @@ DeclareGlobalFunction("SubdirectDiagonalPerms");
 ##  (1,2,3)
 ##  ]]></Example>
 ##  <P/>
-##  The matrices in the image of <A>alpha</A> may lie over a subfield of
-##  <A>F</A>:
+##  The matrices in the image of <A>alpha</A> may have entries in a
+##  subfield of <A>F</A>:
 ##  <Example><![CDATA[
 ##  gap> g:=Group((3,4,5),(1,2,3));;
 ##  gap> mats:=[[[Z(2^2),0*Z(2)],[0*Z(2),Z(2^2)^2]],
