@@ -69,8 +69,9 @@
  *   void AddList(Obj list, Obj obj GAP_GC_ROOTED_BY_ARG(0)) GAP_GC_CANSAFEPOINT;
  *                          ^ on the parameter                ^ on the function
  *
- * Argument indices are zero-based positions in the parameter list, counting
- * every parameter and not just the `Obj` ones.
+ * A parameter annotation is about the parameter it is on; an index in it names
+ * another parameter, counted from zero over all parameters, not just the
+ * `Obj` ones. Above, `obj` is rooted by argument 0, `list`.
  *
  * Put the annotation on a function's FIRST declaration, normally the one in
  * the header. Clang silently ignores an annotation that appears only on a
@@ -108,9 +109,8 @@
  * JuliaLang/julia#62889, hence precise mode needs Julia 1.14.
  *
  * The annotations below let a callee describe its rooting to the analyzer, so
- * that callers need no frame of their own. `GAP_GC_ROOTED_BY_ARG(0)` on
- * AddList's second parameter, for instance, says the value is stored into the
- * first argument and is rooted by whatever roots that.
+ * that callers need no frame of their own: AddList stores `obj` into `list`,
+ * so whatever roots `list` roots `obj` too.
  */
 #if defined(__clang_gcanalyzer__)
 
