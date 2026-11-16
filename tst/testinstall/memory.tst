@@ -9,9 +9,9 @@ gap> g := H.1 ^ 2;; h := H.2 ^ 2;;
 gap> IsMatrix(g);
 true
 gap> IsMatrixObj(g);
-true
+false
 gap> IsRowListMatrix(g);
-true
+false
 gap> StripMemory(g);
 [ [ Z(3)^0, 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0, 0*Z(3) ], 
   [ 0*Z(3), 0*Z(3), Z(3)^0 ] ]

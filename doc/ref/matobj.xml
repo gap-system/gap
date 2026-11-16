@@ -362,8 +362,6 @@ that do not delegate to <Ref Oper="NewVector"/> and
 The following filters define vector objects for which the functionality
 described in this chapter is supported.
 
-<#Include Label="IsGF2VectorRep">
-<#Include Label="Is8BitVectorRep">
 <#Include Label="IsPlistVectorRep">
 <#Include Label="IsZmodnZVectorRep">
 
@@ -376,8 +374,6 @@ described in this chapter is supported.
 The following filters define matrix objects for which the functionality
 described in this chapter is supported.
 
-<#Include Label="IsGF2MatrixRep">
-<#Include Label="Is8BitMatrixRep">
 <#Include Label="IsPlistMatrixRep">
 <#Include Label="IsGenericMatrixRep">
 <#Include Label="IsZmodnZMatrixRep">

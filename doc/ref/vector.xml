@@ -176,6 +176,8 @@ avoid errors and/or loss of performance, when one vector from some
 collection happens to have all of its entries over a smaller field
 than the <Q>natural</Q> field of the problem.
 
+<#Include Label="IsGF2VectorRep">
+<#Include Label="Is8BitVectorRep">
 <#Include Label="ConvertToVectorRep">
 <#Include Label="ImmutableVector">
 <#Include Label="NumberFFVector">

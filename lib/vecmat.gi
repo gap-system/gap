@@ -2450,7 +2450,7 @@ end);
 ##
 #M  ZeroVector( len, <vector> )
 ##
-InstallMethod( ZeroVector, "for an int and a gf2 vector",
+InstallOtherMethod( ZeroVector, "for an int and a gf2 vector",
   [IsInt, IsGF2VectorRep],
   function( len, v )
     return ZERO_GF2VEC_2(len);
@@ -2467,7 +2467,7 @@ InstallMethod( ZeroVector, "for an int and a gf2 matrix",
 ##
 ##  Stuff to adhere to new vector/matrix interface:
 ##
-InstallMethod( BaseDomain, "for a gf2 vector",
+InstallOtherMethod( BaseDomain, "for a gf2 vector",
   [ IsGF2VectorRep ], function( v ) return GF(2); end );
 InstallMethod( BaseDomain, "for a gf2 matrix",
   [ IsGF2MatrixRep ], function( m ) return GF(2); end );
@@ -2476,7 +2476,7 @@ InstallMethod( NumberRows, "for a gf2 matrix",
 InstallMethod( NumberColumns, "for a gf2 matrix",
   [ IsGF2MatrixRep ], function( m ) return Length(m[1]); end );
 # FIXME: this breaks down for matrices with 0 rows
-InstallMethod( Vector, "for a list of gf2 elements and a gf2 vector",
+InstallOtherMethod( Vector, "for a list of gf2 elements and a gf2 vector",
   [ IsList and IsFFECollection, IsGF2VectorRep ],
   function( l, v )
     local r;
@@ -2485,7 +2485,24 @@ InstallMethod( Vector, "for a list of gf2 elements and a gf2 vector",
     return r;
   end );
 
-InstallMethodWithRandomSource( Randomize,
+# The generic methods for these require 'IsVectorObj'.
+InstallOtherMethod( Vector, "for a list and a gf2 vector",
+  [ IsList, IsGF2VectorRep ],
+  { l, v } -> NewVector( IsGF2VectorRep, BaseDomain( v ), l ) );
+
+InstallOtherMethod( Vector, "for a vector object and a gf2 vector",
+  [ IsVectorObj, IsGF2VectorRep ],
+  { w, v } -> NewVector( IsGF2VectorRep, BaseDomain( v ), Unpack( w ) ) );
+
+InstallOtherMethod( StandardBasisVector,
+  "for a length, a gf2 vector, and a position",
+  [ IsPosInt, IsGF2VectorRep, IsPosInt ],
+  { len, v, i } -> StandardBasisVector( IsGF2VectorRep, BaseDomain( v ), len, i ) );
+
+# 'List( v )' is a plain list, as for a plain list <v>
+InstallOtherMethod( ListOp, "for a gf2 vector", [ IsGF2VectorRep ], Unpack );
+
+InstallOtherMethodWithRandomSource( Randomize,
     "for a random source and a mutable gf2 vector",
     [ IsRandomSource, IsGF2VectorRep and IsMutable ],
   function( rs, v )
@@ -2542,7 +2559,7 @@ InstallMethod( ExtractSubMatrix, "for a gf2 matrix, and two lists",
     return mm;
   end );
 
-InstallMethod( CopySubVector, "for two gf2 vectors, and two ranges",
+InstallOtherMethod( CopySubVector, "for two gf2 vectors, and two ranges",
   [IsGF2VectorRep, IsGF2VectorRep and IsMutable, IsRange, IsRange],
         function( v, w, f, t )
     local l;
@@ -2593,7 +2610,7 @@ InstallMethodWithRandomSource( Randomize,
 InstallMethod( Unpack, "for a gf2 matrix",
   [IsGF2MatrixRep],
   m -> List( m, Unpack ) );
-InstallMethod( Unpack, "for a gf2 vector",
+InstallOtherMethod( Unpack, "for a gf2 vector",
   [IsGF2VectorRep],
   function( v )
     # converting a copy in the kernel is much faster than 'PlainListCopy',
@@ -2607,7 +2624,7 @@ InstallOtherMethod( KroneckerProduct, "for two gf2 matrices",
   [IsGF2MatrixRep and IsMatrix, IsGF2MatrixRep and IsMatrix],
   KRONECKERPRODUCT_GF2MAT_GF2MAT );
 
-InstallMethod( ConstructingFilter, "for a gf2 vector",
+InstallOtherMethod( ConstructingFilter, "for a gf2 vector",
   [ IsGF2VectorRep ], function(v) return IsGF2VectorRep; end );
 InstallMethod( ConstructingFilter, "for a gf2 matrix",
   [ IsGF2MatrixRep ], function(v) return IsGF2MatrixRep; end );
@@ -2676,7 +2693,7 @@ InstallTagBasedMethod( NewZeroMatrix,
     return m;
   end );
 
-InstallMethod( ChangedBaseDomain, "for a gf2 vector and a finite field",
+InstallOtherMethod( ChangedBaseDomain, "for a gf2 vector and a finite field",
   [ IsGF2VectorRep, IsField and IsFinite ],
   function( v, f )
     local w;
@@ -2709,13 +2726,13 @@ InstallMethod( CompatibleVectorFilter,
   [ IsGF2MatrixRep ],
   M -> IsGF2VectorRep );
 
-InstallMethod( WeightOfVector, "for a gf2 vector",
+InstallOtherMethod( WeightOfVector, "for a gf2 vector",
   [ IsGF2VectorRep ],
   function( v )
     return WeightVecFFE(v);
   end );
 
-InstallMethod( DistanceOfVectors, "for two gf2 vectors",
+InstallOtherMethod( DistanceOfVectors, "for two gf2 vectors",
   [ IsGF2VectorRep, IsGF2VectorRep ],
   function( v, w )
     return DistanceVecFFE(v,w);

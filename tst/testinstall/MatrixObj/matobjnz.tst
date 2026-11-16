@@ -22,13 +22,13 @@ true
 gap> l = v;
 true
 
-# a compressed vector is a vector object with another 'ConstructingFilter'
+# a compressed vector is a list, like 'l'
 gap> c:= ShallowCopy( l );;
 gap> ConvertToVectorRep( c, 7 );;
 gap> v = c;
-false
+true
 gap> c = v;
-false
+true
 
 # Arithmetic results stay in the ZmodnZ representations, for a prime
 # modulus (base domain GF(7), entries are FFEs) and a composite one.
