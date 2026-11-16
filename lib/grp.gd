@@ -4551,9 +4551,9 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##    (1,12)(2,11)(3,6)(4,8)(5,9)(7,10) ])
 ##  gap> gens := GeneratorsOfGroup( M12 );;
 ##  gap> iso := IsomorphismFpGroupByGenerators( M12, gens );;
-##  #I  the image group has 3 gens and 24 rels of total length 669
+##  #I  the image group has 3 gens and 17 rels of total length 365
 ##  gap> iso := IsomorphismFpGroupByGenerators( M12, gens );;
-##  #I  the image group has 3 gens and 20 rels of total length 414
+##  #I  the image group has 3 gens and 21 rels of total length 479
 ##  ]]></Example>
 ##  <P/>
 ##  Also in the case of a permutation group <A>G</A>, the function
@@ -4602,7 +4602,7 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##  #I  the image group has 3 gens and 11 rels of total length 92
 ##  gap> iso := IsomorphismFpGroupByGenerators( M12, gens :
 ##  >                                           method := "fast" );;
-##  #I  the image group has 3 gens and 136 rels of total length 3170
+##  #I  the image group has 3 gens and 136 rels of total length 3293
 ##  ]]></Example>
 ##  <P/>
 ##  Though the option <C>method := "regular"</C> is only checked in the case
@@ -4624,7 +4624,7 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##    [ [ 0, 1, 0, 0, 0 ], [ 0, 0, 1, 0, 0 ], [ 0, 0, 0, 1, 0 ],
 ##        [ 1, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 1 ] ] ]
 ##  gap> iso := IsomorphismFpGroupByGenerators( G, gens );;
-##  #I  the image group has 2 gens and 11 rels of total length 120
+##  #I  the image group has 2 gens and 9 rels of total length 96
 ##  gap> iso := IsomorphismFpGroupByGenerators( G, gens :
 ##  >                                           method := "regular");;
 ##  #I  the image group has 2 gens and 6 rels of total length 56
