@@ -7,9 +7,10 @@
 **
 **  SPDX-License-Identifier: GPL-2.0-or-later
 **
-**  This header exposes GAP-owned wrappers for runtime GC rooting. In Julia-GC
-**  builds it maps onto Julia's GC frame macros; in other configurations it
-**  compiles away to no-ops.
+**  This header exposes GAP-owned wrappers for runtime GC rooting. In precise
+**  mode (the Julia GC built with DISABLE_STACK_SCAN) it maps onto Julia's GC
+**  frame macros; in every other configuration it compiles away to no-ops,
+**  except that GAP_GC_PUSHARGS still supplies its array.
 */
 
 #ifndef GAP_PRECISE_GC_JULIA_H
@@ -26,6 +27,23 @@ extern "C++" {
 }
 #endif
 
+// Precise mode: the Julia GC without the conservative stack scan. Only then
+// do the rooting macros push frames. With the scan on, the frames would be
+// redundant, and Julia before 1.14 (JuliaLang/julia#62889) crashes on the
+// immediates they hold. The GC analyzer always sees the frames.
+#if defined(DISABLE_STACK_SCAN) || defined(__clang_gcanalyzer__)
+#define GAP_GC_PRECISE 1
+#endif
+
+#ifdef DISABLE_STACK_SCAN
+#if JULIA_VERSION_MAJOR == 1 && JULIA_VERSION_MINOR < 14
+#error "precise mode (DISABLE_STACK_SCAN) needs Julia 1.14 or later"
+#endif
+#endif
+#endif
+
+
+#ifdef GAP_GC_PRECISE
 
 // A root may be the address of a volatile local (one that is modified
 // between GAP_TRY and GAP_CATCH); the cast drops the qualifier the frame
@@ -74,7 +92,11 @@ extern "C++" {
     ((void)0)
 #define GAP_GC_PUSH9(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) \
     ((void)0)
-#define GAP_GC_PUSHARGS(rts, n) ((void)0)
+// The array is still provided: it lives on the C stack, which the collectors
+// of these configurations scan, so a caller need not know which mode it is in.
+// The builtin needs no header; <alloca.h> does not exist on OpenBSD.
+#define GAP_GC_PUSHARGS(rts, n) \
+    ((rts) = (__typeof__(rts))__builtin_alloca(sizeof(void *) * (n)))
 #define GAP_GC_POP() ((void)0)
 
 #endif
