@@ -1527,7 +1527,6 @@ InstallGlobalFunction(CopyToVectorRep,function( v, q )
     fi;
 
     if q = 2 then
-        Assert(2, ForAll(vc, elm -> elm in GF(2)));
         if common > 2 and common mod 2 = 0 then
             common := SMALLEST_FIELD_VECFFE(vc);
         fi;
@@ -1539,7 +1538,6 @@ InstallGlobalFunction(CopyToVectorRep,function( v, q )
         return res;
     elif q <= 256 then
         if common <> q then
-            Assert(2, ForAll(vc, elm -> elm in GF(q)));
             if IsPlistRep(vc) and  GcdInt(common,q) > 1  then
                 common := SMALLEST_FIELD_VECFFE(vc);
             fi;
@@ -1709,7 +1707,9 @@ local sf, rep, ind, ind2, row, i,big,l,nr;
   ind2:=[]; # rows to rebuild
   for i in [1..nr] do
     if not rep(matrix[i]) then
+      # converting a compressed vector in place does not check its entries
       if big or IsLockedRepresentationVector(matrix[i])
+        or IsGF2VectorRep(matrix[i]) or Is8BitVectorRep(matrix[i])
         or (IsMutable(matrix[i]) and not change) then
         Add(ind2,i);
       else
@@ -1754,9 +1754,7 @@ local sf, rep, ind, ind2, row, i,big,l,nr;
     fi;
   else
     for i in ind2 do
-      row := ShallowCopy(matrix[i]);
-      ConvertToVectorRepNC(row, sf);
-      matrix[i] := row;
+      matrix[i] := CopyToVectorRep(matrix[i], sf);
     od;
     for i in ind do
       ConvertToVectorRepNC(matrix[i],sf);
