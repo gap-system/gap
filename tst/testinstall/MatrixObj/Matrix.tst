@@ -57,4 +57,15 @@ gap> m = Matrix( IsGenericMatrixRep, GF(2), [1,2,3,4] * Z(2), 2 );
 true
 
 #
+# vector objects as rows of compressed matrices
+#
+gap> m := Matrix( GF(9), [ Vector( IsPlistVectorRep, GF(9), [ Z(9), 0*Z(9) ] ),
+>                          Vector( IsPlistVectorRep, GF(9), [ 0*Z(9), Z(9)^0 ] ) ] );;
+gap> Is8BitMatrixRep( m ) and m = [ [ Z(9), 0*Z(9) ], [ 0*Z(9), Z(9)^0 ] ];
+true
+gap> m := Matrix( GF(2), [ Vector( IsPlistVectorRep, GF(2), [ Z(2), 0*Z(2) ] ) ] );;
+gap> IsGF2MatrixRep( m ) and m = [ [ Z(2), 0*Z(2) ] ];
+true
+
+#
 gap> STOP_TEST("Matrix.tst");
