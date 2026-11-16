@@ -176,7 +176,16 @@
 #define GAP_GC_NOTSAFEPOINT_ENTER_CONDITIONAL(success) \
     __attribute__((annotate("julia_notsafepoint_enter_conditional:" #success)))
 
+// Declared as in Julia's analyzer_annotations.h, which julia.h includes in a
+// Julia GC build. Julia before 1.14 takes a `void *`, so the analyzer needs
+// Julia 1.14.
+#ifdef __cplusplus
+extern "C" {
+#endif
 void JL_GC_PROMISE_ROOTED(const void * v) GAP_GC_NOTSAFEPOINT;
+#ifdef __cplusplus
+}
+#endif
 #define GAP_GC_PROMISE_ROOTED(v) JL_GC_PROMISE_ROOTED(v)
 
 #elif defined(__clang_safetyanalysis__)
