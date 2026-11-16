@@ -101,8 +101,9 @@
  *
  * Use the fixed-arity `GAP_GC_PUSH1`,...,`GAP_GC_PUSH9` for GAP `Obj` locals,
  * and `GAP_GC_PUSHARGS` for an array of them; the latter stores the values
- * themselves, in a frame it allocates on the C stack. Both kinds may hold
- * GAP's tagged immediates: Julia's root scanner skips those since
+ * themselves, in a frame it allocates on the C stack and assigns to its first
+ * argument, which must be a `jl_value_t **` as for JL_GC_PUSHARGS. Both kinds
+ * may hold GAP's tagged immediates: Julia's root scanner skips those since
  * JuliaLang/julia#62889, hence precise mode needs Julia 1.14.
  *
  * The annotations below let a callee describe its rooting to the analyzer, so
