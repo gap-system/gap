@@ -579,8 +579,8 @@ for every <M>\gamma \in Z^1( G/M, M )</M>.
 Additional attributes and properties of a group can be derived
 from computing its Schur cover.
 For example, if <M>G</M> is a finitely presented group, the
-derived subgroup of a Schur cover of <M>G</M> is invariant and isomorphic to
-the <Ref Oper="NonabelianExteriorSquare"/> value of <M>G</M>,
+derived subgroups of all Schur covers of <M>G</M> are isomorphic,
+namely to the <Ref Oper="NonabelianExteriorSquare"/> value of <M>G</M>,
 see <Cite Key="BJR87"/>.
 
 <Index Subkey="see EpimorphismSchurCover">Darstellungsgruppe</Index>

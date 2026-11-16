@@ -174,7 +174,7 @@ such that <M>G^{(i)} = G^{(i+1)}</M>.
 as a base.)
 Note that different reduced bases for one permutation group <M>G</M>
 may have different lengths.
-For example, the irreducible degree <M>416</M> permutation representation
+For example, the primitive degree <M>416</M> permutation representation
 of the Chevalley Group <M>G_2(4)</M> possesses reduced bases of lengths
 <M>5</M> and <M>7</M>.
 <P/>
