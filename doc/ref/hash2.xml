@@ -202,22 +202,6 @@ The actual function used will vary very much on the type of objects. However
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Dense hash tables">
-<Heading>Dense hash tables</Heading>
-
-Dense hash tables are used for hashing dense sets without collisions,
-in particular integers.
-Keys are stored as an unordered list and values as an
-array with holes. The position of a value is given by
-the function returned by <Ref Oper="DenseIntKey"/>,
-and so this function must be one-to-one.
-
-<#Include Label="DenseHashTable">
-
-</Section>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Sparse hash tables">
 <Heading>Sparse hash tables</Heading>
 

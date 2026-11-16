@@ -16,6 +16,10 @@
 # call as big,perm,aut (the latter two can be groups or generator lists,
 # optional permiso.
 # returns two groups with corresponding generators
+# If permiso (an isomorphism from the automorphism group to the perm group)
+# is given, both groups are isomorphic. Otherwise the automorphisms only
+# need to map onto the permutations (e.g. lifts of automorphisms of a factor
+# group), so the automorphism group can be larger and its size is not set.
 BindGlobal( "AGSRReducedGens", function(arg)
 local
   # -- inputs (from arg) --
@@ -74,6 +78,8 @@ local
     if Length(arg)>3 then
       i:=InverseGeneralMapping(arg[4]);
     else
+      # Without permiso this map need not be well-defined. Its images of
+      # `s` are then just some automorphisms mapping to `s`.
       i:=GroupHomomorphismByImagesNC(big,Group(auts),permgens,auts);
     fi;
     auts:=List(s,x->ImagesRepresentative(i,x));
@@ -85,7 +91,10 @@ local
   fi;
   SetIsGroupOfAutomorphismsFiniteGroup(auts,true);
   SetIsFinite(auts,true);
-  SetSize(auts,Size(bp));
+  if Length(arg)>3 then
+    # only with an isomorphism the orders agree
+    SetSize(auts,Size(bp));
+  fi;
   if A<>fail then
     if HasInnerAutomorphismsAutomorphismGroup(A) then
       SetInnerAutomorphismsAutomorphismGroup(auts,
@@ -480,6 +489,11 @@ local
              # contributed an element
   pp,        # false, or the smallest prime dividing the representative's
              # order
+  cpos,      # position of an earlier class containing a coprime power of
+             # the current representative (or fail)
+  ppos,      # position of the class of the prime order power of the
+             # current representative
+  o,         # loop variable over exponents coprime to the element order
   t,         # NOTE: two roles -- an orbit of a class representative, and
              # a right transversal
   new,       # a preimage element being tested by the condition
@@ -500,8 +514,13 @@ local
     c:=Filtered(c,x->not Representative(x)^
       (Order(Representative(x))/SmallestPrimeDivisor(Order(Representative(x))))
       in ups);
-    # this also implies prime powers after the respective primes
-    SortBy(c,Size);
+    # Sort by class size, ties broken by element order. As C(x)<=C(x^k),
+    # the class of a proper power x^k is never larger than the class of x
+    # and has smaller order, so this guarantees that the classes of all
+    # powers of x are processed before the class of x. (Sorting by size
+    # alone does not, as classes of equal size -- e.g. in abelian
+    # factors -- come in arbitrary order.)
+    SortBy(c,x->[Size(x),Order(Representative(x))]);
 
     Info(InfoMorph,3,Length(c)," classes with ",Sum(c,Size)," subgroups");
   end;
@@ -615,25 +634,40 @@ local
       fi;
     fi;
 
-    # if prime powers, the primes must have worked
+    # `worked[k]` records whether class k meets S (after processing).
     a:=Representative(c[i]);
 
-    # no coprime power in earlier class?
-    have:=worked<>fail and
-      ForAll(Filtered([2..Order(a)-1],o->Gcd(o,Order(a))=1),
-        o->PositionProperty(c{[1..i-1]},x->a^o in x)=fail);
+    # Coprime power in an earlier class? Then both classes generate the same
+    # cyclic subgroups, so class i meets S exactly if that class does.
+    cpos:=fail;
+    if worked<>fail then
+      for o in Filtered([2..Order(a)-1],o->Gcd(o,Order(a))=1) do
+        if cpos=fail then
+          cpos:=PositionProperty(c{[1..i-1]},x->a^o in x);
+        fi;
+      od;
+    fi;
+    have:=worked<>fail and cpos=fail;
 
+    # if prime powers, the class of prime order powers must meet S
     pp:=false;
     if have and not IsPrimeInt(Order(a)) then
       pp:=SmallestPrimeDivisor(Order(a));
       a:=a^(Order(a)/pp);
-      have:=worked[PositionProperty(c,x->a in x)];
+      # by the sorting, this class has been processed already
+      ppos:=PositionProperty(c{[1..i-1]},x->a in x);
+      if ppos<>fail then
+        have:=worked[ppos];
+      fi; # otherwise (should not happen) simply test the class
     fi;
 
     if have then
-      have:=false;
       a:=Representative(c[i]);
       t:=Orbit(q,a);
+      # Elements already tested in the `SubgroupProperty` phase are not
+      # tested again. Those that lie in S still show that the class meets S.
+      have:=ForAny(Filtered(t,x->x in havetest),
+              x->PreImagesRepresentativeNC(hom,x) in S);
       t:=Filtered(t,x->not x in havetest);
 
       cnt:=0;
@@ -649,7 +683,13 @@ local
             ", len=",Size(c[i])," newtest=", Length(t),
             " found ",cnt,": ",Size(S));
     fi;
-    if worked<>fail then Add(worked,have);fi;
+    if worked<>fail then
+      if cpos<>fail then
+        Add(worked,worked[cpos]); # same cyclic subgroups as class cpos
+      else
+        Add(worked,have);
+      fi;
+    fi;
     i:=i+1;
   od;
 
@@ -957,7 +997,6 @@ local
                  # should be reduced
   makeaqiso,     # helper: build the permutation representation AQiso/AQP of
                  # the current AQ
-  stablim,       # helper: stabilizer computation with an index limit
   precond,       # the cheap pre-condition test for an automorphism (or fail)
   cond,          # the (expensive) condition testing whether a factor
                  # automorphism lifts
@@ -1144,51 +1183,6 @@ local
       fi;
     fi;
 
-  end;
-
-  stablim:=function(gp,cond,lim)
-  local
-    no,    # the normalizer of Aperm in gp (or Aperm itself when the index is
-           # small)
-    same,  # flag: no improvement was made in the last pass (loop until true)
-    sz,    # the size of Aperm at the start of a pass, to detect growth
-    ac,    # an ascending chain from Aperm up towards gp
-    sub,   # the intermediate subgroup on which SubgroupProperty is run
-           # (return basis)
-    i;     # index selecting a step of the ascending chain
-    same:=true;
-    repeat
-      sz:=Size(Aperm);
-      if Size(gp)/Size(Aperm)>lim then
-        no:=Normalizer(gp,Aperm);
-        if Size(no)>Size(Aperm) and Size(no)<Size(gp) then
-          stablim(no,cond,lim);
-        fi;
-      else
-        no:=Aperm;
-      fi;
-      if Size(gp)/Size(Aperm)>lim then
-        ac:=AscendingChain(gp,Aperm);
-        List(Union(List(ac,GeneratorsOfGroup)),cond); # try generators...
-        if Size(Aperm)>sz then
-          ac:=Unique(List(ac,x->ClosureGroup(Aperm,x)));
-        fi;
-
-        i:=First([Length(ac),Length(ac)-1..1],x->Size(ac[x])/sz<=lim);
-        sub:=ac[i];
-      else
-        sub:=gp;
-      fi;
-      if Size(sub)>Size(Aperm) and not IsSubset(no,sub) then
-        SubgroupProperty(sub,cond,Aperm);
-      fi;
-      same:=Size(Aperm)=sz;
-      if not same then
-        Info(InfoMorph,3,"stablim improves by ",Size(Aperm)/sz,
-        " remaining ",Size(gp)/Size(Aperm));
-      fi;
-    until same;
-    return sub=gp;
   end;
 
   ff:=FittingFreeLiftSetup(G);
@@ -1679,7 +1673,14 @@ local
         A:=AQ;
       fi;
     else
-      A!.makeaqiso:=makeaqiso;
+      # Delay building the permutation representation. The caller invokes
+      # this function when it is needed. `makeaqiso` only sets the local
+      # variables `AQiso`, `AQP` (and possibly replaces `AQ`), so the
+      # isomorphism must be returned for the caller to store.
+      A!.makeaqiso:=function()
+        makeaqiso();
+        return AQiso;
+      end;
     fi;
 
     # do we use induced radical automorphisms to help next step?
@@ -2303,7 +2304,19 @@ local
   local map,as;
     if not HasIsomorphismPermGroup(origa) then
       if IsBound(origa!.makeaqiso) then
-        origa!.makeaqiso();
+        map:=origa!.makeaqiso();
+        Unbind(origa!.makeaqiso); # closure is not needed any longer
+        if not IsIdenticalObj(Source(map),origa) then
+          # `makeaqiso` may have changed to a group with different
+          # generators (but the same elements). Use that group, as the
+          # isomorphism is defined on it.
+          if IsIdenticalObj(a,origa) then
+            a:=Source(map);
+          fi;
+          origa:=Source(map);
+          SetIsGroupOfAutomorphismsFiniteGroup(origa,true);
+        fi;
+        SetIsomorphismPermGroup(origa,map);
       else
         as:=NiceMonomorphism(origa:autactbase:=aab,someCharacteristics:=somechar,
           directs:=aab,

@@ -347,6 +347,25 @@ gap> v * v;
 gap> m * m = m;
 true
 
+# GF(2) and GF(4) vectors written over a larger field
+gap> v := [ 1, 0, 1 ] * Z(2);;  ConvertToVectorRep( v, 2 );;
+gap> w := CopyToVectorRep( v, 4 );;  Q_VEC8BIT( w );  w = v;  IsGF2VectorRep( v );
+4
+true
+true
+gap> Q_VEC8BIT( CopyToVectorRep( w, 16 ) );  Q_VEC8BIT( CopyToVectorRep( w, 8 ) );
+16
+8
+gap> IsMutable( CopyToVectorRep( Immutable( v ), 4 ) );
+false
+gap> w := ShallowCopy( v );;  ConvertToVectorRep( w, 4 );  Q_VEC8BIT( w );  w = v;
+4
+4
+true
+gap> w := ShallowCopy( v );;  ConvertToVectorRep( w, GF(256) );  Q_VEC8BIT( w );
+256
+256
+
 # test greased matrix mult
 gap> m := ImmutableMatrix( F, IdentityMat( 150, F ) );
 <an immutable 150x150 matrix over GF2>
@@ -465,6 +484,34 @@ Error, CopyToVectorRep: Vector cannot be written over GF(1)
 gap> ConvertToVectorRep( w, 1 );
 Error, ConvertToVectorRepNC: Vector cannot be written over GF(1)
 gap> SetAssertionLevel( lev );
+
+# CopyToVectorRep(NC) must not return a mutable empty input as the copy
+gap> v:= [];;
+gap> w:= CopyToVectorRep( v, 2 );;
+gap> IsIdenticalObj( v, w );
+false
+gap> IsGF2VectorRep( w ) and IsMutable( w );
+true
+gap> Add( w, Z(2) );; v;
+[  ]
+gap> v:= [];;
+gap> w:= CopyToVectorRepNC( v, 4 );;
+gap> IsIdenticalObj( v, w );
+false
+gap> Is8BitVectorRep( w ) and Q_VEC8BIT( w ) = 4 and IsMutable( w );
+true
+gap> Add( w, Z(2) );; v;
+[  ]
+gap> IsMutable( CopyToVectorRep( Immutable( [] ), 3 ) );
+false
+gap> IsMutable( CopyToVectorRepNC( Immutable( [] ), 3 ) );
+false
+gap> CopyToVectorRep( [], 257 );
+fail
+gap> CopyToVectorRep( [], 6 );
+Error, CopyToVectorRep: Vector cannot be written over GF(6)
+gap> IsGF2VectorRep( CopyToVectorRepNC( [], 2 ) );
+true
 
 #
 gap> STOP_TEST("vecmat.tst");

@@ -411,9 +411,9 @@ end);
 ##  <Log><![CDATA[
 ##  gap> ShowDeclarationsOfOperation(IsFinite);
 ##  Available declarations for operation <Property "IsFinite">:
-##    1: GAPROOT/lib/coll.gd:1451 with 1 argument, and filters [ IsListOrCollection ]
-##    2: GAPROOT/lib/float.gd:212 with 1 argument, and filters [ IsFloat ]
-##    3: GAPROOT/lib/ctbl.gd:1195 with 1 argument, and filters [ IsNearlyCharacterTable ]
+##    1: GAPROOT/lib/coll.gd:1459 with 1 argument, and filters [ IsListOrCollection ]
+##    2: GAPROOT/lib/float.gd:247 with 1 argument, and filters [ IsFloat ]
+##    3: GAPROOT/lib/ctbl.gd:1206 with 1 argument, and filters [ IsNearlyCharacterTable ]
 ##  ]]></Log>
 ##  </Description>
 ##  </ManSection>
@@ -438,8 +438,8 @@ BIND_GLOBAL("ShowDeclarationsOfOperation",function(oper)
     for i in [1.. Length(locs)] do
         r := List(reqs[i], r -> JoinStringsWithSeparator(f(r), " and \c"));
         Print(String(i, 3), ": ", locs[i][1], "\c:", locs[i][2], "\c",
-              " with ", Length(reqs[i]), "\c",
-              " arguments, and filters [ ", "\c",
+              " with ", Pluralize(Length(reqs[i]), "argument"), "\c",
+              ", and filters [ ", "\c",
               JoinStringsWithSeparator(r, ", "),
               " ]\n"
               );

@@ -144,11 +144,6 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: "Set up Python"
-        uses: actions/setup-python@v7
-        with:
-          python-version: "3.11"
-
       - uses: gap-actions/setup-cygwin@v2
         if: ${{ runner.os == 'Windows' }}
         with:
@@ -229,7 +224,6 @@ jobs:
                elif [ "$RUNNER_OS" == "macOS" ]; then
                    brew install autoconf zlib # pkg-config resp. pkgconf are pre-installed
                fi
-               python -m pip install gcovr
 
       # Setup ccache, to speed up repeated compilation of the same binaries
       # (i.e., GAP and the packages). Only branch runs store the cache: a PR

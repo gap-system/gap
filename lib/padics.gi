@@ -1108,6 +1108,10 @@ function(x)
     od;
 
     Lp := InverseMatMod(L, fam!.prime);
+    if Lp = fail then
+        Error( "<x> is not invertible; the polynomials defining its family ",
+               "violate the conditions of PadicExtensionNumberFamily" );
+    fi;
 
     # E is the right side (1,0,...,0) and Beta is just (0,...,0)
     E := List([1..fam!.n], i->0);

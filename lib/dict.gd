@@ -25,11 +25,11 @@
 ##  Requires: nothing
 ##  Exports:
 ##      Category IsHash.
-##      Representations IsDenseHashRep and IsSparseHashRep.
+##      Representation IsSparseHashRep.
 ##      Operations PrintHashWithNames, Iterator, GetHashEntry, AddHashEntry,
 ##        GetHashEntryAtLastIndex, SetHashEntryAtLastIndex, SetHashEntry,
 ##        [AddHashEntryAtLastIndex], HashFunct, DenseIntKey.
-##      Functions DenseHash, SparseHash.
+##      Function SparseHashTable.
 ##      Variables MaxViewSize, LastHashIndex.
 ##
 
@@ -418,54 +418,6 @@ DeclareOperation( "HashKeyEnumerator", [ IsHash ] );
 ##  </ManSection>
 ##
 DeclareFilter( "TableHasIntKeyFun" );
-
-
-#############################################################################
-#############################################################################
-##
-##  Dense hash tables
-##
-##  Used for hashing dense sets without collisions, in particular integers.
-##  Stores keys as an unordered list and values as an
-##  array with holes.  The position of a value is given by the function
-##  returned by DenseIntKey, and so this function must be one-to-one.
-##
-#############################################################################
-#############################################################################
-
-#############################################################################
-##
-#R  IsDenseHashRep
-##
-##  <ManSection>
-##  <Filt Name="IsDenseHashRep" Arg='obj' Type='Representation'/>
-##
-##  <Description>
-##  The dense representation for hash tables.
-##  </Description>
-##  </ManSection>
-##
-DeclareRepresentation( "IsDenseHashRep",
-    # as we will call `Enumerator' to get the *current* value list, a hash
-    # table may not be attribute storing.
-    IsComponentObjectRep and IsHash );
-
-#############################################################################
-##
-#F  DenseHashTable( )
-##
-##  <#GAPDoc Label="DenseHashTable">
-##  <ManSection>
-##  <Func Name="DenseHashTable" Arg=''/>
-##
-##  <Description>
-##  Construct an empty dense hash table.  This is the only correct way to
-##  construct such a table.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareGlobalFunction( "DenseHashTable" );
 
 
 #############################################################################
