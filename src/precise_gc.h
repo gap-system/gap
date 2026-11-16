@@ -157,8 +157,12 @@
 // Function does not hit GC safepoints.
 #define GAP_GC_NOTSAFEPOINT \
     __attribute__((annotate("julia_not_safepoint")))
-// Function may hit a GC safepoint. The GCChecker assumes this by default, so
-// the annotation only matters to the thread safety analysis below.
+// Function may hit a GC safepoint. Julia passes these to the GCChecker too,
+// as "julia_can_safepoint" (a call stays a safepoint even where the inlined
+// body reaches none) and, for the ENTER/LEAVE forms, as region transitions.
+// We do not: Julia's first-declaration check would then demand the annotation
+// on every function-pointer type such a function is stored in. So they only
+// matter to the thread safety analysis below.
 #define GAP_GC_CANSAFEPOINT
 #define GAP_GC_CANSAFEPOINT_ENTER
 #define GAP_GC_CANSAFEPOINT_LEAVE
