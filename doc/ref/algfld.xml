@@ -22,9 +22,10 @@ It is important to note that different extensions of the same field are
 entirely different (and its elements lie in different families), even if
 mathematically one could be embedded in the other one.
 <P/>
-Currently &GAP; does not support extension fields of fields <M>K</M>
-when <M>K</M> itself is an extension field: such fields can be created,
-but arithmetic in them fails.
+Towers, that is extensions of a field <M>K</M> that is itself an algebraic
+extension, are only partially supported: sums, products and inverses work,
+but for example adding a rational number to an element, or computing its
+minimal polynomial over the rationals, fails.
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
