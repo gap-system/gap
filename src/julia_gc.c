@@ -67,8 +67,11 @@
 // should not be enabled by default.
 // #define VALIDATE_MARKING
 
-// if DISABLE_STACK_SCAN is defined, all stack scanning is disabled
-// #define DISABLE_STACK_SCAN
+// if DISABLE_STACK_SCAN is defined, all stack scanning is disabled; precise
+// mode does so, since its GC frames take the place of the scan
+#ifdef GAP_ENABLE_PRECISE_GC
+#define DISABLE_STACK_SCAN
+#endif
 
 // if USE_GAP_INSIDE_JULIA is defined, then some hacks which are needed
 // to make julia-inside-gap work are disabled. This is mainly for use in
