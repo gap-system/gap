@@ -155,10 +155,9 @@ fi;
 ##  whenever coset tables or augmented coset tables are created. Its value
 ##  may be <C>"lenlex"</C> or <C>"semilenlex"</C>.
 ##  If it is <C>"lenlex"</C> coset tables will be standardized using
-##  all their columns as defined in Charles Sims' book
-##  (this is the new default standard of &GAP;). If it is <C>"semilenlex"</C>
-##  they will be standardized using only their generator columns (this was
-##  the original &GAP; standard).
+##  all their columns as defined in Charles Sims' book.
+##  If it is <C>"semilenlex"</C>
+##  they will be standardized using only their generator columns.
 ##  The default value of <Ref Var="CosetTableStandard"/> is <C>"lenlex"</C>.
 ##  </Description>
 ##  </ManSection>

@@ -551,9 +551,7 @@ mathematical category is declared as a (&GAP;) category.)
 Eventually the choice between category and property often  becomes a matter of
 taste or style.
 <P/>
-Sometimes there is even a third possibility (if you have &GAP;&nbsp;3 experience
-this might reflect most closely <Q>an object whose operations record is
-<C>XYOps</C></Q>): We might want to indicate this new concept simply by the fact
+Sometimes there is even a third possibility: We might want to indicate this new concept simply by the fact
 that certain attributes are set. In this case we could simply use the
 respective attribute tester(s).
 <P/>

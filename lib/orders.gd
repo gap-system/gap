@@ -564,7 +564,6 @@ DeclareProperty("IsShortLexOrdering",IsOrdering and
 ##  returns <C>IsLessThanOrEqualUnder(<A>ord</A>, <A>u</A>, <A>v</A>)</C>
 ##  where <A>ord</A> is the short less ordering for the family of <A>u</A>
 ##  and <A>v</A>.
-##  (This is here for compatibility with &GAP;&nbsp;4.2.)
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -717,7 +716,6 @@ DeclareProperty("IsBasicWreathProductOrdering",IsOrdering);
 ##  returns <C>IsLessThanOrEqualUnder(<A>ord</A>, <A>u</A>, <A>v</A>)</C>
 ##  where <A>ord</A> is the basic wreath product ordering for the family of
 ##  <A>u</A> and <A>v</A>.
-##  (This is here for compatibility with &GAP;&nbsp;4.2.)
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
