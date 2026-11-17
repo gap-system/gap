@@ -251,6 +251,11 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled }}
       - name: "Run tests"
         run: ${{ matrix.extra }} dev/ci.sh ${{ matrix.test-suites }}
+      # Unit tests of src/packmat/ in the 32-bit build, where the portable
+      # code paths are the default; a step of its own keeps the job name.
+      - name: "Run packmat unit tests"
+        if: ${{ contains(matrix.extra, 'ABI=32') }}
+        run: ${{ matrix.extra }} dev/ci.sh testpackmat
       - name: "Upload pdf manuals"
         if: ${{ contains(matrix.test-suites, 'makemanuals') }}
         uses: actions/upload-artifact@v7

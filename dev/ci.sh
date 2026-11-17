@@ -388,6 +388,10 @@ GAPInput
     $MAKE V=1 testkernel
     ;;
 
+  testpackmat)
+    $MAKE V=1 check-packmat
+    ;;
+
   testmockpkg)
     # for debugging it is useful to know what sysinfo.gap contains at this point
     echo "Content of sysinfo.gap:"
