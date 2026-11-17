@@ -145,14 +145,10 @@ TypInputFile * GetCurrentInput(void)
 
 /****************************************************************************
 **
-*F  GetNextChar() . . . . . . . . . . . . . . . get the next character, local
-**
-**  'GetNextChar' returns the next character from  the current input file.
+*F  GetNextCharSlow() . . . . . . . slow path of 'GetNextChar', see 'io.h'
 */
-Char GetNextChar(TypInputFile * input)
+Char GetNextCharSlow(TypInputFile * input)
 {
-    input->ptr++;
-
     // handle line continuation, i.e., backslash followed by new line; and
     // also the case when we run out of buffered data
     while (*input->ptr == '\\' || *input->ptr == 0) {
@@ -235,9 +231,15 @@ Char PEEK_CURR_CHAR(TypInputFile * input)
 
 void SKIP_TO_END_OF_LINE(TypInputFile * input)
 {
+    // the line buffer usually holds the whole rest of the line, so scan it
+    // in one go; 'GetLine' is needed only for lines longer than the buffer
     Char c = *input->ptr;
-    while (c != '\n' && c != '\r' && c != '\377')
-        c = GET_NEXT_CHAR_NO_LC(input);
+    while (c != '\n' && c != '\r' && c != '\377') {
+        input->ptr += strcspn(input->ptr, "\n\r\377");
+        c = *input->ptr;
+        if (c == 0)
+            c = GetLine(input);
+    }
 }
 
 

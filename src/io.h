@@ -389,7 +389,19 @@ UInt CloseOutput(TypOutputFile * output);
 
 TypInputFile * GetCurrentInput(void);
 
-Char GetNextChar(TypInputFile * input);
+// handle the character at 'input->ptr' if it is the end of the buffered
+// data or a backslash, which may start a line continuation
+Char GetNextCharSlow(TypInputFile * input);
+
+// the scanner calls this once per input character, so keep it inline
+EXPORT_INLINE Char GetNextChar(TypInputFile * input)
+{
+    Char c = *++input->ptr;
+    if (c != '\\' && c != 0)
+        return c;
+    return GetNextCharSlow(input);
+}
+
 Char GET_NEXT_CHAR_NO_LC(TypInputFile * input);
 Char PEEK_NEXT_CHAR(TypInputFile * input);
 Char PEEK_CURR_CHAR(TypInputFile * input);
