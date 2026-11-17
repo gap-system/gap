@@ -281,6 +281,32 @@ end );
 
 #############################################################################
 ##
+#F  IsPathInList( <path>, <paths> )
+##
+##  Whether <path> is one of <paths>, up to symlinks. Paths that cannot be
+##  resolved, e.g. as they do not exist, are compared as given.
+##
+BindGlobal( "IsPathInList", function( path, paths )
+    local resolve;
+
+    resolve:= function( p )
+      local real;
+      if IsDirectory( p ) then
+        p:= Filename( p, "" );
+      fi;
+      real:= GAP_realpath( p );
+      if real = fail then
+        return p;
+      fi;
+      return real;
+    end;
+
+    return resolve( path ) in List( paths, resolve );
+end );
+
+
+#############################################################################
+##
 #F  InitializePackagesInfoRecords()
 ##
 ##  In earlier versions, this function had an argument; now we ignore it.
@@ -306,7 +332,7 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
         for pkgdirstrs in GAPInfo.CommandLineOptions.packagedirs do
             pkgdirs:= List( List( SplitString( pkgdirstrs, ";" ), GAP_realpath ), Directory );
             for pkgdir in pkgdirs do
-                if not pkgdir in GAPInfo.PackageDirectories then
+                if not IsPathInList( pkgdir, GAPInfo.PackageDirectories ) then
                     Add( GAPInfo.PackageDirectories, pkgdir );
                 fi;
             od;
@@ -315,10 +341,11 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
     # add any new pkg directories to the list
     pkgdirs:= DirectoriesLibrary( "pkg" );
     if pkgdirs <> fail then
-        pkgdirs:= Filtered( pkgdirs, dir -> not dir in GAPInfo.PackageDirectories );
-        if not IsEmpty(pkgdirs) then
-            Append( GAPInfo.PackageDirectories, pkgdirs );
-        fi;
+        for pkgdir in pkgdirs do
+            if not IsPathInList( pkgdir, GAPInfo.PackageDirectories ) then
+                Add( GAPInfo.PackageDirectories, pkgdir );
+            fi;
+        od;
     fi;
 
     if IsEmpty(GAPInfo.PackageDirectories) then
@@ -1856,7 +1883,7 @@ InstallGlobalFunction( SetPackagePath, function( pkgname, pkgpath )
 #F  ExtendRootDirectories( <paths> )
 ##
 InstallGlobalFunction( ExtendRootDirectories, function( rootpaths )
-    local i;
+    local i, new, path;
 
     rootpaths:= List( rootpaths, GAP_realpath );
     # 'DirectoriesLibrary' concatenates root paths with directory names.
@@ -1865,11 +1892,14 @@ InstallGlobalFunction( ExtendRootDirectories, function( rootpaths )
         rootpaths[i]:= Concatenation( rootpaths[i], "/" );
       fi;
     od;
-    rootpaths:= Filtered( rootpaths, path -> not path in GAPInfo.RootPaths );
-    if not IsEmpty( rootpaths ) then
-      # Append the new root paths.
-      GAPInfo.RootPaths:= Immutable( Concatenation( GAPInfo.RootPaths,
-          rootpaths ) );
+    new:= ShallowCopy( GAPInfo.RootPaths );
+    for path in rootpaths do
+      if not IsPathInList( path, new ) then
+        Add( new, path );
+      fi;
+    od;
+    if Length( new ) > Length( GAPInfo.RootPaths ) then
+      GAPInfo.RootPaths:= Immutable( new );
       # Clear the cache.
       GAPInfo.DirectoriesLibrary:= AtomicRecord( rec() );
       # Reread the package information.
@@ -1896,7 +1926,7 @@ InstallGlobalFunction( ExtendPackageDirectories, function( paths_or_dirs )
         Error("input must be a list of path strings or directory objects");
       fi;
       p:= Directory( GAP_realpath( p ) );
-      if not p in GAPInfo.PackageDirectories then
+      if not IsPathInList( p, GAPInfo.PackageDirectories ) then
         Add( GAPInfo.PackageDirectories, p );
         changed:= true;
       fi;
