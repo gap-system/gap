@@ -55,6 +55,8 @@
 ##  which explain how to substitute them.
 ##  Usually, old names will be available for several releases;
 ##  they may be removed when they don't seem to be used any more.
+##  Names marked as removed no longer work; the other names in the tables
+##  of this chapter are still available.
 ##  <P/>
 ##  Information about obsolete names is printed by <Ref Func="Info"/> using the
 ##  <Ref InfoClass="InfoObsolete"/> Info class.
