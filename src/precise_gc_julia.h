@@ -74,10 +74,10 @@ extern "C++" {
 #error "GAP_ENABLE_PRECISE_GC needs Julia 1.14 or later"
 #endif
 
-// GAP_GC_PRECISE says whether the macros push frames: in precise mode, and
-// whenever the GC analyzer runs, so that it sees them also when it checks a
-// build with the stack scan. In such a build the frames would only cost time,
-// and Julia before 1.14 crashes on the immediates they hold.
+// GAP_GC_PRECISE controls whether the macros push frames: namely in precise
+// mode, and whenever the GC analyzer runs, so that it sees them also when it
+// checks a build with the stack scan. In such a build the frames would only
+// cost time, and Julia before 1.14 crashes on the immediates they hold.
 #if defined(GAP_ENABLE_PRECISE_GC) || defined(__clang_gcanalyzer__)
 #define GAP_GC_PRECISE 1
 #endif
@@ -87,10 +87,10 @@ extern "C++" {
 
 #ifdef GAP_GC_PRECISE
 
-// A local modified between GAP_TRY and GAP_CATCH must be `volatile`. Julia's
-// frame macros store each root as a `void *`, and converting the address of
-// such a local to that type implicitly drops `volatile`, which GCC rejects
-// with -Werror; the explicit cast is allowed.
+// A local variable modified between GAP_TRY and GAP_CATCH must be
+// `volatile`. Julia's frame macros store each root as a `void *`, and
+// converting the address of such a variable to that type implicitly drops
+// `volatile`, which GCC rejects with -Werror; the explicit cast is allowed.
 #define GAP_GC_ROOT_(a) ((void *)(a))
 
 #define GAP_GC_PUSH1(arg1) JL_GC_PUSH1(GAP_GC_ROOT_(arg1))
@@ -119,8 +119,10 @@ extern "C++" {
                 GAP_GC_ROOT_(arg4), GAP_GC_ROOT_(arg5), GAP_GC_ROOT_(arg6), \
                 GAP_GC_ROOT_(arg7), GAP_GC_ROOT_(arg8), GAP_GC_ROOT_(arg9))
 
-// JL_GC_PUSHARGS takes only a `jl_value_t **`; going through one lets `rts`
-// be an `Obj *`.
+// JL_GC_PUSHARGS(rts, n) assigns a `jl_value_t **` to `rts`, which does not
+// compile if `rts` has another type, such as `Obj *`. So let it assign to a
+// temporary of type `jl_value_t **` instead, and copy that to `rts` with a
+// cast.
 #define GAP_GC_PUSHARGS(rts, n) \
     do { \
         jl_value_t ** gap_gc_pushargs_; \
@@ -143,12 +145,12 @@ extern "C++" {
 #define GAP_GC_PUSH9(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) \
     ((void)0)
 
-// GAP_GC_PUSHARGS must still provide the slots, since code using it stores
-// into them, and zero them as JL_GC_PUSHARGS does; the collectors of these
-// configurations scan the C stack, so the values stay alive. __builtin_alloca
-// needs no header (<alloca.h> does not exist on OpenBSD). If your compiler
-// lacks it, try `alloca` instead, and please tell the GAP team, so that we
-// can find a more portable solution.
+// Even if precise mode is disabled, GAP_GC_PUSHARGS must still provide the
+// slots, since code using it stores into them, and zero them as
+// JL_GC_PUSHARGS does. The collector then scans the C stack, so the values
+// stay alive. __builtin_alloca needs no header (<alloca.h> does not exist on
+// OpenBSD). If your compiler lacks it, try `alloca` instead, and please tell
+// the GAP team, so that we can find a more portable solution.
 #define GAP_GC_PUSHARGS(rts, n) \
     ((rts) = (__typeof__(rts))__builtin_memset( \
          __builtin_alloca(sizeof(void *) * (n)), 0, sizeof(void *) * (n)))
