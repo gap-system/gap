@@ -45,6 +45,7 @@
 #include "hpc/aobjects.h"
 #endif
 
+#include <errno.h>
 #include <limits.h>
 
 
@@ -198,8 +199,7 @@ Char PEEK_NEXT_CHAR(TypInputFile * input)
 
     // read next character; this will increment input->ptr and then
     // possibly read in new line data, and so even might end up resetting
-    // input->ptr to point at the start of the line buffer, which is
-    // equal to Input->line+1
+    // input->ptr to point at the start of the new line
     char next = GetNextChar(input);
 
     // push back the previous character: first, return input->ptr to the
@@ -208,7 +208,7 @@ Char PEEK_NEXT_CHAR(TypInputFile * input)
     // back buffer"
     GAP_ASSERT(input->ptr > input->line);
     input->ptr--;
-    if (input->ptr == input->line)
+    if (input->ptr == input->lineStart - 1)
         *input->ptr = c;
 
     // return the next character
@@ -358,10 +358,23 @@ UInt OpenInput(TypInputFile * input, const Char * filename)
 
     input->gapnameid = LookupSymbol(&FilenameSymbolTable, filename);
 
+    // read regular files in place; the terminals need the prompt and line
+    // editing of 'SyFgets', and on Windows 'SyFgets' also translates line
+    // ends
+#ifdef SYS_IS_WINDOWS
+    input->inPlace = FALSE;
+#else
+    input->inPlace = (file != 0 && file != 2);
+#endif
+
     // start with an empty line
     input->line[0] = '\0';    // init the pushback buffer
     input->line[1] = '\0';    // empty line buffer
     input->ptr = input->line + 1;
+    input->lineStart = input->line + 1;
+    input->lineEnd = input->line + 1;
+    input->dataEnd = input->line + 1;
+    input->lineEndChar = '\0';
     input->number = 1;
     input->lastErrorLine = 0;
 
@@ -400,11 +413,13 @@ UInt OpenInputStream(TypInputFile * input, Obj stream, BOOL echo)
     }
     input->echo = echo;
     input->gapnameid = LookupSymbol(&FilenameSymbolTable, "stream");
+    input->inPlace = FALSE;
 
     // start with an empty line
     input->line[0] = '\0';    // init the pushback buffer
     input->line[1] = '\0';    // empty line buffer
     input->ptr = input->line + 1;
+    input->lineStart = input->line + 1;
     input->number = 1;
     input->lastErrorLine = 0;
 
@@ -470,7 +485,10 @@ UInt CloseInput(TypInputFile * input)
 
 void FlushRestOfInputLine(TypInputFile * input)
 {
-    input->ptr[0] = input->ptr[1] = '\0';
+    input->ptr[0] = '\0';
+    // in place, the byte after 'lineEnd' belongs to the next line
+    if (!input->inPlace || input->ptr < input->lineEnd)
+        input->ptr[1] = '\0';
 }
 
 /****************************************************************************
@@ -955,6 +973,11 @@ void SetPrompt(const char * prompt)
 */
 static Int GetLine2(TypInputFile * input)
 {
+    // initialize 'input->ptr'
+    input->line[0] = '\0';    // init the pushback buffer
+    input->line[1] = '\0';    // empty line buffer
+    input->ptr = input->line + 1;
+
     Char * buffer = input->line + 1;
     UInt   length = sizeof(input->line) - 1;
 
@@ -1023,6 +1046,71 @@ static Int GetLine2(TypInputFile * input)
 
 /****************************************************************************
 **
+*F  GetLineInPlace( <input> )  . . . . . . . . . get a line in place, local
+**
+**  'GetLineInPlace' makes the next line of a file the current line without
+**  copying it, by ending it with a NUL in the buffer. Like 'SyFgets', it
+**  splits lines that do not fit into 'line' after the pushback buffer.
+**  It returns 0 at the end of the file.
+*/
+static Int GetLineInPlace(TypInputFile * input)
+{
+    // the space for data, minus the pushback buffer and the final NUL
+    const UInt maxlen = sizeof(input->line) - 2;
+
+    Char * start = input->lineEnd;
+    Char * end;
+    *start = input->lineEndChar;
+
+    // find the end of the line, reading more data as needed
+    UInt scanned = 0;
+    for (;;) {
+        const UInt avail = input->dataEnd - start;
+        const UInt limit = avail < maxlen ? avail : maxlen;
+        Char *     nl = memchr(start + scanned, '\n', limit - scanned);
+        if (nl) {
+            end = nl + 1;
+            break;
+        }
+        if (avail >= maxlen) {
+            end = start + maxlen;
+            break;
+        }
+        scanned = avail;
+
+        // move the partial line to the front, and fill the rest
+        if (start != input->line + 1) {
+            memmove(input->line + 1, start, avail);
+            start = input->line + 1;
+            input->dataEnd = start + avail;
+        }
+        Int n;
+        do {
+            errno = 0;
+            n = SyReadWithBuffer(input->file, input->dataEnd,
+                                 input->line + 1 + maxlen - input->dataEnd);
+        } while (n < 0 && errno == EAGAIN);
+        if (n <= 0) {
+            if (avail == 0)
+                return 0;
+            end = input->dataEnd;
+            break;
+        }
+        input->dataEnd += n;
+    }
+
+    start[-1] = '\0';    // init the pushback buffer
+    input->ptr = start;
+    input->lineStart = start;
+    input->lineEnd = end;
+    input->lineEndChar = *end;
+    *end = '\0';
+    return 1;
+}
+
+
+/****************************************************************************
+**
 *F  GetLine( <input> ) . . . . . . . . . . . . . . . . . .  get a line, local
 **
 **  'GetLine'  fetches another  line from  the  input 'Input' into the buffer
@@ -1057,20 +1145,24 @@ static Char GetLine(TypInputFile * input)
     }
 
     // bump the line number
-    if (input->ptr > input->line && input->ptr[-1] == '\n') {
+    if (input->ptr >= input->lineStart && input->ptr[-1] == '\n') {
         input->number++;
     }
 
-    // initialize 'input->ptr', no errors on this line so far
-    input->line[0] = '\0';    // init the pushback buffer
-    input->line[1] = '\0';    // empty line buffer
-    input->ptr = input->line + 1;
+    // no errors on this line so far
     input->lastErrorLine = 0;
 
     // try to read a line
-    if (!GetLine2(input)) {
-        input->ptr[0] = '\377';
-        input->ptr[1] = '\0';
+    if (input->inPlace ? !GetLineInPlace(input) : !GetLine2(input)) {
+        // signal the end of the file by a line holding only '\377'
+        input->line[0] = '\0';
+        input->line[1] = '\377';
+        input->line[2] = '\0';
+        input->ptr = input->line + 1;
+        input->lineStart = input->line + 1;
+        input->lineEnd = input->line + 2;
+        input->dataEnd = input->line + 2;
+        input->lineEndChar = '\0';
     }
 
     // if necessary echo the line to the logfile
