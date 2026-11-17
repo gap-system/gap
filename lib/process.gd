@@ -91,13 +91,13 @@
 ##  gap> ls := PathSystemProgram( "ls" );;
 ##  gap> stdin := InputTextUser();;
 ##  gap> stdout := OutputTextUser();;
-##  gap> path := DirectoriesSystemPrograms();;
-##  gap> Process( path[1], ls, stdin, stdout, ["-c"] );;
-##  awk    ls     mkdir
-##  gap> # current directory, here the root directory
-##  gap> Process( DirectoryCurrent(), ls, stdin, stdout, ["-c"] );;
-##  bin    lib    trans  tst    CVS    grp    prim   thr    two
-##  src    dev    etc    tbl    doc    pkg    small  tom
+##  gap> # the directory with GAP's vim support files
+##  gap> Process( DirectoriesLibrary( "etc/vim" )[1], ls, stdin, stdout, [] );;
+##  README.vim-utils
+##  debug.vim
+##  debugvim.txt
+##  gap.vim
+##  gap_indent.vim
 ##  gap> # create a temporary directory
 ##  gap> tmpdir := DirectoryTemporary();;
 ##  gap> Process( tmpdir, ls, stdin, stdout, ["-c"] );;
@@ -158,7 +158,7 @@
 ##  0
 ##  gap> CloseStream(a);
 ##  gap> Print(str);
-##  Fri Jul 11 09:04:23 MET DST 1997
+##  Mon Nov 16 13:50:23 CET 2026
 ##  ]]></Log>
 ##  </Description>
 ##  </ManSection>

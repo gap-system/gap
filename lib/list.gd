@@ -1056,7 +1056,7 @@ DeclareOperation( "PositionBound", [ IsList ] );
 ##  gap> PositionsBound([,1,,3]);
 ##  [ 2, 4 ]
 ##  gap> PositionsBound([]);
-##  []
+##  [  ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1625,7 +1625,7 @@ DeclareOperation( "Shuffle", [IsDenseList and IsMutable] );
 ##  [ 1, 4, 5, 5, 6, 7 ]
 ##  gap> SortBy(list, x -> x mod 3);
 ##  gap> list; # Sorted by mod 3
-##  [ 6, 1, 4, 7, 5, 5]
+##  [ 6, 1, 4, 7, 5, 5 ]
 ##  gap> list := [ [0,6], [1,2], [1,3], [1,5], [0,4], [3,4] ];;
 ##  gap> Sort( list, function(v,w) return v*v < w*w; end );
 ##  gap> list;  # sorted according to the Euclidean distance from [0,0]

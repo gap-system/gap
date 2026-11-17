@@ -3986,6 +3986,17 @@ DeclareSynonym( "SubgroupNC", SubmagmaWithInversesNC );
 ##  <P/>
 ##  Note that currently very little functionality beyond an element test
 ##  exists for groups created this way.
+##  <Example><![CDATA[
+##  gap> g:=Group((1,2,3,4),(1,2));;
+##  gap> u:=SubgroupByProperty(g,i->3^i=3);
+##  <subgrp of Group([ (1,2,3,4), (1,2) ]) by property>
+##  gap> (1,3) in u; (1,4) in u; (1,5) in u;
+##  false
+##  true
+##  false
+##  gap> GeneratorsOfGroup(u);
+##  [ (1,2), (1,4,2) ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -4019,16 +4030,14 @@ DeclareAttribute( "ElementTestFunction", IsGroup );
 ##  creates a subgroup of <A>G</A> which at this point is not yet specified
 ##  further (but will be later, for example by assigning a generating set).
 ##  <Example><![CDATA[
-##  gap> u:=SubgroupByProperty(g,i->3^i=3);
-##  <subgrp of Group([ (1,2,3,4), (1,2) ]) by property>
-##  gap> (1,3) in u; (1,4) in u; (1,5) in u;
-##  false
-##  true
-##  false
-##  gap> GeneratorsOfGroup(u);
-##  [ (1,2), (1,4,2) ]
+##  gap> g:=Group((1,2,3,4),(1,2));;
 ##  gap> u:=SubgroupShell(g);
 ##  <group>
+##  gap> SetGeneratorsOfGroup(u,[(1,2),(3,4)]);
+##  gap> u;
+##  Group([ (1,2), (3,4) ])
+##  gap> IsSubgroup(g,u);
+##  true
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

@@ -907,7 +907,7 @@ DeclareCategory( "IsInputOutputStream", IsInputStream and
 ##  process, which is expected to exit.
 ##  <Log><![CDATA[
 ##  gap> d := DirectoryCurrent();
-##  dir("./")
+##  dir("/home/user/")
 ##  gap> f := PathSystemProgram("rev");
 ##  "/usr/bin/rev"
 ##  gap> s := InputOutputLocalProcess(d,f,[]);
