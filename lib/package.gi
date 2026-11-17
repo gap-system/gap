@@ -330,7 +330,7 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
     # the first time this is called, add the cmd line args to the list
     if IsEmpty(GAPInfo.PackageDirectories) then
         for pkgdirstrs in GAPInfo.CommandLineOptions.packagedirs do
-            pkgdirs:= List( List( SplitString( pkgdirstrs, ";" ), GAP_realpath ), Directory );
+            pkgdirs:= List( List( SplitString( pkgdirstrs, ";" ), GAP_abspath ), Directory );
             for pkgdir in pkgdirs do
                 if not IsPathInList( pkgdir, GAPInfo.PackageDirectories ) then
                     Add( GAPInfo.PackageDirectories, pkgdir );
@@ -1885,7 +1885,7 @@ InstallGlobalFunction( SetPackagePath, function( pkgname, pkgpath )
 InstallGlobalFunction( ExtendRootDirectories, function( rootpaths )
     local i, new, path;
 
-    rootpaths:= List( rootpaths, GAP_realpath );
+    rootpaths:= List( rootpaths, GAP_abspath );
     # 'DirectoriesLibrary' concatenates root paths with directory names.
     for i in [ 1 .. Length( rootpaths ) ] do
       if not EndsWith( rootpaths[i], "/" ) then
@@ -1925,7 +1925,7 @@ InstallGlobalFunction( ExtendPackageDirectories, function( paths_or_dirs )
       elif not IsString( p ) then
         Error("input must be a list of path strings or directory objects");
       fi;
-      p:= Directory( GAP_realpath( p ) );
+      p:= Directory( GAP_abspath( p ) );
       if not IsPathInList( p, GAPInfo.PackageDirectories ) then
         Add( GAPInfo.PackageDirectories, p );
         changed:= true;
