@@ -2928,6 +2928,45 @@ Char * SyRealpath(const Char * path, Char * buf)
 
 /****************************************************************************
 **
+*F  SyAbsolutePath( <path>, <buf> ) . . . . . . . . . . . . . absolute path
+*/
+Char * SyAbsolutePath(const Char * path, Char * buf)
+{
+    // a leading ~ stands for a home directory
+    BOOL isAbsolute = path[0] == '/' || path[0] == '~';
+#ifdef SYS_IS_WINDOWS
+    // drive letter, as in C:/
+    isAbsolute = isAbsolute || (path[0] && path[1] == ':');
+#endif
+    if (isAbsolute) {
+        if (gap_strlcpy(buf, path, GAP_PATH_MAX) >= GAP_PATH_MAX) {
+            errno = ENAMETOOLONG;
+            return NULL;
+        }
+        return buf;
+    }
+
+    if (!getcwd(buf, GAP_PATH_MAX))
+        return NULL;
+#ifdef SYS_IS_WINDOWS
+    for (char * p = buf; *p; p++)
+        if (*p == '\\')
+            *p = '/';
+#endif
+    if (buf[strlen(buf) - 1] != '/')
+        gap_strlcat(buf, "/", GAP_PATH_MAX);
+    while (path[0] == '.' && path[1] == '/')
+        path += 2;
+    if (gap_strlcat(buf, path, GAP_PATH_MAX) >= GAP_PATH_MAX) {
+        errno = ENAMETOOLONG;
+        return NULL;
+    }
+    return buf;
+}
+
+
+/****************************************************************************
+**
 *F  SyIsReadableFile( <name> )  . . . . . . . . . . . is file <name> readable
 **
 **  'SyIsReadableFile'   returns 0  if the   file  <name> is   readable and

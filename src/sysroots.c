@@ -217,14 +217,11 @@ void SySetGapRootPath(const Char * string)
         }
     }
 
-    // make all paths absolute; paths that do not exist are left as is
+    // make all paths absolute
     for (i = 0; i < MAX_GAP_DIRS && SyGapRootPaths[i][0]; i++) {
         char buf[GAP_PATH_MAX];
-        if (SyRealpath(SyGapRootPaths[i], buf)) {
+        if (SyAbsolutePath(SyGapRootPaths[i], buf))
             strxcpy(SyGapRootPaths[i], buf, sizeof(SyGapRootPaths[i]));
-            if (SyGapRootPaths[i][strlen(SyGapRootPaths[i]) - 1] != '/')
-                strxcat(SyGapRootPaths[i], "/", sizeof(SyGapRootPaths[i]));
-        }
     }
 }
 
