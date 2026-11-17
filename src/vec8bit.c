@@ -5665,8 +5665,8 @@ static Obj FuncDETERMINANT_LIST_VEC8BITS(Obj self, Obj mat)
     if (!IS_VEC8BIT_REP(row))
         return TRY_NEXT_METHOD;
     q = FIELD_VEC8BIT(row);
-    width = FIELD_VEC8BIT(row);
-    if (width == 0)
+    width = LEN_VEC8BIT(row);
+    if (width != len)
         return TRY_NEXT_METHOD;
     for (i = 2; i <= len; i++) {
         row = ELM_PLIST(mat, i);
