@@ -36,11 +36,12 @@
 **  push needs a GAP_GC_POP on each way out of the function.
 **
 **  GAP_GC_PUSH1 to GAP_GC_PUSH9 root `Obj` locals. GAP_GC_PUSHARGS(rts, n)
-**  allocates a frame of n slots on the C stack and assigns the slots to
-**  `rts`, which must be a `jl_value_t **` as for Julia's JL_GC_PUSHARGS; the
-**  values stored there are rooted. Both kinds of frame may hold GAP's tagged
-**  immediates: Julia's root scanner skips those since JuliaLang/julia#62889,
-**  which is why precise mode needs Julia 1.14.
+**  allocates n zeroed slots on the C stack and points `rts`, typically an
+**  `Obj *`, at them; in precise mode they form a frame, so the values stored
+**  there are rooted. It supplies the slots in every build, so code using it
+**  needs no `#ifdef`. Both kinds of frame may hold GAP's tagged immediates:
+**  Julia's root scanner skips those since JuliaLang/julia#62889, which is why
+**  precise mode needs Julia 1.14.
 **
 **  Which locals need rooting is what Julia's GC analyzer checks; see
 **  "precise_gc.h" for it, and for the annotations that let a function
@@ -117,7 +118,15 @@ extern "C++" {
     JL_GC_PUSH9(GAP_GC_ROOT_(arg1), GAP_GC_ROOT_(arg2), GAP_GC_ROOT_(arg3), \
                 GAP_GC_ROOT_(arg4), GAP_GC_ROOT_(arg5), GAP_GC_ROOT_(arg6), \
                 GAP_GC_ROOT_(arg7), GAP_GC_ROOT_(arg8), GAP_GC_ROOT_(arg9))
-#define GAP_GC_PUSHARGS(rts, n) JL_GC_PUSHARGS(rts, n)
+
+// JL_GC_PUSHARGS takes only a `jl_value_t **`; going through one lets `rts`
+// be an `Obj *`.
+#define GAP_GC_PUSHARGS(rts, n) \
+    do { \
+        jl_value_t ** gap_gc_pushargs_; \
+        JL_GC_PUSHARGS(gap_gc_pushargs_, n); \
+        (rts) = (__typeof__(rts))gap_gc_pushargs_; \
+    } while (0)
 #define GAP_GC_POP() JL_GC_POP()
 
 #else    // !GAP_GC_PRECISE
@@ -134,13 +143,15 @@ extern "C++" {
 #define GAP_GC_PUSH9(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) \
     ((void)0)
 
-// GAP_GC_PUSHARGS must still provide the array, since code using it stores
-// into it; the collectors of these configurations scan the C stack, so the
-// values stay alive. __builtin_alloca needs no header (<alloca.h> does not
-// exist on OpenBSD). If your compiler lacks it, try `alloca` instead, and
-// please tell the GAP team, so that we can find a more portable solution.
+// GAP_GC_PUSHARGS must still provide the slots, since code using it stores
+// into them, and zero them as JL_GC_PUSHARGS does; the collectors of these
+// configurations scan the C stack, so the values stay alive. __builtin_alloca
+// needs no header (<alloca.h> does not exist on OpenBSD). If your compiler
+// lacks it, try `alloca` instead, and please tell the GAP team, so that we
+// can find a more portable solution.
 #define GAP_GC_PUSHARGS(rts, n) \
-    ((rts) = (__typeof__(rts))__builtin_alloca(sizeof(void *) * (n)))
+    ((rts) = (__typeof__(rts))__builtin_memset( \
+         __builtin_alloca(sizeof(void *) * (n)), 0, sizeof(void *) * (n)))
 #define GAP_GC_POP() ((void)0)
 
 #endif    // GAP_GC_PRECISE
