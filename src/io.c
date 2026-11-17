@@ -215,20 +215,6 @@ Char PEEK_NEXT_CHAR(TypInputFile * input)
     return next;
 }
 
-Char PEEK_CURR_CHAR(TypInputFile * input)
-{
-    Char c = *input->ptr;
-
-    // if no character is available then get one
-    if (c == '\0') {
-        GAP_ASSERT(input->ptr > input->line);
-        input->ptr--;
-        c = GetNextChar(input);
-    }
-
-    return c;
-}
-
 void SKIP_TO_END_OF_LINE(TypInputFile * input)
 {
     // the line buffer usually holds the whole rest of the line, so scan it
@@ -242,24 +228,6 @@ void SKIP_TO_END_OF_LINE(TypInputFile * input)
     }
 }
 
-
-Int GetInputLineNumber(TypInputFile * input)
-{
-    return input ? input->number : 0;
-}
-
-const Char * GetInputLineBuffer(TypInputFile * input)
-{
-    GAP_ASSERT(input);
-    // first byte of Input->line is reserved for the pushback buffer, so add 1
-    return input->line + 1;
-}
-
-Int GetInputLinePosition(TypInputFile * input)
-{
-    GAP_ASSERT(input);
-    return input->ptr - GetInputLineBuffer(input);
-}
 
 UInt GetInputFilenameID(TypInputFile * input)
 {
