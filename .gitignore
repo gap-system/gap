@@ -114,6 +114,7 @@ doc/ref/user_pref_list.xml
 /tst/testlibgap/wscreate
 /tst/testlibgap/wsload
 /tst/testlibgap/trycatch
+/tst/testlibgap/enterstack
 /tst/testlibgap/*.out
 
 /tst/testkernel/dstruct

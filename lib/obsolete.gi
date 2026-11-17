@@ -272,9 +272,8 @@ BindGlobal("R_X", fail);
 InstallMethod( NaturalHomomorphism, "for a group with natural homomorphism stored",
     [ IsGroup ],
 function(G)
-  Info(InfoWarning,0,"The use of `NaturalHomomorphism` for a `FactorGroup`\n",
-    "has been deprecated, as it caused side-effects.\n",
-    "Proceed at risk!");
+  Info(InfoObsolete, 1, "`NaturalHomomorphism` for a `FactorGroup` is ",
+    "deprecated; use `NaturalHomomorphismByNormalSubgroup` instead.");
 
   if IsBound(G!.nathom) then
     return G!.nathom;

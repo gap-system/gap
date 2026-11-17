@@ -6,7 +6,9 @@
 <!-- %W                                                       & Heiko Theißen -->
 <!-- %% -->
 <!-- %% -->
-<!-- %Y  Copyright 1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,   Germany -->
+<!-- %Y  Copyright of GAP belongs to its developers, whose names are too -->
+<!-- %Y  numerous to list here. Please refer to the COPYRIGHT file for details. -->
+<!-- %Y  SPDX-License-Identifier: GPL-2.0-or-later -->
 <!-- %% -->
 <!-- %%  This file contains a tutorial introduction to groups. -->
 <!-- %% -->
@@ -77,7 +79,7 @@ compute the commutator  subgroup  of <E>two</E> arbitrary  subgroups.)  The
 situation is  a bit  different for  Sylow  <M>p</M>-subgroups: The function
 <Ref Func="SylowSubgroup" BookName="ref"/> also  requires  two arguments,
 namely a   group and a
-prime <M>p</M>, but the result is  stored in the  group &ndash;namely together
+prime <M>p</M>, but the result is stored in the group &ndash; namely together
 with the prime  <M>p</M> in a  list that can be accessed with
 <C>ComputedSylowSubgroups</C>, but we
 won't dwell on the details here.
@@ -125,8 +127,8 @@ not know which identifier(s) point  to it, in fact  there can be several.
 In order to    give a name  to  the  group  itself (rather   than  to the
 identifier),
 you can use the function <Ref Func="SetName" BookName="ref"/>.
-We do this with the
-name <C>2^3</C> here which reflects  the mathematical properties of the group.
+We do this with a
+name containing <C>2^3</C> here which reflects  the mathematical properties of the group.
 From now on,  &GAP; will use  this name when  printing the group for us,
 but we still cannot use this name to specify the group to &GAP;, because
 the name does  not know to which group   it was assigned (after  all, you
@@ -306,8 +308,7 @@ Note also the function <Ref Oper="First" BookName="ref"/>,
 used to find the first element in a list which passes some test.
 <P/>
 In this example,
-we  have specified the action function <Ref Func="OnPoints" BookName="ref"/>
-in this example,
+we have specified the action function <Ref Func="OnPoints" BookName="ref"/>,
 which is defined as
 <C>OnPoints( </C><M>d</M><C>, </C><M>g</M><C> ) = </C><M>d</M><C> ^ </C><M>g</M>.
 This <Q>caret</Q>  operator denotes conjugation in  a group if  both
@@ -331,13 +332,14 @@ false
 gap> blocks := Blocks( op, [ 1 .. 112 ] );;
 ]]></Example>
 <P/>
-Note that we  must specify the domain  of the action. You  might think
-that the   functions <Ref Func="IsPrimitive" BookName="ref"/> and
-<Ref Func="Blocks" BookName="ref"/> could use <C>[ 1 .. 112 ]</C> as
-default  domain if no  domain was  given. But  this  is not so  easy,
-for example would the default domain of <C>Group(  (2,3,4)  )</C> be
+Note that we  must specify the domain  of the action for
+<Ref Func="Blocks" BookName="ref"/>.
+Some action functions, such as <Ref Func="IsPrimitive" BookName="ref"/>,
+use the moved points of a permutation group as
+default  domain if no  domain is  given. But  this  is not always what you
+want, for example would the domain of <C>Group(  (2,3,4)  )</C> be
 <C>[ 1 .. 4 ]</C> or <C>[ 2 .. 4 ]</C>?
-To avoid confusion, all action  functions  require that you
+To avoid confusion, it is best to
 specify  the domain of action.
 If we had specified <C>[ 1 .. 113 ]</C> in the
 primitivity test above,  point&nbsp;113  would have been  a fixed point
@@ -400,7 +402,7 @@ gap> Image(nophom,(1,2,3));
 91)(42,72,92)
 ]]></Example>
 <P/>
-In this situation, however (for performance reasons, avoiding computation
+In this situation, however (for performance reasons, avoiding the computation of
 an image that might never be needed) the homomorphism is defined to be not
 into the <E>Image</E> of the action, but into the <E>full symmetric
 group</E>, i.e. it is not automatically surjective. Surjectivity can be
@@ -652,10 +654,11 @@ false
 <P/>
 Remember that we can leave out the function if we mean
 <Ref Func="OnPoints" BookName="ref"/>
-but that we have to specify the action domain for all action functions.
+but that some action functions, such as
+<Ref Func="Blocks" BookName="ref"/>, need the action domain.
 <P/>
 We see that <C>a8_56</C>   is not primitive. This  means  of course   that the
-action  of <C>a8</C>  on  <C>orb[2]</C>  is not  primitive,  because those   two
+action of <C>a8</C> on <C>orbs[2]</C> is not primitive, because those two
 actions are equivalent. So the stabilizer <C>u56</C> is not maximal. Let us
 try to find its supergroups.
 We use the function <Ref Func="Blocks" BookName="ref"/> to find a block
@@ -709,7 +712,7 @@ gap> Index( a8, u28 );
 ]]></Example>
 <P/>
 We know that  the subgroup <C>u28</C> of index  28 is maximal, because we know
-that  <C>a8</C> has no  subgroups  of index 2,  4,  or 7.  However we can also
+that  <C>a8</C> has no  subgroups  of index 2,  4,  7, or 14.  However we can also
 quickly verify this by checking  that <C>a8_56</C> acts primitively on the
 28 blocks.
 <P/>
@@ -741,7 +744,7 @@ of <Ref Func="OnPairs" BookName="ref"/>)
 and   then  pass it   as  action domain  to   the function
 <Ref Func="IsRegular" BookName="ref"/>.
 The positive result of  the regularity test means that this
-action is equivalent  to the actions of <C>u336</C>  on  its 60 elements
+action is equivalent to the action of <C>u336</C> on its 60 elements
 from the right.
 <P/>
 <Example><![CDATA[
@@ -753,7 +756,8 @@ Just as we did in the  case of the  action on the  pairs above, we now
 construct a new permutation group that acts on <C>[ 1 .. 336 ]</C>
 in the same way that <C>a8</C> acts on the cosets of <C>u336</C>.
 But this time we let <C>a8</C> operate on a right transversal,
-just like <C>norm</C> did in the natural homomorphism above.
+just like we did with <C>RightTransversal( a8, norm )</C> in
+Section&nbsp;<Ref Sect="Actions of Groups"/>.
 <P/>
 <Example><![CDATA[
 gap> t := RightTransversal( a8, u336 );;
@@ -768,7 +772,7 @@ gap> blocks := Blocks( a8_336, [1..336] );; blocks[1];
 ]]></Example>
 <P/>
 We see that the union of <C>u336</C> with its 43rd and its 85th coset
-is a subgroup in <C>a8_336</C>, its index is 112.
+is a subgroup of <C>a8</C>, its index is 112.
 We can obtain it as the closure of <C>u336</C> with a representative
 of the  43rd coset, which can be found as the 43rd element
 of the transversal&nbsp;<C>t</C>.
@@ -930,7 +934,7 @@ gap> PreImage( hom, (1,2,3) );
 Error, <map> must be an injective and surjective mapping
 Stack trace:
 *[1] ErrorNoReturn( "<map> must be an injective and surjective ", "mapping" );
-   @ GAPROOT/lib/mapping.gi:262
+   @ GAPROOT/lib/mapping.gi:264
 <function "PreImage">( <arguments> )
  called from read-eval loop at *stdin*:7
 you can enter 'quit;' to quit to outer loop
@@ -1036,8 +1040,8 @@ gap> rev := GroupGeneralMappingByImages( s3, s4,
 >           [(1,2),(2,3)], GeneratorsOfGroup(s4) );;
 ]]></Example>
 <P/>
-Now <M>hom</M> maps <M>a</M> to <M>b</M> if and only if
-<M>rev</M> maps <M>b</M> to <M>a</M>,
+Now <C>hom</C> maps <M>a</M> to <M>b</M> if and only if
+<C>rev</C> maps <M>b</M> to <M>a</M>,
 for <M>a \in</M> <C>s4</C> and <M>b \in</M> <C>s3</C>.
 Since every such <M>b</M> has four preimages under <C>hom</C>,
 it now has four images under <C>rev</C>.
@@ -1139,9 +1143,7 @@ gap> List( gcls, Size );
 ]]></Example>
 <P/>
 All the steps we have made above are automatically performed by &GAP;
-if you simply ask for <C>ConjugacyClasses( grp )</C>,
-provided that &GAP; already knows that <C>grp</C> is finite
-(e.g., because you asked <C>IsFinite( grp )</C> before).
+if you simply ask for <C>ConjugacyClasses( grp )</C>.
 The reason for this is that a finite matrix group like <C>grp</C> is
 <Q>handled by a nice monomorphism</Q>.
 For such groups, &GAP; uses the command
@@ -1165,7 +1167,7 @@ true
 <P/>
 Note that a nice monomorphism might be defined on a larger group than
 <C>grp</C>
-&ndash;so we have to use <C>Image( hom, grp )</C> and not only
+&ndash; so we have to use <C>Image( hom, grp )</C> and not only
 <C>Image( hom )</C>.
 <P/>
 Nice monomorphisms are not only used for matrix groups, but also for

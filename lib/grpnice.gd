@@ -100,7 +100,7 @@ DeclareAttribute("RestrictedNiceMonomorphism", IsObject);
 ##  <Prop Name="IsCanonicalNiceMonomorphism" Arg='nhom'/>
 ##
 ##  <Description>
-##  A nice monomorphism (see <Ref Attr="NiceMonomorphism"/> <A>nhom</A> is
+##  A nice monomorphism (see <Ref Attr="NiceMonomorphism"/>) <A>nhom</A> is
 ##  canonical if the image set will only depend on the set of group elements
 ##  but not on the generating set and <Ref Oper="\&lt;"/> comparison
 ##  of group elements translates through the nice monomorphism.

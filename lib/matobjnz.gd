@@ -29,7 +29,7 @@
 ##  of <A>obj</A>.
 ##  <P/>
 ##  <Ref Filt="IsZmodnZVectorRep"/> implies <Ref Filt="IsCopyable"/>,
-##  thus matrix objects in this representation can be mutable.
+##  thus vector objects in this representation can be mutable.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -43,8 +43,7 @@ DeclareRepresentation( "IsZmodnZVectorRep",
         IsVectorObj and IsPositionalObjectRep
     and IsCopyable
     and IsNoImmediateMethodsObject
-    and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain,
-    [] );
+    and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain );
 
 
 #############################################################################
@@ -62,7 +61,7 @@ DeclareRepresentation( "IsZmodnZVectorRep",
 ##  The matrix entries lie in a residue class ring of the ring of integers
 ##  (see <Ref Func="ZmodnZ"/>).
 ##  This ring is the base domain
-##  (see <Ref Attr="BaseDomain" Label="for a vector object"/>)
+##  (see <Ref Attr="BaseDomain" Label="for a matrix object"/>)
 ##  of <A>obj</A>.
 ##  <P/>
 ##  <Ref Filt="IsZmodnZMatrixRep"/> implies <Ref Filt="IsCopyable"/>,
@@ -96,7 +95,6 @@ DeclareRepresentation( "IsZmodnZMatrixRep",
     and IsCopyable
     and IsNoImmediateMethodsObject
     and HasNumberRows and HasNumberColumns
-    and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain,
-    [] );
+    and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain );
 
 Add( ConstructingFiltersForMatrixGroupElements, IsZmodnZMatrixRep );

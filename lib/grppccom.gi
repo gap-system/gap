@@ -228,7 +228,7 @@ end);
 
 #############################################################################
 ##
-#F  CONextCocycles( <cor>, <ocr>, <S> )    . . . . . . . . . . . . . . . . local
+#F  CONextCocycles( <cor>, <ocr>, <S> ) . . . . . . . . . . . . . . . . local
 ##
 ##  Get the next conjugacy classes of  complements  under  operation  of  <S>
 ##  using affine operation on the onecohomologygroup of <K>  and  <N>,  where
@@ -369,7 +369,7 @@ end );
 
 #############################################################################
 ##
-#F  CONextCentral( <cor>, <ocr>, <S> )     . . . . . . . . . . . . . . . . local
+#F  CONextCentral( <cor>, <ocr>, <S> ) . . . . . . . . . . . . . . . .  local
 ##
 ##  Get the conjugacy classes of complements in case <ocr.module> is central.
 ##
@@ -497,7 +497,7 @@ local   z,K,N,zett,SN,B,L,tau,gens,imgs,A,T,heads,dim,s,v,j,i,root;
     od;
     while j <= dim and heads[j] <> 0  do
       z:=v[j] / B[heads[j]][j];
-      if z <> 0*z  then
+      if not IsZero( z ) then
         s:=s / A[heads[j]] ^ ocr.logTable[LogFFE(z,root)+1];
       fi;
       v:=v - v[j] / B[heads[j]][j] * B[heads[j]];
@@ -816,7 +816,7 @@ end );
 
 #############################################################################
 ##
-#M  COComplementsMain( <G>, <N>, <all>, <fun> )  . . . . . . . . . . . . . local
+#M  COComplementsMain( <G>, <N>, <all>, <fun> ) . . . . . . . . . . . . local
 ##
 ##  Prepare arguments for 'ComplementCO'.
 ##

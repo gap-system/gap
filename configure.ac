@@ -23,7 +23,7 @@ dnl 2. Otherwise (i.e., if no interfaces have been removed or changed),
 dnl    if any interfaces have been added since the last public release, then
 dnl    increment minor.
 dnl
-m4_define([kernel_major_version], [11])
+m4_define([kernel_major_version], [12])
 m4_define([kernel_minor_version], [0])
 
 m4_define([GAP_DEFINE], [GAP_DEFINES="$GAP_DEFINES -D$1"])
@@ -192,6 +192,7 @@ CHECK_COMPILER_BUILTIN([__builtin_clzll],[0]);
 CHECK_COMPILER_BUILTIN([__builtin_popcount],[0]);
 CHECK_COMPILER_BUILTIN([__builtin_popcountl],[0]);
 CHECK_COMPILER_BUILTIN([__builtin_popcountll],[0]);
+CHECK_COMPILER_BUILTIN([__builtin_unwind_init],[]);
 
 dnl determine sizeof of some standard types, so that the GAP headers
 dnl can pick the correct builtins among those we just tested
@@ -422,8 +423,27 @@ AC_MSG_CHECKING([whether to enable debug mode])
 AC_MSG_RESULT([$enable_debug])
 
 AS_IF([test "x$enable_debug" != "xno"],
-    [GAP_DEFINE([GAP_KERNEL_DEBUG=1])
-     GAP_DEFINE([GAP_PRINT_BACKTRACE=1])],
+    [GAP_DEFINE([GAP_KERNEL_DEBUG=1])],
+)
+
+dnl
+dnl User setting: print a backtrace upon crashes. On by default in debug and
+dnl HPC-GAP mode, where crashes are expected often enough to be worth it.
+dnl
+AS_IF([test "x$enable_debug" != "xno" -o "x$enable_hpcgap" = "xyes"],
+    [enable_backtrace_default=yes],
+    [enable_backtrace_default=no])
+AC_ARG_ENABLE([backtrace],
+    [AS_HELP_STRING([--enable-backtrace],
+        [print a backtrace upon crashes (default: yes with --enable-debug or --enable-hpcgap, else no)])],
+    [],
+    [enable_backtrace=$enable_backtrace_default]
+    )
+AC_MSG_CHECKING([whether to print backtraces upon crashes])
+AC_MSG_RESULT([$enable_backtrace])
+
+AS_IF([test "x$enable_backtrace" != "xno"],
+    [GAP_DEFINE([GAP_PRINT_BACKTRACE=1])],
 )
 
 dnl
@@ -956,8 +976,6 @@ dnl
 dnl Detect host specific setting
 dnl
 
-GP_C_LONG_ALIGN
-
 case "$host_cpu" in
   sparc* )
     AC_DEFINE([SYS_IS_SPARC], [1], [define as 1 on SPARC architecture to flush register windows])
@@ -1057,8 +1075,6 @@ AX_EXECINFO
 
 AS_IF([test "x$enable_hpcgap" = xyes],[
   AS_BOX([WARNING: Experimental HPC-GAP mode enabled])
-  dnl also enable backtrace, to help debug spurious crashes
-  AC_DEFINE([GAP_PRINT_BACKTRACE], [1], [to enable backtraces upon crashes])
   ])
 
 AS_IF([test "x$enable_macos_tls_asm" = xno],[

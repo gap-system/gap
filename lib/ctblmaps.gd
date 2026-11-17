@@ -38,7 +38,7 @@
 ##  (see Section&nbsp;<Ref Sect="Class Fusions between Character Tables"/>)
 ##  must be known to get information about the embedding or simply to induce
 ##  or restrict characters,
-##  see Section&nbsp;<Ref Sect="Restricted and Induced Class Functions"/>).
+##  see Section&nbsp;<Ref Sect="Restricted and Induced Class Functions"/>.
 ##  <P/>
 ##  These are examples of functions from conjugacy classes which will be
 ##  called <E>maps</E> in the following.
@@ -196,7 +196,7 @@ DeclareAttributeSuppCT( "ComputedPowerMaps",
 ##  <Ref Oper="PossiblePowerMaps"/> returns the list of all maps that have
 ##  the following properties of the <M>p</M>-th power map of <A>tbl</A>.
 ##  (Representative orders are used only if the
-##  <Ref Attr="OrdersClassRepresentatives"/> value of <A>tbl</A> is known.
+##  <Ref Attr="OrdersClassRepresentatives"/> value of <A>tbl</A> is known.)
 ##
 ##  <Enum>
 ##  <Item>
@@ -207,7 +207,7 @@ DeclareAttributeSuppCT( "ComputedPowerMaps",
 ##  </Item>
 ##  <Item>
 ##    Let <M>n</M> be the order of elements in class <M>i</M>.
-##    If <A>prime</A> divides <M>n</M> then the images have order <M>n/p</M>;
+##    If <A>p</A> divides <M>n</M> then the images have order <M>n/p</M>;
 ##    otherwise the images have order <M>n</M>.
 ##    These criteria are checked in <Ref Func="InitPowerMap"/>.
 ##  </Item>
@@ -220,8 +220,8 @@ DeclareAttributeSuppCT( "ComputedPowerMaps",
 ##    then the two values are equal.
 ##    This congruence is checked for the characters specified below in
 ##    the discussion of the <A>options</A> argument;
-##    For linear characters <M>\lambda</M> among these characters,
-##    the condition <M>\chi(g)^p = \chi(g^p)</M> is checked.
+##    for linear characters <M>\lambda</M> among these characters,
+##    the condition <M>\lambda(g)^p = \lambda(g^p)</M> is checked.
 ##    The corresponding function is
 ##    <Ref Func="Congruences" Label="for character tables"/>.
 ##  </Item>
@@ -248,7 +248,7 @@ DeclareAttributeSuppCT( "ComputedPowerMaps",
 ##    For each character <M>\chi</M> of <M>G</M>,
 ##    the symmetrization <M>\psi</M> defined by
 ##    <M>\psi(g) = (\chi(g)^p - \chi(g^p))/p</M> is a character.
-##    This condition is checked for the kernels of all characters
+##    This condition is checked for all characters
 ##    <M>\chi</M> specified below,
 ##    the corresponding function is
 ##    <Ref Func="PowerMapsAllowedBySymmetrizations"/>.
@@ -679,7 +679,7 @@ DeclareOperation( "FusionConjugacyClassesOp",
 ##  computed already by
 ##  <Ref Oper="FusionConjugacyClasses" Label="for two character tables"/> or
 ##  explicitly stored by <Ref Func="StoreFusion"/>
-##  are stored in the <Ref Attr="ComputedClassFusions"/> list of <A>tbl1</A>.
+##  are stored in the <Ref Attr="ComputedClassFusions"/> list of <A>tbl</A>.
 ##  Each entry of this list is a record with the following components.
 ##
 ##  <List>
@@ -706,7 +706,7 @@ DeclareOperation( "FusionConjugacyClassesOp",
 ##  <P/>
 ##  Note that stored fusion maps may differ from the maps returned by
 ##  <Ref Func="GetFusionMap"/> and the maps entered by
-##  <Ref Func="StoreFusion"/> if the table <A>destination</A> has a
+##  <Ref Func="StoreFusion"/> if the destination table has a
 ##  nonidentity <Ref Attr="ClassPermutation"/> value.
 ##  So if one fetches a fusion map from a table <A>tbl1</A> to a table
 ##  <A>tbl2</A> via access to the data in the
@@ -789,7 +789,7 @@ DeclareGlobalFunction( "GetFusionMap" );
 ##  <A>source</A> to <A>destination</A> in the
 ##  <Ref Attr="ComputedClassFusions"/> list of <A>source</A>,
 ##  and adds the <Ref Attr="Identifier" Label="for character tables"/> string
-##  of <A>destination</A> to the <Ref Attr="NamesOfFusionSources"/> list of
+##  of <A>source</A> to the <Ref Attr="NamesOfFusionSources"/> list of
 ##  <A>destination</A>.
 ##  <P/>
 ##  <A>fusion</A> can either be a fusion map (that is, the list of positions
@@ -1174,10 +1174,9 @@ DeclareGlobalFunction( "CompositionMaps" );
 ##  For a parametrized map <A>paramap</A>,
 ##  <Ref Func="InverseMap"/> returns a mutable parametrized map whose
 ##  <M>i</M>-th entry is unbound if <M>i</M> is not in the image of
-##  <A>paramap</A>, equal to <M>j</M> if <M>i</M> is (in) the image of
-##  <C><A>paramap</A>[<A>j</A>]</C> exactly for <M>j</M>,
-##  and equal to the set of all preimages of <M>i</M> under <A>paramap</A>
-##  otherwise.
+##  <A>paramap</A>, equal to <M>j</M> if <M>j</M> is the only position
+##  where <A>paramap</A> has <M>i</M> as (possible) image,
+##  and equal to the set of all such positions otherwise.
 ##  <P/>
 ##  We have
 ##  <C>CompositionMaps( <A>paramap</A>, InverseMap( <A>paramap</A> ) )</C>
@@ -1492,20 +1491,13 @@ DeclareGlobalFunction( "ImproveMaps" );
 ##  The return value is <K>fail</K> if an inconsistency was found.
 ##  Otherwise a record with the components <C>imp1</C>, <C>imp2</C>,
 ##  <C>imp3</C>, <C>imp4</C> is returned, each bound to the list of positions
-##  where the corresponding parametrized map was changed,
+##  where the corresponding parametrized map was changed.
 ##  <P/>
 ##  The optional argument <A>improvements</A> must be a record with
 ##  components <C>imp1</C>, <C>imp2</C>, <C>imp3</C>, <C>imp4</C>.
 ##  If such a record is specified then only diagrams are considered where
 ##  entries of the <M>i</M>-th component occur as preimages of the
 ##  <M>i</M>-th parametrized map.
-##  <P/>
-##  When an inconsistency is detected,
-##  <Ref Func="CommutativeDiagram"/> immediately returns <K>fail</K>.
-##  Otherwise a record is returned that contains four lists <C>imp1</C>,
-##  <M>\ldots</M>, <C>imp4</C>:
-##  The <M>i</M>-th component is the list of classes where the <M>i</M>-th
-##  argument was changed.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> map1:= [[ 1, 2, 3 ], [ 1, 3 ]];; map2:= [[ 1, 2 ], 1, [ 1, 3 ]];;
@@ -1538,13 +1530,13 @@ DeclareGlobalFunction( "CommutativeDiagram" );
 ##  <Description>
 ##  Let <A>inside1</A>, <A>between</A>, <A>inside2</A> be parametrized maps,
 ##  where <A>between</A> is assumed to map each fixed point of <A>inside1</A>
-##  (that is, <A>inside1</A><C>[</C><M>i</M><C>] = </C><A>i</A>)
+##  (that is, <A>inside1</A><C>[</C><M>i</M><C>] = </C><M>i</M>)
 ##  to a fixed point of <A>inside2</A>
 ##  (that is, <A>between</A><C>[</C><M>i</M><C>]</C> is either an integer
-##  that is fixed by <A>inside2</A> or a list that has nonempty intersection
-##  with the union of its images under <A>inside2</A>).
+##  that is fixed by <A>inside2</A> or a list containing a point that
+##  <A>inside2</A> may fix).
 ##  <Ref Func="CheckFixedPoints"/> changes <A>between</A> and <A>inside2</A>
-##  by removing all those entries violate this condition.
+##  by removing all entries that violate this condition.
 ##  <P/>
 ##  When an inconsistency is detected,
 ##  <Ref Func="CheckFixedPoints"/> immediately returns <K>fail</K>.
@@ -1893,7 +1885,7 @@ DeclareGlobalFunction( "ContainedPossibleCharacters" );
 ##  has nonnegative integral scalar product in <A>tbl</A> with all entries of
 ##  <A>constituents</A>.
 ##  This situation is handled by <Ref Func="ContainedCharacters"/>.
-##  Note that the entries of the result list are <E>not</E> necessary linear
+##  Note that the entries of the result list are <E>not</E> necessarily linear
 ##  combinations of <A>constituents</A>,
 ##  and they are <E>not</E> necessarily characters of <A>tbl</A>.
 ##  <P/>
@@ -1990,11 +1982,12 @@ DeclareGlobalFunction( "InitPowerMap" );
 ##  <A>prime</A> a prime integer,
 ##  <A>approxmap</A> a parametrized map that is an approximation for the
 ##  <A>prime</A>-th power map of <A>tbl</A>
-##  (e.g., a list returned by <Ref Func="InitPowerMap"/>,
+##  (e.g., a list returned by <Ref Func="InitPowerMap"/>),
 ##  and <A>quick</A> a Boolean.
 ##  <P/>
 ##  The <A>quick</A> value <K>true</K> means that only those classes are
-##  considered for which <A>approxmap</A> lists more than one possible image.
+##  considered for which <A>approxmap</A> lists more than one possible image;
+##  the default is <K>false</K>.
 ##  <#/GAPDoc>
 ##
 
@@ -2005,7 +1998,7 @@ DeclareGlobalFunction( "InitPowerMap" );
 ##
 ##  <#GAPDoc Label="Congruences">
 ##  <ManSection>
-##  <Func Name="Congruences" Arg='tbl, chars, approxmap, prime, quick'
+##  <Func Name="Congruences" Arg='tbl, chars, approxmap, prime[, quick]'
 ##  Label="for character tables"/>
 ##
 ##  <Description>
@@ -2041,17 +2034,18 @@ DeclareGlobalFunction( "Congruences" );
 ##
 ##  <#GAPDoc Label="ConsiderKernels">
 ##  <ManSection>
-##  <Func Name="ConsiderKernels" Arg='tbl, chars, approxmap, prime, quick'/>
+##  <Func Name="ConsiderKernels" Arg='tbl, chars, approxmap, prime[, quick]'/>
 ##
 ##  <Description>
 ##  <Ref Func="ConsiderKernels"/> replaces the entries of <A>approxmap</A> by
 ##  improved values, according to condition 4.&nbsp;listed in the description
 ##  of <Ref Oper="PossiblePowerMaps"/>.
 ##  <P/>
-##  <Ref Func="Congruences" Label="for character tables"/>
+##  <Ref Func="ConsiderKernels"/>
 ##  returns <K>true</K> if the orders of the
 ##  kernels of all characters in <A>chars</A> divide the order of the group
-##  of <A>tbl</A>, and <K>false</K> otherwise.
+##  of <A>tbl</A> and images remain for all classes,
+##  and <K>false</K> otherwise.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> t:= CharacterTable( "A7.2" );;  init:= InitPowerMap( t, 2 );
@@ -2076,7 +2070,7 @@ DeclareGlobalFunction( "ConsiderKernels" );
 ##  <#GAPDoc Label="ConsiderSmallerPowerMaps">
 ##  <ManSection>
 ##  <Func Name="ConsiderSmallerPowerMaps"
-##   Arg='tbl, approxmap, prime, quick'/>
+##   Arg='tbl, approxmap, prime[, quick]'/>
 ##
 ##  <Description>
 ##  <Ref Func="ConsiderSmallerPowerMaps"/> replaces the entries of
@@ -2166,7 +2160,7 @@ DeclareGlobalFunction( "MinusCharacter" );
 ##  <A>prime</A> a prime integer,
 ##  <A>approxmap</A> a parametrized map that is an approximation of the
 ##  <A>prime</A>-th power map of <A>tbl</A>
-##  (e.g., a list returned by <Ref Func="InitPowerMap"/>,
+##  (e.g., a list returned by <Ref Func="InitPowerMap"/>),
 ##  <A>chars</A> and <A>subchars</A> two lists of (values lists of)
 ##  characters of <A>tbl</A>,
 ##  and <A>parameters</A> a record with components
@@ -2179,7 +2173,9 @@ DeclareGlobalFunction( "MinusCharacter" );
 ##  <Ref Func="PowerMapsAllowedBySymmetrizations"/> replaces the entries of
 ##  <A>approxmap</A> by improved values,
 ##  according to condition 6.&nbsp;listed in the description of
-##  <Ref Oper="PossiblePowerMaps"/>.
+##  <Ref Oper="PossiblePowerMaps"/>,
+##  and returns the list of allowed power maps, which may still be
+##  parametrized; the list is empty if an inconsistency is found.
 ##  <P/>
 ##  More precisely, the strategy used is as follows.
 ##  <P/>
@@ -2383,17 +2379,19 @@ DeclareGlobalFunction( "ConsiderTableAutomorphisms" );
 ##  optional components of the <A>parameters</A> record are
 ##  <C>testdec</C> (the function that tests the decomposability,
 ##  the default is <Ref Func="NonnegIntScalarProducts"/>),
-##  <C>powermaps</C> (the power paps of <A>subtbl</A> that shall be used for
+##  <C>powermaps</C> (the power maps of <A>tbl</A> that shall be used for
 ##  compatibility checks, the default is the <Ref Attr="ComputedPowerMaps"/>
 ##  value),
-##  <C>subpowermaps</C> (the power paps of <A>tbl</A> that shall be used for
-##  compatibility checks, the default is the <Ref Attr="ComputedPowerMaps"/>
+##  <C>subpowermaps</C> (the power maps of <A>subtbl</A> that shall be used
+##  for compatibility checks, the default is the <Ref Attr="ComputedPowerMaps"/>
 ##  value).
 ##  <P/>
 ##  <Ref Func="FusionsAllowedByRestrictions"/> replaces the entries of
 ##  <A>approxmap</A> by improved values,
 ##  according to condition 5.&nbsp;listed in the description of
-##  <Ref Oper="PossibleClassFusions"/>.
+##  <Ref Oper="PossibleClassFusions"/>,
+##  and returns the list of allowed fusion maps, which may still be
+##  parametrized; the list is empty if an inconsistency is found.
 ##  <P/>
 ##  More precisely, the strategy used is as follows.
 ##  <P/>
@@ -2411,7 +2409,7 @@ DeclareGlobalFunction( "ConsiderTableAutomorphisms" );
 ##    inspect.
 ##  </Item>
 ##  <Item>
-##    Otherwise if <C>Indeterminateness( minus )</C> is smaller than
+##    Otherwise if <C>Indeterminateness( restricted )</C> is smaller than
 ##    <C><A>parameters</A>.minamb</C> then <M>\chi</M> is deleted from the
 ##    list of characters.
 ##  </Item>

@@ -137,7 +137,7 @@ DeclareCategoryCollections( "IsRestrictedLieObject" );
 ##  the images in <C>F</C> will be the image of <C>x * y - y * x</C>.
 ##  <P/>
 ##  The standard type of objects in a Lie family <C>F</C> is
-##  <C><A>F</A>!.packedType</C>.
+##  <C>F!.packedType</C>.
 ##  <P/>
 ##  <Index Key="Embedding" Subkey="for Lie algebras"><C>Embedding</C></Index>
 ##  The bijection from <A>Fam</A> to <C>F</C> is given by

@@ -3,7 +3,9 @@
 <!-- %W  meataxe.tex                 GAP documentation        Alexander Hulpke -->
 <!-- %% -->
 <!-- %% -->
-<!-- %Y  Copyright 1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,   Germany -->
+<!-- %Y  Copyright of GAP belongs to its developers, whose names are too -->
+<!-- %Y  numerous to list here. Please refer to the COPYRIGHT file for details. -->
+<!-- %Y  SPDX-License-Identifier: GPL-2.0-or-later -->
 <!-- %% -->
 <!-- %%  This file contains a description of the MeatAxe functions. -->
 <!-- %% -->
@@ -135,7 +137,7 @@ they should have the same number of generators.
 <Func Name="WedgeGModule" Arg='module'/>
 
 <Description>
-<Ref Func="WedgeGModule"/> calculates the wedge product of a <A>G</A>-module.
+<Ref Func="WedgeGModule"/> calculates the wedge product of <A>module</A>.
 That is the action on antisymmetric tensors.
 </Description>
 </ManSection>
@@ -241,7 +243,7 @@ A module is <E>decomposable</E> if it can be written as the direct sum of two
 proper submodules (and <E>indecomposable</E> if not). Obviously every finite
 dimensional module is a direct sum of its indecomposable parts.
 The <E>homogeneous components</E> of a module are the direct sums of isomorphic
-indecomposable components. They are uniquely determined.
+indecomposable components. They are uniquely determined up to isomorphism.
 <P/>
 <ManSection>
 <Func Name="MTX.IsIndecomposable" Arg='module'/>
@@ -555,8 +557,8 @@ the results are unpredictable.
 The isomorphism is given by a matrix <M>M</M>, whose rows give the images of
 the standard basis vectors of <A>module1</A> in the standard basis of
 <A>module2</A>.
-That is, conjugation of the generators of <A>module2</A> with <M>M</M> yields
-the generators of <A>module1</A>.
+That is, conjugation of the generators of <A>module1</A> with <M>M</M> yields
+the generators of <A>module2</A>.
 </Description>
 </ManSection>
 
@@ -681,7 +683,7 @@ is known to be irreducible.
 <Func Name="SMTX.SortHomGModule" Arg='module1, module2, homs'/>
 
 <Description>
-Function to sort the output of <C>Homomorphisms</C>.
+Function to sort the output of <Ref Func="MTX.Homomorphisms"/>.
 </Description>
 </ManSection>
 
@@ -729,8 +731,11 @@ called to obtain a random submodule.
 <Func Name="SMTX.AbsoluteIrreducibilityTest" Arg='module'/>
 
 <Description>
-Tests for absolute irreducibility and sets splitting field degree. It
-neither sets an absolute irreducibility flag, nor tests it.
+Tests for absolute irreducibility and sets splitting field degree.
+It sets the absolute irreducibility flag,
+but it does not simply return a stored absolute irreducibility flag
+because functions calling <Ref Func="SMTX.AbsoluteIrreducibilityTest"/>
+may expect that it sets other flags as well.
 </Description>
 </ManSection>
 
@@ -740,7 +745,7 @@ neither sets an absolute irreducibility flag, nor tests it.
 
 <Description>
 returns the basis of a minimal submodule of <A>module</A> containing the
-indicated composition factor. It assumes <C>Distinguish</C> has been called
+indicated composition factor. It assumes <Ref Func="MTX.Distinguish"/> has been called
 already.
 </Description>
 </ManSection>
@@ -756,11 +761,12 @@ creates the direct sum of two matrix lists.
 
 
 <ManSection>
-<Func Name="SMTX.CompleteBasis" Arg='module, pbasis'/>
+<Func Name="SMTX.CompleteBasis" Arg='matrices, pbasis'/>
 
 <Description>
 extends the partial basis <A>pbasis</A> to a basis of the full space
-by action of <A>module</A>. It returns whether it succeeded.
+by action of the list <A>matrices</A> of generators of an irreducible module.
+It returns whether it succeeded.
 </Description>
 </ManSection>
 
@@ -805,7 +811,7 @@ matrix of <Ref Func="SMTX.AlgEl"/>.
 <Func Name="SMTX.AlgElCharPol" Arg='module'/>
 
 <Description>
-minimal polynomial of <Ref Func="SMTX.AlgEl"/>.
+characteristic polynomial of <Ref Func="SMTX.AlgEl"/>.
 </Description>
 </ManSection>
 

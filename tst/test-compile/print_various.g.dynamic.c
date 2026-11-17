@@ -59,19 +59,13 @@ static Obj  HdlrFunc2 (
  t_3 = NEW_PLIST( T_PLIST, 2 );
  SET_LEN_PLIST( t_3, 2 );
  SET_ELM_PLIST( t_4, 1, t_3 );
- CHANGED_BAG( t_4 );
  SET_ELM_PLIST( t_3, 1, INTOBJ_INT(1) );
- CHANGED_BAG( t_3 );
  SET_ELM_PLIST( t_3, 2, INTOBJ_INT(2) );
- CHANGED_BAG( t_3 );
  t_3 = NEW_PLIST( T_PLIST, 2 );
  SET_LEN_PLIST( t_3, 2 );
  SET_ELM_PLIST( t_4, 2, t_3 );
- CHANGED_BAG( t_4 );
  SET_ELM_PLIST( t_3, 1, INTOBJ_INT(5) );
- CHANGED_BAG( t_3 );
  SET_ELM_PLIST( t_3, 2, INTOBJ_INT(6) );
- CHANGED_BAG( t_3 );
  t_2 = Array2Perm( t_4 );
  t_3 = MakeString( "\n" );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -88,7 +82,6 @@ static Obj  HdlrFunc2 (
  SET_ELM_PLIST( t_2, 1, INTOBJ_INT(1) );
  t_3 = MakeString( "abc" );
  SET_ELM_PLIST( t_2, 2, t_3 );
- CHANGED_BAG( t_2 );
  t_3 = MakeString( "\n" );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
   CALL_2ARGS( t_1, t_2, t_3 );
@@ -106,13 +99,9 @@ static Obj  HdlrFunc2 (
  t_5 = NEW_PLIST( T_PLIST, 3 );
  SET_LEN_PLIST( t_5, 3 );
  SET_ELM_PLIST( t_6, 1, t_5 );
- CHANGED_BAG( t_6 );
  SET_ELM_PLIST( t_5, 1, INTOBJ_INT(1) );
- CHANGED_BAG( t_5 );
  SET_ELM_PLIST( t_5, 2, INTOBJ_INT(2) );
- CHANGED_BAG( t_5 );
  SET_ELM_PLIST( t_5, 3, INTOBJ_INT(3) );
- CHANGED_BAG( t_5 );
  t_4 = Array2Perm( t_6 );
  if ( TNUM_OBJ( t_3 ) == T_FUNCTION ) {
   t_2 = CALL_1ARGS( t_3, t_4 );
@@ -160,7 +149,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 7);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG(t_1);
  AssGVar( G_runtest, t_1 );
  
  /* return; */
@@ -223,7 +211,6 @@ static Int InitLibrary ( StructInitInfo * module )
  SET_ENVI_FUNC( func1, STATE(CurrLVars) );
  body1 = NewFunctionBody();
  SET_BODY_FUNC( func1, body1 );
- CHANGED_BAG( func1 );
  CALL_0ARGS( func1 );
  
  return 0;

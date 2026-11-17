@@ -166,7 +166,7 @@ DeclareOperation( "RoundCycDown" , [ IsCyclotomic ] );
 DeclareGlobalFunction( "CoeffsCyc" );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  DescriptionOfRootOfUnity( <root> )
 ##
@@ -231,7 +231,7 @@ DeclareGlobalFunction( "DescriptionOfRootOfUnity" );
 ##  The following so-called <E>atomic irrationalities</E>
 ##  (see <Cite Key="CCN85" Where="Chapter 7, Section 10"/>)
 ##  can be entered using functions.
-##  (Note that the values are not necessary irrational.)
+##  (Note that the values are not necessarily irrational.)
 ##  <P/>
 ##  <Table Align="lclclcl">
 ##  <Row>
@@ -440,7 +440,7 @@ DeclareGlobalFunction( "ER" );
 ##    <Item><M>(n = <A>N</A>_3)</M></Item>
 ##  </Row>
 ##  <Row>
-##    <Item><C>EW</C>(<A>N</A><C>)</C></Item>
+##    <Item><C>EW(</C><A>N</A><C>)</C></Item>
 ##    <Item>=</Item>
 ##    <Item><M>w_{<A>N</A>}</M></Item>
 ##    <Item>=</Item>
@@ -667,7 +667,7 @@ DeclareGlobalFunction( "NK" );
 ##    <Item><C>4qN&amp;3&amp;5&amp;7-3&amp;4</C></Item>
 ##    <Item>means</Item>
 ##    <Item><M>4 (q_N + q_N^{{*3}} + q_N^{{*5}} + q_N^{{*7}})
-##    - 3 q_N^{{*11}}</M></Item>
+##    - 3 q_N^{{*4}}</M></Item>
 ##  </Row>
 ##  <Row>
 ##    <Item><C>4qN*3&amp;5+&amp;7</C></Item>

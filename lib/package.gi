@@ -1575,6 +1575,23 @@ BindGlobal( "GetPackageNameForPrefix", function( prefix )
 
 #############################################################################
 ##
+#F  PackageExtensionDescription( <entry> )
+##
+##  Return a string naming the package extension <entry> in log messages:
+##  its file, or the packages it needs if it has no file.
+##
+BindGlobal( "PackageExtensionDescription", function( entry )
+    if IsBound( entry.filename ) then
+      return entry.filename;
+    fi;
+    return Concatenation( "for ",
+               JoinStringsWithSeparator( List( entry.needed, l -> l[1] ),
+                                         ", " ) );
+    end );
+
+
+#############################################################################
+##
 #F  LoadPackage( <name>[, <version>][, <banner>] )
 ##
 ##  The global option <C>LoadInfo</C> (with value a mutable record)
@@ -1757,7 +1774,8 @@ InstallGlobalFunction( LoadPackage, function( arg )
         if IsBound( info.Extensions ) then
           for entry in info.Extensions do
             LogPackageLoadingMessage( PACKAGE_DEBUG,
-                Concatenation( "notify extension ", entry.filename ),
+                Concatenation( "notify extension ",
+                    PackageExtensionDescription( entry ) ),
                 pkgname );
             r:= ShallowCopy( entry );
             r.providedby:= pkgname;
@@ -1796,11 +1814,14 @@ InstallGlobalFunction( LoadPackage, function( arg )
     for i in [ 1 .. Length( GAPInfo.PackageExtensionsPending ) ] do
       entry:= GAPInfo.PackageExtensionsPending[i];
       if ForAll( entry.needed, l -> IsPackageLoaded( l[1], l[2] ) ) then
-        ReadPackage( entry.providedby, entry.filename );
+        if IsBound( entry.filename ) then
+          ReadPackage( entry.providedby, entry.filename );
+        fi;
         Add( GAPInfo.PackageExtensionsLoaded, entry );
         Unbind( GAPInfo.PackageExtensionsPending[i] );
         LogPackageLoadingMessage( PACKAGE_DEBUG,
-            Concatenation( "load extension ", entry.filename ),
+            Concatenation( "load extension ",
+                PackageExtensionDescription( entry ) ),
             entry.providedby );
       fi;
     od;
@@ -1827,6 +1848,31 @@ InstallGlobalFunction( LoadAllPackages, function()
         List( RecNames( GAPInfo.PackagesInfo ), LoadPackage );
     fi;
     ResumeMethodReordering();
+    end );
+
+
+#############################################################################
+##
+#F  TestFilesOfPendingPackageExtensions()
+##
+InstallGlobalFunction( TestFilesOfPendingPackageExtensions, function()
+    local result, entry, dir, file, path;
+
+    result:= [];
+    for entry in GAPInfo.PackageExtensionsPending do
+      if not IsBound( entry.testfiles ) then
+        continue;
+      fi;
+      dir:= Directory( GAPInfo.PackagesLoaded.( entry.providedby )[1] );
+      for file in entry.testfiles do
+        # compare real paths, since callers may reach the file via symlinks
+        path:= GAP_realpath( Filename( dir, file ) );
+        if path <> fail then
+          Add( result, [ path, entry.needed ] );
+        fi;
+      od;
+    od;
+    return Set( result );
     end );
 
 
@@ -2520,8 +2566,12 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
                          ForAll( r.needed,
                              l -> IsList( l ) and Length( l ) = 2 and
                                   ForAll( l, IsString ) ) and
-                         IsBound( r.filename ) and IsString( r.filename ) ),
-        "a list of records with components `needed' and `filename'" );
+                         ( not IsBound( r.filename ) or
+                           IsString( r.filename ) ) and
+                         ( not IsBound( r.testfiles ) or
+                           IsFilenameList( r.testfiles ) ) ),
+        Concatenation( "a list of records with component `needed' and ",
+                       "optional components `filename' and `testfiles'" ) );
     TestOption( record, "AvailabilityTest", IsFunction, "a function" );
     TestOption( record, "BannerFunction", IsFunction, "a function" );
     TestOption( record, "BannerString", IsString, "a string" );
@@ -2795,7 +2845,7 @@ Unicode:= "dummy";
 Encode:= "dummy";
 
 InstallGlobalFunction( BibEntry, function( arg )
-    local key, pkgname, pkginfo, GAP, ps, val, entry, author;
+    local key, pkgname, pkginfo, GAP, ps, monthyear, entry, author;
 
     key:= false;
     if   Length( arg ) = 1 and IsString( arg[1] ) then
@@ -2847,6 +2897,23 @@ InstallGlobalFunction( BibEntry, function( arg )
       return Encode( uni, "UTF-8" );
     end;
 
+    # <month> and <year> elements for a date yyyy-mm-dd or dd/mm/yyyy
+    monthyear:= function( date )
+      local val;
+
+      val:= SplitString( date, "-" );
+      if Length( val ) <> 3 then
+        val:= Reversed( SplitString( date, "/" ) );
+      fi;
+      if Length( val ) <> 3 then
+        return "";
+      elif Int( val[2] ) in [ 1 .. 12 ] then
+        val[2]:= NameMonth[ Int( val[2] ) ];
+      fi;
+      return Concatenation( "  <month>", val[2], "</month>\n",
+                            "  <year>", val[1], "</year>\n" );
+    end;
+
     # According to <Cite Key="La85"/>,
     # the supported fields of a Bib&TeX; entry of <C>@misc</C> type are
     # the following.
@@ -2890,18 +2957,6 @@ InstallGlobalFunction( BibEntry, function( arg )
     # the <C>edition</C> component is not supported in the base styles.
 
     if GAP then
-      val:= SplitString( GAPInfo.Date, "-" );
-      if Length( val ) = 3 then
-        if Int( val[2] ) in [ 1 .. 12 ] then
-          val:= Concatenation( "  <month>", NameMonth[ Int( val[2] ) ],
-                               "</month>\n  <year>", val[1], "</year>\n" );
-        else
-          val:= Concatenation( "  <month>", val[2],
-                               "</month>\n  <year>", val[1], "</year>\n" );
-        fi;
-      else
-        val:= "";
-      fi;
       entry:= Concatenation(
         "<entry id=\"", key, "\"><misc>\n",
         "  <title><C>GAP</C> &ndash;",
@@ -2909,7 +2964,7 @@ InstallGlobalFunction( BibEntry, function( arg )
         "         and <C>P</C>rogramming,",
         " <C>V</C>ersion ", GAPInfo.Version, "</title>\n",
         "  <howpublished><URL>https://www.gap-system.org</URL></howpublished>\n",
-        val,
+        monthyear( GAPInfo.Date ),
         "  <key>GAP</key>\n",
         "  <keywords>groups; *; gap; manual</keywords>\n",
         "  <other type=\"organization\">The GAP <C>G</C>roup</other>\n",
@@ -2946,18 +3001,8 @@ InstallGlobalFunction( BibEntry, function( arg )
           "  <howpublished><URL>", pkginfo.PackageWWWHome,
           "</URL></howpublished>\n" ) );
       fi;
-      if IsBound( pkginfo.Date ) and IsDenseList( pkginfo.Date )
-                                 and Length( pkginfo.Date ) = 10 then
-        if Int( pkginfo.Date{ [ 4, 5 ] } ) in [ 1 .. 12 ] then
-          Append( entry, Concatenation(
-            "  <month>", NameMonth[ Int( pkginfo.Date{ [ 4, 5 ] } ) ],
-            "</month>\n",
-            "  <year>", pkginfo.Date{ [ 7 .. 10 ] }, "</year>\n" ) );
-        else
-          Append( entry, Concatenation(
-            "  <month>", pkginfo.Date{ [ 4, 5 ] }, "</month>\n",
-            "  <year>", pkginfo.Date{ [ 7 .. 10 ] }, "</year>\n" ) );
-        fi;
+      if IsBound( pkginfo.Date ) and IsString( pkginfo.Date ) then
+        Append( entry, monthyear( pkginfo.Date ) );
       fi;
       Append( entry, "  <note>" );
 #     Append( entry, "<Package>GAP</Package> package</note>\n" );

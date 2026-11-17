@@ -645,7 +645,7 @@ end );
 
 #############################################################################
 ##
-#F  FindRegularNormalCSPG()  . . . . . . . . . . find a proper normal subgroup
+#F  FindRegularNormalCSPG() . . . . . . . . . . find a proper normal subgroup
 ##
 ##  given perfect, primitive G with regular minimal normal
 ##  subgroup(s), the routine returns one

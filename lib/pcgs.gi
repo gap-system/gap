@@ -1247,7 +1247,7 @@ end );
 #R  IsEnumeratorByPcgsRep
 ##
 DeclareRepresentation( "IsEnumeratorByPcgsRep",
-    IsAttributeStoringRep, [ "pcgs", "sublist" ] );
+    IsAttributeStoringRep );
 
 
 #############################################################################
@@ -1731,8 +1731,7 @@ InstallOtherMethod( PcgsElementaryAbelianSeries, "group list", true,
 ##  then determines the desired exponents in a shadowing pc group
 ##
 DeclareRepresentation( "IsPcgsByPcgsRep",
-    IsPcgsDefaultRep and IsFiniteOrdersPcgs, [ "usePcgs",
-    "shadowFamilyPcgs", "shadowImagePcgs" ] );
+    IsPcgsDefaultRep and IsFiniteOrdersPcgs );
 
 InstallGlobalFunction(PcgsByPcgs,function(gens,use,family,images)
 local pcgs;

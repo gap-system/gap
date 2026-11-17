@@ -82,7 +82,7 @@ InstallMethod( Embedding,
     # compute embedding
     G   := info.groups[i];
     gens := Pcgs( G );
-    imgs := Pcgs(D){[info.first[i] .. info.first[i+1]-1]};
+    imgs := FamilyPcgs(D){[info.first[i] .. info.first[i+1]-1]};
     hom := GroupHomomorphismByImagesNC( G, D, gens, imgs );
     SetIsInjective( hom, true );
 
@@ -111,7 +111,7 @@ InstallMethod( Projection,
 
     # compute projection
     G    := info.groups[i];
-    gens := Pcgs( D );
+    gens := FamilyPcgs( D );
     imgs := Concatenation( List( [1..info.first[i]-1], x -> One( G ) ),
                            Pcgs( G ),
                            List( [info.first[i+1]..Length(gens)], x -> One(G)));

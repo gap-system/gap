@@ -394,7 +394,8 @@ DeclareCategoryKernel( "IsRange",
 ##  <P/>
 ##  Lists created by the syntactic construct
 ##  <C>[ <A>first</A>, <A>second</A>  .. <A>last</A> ]</C>,
-##  see <Ref Sect="Ranges"/>, are in <Ref Filt="IsRangeRep"/>.
+##  see <Ref Sect="Ranges"/>, with at least two elements are in
+##  <Ref Filt="IsRangeRep"/>.
 ##  <P/>
 #   Note that if you modify an <Ref Filt="IsRangeRep"/> object by assigning to
 #   one of its entries, or by using <Ref Oper="Add"/> or <Ref Oper="Append"/>,
@@ -802,7 +803,8 @@ DeclareSynonym( "IsSubsetBlist", IS_SUB_BLIST );
 ##  [ true, true, true, false ]
 ##  ]]></Example>
 ##  <P/>
-##  The function <Ref Func="UnionBlist" Label="for a list"/> is the
+##  The function <Ref Func="UnionBlist" Label="for various boolean lists"/>
+##  is the
 ##  nondestructive counterpart to <Ref Func="UniteBlist"/>.
 ##  </Description>
 ##  </ManSection>
@@ -837,7 +839,8 @@ DeclareSynonym( "UniteBlist", UNITE_BLIST );
 ##  [ true, false, false, false ]
 ##  ]]></Example>
 ##  <P/>
-##  The function <Ref Func="IntersectionBlist" Label="for a list"/> is the
+##  The function
+##  <Ref Func="IntersectionBlist" Label="for various boolean lists"/> is the
 ##  nondestructive counterpart to <Ref Func="IntersectBlist"/>.
 ##  </Description>
 ##  </ManSection>

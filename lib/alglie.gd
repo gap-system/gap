@@ -526,7 +526,7 @@ DeclareAttribute( "LieSolvableRadical", IsAlgebra and IsLieAlgebra );
 ##  <Lie algebra of dimension 102 over Rationals>
 ##  gap> lev:= LeviMalcevDecomposition(K);;
 ##  gap> SemiSimpleType( lev[1] );
-##  "B3 A1"
+##  "A1 B3"
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -659,7 +659,7 @@ DeclareOperation( "AdjointMatrix", [ IsBasis, IsRingElement ] );
 ##  is the orthogonal complement of the subspace <A>U</A> of the Lie algebra
 ##  <A>L</A> with respect to the Killing form <M>\kappa</M>, that is,
 ##  the set <M>U^{{\perp}} = \{ x \in L; \kappa( x, y ) = 0 \hbox{ for all }
-##  y \in L \}</M>.
+##  y \in U \}</M>.
 ##  <P/>
 ##  <M>U^{{\perp}}</M> is a subspace of <A>L</A>, and if <A>U</A> is an ideal
 ##  of <A>L</A> then <M>U^{{\perp}}</M> is a subalgebra of <A>L</A>.
@@ -680,15 +680,15 @@ DeclareOperation( "KappaPerp",
 
 #############################################################################
 ##
-#O  PowerSi( <one>, <i> )
+#F  PowerSi( <F>, <i> )
 #A  PowerS( <L> )
 ##
 ##  <ManSection>
-##  <Oper Name="PowerSi" Arg='one, i'/>
+##  <Func Name="PowerSi" Arg='F, i'/>
 ##  <Attr Name="PowerS" Arg='L'/>
 ##
 ##  <Description>
-##  <A>one</A> is the identity in a field <M>F</M> of characteristic <M>p</M>.
+##  <A>F</A> is a field of characteristic <M>p</M>.
 ##  The <M>p</M>-th power map of a restricted Lie algebra over <M>F</M>
 ##  satisfies the following relation.
 ##  <M>(x+y)^{[p]} = x^{[p]} + y^{[p]} + \sum_{i=1}^{p-1} s_i(x,y)</M>
@@ -702,6 +702,7 @@ DeclareOperation( "KappaPerp",
 ##  <P/>
 ##  <C>PowerSi</C> returns the function <M>s_i</M>, which only depends on <M>p</M> and
 ##  <M>i</M> and not on the Lie algebra or on <M>F</M>.
+##  It can be called as <C>s( x, y )</C> or as <C>s( [ x, y ] )</C>.
 ##  <P/>
 ##  <C>PowerS</C> returns the list <M>[ s_1, \ldots, s_{p-1} ]</M> of all s-functions
 ##  as computed by <C>PowerSi</C>.
@@ -819,7 +820,7 @@ DeclareOperation("PClosureSubalgebra", [IsLieAlgebra and IsJacobianElementCollec
 DeclareGlobalFunction( "FindSl2" );
 
 
-############################################################################
+#############################################################################
 ##
 #C  IsRootSystem( <obj> )
 ##
@@ -836,7 +837,7 @@ DeclareGlobalFunction( "FindSl2" );
 DeclareCategory( "IsRootSystem", IsObject );
 
 
-############################################################################
+#############################################################################
 ##
 #C  IsRootSystemFromLieAlgebra( <obj> )
 ##
@@ -858,7 +859,7 @@ DeclareCategory( "IsRootSystem", IsObject );
 DeclareCategory( "IsRootSystemFromLieAlgebra", IsRootSystem );
 
 
-##############################################################################
+#############################################################################
 ##
 #A  UnderlyingLieAlgebra( <R> )
 ##
@@ -876,7 +877,7 @@ DeclareCategory( "IsRootSystemFromLieAlgebra", IsRootSystem );
 DeclareAttribute( "UnderlyingLieAlgebra", IsRootSystemFromLieAlgebra );
 
 
-##############################################################################
+#############################################################################
 ##
 #A  RootSystem( <L> )
 ##
@@ -904,7 +905,7 @@ DeclareAttribute( "UnderlyingLieAlgebra", IsRootSystemFromLieAlgebra );
 DeclareAttribute( "RootSystem", IsAlgebra and IsLieAlgebra );
 
 
-############################################################################
+#############################################################################
 ##
 #A  PositiveRoots( <R> )
 ##
@@ -921,7 +922,7 @@ DeclareAttribute( "RootSystem", IsAlgebra and IsLieAlgebra );
 DeclareAttribute( "PositiveRoots", IsRootSystem );
 
 
-############################################################################
+#############################################################################
 ##
 #A  NegativeRoots( <R> )
 ##
@@ -938,7 +939,7 @@ DeclareAttribute( "PositiveRoots", IsRootSystem );
 DeclareAttribute( "NegativeRoots", IsRootSystem );
 
 
-############################################################################
+#############################################################################
 ##
 #A  PositiveRootVectors( <R> )
 ##
@@ -949,7 +950,7 @@ DeclareAttribute( "NegativeRoots", IsRootSystem );
 ##  <Description>
 ##  A list of positive root vectors of the root system <A>R</A> that comes
 ##  from a Lie algebra <C>L</C>. This is a list in bijection with the list
-##  <C>PositiveRoots( L )</C> (see&nbsp;<Ref Attr="PositiveRoots"/>). The
+##  <C>PositiveRoots( <A>R</A> )</C> (see&nbsp;<Ref Attr="PositiveRoots"/>). The
 ##  root vector is a non-zero element of the root space (in <C>L</C>) of
 ##  the corresponding root.
 ##  </Description>
@@ -959,7 +960,7 @@ DeclareAttribute( "NegativeRoots", IsRootSystem );
 DeclareAttribute( "PositiveRootVectors", IsRootSystemFromLieAlgebra );
 
 
-############################################################################
+#############################################################################
 ##
 #A  NegativeRootVectors( <R> )
 ##
@@ -970,7 +971,7 @@ DeclareAttribute( "PositiveRootVectors", IsRootSystemFromLieAlgebra );
 ##  <Description>
 ##  A list of negative root vectors of the root system <A>R</A> that comes
 ##  from a Lie algebra <C>L</C>. This is a list in bijection with the list
-##  <C>NegativeRoots( L )</C> (see&nbsp;<Ref Attr="NegativeRoots"/>). The
+##  <C>NegativeRoots( <A>R</A> )</C> (see&nbsp;<Ref Attr="NegativeRoots"/>). The
 ##  root vector is a non-zero element of the root space (in <C>L</C>) of
 ##  the corresponding root.
 ##  </Description>
@@ -980,7 +981,7 @@ DeclareAttribute( "PositiveRootVectors", IsRootSystemFromLieAlgebra );
 DeclareAttribute( "NegativeRootVectors", IsRootSystemFromLieAlgebra );
 
 
-############################################################################
+#############################################################################
 ##
 #A  SimpleSystem( <R> )
 ##
@@ -997,7 +998,7 @@ DeclareAttribute( "NegativeRootVectors", IsRootSystemFromLieAlgebra );
 DeclareAttribute( "SimpleSystem", IsRootSystem );
 
 
-############################################################################
+#############################################################################
 ##
 #A  CartanMatrix( <R> )
 ##
@@ -1015,7 +1016,7 @@ DeclareAttribute( "SimpleSystem", IsRootSystem );
 DeclareAttribute( "CartanMatrix", IsRootSystem );
 
 
-############################################################################
+#############################################################################
 ##
 #A  BilinearFormMat( <R> )
 ##
@@ -1035,7 +1036,7 @@ DeclareAttribute( "CartanMatrix", IsRootSystem );
 DeclareAttribute( "BilinearFormMat", IsRootSystem );
 
 
-############################################################################
+#############################################################################
 ##
 #A  CanonicalGenerators( <R> )
 ##
@@ -1090,7 +1091,7 @@ DeclareAttribute( "BilinearFormMat", IsRootSystem );
 ##
 DeclareAttribute( "CanonicalGenerators", IsRootSystemFromLieAlgebra );
 
-##############################################################################
+#############################################################################
 ##
 #A  ChevalleyBasis( <L> )
 ##
@@ -1120,7 +1121,7 @@ DeclareAttribute( "CanonicalGenerators", IsRootSystemFromLieAlgebra );
 DeclareAttribute( "ChevalleyBasis", IsLieAlgebra );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  SimpleLieAlgebra( <type>, <n>, <F> )
 ##
@@ -1216,7 +1217,7 @@ DeclareGlobalFunction( "DescriptionOfNormalizedUEAElement" );
 ##
 ##  <Description>
 ##  Returns the universal enveloping algebra of the Lie algebra <A>L</A>.
-##  The elements of this algebra are written on a Poincare-Birkhoff-Witt
+##  The elements of this algebra are written on a Poincaré-Birkhoff-Witt
 ##  basis.
 ##  <P/>
 ##  If a second argument <A>B</A> is given, it must be a basis of <A>L</A>,
@@ -1308,7 +1309,7 @@ DeclareCategory( "IsFamilyElementOfFreeLieAlgebra",
 DeclareCategory( "IsFptoSCAMorphism", IsAlgebraGeneralMapping and IsTotal and
                                       IsSingleValued );
 
-##############################################################################
+#############################################################################
 ##
 #F  FpLieAlgebraByCartanMatrix( <C> )
 ##
@@ -1412,7 +1413,7 @@ DeclareGlobalFunction( "FpLieAlgebraEnumeration" );
 DeclareGlobalFunction( "NilpotentQuotientOfFpLieAlgebra" );
 
 
-##############################################################################
+#############################################################################
 ##
 #A  JenningsLieAlgebra( <G> )
 ##
@@ -1443,7 +1444,7 @@ DeclareGlobalFunction( "NilpotentQuotientOfFpLieAlgebra" );
 DeclareAttribute( "JenningsLieAlgebra", IsGroup );
 
 
-###########################################################################
+#############################################################################
 ##
 #A  PCentralLieAlgebra( <G> )
 ##

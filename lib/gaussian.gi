@@ -94,8 +94,7 @@ InstallMethod( Basis,
 #M  CanonicalBasis( GaussianIntegers )  . . . . . . . . for Gaussian integers
 ##
 DeclareRepresentation(
-    "IsCanonicalBasisGaussianIntegersRep", IsAttributeStoringRep,
-    [ "conductor", "zumbroichbase" ] );
+    "IsCanonicalBasisGaussianIntegersRep", IsAttributeStoringRep );
 
 InstallMethod( CanonicalBasis,
     "for Gaussian integers",

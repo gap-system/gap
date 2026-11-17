@@ -18,7 +18,7 @@
 ##  <E>Domain</E> is &GAP;'s name for structured sets.
 ##  The ring of Gaussian integers <M>&ZZ;[\sqrt{{-1}}]</M> is an example of a
 ##  domain,
-##  the group <M>D_{12}</M> of symmetries of a regular hexahedron is another.
+##  the group <M>D_{12}</M> of symmetries of a regular hexagon is another.
 ##  <P/>
 ##  The &GAP; library predefines some domains.
 ##  For example the ring of Gaussian integers is predefined as
@@ -52,7 +52,7 @@
 ##  <Ref Oper="Factors"/>, and many other functions as well,
 ##  accept this domain as optional first argument.
 ##  Thus <C>Factors( GaussianIntegers, 10 )</C> yields the desired result
-##  <C>[ 1+E(4), 1-E(4), 2+E(4), 2-E(4) ]</C>.
+##  <C>[ -1-E(4), 1+E(4), 1+2*E(4), 2+E(4) ]</C>.
 ##  (The imaginary unit <M>\sqrt{{-1}}</M> is written as <C>E(4)</C>
 ##  in &GAP;, see <Ref Oper="E"/>.)
 ##  <#/GAPDoc>
@@ -61,7 +61,7 @@
 ##  <E>Equality</E> and <E>comparison</E> of domains are defined as follows.
 ##  <P/>
 ##  Two domains are considered <E>equal</E> if and only if the sets of their
-##  elements as computed by <Ref Attr="AsSSortedList"/>) are equal.
+##  elements as computed by <Ref Attr="AsSSortedList"/> are equal.
 ##  Thus, in general <C>=</C> behaves as if each domain operand were replaced
 ##  by its set of elements.
 ##  Except that <C>=</C> will also sometimes, but not always,
@@ -81,7 +81,7 @@
 ##  <!-- #T defined.  Do we really want to guarantee this? -->
 ##  <E>No</E> general <E>ordering</E> of arbitrary domains via <C>&lt;</C>
 ##  is defined in &GAP;&nbsp;4.
-##  This is because a well-defined <C>&lt;</C> for domains or, more general,
+##  This is because a well-defined <C>&lt;</C> for domains or, more generally,
 ##  for collections, would have to be compatible with <C>=</C> and would need
 ##  to be transitive and antisymmetric in order to be used to form ordered
 ##  sets.
@@ -143,7 +143,7 @@ InstallTrueMethod( IsDuplicateFree, IsDomain );
 ##  structure, that is interpreting <A>D</A> as a set.
 ##  The returned list may contain repetitions.
 ##  <P/>
-##  See&nbsp;<Ref Sect="Constructing Domains"/> and for
+##  See&nbsp;<Ref Sect="Constructing Domains"/> for
 ##  <C>GeneratorsOf<A>Struct</A></C> methods with respect to other available
 ##  operational structures.
 ##  <P/>
@@ -269,7 +269,7 @@ DeclareOperation( "DomainByGenerators", [ IsFamily, IsList ] );
 ##  for example <Ref Attr="DerivedSubgroup"/> for a perfect
 ##  group <M>G</M> may return <M>G</M> itself, and if <M>G</M> had already a
 ##  parent then this is not replaced by <M>G</M>.
-##  As a rule of thumb, &GAP; avoids to set a domain as its own parent,
+##  As a rule of thumb, &GAP; avoids setting a domain as its own parent,
 ##  which is consistent with the behaviour of <Ref Func="Parent"/>,
 ##  at least until a parent is set explicitly with <Ref Oper="SetParent"/>.
 ##  <P/>
@@ -383,16 +383,16 @@ DeclareGlobalFunction( "InstallAccessToGenerators" );
 ##  attribute as described above,
 ##  with names <A>name</A>, <A>name</A><C>Op</C>,
 ##  and <A>name</A><C>InParent</C>.
-##  <A>super-req</A> and <A>sub-req</A> specify the required filters for the
+##  <A>super</A> and <A>sub</A> specify the required filters for the
 ##  first and second argument of the operation <A>name</A><C>Op</C>,
 ##  which are needed to create this operation with
 ##  <Ref Func="DeclareOperation"/>.
-##  <A>sub-req</A> is also the required filter for the corresponding
+##  <A>sub</A> is also the required filter for the corresponding
 ##  attribute <A>name</A><C>InParent</C>;
 ##  note that <Ref Filt="HasParent"/> is <E>not</E> required
-##  for the argument <A>U</A> of <A>name</A><C>InParent</C>,
+##  for the argument <M>U</M> of <A>name</A><C>InParent</C>,
 ##  because even without a parent stored,
-##  <C>Parent( <A>U</A> )</C> is legal, meaning <A>U</A> itself
+##  <C>Parent( U )</C> is legal, meaning <M>U</M> itself
 ##  (see&nbsp;<Ref Sect="Parents"/>).
 ##  The fourth argument must be <Ref Func="DeclareProperty"/>
 ##  if <A>name</A><C>InParent</C> takes only boolean values (for example in
@@ -402,7 +402,7 @@ DeclareGlobalFunction( "InstallAccessToGenerators" );
 ##  For example, to set up the three objects
 ##  <Ref Oper="Index" Label="for a group and its subgroup"/>, <C>IndexOp</C>,
 ##  and <C>IndexInParent</C> together,
-##  the declaration file <F>lib/domain.gd</F> contains the following line of
+##  the declaration file <F>lib/grp.gd</F> contains the following line of
 ##  code.
 ##  <Log><![CDATA[
 ##  InParentFOA( "Index", IsGroup, IsGroup, DeclareAttribute );

@@ -1089,12 +1089,16 @@ InstallMethodWithRandomSource( Randomize,
 
 InstallMethod( Unpack, "for an 8bit matrix",
   [Is8BitMatrixRep],
-  function( m )
-    return List(m, PlainListCopy);
-  end );
+  m -> List( m, Unpack ) );
 InstallMethod( Unpack, "for an 8bit vector",
   [Is8BitVectorRep],
-  PlainListCopy );
+  function( v )
+    # converting a copy in the kernel is much faster than 'PlainListCopy',
+    # which fetches the entries one by one
+    v:= ShallowCopy( v );
+    PLAIN_VEC8BIT( v );
+    return v;
+  end );
 
 InstallOtherMethod( KroneckerProduct, "for two 8bit matrices", # priority to kernel code, if matrices have same field
   [Is8BitMatrixRep and IsMatrix, Is8BitMatrixRep and IsMatrix], 1,

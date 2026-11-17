@@ -315,9 +315,7 @@ local hashfun,obj,dom,lookup,maxblist,forcesort;
 
   maxblist:=ValueOption("blistlimit");
   if not IsInt(maxblist) then
-    #2^25 plist (for the lookup list that will hold e.g. positions)
-    # is 128MB size on a 32-bit system.
-    maxblist:=2^25;
+    maxblist:=DICT_BLISTLIMIT;
   fi;
 
   # are we given a domain, which can index very quickly?
@@ -435,120 +433,6 @@ MaxHashViewSize := 10;
 #V  LastHashIndex is used for fast access to the last hash index.
 ##
 LastHashIndex := -1;
-
-
-#############################################################################
-#############################################################################
-##
-##  Dense hash tables
-##
-#############################################################################
-#############################################################################
-
-#############################################################################
-##
-#F  DenseHashTable( )
-##
-InstallGlobalFunction( DenseHashTable,
-    function( )
-        local Type, Rec;
-
-        Type := NewType( DictionariesFamily, IsDenseHashRep and IsMutable );
-        Rec := rec( KeyArray := [], ValueArray := [] );
-        return Objectify( Type, Rec );
-    end );
-
-#############################################################################
-##
-#M  ViewObj( <hash> ) for dense hash tables
-##
-InstallMethod( ViewObj, "for dense hash tables", true,
-    [ IsDenseHashRep ], 0,
-    function( hash )
-        if Size( hash ) > MaxHashViewSize then
-            Print("<dense hash table of size ", Size( hash ), ">");
-        else
-            PrintHashWithNames( hash, "Keys", "Values" );
-        fi;
-    end );
-
-#############################################################################
-##
-#M  PrintHashWithNames( <hash>, <keyName>, <valueName> )
-#M      for dense hash tables
-##
-InstallMethod( PrintHashWithNames, "for dense hash tables", true,
-    [ IsDenseHashRep, IsString, IsString ], 0,
-    function( hash, keyName, valueName )
-        local key;
-        Print(keyName, ": ", hash!.KeyArray, "\n");
-        Print(valueName, ": ", List( hash!.KeyArray,
-               key -> hash!.ValueArray[key] ));
-    end );
-
-#############################################################################
-##
-#M  PrintObj( <hash> ) for dense hash tables
-##
-InstallMethod( PrintObj, "for dense hash tables", true,
-    [ IsDenseHashRep ], 0,
-    function( hash )
-        PrintHashWithNames( hash, "Keys", "Values" ); Print("\n");
-    end );
-
-#############################################################################
-##
-#M  Size( <hash> ) for dense hash tables
-##
-InstallMethod( Size, "for dense hash tables", true,
-    [ IsDenseHashRep ], 0,
-    function( hash )
-        return Length( hash!.KeyArray );
-    end );
-
-#############################################################################
-##
-#M  Enumerator( <hash> ) for dense hash tables
-##
-InstallMethod( Enumerator, "for dense hash tables", true,
-    [ IsDenseHashRep ], 0,
-    function( hash )
-        return List( hash!.KeyArray, key -> GetHashEntry( hash, key ) );
-    end );
-
-#############################################################################
-##
-#M  HashKeyEnumerator( <hash> ) for dense hash tables
-##
-InstallMethod( HashKeyEnumerator, "for dense hash tables", true,
-    [ IsDenseHashRep ], 0,
-    function( hash )
-        return hash!.KeyArray;
-    end );
-
-#############################################################################
-##
-#M  Random( <hash> ) for dense hash tables
-##
-##  Returns a random value.
-##
-InstallMethod( Random, "for dense hash tables", true,
-    [ IsHash and IsDenseHashRep ], 100,
-    function( hash )
-        return GetHashEntry( hash, RandomHashKey( hash ) );
-    end );
-
-#############################################################################
-##
-#M  RandomHashKey( <hash> ) for dense hash tables
-##
-##  Returns a random key.
-##
-InstallMethod( RandomHashKey, "for dense hash tables", true,
-    [ IsHash and IsDenseHashRep ], 100,
-    function( hash )
-        return Random(hash!.KeyArray);
-    end );
 
 
 #############################################################################
@@ -886,7 +770,7 @@ function(ht,x)
   return LookupDictionary(ht,x)<>fail;
 end);
 
-############################################################################
+#############################################################################
 ##
 #M  LookupDictionary(<dict>,<key>)
 ##
@@ -908,7 +792,7 @@ local index,intkey,i;
   return fail;
 end );
 
-############################################################################
+#############################################################################
 ##
 #M  LookupDictionary(<dict>,<key>)
 ##

@@ -286,7 +286,6 @@ static Obj sha256_words(sha256_state_t st)
     SET_LEN_PLIST(result, 8);
     for (i = 0; i < 8; i++) {
         SET_ELM_PLIST(result, i + 1, ObjInt_UInt(st.r[i]));
-        CHANGED_BAG(result);
     }
     return result;
 }

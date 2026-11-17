@@ -1750,7 +1750,6 @@ static Obj FuncUNIXSelect(Obj self,
         j = INT_INTOBJ(o);  // a UNIX file descriptor
         if (!(FD_ISSET(j,&infds))) {
           SET_ELM_PLIST(inlist,i,Fail);
-          CHANGED_BAG(inlist);
         }
       }
     }
@@ -1761,7 +1760,6 @@ static Obj FuncUNIXSelect(Obj self,
         j = INT_INTOBJ(o);  // a UNIX file descriptor
         if (!(FD_ISSET(j,&outfds))) {
           SET_ELM_PLIST(outlist,i,Fail);
-          CHANGED_BAG(outlist);
         }
       }
     }
@@ -1772,7 +1770,6 @@ static Obj FuncUNIXSelect(Obj self,
         j = INT_INTOBJ(o);  // a UNIX file descriptor
         if (!(FD_ISSET(j,&excfds))) {
           SET_ELM_PLIST(exclist,i,Fail);
-          CHANGED_BAG(exclist);
         }
       }
     }

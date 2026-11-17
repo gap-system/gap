@@ -1,5 +1,5 @@
 #@local c3, n, wr, irr, betas, i, G, reps, t, G1, t1, charparam1, classparam1
-#@local pi, G2, t2, tr
+#@local pi, G2, t2, psi, tr
 gap> START_TEST( "ctblsymm.tst" );
 
 #
@@ -31,22 +31,26 @@ gap> CharacterParameters( t )[7] = [ 1, [ 5 ] ];
 true
 
 # use the generic character table for natural alternating groups
+# (the ordering of classes in a group can differ from the ordering of
+# classes in its table, depending on the method that computes the table)
 gap> G1:= AlternatingGroup(7);;
 gap> t1:= CharacterTable( G1 );;  Irr( t1 );;
 gap> charparam1:= CharacterParameters( t1 );;
 gap> classparam1:= ClassParameters( t1 );;
-gap> reps:= List( ConjugacyClasses( t1 ), Representative );;
+gap> reps:= List( ConjugacyClasses( G1 ), Representative );;
 gap> pi:= (5,6,7);;
 gap> G2:= AlternatingGroup(7);;
 gap> SetConjugacyClasses( G2,
->        List( Permuted( reps, pi ), x -> ConjugacyClass( G1, x ) ) );
+>        List( Permuted( reps, pi ), x -> ConjugacyClass( G2, x ) ) );
 gap> t2:= CharacterTable( G2 );;  Irr( t2 );;
 gap> CharacterParameters( t2 ) = charparam1;
 true
-gap> ClassParameters( t2 ) = Permuted( classparam1, pi );
+gap> psi:= PermList( IdentificationOfConjugacyClasses( t1 ) ) * pi
+>          * PermList( IdentificationOfConjugacyClasses( t2 ) )^-1;;
+gap> ClassParameters( t2 ) = Permuted( classparam1, psi );
 true
 gap> tr:= TransformingPermutationsCharacterTables( t1, t2 );;
-gap> tr.columns = pi;
+gap> tr.columns = psi;
 true
 gap> tr.rows = ();
 true

@@ -8,18 +8,18 @@
 ##  to list here. Please refer to the COPYRIGHT file for details.
 ##
 
-############################################################################
+#############################################################################
 #
 # This file is a sample implementation for new style vectors and matrices.
 # It stores matrices as dense lists of lists with wrapping.
 #
 
-############################################################################
+#############################################################################
 # Constructors:
-############################################################################
+#############################################################################
 
 
-############################################################################
+#############################################################################
 ##
 #F  MakeIsPlistVectorRep( <basedomain>, <list>, <check> )
 ##
@@ -85,7 +85,7 @@ BindGlobal( "MakeIsPlistVectorRep",
   end );
 
 
-############################################################################
+#############################################################################
 ##
 #F  MakeIsPlistMatrixRep( <basedomain>, <emptyvector>, <ncols>, <list>,
 #F                        <check> )
@@ -156,9 +156,9 @@ BindGlobal( "MakeIsPlistMatrixRep",
   end );
 
 
-############################################################################
+#############################################################################
 # Constructor methods:
-############################################################################
+#############################################################################
 
 InstallTagBasedMethod( NewVector,
   IsPlistVectorRep,
@@ -220,9 +220,9 @@ InstallTagBasedMethod( NewZeroMatrix,
   end );
 
 
-############################################################################
+#############################################################################
 # Printing and viewing methods:
-############################################################################
+#############################################################################
 
 InstallMethod( ViewObj, [ "IsPlistVectorRep" ],
   function( v )
@@ -268,16 +268,16 @@ InstallMethod( Display, [ "IsPlistVectorRep" ],
 InstallMethod( CompatibleVectorFilter, ["IsPlistMatrixRep"],
   M -> IsPlistVectorRep );
 
-############################################################################
-############################################################################
+#############################################################################
+#############################################################################
 # Vectors:
-############################################################################
-############################################################################
+#############################################################################
+#############################################################################
 
 
-############################################################################
+#############################################################################
 # The basic attributes:
-############################################################################
+#############################################################################
 
 InstallMethod( BaseDomain, [ "IsPlistVectorRep" ],
   v -> v![BDPOS] );
@@ -286,9 +286,9 @@ InstallMethod( Length, [ "IsPlistVectorRep" ],
   v -> Length( v![ELSPOS] ) );
 
 
-############################################################################
+#############################################################################
 # Representation preserving constructors:
-############################################################################
+#############################################################################
 
 InstallMethod( ZeroVector,
   [ "IsInt", "IsPlistVectorRep" ],
@@ -318,9 +318,9 @@ InstallMethod( Vector,
   end );
 
 
-############################################################################
+#############################################################################
 # A selection of list operations:
-############################################################################
+#############################################################################
 
 InstallMethod( \[\],
   [ "IsPlistVectorRep", "IsPosInt" ],
@@ -366,9 +366,9 @@ InstallMethod( Unpack,
   [ "IsPlistVectorRep" ],
   v -> ShallowCopy( v![ELSPOS] ) );
 
-############################################################################
+#############################################################################
 # Standard operations for all objects:
-############################################################################
+#############################################################################
 
 InstallMethod( ShallowCopy, [ "IsPlistVectorRep" ],
   v -> MakeIsPlistVectorRep( v![BDPOS], ShallowCopy( v![ELSPOS] ), false ) );
@@ -381,9 +381,9 @@ InstallMethod( PostMakeImmutable, [ "IsPlistVectorRep" ],
   end );
 
 
-############################################################################
+#############################################################################
 # Arithmetical operations:
-############################################################################
+#############################################################################
 
 InstallMethod( \+,
   [ "IsPlistVectorRep", "IsPlistVectorRep" ],
@@ -601,16 +601,16 @@ InstallMethod( CopySubVector,
   end );
 
 
-############################################################################
-############################################################################
+#############################################################################
+#############################################################################
 # Matrices:
-############################################################################
-############################################################################
+#############################################################################
+#############################################################################
 
 
-############################################################################
+#############################################################################
 # The basic attributes:
-############################################################################
+#############################################################################
 
 InstallMethod( BaseDomain,
   [ "IsPlistMatrixRep" ],
@@ -625,9 +625,9 @@ InstallMethod( NumberColumns,
   M -> M![RLPOS] );
 
 
-############################################################################
+#############################################################################
 # Representation preserving constructors:
-############################################################################
+#############################################################################
 
 InstallMethod( ZeroMatrix,
   [ "IsInt", "IsInt", "IsPlistMatrixRep" ],
@@ -696,9 +696,9 @@ InstallMethod( Matrix,
   end );
 
 
-############################################################################
+#############################################################################
 # A selection of list operations:
-############################################################################
+#############################################################################
 
 InstallOtherMethod( \[\],
 #T Once the declaration of '\[\]' for 'IsMatrixObj' disappears,
@@ -883,15 +883,143 @@ InstallMethod( SetMatElm,
   end );
 
 
-############################################################################
+#############################################################################
+# Elementary row and column operations:
+#############################################################################
+
+# These work on the entry lists of the rows.  They check only <scalar>,
+# because multiplying by an element of the base domain or by an integer
+# keeps the entries in the base domain.  Integers are replaced by elements
+# of the base domain, for which the list methods of 'AddRowVector' apply.
+BindGlobal( "PLIST_MAT_SCALAR",
+  function( M, scalar )
+    if IsInt( scalar ) then
+      return scalar * One( M![BDPOS] );
+    elif ValueOption( "check" ) <> false and not scalar in M![BDPOS] then
+      Error( "<scalar> must lie in the base domain of <M>" );
+    fi;
+    return scalar;
+  end );
+
+InstallMethod( MultMatrixRowLeft,
+  [ "IsPlistMatrixRep and IsMutable", "IsInt", "IsObject" ],
+  function( M, row, scalar )
+    MultVectorLeft( M![ROWSPOS][row]![ELSPOS], PLIST_MAT_SCALAR( M, scalar ) );
+  end );
+
+InstallMethod( MultMatrixRowRight,
+  [ "IsPlistMatrixRep and IsMutable", "IsInt", "IsObject" ],
+  function( M, row, scalar )
+    MultVectorRight( M![ROWSPOS][row]![ELSPOS], PLIST_MAT_SCALAR( M, scalar ) );
+  end );
+
+InstallMethod( MultMatrixColumnLeft,
+  [ "IsPlistMatrixRep and IsMutable", "IsInt", "IsObject" ],
+  function( M, col, scalar )
+    local row, l;
+    scalar := PLIST_MAT_SCALAR( M, scalar );
+    for row in M![ROWSPOS] do
+      l := row![ELSPOS];
+      l[col] := scalar * l[col];
+    od;
+  end );
+
+InstallMethod( MultMatrixColumnRight,
+  [ "IsPlistMatrixRep and IsMutable", "IsInt", "IsObject" ],
+  function( M, col, scalar )
+    local row, l;
+    scalar := PLIST_MAT_SCALAR( M, scalar );
+    for row in M![ROWSPOS] do
+      l := row![ELSPOS];
+      l[col] := l[col] * scalar;
+    od;
+  end );
+
+# The list methods of 'AddRowVector' multiply from the left.
+InstallMethod( AddMatrixRowsLeft,
+  [ "IsPlistMatrixRep and IsMutable", "IsInt", "IsInt", "IsObject" ],
+  function( M, row1, row2, scalar )
+    local dst, src;
+    scalar := PLIST_MAT_SCALAR( M, scalar );
+    dst := M![ROWSPOS][row1]![ELSPOS];
+    src := M![ROWSPOS][row2]![ELSPOS];
+    if Length( dst ) > 0 then
+      AddRowVector( dst, src, scalar );
+    fi;
+  end );
+
+InstallMethod( AddMatrixRowsRight,
+  [ "IsPlistMatrixRep and IsMutable", "IsInt", "IsInt", "IsObject" ],
+  function( M, row1, row2, scalar )
+    local dst, src, i;
+    scalar := PLIST_MAT_SCALAR( M, scalar );
+    dst := M![ROWSPOS][row1]![ELSPOS];
+    src := M![ROWSPOS][row2]![ELSPOS];
+    if Length( dst ) = 0 then
+      return;
+    elif IsCommutative( M![BDPOS] ) then
+      AddRowVector( dst, src, scalar );
+    else
+      for i in [ 1 .. Length( dst ) ] do
+        dst[i] := dst[i] + src[i] * scalar;
+      od;
+    fi;
+  end );
+
+InstallMethod( AddMatrixColumnsLeft,
+  [ "IsPlistMatrixRep and IsMutable", "IsInt", "IsInt", "IsObject" ],
+  function( M, col1, col2, scalar )
+    local row, l;
+    scalar := PLIST_MAT_SCALAR( M, scalar );
+    for row in M![ROWSPOS] do
+      l := row![ELSPOS];
+      l[col1] := l[col1] + scalar * l[col2];
+    od;
+  end );
+
+InstallMethod( AddMatrixColumnsRight,
+  [ "IsPlistMatrixRep and IsMutable", "IsInt", "IsInt", "IsObject" ],
+  function( M, col1, col2, scalar )
+    local row, l;
+    scalar := PLIST_MAT_SCALAR( M, scalar );
+    for row in M![ROWSPOS] do
+      l := row![ELSPOS];
+      l[col1] := l[col1] + l[col2] * scalar;
+    od;
+  end );
+
+InstallMethod( SwapMatrixRows,
+  [ "IsPlistMatrixRep and IsMutable", "IsInt", "IsInt" ],
+  function( M, row1, row2 )
+    local rows, tmp;
+    rows := M![ROWSPOS];
+    tmp := rows[row1];
+    rows[row1] := rows[row2];
+    rows[row2] := tmp;
+  end );
+
+InstallMethod( SwapMatrixColumns,
+  [ "IsPlistMatrixRep and IsMutable", "IsInt", "IsInt" ],
+  function( M, col1, col2 )
+    local row, l, tmp;
+    for row in M![ROWSPOS] do
+      l := row![ELSPOS];
+      tmp := l[col1];
+      l[col1] := l[col2];
+      l[col2] := tmp;
+    od;
+  end );
+
+
+#############################################################################
 # Printing and viewing methods:
-############################################################################
+#############################################################################
 
 InstallMethod( ViewObj, [ "IsPlistMatrixRep" ],
   function( M )
     Print("<");
     if not IsMutable(M) then Print("immutable "); fi;
-    Print(Length(M![ROWSPOS]),"x",M![RLPOS],"-matrix over ",M![BDPOS],">");
+    Print(Length(M![ROWSPOS]),"x",M![RLPOS]," plist matrix over ",M![BDPOS],">");
   end );
 
 InstallMethod( PrintObj, [ "IsPlistMatrixRep" ],
@@ -910,7 +1038,7 @@ InstallMethod( Display, [ "IsPlistMatrixRep" ],
     local i;
     Print("<");
     if not IsMutable(M) then Print("immutable "); fi;
-    Print(Length(M![ROWSPOS]),"x",M![RLPOS],"-matrix over ",M![BDPOS],":\n");
+    Print(Length(M![ROWSPOS]),"x",M![RLPOS]," plist matrix over ",M![BDPOS],":\n");
     for i in [1..Length(M![ROWSPOS])] do
         if i = 1 then
             Print("[");
@@ -942,9 +1070,9 @@ InstallMethod( String, [ "IsPlistMatrixRep" ],
     return st;
   end );
 
-############################################################################
+#############################################################################
 # Arithmetical operations:
-############################################################################
+#############################################################################
 
 InstallMethod( \+,
   [ "IsPlistMatrixRep", "IsPlistMatrixRep" ],

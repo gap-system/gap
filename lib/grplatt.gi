@@ -1,4 +1,4 @@
-###########################################################################
+#############################################################################
 ##
 ##  This file is part of GAP, a system for computational discrete algebra.
 ##  This file's authors include Martin Schönert, Alexander Hulpke.

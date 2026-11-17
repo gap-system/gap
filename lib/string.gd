@@ -116,7 +116,7 @@ DeclareGlobalFunction( "DaysInYear" );
 ##
 ##  <Description>
 ##  returns the number of days in month number <A>month</A> of <A>year</A>,
-##  and <K>fail</K> if <C>month</C> is not in the valid range.
+##  and <K>fail</K> if <A>month</A> is not in the valid range.
 ##  <Example><![CDATA[
 ##  gap> DaysInYear(1998);
 ##  365
@@ -162,7 +162,7 @@ DeclareGlobalFunction( "DMYDay" );
 ##  <C>[ day, month, year ]</C> in Gregorian calendar counting.
 ##  The result is <K>fail</K> on input outside valid ranges.
 ##  <P/>
-##  Note that this makes not much sense for early dates like: before 1582
+##  Note that this makes little sense for early dates: before 1582
 ##  (no Gregorian calendar at all), or before 1753 in many English speaking
 ##  countries or before 1917 in Russia.
 ##  </Description>
@@ -174,7 +174,7 @@ DeclareGlobalFunction( "DayDMY" );
 
 #############################################################################
 ##
-#F  SecondsDMYhms( <DMYhms> ) . . . . . convert day-month-year-hms into seconds
+#F  SecondsDMYhms( <DMYhms> ) . . . . convert day-month-year-hms into seconds
 ##
 ##  <#GAPDoc Label="SecondsDMYhms">
 ##  <ManSection>
@@ -186,7 +186,7 @@ DeclareGlobalFunction( "DayDMY" );
 ##  <C>[ day, month, year, hour, minute, second ]</C>.
 ##  The remarks on the Gregorian calendar in the section on
 ##  <Ref Func="DayDMY"/> apply here as well.
-##  The last three arguments must lie in the appropriate ranges.
+##  The last three entries must lie in the appropriate ranges.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -196,7 +196,7 @@ DeclareGlobalFunction( "SecondsDMYhms" );
 
 #############################################################################
 ##
-#F  DMYhmsSeconds( <secs> ) . . . . . . . . . . . . . inverse of SecondsDMYhms
+#F  DMYhmsSeconds( <secs> ) . . . . . . . . . . . .  inverse of SecondsDMYhms
 ##
 ##  <#GAPDoc Label="DMYhmsSeconds">
 ##  <ManSection>
@@ -285,7 +285,7 @@ DeclareGlobalFunction( "StringDate" );
 
 #############################################################################
 ##
-#F  HMSMSec( <msec> )  . . . . . . . .  convert seconds into hour-min-sec-mill
+#F  HMSMSec( <msec> )  . . . . . . . . convert seconds into hour-min-sec-mill
 ##
 ##  <#GAPDoc Label="HMSMSec">
 ##  <ManSection>
@@ -367,7 +367,7 @@ DeclareGlobalFunction( "StringTime" );
 DeclareGlobalFunction( "StringPP" );
 
 
-############################################################################
+#############################################################################
 ##
 #F  WordAlp( <alpha>, <nr> ) . . . . . .  <nr>-th word over alphabet <alpha>
 ##
@@ -494,12 +494,16 @@ DeclareGlobalFunction( "UppercaseChar" );
 ##  <P/>
 ##  A separator at the end of a string is interpreted as a terminator; in
 ##  this case, the separator does not produce a trailing empty string.
+##  More precisely, the last substring is dropped if it is empty, so the
+##  empty string yields an empty list.
 ##  Also see&nbsp;<Ref Func="Chomp"/>.
 ##  <Example><![CDATA[
 ##  gap> SplitString( "substr1:substr2::substr4", ":" );
 ##  [ "substr1", "substr2", "", "substr4" ]
 ##  gap> SplitString( "a;b;c;d;", ";" );
 ##  [ "a", "b", "c", "d" ]
+##  gap> SplitString( "", ";" );
+##  [  ]
 ##  gap> SplitString( "/home//user//dir/", "", "/" );
 ##  [ "home", "user", "dir" ]
 ##  ]]></Example>
@@ -522,7 +526,7 @@ DeclareGlobalFunction( "RemoveCharacters" );
 
 #############################################################################
 ##
-#F  NormalizedWhitespace( <str> ) .  copy of string with normalized whitespace
+#F  NormalizedWhitespace( <str> ) . copy of string with normalized whitespace
 ##
 ##  <#GAPDoc Label="NormalizedWhitespace">
 ##  <ManSection>
@@ -837,8 +841,8 @@ BindGlobal("BHINT", MakeImmutable("\>\<"));
 
 #############################################################################
 ##
-#F StringOfMemoryAmount( <m> )    returns an appropriate human-readable string
-##                        representation of <m> bytes
+#F StringOfMemoryAmount( <m> ) . returns an appropriate human-readable string
+##                               representation of <m> bytes
 ##
 ##
 ##  <#GAPDoc Label="StringOfMemoryAmount">
@@ -850,12 +854,12 @@ BindGlobal("BHINT", MakeImmutable("\>\<"));
 ##  <Arg>numbytes</Arg> of memory. It is used in printing amounts of memory
 ##  allocated by tests and benchmarks. Binary prefixes (representing powers of
 ##  1024) are used.
-##  </Description>
-##  </ManSection>
 ##  <Example><![CDATA[
 ##  gap> StringOfMemoryAmount(123456789);
 ##  "117MB"
 ##  ]]></Example>
+##  </Description>
+##  </ManSection>
 ##  <#/GAPDoc>
 
 
@@ -911,15 +915,13 @@ DeclareGlobalFunction("StringOfMemoryAmount");
 ##  </Item>
 ##  </List>
 ##
-##  A single brace can be outputted by doubling, so <C>{{</C> in the format string
+##  A single brace can be produced by doubling it, so <C>{{</C> in the format string
 ##  produces <C>{</C> and <C>}}</C> produces <C>}</C>.
 ##  <P/>
 ##  The <C>format</C> decides how the variable is printed. <C>format</C> must be one
 ##  of  <C>s</C> (which uses <Ref Attr="String"/>), <C>v</C> (which uses
 ##  <Ref Oper="ViewString"/>) or <C>d</C> (which calls <Ref Oper="DisplayString"/>).
 ##  The default value for <C>format</C> is <C>s</C>.
-##  </Description>
-##  </ManSection>
 ##  <Example><![CDATA[
 ##  gap> StringFormatted("I have {} cats and {} dogs", 4, 5);
 ##  "I have 4 cats and 5 dogs"
@@ -933,6 +935,8 @@ DeclareGlobalFunction("StringOfMemoryAmount");
 ##  gap> StringFormatted("String: {1!s}, ViewString: {1!v}", sym3);
 ##  "String: SymmetricGroup( [ 1 .. 3 ] ), ViewString: Sym( [ 1 .. 3 ] )"
 ##  ]]></Example>
+##  </Description>
+##  </ManSection>
 ##  <#/GAPDoc>
 
 
@@ -979,8 +983,6 @@ DeclareGlobalFunction("PrintToFormatted");
 ##    remove the control characters <C>\&lt;</C> and <C>\&gt;</C> from
 ##    the return value.
 ##
-##  </Description>
-##  </ManSection>
 ##  <Example><![CDATA[
 ##  gap> Pluralize( "generator" );
 ##  "generators"
@@ -1001,6 +1003,8 @@ DeclareGlobalFunction("PrintToFormatted");
 ##  gap> Print( Pluralize( 4, "battery" ) );
 ##  4 batteries
 ##  ]]></Example>
+##  </Description>
+##  </ManSection>
 ##  <#/GAPDoc>
 
 DeclareGlobalFunction("Pluralize");

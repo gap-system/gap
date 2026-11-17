@@ -795,9 +795,7 @@ InstallMethod(\*,"wrapped additive elements",IsIdenticalObj,
   [IsAdditiveElementAsMultiplicativeElementRep,
    IsAdditiveElementAsMultiplicativeElementRep],
 function(x,y)
-  # is this safe, or do we have to consider that one has and one doesn't
-  # have inverses? AH
-  return Objectify(TypeObj(x),[x![1]+y![1]]);
+  return AdditiveElementAsMultiplicativeElement(x![1]+y![1]);
 end);
 
 #############################################################################
@@ -809,9 +807,7 @@ InstallMethod(\/,"wrapped additive elements",IsIdenticalObj,
    IsAdditiveElementAsMultiplicativeElementRep and
    IsMultiplicativeElementWithInverse],
 function(x,y)
-  # is this safe, or do we have to consider that one has and one doesn't
-  # have inverses? AH
-  return Objectify(TypeObj(x),[x![1]-y![1]]);
+  return AdditiveElementAsMultiplicativeElement(x![1]-y![1]);
 end);
 
 #############################################################################
@@ -822,7 +818,7 @@ InstallMethod(InverseOp,"wrapped additive elements",
   [IsAdditiveElementAsMultiplicativeElementRep and
   IsMultiplicativeElementWithInverse],
 function(x)
-  return Objectify(TypeObj(x),[-x![1]]);
+  return AdditiveElementAsMultiplicativeElement(-x![1]);
 end);
 
 #############################################################################
@@ -833,7 +829,7 @@ InstallMethod(OneOp,"wrapped additive elements",
   [IsAdditiveElementAsMultiplicativeElementRep and
   IsMultiplicativeElementWithOne],
 function(x)
-  return Objectify(TypeObj(x),[Zero(x![1])]);
+  return AdditiveElementAsMultiplicativeElement(Zero(x![1]));
 end);
 
 #############################################################################
@@ -845,9 +841,7 @@ InstallMethod(\^,"wrapped additive elements",IsIdenticalObj,
    IsAdditiveElementAsMultiplicativeElementRep and
    IsMultiplicativeElementWithInverse],
 function(x,y)
-  # is this safe, or do we have to consider that one has and one doesn't
-  # have inverses? AH
-  return Objectify(TypeObj(x),[x![1]]);
+  return AdditiveElementAsMultiplicativeElement(x![1]);
 end);
 
 #############################################################################

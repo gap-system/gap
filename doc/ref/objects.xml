@@ -87,14 +87,14 @@ it as a set. In particular, two sets <M>A</M> and <M>B</M> are equal if and only
 <P/>
 There are two types of object in &GAP; which exhibit this kind of behaviour
 with respect to equality, namely domains (see Section&nbsp;<Ref Sect="Domains"/>) and lists
-whose elements are strictly sorted see <Ref Prop="IsSSortedList"/>.
+whose elements are strictly sorted (see <Ref Prop="IsSSortedList"/>).
 In general, <E>set</E> in this manual
 will mean an object of one of these types.
 <P/>
-More precisely: two domains can be compared with <Q>{<C>=</C>}</Q>,
+More precisely: two domains can be compared with <Q><C>=</C></Q>,
 the answer being <K>true</K> if and only if the sets of elements
-are equal (regardless of any additional structure) and;
-a domain and a list can be compared with <Q><C>=</C></Q>,
+are equal (regardless of any additional structure);
+and a domain and a list can be compared with <Q><C>=</C></Q>,
 the answer being <K>true</K> if and only if the list is equal to
 the strictly sorted list of elements of the domain.
 <P/>
@@ -249,7 +249,7 @@ are immutable.  So the product of two matrices or of a vector and a
 matrix is immutable if and only if the two matrices or both the vector
 and the matrix are immutable (see also&nbsp;<Ref Sect="Arithmetic for Lists"/>). There
 is one exception to this rule, which arises where the result is less
-deeply nested than at least one of the argument, where mutable
+deeply nested than at least one of the arguments, where mutable
 arguments may sometimes lead to an immutable result. For instance, a
 mutable matrix with immutable rows, multiplied by an immutable vector
 gives an immutable vector result. The exact rules are given
@@ -319,7 +319,7 @@ continues to represent the same mathematical object.
 
 There are a number of general operations which can be applied, in
 principle, to any object in &GAP;. Some of these are documented
-elsewhere &ndash;see <Ref Attr="String"/>, <Ref Oper="PrintObj"/> and
+elsewhere, see <Ref Attr="String"/>, <Ref Oper="PrintObj"/> and
 <Ref Oper="Display"/>. Others are mainly somewhat technical.
 
 

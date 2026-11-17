@@ -409,7 +409,7 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  is a more interesting operation than the vector product of plain lists.
 ##  (Another candidate for a multiplication of compatible class functions
 ##  would have been the inner product, which is implemented via the function
-##  <Ref Oper="ScalarProduct" Label="for characters"/>.
+##  <Ref Oper="ScalarProduct" Label="for characters"/>.)
 ##  In terms of filters, the arithmetic of class functions is based on the
 ##  decision that they lie in <Ref Filt="IsGeneralizedRowVector"/>,
 ##  with additive nesting depth <M>1</M>, but they do <E>not</E> lie in
@@ -572,7 +572,7 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##
 ##  <Description>
 ##  The <E>characteristic</E> of class functions is zero,
-##  as for all list of cyclotomics.
+##  as for all lists of cyclotomics.
 ##  For class functions of a <M>p</M>-modular character table, such as Brauer
 ##  characters, the prime <M>p</M> is given by the
 ##  <Ref Attr="UnderlyingCharacteristic" Label="for a character table"/>
@@ -602,7 +602,7 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  <Ref Attr="ComplexConjugate" Label="for a class function"/>,
 ##  <Ref Oper="GaloisCyc" Label="for a class function"/>,
 ##  and <Ref Meth="Permuted" Label="for a class function"/> return
-##  a class function when they are called with a class function;
+##  a class function when they are called with a class function.
 ##  The complex conjugate of a class function that is known to be a (virtual)
 ##  character is again known to be a (virtual) character, and applying an
 ##  arbitrary Galois automorphism to an ordinary (virtual) character yields
@@ -1002,8 +1002,9 @@ DeclareAttribute( "TrivialCharacter", IsGroup );
 ##  If the argument is a group homomorphism <A>hom</A> whose image is a
 ##  permutation group or a matrix group then
 ##  <Ref Attr="NaturalCharacter" Label="for a homomorphism"/> returns the
-##  restriction of the natural character of the image of <A>hom</A> to the
-##  preimage of <A>hom</A>.
+##  character of the source of <A>hom</A> whose value at <M>g</M> is the
+##  value of the natural character of the image of <A>hom</A> at the image
+##  of <M>g</M>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> NaturalCharacter( SymmetricGroup( 3 ) );
@@ -1111,9 +1112,10 @@ DeclareOperation( "PermutationCharacter", [ IsGroup, IsGroup ] );
 ##  <P/>
 ##  <Index>Brauer character</Index>
 ##  A <E>Brauer character</E> of <M>G</M> in characteristic <M>p</M> is
-##  a class function of <M>G</M> whose values are the complex lifts of a
-##  matrix representation of <M>G</M> with image a finite field of
-##  characteristic <M>p</M>.
+##  a class function on the <M>p</M>-regular classes of <M>G</M> whose value
+##  at <M>g</M> is the sum of the complex lifts of the eigenvalues of the
+##  image of <M>g</M> under a matrix representation of <M>G</M> over a
+##  field of characteristic <M>p</M>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1248,7 +1250,7 @@ DeclareOperation( "ScalarProduct",
 ##  Called with two lists <A>list</A>, <A>list2</A> of class functions of the
 ##  same character table (which may be given as the argument <A>tbl</A>),
 ##  <Ref Oper="MatScalarProducts"/> returns the matrix of scalar products
-##  (see <Ref Oper="ScalarProduct" Label="for characters"/>)
+##  (see <Ref Oper="ScalarProduct" Label="for characters"/>).
 ##  More precisely, this matrix contains in the <M>i</M>-th row the list of
 ##  scalar products of <M><A>list2</A>[i]</M>
 ##  with the entries of <A>list</A>.
@@ -1336,7 +1338,7 @@ DeclareOperation( "Norm", [ IsOrdinaryTable, IsHomogeneousList ] );
 ##  the quotient of the value of <A>chi</A> by the degree of <A>chi</A> is
 ##  a root of unity.
 ##  <P/>
-##  If the underlying character table of <A>psi</A> does not store the group
+##  If the underlying character table of <A>chi</A> does not store the group
 ##  <M>G</M> then an error is signalled.
 ##  (See&nbsp;<Ref Attr="ClassPositionsOfCentre" Label="for a character"/>
 ##  for a way to handle the centre implicitly,
@@ -1547,8 +1549,8 @@ DeclareAttribute( "ClassPositionsOfKernel", IsHomogeneousList );
 ##  <Oper Name="CycleStructureClass" Arg='[tbl, ]chi, class'/>
 ##
 ##  <Description>
-##  Let <A>permchar</A> be a permutation character, and <A>class</A> be the
-##  position of a conjugacy class of the character table of <A>permchar</A>.
+##  Let <A>chi</A> be a permutation character, and <A>class</A> be the
+##  position of a conjugacy class of the character table of <A>chi</A>.
 ##  <Ref Oper="CycleStructureClass"/> returns a list describing
 ##  the cycle structure of each element in class <A>class</A> in the
 ##  underlying permutation representation, in the same format as the result
@@ -1582,7 +1584,7 @@ DeclareOperation( "CycleStructureClass", [ IsClassFunction, IsPosInt ] );
 ##  corresponds to an action on the <M>G</M>-set <M>\Omega</M>
 ##  (see&nbsp;<Ref Oper="PermutationCharacter"
 ##  Label="for a group, an action domain, and a function"/>),
-##  <Ref Oper="IsTransitive" Label="for a group, an action domain, etc."/>
+##  <Ref Prop="IsTransitive" Label="for a character"/>
 ##  returns <K>true</K> if the action of <M>G</M> on <M>\Omega</M> is
 ##  transitive, and <K>false</K> otherwise.
 ##  </Description>
@@ -1852,7 +1854,7 @@ DeclareOperation( "TensorProductOp", [ IsDenseList, IsClassFunction ] );
 ##  Let <A>chi</A> be a class function of a group <M>G</M>
 ##  and let <A>target</A> be either a subgroup <M>H</M> of <M>G</M>
 ##  or an injective homomorphism from <M>H</M> to <M>G</M>
-##  or the character table of <A>H</A>.
+##  or the character table of <M>H</M>.
 ##  Then <Ref Oper="RestrictedClassFunction"/> returns the class function of
 ##  <M>H</M> obtained by restricting <A>chi</A> to <M>H</M>.
 ##  <P/>
@@ -1982,9 +1984,9 @@ DeclareSynonym( "Inflated", Restricted );
 ##
 ##  <Description>
 ##  Let <A>chi</A> be a class function of a group <M>G</M>
-##  and let <A>target</A> be either a supergroup <M>H</M> of <M>G</M>
-##  or an injective homomorphism from <M>H</M> to <M>G</M>
-##  or the character table of <A>H</A>.
+##  and let the last argument be either a supergroup <A>H</A> of <M>G</M>
+##  or an injective homomorphism <A>hom</A> from <M>G</M> to <M>H</M>
+##  or the character table <A>suptbl</A> of <M>H</M>.
 ##  Then <Ref Oper="InducedClassFunction" Label="for a supergroup"/>
 ##  returns the class function of <M>H</M> obtained by inducing <A>chi</A>
 ##  to <M>H</M>.
@@ -2682,7 +2684,7 @@ DeclareGlobalFunction( "SymplecticComponents" );
 ##  are in the ring <M>&ZZ;_{<A>p</A>}</M> of <A>p</A>-local numbers,
 ##  where <A>p</A> is a prime integer.
 ##  Assume that <A>value</A> lies in <M>&ZZ;_{<A>p</A>}[\zeta]</M>
-##  for <M>\zeta = \exp(<A>p</A>^n-1)</M>,
+##  for <M>\zeta = \exp(2 \pi i / (<A>p</A>^n-1))</M>,
 ##  for some positive integer <M>n</M>.
 ##  <P/>
 ##  <Ref Func="FrobeniusCharacterValue"/> returns the image of <A>value</A>
@@ -2714,7 +2716,7 @@ DeclareGlobalFunction( "SymplecticComponents" );
 DeclareGlobalFunction( "FrobeniusCharacterValue" );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  ReductionToFiniteField( <value>, <p> )
 ##
@@ -2848,8 +2850,8 @@ DeclareGlobalFunction( "ZevDataValue" );
 ##  via the function <Ref Func="FrobeniusCharacterValue"/>.
 ##  Note that the reduction map is defined as in&nbsp;<Cite Key="JLPW95"/>,
 ##  that is, the complex <M>(<A>p</A>^d-1)</M>-th root of unity
-##  <M>\exp(<A>p</A>^d-1)</M> is mapped to the residue class of the
-##  indeterminate, modulo the ideal spanned by the Conway polynomial
+##  <M>\exp(2 \pi i / (<A>p</A>^d-1))</M> is mapped to the residue class of
+##  the indeterminate, modulo the ideal spanned by the Conway polynomial
 ##  (see&nbsp;<Ref Func="ConwayPolynomial"/>) of degree <M>d</M> over the
 ##  field with <M>p</M> elements.
 ##  <P/>
@@ -2912,6 +2914,15 @@ DeclareGlobalFunction( "RealizableBrauerCharacters" );
 ##  <#GAPDoc Label="[9]{ctblfuns}">
 ##  &GAP; supports groups, vector spaces, and algebras generated by class
 ##  functions.
+##  For a group, use the two-argument version of
+##  <Ref Func="Group" Label="for a list of generators (and an identity element)"/>
+##  with the trivial character as identity.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> d8:= DihedralGroup( 8 );;
+##  gap> Dimension( VectorSpace( Rationals, Irr( d8 ) ) );
+##  5
+##  ]]></Example>
 ##  <!-- add examples:
 ##  gap> d8:= DihedralGroup( 8 );
 ##  <pc group of size 8 with 3 generators>
@@ -2979,7 +2990,7 @@ DeclareHandlingByNiceBasis( "IsClassFunctionsSpace",
 ##
 
 
-##############################################################################
+#############################################################################
 ##
 #F  OrbitChar( <chi>, <linear> )
 ##
@@ -3001,7 +3012,7 @@ DeclareHandlingByNiceBasis( "IsClassFunctionsSpace",
 DeclareGlobalFunction( "OrbitChar" );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  OrbitsCharacters( <chars> )
 ##
@@ -3021,7 +3032,7 @@ DeclareGlobalFunction( "OrbitChar" );
 DeclareGlobalFunction( "OrbitsCharacters" );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  OrbitRepresentativesCharacters( <irr> )
 ##

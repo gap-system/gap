@@ -168,7 +168,7 @@ end );
 ##
 DeclareRepresentation(
     "IsNBitsPcWordRep",
-    IsDataObjectRep, [] );
+    IsDataObjectRep );
 
 
 #############################################################################
@@ -370,7 +370,7 @@ end );
 ##
 DeclareRepresentation(
     "Is8BitsPcWordRep",
-    IsNBitsPcWordRep and IsKernelPcWord, [] );
+    IsNBitsPcWordRep and IsKernelPcWord );
 
 
 #############################################################################
@@ -540,7 +540,7 @@ InstallMethod( \<,
 ##
 DeclareRepresentation(
     "Is16BitsPcWordRep",
-    IsNBitsPcWordRep and IsKernelPcWord, [] );
+    IsNBitsPcWordRep and IsKernelPcWord );
 
 
 #############################################################################
@@ -710,7 +710,7 @@ InstallMethod( \<,
 ##
 DeclareRepresentation(
     "Is32BitsPcWordRep",
-    IsNBitsPcWordRep and IsKernelPcWord, [] );
+    IsNBitsPcWordRep and IsKernelPcWord );
 
 
 #############################################################################

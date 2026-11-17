@@ -91,7 +91,7 @@ InstallMethod(Size,"for a matrix group that knows to be a direct product",
 DeclareRepresentation("IsEmbeddingDirectProductMatrixGroup",
       IsAttributeStoringRep and
       IsGroupHomomorphism and IsInjective and
-      IsSPGeneralMapping,[ "component" ]);
+      IsSPGeneralMapping);
 
 #############################################################################
 ##
@@ -183,7 +183,7 @@ end);
 DeclareRepresentation("IsProjectionDirectProductMatrixGroup",
       IsAttributeStoringRep and
       IsGroupHomomorphism and IsSurjective and
-      IsSPGeneralMapping,[ "component" ]);
+      IsSPGeneralMapping);
 
 #############################################################################
 ##
@@ -357,7 +357,7 @@ end);
 DeclareRepresentation( "IsEmbeddingImprimitiveWreathProductMatrixGroup",
       IsAttributeStoringRep and
       IsGroupHomomorphism and IsInjective and
-      IsSPGeneralMapping, [ "component" ] );
+      IsSPGeneralMapping );
 
 #############################################################################
 ##

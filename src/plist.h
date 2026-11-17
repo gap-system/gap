@@ -50,14 +50,14 @@ EXPORT_INLINE Obj NEW_PLIST(UInt type, Int plen)
 
 EXPORT_INLINE Obj NEW_PLIST_IMM(UInt type, Int plen)
 {
-    return NEW_PLIST(type | IMMUTABLE, plen);
+    Obj list = NEW_PLIST(type, plen);
+    MakeImmutableNoRecurse(list);
+    return list;
 }
 
 EXPORT_INLINE Obj NEW_PLIST_WITH_MUTABILITY(Int mut, UInt type, Int plen)
 {
-    if (!mut)
-        type |= IMMUTABLE;
-    return NEW_PLIST(type, plen);
+    return mut ? NEW_PLIST(type, plen) : NEW_PLIST_IMM(type, plen);
 }
 
 /****************************************************************************
@@ -171,19 +171,38 @@ EXPORT_INLINE Int LEN_PLIST(Obj list)
 
 /****************************************************************************
 **
-*F  SET_ELM_PLIST(<list>,<pos>,<val>) . . . assign an element to a plain list
+*F  SET_ELM_PLIST_RAW(<list>,<pos>,<val>) . . assign without GC write barrier
 **
-**  'SET_ELM_PLIST' assigns the value  <val> to the  plain list <list> at the
-**  position <pos>.  <pos> must be a  positive integer less  than or equal to
-**  the length of <list>.
+**  'SET_ELM_PLIST_RAW' assigns the value <val> to the plain list <list> at
+**  the position <pos>. <pos> must be a positive integer less than or equal
+**  to the length of <list>.
 **
+**  Unlike 'SET_ELM_PLIST', it does not inform the garbage collector. Use it
+**  only where the caller calls 'CHANGED_BAG' itself before the next
+**  allocation, or where the list must not be marked as changed, such as
+**  while restoring a workspace.
 */
-EXPORT_INLINE void SET_ELM_PLIST(Obj list, Int pos, Obj val)
+EXPORT_INLINE void SET_ELM_PLIST_RAW(Obj list, Int pos, Obj val)
 {
     GAP_ASSERT(IS_PLIST_OR_POSOBJ(list));
     GAP_ASSERT(pos >= 1);
     GAP_ASSERT(pos <= CAPACITY_PLIST(list));
     ADDR_OBJ(list)[pos] = val;
+}
+
+/****************************************************************************
+**
+*F  SET_ELM_PLIST(<list>,<pos>,<val>) . . . assign an element to a plain list
+**
+**  'SET_ELM_PLIST' assigns the value <val> to the plain list <list> at the
+**  position <pos> and informs the garbage collector via 'CHANGED_BAG'.
+**  <pos> must be a positive integer less than or equal to the length of
+**  <list>.
+*/
+EXPORT_INLINE void SET_ELM_PLIST(Obj list, Int pos, Obj val)
+{
+    SET_ELM_PLIST_RAW(list, pos, val);
+    CHANGED_BAG(list);
 }
 
 /****************************************************************************
@@ -234,16 +253,6 @@ EXPORT_INLINE BOOL IS_DENSE_PLIST(Obj list)
 
 /****************************************************************************
 **
-*F  IS_PLIST_MUTABLE( <list> )  . . . . . . . . . . . is a plain list mutable
-*/
-EXPORT_INLINE BOOL IS_PLIST_MUTABLE(Obj list)
-{
-    GAP_ASSERT(IS_PLIST(list));
-    return !((TNUM_OBJ(list) - T_PLIST) % 2);
-}
-
-/****************************************************************************
-**
 *F  AssPlist( <list>, <pos>, <val>) . . . . . . . . .  assign to a plain list
 */
 void AssPlist(Obj list, Int pos, Obj val);
@@ -263,7 +272,7 @@ EXPORT_INLINE UInt PushPlist(Obj list, Obj val)
     const UInt pos = LEN_PLIST(list) + 1;
     GROW_PLIST(list, pos);
     SET_LEN_PLIST(list, pos);
-    SET_ELM_PLIST(list, pos, val);
+    SET_ELM_PLIST_RAW(list, pos, val);
     if (IS_BAG_REF(val))
         CHANGED_BAG(list);
     return pos;
@@ -286,7 +295,7 @@ EXPORT_INLINE Obj PopPlist(Obj list)
     const UInt pos = LEN_PLIST(list);
     Obj val = ELM_PLIST(list, pos);
     SET_LEN_PLIST(list, pos - 1);
-    SET_ELM_PLIST(list, pos, 0);
+    SET_ELM_PLIST_RAW(list, pos, 0);
     return val;
 }
 

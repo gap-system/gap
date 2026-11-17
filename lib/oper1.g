@@ -381,7 +381,7 @@ BIND_GLOBAL( "InstallOtherMethod",
 ##  <P/>
 ##  This can be used to avoid method selection overhead for certain special
 ##  cases, i.e., as an optimization. Overall, we recommend to use this
-##  feature very sparingly, as it is tool with sharp edges: for example, any
+##  feature very sparingly, as it is a tool with sharp edges: for example, any
 ##  inputs that are handled by an early method can not be intercepted by a
 ##  regular method, no matter how high its rank is; this can preclude other
 ##  kinds of optimizations.
@@ -950,9 +950,9 @@ end);
 ##  If a method is installed with <Ref Func="InstallMethod"/>
 ##  for a wrapper operation such as
 ##  <Ref Oper="SylowSubgroup"/> then a warning is signalled
-##  provided the <Ref InfoClass="InfoWarning"/> level
+##  provided the <C>InfoDebug</C> level
 ##  is at least <C>1</C>.
-##  (Use <Ref Func="InstallMethod"/> in order to suppress the
+##  (Use <Ref Func="InstallOtherMethod"/> in order to suppress the
 ##  warning.)
 ##  </Description>
 ##  </ManSection>

@@ -29,17 +29,17 @@ gap> DirectSumMat( N, N );
 
 # matrix objects
 gap> M:= Matrix( IsPlistMatrixRep, Rationals, [ 1, 2, 3, 4 ], 2 );
-<2x2-matrix over Rationals>
+<2x2 plist matrix over Rationals>
 gap> DirectSumMat( M ) = M;
 true
 gap> DirectSumMat( M, M );
-<4x4-matrix over Rationals>
+<4x4 plist matrix over Rationals>
 gap> DirectSumMat( [ M ] ) = M;
 true
 gap> DirectSumMat( [ M, M ] ) = DirectSumMat( M, M );
 true
 gap> DirectSumMat( M, [[ 1 ]] );
-<3x3-matrix over Rationals>
+<3x3 plist matrix over Rationals>
 
 #
 gap> STOP_TEST( "DirectSumMat.tst" );

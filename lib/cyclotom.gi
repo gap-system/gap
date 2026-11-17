@@ -176,7 +176,7 @@ InstallMethod( ImaginaryPart,
 ##
 ##  <Description>
 ##  The external representation of a cyclotomic <A>cyc</A> with conductor
-##  <M>n</M> (see <Ref Attr="Conductor" Label="for a cyclotomic"/> is
+##  <M>n</M> (see <Ref Attr="Conductor" Label="for a cyclotomic"/>) is
 ##  the list returned by <Ref Func="CoeffsCyc"/>,
 ##  called with <A>cyc</A> and <M>n</M>.
 ##  <P/>
@@ -376,7 +376,7 @@ InstallGlobalFunction( IsGaussRat,
     x -> IsCyc( x ) and (Conductor( x ) = 1 or Conductor( x ) = 4) );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  DescriptionOfRootOfUnity( <root> )
 ##

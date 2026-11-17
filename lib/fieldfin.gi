@@ -384,8 +384,7 @@ end );
 ##  basis as value of the component `inverseBase'.
 ##
 DeclareRepresentation( "IsBasisFiniteFieldRep",
-    IsAttributeStoringRep,
-    [ "inverseBase", "d", "q" ] );
+    IsAttributeStoringRep );
 
 InstallTrueMethod( IsFinite, IsBasis and IsBasisFiniteFieldRep );
 
@@ -613,7 +612,7 @@ InstallMethod( NormalBase,
     [ IsField and IsFinite, IsScalar ],
 function(F, b)
     local q, d, z, l, bas, i;
-    if b=0*b then
+    if IsZero( b ) then
         b := One(F);
     fi;
     q := Size(LeftActingDomain(F));
@@ -644,8 +643,7 @@ end);
 DeclareRepresentation( "IsFrobeniusAutomorphism",
         IsFieldHomomorphism
     and IsMapping
-    and IsAttributeStoringRep,
-    [ "power" ] );
+    and IsAttributeStoringRep );
 
 
 #############################################################################

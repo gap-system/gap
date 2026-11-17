@@ -262,7 +262,7 @@ DeclareOperation( "RandomSource", [IsOperation] );
 DeclareOperation( "RandomSource", [IsOperation, IsObject] );
 
 
-##############################################################################
+#############################################################################
 ##
 ##  <#GAPDoc Label="RandomSource_develop">
 ##  <Subsection Label="Implementing new kinds of random sources">
@@ -329,7 +329,7 @@ DeclareOperation( "RandomSource", [IsOperation, IsObject] );
 ##  </Subsection>
 ##  <#/GAPDoc>
 
-##############################################################################
+#############################################################################
 ##
 ##  <#GAPDoc Label="InstallMethodWithRandomSource">
 ##  <ManSection>

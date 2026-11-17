@@ -25,8 +25,7 @@
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation( "IsGroupGeneralMappingByPcgs",
-      IsGroupGeneralMappingByImages,
-      [ "generators", "genimages", "sourcePcgs", "sourcePcgsImages" ] );
+      IsGroupGeneralMappingByImages );
 
 #############################################################################
 ##
@@ -45,8 +44,7 @@ DeclareRepresentation( "IsGroupGeneralMappingByPcgs",
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation( "IsPcGroupGeneralMappingByImages",
-      IsGroupGeneralMappingByPcgs,
-      [ "generators", "genimages", "sourcePcgs", "sourcePcgsImages" ] );
+      IsGroupGeneralMappingByPcgs );
 DeclareSynonym("IsPcGroupHomomorphismByImages",
   IsPcGroupGeneralMappingByImages and IsMapping);
 
@@ -67,8 +65,7 @@ DeclareSynonym("IsPcGroupHomomorphismByImages",
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation( "IsToPcGroupGeneralMappingByImages",
-      IsGroupGeneralMappingByImages,
-      [ "generators", "genimages", "rangePcgs", "rangePcgsPreimages" ] );
+      IsGroupGeneralMappingByImages );
 DeclareSynonym("IsToPcGroupHomomorphismByImages",
   IsToPcGroupGeneralMappingByImages and IsMapping);
 
@@ -99,8 +96,7 @@ DeclareOperation( "NaturalIsomorphismByPcgs", [ IsGroup, IsPcgs ] );
 ##
 DeclareRepresentation( "IsNaturalHomomorphismPcGroupRep",
       IsGroupHomomorphism and IsSurjective and IsSPGeneralMapping and
-      IsAttributeStoringRep,
-      [ "sourcePcgs", "rangePcgs" ] );
+      IsAttributeStoringRep );
 
 #############################################################################
 ##
@@ -114,9 +110,7 @@ DeclareRepresentation( "IsNaturalHomomorphismPcGroupRep",
 ##  </ManSection>
 ##
 DeclareRepresentation( "IsPcgsToPcgsGeneralMappingByImages",
-      IsPcGroupGeneralMappingByImages and IsToPcGroupGeneralMappingByImages,
-      [ "generators", "genimages", "sourcePcgs", "sourcePcgsImages",
-        "rangePcgs", "rangePcgsPreimages" ] );
+      IsPcGroupGeneralMappingByImages and IsToPcGroupGeneralMappingByImages );
 DeclareSynonym( "IsPcgsToPcgsHomomorphism",
   IsPcgsToPcgsGeneralMappingByImages and IsMapping);
 

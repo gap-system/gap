@@ -143,7 +143,7 @@ InstallSubsetMaintenance( HomePcgs, IsGroup, IsGroup );
 ##  <Attr Name="InducedPcgsWrtFamilyPcgs" Arg='grp'/>
 ##
 ##  <Description>
-##  returns the pcgs which induced with respect to a family pcgs
+##  returns the pcgs of <A>grp</A> induced with respect to the family pcgs
 ##  (see <Ref Prop="IsParentPcgsFamilyPcgs"/> for further details).
 ##  </Description>
 ##  </ManSection>
@@ -259,7 +259,7 @@ DeclareAttribute(
 ##
 ##  <Description>
 ##  returns a pcgs for the group <A>G</A>.
-##  If <A>grp</A> is not polycyclic it returns <K>fail</K> <E>and this result
+##  If <A>G</A> is not polycyclic it returns <K>fail</K> <E>and this result
 ##  is not  stored as attribute value</E>,
 ##  in particular in this case the filter <C>HasPcgs</C> is <E>not</E> set
 ##  for <A>G</A>!
@@ -347,7 +347,7 @@ DeclareOperation( "SubgroupByPcgs", [IsGroup, IsPcgs] );
 ##  <Oper Name="AffineAction" Arg='gens, basisvectors, linear, transl'/>
 ##
 ##  <Description>
-##  return a list of matrices, one for each element of <A>gens</A>, which
+##  returns a list of matrices, one for each element of <A>gens</A>, which
 ##  corresponds to the affine action of the elements in <A>gens</A> on the
 ##  basis <A>basisvectors</A> via <A>linear</A> with translation
 ##  <A>transl</A>.

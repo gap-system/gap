@@ -38,5 +38,17 @@ true
 gap> Length( IrreducibleModules( SymmetricGroup(5), GF(3), 1 )[2] ) = 2;
 true
 
+# Modules computed from the factor group by the p-core
+gap> G1:= SymmetricGroup( 4 );;
+gap> G2:= Image( IsomorphismPcGroup( G1 ) );;
+gap> res1:= IrreducibleModules( G1, GF(2), 0 );;
+gap> res2:= IrreducibleModules( G2, GF(4), 0 );;
+gap> List( [ res1, res2 ], r -> List( r[2], m -> m.dimension ) );
+[ [ 1, 2 ], [ 1, 2 ] ]
+gap> ForAll( [ [ G1, res1 ], [ G2, res2 ] ], p -> ForAll( p[2][2], m ->
+>      GroupHomomorphismByImages( p[1], Group( m.generators ),
+>                                 p[2][1], m.generators ) <> fail ) );
+true
+
 #
 gap> STOP_TEST( "grpreps.tst" );

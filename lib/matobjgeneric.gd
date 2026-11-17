@@ -8,7 +8,7 @@
 ##  to list here. Please refer to the COPYRIGHT file for details.
 ##
 
-############################################################################
+#############################################################################
 #
 # Dense matrix objects backed by plain lists of plain row lists.
 #
@@ -45,8 +45,7 @@ DeclareRepresentation( "IsGenericMatrixRep",
     and IsCopyable
     and IsNoImmediateMethodsObject
     and HasNumberRows and HasNumberColumns
-    and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain,
-    [] );
+    and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain );
 
 
 # Internal positions for IsGenericMatrixRep:

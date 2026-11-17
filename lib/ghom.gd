@@ -70,6 +70,8 @@ DeclareOperation( "GroupGeneralMappingByImagesNC",
 ##  <#GAPDoc Label="GroupHomomorphismByImages">
 ##  <ManSection>
 ##  <Func Name="GroupHomomorphismByImages" Arg='G, H[[, gens], imgs]'/>
+##  <Func Name="GroupHomomorphismByImages" Arg='G[, gens], imgs'
+##   Label="without range"/>
 ##
 ##  <Description>
 ##  <Ref Func="GroupHomomorphismByImages"/> returns the group homomorphism
@@ -79,8 +81,8 @@ DeclareOperation( "GroupGeneralMappingByImagesNC",
 ##  <P/>
 ##  If omitted, the arguments <A>gens</A> and <A>imgs</A> default to
 ##  the <Ref Attr="GeneratorsOfGroup"/> value of <A>G</A> and <A>H</A>,
-##  respectively. If <A>H</A> is not given the mapping is automatically
-##  considered as surjective.
+##  respectively. If <A>H</A> is not given, the range is the group generated
+##  by <A>imgs</A>, so the mapping is surjective.
 ##  <P/>
 ##  If <A>gens</A> does not generate <A>G</A> or if the mapping of the
 ##  generators does not extend to a homomorphism
@@ -180,8 +182,7 @@ DeclareOperation( "GroupHomomorphismByImagesNC",
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation( "IsGroupGeneralMappingByImages",
-      IsGroupGeneralMapping and IsSPGeneralMapping and IsAttributeStoringRep,
-      [] );
+      IsGroupGeneralMapping and IsSPGeneralMapping and IsAttributeStoringRep );
 
 
 #############################################################################
@@ -201,8 +202,7 @@ DeclareRepresentation( "IsGroupGeneralMappingByImages",
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation( "IsPreimagesByAsGroupGeneralMappingByImages",
-      IsGroupGeneralMapping and IsSPGeneralMapping and IsAttributeStoringRep,
-      [  ] );
+      IsGroupGeneralMapping and IsSPGeneralMapping and IsAttributeStoringRep );
 
 
 #############################################################################
@@ -222,7 +222,7 @@ DeclareRepresentation( "IsPreimagesByAsGroupGeneralMappingByImages",
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation( "IsGroupGeneralMappingByAsGroupGeneralMappingByImages",
-      IsPreimagesByAsGroupGeneralMappingByImages, [  ] );
+      IsPreimagesByAsGroupGeneralMappingByImages );
 
 
 #############################################################################
@@ -584,7 +584,7 @@ DeclareGlobalFunction( "MakeMapping" );
 ##  such that each element <C>s</C> of <A>S</A> is mapped to the element
 ##  <A>fun</A><C>( s )</C>, where <A>fun</A> is a &GAP; function.
 ##  <P/>
-##  If the argument <A>invfun</A> is bound then <A>hom</A> is a bijection
+##  If the argument <A>invfun</A> is bound then <C>hom</C> is a bijection
 ##  between <A>S</A> and <A>R</A>,
 ##  and the preimage of each element <C>r</C> of <A>R</A> is given by
 ##  <A>invfun</A><C>( r )</C>,

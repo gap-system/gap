@@ -370,7 +370,6 @@ static Obj  HdlrFunc3 (
  SET_ENDLINE_BODY(t_2, 60);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG(t_1);
  l_vararg__fun = t_1;
  
  /* Print( vararg_fun(  ), "\n" ); */
@@ -524,12 +523,9 @@ static Obj  HdlrFunc3 (
  SET_LEN_PLIST( t_3, 7 );
  t_4 = MakeString( "x" );
  SET_ELM_PLIST( t_3, 1, t_4 );
- CHANGED_BAG( t_3 );
  t_4 = True;
  SET_ELM_PLIST( t_3, 2, t_4 );
- CHANGED_BAG( t_3 );
  SET_ELM_PLIST( t_3, 3, l_vararg__fun );
- CHANGED_BAG( t_3 );
  SET_ELM_PLIST( t_3, 4, INTOBJ_INT(4) );
  SET_ELM_PLIST( t_3, 5, INTOBJ_INT(5) );
  SET_ELM_PLIST( t_3, 6, INTOBJ_INT(6) );
@@ -608,7 +604,6 @@ static Obj  HdlrFunc3 (
  SET_ENDLINE_BODY(t_2, 91);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG(t_1);
  l_vararg__fun = t_1;
  
  /* vararg_fun(  ); */
@@ -689,12 +684,9 @@ static Obj  HdlrFunc3 (
  SET_LEN_PLIST( t_1, 7 );
  t_2 = MakeString( "x" );
  SET_ELM_PLIST( t_1, 1, t_2 );
- CHANGED_BAG( t_1 );
  t_2 = True;
  SET_ELM_PLIST( t_1, 2, t_2 );
- CHANGED_BAG( t_1 );
  SET_ELM_PLIST( t_1, 3, l_vararg__fun );
- CHANGED_BAG( t_1 );
  SET_ELM_PLIST( t_1, 4, INTOBJ_INT(4) );
  SET_ELM_PLIST( t_1, 5, INTOBJ_INT(5) );
  SET_ELM_PLIST( t_1, 6, INTOBJ_INT(6) );
@@ -1525,12 +1517,10 @@ static Obj  HdlrFunc9 (
  t_3 = NEW_PLIST( T_PLIST, 2 );
  SET_LEN_PLIST( t_3, 2 );
  SET_ELM_PLIST( t_2, 4, t_3 );
- CHANGED_BAG( t_2 );
  SET_ELM_PLIST( t_3, 1, INTOBJ_INT(4) );
  SET_ELM_PLIST( t_3, 2, INTOBJ_INT(5) );
  t_3 = NEW_PREC( 1 );
  SET_ELM_PLIST( t_2, 5, t_3 );
- CHANGED_BAG( t_2 );
  t_4 = (Obj)R_x;
  t_5 = NEW_PLIST( T_PLIST, 2 );
  SET_LEN_PLIST( t_5, 2 );
@@ -1538,7 +1528,6 @@ static Obj  HdlrFunc9 (
  SET_ELM_PLIST( t_5, 1, INTOBJ_INT(6) );
  t_6 = NEW_PREC( 0 );
  SET_ELM_PLIST( t_5, 2, t_6 );
- CHANGED_BAG( t_5 );
  SortPRecRNam( t_6 );
  SortPRecRNam( t_3 );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
@@ -2407,7 +2396,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 48);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG(t_1);
  AssGVar( G_test__int__constants, t_1 );
  
  /* test_func_calls := function (  )
@@ -2450,7 +2438,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 112);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG(t_1);
  AssGVar( G_test__func__calls, t_1 );
  
  /* test_cmp_ops := function (  )
@@ -2550,7 +2537,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 163);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG(t_1);
  AssGVar( G_test__cmp__ops, t_1 );
  
  /* test_arith := function (  )
@@ -2568,7 +2554,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 177);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG(t_1);
  AssGVar( G_test__arith, t_1 );
  
  /* test_tilde := function (  )
@@ -2582,7 +2567,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 199);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG(t_1);
  AssGVar( G_test__tilde, t_1 );
  
  /* test_list_rec_exprs := function (  )
@@ -2622,7 +2606,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 233);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG(t_1);
  AssGVar( G_test__list__rec__exprs, t_1 );
  
  /* myglobal := 1; */
@@ -2683,7 +2666,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 299);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG(t_1);
  AssGVar( G_test__IsBound__Unbind, t_1 );
  
  /* test_loops := function (  )
@@ -2731,7 +2713,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 346);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG(t_1);
  AssGVar( G_test__loops, t_1 );
  
  /* runtest := function (  )
@@ -2753,7 +2734,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 364);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG(t_1);
  AssGVar( G_runtest, t_1 );
  
  /* return; */
@@ -2873,7 +2853,6 @@ static Int InitLibrary ( StructInitInfo * module )
  SET_ENVI_FUNC( func1, STATE(CurrLVars) );
  body1 = NewFunctionBody();
  SET_BODY_FUNC( func1, body1 );
- CHANGED_BAG( func1 );
  CALL_0ARGS( func1 );
  
  return 0;

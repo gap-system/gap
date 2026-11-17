@@ -34,7 +34,7 @@
 ##  <M>c( x_{{i_1}}, \ldots, x_{{i_s}} ) =
 ##  \sum \lambda^k_{{i_1,\ldots, i_s}} v_k</M>.
 ##  Denote the dimension of <M>V</M> by <M>r</M>.
-##  Then we represent an <M>s</M>-cocycle by a list of <M>r</M> lists.
+##  Then we represent an <M>s</M>-cochain by a list of <M>r</M> lists.
 ##  The <M>j</M>-th of those lists consists of entries of the form
 ##  <Display Mode="M">
 ##  [ [ i_1, i_2, \ldots, i_s ], \lambda^j_{{i_1, \ldots, i_s}} ]
@@ -68,7 +68,7 @@
 ##
 
 
-##############################################################################
+#############################################################################
 ##
 #C  IsCochain( <obj> )
 #C  IsCochainCollection( <obj> )
@@ -96,7 +96,7 @@ DeclareCategoryCollections( "IsCochain" );
 ##  <Oper Name="Cochain" Arg='V, s, obj'/>
 ##
 ##  <Description>
-##  Constructs a <A>s</A>-cochain given by the data in <A>obj</A>, with
+##  Constructs an <A>s</A>-cochain given by the data in <A>obj</A>, with
 ##  respect to the Lie algebra module <A>V</A>. If <A>s</A> is non-zero,
 ##  then <A>obj</A> must be a list.
 ##  <Example><![CDATA[
@@ -256,7 +256,7 @@ DeclareOperation( "Cocycles", [ IsAlgebraModule, IS_INT  ] );
 DeclareOperation( "Coboundaries", [ IsAlgebraModule, IS_INT ] );
 
 
-############################################################################
+#############################################################################
 ##
 #P  IsWeylGroup( <G> )
 ##
@@ -274,7 +274,7 @@ DeclareOperation( "Coboundaries", [ IsAlgebraModule, IS_INT ] );
 DeclareProperty( "IsWeylGroup", IsGroup );
 InstallTrueMethod( IsGroup, IsWeylGroup );
 
-############################################################################
+#############################################################################
 ##
 #A  WeylGroup( <R> )
 ##
@@ -308,7 +308,7 @@ InstallTrueMethod( IsGroup, IsWeylGroup );
 ##
 DeclareAttribute( "WeylGroup", IsRootSystem );
 
-############################################################################
+#############################################################################
 ##
 #A  SparseCartanMatrix( <W> )
 ##
@@ -329,7 +329,7 @@ DeclareAttribute( "WeylGroup", IsRootSystem );
 ##
 DeclareAttribute( "SparseCartanMatrix", IsWeylGroup );
 
-############################################################################
+#############################################################################
 ##
 #O  ApplySimpleReflection( <SC>, <i>, <wt> )
 ##
@@ -356,7 +356,7 @@ DeclareAttribute( "SparseCartanMatrix", IsWeylGroup );
 ##
 DeclareOperation( "ApplySimpleReflection", [ IsList, IS_INT, IsList ] );
 
-############################################################################
+#############################################################################
 ##
 #A  LongestWeylWordPerm( <W> )
 ##
@@ -383,7 +383,7 @@ DeclareOperation( "ApplySimpleReflection", [ IsList, IS_INT, IsList ] );
 ##
 DeclareAttribute( "LongestWeylWordPerm", IsWeylGroup );
 
-############################################################################
+#############################################################################
 ##
 #O  ConjugateDominantWeight( <W>, <wt> )
 #O  ConjugateDominantWeightWithWord( <W>, <wt> )
@@ -425,7 +425,7 @@ DeclareOperation( "ConjugateDominantWeight", [ IsWeylGroup, IsList ] );
 DeclareOperation( "ConjugateDominantWeightWithWord", [ IsWeylGroup, IsList ]);
 
 
-############################################################################
+#############################################################################
 ##
 #O  WeylOrbitIterator( <W>, <wt> )
 ##
@@ -461,7 +461,7 @@ DeclareOperation( "ConjugateDominantWeightWithWord", [ IsWeylGroup, IsList ]);
 ##
 DeclareOperation( "WeylOrbitIterator", [ IsWeylGroup, IsList ] );
 
-############################################################################
+#############################################################################
 ##
 #A  PositiveRootsAsWeights( <R> )
 ##
@@ -476,7 +476,7 @@ DeclareOperation( "WeylOrbitIterator", [ IsWeylGroup, IsList ] );
 ##
 DeclareAttribute( "PositiveRootsAsWeights", IsRootSystem );
 
-############################################################################
+#############################################################################
 ##
 #O  DominantWeights( <R>, <maxw> )
 ##
@@ -504,7 +504,7 @@ DeclareAttribute( "PositiveRootsAsWeights", IsRootSystem );
 DeclareOperation( "DominantWeights", [ IsRootSystem, IsList ] );
 
 
-############################################################################
+#############################################################################
 ##
 #O  DominantCharacter( <L>, <maxw> )
 #O  DominantCharacter( <R>, <maxw> )
@@ -638,12 +638,12 @@ DeclareOperation( "DimensionOfHighestWeightModule", [ IsLieAlgebra, IsList ] );
 ##  </Table>
 ##  Then by a theorem of Kostant, the <M>x_{\alpha}^{(n)}</M> and
 ##  <M>y_{\alpha}^{(n)}</M> generate a subring of the universal enveloping algebra
-##  <M>U(L)</M> spanned (as a free <M>Z</M>-module) by the elements
+##  <M>U(L)</M> spanned (as a free <M>&ZZ;</M>-module) by the elements
 ##  <Display Mode="M">
 ##  y^M h^K x^N
 ##  </Display>
-##  (see, e.g., <Cite Key="Hum72"/> or <Cite Key="Hum78" Where="Section 26"/>)
-##  So by the Poincare-Birkhoff-Witt theorem
+##  (see, e.g., <Cite Key="Hum72"/> or <Cite Key="Hum78" Where="Section 26"/>).
+##  So by the Poincaré-Birkhoff-Witt theorem
 ##  this subring is a lattice in <M>U(L)</M>. Furthermore, this lattice is
 ##  invariant under the <M>x_{\alpha}^{(n)}</M> and <M>y_{\alpha}^{(n)}</M>.
 ##  Therefore, it is called an admissible lattice in <M>U(L)</M>.
@@ -654,7 +654,7 @@ DeclareOperation( "DimensionOfHighestWeightModule", [ IsLieAlgebra, IsList ] );
 ##
 
 
-##############################################################################
+#############################################################################
 ##
 #C  IsUEALatticeElement( <obj> )
 #C  IsUEALatticeElementCollection( <obj> )
@@ -679,7 +679,7 @@ DeclareCategoryCollections( "IsUEALatticeElement" );
 DeclareCategoryFamily( "IsUEALatticeElement" );
 
 
-##############################################################################
+#############################################################################
 ##
 #A  LatticeGeneratorsInUEA( <L> )
 ##
@@ -720,7 +720,7 @@ DeclareCategoryFamily( "IsUEALatticeElement" );
 ##
 DeclareAttribute( "LatticeGeneratorsInUEA", IsLieAlgebra );
 
-##############################################################################
+#############################################################################
 ##
 #F  CollectUEALatticeElement( <noPosR>, <BH>, <f>, <vars>, <Rvecs>, <RT>,
 ##                                                          <posR>, <lst> )
@@ -735,7 +735,7 @@ DeclareAttribute( "LatticeGeneratorsInUEA", IsLieAlgebra );
 DeclareGlobalFunction( "CollectUEALatticeElement" );
 
 
-##############################################################################
+#############################################################################
 ##
 #C  IsWeightRepElement( <obj> )
 #C  IsWeightRepElementCollection( <obj> )
@@ -766,7 +766,7 @@ DeclareGlobalFunction( "CollectUEALatticeElement" );
 ##  If <C>v</C> is a <C>WeightRepElement</C>, then <C>ExtRepOfObj( v )</C>
 ##  returns the corresponding list, and if <C>list</C> is such a list and
 ##  <A>fam</A> a <C>WeightRepElementFamily</C>, then
-##  <C>ObjByExtRep( <A>list</A>, <A>fam</A> )</C> returns the corresponding
+##  <C>ObjByExtRep( <A>fam</A>, <A>list</A> )</C> returns the corresponding
 ##  <C>WeightRepElement</C>.
 ##  </Description>
 ##  </ManSection>
@@ -776,7 +776,7 @@ DeclareCategory( "IsWeightRepElement", IsVector );
 DeclareCategoryCollections( "IsWeightRepElement" );
 DeclareCategoryFamily( "IsWeightRepElement" );
 
-##############################################################################
+#############################################################################
 ##
 #C  IsBasisOfWeightRepElementSpace( <B> )
 ##
@@ -817,10 +817,6 @@ DeclareCategory( "IsBasisOfWeightRepElementSpace", IsBasis );
 ##  lie in the category <Ref Filt="IsWeightRepElement"/>). However, if
 ##  <C>v</C> is an element of such a module, then <C>ExtRepOfObj( v )</C>
 ##  is a <C>WeightRepElement</C>.
-##  <P/>
-##  Note that for the following examples of this chapter we increase the line
-##  length limit from its default value 80 to 81 in order to make some long
-##  output expressions fit into the lines.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> K1:= SimpleLieAlgebra( "G", 2, Rationals );;
@@ -870,7 +866,7 @@ DeclareOperation( "HighestWeightModule", [ IsAlgebra, IsList ] );
 DeclareOperation( "LeadingUEALatticeMonomial",
                                    [ IsInt, IsUEALatticeElement ] );
 
-##############################################################################
+#############################################################################
 ##
 #F  LeftReduceUEALatticeElement( <novar>, <G>, <lms>, <p> )
 ##
@@ -884,7 +880,7 @@ DeclareOperation( "LeadingUEALatticeMonomial",
 DeclareGlobalFunction( "LeftReduceUEALatticeElement" );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  ExtendRepresentation( <L>, <newelts>, <I>, <mats> )
 ##

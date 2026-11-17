@@ -16,7 +16,7 @@ DeclareCategory( "IsZmodnZepsObj", IsScalar );
 
 DeclareCategoryCollections( "IsZmodnZepsObj" );
 
-DeclareRepresentation( "IsZmodnZepsRep", IsPositionalObjectRep, [ 1 ] );
+DeclareRepresentation( "IsZmodnZepsRep", IsPositionalObjectRep );
 
 DeclareGlobalFunction( "ZmodnZepsObj");
 

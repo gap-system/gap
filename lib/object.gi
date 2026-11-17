@@ -51,7 +51,7 @@ InstallMethod( \=,
 ##  next are permutations (see&nbsp;<Ref Filt="IsPerm"/>),
 ##  followed by the boolean values <K>true</K>, <K>false</K>, and <K>fail</K>
 ##  (see&nbsp;<Ref Filt="IsBool"/>),
-##  characters (such as <C>{</C>}a{'}', see&nbsp;<Ref Filt="IsChar"/>),
+##  characters (such as <C>'a'</C>, see&nbsp;<Ref Filt="IsChar"/>),
 ##  and lists (see&nbsp;<Ref Filt="IsList"/>) are largest;
 ##  note that two lists can be compared with <C>&lt;</C> if and only if their
 ##  elements are again objects that can be compared with <C>&lt;</C>.

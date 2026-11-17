@@ -107,8 +107,7 @@ static inline Obj FastAInvInt(Obj x)
   SET_ELM_PLIST( wst,  st, word ); \
   SET_ELM_PLIST( west, st, exp );  \
   SET_ELM_PLIST( sst,  st, INTOBJ_INT(1) ); \
-  SET_ELM_PLIST( est,  st, ELM_PLIST( word, 2 ) ); \
-  CHANGED_BAG( wst ); CHANGED_BAG( west ); CHANGED_BAG( est ); }
+  SET_ELM_PLIST( est,  st, ELM_PLIST( word, 2 ) ); }
 
 
 static void AddIn(Obj list, Obj w, Obj e)
@@ -335,13 +334,11 @@ static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
             SET_ELM_PLIST( west, st, we );
             SET_ELM_PLIST( sst,  st, INTOBJ_INT(1) );
             SET_ELM_PLIST( est,  st, ELM_PLIST( w, 2 ) );
-            CHANGED_BAG( west ); CHANGED_BAG( est );
           }
         }
         else {
           SET_ELM_PLIST( sst, st, INTOBJ_INT(syl) );
           SET_ELM_PLIST( est, st, ELM_PLIST( w, syl+1 ));
-          CHANGED_BAG( est );
         }
       }
     }

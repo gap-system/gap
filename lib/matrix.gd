@@ -323,7 +323,7 @@ DeclareAttribute( "BaseMat", IsMatrixOrMatrixObj );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "BaseMatDestructive", [ IsMatrixOrMatrixObj ] );
+DeclareOperation( "BaseMatDestructive", [ IsMatrixOrMatrixObj and IsMutable ] );
 
 #############################################################################
 ##
@@ -564,11 +564,13 @@ DeclareGlobalFunction( "ElementaryDivisorsMatDestructive" );
 ##  <Func Name="ElementaryDivisorsTransformationsMatDestructive" Arg='ring,mat'/>
 ##
 ##  <Description>
-##  <C>ElementaryDivisorsTransformations</C>, in addition to the tasks done
-##  by <C>ElementaryDivisorsMat</C>, also calculates transforming matrices.
+##  <Ref Oper="ElementaryDivisorsTransformationsMat"/>, in addition to the
+##  tasks done by <Ref Oper="ElementaryDivisorsMat"/>, also calculates
+##  transforming matrices.
 ##  It returns a record with components <C>normal</C> (a matrix <M>S</M>),
 ##  <C>rowtrans</C> (a matrix <M>P</M>),
-##  and <C>coltrans</C> (a matrix <M>Q</M>) such that <M>P A Q = S</M>.
+##  and <C>coltrans</C> (a matrix <M>Q</M>) such that
+##  <M>P \cdot <A>mat</A> \cdot Q = S</M>.
 ##  The operations are performed over the euclidean ring
 ##  <A>ring</A>, which must contain
 ##  all matrix entries. For compatibility reasons it can be omitted and
@@ -807,8 +809,8 @@ DeclareOperation( "Eigenvectors", [ IsRing, IsMatrixOrMatrixObj ] );
 ##  <Attr Name="ProjectiveOrder" Arg='mat'/>
 ##
 ##  <Description>
-##  Returns an integer n and a finite field element e such that
-##  <A>A</A>^n = eI.
+##  Returns an integer <M>n</M> and a finite field element <M>e</M> such that
+##  <M><A>mat</A>^n = eI</M>.
 ##  <A>mat</A> must be a matrix defined over a finite field.
 ##  <Example><![CDATA[
 ##  gap> ProjectiveOrder([[1,4],[5,2]]*Z(11)^0);
@@ -1147,9 +1149,9 @@ DeclareOperation( "MutableTransposedMatDestructive", [IsMatrixOrMatrixObj and Is
 ##  <Oper Name="TransposedMatDestructive" Arg='mat'/>
 ##
 ##  <Description>
-##  If <A>mat</A> is a mutable matrix, then the transposed
-##  is computed by swapping the entries in <A>mat</A>. In this way <A>mat</A> gets
-##  changed. In all other cases the transposed is computed by <Ref Attr="TransposedMat"/>.
+##  Returns the transposed of the fully mutable matrix <A>mat</A>,
+##  which is computed by swapping the entries in <A>mat</A>.
+##  In this way <A>mat</A> gets changed.
 ##  <Example><![CDATA[
 ##  gap> TransposedMat([[1,2,3],[4,5,6],[7,8,9]]);
 ##  [ [ 1, 4, 7 ], [ 2, 5, 8 ], [ 3, 6, 9 ] ]
@@ -1163,11 +1165,11 @@ DeclareOperation( "MutableTransposedMatDestructive", [IsMatrixOrMatrixObj and Is
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "TransposedMatDestructive", [ IsMatrixOrMatrixObj ] );
+DeclareOperation( "TransposedMatDestructive", [ IsMatrixOrMatrixObj and IsMutable ] );
 
 
 
-############################################################################
+#############################################################################
 ##
 #P  IsMonomialMatrix( <mat> )
 ##
@@ -1303,7 +1305,7 @@ DeclareOperation( "SolutionMatDestructive",
     [ IsMatrixOrMatrixObj and IsMutable, IsRowVectorOrVectorObj ] );
 
 
-############################################################################
+#############################################################################
 ##
 #O  SumIntersectionMat( <M1>, <M2> )  . .  sum and intersection of two spaces
 ##
@@ -1531,9 +1533,9 @@ DeclareGlobalFunction( "BlownUpMat" );
 ##  <P/>
 ##  So <Ref Func="BlownUpVector"/> and <Ref Func="BlownUpMat"/> are compatible
 ##  in the sense that for a matrix <A>mat</A> over <M>F</M>,
-##  <C>BlownUpVector( <A>B</A>, <A>mat</A> * <A>vector</A> )</C>
+##  <C>BlownUpVector( <A>B</A>, <A>vector</A> * <A>mat</A> )</C>
 ##  is equal to
-##  <C>BlownUpMat( <A>B</A>, <A>mat</A> ) * BlownUpVector( <A>B</A>, <A>vector</A> )</C>.
+##  <C>BlownUpVector( <A>B</A>, <A>vector</A> ) * BlownUpMat( <A>B</A>, <A>mat</A> )</C>.
 ##  <Example><![CDATA[
 ##  gap> B:= Basis( CF(4), [ 1, E(4) ] );;
 ##  gap> mat:= [ [ 1, E(4) ], [ 0, 1 ] ];;  vec:= [ 1, E(4) ];;
@@ -1658,7 +1660,7 @@ DeclareSynonym( "MutableCopyMat", MutableCopyMatrix );
 ##
 ##  <Description>
 ##  returns a (mutable) <A>m</A><M>\times</M><A>n</A> null matrix over the ring given by
-##  by <A>R</A>. Here, <A>R</A> can be either a ring, or an element of a ring. By default,
+##  <A>R</A>. Here, <A>R</A> can be either a ring, or an element of a ring. By default,
 ##  an integer matrix is created.
 ##  <Example><![CDATA[
 ##  gap> NullMat(3,2);
@@ -1798,13 +1800,13 @@ DeclareGlobalFunction( "PermutationMat" );
 ##  gap> Is8BitMatrixRep( d1 );
 ##  true
 ##  gap> d2:= DiagonalMatrix( IsPlistMatrixRep, GF(9), [ 1, 2 ] * Z(3)^0 );
-##  <2x2-matrix over GF(3^2)>
+##  <2x2 plist matrix over GF(3^2)>
 ##  gap> IsPlistMatrixRep( d2 );
 ##  true
 ##  gap> DiagonalMatrix( [ 1, 2 ] );
-##  <2x2-matrix over Rationals>
+##  <2x2 plist matrix over Rationals>
 ##  gap> DiagonalMatrix( [ 1, 2 ], Matrix( Integers, [ [ 1 ] ], 1 ) );
-##  <2x2-matrix over Integers>
+##  <2x2 plist matrix over Integers>
 ##  gap> DiagonalMatrix( [ 1, 2 ], [ [ 1 ] ] );
 ##  [ [ 1, 0 ], [ 0, 2 ] ]
 ##  ]]></Example>
@@ -1829,7 +1831,7 @@ DeclareOperation( "DiagonalMatrix", [ IsRowVectorOrVectorObj ] );
 ##  <Func Name="DiagonalMat" Arg='vector'/>
 ##
 ##  <Description>
-##  returns a diagonal matrix <A>mat</A> with the diagonal entries given by
+##  returns a diagonal matrix with the diagonal entries given by
 ##  <A>vector</A>.
 ##  <Example><![CDATA[
 ##  gap> DiagonalMat([1,2,3]);
@@ -2095,7 +2097,7 @@ DeclareOperation( "RandomMatrix",
 
 #############################################################################
 ##
-#F  RandomUnimodularMat( [rs ,] <m> ) . . . . . . . . random unimodular matrix
+#F  RandomUnimodularMat( [rs ,] <m> ) . . . . . . .  random unimodular matrix
 ##
 ##  <#GAPDoc Label="RandomUnimodularMat">
 ##  <ManSection>
@@ -2105,8 +2107,8 @@ DeclareOperation( "RandomMatrix",
 ##  returns a new random mutable <A>m</A><M>\times</M><A>m</A> matrix with integer
 ##  entries that is invertible over the integers.
 ##  Optionally, a random source <A>rs</A> can be supplied.
-##  If the option <A>domain</A> is given, random selection is made from <A>domain</A>, otherwise
-##  from <A>Integers</A>
+##  If the option <C>domain</C> is given, random selection is made from <C>domain</C>, otherwise
+##  from <Ref Var="Integers"/>.
 ##  <Example><![CDATA[
 ##  gap> m := RandomUnimodularMat(3);
 ##  [ [ 1, -5, 26 ], [ 0, 1, -6 ], [ 0, 0, 1 ] ]
@@ -2133,17 +2135,17 @@ DeclareGlobalFunction( "RandomUnimodularMat" );
 ##  <Func Name="SimultaneousEigenvalues" Arg='matlist, expo'/>
 ##
 ##  <Description>
-##  The matrices in <A>matlist</A> must be matrices over GF(<A>q</A>)
-##  for some prime <A>q</A>.
-##  Together, they must generate an abelian p-group of exponent <A>expo</A>.
-##  Then the eigenvalues of <A>mat</A> in the splitting field
-##  <C>GF(<A>q</A>^<A>r</A>)</C> for some <A>r</A> are powers of an element
+##  The matrices in <A>matlist</A> must be matrices over <M>GF(q)</M>
+##  for some prime <M>q</M>.
+##  Together, they must generate an abelian <M>q</M>-group of exponent <A>expo</A>.
+##  Then the eigenvalues of the matrices in <A>matlist</A> in the splitting field
+##  <M>GF(q^r)</M> for some <M>r</M> are powers of an element
 ##  <M>\xi</M> in the splitting field, which is of order <A>expo</A>.
 ##  <Ref Func="SimultaneousEigenvalues"/> returns a matrix of
 ##  integers mod <A>expo</A> <M>(a_{{i,j}})</M>, such that the power
-##  <M>\xi^{{a_{{i,j}}}}</M> is an eigenvalue of the <A>i</A>-th matrix in
+##  <M>\xi^{{a_{{i,j}}}}</M> is an eigenvalue of the <M>i</M>-th matrix in
 ##  <A>matlist</A> and the eigenspaces of the different matrices to the
-##  eigenvalues <M>\xi^{{a_{{i,j}}}}</M> for fixed <A>j</A> are equal.
+##  eigenvalues <M>\xi^{{a_{{i,j}}}}</M> for fixed <M>j</M> are equal.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2273,8 +2275,9 @@ DeclareGlobalFunction( "EmptyMatrix" );
 ##  normal form. (In other words: it triangulizes the product of <A>bas</A> with
 ##  <A>mat</A>.)
 ##  <P/>
-##  <A>bas</A> must be given in Hermite normal form,
-##  otherwise an error is triggered (see&nbsp;<Ref Sect="Action on canonical representatives"/>).
+##  <A>bas</A> must be given in Hermite normal form, otherwise
+##  orbit and stabilizer computations signal an error
+##  (see&nbsp;<Ref Sect="Action on canonical representatives"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2490,8 +2493,8 @@ DeclareGlobalFunction( "SimplexMethod" );
 ##
 ##  <Description>
 ##  <Index>Frobenius Normal Form</Index>
-##  For a matrix <C>A</C>, return a matrix <C>P</C> such that
-##  <M>A^{P}</M> is in rational canonical form (also called
+##  For a matrix <A>mat</A>, return a matrix <M>P</M> such that
+##  <M><A>mat</A>^{P}</M> is in rational canonical form (also called
 ##  Frobenius normal form). The algorithm used is the basic textbook
 ##  version and thus not of optimal complexity.
 ##  <Example><![CDATA[

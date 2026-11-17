@@ -175,7 +175,7 @@ DeclareAttribute("FreeGeneratorsOfFpMonoid",  IsFpMonoid);
 ##
 DeclareAttribute("FreeMonoidOfFpMonoid", IsFpMonoid);
 
-############################################################################
+#############################################################################
 ##
 #A  RelationsOfFpMonoid(<m>)
 ##
@@ -191,7 +191,7 @@ DeclareAttribute("FreeMonoidOfFpMonoid", IsFpMonoid);
 ##
 DeclareAttribute("RelationsOfFpMonoid",IsFpMonoid);
 
-############################################################################
+#############################################################################
 ##
 #A  IsomorphismFpMonoid(<m>)
 ##
@@ -210,7 +210,7 @@ DeclareAttribute("RelationsOfFpMonoid",IsFpMonoid);
 
 DeclareAttribute("IsomorphismFpMonoid",IsSemigroup);
 
-############################################################################
+#############################################################################
 ##
 #F  IsomorphismFpMonoidInversesFirst(<G>)
 ##
@@ -230,7 +230,7 @@ DeclareAttribute("IsomorphismFpMonoid",IsSemigroup);
 ##
 DeclareGlobalFunction("IsomorphismFpMonoidInversesFirst");
 
-############################################################################
+#############################################################################
 ##
 #F  IsomorphismFpMonoidGeneratorsFirst(<G>)
 ##

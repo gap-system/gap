@@ -39,7 +39,7 @@ DeclareSynonymAttr( "IsMonoid", IsMagmaWithOne and IsAssociative );
 ##  <#GAPDoc Label="Monoid">
 ##  <ManSection>
 ##  <Heading>Monoid</Heading>
-##  <Func Name="Monoid" Arg='gen1, gen2 ...'
+##  <Func Name="Monoid" Arg='gen1, gen2, ...'
 ##   Label="for various generators"/>
 ##  <Func Name="Monoid" Arg='gens[, id]' Label="for a list"/>
 ##

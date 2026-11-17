@@ -916,7 +916,6 @@ static Obj InversePlistGF2VecsDesstructive(Obj list)
         NEW_GF2VEC(row, TYPE_LIST_GF2VEC, len);
         BLOCK_ELM_GF2VEC(row, i) |= MASK_POS_GF2VEC(i);
         SET_ELM_PLIST(tmp, i, row);
-        CHANGED_BAG(tmp);
     }
     SET_LEN_PLIST(tmp, len);
     inv = tmp;
@@ -1022,7 +1021,6 @@ static Obj InverseGF2Mat(Obj mat, UInt mut)
         while (ptP < end)
             *ptP++ = *ptQ++;
         SET_ELM_PLIST(tmp, i, row);
-        CHANGED_BAG(tmp);
     }
     SET_LEN_PLIST(tmp, len);
     inv = InversePlistGF2VecsDesstructive(tmp);
@@ -1147,18 +1145,15 @@ static Obj SemiEchelonListGF2Vecs(Obj mat, UInt TransformationsNeeded)
         // garbage collection OK again after here
         if (j <= ncols) {
             SET_ELM_PLIST(vectors, ++nvecs, row);
-            CHANGED_BAG(vectors);    // Could be an old bag by now. Max.
             SET_LEN_PLIST(vectors, nvecs);
             SET_ELM_PLIST(heads, j, INTOBJ_INT(nvecs));
             if (TransformationsNeeded) {
                 SET_ELM_PLIST(coeffs, nvecs, coeffrow);
-                CHANGED_BAG(coeffs);    // Could be an old bag by now. Max.
                 SET_LEN_PLIST(coeffs, nvecs);
             }
         }
         else if (TransformationsNeeded) {
             SET_ELM_PLIST(relns, ++nrels, coeffrow);
-            CHANGED_BAG(relns);    // Could be an old bag by now. Max.
             SET_LEN_PLIST(relns, nrels);
         }
         TakeInterrupt();
@@ -1293,14 +1288,14 @@ static void PlainGF2Vec(Obj list)
     // wipe out the first entry of the GF2 vector (which becomes the  second
     // entry of the plain list, in case the list has length 1.
     if (len == 1)
-        SET_ELM_PLIST(list, 2, 0);
+        SET_ELM_PLIST_RAW(list, 2, 0);
 
     // replace the bits by 'GF2One' or 'GF2Zero' as the case may be
     // this must of course be done from the end of the list backwards
     for (i = len; 1 < i; i--)
-        SET_ELM_PLIST(list, i, ELM_GF2VEC(list, i));
+        SET_ELM_PLIST_RAW(list, i, ELM_GF2VEC(list, i));
     if (len != 0)
-        SET_ELM_PLIST(list, 1, first);
+        SET_ELM_PLIST_RAW(list, 1, first);
 
     CHANGED_BAG(list);
 }
@@ -1378,7 +1373,7 @@ static void ConvGF2Vec(Obj list)
     }
     if (SIZE_PLEN_GF2VEC(len) > SIZE_OBJ(list))
         ResizeBag(list, SIZE_PLEN_GF2VEC(len));
-    BOOL mutable = IS_PLIST_MUTABLE(list);
+    BOOL mutable = IS_MUTABLE_OBJ(list);
 
     block = 0;
     bit = 1;
@@ -1478,7 +1473,7 @@ static Obj NewGF2Vec(Obj list)
     }
 
     // mutability should be inherited from the argument
-    if (IS_PLIST_MUTABLE(list))
+    if (IS_MUTABLE_OBJ(list))
         SetTypeDatObj(res, TYPE_LIST_GF2VEC);
     else
         SetTypeDatObj(res, TYPE_LIST_GF2VEC_IMM);
@@ -1534,7 +1529,7 @@ static Obj FuncCONV_GF2MAT(Obj self, Obj list)
         SET_ELM_PLIST(list, i + 1, tmp);
     }
     SET_ELM_PLIST(list, 1, INTOBJ_INT(len));
-    mut = IS_PLIST_MUTABLE(list);
+    mut = IS_MUTABLE_OBJ(list);
     RetypeBag(list, T_POSOBJ);
     SET_TYPE_POSOBJ(list, mut ? TYPE_LIST_GF2MAT : TYPE_LIST_GF2MAT_IMM);
     return (Obj)0;
@@ -3085,7 +3080,6 @@ static void DistVecClosVec(
                 cnt = SumInt(cnt, one);
                 vec = CONST_BLOCKS_GF2VEC(ovec);
                 SET_ELM_PLIST(d, di + 1, cnt);
-                CHANGED_BAG(d);
             }
         }
         AddGF2VecToGF2Vec(BLOCKS_GF2VEC(osum),
@@ -3288,7 +3282,6 @@ static Obj FuncA_CLOS_VEC_COORDS(
     SET_LEN_PLIST(res, 2);
     SET_ELM_PLIST(res, 1, best);
     SET_ELM_PLIST(res, 2, bcoords);
-    CHANGED_BAG(res);
     return res;
 }
 
@@ -3329,7 +3322,6 @@ static UInt CosetLeadersInnerGF2(
                 memcpy(BLOCKS_GF2VEC(vc), CONST_BLOCKS_GF2VEC(v),
                        NUMBER_BLOCKS_GF2VEC(v) * sizeof(UInt));
                 SET_ELM_PLIST(leaders, sy + 1, vc);
-                CHANGED_BAG(leaders);
                 if (++found == tofind)
                     return found;
             }
@@ -3886,8 +3878,6 @@ FuncQUOTREM_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
 
     SET_ELM_PLIST(ret, 1, quotv);
     SET_ELM_PLIST(ret, 2, remv);
-
-    CHANGED_BAG(ret);
 
     return ret;
 }

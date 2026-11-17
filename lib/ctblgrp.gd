@@ -74,7 +74,7 @@
 ##  <Func Name="IsDxLargeGroup" Arg='G'/>
 ##
 ##  <Description>
-##  returns <K>true</K> if the order of the group <A>G</A> is smaller than
+##  returns <K>true</K> if the order of the group <A>G</A> is larger than
 ##  the current value of the global variable <C>DXLARGEGROUPORDER</C>,
 ##  and <K>false</K> otherwise.
 ##  In Dixon-Schneider calculations, for small groups in the above sense a
@@ -311,7 +311,7 @@ DeclareGlobalFunction( "DixonInit" );
 ##
 ##  <#GAPDoc Label="DixonSplit">
 ##  <ManSection>
-##  <Func Name="DixonSplit" Arg='D'/>
+##  <Func Name="DixonSplit" Arg='D[, i]'/>
 ##
 ##  <Description>
 ##  This function performs one splitting step in the Dixon-Schneider
@@ -321,7 +321,7 @@ DeclareGlobalFunction( "DixonInit" );
 ##  <P/>
 ##  The class to use for splitting is chosen via
 ##  <Ref Func="BestSplittingMatrix"/> and the options described for this
-##  function apply here.
+##  function apply here, unless the class position <A>i</A> is given.
 ##  <P/>
 ##  <Ref Func="DixonSplit"/> returns the number of the class that was
 ##  used for splitting if a split was performed, and <K>fail</K> otherwise.
@@ -408,7 +408,7 @@ DeclareOperation( "IrrDixonSchneider", [ IsGroup, IsRecord ] );
 ##  there is no subgroup in which its reduction has a linear constituent
 ##  with multiplicity one.
 ##  <P/>
-##  If the option <A>unitary</A> is given, &GAP; tries, at extra cost, to find a
+##  If the option <C>unitary</C> is given, &GAP; tries, at extra cost, to find a
 ##  unitary representation (and will issue an error if it cannot do so).
 ##  <Example><![CDATA[
 ##  gap> a5:= AlternatingGroup( 5 );

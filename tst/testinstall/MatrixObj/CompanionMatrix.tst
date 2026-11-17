@@ -49,39 +49,39 @@ Error, NewCompanionMatrix: degree of <pol> must be at least 1
 #
 gap> F:= GF(251);;  x:= X(F);;
 gap> TestCompanionMatrix(IsPlistMatrixRep, x+1, F);
-<1x1-matrix over GF(251)>
+<1x1 plist matrix over GF(251)>
 gap> TestCompanionMatrix(IsPlistMatrixRep, x^2+x+1, F);
-<2x2-matrix over GF(251)>
+<2x2 plist matrix over GF(251)>
 
 #
 gap> F:= Integers;;  x:= X(F);;
 gap> TestCompanionMatrix(IsPlistMatrixRep, x+1, F);
-<1x1-matrix over Integers>
+<1x1 plist matrix over Integers>
 gap> TestCompanionMatrix(IsPlistMatrixRep, x^2+x+1, F);
-<2x2-matrix over Integers>
+<2x2 plist matrix over Integers>
 
 #
 gap> F:= Rationals;;  x:= X(F);;
 gap> TestCompanionMatrix(IsPlistMatrixRep, x+1, F);
-<1x1-matrix over Rationals>
+<1x1 plist matrix over Rationals>
 gap> TestCompanionMatrix(IsPlistMatrixRep, x^2+x+1, F);
-<2x2-matrix over Rationals>
+<2x2 plist matrix over Rationals>
 
 #
 # IsGenericMatrixRep
 #
 gap> F:= GF(251);;  x:= X(F);;
 gap> TestCompanionMatrix(IsGenericMatrixRep, x+1, F);
-<1x1-matrix over GF(251)>
+<1x1 generic matrix over GF(251)>
 gap> TestCompanionMatrix(IsGenericMatrixRep, x^2+x+1, F);
-<2x2-matrix over GF(251)>
+<2x2 generic matrix over GF(251)>
 
 #
 gap> F:= Integers;;  x:= X(F);;
 gap> TestCompanionMatrix(IsGenericMatrixRep, x+1, F);
-<1x1-matrix over Integers>
+<1x1 generic matrix over Integers>
 gap> TestCompanionMatrix(IsGenericMatrixRep, x^2+x+1, F);
-<2x2-matrix over Integers>
+<2x2 generic matrix over Integers>
 
 #
 # IsPlistRep
@@ -143,23 +143,23 @@ gap> CompanionMatrix(x^2+x+1, F);
 #
 gap> F:= Integers;;  x:= X(F);;
 gap> CompanionMatrix(x+1, F);
-<1x1-matrix over Integers>
+<1x1 plist matrix over Integers>
 gap> CompanionMatrix(x^2+x+1, F);
-<2x2-matrix over Integers>
+<2x2 plist matrix over Integers>
 
 #
 gap> F:= Rationals;;  x:= X(F);;
 gap> CompanionMatrix(x+1, F);
-<1x1-matrix over Rationals>
+<1x1 plist matrix over Rationals>
 gap> CompanionMatrix(x^2+x+1, F);
-<2x2-matrix over Rationals>
+<2x2 plist matrix over Rationals>
 
 #
 gap> F:= Integers mod 4;;  x:= X(F);;
 gap> CompanionMatrix(x+1, F);
-<1x1-matrix over (Integers mod 4)>
+<1x1 plist matrix over (Integers mod 4)>
 gap> CompanionMatrix(x^2+x+1, F);
-<2x2-matrix over (Integers mod 4)>
+<2x2 plist matrix over (Integers mod 4)>
 
 #
 gap> STOP_TEST("CompanionMatrix.tst");

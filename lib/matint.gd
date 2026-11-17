@@ -237,7 +237,7 @@ DeclareGlobalFunction( "DiagonalizeIntMat" );
 ##  <Func Name="NormalFormIntMat" Arg='mat, options'/>
 ##
 ##  <Description>
-##  This general operation for computation of various Normal Forms
+##  This general function for computation of various Normal Forms
 ##  is probably the most efficient.
 ##  <P/>
 ##  Options bit values:
@@ -271,7 +271,7 @@ DeclareGlobalFunction( "DiagonalizeIntMat" );
 ##  <!-- %The routines used are based on work by Arne Storjohann -->
 ##  <!-- %and were implemented in &GAP;&nbsp;4 by A.&nbsp;Storjohann and R.&nbsp;Wainwright. -->
 ##  <P/>
-##  Note option is a value ranging from 0 to 15 but not all options make sense
+##  Note option is a value ranging from 0 to 31 but not all options make sense
 ##  (e.g., reducing off diagonal entries with SNF option selected already).
 ##  If an option makes no sense it is ignored.
 ##  <P/>

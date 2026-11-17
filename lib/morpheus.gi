@@ -1,4 +1,4 @@
-###########################################################################
+#############################################################################
 ##
 ##  This file is part of GAP, a system for computational discrete algebra.
 ##  This file's authors include Alexander Hulpke.
@@ -143,7 +143,7 @@ function(G)
 end);
 
 DeclareRepresentation("IsActionHomomorphismAutomGroup",
-  IsActionHomomorphismByBase,["basepos"]);
+  IsActionHomomorphismByBase);
 
 #############################################################################
 ##
@@ -208,7 +208,8 @@ local gens, inn,out, nonperm, syno, orb, orbi, perms, free, rep, i, maxl, gen,
   free:=FreeGroup(Length(nonperm));
   rep:=[One(free)];
   i:=1;
-  maxl:=NrMovedPoints(g);
+  # degree ^2/3 many images
+  maxl:=Maximum(20,RootInt(NrMovedPoints(g)^2,3));
   while i<=Length(orb) and Length(orb)<maxl do
     for w in [1..Length(nonperm)] do
       gen:=nonperm[w];
@@ -562,8 +563,11 @@ local hom, gens, c, ran, r, cen, img, u, orbs,
     fi;
     Info(InfoMorph,4,"Genclass orbit ",Length(of)," size ",Sum(of,Size));
     Append(o,of);
-    u:=ClosureGroup(u,List(of,Representative));
-    u:=NormalClosure(g,u);
+    # The classes in <o> are closed under conjugation, but the elements in
+    # <fix> are not: only <fix> itself is known to be fixed by <au>, not its
+    # conjugates. So we must not take the normal closure of <fix>.
+    u:=NormalClosure(g,SubgroupNC(g,List(o,Representative)));
+    u:=ClosureGroup(u,fix);
   od;
 
   bestdeg:=Sum(o,Size);
@@ -650,8 +654,8 @@ local hom, gens, c, ran, r, cen, img, u, orbs,
         of:=[c];
       fi;
       u:=List(of,x->rec(siz:=Size(x[1])*Length(x),clas:=x,reps:=[Representative(x[1])],
-        closure:=NormalClosure(g,SubgroupNC(g,
-          Concatenation(List(x,Representative),fix))) ));
+        closure:=ClosureGroup(NormalClosure(g,SubgroupNC(g,
+          List(x,Representative))),fix) ));
       of:=[];
       for j in u do
         if j.siz>1 and j.siz<bestdeg
@@ -767,6 +771,7 @@ local hom, gens, c, ran, r, cen, img, u, orbs,
 
   # try to embed into wreath according to non-conjugator
   if IsPermGroup(g) then
+    Info(InfoMorph,2,"Try Wreath Embedding");
     img:=AutomorphismWreathEmbedding(au,g);
   else
     img:=fail;
@@ -1350,7 +1355,7 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
     size:=Size(params.to);
     action:=action-4;
     if Index(range,DerivedSubgroup(range))>1 then
-      derhom:=NaturalHomomorphismByNormalSubgroup(range,DerivedSubgroup(range));
+      derhom:=MaximalAbelianQuotient(range);
     fi;
   fi;
   tinj:=action>1; # test injective
@@ -1757,7 +1762,7 @@ end);
 
 #############################################################################
 ##
-#F  Morphium(<G>,<H>,<DoAuto>) . . . . . . . .Find isomorphisms between G and H
+#F  Morphium(<G>,<H>,<DoAuto>) . . . . . .  Find isomorphisms between G and H
 ##       modulo inner automorphisms. DoAuto indicates whether all
 ##       automorphisms are to be found
 ##       This function thus does the main combinatoric work for creating
@@ -2669,11 +2674,14 @@ InstallMethod( InnerAutomorphismGroup,
     local gens, A;
     if HasAutomorphismGroup( G ) or IsTrivial( G ) then
         return InnerAutomorphismsAutomorphismGroup( AutomorphismGroup( G ) );
+    elif IsAbelian( G ) then
+        A := Group([], IdentityMapping(G));
+    else
+        gens:= GeneratorsOfGroup( G );
+        # get the non-central generators
+        gens:= Filtered( gens, i -> not ForAll( gens, j -> i*j = j*i ) );
+        A := Group( List( gens, i -> InnerAutomorphism( G, i ) ) );
     fi;
-    gens:= GeneratorsOfGroup( G );
-    # get the non-central generators
-    gens:= Filtered( gens, i -> not ForAll( gens, j -> i*j = j*i ) );
-    A := Group( List( gens, i -> InnerAutomorphism( G, i ) ) );
     SetIsGroupOfAutomorphismsFiniteGroup( A, true );
     return A;
     end );
@@ -3147,8 +3155,7 @@ local Fgens,    # generators of F
   bestval:=infinity;
   if Size(F)<10000000 and Length(Fgens)>2 then
     len:=Maximum(2,Length(SmallGeneratingSet(
-                 Image(NaturalHomomorphismByNormalSubgroup(F,
-                   DerivedSubgroup(F))))));
+                 Image(MaximalAbelianQuotient(F)))));
   else
     len:=2;
   fi;

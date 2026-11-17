@@ -676,9 +676,6 @@ Obj ElmsListDefault (
             // assign the element into <elms>
             SET_ELM_PLIST( elms, i, elm );
 
-            // notify Gasman
-            CHANGED_BAG( elms );
-
         }
 
     }
@@ -723,9 +720,6 @@ Obj ElmsListDefault (
 
             // assign the element to <elms>
             SET_ELM_PLIST( elms, i, elm );
-
-            // notify Gasman
-            CHANGED_BAG( elms );
 
         }
 
@@ -1360,9 +1354,6 @@ void            ElmListLevel (
             // replace the list with the element
             SET_ELM_PLIST( lists, i, elm );
 
-            // notify Gasman
-            CHANGED_BAG( lists );
-
         }
         RetypeBag(lists, T_PLIST_DENSE);
 
@@ -1423,9 +1414,6 @@ void            ElmsListLevel (
 
             // replace the list with the elements
             SET_ELM_PLIST( lists, i, elm );
-
-            // notify Gasman
-            CHANGED_BAG( lists );
 
         }
 
@@ -1735,7 +1723,6 @@ Obj PLAIN_LIST_COPY(Obj list)
     SET_LEN_PLIST(res, len);
     for (Int i = 1; i <= len; i++) {
         SET_ELM_PLIST(res, i, ELMV0_LIST(list, i));
-        CHANGED_BAG(res);
     }
     return res;
 }
@@ -1930,11 +1917,12 @@ static Obj SwapMatRows;
 
 static Obj FuncSWAP_MAT_ROWS(Obj self, Obj mat, Obj row1, Obj row2)
 {
-    if (IS_POS_INTOBJ(row1) && IS_POS_INTOBJ(row2) && IS_PLIST(mat)) {
+    if (IS_POS_INTOBJ(row1) && IS_POS_INTOBJ(row2) && IS_PLIST(mat) &&
+        IS_MUTABLE_OBJ(mat)) {
         Int r1 = INT_INTOBJ(row1);
         Int r2 = INT_INTOBJ(row2);
         Obj row1list = r1 <= LEN_PLIST(mat) ? ELM_PLIST(mat, r1) : 0;
-        Obj row2list = r1 <= LEN_PLIST(mat) ? ELM_PLIST(mat, r2) : 0;
+        Obj row2list = r2 <= LEN_PLIST(mat) ? ELM_PLIST(mat, r2) : 0;
         if (!row1list)
             ErrorMayQuit("Matrix Element: <mat>[%d] must have an assigned value",
                          (Int)r1, 0);

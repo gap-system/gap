@@ -27,7 +27,7 @@
 ##  <Filt Name="IsOrdering" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
-##  returns <K>true</K> if and only if the object <A>ord</A> is an ordering.
+##  returns <K>true</K> if and only if the object <A>obj</A> is an ordering.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -245,14 +245,14 @@ DeclareOperation( "IsIncomparableUnder" ,[IsOrdering,IsObject,IsObject]);
 ##
 ##  <Description>
 ##  Called with two arguments, <Ref Oper="OrderingByLessThanFunctionNC"/>
-##  returns the ordering on the elements of the elements of the family
+##  returns the ordering on the elements of the family
 ##  <A>fam</A>, according to the <Ref Attr="LessThanFunction"/> value given
 ##  by <A>lt</A>,
 ##  where <A>lt</A> is a function that takes two
-##  arguments in <A>fam</A> and returns <K>true</K> or <K>false</K>.
+##  elements of <A>fam</A> and returns <K>true</K> or <K>false</K>.
 ##  <P/>
 ##  Called with three arguments, for a family <A>fam</A>,
-##  a function <A>lt</A> that takes two arguments in <A>fam</A> and returns
+##  a function <A>lt</A> that takes two elements of <A>fam</A> and returns
 ##  <K>true</K> or <K>false</K>, and a list <A>l</A>
 ##  of properties of orderings, <Ref Oper="OrderingByLessThanFunctionNC"/>
 ##  returns the ordering on the elements of <A>fam</A> with
@@ -275,13 +275,13 @@ DeclareOperation( "OrderingByLessThanFunctionNC" ,[IsFamily,IsFunction]);
 ##  <Description>
 ##  Called with two arguments,
 ##  <Ref Oper="OrderingByLessThanOrEqualFunctionNC"/> returns the ordering on
-##  the elements of the elements of the family <A>fam</A> according to
+##  the elements of the family <A>fam</A> according to
 ##  the <Ref Attr="LessThanOrEqualFunction"/> value given by <A>lteq</A>,
-##  where <A>lteq</A> is a function that takes two arguments in <A>fam</A>
+##  where <A>lteq</A> is a function that takes two elements of <A>fam</A>
 ##  and returns <K>true</K> or <K>false</K>.
 ##  <P/>
 ##  Called with three arguments, for a family <A>fam</A>,
-##  a function <A>lteq</A> that takes two arguments in <A>fam</A> and returns
+##  a function <A>lteq</A> that takes two elements of <A>fam</A> and returns
 ##  <K>true</K> or <K>false</K>, and a list <A>l</A>
 ##  of properties of orderings,
 ##  <Ref Oper="OrderingByLessThanOrEqualFunctionNC"/>
@@ -310,7 +310,7 @@ DeclareOperation( "OrderingByLessThanOrEqualFunctionNC" ,
     [IsFamily,IsFunction]);
 
 
-############################################################################
+#############################################################################
 ##
 ##  Orderings on families of associative words
 ##
@@ -405,7 +405,7 @@ DeclareProperty( "IsTranslationInvariantOrdering" ,IsOrdering and
 ##
 ##  <#GAPDoc Label="IsReductionOrdering">
 ##  <ManSection>
-##  <Prop Name="IsReductionOrdering" Arg='ord'/>
+##  <Filt Name="IsReductionOrdering" Arg='ord'/>
 ##
 ##  <Description>
 ##  for an ordering <A>ord</A> on a family of associative words,
@@ -669,8 +669,8 @@ DeclareProperty("IsWeightLexOrdering",IsOrdering and
 ##  generators of <A>D</A>, in the desired order,
 ##  or a list of the positions of these generators,
 ##  in the desired order,
-##  and <Ref Oper="BasicWreathProductOrdering"/> returns the lexicographic
-##  ordering on the elements of <A>D</A> with the ordering on the
+##  and <Ref Oper="BasicWreathProductOrdering"/> returns the basic wreath
+##  product ordering on the elements of <A>D</A> with the ordering on the
 ##  generators as given.
 ##  </Description>
 ##  </ManSection>

@@ -13,7 +13,8 @@
 
 ##  We take advantage of knowing conjugacy class representatives
 ##  as words in generators.
-InstallMethod(LinearCharacters, ["CanEasilyComputePcgs"], function(G)
+InstallMethod(LinearCharacters, ["CanEasilyComputePcgs", "IsZeroCyc"],
+  function(G, zero)
   local pcgs, hom, Gab, abinv, exp, e, Ee, genexp,
         clexps, tab, irgens, a, lin, c, res, j, i, sz, chi;
   if Size(G) = 1 then
@@ -37,10 +38,10 @@ InstallMethod(LinearCharacters, ["CanEasilyComputePcgs"], function(G)
   IndependentGeneratorsOfAbelianGroup(Gab);
   genexp := List(pcgs, x-> IndependentGeneratorExponents(Gab, x^hom));
   # exponent vectors of class representatives of G
-  clexps := List(ConjugacyClasses(G),
+  tab := CharacterTable(G);
+  clexps := List(ConjugacyClasses(tab),
                  c-> ExponentsOfPcElement(pcgs, Representative(c)));
   # irgens are the dual generators of G/G'
-  tab := CharacterTable(G);
   irgens := [];
   for i in [1..Length(abinv)] do
     a := exp/abinv[i];
@@ -695,14 +696,15 @@ InstallMethod( IrrConlon, [ "IsGroup" ],
 function( G )
   local pcgs, clreps, ct, irr, tr, Cs, normal, N, hom, Cab, abgens,
         ind, coreps, evals, xg, K, sz, h, qu, genqu, multi, mods,
-        ch, c, ms, vals, cval, k, C, x, g, t, i, j, r, tm, new;
+        ch, c, ms, vals, cval, k, C, x, g, t, i, j, r, tm, new, known, min,
+        pos;
   pcgs := Pcgs(G);
   # return no characters if G is not solvable
   if pcgs = fail then
     return [];
   fi;
-  clreps := List( ConjugacyClasses( G ), Representative );
   ct := CharacterTable( G );
+  clreps := List( ConjugacyClasses( ct ), Representative );
   irr := [];
   # linear characters without covering triples
   Append( irr, LinearCharacters( G ) );
@@ -711,6 +713,8 @@ function( G )
     SetTestMonomial( ch, tm );
   od;
   tm := rec( isMonomial := true, comment := "induced from given subgroup" );
+  # the smallest values list of each Galois orbit found so far
+  known := [];
 
   # we now only need the triples for proper subgroups
   tr := Filtered( CoveringTriplesCharacters( G, One( G ) ), a-> a[1] <> G );
@@ -805,7 +809,15 @@ function( G )
             od;
           fi;
         od;
-        new := List( vals, l-> Character( ct, l ) );
+        # The characters from one triple form an orbit under Galois
+        # conjugation, and several triples can yield the same orbit.
+        min := Minimum( vals );
+        pos := PositionSorted( known, min );
+        if pos <= Length( known ) and known[pos] = min then
+          continue;
+        fi;
+        Add( known, min, pos );
+        new := List( DuplicateFreeList( vals ), l-> Character( ct, l ) );
         for ch in new do
           SetTestMonomial( ch, tm );
         od;
@@ -835,6 +847,7 @@ InstallMethod( Irr,
 InstallMethod( Irr,
     "for a supersolvable group with known `IrrConlon'",
     [ IsGroup and IsSupersolvableGroup and HasIrrConlon, IsZeroCyc ],
+    SUM_FLAGS, # above all methods that actually compute something
     function( G, zero )
     local irr, tbl;
     irr:= IrrConlon( G );
@@ -865,6 +878,7 @@ InstallMethod( Irr,
 InstallMethod( Irr,
     "for a supersolvable group with known `IrrBaumClausen'",
     [ IsGroup and IsSupersolvableGroup and HasIrrBaumClausen, IsZeroCyc ],
+    SUM_FLAGS, # above all methods that actually compute something
     function( G, zero )
     local irr, tbl;
     irr:= IrrBaumClausen( G );
@@ -1611,11 +1625,16 @@ InstallMethod( BaumClausenInfo,
               pos:= pilinear[i][ pos ];
             od;
 
-            # Compute $\pi = \sigma^{-1} (1,2,\ldots,p) \sigma$.
+            # Compute $\pi = \sigma^{-1} (1,2,\ldots,p) \sigma$,
+            # the permutation of the blocks of $D^{g_j}(g_i)$,
+            # see Phase 2, Case 2 in Section 3 of~\cite{BC94}.
+            # Permutations are multiplied from right to left there
+            # (see the product of monomial matrices in Section 4),
+            # thus $\pi( \sigma^{-1}(u) ) = \sigma^{-1}(u+1)$.
             pi:= [];
-            pi[ sigma[p] ]:= sigma[1];
+            pi[ Position( sigma, p ) ]:= Position( sigma, 1 );
             for u in [ 1 .. p-1 ] do
-              pi[ sigma[u] ]:= sigma[ u+1 ];
+              pi[ Position( sigma, u ) ]:= Position( sigma, u+1 );
             od;
 
             # Compute the values $c_{\pi^u(0)}$, for $0 \leq u \leq p-1$.
@@ -1786,11 +1805,12 @@ InstallMethod( BaumClausenInfo,
               pos:= pinonlin[i][ pos ];
             od;
 
-            # Compute $\pi = \sigma^{-1} (1,2,\ldots,p) \sigma$.
+            # Compute $\pi = \sigma^{-1} (1,2,\ldots,p) \sigma$
+            # as for the linear representations.
             pi:= [];
-            pi[ sigma[p] ]:= sigma[1];
+            pi[ Position( sigma, p ) ]:= Position( sigma, 1 );
             for u in [ 1 .. p-1 ] do
-              pi[ sigma[u] ]:= sigma[ u+1 ];
+              pi[ Position( sigma, u ) ]:= Position( sigma, u+1 );
             od;
 
             # Compute the positions of the constituents

@@ -41,9 +41,9 @@
 ##  integer at first position.
 ##
 if IsHPCGAP then
-DeclareRepresentation( "IsModulusRep", IsReadOnlyPositionalObjectRep, [ 1 ] );
+DeclareRepresentation( "IsModulusRep", IsReadOnlyPositionalObjectRep );
 else
-DeclareRepresentation( "IsModulusRep", IsPositionalObjectRep, [ 1 ] );
+DeclareRepresentation( "IsModulusRep", IsPositionalObjectRep );
 fi;
 
 
@@ -575,7 +575,7 @@ InstallMethod( LogFFE,
 
 #############################################################################
 ##
-#M  RootFFE( <z>, <k> )  . . . . . . . . . . . . . . . . . . for `IsZmodpZObj'
+#M  RootFFE( <z>, <k> )  . . . . . . . . . . . . . . . . .  for `IsZmodpZObj'
 ##
 InstallOtherMethod(RootFFE,"for modulus rep, using RootMod",true,
   [IsPosInt,IsZmodpZObj and IsModulusRep,IsPosInt],
@@ -619,7 +619,7 @@ InstallMethod(IntFFE,
 
 #############################################################################
 ##
-#M  IntFFESymm( <obj> )  . . . . . . . . . . . . . . . . . . . for `IsZmodnZObj'
+#M  IntFFESymm( <obj> ) . . . . . . . . . . . . . . . . . . for `IsZmodnZObj'
 ##
 InstallOtherMethod(IntFFESymm,"Z/nZ (ModulusRep)",
   [IsZmodnZObj and IsModulusRep],
@@ -636,7 +636,7 @@ end);
 
 #############################################################################
 ##
-#M  Z(p) ... return a primitive root
+#M  Z(p) . . . . . . . . . . . . . . . . . . . . . .  return a primitive root
 ##
 InstallMethod(ZOp,
         [IsPosInt],
@@ -893,7 +893,7 @@ InstallMethod( String,
 
 #############################################################################
 ##
-#M  AsSSortedList( <R> ) . . . . . . . . . . . .  set of elements of Z mod n Z
+#M  AsSSortedList( <R> ) . . . . . . . . . . . . set of elements of Z mod n Z
 #M  AsList( <R> ) . . . . . . . . . . . . . . .  set of elements of Z mod n Z
 ##
 InstallMethod( AsList,
@@ -1202,7 +1202,9 @@ InstallMethod( DefaultFieldOfMatrixGroup,
 ##
 #M  AsInternalFFE( <zmodpzobj> )
 ##
-##  A ZmodpZ object can be a finite field element, but is never equal to
-##  an internal FFE, so this method just returns fail
+##  Only primes up to 'MAXSIZE_GF_INTERNAL' have internal FFEs.
 ##
-InstallMethod(AsInternalFFE, [IsZmodpZObj], ReturnFail);
+InstallMethod( AsInternalFFE, [ IsZmodpZObjSmall and IsModulusRep ],
+    x -> x![1] * One( FamilyObj( x ) ) );
+
+InstallMethod( AsInternalFFE, [ IsZmodpZObjLarge ], ReturnFail );

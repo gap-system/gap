@@ -1156,7 +1156,7 @@ static Obj TypeComObj(Obj obj)
 #endif
 
 
-/*****************************************************************************
+/****************************************************************************
 **
 *F  FuncIS_COMOBJ( <self>, <obj> ) . . . . . . . . handler for 'IS_COMOBJ'
 */
@@ -1369,7 +1369,6 @@ void AssPosObj(Obj obj, Int idx, Obj val)
             ResizeBag(obj, (idx + 1) * sizeof(Obj));
         }
         SET_ELM_PLIST(obj, idx, val);
-        CHANGED_BAG(obj);
     }
 #ifdef HPCGAP
     else if (TNUM_OBJ(obj) == T_APOSOBJ) {
@@ -1501,7 +1500,7 @@ void SetTypeDatObj( Obj obj, Obj type)
 }
 
 
-/*****************************************************************************
+/****************************************************************************
 **
 *F  FuncIS_DATOBJ( <self>, <obj> ) . . . . . . . . handler for 'IS_DATOBJ'
 */

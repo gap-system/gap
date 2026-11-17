@@ -20,9 +20,9 @@ DeclareAttribute("AdjoinedIdentityFamily", IsFamily);
 DeclareAttribute("UnderlyingSemigroupFamily", IsFamily);
 DeclareAttribute("AdjoinedIdentityDefaultType", IsFamily);
 
-DeclareRepresentation("IsMonoidByAdjoiningIdentityEltRep", IsPositionalObjectRep, 1);
+DeclareRepresentation("IsMonoidByAdjoiningIdentityEltRep", IsPositionalObjectRep);
 
-###########################################################################
+#############################################################################
 ##
 #A  MonoidByAdjoiningIdentity( <semigroup> )
 ##
@@ -33,7 +33,7 @@ DeclareRepresentation("IsMonoidByAdjoiningIdentityEltRep", IsPositionalObjectRep
 
 DeclareAttribute("MonoidByAdjoiningIdentity", IsSemigroup);
 
-###########################################################################
+#############################################################################
 ##
 #A  UnderlyingSemigroupOfMonoidByAdjoiningIdentity( <monoid> )
 ##
@@ -42,7 +42,7 @@ DeclareAttribute("MonoidByAdjoiningIdentity", IsSemigroup);
 
 DeclareAttribute("UnderlyingSemigroupOfMonoidByAdjoiningIdentity", IsMonoidByAdjoiningIdentity );
 
-###########################################################################
+#############################################################################
 ##
 #A  MonoidByAdjoiningIdentityElt( <elt> )
 ##
@@ -52,7 +52,7 @@ DeclareAttribute("UnderlyingSemigroupOfMonoidByAdjoiningIdentity", IsMonoidByAdj
 
 DeclareAttribute("MonoidByAdjoiningIdentityElt", IsMultiplicativeElement and IsAssociativeElement);
 
-###########################################################################
+#############################################################################
 ##
 #A  UnderlyingSemigroupOfMonoidByAdjoiningIdentity( <monoidelt> )
 ##

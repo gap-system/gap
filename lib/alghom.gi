@@ -47,10 +47,10 @@
 ##
 DeclareRepresentation( "IsAlgebraGeneralMappingByImagesDefaultRep",
     IsAlgebraGeneralMapping and IsAdditiveElementWithInverse
-    and IsAttributeStoringRep, [] );
+    and IsAttributeStoringRep );
 
 DeclareRepresentation( "IsPolynomialRingDefaultGeneratorMapping",
-    IsAlgebraGeneralMappingByImagesDefaultRep,[]);
+    IsAlgebraGeneralMappingByImagesDefaultRep);
 
 
 #############################################################################
@@ -770,9 +770,7 @@ InstallOtherMethod( \+,
 ##
 DeclareRepresentation( "IsOperationAlgebraHomomorphismDefaultRep",
     IsAlgebraHomomorphism and IsAdditiveElementWithInverse
-    and IsAttributeStoringRep,
-    [ "basis", "operation",
-      "basisImage", "preimagesBasisImage" ] );
+    and IsAttributeStoringRep );
 
 
 #############################################################################
@@ -983,9 +981,7 @@ end );
 ##
 DeclareRepresentation( "IsAlgebraHomomorphismFromFpRep",
     IsAlgebraHomomorphism and IsAdditiveElementWithInverse
-    and IsAttributeStoringRep,
-    [ "Agenerators", "Agenimages",
-      "basisImage", "preimagesBasisImage" ] );
+    and IsAttributeStoringRep );
 
 
 #############################################################################

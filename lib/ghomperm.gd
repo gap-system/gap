@@ -31,9 +31,9 @@
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation( "IsPermGroupGeneralMapping",
-      IsGroupGeneralMapping,[]);
+      IsGroupGeneralMapping);
 DeclareRepresentation( "IsPermGroupGeneralMappingByImages",
-      IsPermGroupGeneralMapping and IsGroupGeneralMappingByImages, [] );
+      IsPermGroupGeneralMapping and IsGroupGeneralMappingByImages );
 DeclareSynonym( "IsPermGroupHomomorphism",
     IsPermGroupGeneralMapping and IsMapping );
 DeclareSynonym( "IsPermGroupHomomorphismByImages",
@@ -57,8 +57,7 @@ DeclareSynonym( "IsPermGroupHomomorphismByImages",
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation( "IsToPermGroupGeneralMappingByImages",
-      IsGroupGeneralMappingByImages,
-      [ "generators", "genimages" ] );
+      IsGroupGeneralMappingByImages );
 DeclareSynonym( "IsToPermGroupHomomorphismByImages",
     IsToPermGroupGeneralMappingByImages and IsMapping );
 

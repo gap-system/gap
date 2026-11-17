@@ -3,8 +3,9 @@
 <!-- %A  padics.xml                  GAP documentation            Alexander Hulpke -->
 <!-- %% -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
-<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %Y  Copyright of GAP belongs to its developers, whose names are too -->
+<!-- %Y  numerous to list here. Please refer to the COPYRIGHT file for details. -->
+<!-- %Y  SPDX-License-Identifier: GPL-2.0-or-later -->
 <!-- %% -->
 <Chapter Label="p-adic Numbers">
 <Heading>p-adic Numbers (preliminary)</Heading>
@@ -17,7 +18,7 @@ if <M>p</M> divides neither <M>a</M> nor <M>b</M>.
 They form a field of characteristic 0 which nevertheless shows
 some behaviour of the finite field with <M>p</M> elements.
 <P/>
-A <M>p</M>-adic numbers can be represented by a
+A <M>p</M>-adic number can be represented by a
 <Q><M>p</M>-adic expansion</Q> which is similar to the decimal expansion
 used for the reals (but written from left to right).
 So for example if <M>p = 2</M>, the numbers <M>1</M>, <M>2</M>, <M>3</M>,
@@ -101,9 +102,8 @@ extension of the <M>p</M>-adic numbers and <M>L/K</M> is purely ramified.
 or another book on algebraic number theory.
 Essentially, an extension <M>L</M> of the <M>p</M>-adic numbers generated
 by a rational polynomial <M>f</M> is unramified if <M>f</M> remains
-squarefree modulo <M>p</M> and is completely ramified if modulo <M>p</M> the
-polynomial <M>f</M> is a power of a linear factor while remaining irreducible
-over the <M>p</M>-adic numbers.)
+squarefree modulo <M>p</M> and is completely ramified if <M>f</M> is an
+Eisenstein polynomial.)
 <P/>
 The representation of extensions of <M>p</M>-adic numbers in &GAP; uses the
 subfield <M>K</M>.

@@ -1165,7 +1165,8 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,r,
         ind,    # stabilizer index
         indh,   # 1/2 stabilizer index
         increp, # do we still want to increase the rep list?
-        incstb; # do we still want to increase the stabilizer?
+        incstb, # do we still want to increase the stabilizer?
+        lim;    # largest domain for a position dictionary
 
   stopat:=fail; # to trigger error if wrong generators
   d:=Immutable(dopr.pnt);
@@ -1177,11 +1178,20 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,r,
 
   onlystab:=IsBound(dopr.onlystab) and dopr.onlystab=true;
 
-  # try to find a domain
+  # try to find a domain, for the dictionary only: the result of
+  # DomainForAction may be a hint such as a record, not a list of points
   if IsBool(D) then
-    D:=DomainForAction(d,acts,act);
+    # the orbit has at most Size(G) points; a hash table takes up to eight
+    # words per point, a position dictionary one per point of the domain
+    lim:=ValueOption("blistlimit");
+    if not IsInt(lim) then
+      lim:=DICT_BLISTLIMIT;
+    fi;
+    dict:=NewDictionary(d,true,DomainForAction(d,acts,act)
+                        : blistlimit:=Minimum(lim,8*Size(G)));
+  else
+    dict:=NewDictionary(d,true,D);
   fi;
-  dict:=NewDictionary(d,true,D);
 
   if IsBound(dopr.stabsub) then
     stabsub:=AsSubgroup(Parent(G),dopr.stabsub);
@@ -3721,12 +3731,14 @@ function(pnt,acts,act)
   local m;
   if not (Length(pnt)>0 and ForAll(pnt,IsPosInt) and
     ForAll(acts,IsPerm) and
-    (act=OnSets or act=OnPoints or act=OnRight or act=\^)) then
+    (act=OnTuples or act=OnPairs or (act=OnSets and IsSSortedList(pnt)))) then
     TryNextMethod();
   fi;
   m:=Maximum(Maximum(pnt),LargestMovedPoint(acts));
-  # workaround to avoid creating formal objects of bounded tuples
-  return ["BoundedTuples",[1..m],Length(pnt)];
+  if act=OnSets then
+    return EnumeratorOfCombinations([1..m],Length(pnt));
+  fi;
+  return EnumeratorOfTuples([1..m],Length(pnt));
 end);
 
 #############################################################################

@@ -262,8 +262,8 @@ DeclareOperation( "AlgebraWithOneHomomorphismByImagesNC",
 ##
 ##  <#GAPDoc Label="AlgebraHomomorphismbyFunction">
 ##  <ManSection>
-##  <Oper Name="AlgebraHomomorphismByFunction" Arg="A B f"/>
-##  <Oper Name="AlgebraWithOneHomomorphismByFunction" Arg="A B f"/>
+##  <Oper Name="AlgebraHomomorphismByFunction" Arg="A, B, f"/>
+##  <Oper Name="AlgebraWithOneHomomorphismByFunction" Arg="A, B, f"/>
 ##  <Description>
 ##  These functions construct an algebra homomorphism from the algebra
 ##  <A>A</A> to the algebra <A>B</A> using a one-argument function <A>f</A>.

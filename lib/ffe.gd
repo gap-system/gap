@@ -32,9 +32,9 @@
 ##  <C>GF(<A>p^d</A>)</C> such that either
 ##  (1) <A>p^d</A> <M>&lt;= 65536</M> (in which case an extremely efficient
 ##      internal representation is used);
-##  (2) d = 1, (in which case, for large <A>p</A>, the field is represented
-##      using the machinery of residue class rings
-##      (see section&nbsp;<Ref Sect="Residue Class Rings"/>) or
+##  (2) d = 1 (in which case, for large <A>p</A>, the field is represented
+##      using the machinery of residue class rings,
+##      see section&nbsp;<Ref Sect="Residue Class Rings"/>); or
 ##  (3) if the Conway polynomial of degree <A>d</A> over the field with
 ##      <A>p</A> elements is known, or can be computed
 ##      (see <Ref Func="ConwayPolynomial"/>).
@@ -91,8 +91,8 @@
 ##  of <C>GF(<A>p</A>,</C><M>n</M><C>)</C> and
 ##  <C>GF(<A>p</A>,</C><M>m</M><C>)</C>,
 ##  since <C>Z</C><M>(<A>p</A>^n)</M> is an element of order
-##  <M><A>p</A>^m-1</M> and <C>Z</C><M>(<A>p</A>^m)</M> is an element
-##  of order <M><A>p</A>^n-1</M>.
+##  <M><A>p</A>^n-1</M> and <C>Z</C><M>(<A>p</A>^m)</M> is an element
+##  of order <M><A>p</A>^m-1</M>.
 ##  This is achieved  by choosing <C>Z(<A>p</A>)</C> as the smallest
 ##  primitive root modulo <A>p</A> and <C>Z(</C><A>p^n</A><C>)</C> as a root
 ##  of the <M>n</M>-th <E>Conway polynomial</E>
@@ -597,7 +597,7 @@ DeclareAttribute( "IntFFE", IsFFE  );
 ##  <M>i</M><C> * One( </C><A>z</A><C> ) = </C><A>z</A> holds.
 ##  <P/>
 ##  For a vector <A>vec</A> of FFEs, the operation returns the result of
-##  applying <Ref Attr="IntFFESymm" Label="for a vector of FFEs"/>
+##  applying <Ref Attr="IntFFESymm" Label="for a FFE"/>
 ##  to every entry of the vector.
 ##  <P/>
 ##  The  correspondence between elements from a finite prime field of
@@ -653,7 +653,8 @@ DeclareOperation( "IntVecFFE", [ IsRowVector and IsFFECollection ] );
 ##  <Attr Name="AsInternalFFE" Arg='ffe'/>
 ##
 ## <Description>
-## return an internal FFE equal to <A>ffe</A> if one exists, otherwise <C>fail</C>
+## returns an internal finite field element equal to <A>ffe</A> if one
+## exists, otherwise <C>fail</C>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

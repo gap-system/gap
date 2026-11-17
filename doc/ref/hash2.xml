@@ -5,8 +5,9 @@
 <!-- %A	        					     Alexander Hulpke -->
 <!-- %% -->
 <!-- %% -->
-<!-- %Y  (C) 2000 School Math and Comp. Sci., University of St Andrews, Scotland -->
-<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %Y  Copyright of GAP belongs to its developers, whose names are too -->
+<!-- %Y  numerous to list here. Please refer to the COPYRIGHT file for details. -->
+<!-- %Y  SPDX-License-Identifier: GPL-2.0-or-later -->
 <!-- %% -->
 <Chapter Label="Dictionaries and General Hash Tables">
 <Heading>Dictionaries and General Hash Tables</Heading>
@@ -42,7 +43,7 @@ fastest possible access to objects. These internal methods include
 <Heading>Using Dictionaries</Heading>
 
 The standard way to use dictionaries is to first create a dictionary (using
-<Ref Func="NewDictionary"/>, and then to store objects (and associated information) in
+<Ref Func="NewDictionary"/>), and then to store objects (and associated information) in
 it and look them up.
 <P/>
 For the creation of objects the user has to make a few choices: Is the
@@ -112,7 +113,7 @@ The same effect happens in the following example, in which we work with
 vectors: Indicating only a vector only enables sorted index, as it cannot be
 known whether all vectors will be defined over the prime field. On the other
 hand, providing the vector space (and thus limiting the domain) enables
-the use of hashing (which will be faster).
+direct indexing (which will be faster).
 <Example><![CDATA[
 gap> v:=GF(2)^7;;
 gap> d:=NewDictionary(Zero(v),true);;
@@ -173,8 +174,7 @@ functionality ought to use the dictionary interface described above.
 <P/>
 We hash by keys and also store a value.  Keys
 cannot be removed from the table, but the corresponding value can be
-changed.  Fast access to last hash index allows you to efficiently store
-more than one array of values &ndash;this facility should be used with care.
+changed.
 <P/>
 This code works for any kind of object, provided you have a
 <Ref Oper="DenseIntKey"/> method to convert the key into a positive integer.
@@ -202,30 +202,14 @@ The actual function used will vary very much on the type of objects. However
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Dense hash tables">
-<Heading>Dense hash tables</Heading>
-
-Dense hash tables are used for hashing dense sets without collisions,
-in particular integers.
-Keys are stored as an unordered list and values as an
-array with holes. The position of a value is given by
-the function returned by <Ref Oper="DenseIntKey"/>,
-and so <C>KeyIntDense</C> must be one-to-one.
-
-<#Include Label="DenseHashTable">
-
-</Section>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Sparse hash tables">
 <Heading>Sparse hash tables</Heading>
 
 Sparse hash tables are used for hashing sparse sets.
-Stores keys as an array with fail
-denoting an empty position, stores values as an array with holes.
-Uses
-the result of calling <Ref Oper="SparseIntKey"/>) of the key.
+Keys are stored as an array with <K>fail</K>
+denoting an empty position, values as an array with holes.
+The position is computed from
+the result of calling <Ref Oper="SparseIntKey"/> on the key.
 <C>DefaultHashLength</C>
 is the default starting hash table length; the table is doubled
 when it becomes half full.

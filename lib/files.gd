@@ -220,7 +220,7 @@ DeclareOperation( "ExternalFilename", [ IsList, IsString ] );
 ##  The input for this break loop is not taken from the file, but from the
 ##  input connected to the <C>stderr</C> output of &GAP;.
 ##  If <C>stderr</C> is not connected to a terminal,
-##  no break loop is entered.
+##  the input is taken from the standard input instead.
 ##  If this break loop is left with <K>quit</K> (or <B>Ctrl-D</B>),
 ##  &GAP; exits from the <Ref Oper="Read"/> command, and from all enclosing
 ##  <Ref Oper="Read"/> commands, so that control is normally returned to an
@@ -593,16 +593,13 @@ end );
 ##  <Description>
 ##  <Index>hash function</Index>
 ##  <Index>checksum</Index>
-##  This function computes a CRC (cyclic redundancy check) number for the
-##  content of the file <A>filename</A>.
-##  <P/>
 ##  <Ref Func="CrcFile"/> computes a CRC (cyclic redundancy check) checksum
 ##  value for the file with filename <A>filename</A> and returns this value
 ##  as an integer. The function returns <K>fail</K> if an error occurred,
 ##  for example, if <A>filename</A> does not exist.
 ##  In this case the function <Ref Func="LastSystemError"/>
 ##  can be used to get information about the error.
-##  See also <Ref Func="CrcFile"/> and <Ref Func="HexSHA256"/>.
+##  See also <Ref Func="CrcString"/> and <Ref Func="HexSHA256"/>.
 ##  <P/>
 ##  <Log><![CDATA[
 ##  gap> CrcFile( "lib/morpheus.gi" );
@@ -692,7 +689,7 @@ end );
 ##  <P/>
 ##  This function first appeared in GAP 4.12. It is typically called in the
 ##  <C>AvailabilityTest</C> function of a package
-##  (see <Ref Subsect="Test for the Existence of GAP Package Binaries"/>).
+##  (see <Ref Sect="Kernel modules"/>).
 ##  <Log><![CDATA[
 ##  gap> IsKernelExtensionAvailable("myPackageWithKernelExtension");
 ##  true

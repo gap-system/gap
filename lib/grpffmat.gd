@@ -116,12 +116,12 @@ DeclareGlobalFunction("Phi2_Md");
 #F  NrConjugacyClassesGU( <n>, <q> ) . . . . . . . . Class number for GU(n,q)
 #F  NrConjugacyClassesSL( <n>, <q> ) . . . . . . . . Class number for SL(n,q)
 #F  NrConjugacyClassesSU( <n>, <q> ) . . . . . . . . Class number for SU(n,q)
-#F  NrConjugacyClassesPGL( <n>, <q> ) . . . . . . .  Class number for PGL(n,q)
-#F  NrConjugacyClassesPGU( <n>, <q> ) . . . . . . .  Class number for PGU(n,q)
-#F  NrConjugacyClassesPSL( <n>, <q> ) . . . . . . .  Class number for PSL(n,q)
-#F  NrConjugacyClassesPSU( <n>, <q> ) . . . . . . .  Class number for PSU(n,q)
-#F  NrConjugacyClassesSLIsogeneous( <n>, <q>, <f> ) . . for SL(n,q) isogeneous
-#F  NrConjugacyClassesSUIsogeneous( <n>, <q>, <f> ) . . for SU(n,q) isogeneous
+#F  NrConjugacyClassesPGL( <n>, <q> ) . . . . . . . Class number for PGL(n,q)
+#F  NrConjugacyClassesPGU( <n>, <q> ) . . . . . . . Class number for PGU(n,q)
+#F  NrConjugacyClassesPSL( <n>, <q> ) . . . . . . . Class number for PSL(n,q)
+#F  NrConjugacyClassesPSU( <n>, <q> ) . . . . . . . Class number for PSU(n,q)
+#F  NrConjugacyClassesSLIsogeneous( <n>, <q>, <f> ) .  for SL(n,q) isogeneous
+#F  NrConjugacyClassesSUIsogeneous( <n>, <q>, <f> ) .  for SU(n,q) isogeneous
 ##
 ##  <#GAPDoc Label="NrConjugacyClassesGL">
 ##  <ManSection>
@@ -137,12 +137,12 @@ DeclareGlobalFunction("Phi2_Md");
 ##  <Func Name="NrConjugacyClassesSUIsogeneous" Arg='n, q, f'/>
 ##
 ##  <Description>
-##  The first of these functions compute for given positive integer <A>n</A>
+##  The first eight of these functions compute for given positive integer <A>n</A>
 ##  and prime power <A>q</A> the number of conjugacy classes in the classical
 ##  groups GL( <A>n</A>, <A>q</A> ), GU( <A>n</A>, <A>q</A> ),
 ##  SL( <A>n</A>, <A>q</A> ), SU( <A>n</A>, <A>q</A> ),
 ##  PGL( <A>n</A>, <A>q</A> ), PGU( <A>n</A>, <A>q</A> ),
-##  PSL( <A>n</A>, <A>q</A> ), PSL( <A>n</A>, <A>q</A> ), respectively.
+##  PSL( <A>n</A>, <A>q</A> ), PSU( <A>n</A>, <A>q</A> ), respectively.
 ##  (See also <Ref Attr="ConjugacyClasses" Label="attribute"/>  and
 ##  Section&nbsp;<Ref Sect="Classical Groups"/>.)
 ##  <P/>

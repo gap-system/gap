@@ -149,6 +149,10 @@ local r,i,j,u,f,q,n,lim,sel,nat,ok,mi;
      CanEasilyComputePcgs(g) then
     return MinimalGeneratingSet(g);
   fi;
+  # discovered cyclic, redo
+  if not HasIsCyclic(g) and IsCyclic(g) then
+    return MinimalGeneratingSet(g);
+  fi;
   # start at rank 2/abelian rank
   n:=AbelianInvariants(g);
   if Length(n)>0 then
@@ -381,7 +385,7 @@ InstallMethod( IsPGroup,
 
 #############################################################################
 ##
-#M  IsPowerfulPGroup( <G> ) . . . . . . . . . . is a group a powerful p-group ?
+#M  IsPowerfulPGroup( <G> ) . . . . . . . . . is a group a powerful p-group ?
 ##
 InstallMethod( IsPowerfulPGroup,
     "use characterisation of powerful p-groups based on rank ",
@@ -1104,7 +1108,7 @@ InstallMethod( CommutatorFactorGroup,
     end );
 
 
-############################################################################
+#############################################################################
 ##
 #M MaximalAbelianQuotient(<group>)
 ##
@@ -1247,9 +1251,9 @@ end);
 ##
 
 
-##############################################################################
+#############################################################################
 ##
-#M  ChiefLength( <G> ) . . . . . . . . . . . . . . . . chief length of a group
+#M  ChiefLength( <G> ) . . . . . . . . . . . . . . .  chief length of a group
 ##
 ##  For small groups, computing the 'IsSupersolvableGroup' flag is more
 ##  expensive than computing a chief series,
@@ -1271,9 +1275,9 @@ InstallMethod( ChiefLength,
     end );
 
 
-##############################################################################
+#############################################################################
 ##
-#M  DerivedLength( <G> ) . . . . . . . . . . . . . . derived length of a group
+#M  DerivedLength( <G> ) . . . . . . . . . . . . .  derived length of a group
 ##
 InstallMethod( DerivedLength,
     "generic method for groups",
@@ -1281,9 +1285,9 @@ InstallMethod( DerivedLength,
     G -> Length( DerivedSeriesOfGroup( G ) ) - 1 );
 
 
-##############################################################################
+#############################################################################
 ##
-#M  HirschLength( <G> ) . . . . .hirsch length of a polycyclic-by-finite group
+#M  HirschLength( <G> ) . . . . Hirsch length of a polycyclic-by-finite group
 ##
 InstallMethod( HirschLength,
     "generic method for finite groups",
@@ -1394,7 +1398,7 @@ InstallMethod( DerivedSubgroup,
     TrivialSubgroup );
 
 
-##########################################################################
+#############################################################################
 ##
 #M  DimensionsLoewyFactors( <G> )  . . . . . . dimension of the Loewy factors
 ##
@@ -2997,13 +3001,17 @@ local hom,F,new;
   #TODO: Remove the !.nathom component
   if not IsBound(F!.nathom) then
     F!.nathom:=hom;
-  else
-    # avoid cached homomorphisms
-    new:=Group(GeneratorsOfGroup(F),One(F));
-    hom:=hom*GroupHomomorphismByImagesNC(F,new,
-      GeneratorsOfGroup(F),GeneratorsOfGroup(F));
-    F:=new;
-    F!.nathom:=hom;
+  elif not IsIdenticalObj(F!.nathom,hom) then
+    # Unrelated natural homomorphisms can share their image, for example a
+    # cached pc group. Then return a copy of <F>, the same one in each call.
+    if not IsBound(hom!.factorGroup) then
+      new:=Group(GeneratorsOfGroup(F),One(F));
+      UseIsomorphismRelation(F,new);
+      new!.nathom:=hom*GroupHomomorphismByImagesNC(F,new,
+        GeneratorsOfGroup(F),GeneratorsOfGroup(F));
+      hom!.factorGroup:=new;
+    fi;
+    F:=hom!.factorGroup;
   fi;
   return F;
 end );
@@ -3211,8 +3219,7 @@ InstallGlobalFunction( IsSubgroup,
 #R  IsRightTransversalRep( <obj> )  . . . . . . . . . . . . right transversal
 ##
 DeclareRepresentation( "IsRightTransversalRep",
-    IsAttributeStoringRep and IsRightTransversal,
-    [ "group", "subgroup" ] );
+    IsAttributeStoringRep and IsRightTransversal );
 
 InstallMethod( PrintObj,
     "for right transversal",
@@ -3261,7 +3268,39 @@ end);
 #############################################################################
 ##
 #M  NormalClosure( <G>, <U> ) . . . . normal closure of a subgroup in a group
+#M  NormalClosureInParent( <U> )
+#M  NormalClosureOp( <G>, <U> )
+#M  NormalClosure( <G>, <list> )
 ##
+InstallMethod( NormalClosure,
+  "try to exploit the in-parent attribute NormalClosureInParent",
+  [ IsGroup, IsGroup ],
+  function( super, sub )
+  local value;
+
+  if HasParent( sub ) and IsIdenticalObj( super, Parent( sub ) ) then
+    value:= NormalClosureInParent( sub );
+  else
+    value:= NormalClosureOp( super, sub );
+    # Because of the following, this method is not created by 'InParentFOA'.
+    if HasParent( value ) and IsIdenticalObj( super, Parent( value ) ) then
+      SetIsNormalInParent( value, true );
+      SetNormalClosureInParent( value, value );
+    fi;
+  fi;
+  return value;
+  end );
+
+InstallMethod( NormalClosureInParent,
+  "method that calls the two-argument operation NormalClosureOp",
+  [ IsGroup and HasParent ],
+  D -> NormalClosureOp( Parent( D ), D ) );
+
+InstallMethod( NormalClosureInParent,
+  "method that uses the known IsNormalInParent",
+  [ IsGroup and HasParent and IsNormalInParent ], SUM_FLAGS,
+  IdFunc );
+
 InstallMethod( NormalClosureOp,
     "generic method for two groups",
     IsIdenticalObj, [ IsGroup, IsGroup ],
@@ -3653,7 +3692,7 @@ InstallMethod( SylowSubgroupOp,
     end );
 
 
-############################################################################
+#############################################################################
 ##
 #M  HallSubgroupOp (<grp>, <pi>)
 ##
@@ -3834,7 +3873,7 @@ InstallGlobalFunction( NormalHallSubgroupsFromSylows, function( arg )
   fi;
 end);
 
-############################################################################
+#############################################################################
 ##
 #M  NormalHallSubgroups( <G> )
 ##
@@ -3847,7 +3886,7 @@ function( G )
 end);
 
 
-############################################################################
+#############################################################################
 ##
 #M  SylowComplementOp (<grp>, <p>)
 ##
@@ -4960,6 +4999,7 @@ function( gens )
   fi;
 
   gens:=AsList(gens);
+  CheckMatrixGroupGenerators( gens, false );
   return MakeGroupyObj(FamilyObj(gens), IsGroup, gens, false);
 end );
 
@@ -4976,6 +5016,7 @@ function( gens, id )
   fi;
 
   gens:=AsList(gens);
+  CheckMatrixGroupGenerators( gens, id );
   return MakeGroupyObj(FamilyObj(gens), IsGroup, gens, id);
 end );
 
@@ -5353,7 +5394,7 @@ local nrm;        # normal subgroups of <G>,result
 end);
 
 
-##############################################################################
+#############################################################################
 ##
 #F  MaximalNormalSubgroups(<G>)
 ##
@@ -5426,7 +5467,7 @@ InstallMethod( MaximalNormalSubgroups, "general method selection",
 end);
 
 
-##############################################################################
+#############################################################################
 ##
 #F  MinimalNormalSubgroups(<G>)
 ##

@@ -127,7 +127,7 @@ DeclareGlobalFunction("COComplements");
 
 #############################################################################
 ##
-#O  COComplementsMain( <G>, <N>, <all>, <fun> )  . . . . . . . . . . . . . local
+#O  COComplementsMain( <G>, <N>, <all>, <fun> ) . . . . . . . . . . . . local
 ##
 ##  <ManSection>
 ##  <Oper Name="COComplementsMain" Arg='G, N, all, fun'/>
@@ -161,7 +161,7 @@ DeclareGlobalFunction("COSolvableFactor");
 
 #############################################################################
 ##
-#O  ComplementClassesRepresentatives( <G>, <N> ) . . . . . . . . . . . . find all complement
+#O  ComplementClassesRepresentatives( <G>, <N> ) . . . .  find all complement
 ##
 ##  <#GAPDoc Label="ComplementClassesRepresentatives">
 ##  <ManSection>

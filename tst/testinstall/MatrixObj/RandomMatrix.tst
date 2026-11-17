@@ -39,9 +39,9 @@ true
 # with example matrix
 gap> M:= Matrix( IsPlistMatrixRep, Integers, [ 1 ], 1 );;
 gap> RandomMatrix( 2, 2, M );
-<2x2-matrix over Integers>
+<2x2 plist matrix over Integers>
 gap> RandomMatrix( 0, 0, M );
-<0x0-matrix over Integers>
+<0x0 plist matrix over Integers>
 gap> M:= [ [ 1 ] ];;
 gap> BaseDomain( M );
 Rationals
@@ -51,14 +51,14 @@ gap> ForAll( Flat( RandomMatrix( 1, 2, M ) ), IsRat );
 true
 gap> M:= Matrix( IsPlistMatrixRep, GF(3), [ Z(3) ], 1 );;
 gap> RandomMatrix( 2, 2, M );
-<2x2-matrix over GF(3)>
+<2x2 plist matrix over GF(3)>
 
 # with random source and example matrix
 gap> M:= Matrix( IsPlistMatrixRep, Integers, [ 1 ], 1 );;
 gap> RandomMatrix( rs, 2, 2, M );
-<2x2-matrix over Integers>
+<2x2 plist matrix over Integers>
 gap> RandomMatrix( rs, 0, 0, M );
-<0x0-matrix over Integers>
+<0x0 plist matrix over Integers>
 gap> M:= [ [ 1 ] ];;
 gap> IsPlistRep( RandomMatrix( rs, 2, 2, M ) );
 true
@@ -66,7 +66,7 @@ gap> ForAll( Flat( RandomMatrix( rs, 1, 2, M ) ), IsRat );
 true
 gap> M:= Matrix( IsPlistMatrixRep, GF(3), [ Z(3) ], 1 );;
 gap> RandomMatrix( rs, 2, 2, M );
-<2x2-matrix over GF(3)>
+<2x2 plist matrix over GF(3)>
 
 #
 gap> STOP_TEST( "RandomMatrix.tst" );

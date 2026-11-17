@@ -155,6 +155,15 @@ end );
 MakeThreadLocal("FULLGLNICOCACHE"); # avoid recreating same homom. repeatedly
 BindGlobal( "FULLGLNICOCACHE", [] );
 
+# the cached mappings refer to field objects that 'FlushCaches' replaces
+InstallMethod( FlushCaches, [],
+    function()
+      while not IsEmpty( FULLGLNICOCACHE ) do
+        Remove( FULLGLNICOCACHE );
+      od;
+      TryNextMethod();
+    end );
+
 
 #############################################################################
 ##
@@ -179,9 +188,13 @@ InstallGlobalFunction( NicomorphismFFMatGroupOnFullSpace, function( grp )
     fi;
     dim:= DimensionOfMatrixGroup( grp );
 
-    #check cache
+    # Check the cache.  The stored homomorphism embeds objects over the
+    # stored field, so a field that is merely equal to <field> will not do:
+    # 'FlushCaches' makes 'GF( q )' return a new object, and mixing the two
+    # is rejected by representations that compare base domains by identity.
     nice:= First( FULLGLNICOCACHE,
-                  x -> x[1] = field and x[2] = dim and x[3] = filt );
+                  x -> IsIdenticalObj( x[1], field ) and x[2] = dim
+                       and x[3] = filt );
 
     if nice<>fail then return nice[4];fi;
 
@@ -499,8 +512,10 @@ function( G, flag )
   fi;
 
   # now convert into actual matrices and compute centralizer order
+  # (in the representation used by <G>, so that the class representatives
+  # can be compared with the elements of <G>)
   cl := [];
-  one :=  One(GF(q));
+  one := OneOfBaseDomain( One(G) );
   for a in cls do
     mat := [];
     cen := 1;
@@ -522,21 +537,19 @@ function( G, flag )
           Add(mat, mat[1]^rep[i]);
         od;
         for m in mat do
-            new := ConjugacyClass( G, m );
+            new := ConjugacyClass( G, Matrix( m, One(G) ) );
             SetSize( new, (o*(q-1))/(cen*gcd) );
             Add( cl, new );
         od;
       fi;
     else
-      new := ConjugacyClass( G, mat );
+      new := ConjugacyClass( G, Matrix( mat, One(G) ) );
       SetSize( new, o/cen );
       Add(cl, new );
     fi;
   od;
   # obey general rule in GAP to put class of identity first
-  i := First([1..Length(cl)], c-> Representative(cl[c]) = One(G));
-#T note that One(G) is in Is8BitMatrixRep,
-#T but the class representatives are in IsPlistRep
+  i := First([1..Length(cl)], c-> IsOne(Representative(cl[c])));
   if i <> 1 then
     a := cl[i];
     cl[i] := cl[1];

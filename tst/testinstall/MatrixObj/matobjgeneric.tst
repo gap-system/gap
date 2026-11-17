@@ -1,4 +1,4 @@
-#@local e, v, v2, w, M, z, rows, a, b, c, d, p, ev, n, ai, inv, zm, zs, N, T, R
+#@local e, v, v2, w, M, z, rows, a, b, c, d, p, ev, n, ai, inv, zm, zs, N, T, R, mat
 gap> START_TEST( "matobjgeneric.tst" );
 
 #
@@ -17,31 +17,31 @@ gap> w:= MakeIsPlistVectorRep( Rationals, [ 1 ], true );
 gap> MakeIsGenericMatrixRep( Integers, 2, [ v ], true );
 Error, the entries of <list> must be plain lists
 gap> M:= MakeIsGenericMatrixRep( Integers, 2, [], true );
-<0x2-matrix over Integers>
+<0x2 generic matrix over Integers>
 gap> MakeIsGenericMatrixRep( Integers, 1, [ [ 1 ] ], true );
-<1x1-matrix over Integers>
+<1x1 generic matrix over Integers>
 gap> MakeIsGenericMatrixRep( Integers, 2, [ [ 1 ] ], true );
 Error, the entries of <list> must have length <ncols>
 gap> MakeIsGenericMatrixRep( Integers, 1, [ [ 1/2 ] ], true );
 Error, the elements in <list> must lie in <basedomain>
 gap> MakeIsGenericMatrixRep( GF(2), 1, [ [ Z(2) ] ], true );
-<1x1-matrix over GF(2)>
+<1x1 generic matrix over GF(2)>
 gap> MakeIsGenericMatrixRep( GF(2), 1, [ [ Z(4) ] ], true );
 Error, the elements in <list> must lie in <basedomain>
 
 #
 gap> NewMatrix( IsGenericMatrixRep, Integers, 2, [] );
-<0x2-matrix over Integers>
+<0x2 generic matrix over Integers>
 gap> NewMatrix( IsGenericMatrixRep, Integers, 2, [ 1 ] );
 Error, NewMatrix: Length of <list> is not a multiple of <ncols>
 gap> NewMatrix( IsGenericMatrixRep, Integers, 2, [ [ 1 ] ] );
 Error, the entries of <list> must have length <ncols>
 gap> NewMatrix( IsGenericMatrixRep, Integers, 2, [ [ 1, 2 ] ] );
-<1x2-matrix over Integers>
+<1x2 generic matrix over Integers>
 gap> NewMatrix( IsGenericMatrixRep, Integers, 2, [ v ] );
 Error, the entries of <list> must have length <ncols>
 gap> M:= NewMatrix( IsGenericMatrixRep, Integers, 2, [ [ 1, 2 ], [ 3, 4 ] ] );
-<2x2-matrix over Integers>
+<2x2 generic matrix over Integers>
 gap> IsMutable( M );
 true
 gap> Unpack( M );
@@ -78,15 +78,15 @@ gap> Unpack( M );
 #
 #
 gap> a:= ZeroMatrix( IsGenericMatrixRep, Integers, 2, 0 );
-<2x0-matrix over Integers>
+<2x0 generic matrix over Integers>
 gap> b:= ZeroMatrix( IsGenericMatrixRep, Integers, 0, 3 );
-<0x3-matrix over Integers>
+<0x3 generic matrix over Integers>
 gap> c:= ZeroMatrix( IsGenericMatrixRep, Integers, 0, 0 );
-<0x0-matrix over Integers>
+<0x0 generic matrix over Integers>
 gap> d:= ZeroMatrix( IsGenericMatrixRep, Integers, 0, 2 );
-<0x2-matrix over Integers>
+<0x2 generic matrix over Integers>
 gap> z:= ZeroMatrix( IsGenericMatrixRep, Integers, 2, 3 );
-<2x3-matrix over Integers>
+<2x3 generic matrix over Integers>
 gap> IsMutable( z );
 true
 gap> Unpack( z );
@@ -109,15 +109,15 @@ true
 
 #
 gap> p:= a * b;
-<2x3-matrix over Integers>
+<2x3 generic matrix over Integers>
 gap> Unpack( p );
 [ [ 0, 0, 0 ], [ 0, 0, 0 ] ]
 gap> p:= d * a;
-<0x0-matrix over Integers>
+<0x0 generic matrix over Integers>
 gap> Unpack( p );
 [  ]
 gap> p:= c * b;
-<0x3-matrix over Integers>
+<0x3 generic matrix over Integers>
 gap> Unpack( p );
 [  ]
 
@@ -145,19 +145,19 @@ gap> Unpack( v2 * a );
 
 #
 gap> b + b;
-<0x3-matrix over Integers>
+<0x3 generic matrix over Integers>
 gap> b - b;
-<0x3-matrix over Integers>
+<0x3 generic matrix over Integers>
 gap> -b;
-<0x3-matrix over Integers>
+<0x3 generic matrix over Integers>
 gap> ZeroMutable( b );
-<0x3-matrix over Integers>
+<0x3 generic matrix over Integers>
 
 #
 gap> InverseMutable( c );
-<0x0-matrix over Integers>
+<0x0 generic matrix over Integers>
 gap> InverseSameMutability( c );
-<0x0-matrix over Integers>
+<0x0 generic matrix over Integers>
 
 #
 gap> M:= Matrix( IsGenericMatrixRep, Integers, [ [ 0, 0, 2 ], [ 0, 0, 0 ] ] );;
@@ -186,6 +186,40 @@ gap> SwapMatrixRows( M, 1, 2 );;
 gap> Unpack( M );
 [ [ 54, 66, 78 ], [ 23, 28, 33 ] ]
 
+# elementary operations change neither the input list nor copies
+gap> rows:= [ [ Z(9), Z(3) ], [ Z(3)^0, 0*Z(3) ] ];;
+gap> M:= Matrix( IsGenericMatrixRep, GF(9), rows );;
+gap> N:= MutableCopyMatrix( M );;
+gap> T:= ShallowCopy( M );;
+gap> a:= ExtractSubMatrix( M, [ 1, 2 ], [ 1, 2 ] );;
+gap> b:= Unpack( M );;
+gap> AddMatrixRowsLeft( M, 1, 2, Z(9) );;
+gap> AddMatrixRowsRight( M, 2, 1, 2 );;
+gap> MultMatrixRowLeft( M, 2, Z(9)^3 );;
+gap> MultMatrixRowRight( M, 1, -1 );;
+gap> AddMatrixColumnsLeft( M, 2, 1, Z(9) );;
+gap> MultMatrixColumnRight( M, 1, Z(9)^2 );;
+gap> Unpack( M );
+[ [ Z(3^2)^3, Z(3^2)^7 ], [ Z(3^2)^7, Z(3^2) ] ]
+gap> rows = b and Unpack( N ) = b and Unpack( T ) = b and Unpack( a ) = b;
+true
+
+#
+gap> a:= ZeroMatrix( IsGenericMatrixRep, Integers, 2, 0 );;
+gap> AddMatrixRowsLeft( a, 1, 2, 1 );;
+gap> AddMatrixRowsRight( a, 1, 2, 1 );;
+gap> MultMatrixRowLeft( a, 1, 2 );;
+gap> MultMatrixRowRight( a, 2, 2 );;
+gap> Unpack( a );
+[ [  ], [  ] ]
+gap> AddMatrixRowsLeft( a, 1, 3, 1 );
+Error, List Element: <list>[3] must have an assigned value
+gap> MultMatrixColumnLeft( M, 3, Z(9) );
+Error, List Element: <list>[3] must have an assigned value
+gap> MultMatrixRowLeft( MakeImmutable( M ), 1, Z(9) );
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `MultMatrixRowLeft' on 3 arguments
+
 #
 # Test Inverse / InverseMutable
 #
@@ -202,7 +236,7 @@ fail
 gap> M:= Matrix( IsGenericMatrixRep, GF(2), [ [ Z(2)^0, Z(2)^0 ], [ Z(2)^0, 0*Z(2) ] ] );;
 gap> N:= InverseMutable( M );;
 gap> Display( N );
-<2x2-matrix over GF(2):
+<2x2 generic matrix over GF(2):
 [[ 0*Z(2), Z(2)^0 ]
  [ Z(2)^0, Z(2)^0 ]
 ]>
@@ -215,7 +249,7 @@ true
 gap> M:= Matrix( IsGenericMatrixRep, Rationals, [ [ 1, 2 ], [ 3, 5 ] ] );;
 gap> N:= InverseMutable( M );;
 gap> Display( N );
-<2x2-matrix over Rationals:
+<2x2 generic matrix over Rationals:
 [[ -5, 2 ]
  [ 3, -1 ]
 ]>
@@ -334,11 +368,11 @@ false
 # ViewObj, PrintObj, Display, String
 #
 gap> M := Matrix( IsGenericMatrixRep, GF(2), [ [ Z(2)^0, 0*Z(2) ] ] );
-<1x2-matrix over GF(2)>
+<1x2 generic matrix over GF(2)>
 gap> Print(M, "\n");
 NewMatrix(IsGenericMatrixRep,GF(2),2,[ [ Z(2)^0, 0*Z(2) ] ])
 gap> Display(M);
-<1x2-matrix over GF(2):
+<1x2 generic matrix over GF(2):
 [[ Z(2)^0, 0*Z(2) ]
 ]>
 gap> String(M);
@@ -346,11 +380,11 @@ gap> String(M);
 
 #
 gap> MakeImmutable( M );
-<immutable 1x2-matrix over GF(2)>
+<immutable 1x2 generic matrix over GF(2)>
 gap> Print(M, "\n");
 NewMatrix(IsGenericMatrixRep,GF(2),2,[ [ Z(2)^0, 0*Z(2) ] ])
 gap> Display(M);
-<immutable 1x2-matrix over GF(2):
+<immutable 1x2 generic matrix over GF(2):
 [[ Z(2)^0, 0*Z(2) ]
 ]>
 gap> String(M);
@@ -358,11 +392,11 @@ gap> String(M);
 
 #
 gap> M :=Matrix( IsGenericMatrixRep, Integers, [ [ 1, 2 ], [ 3, 4 ] ] );
-<2x2-matrix over Integers>
+<2x2 generic matrix over Integers>
 gap> Print(M, "\n");
 NewMatrix(IsGenericMatrixRep,Integers,2,[ [ 1, 2 ], [ 3, 4 ] ])
 gap> Display(M);
-<2x2-matrix over Integers:
+<2x2 generic matrix over Integers:
 [[ 1, 2 ]
  [ 3, 4 ]
 ]>
@@ -371,11 +405,11 @@ gap> String(M);
 
 #
 gap> MakeImmutable( M );
-<immutable 2x2-matrix over Integers>
+<immutable 2x2 generic matrix over Integers>
 gap> Print(M, "\n");
 NewMatrix(IsGenericMatrixRep,Integers,2,[ [ 1, 2 ], [ 3, 4 ] ])
 gap> Display(M);
-<immutable 2x2-matrix over Integers:
+<immutable 2x2 generic matrix over Integers:
 [[ 1, 2 ]
  [ 3, 4 ]
 ]>
@@ -443,7 +477,7 @@ Error, no 1st choice method found for `BaseDomain' on 1 arguments
 # families
 #
 gap> M:= NewZeroMatrix( IsGenericMatrixRep, Integers, 2, 3 );
-<2x3-matrix over Integers>
+<2x3 generic matrix over Integers>
 gap> IsMutable( M );
 true
 gap> IsCyclotomicCollColl( M );
@@ -453,12 +487,57 @@ false
 
 #
 gap> M:= NewZeroMatrix( IsGenericMatrixRep, GF(257), 2, 3 );
-<2x3-matrix over GF(257)>
+<2x3 generic matrix over GF(257)>
 gap> IsMutable( M );
 true
 gap> IsCyclotomicCollColl( M );
 false
 gap> IsFFECollColl( M );
+true
+
+# a scalar outside the base domain is rejected before anything changes
+gap> mat:= Matrix( IsGenericMatrixRep, Integers, [ [ 1, 2 ], [ 3, 4 ] ] );;
+gap> MultMatrixRowLeft( mat, 1, [ [ 1 ] ] );
+Error, <scalar> must lie in the base domain of <mat>
+gap> AddMatrixRowsLeft( mat, 1, 2, 1/2 );
+Error, <scalar> must lie in the base domain of <mat>
+gap> AddMatrixColumnsRight( mat, 1, 2, 1/2 );
+Error, <scalar> must lie in the base domain of <mat>
+gap> MultMatrixColumnLeft( mat, 1, [ [ 1 ] ] );
+Error, <scalar> must lie in the base domain of <mat>
+gap> Unpack( mat );
+[ [ 1, 2 ], [ 3, 4 ] ]
+gap> mat:= Matrix( IsGenericMatrixRep, GF(9), Z(9) * [ [ 1, 0 ], [ 1, 1 ] ] );;
+gap> MultMatrixRowRight( mat, 1, Z(27) );
+Error, <scalar> must lie in the base domain of <mat>
+gap> AddMatrixRowsRight( mat, 1, 2, 2 );; Unpack( mat );
+[ [ 0*Z(3), Z(3^2)^5 ], [ Z(3^2), Z(3^2) ] ]
+
+#
+# ordering, which sets of generic matrices rely on
+#
+gap> a:= Matrix( IsGenericMatrixRep, GF(3), Z(3)^0 * [ [ 1, 0 ], [ 0, 1 ] ] );;
+gap> b:= Matrix( IsGenericMatrixRep, GF(3), Z(3)^0 * [ [ 1, 1 ], [ 0, 1 ] ] );;
+gap> a < b;  b < a;  a < a;
+true
+false
+false
+
+# dimensions of transposed matrices and products with empty matrices
+gap> M:= ZeroMatrix( IsGenericMatrixRep, Rationals, 0, 3 );;
+gap> T:= TransposedMat( M );;  [ NrRows( T ), NrCols( T ) ];
+[ 3, 0 ]
+gap> T:= TransposedMat( T );;  [ NrRows( T ), NrCols( T ) ];
+[ 0, 3 ]
+gap> N:= ZeroMatrix( IsGenericMatrixRep, Rationals, 2, 3 ) * TransposedMat( M );;
+gap> [ NrRows( N ), NrCols( N ) ];
+[ 2, 0 ]
+gap> N:= M * ZeroMatrix( IsGenericMatrixRep, Rationals, 3, 2 );;
+gap> [ NrRows( N ), NrCols( N ) ];
+[ 0, 2 ]
+gap> N:= ZeroMatrix( IsGenericMatrixRep, Rationals, 2, 0 ) * M;;
+gap> [ NrRows( N ), NrCols( N ) ];  IsZero( N );
+[ 2, 3 ]
 true
 
 #

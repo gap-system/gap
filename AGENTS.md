@@ -4,15 +4,15 @@ This repository contains the core GAP system sources.
 
 ## AI disclosure
 
-1. Sign off every commit you create with an `Assisted-by: <tool> (<model>)` trailer naming both the
-   tool and the model behind it, for example `Assisted-by: Claude Code (Opus 5)`. Name the model,
-   not just the harness - it is what tells a later reader what actually produced the work. Do not
-   use `Co-authored-by:` for tools, and do not list a tool as an author; this trailer replaces any
-   co-author trailer your harness adds by default.
+1. End every commit in which an AI tool wrote or changed code or text with the trailer
+   `Assisted-by: Generative AI`, exactly in this form, without naming the tool, the vendor or the
+   model. Mere completion, spell-checking and the like do not need it. Do not use `Co-authored-by:`
+   for AI tools and do not list a tool as an author; this trailer replaces any co-author trailer
+   your harness adds.
 2. Agents can only open PRs or post comments once the human user gives them explicit permission.
 3. Any use of AI tools for preparing code, documentation, tests, commit messages, pull requests,
    issue comments, or reviews for this repository must be disclosed. Include a brief note saying
-   which AI tool was used and what kind of assistance it provided.
+   that AI was used and what kind of assistance it provided; naming the tool is not required.
 
 ## Repository layout
 
@@ -155,9 +155,10 @@ merged pull requests and their labels, so every pull request should be labelled:
 
 - exactly one `release notes: ...` label, stating what should happen with it:
   `use title` if its title can be used as the release notes entry as-is,
-  `not needed` for changes irrelevant to users, `to be added` if an entry is
-  needed but the title does not suffice, and additionally `highlight` for
-  changes prominent enough to be listed at the very top;
+  `use body` if it needs several entries (see below), `not needed` for changes
+  irrelevant to users, `to be added` if an entry is needed but neither title
+  nor body suffices, and additionally `highlight` for changes prominent enough
+  to be listed at the very top;
 - a `kind: ...` label, such as `kind: new feature`, `kind: enhancement` or one
   of the `kind: bug...` labels;
 - one or more `topic: ...` labels naming the affected part of GAP, such as
@@ -165,10 +166,27 @@ merged pull requests and their labels, so every pull request should be labelled:
   `topic: performance`.
 
 The `prioritylist` in `dev/releases/release_notes.py` maps labels to release
-notes sections; a pull request is listed only in the section belonging to the
+notes sections; each entry is listed only in the section belonging to the
 first matching label, so consult that list to see which label wins. Labels are
 matched by their exact name, so take them from there or from `gh label list`
 rather than guessing.
+
+Prefer `use title`: a change that does not fit into one title usually belongs in
+several pull requests. Use `use body` only if a pull request must contain
+several changes that deserve their own entries, such as two bug fixes. List the
+entries under `## Text for release notes` in the pull request description, one
+item each; labels in braces at the end of an item replace those of the pull
+request for that entry:
+
+```md
+## Text for release notes
+
+- Fix `Foo` for trivial groups {kind: bug: wrong result}
+- Fix a crash in `Bar` {kind: bug: crash}
+```
+
+Conversely, entries with identical text are merged into one, so a follow-up
+pull request can share the entry of an earlier one by using its exact title.
 
 ## Changelog
 

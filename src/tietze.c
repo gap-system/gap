@@ -213,7 +213,6 @@ static Obj FuncTzSortC(Obj self, Obj tietze)
         SET_LEN_PLIST( lens,  i );  SHRINK_PLIST( lens,  i );
         SET_LEN_PLIST( flags, i );  SHRINK_PLIST( flags, i );
         SET_ELM_PLIST( tietze, TZ_NUMRELS, INTOBJ_INT(i) );
-        CHANGED_BAG(tietze);
     }
 
     return 0;
@@ -1140,6 +1139,11 @@ static Obj FuncTzSearchC(Obj self, Obj args)
        {
           continue;  // loop over y
        }
+
+       // A relator that was just shortened is examined again whatever its
+       // length, but it cannot contain a match longer than itself
+       if ( ylen < mlen )
+          continue;  // loop over y
        lasty = y;
 
        // Compute the key values of the current relator
@@ -1483,7 +1487,8 @@ static Obj FuncREDUCE_LETREP_WORDS_REW_SYS(Obj self, Obj tzrules, Obj a_w)
      }
      else {
         // make space for the new word
-        nw = NEW_PLIST(TNUM_OBJ(w),newlen);
+        nw = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(w), TNUM_OBJ(w),
+                                       newlen);
 
        // addresses
        wa=ADDR_OBJ(w);

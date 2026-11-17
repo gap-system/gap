@@ -102,5 +102,24 @@ ClassFunction( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 0, 0, 0, 0, 0 ] )
 gap> AntiSymmetricParts( tbl, [ chi ], 2 );
 [ VirtualCharacter( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 0, 0, 0, 0, 0 ] ) ]
 
+# SymmetricParts and AntiSymmetricParts agree with Symmetrizations,
+# also for reducible and virtual characters
+gap> t:= CharacterTable( AlternatingGroup( 5 ) );;
+gap> l:= Concatenation( Irr( t ),
+>            [ Sum( Irr( t ) ), Irr( t )[2] - Irr( t )[1] ] );;
+gap> ForAll( [ 1 .. 6 ], n ->
+>      SymmetricParts( t, l, n ) = List( l, c -> Symmetrizations( [ c ], n )
+>                                    [ Position( Partitions( n ), [ n ] ) ] )
+>      and AntiSymmetricParts( t, l, n ) =
+>          List( l, c -> Symmetrizations( [ c ], n )[1] ) );
+true
+gap> SymmetricParts( t, l, 0 ) = List( l, c -> TrivialCharacter( t ) );
+true
+gap> chi:= First( Irr( t ), x -> x[1] = 3 );;
+gap> SymmetricPower( chi, 60 )[1] = Binomial( 62, 60 );
+true
+gap> ExteriorPower( Sum( Irr( t ) ), 8 )[1] = Binomial( 16, 8 );
+true
+
 #
 gap> STOP_TEST("ctblfuns.tst");

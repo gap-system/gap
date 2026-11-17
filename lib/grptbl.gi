@@ -20,8 +20,7 @@
 ##  At position 1 of the element $m_i$, the number $i$ is stored.
 ##
 DeclareRepresentation( "IsMagmaByMultiplicationTableObj",
-    IsPositionalObjectRep and IsMultiplicativeElementWithInverse,
-    [ 1 ] );
+    IsPositionalObjectRep and IsMultiplicativeElementWithInverse );
 #T change to IsPositionalObjectOneSlotRep!
 
 

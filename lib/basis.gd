@@ -445,7 +445,7 @@ DeclareAttribute( "StructureConstantsTable", IsBasis );
 ##  would have to store the basis vectors and the coefficient domain
 ##  separately.
 ##  Storing the module allows one for example to deal with bases whose basis
-##  vectors have not yet been computed yet (see&nbsp;<Ref Attr="Basis"/>);
+##  vectors have not yet been computed (see&nbsp;<Ref Attr="Basis"/>);
 ##  furthermore, in some cases it is convenient to test membership of a
 ##  vector in the module before computing coefficients w.r.t.&nbsp;a basis.
 ##  <!-- this happens for example for finite fields and cyclotomic fields-->
@@ -663,7 +663,7 @@ DeclareOperation( "BasisNC", [ IsFreeLeftModule, IsHomogeneousList ] );
 ##  If additionally a list <A>vectors</A> of vectors in <A>V</A> is given
 ##  that forms a semi-echelonized basis of <A>V</A>
 ##  then <Ref Attr="SemiEchelonBasis"/> returns this basis;
-##  if <A>vectors</A> do not form a basis of <A>V</A>
+##  if <A>vectors</A> do not form a semi-echelonized basis of <A>V</A>
 ##  then <K>fail</K> is returned.
 ##  <P/>
 ##  <Ref Oper="SemiEchelonBasisNC"/> does the same as the two argument
@@ -785,7 +785,8 @@ DeclareOperation( "RelativeBasisNC", [ IsBasis, IsHomogeneousList ] );
 ##  that shall be handled via the mechanism of nice bases
 ##  (see&nbsp;<Ref Sect="Vector Spaces Handled By Nice Bases"/>).
 ##  <P/>
-##  <A>name</A> must be a string,
+##  <A>name</A> must be a string and <A>info</A> a string describing the
+##  new kind of modules,
 ##  a filter <M>f</M> with this name is created which implies
 ##  <Ref Filt="IsFreeLeftModule"/>, and
 ##  a logical implication from the join of <M>f</M> with
@@ -832,9 +833,9 @@ DeclareOperation( "RelativeBasisNC", [ IsBasis, IsHomogeneousList ] );
 ##  left modules handled by the mechanism of nice bases is to call
 ##  <Ref Func="DeclareHandlingByNiceBasis"/> and
 ##  <Ref Func="InstallHandlingByNiceBasis"/>,
-##  which causes the installation of the necessary methods and adds the pair
-##  <M>[ f, </M><A>record</A><C>.detect</C><M> ]</M> to the global list
-##  <Ref Var="NiceBasisFiltersInfo"/>.
+##  which causes the installation of the necessary methods and adds the triple
+##  <C>[ f, <A>info</A>, <A>record</A>.detect ]</C>
+##  to the global list <Ref Var="NiceBasisFiltersInfo"/>.
 ##  The <Ref Oper="LeftModuleByGenerators"/> methods call
 ##  <Ref Func="CheckForHandlingByNiceBasis"/>, which sets the appropriate filter
 ##  for the desired left module if applicable.
@@ -1145,11 +1146,11 @@ DeclareAttribute( "NiceFreeLeftModuleInfo",
 ##  free left module <A>V</A> and <C><A>W</A>:= NiceFreeLeftModule( <A>V</A> )</C>.
 ##  <P/>
 ##  If <A>v</A> lies in the elements family of the family of <A>V</A> then
-##  <C>NiceVector( <A>v</A> )</C> is either <K>fail</K> or an element in the elements family
+##  <C>NiceVector( <A>V</A>, <A>v</A> )</C> is either <K>fail</K> or an element in the elements family
 ##  of the family of <A>W</A>.
 ##  <P/>
 ##  If <A>r</A> lies in the elements family of the family of <A>W</A> then
-##  <C>UglyVector( <A>r</A> )</C> is either <K>fail</K> or an element in the elements family
+##  <C>UglyVector( <A>V</A>, <A>r</A> )</C> is either <K>fail</K> or an element in the elements family
 ##  of the family of <A>V</A>.
 ##  <P/>
 ##  If <A>v</A> lies in <A>V</A> (which usually <E>cannot</E> be checked without using <A>W</A>)

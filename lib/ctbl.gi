@@ -907,17 +907,20 @@ InstallMethod( Irr,
 
 #############################################################################
 ##
-#M  Irr( <G>, <0> )   . . . . . . . . . . . . . . . . .  for a group and zero
+#M  Irr( <G>, 0 )   . . . . . . . . . . . . . . . . . .  for a group and zero
 ##
-##  We compute the character table of <G> if it is not yet stored
-##  (which must be done anyhow), and then check whether the table already
-##  knows its irreducibles.
-##  This method is successful if the method for computing the table (head)
-##  automatically computes also the irreducibles.
+##  If the character table of <G> is already stored,
+##  check whether it knows its irreducibles.
+##
+##  (If <G> is a group for which 'OrdinaryCharacterTable( <G> )' computes
+##  not only the table head but also the irreducibles,
+##  then a special 'Irr( <G>, 0 )' method of high rank for this group
+##  may make sense.)
 ##
 InstallMethod( Irr,
     "partial method for a group, and zero",
-    [ IsGroup, IsZeroCyc ], SUM_FLAGS,
+    [ IsGroup and HasOrdinaryCharacterTable, IsZeroCyc ],
+    QuoInt( SUM_FLAGS + GETTER_FLAGS, 2 ), # above all other methods
     function( G, zero )
     local tbl;
     tbl:= OrdinaryCharacterTable( G );
@@ -1132,14 +1135,16 @@ InstallMethod( LinearCharacters,
       return Irr( G, 0 );
     fi;
 
-    pi:= NaturalHomomorphismByNormalSubgroupNC( G, DerivedSubgroup( G ) );
+    pi:= MaximalAbelianQuotient( G );
     img:= ImagesSource( pi );
     SetIsAbelian( img, true );
 #   return RestrictedClassFunctions( CharacterTable( img ),
 #              Irr( img, 0 ), pi );
 # We cannot use this because the source of `pi' may be not identical with `G'!
-    fus:= FusionConjugacyClasses( pi );
+# `FusionConjugacyClasses( pi )' refers to the classes of that source
+# and of the group `img', so compute the fusion between the tables.
     tbl:= CharacterTable( G );
+    fus:= FusionConjugacyClasses( pi, tbl, CharacterTable( img ) );
     res:= List( Irr( img, 0 ), x -> Character( tbl, x{ fus } ) );
     for chi in res do
       SetIsIrreducibleCharacter( chi, true );
@@ -1265,7 +1270,7 @@ InstallMethod( OrdinaryCharacterTable,
     end );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  AbelianInvariants( <tbl> )  . . . . . . . for an ordinary character table
 ##
@@ -4675,7 +4680,7 @@ InstallGlobalFunction( ConvertToCharacterTable, function( record )
         Info( InfoCharacterTable, 1,
               "group stored but no conjugacy classes!" );
         return fail;
-      elif not IsBound( record!.IdentificationOfClasses ) then
+      elif not IsBound( record!.IdentificationOfConjugacyClasses ) then
         Info( InfoCharacterTable, 1,
               "group stored but no identification of classes!" );
         return fail;
@@ -7311,13 +7316,13 @@ InstallGlobalFunction( SortedCharacterTable, function( arg )
 end );
 
 
-############################################################################
+#############################################################################
 ##
 ##  12. Storing Normal Subgroup Information
 ##
 
 
-##############################################################################
+#############################################################################
 ##
 #M  NormalSubgroupClassesInfo( <tbl> )
 ##
@@ -7329,7 +7334,7 @@ InstallMethod( NormalSubgroupClassesInfo,
                 nsgfactors := [] ) );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  ClassPositionsOfNormalSubgroup( <tbl>, <N> )
 ##
@@ -7382,7 +7387,7 @@ InstallGlobalFunction( ClassPositionsOfNormalSubgroup, function( tbl, N )
 end );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  NormalSubgroupClasses( <tbl>, <classes> )
 ##
@@ -7461,7 +7466,7 @@ InstallGlobalFunction( NormalSubgroupClasses, function( tbl, classes )
 end );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  FactorGroupNormalSubgroupClasses( <tbl>, <classes> )
 ##
@@ -7489,7 +7494,7 @@ InstallGlobalFunction( FactorGroupNormalSubgroupClasses,
 end );
 
 
-############################################################################
+#############################################################################
 ##
 ##  13. Auxiliary Stuff
 ##

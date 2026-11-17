@@ -43,7 +43,7 @@ DeclareSynonym("SemigroupIdealByGenerators", MagmaIdealByGenerators );
 ##  <Prop Name="IsSemigroupIdeal" Arg='I'/>
 ##
 ##  <Description>
-##  Categories of semigroup ideals.
+##  Properties of semigroup ideals.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

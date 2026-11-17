@@ -13,10 +13,9 @@
 ##
 ##  In the hash tables, we hash by keys and also store a value.  Keys
 ##  cannot be removed from the table, but the corresponding value can be
-##  changed.  Fast access to last hash index allows you to efficiently store
-##  more than one array of values -- this facility should be used with care.
+##  changed.
 ##
-##  This code works for any kind of object, provided you have a KeyIntDense
+##  This code works for any kind of object, provided you have a DenseIntKey
 ##  method to convert the key into a positive integer.
 ##  This method should ideally be implemented efficiently in the core.
 ##
@@ -26,11 +25,11 @@
 ##  Requires: nothing
 ##  Exports:
 ##      Category IsHash.
-##      Representations IsDenseHashRep and IsSparseHashRep.
+##      Representation IsSparseHashRep.
 ##      Operations PrintHashWithNames, Iterator, GetHashEntry, AddHashEntry,
 ##        GetHashEntryAtLastIndex, SetHashEntryAtLastIndex, SetHashEntry,
-##        [AddHashEntryAtLastIndex], HashFunct, KeyIntDense.
-##      Functions DenseHash, SparseHash.
+##        [AddHashEntryAtLastIndex], HashFunct, DenseIntKey.
+##      Function SparseHashTable.
 ##      Variables MaxViewSize, LastHashIndex.
 ##
 
@@ -99,7 +98,7 @@ DeclareCategory( "IsHash", IsLookupDictionary );
 ##  There are several ways how dictionaries are implemented: As lists, as
 ##  sorted lists, as hash tables or via binary lists. A user however will
 ##  just have to call <Ref Func="NewDictionary"/> and obtain a <Q>suitable</Q> dictionary
-##  for the kind of objects she wants to create. It is possible however to
+##  for the kind of objects to be stored. It is possible however to
 ##  create hash tables (see&nbsp;<Ref Sect="General Hash Tables"/>)
 ##  and dictionaries using binary lists (see&nbsp;<Ref Func="DictionaryByPosition"/>).
 ##  <P/>
@@ -129,6 +128,11 @@ DeclareCategory( "IsHash", IsLookupDictionary );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("NewDictionary");
+
+##  default for the option blistlimit of NewDictionary: the largest domain
+##  that gets a position dictionary. Its bit list then takes 4 MB, but the
+##  value list of a lookup dictionary up to 2^25 words, i.e. 256 MB.
+BindGlobal("DICT_BLISTLIMIT", 2^25);
 
 #############################################################################
 ##
@@ -173,10 +177,10 @@ DeclareGlobalFunction("NewDictionary");
 ##  <Description>
 ##  creates a new (lookup) dictionary which uses
 ##  <Ref Oper="PositionCanonical"/> in <A>list</A> for indexing.
-##  The dictionary will have an entry <A>dict</A><C>!.blist</C>
+##  The returned dictionary <C>dict</C> will have an entry <C>dict!.blist</C>
 ##  which is a bit list corresponding to <A>list</A> indicating the known
 ##  values.
-##  If <A>look</A> is <K>true</K>,
+##  If <A>lookup</A> is <K>true</K>,
 ##  the dictionary will be a lookup dictionary,
 ##  otherwise it is an ordinary dictionary.
 ##  </Description>
@@ -278,7 +282,7 @@ DeclareOperation("LookupDictionary",[IsDictionary,IsObject]);
 DeclareSynonym("GetHashEntry",LookupDictionary);
 
 DeclareRepresentation("IsDictionaryDefaultRep",
-  IsDictionary and IsNonAtomicComponentObjectRep,[]);
+  IsDictionary and IsNonAtomicComponentObjectRep);
 
 #############################################################################
 ##
@@ -294,11 +298,9 @@ DeclareRepresentation("IsDictionaryDefaultRep",
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareRepresentation("IsListDictionary",IsDictionaryDefaultRep,
-  ["entries"] );
+DeclareRepresentation("IsListDictionary",IsDictionaryDefaultRep );
 DeclareRepresentation("IsListLookupDictionary",
-  IsListDictionary and IsLookupDictionary,
-  ["entries"] );
+  IsListDictionary and IsLookupDictionary );
 
 #############################################################################
 ##
@@ -328,11 +330,9 @@ DeclareOperation( "ListKeyEnumerator", [ IsListDictionary ] );
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareRepresentation("IsSortDictionary",IsListDictionary,
-  ["entries"] );
+DeclareRepresentation("IsSortDictionary",IsListDictionary );
 DeclareRepresentation("IsSortLookupDictionary",
-  IsSortDictionary and IsListLookupDictionary and IsLookupDictionary,
-  ["entries"] );
+  IsSortDictionary and IsListLookupDictionary and IsLookupDictionary );
 
 #############################################################################
 ##
@@ -350,10 +350,9 @@ DeclareRepresentation("IsSortLookupDictionary",
 ##  </ManSection>
 ##
 DeclareRepresentation("IsPositionDictionary",
-  IsDictionaryDefaultRep,["domain","blist"] );
+  IsDictionaryDefaultRep );
 DeclareRepresentation("IsPositionLookupDictionary",
-  IsPositionDictionary and IsLookupDictionary,
-  ["domain","blist","vals"] );
+  IsPositionDictionary and IsLookupDictionary );
 
 #############################################################################
 #############################################################################
@@ -424,55 +423,6 @@ DeclareFilter( "TableHasIntKeyFun" );
 #############################################################################
 #############################################################################
 ##
-##  Dense hash tables
-##
-##  Used for hashing dense sets without collisions, in particular integers.
-##  Stores keys as an unordered list and values as an
-##  array with holes.  The position of a value is given by
-##  KeyIntDense of the key, and so KeyIntDense must be one-to-one.
-##
-#############################################################################
-#############################################################################
-
-#############################################################################
-##
-#R  IsDenseHashRep
-##
-##  <ManSection>
-##  <Filt Name="IsDenseHashRep" Arg='obj' Type='Representation'/>
-##
-##  <Description>
-##  The dense representation for hash tables.
-##  </Description>
-##  </ManSection>
-##
-DeclareRepresentation( "IsDenseHashRep",
-    # as we will call `Enumerator' to get the *current* value list, a hash
-    # table may not be attribute storing.
-    IsComponentObjectRep and IsHash,
-    ["KeyArray", "ValueArray"] );
-
-#############################################################################
-##
-#F  DenseHashTable( )
-##
-##  <#GAPDoc Label="DenseHashTable">
-##  <ManSection>
-##  <Func Name="DenseHashTable" Arg=''/>
-##
-##  <Description>
-##  Construct an empty dense hash table.  This is the only correct way to
-##  construct such a table.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareGlobalFunction( "DenseHashTable" );
-
-
-#############################################################################
-#############################################################################
-##
 ##  Sparse hash tables
 ##
 ##  Used for hashing sparse sets.  Stores keys as an array with fail
@@ -499,10 +449,7 @@ DeclareGlobalFunction( "DenseHashTable" );
 DeclareRepresentation( "IsSparseHashRep",
     # as we will call `Enumerator' to get the *current* value list, a hash
     # table may not be attribute storing.
-    IsNonAtomicComponentObjectRep and IsHash,
-    ["KeyArray", "ValueArray", "HashFunct", "LengthArray",
-     "LengthArrayHalf", # so we dont need to *2 to see overflow
-     "NumberKeys"] );
+    IsNonAtomicComponentObjectRep and IsHash );
 
 BindGlobal("DefaultSparseHashRepType",
   NewType( DictionariesFamily, IsSparseHashRep and IsMutable and IsCopyable ));

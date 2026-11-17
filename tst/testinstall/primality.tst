@@ -103,4 +103,14 @@ true
 # true
 
 #
+gap> List([-3, 0, 1, 2, 4, 9, 15, 21, 645, 2465], PrimalityProof);
+[ fail, fail, fail, fail, false, false, false, false, false, false ]
+gap> PrimalityProof(1009);
+[ [ "F", 2, 11 ], [ "F", 3, 2 ], [ "F", 7, 2 ], [ "L", 2, 11, 8 ], 
+  [ "L", 5, 11, 2 ], [ "L", 101, 11, 2 ] ]
+gap> ForAll(Filtered([3, 5 .. 2001], n -> not IsPrimeInt(n)),
+>           n -> PrimalityProof(n) = false);
+true
+
+#
 gap> STOP_TEST("primality.tst");

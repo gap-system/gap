@@ -445,6 +445,16 @@ Obj SyGetOsRelease(void)
 
 /****************************************************************************
 **
+*F  IS_UTF8_CONT( <C> ) . . . . . . . . . is <C> a UTF-8 continuation byte
+*F  UTF8_TAIL( <C> )  . . . . number of continuation bytes following byte <C>
+*/
+#define IS_UTF8_CONT(C) (((C) & 0xC0) == 0x80)
+#define UTF8_TAIL(C)    ((UChar)(C) < 0xC0 ? 0 : (UChar)(C) < 0xE0 ? 1 : \
+                         (UChar)(C) < 0xF0 ? 2 : 3)
+
+
+/****************************************************************************
+**
 *F  CTR( <V> )  . . . . . . . . . . . . . . . .  convert <V> into control-<V>
 */
 #define CTR(C)          ((C) & 0x1F)    // <ctr> character
@@ -514,34 +524,52 @@ void syWinPut (
 
 /****************************************************************************
 **
-*F  SyWinCmd( <str>, <len> )  . . . . . . . . . . . . .  execute a window cmd
+*F  SyWinCmd( <str> ) . . . . . . . . . . . . . . . . .  execute a window cmd
 **
-**  'SyWinCmd' send   the  command <str> to  the   window  handler (<len>  is
-**  ignored).  In the string <str> '@' characters are duplicated, and control
-**  characters  are converted to  '@<chr>', e.g.,  <newline> is converted  to
-**  '@J'.  Then  'SyWinCmd' waits for  the window handlers answer and returns
-**  that string.
+**  'SyWinCmd' sends the command <str> to the window handler.  In the string
+**  <str> '@' characters are duplicated, and control characters are converted
+**  to '@<chr>', e.g., <newline> is converted to '@J'.  Then 'SyWinCmd' waits
+**  for the window handlers answer '@a<len>+<data>' and returns <data> with
+**  these conversions undone, as a string object.  <len> is the length of
+**  <data> as sent, least significant digit first.
 */
-static Char WinCmdBuffer[8000];
+static const Char * const WinCmdIllegalAnswer = "I1+S41+Illegal Answer";
 
-const Char * SyWinCmd (
-    const Char *        str,
-    UInt                len )
+// read exactly <len> bytes from the window handler, FALSE on EOF or error
+static BOOL syWinRead(UChar * buf, UInt len)
+{
+    Int ret;    // return value of 'SyRead'
+
+    while (0 < len) {
+        ret = SyRead(0, buf, len);
+        if (ret == -1 && (errno == EAGAIN || errno == EINTR))
+            continue;
+        if (ret <= 0)
+            return FALSE;
+        buf += ret;
+        len -= ret;
+    }
+    return TRUE;
+}
+
+Obj SyWinCmd(const Char * str)
 {
     Char                buf [130];      // temporary buffer
     const Char *        s;              // pointer into the string
-    const Char *        bb;             // pointer into the temporary
     Char *              b;              // pointer into the temporary
-    UInt                i;              // loop variable
-#ifdef SYS_IS_CYGWIN32
-    UInt                len1;           // temporary storage for len
-#endif
+    UInt                len;            // length of the command / answer
+    UInt                place;          // power of ten of the current digit
+    UChar               c;              // byte of the answer
+    Obj                 answer;         // the answer
+    const UChar *       src;            // pointer into the escaped answer
+    const UChar *       end;            // end of the escaped answer
+    UChar *             dst;            // pointer into the un-escaped answer
 
     // if not running under a window handler, don't do nothing
     if ( ! SyWindow )
-        return "I1+S52+No Window Handler Present";
+        return MakeString("I1+S52+No Window Handler Present");
 
-    // compute the length of the (expanded) string (and ignore argument)
+    // compute the length of the (expanded) string
     len = 0;
     for ( s = str; *s != '\0'; s++ )
         len += 1 + (*s == '@' || (CTR('A') <= *s && *s <= CTR('Z')));
@@ -559,59 +587,44 @@ const Char * SyWinCmd (
     syWinPut( 1, "", str );
 
     // read the length of the answer
-    b = WinCmdBuffer;
-    i = 3;
-    while ( 0 < i ) {
-        len = read( 0, b, i );
-        i  -= len;
-        b  += len;
+    if (!syWinRead(&c, 1) || c != '@' || !syWinRead(&c, 1) || c != 'a')
+        return MakeString(WinCmdIllegalAnswer);
+    len = 0;
+    for (place = 1; syWinRead(&c, 1) && IsDigit(c); place *= 10) {
+        if (INT_INTOBJ_MAX / 10 < place)
+            return MakeString(WinCmdIllegalAnswer);
+        len += (c - '0') * place;
     }
-    if ( WinCmdBuffer[0] != '@' || WinCmdBuffer[1] != 'a' )
-        return "I1+S41+Illegal Answer";
-    b = WinCmdBuffer+2;
-    for ( i=1,len=0; '0' <= *b && *b <= '9';  i *= 10 ) {
-        len += (*b-'0')*i;
-        while ( read( 0, b, 1 ) != 1 )  ;
-    }
+    if (c != '+')
+        return MakeString(WinCmdIllegalAnswer);
 
     // read the arguments of the answer
-    b = WinCmdBuffer;
-    i = len;
-#ifdef SYS_IS_CYGWIN32
-    len1 = len;
-    while ( 0 < i ) {
-        len = read( 0, b, i );
-        b += len;
-        i  -= len;
-        s  += len;
-    }
-    len = len1;
-#else
-    while ( 0 < i ) {
-        len = read( 0, b, i );
-        i  -= len;
-        s  += len;
-    }
-#endif
+    answer = NEW_STRING(len);
+    if (!syWinRead(CHARS_STRING(answer), len))
+        return MakeString(WinCmdIllegalAnswer);
 
-    // shrink '@@' into '@'
-    for ( bb = b = WinCmdBuffer;  0 < len;  len-- ) {
-        if ( *bb == '@' ) {
-            bb++;
-            if ( *bb == '@' )
-                *b++ = '@';
-            else if ( 'A' <= *bb && *bb <= 'Z' )
-                *b++ = CTR(*bb);
-            bb++;
+    // shrink '@@' into '@' and '@<chr>' into a control character; an escape
+    // is two bytes of input but one of output
+    src = dst = CHARS_STRING(answer);
+    end = src + len;
+    while (src < end) {
+        c = *src++;
+        if (c != '@') {
+            *dst++ = c;
+            continue;
         }
-        else {
-            *b++ = *bb++;
-        }
+        if (src == end)
+            break;
+        c = *src++;
+        if (c == '@')
+            *dst++ = '@';
+        else if ('A' <= c && c <= 'Z')
+            *dst++ = CTR(c);
     }
-    *b = 0;
+    *dst = '\0';
+    SET_LEN_STRING(answer, dst - CHARS_STRING(answer));
 
-    // return the string
-    return WinCmdBuffer;
+    return answer;
 }
 
 
@@ -1230,6 +1243,17 @@ static void syEchoch(Int ch, Int fid)
         ch2 = ch;
         echoandcheck( fid, (char*)&ch2, 1 );
     }
+}
+
+// A cell of the screen holds the bytes of one character, the first byte
+// being the most significant one.
+static void syEchoCell(UInt4 cell, Int fid)
+{
+    Int i;
+
+    for (i = 24; i >= 0; i -= 8)
+        if (cell >> i)
+            syEchoch((cell >> i) & 0xFF, fid);
 }
 
 /****************************************************************************
@@ -1866,6 +1890,12 @@ static void HandleCharReadHook(int stdinfd)
 
 
 
+#ifdef HAVE_LIBREADLINE
+// the rest of a line read by readline that was too long for the caller
+static char * readlineRest;
+#endif
+
+
 /***************************************************************************
 **
 *F HasAvailableBytes( <fid> ) returns positive if  a subsequent read to <fid>
@@ -1878,6 +1908,11 @@ Int HasAvailableBytes( UInt fid )
   UInt bufno;
   if (!SyBufInUse(fid))
     return -1;
+
+#ifdef HAVE_LIBREADLINE
+  if (readlineRest && (fid == 0 || fid == 2))
+    return 1;
+#endif
 
   if (syBuf[fid].bufno >= 0)
     {
@@ -2171,15 +2206,33 @@ static void initreadline(void)
   ISINITREADLINE = 1;
 }
 
+// Copy the line <rlres> read by readline into <line> and free it. If it does
+// not fit, the next call of 'readlineFgets' returns the rest.
+static Char * readlineCopy(Char * line, UInt length, char * rlres)
+{
+  UInt len = strlen(rlres);
+
+  gap_strlcpy(line, rlres, length);
+  if (len + 2 <= length)
+    gap_strlcat(line, "\n", length);
+  else
+    readlineRest = strdup(rlres + length - 1);
+  free(rlres);
+  return line;
+}
+
 static Char * readlineFgets(Char * line, UInt length, Int fid, UInt block)
 {
-  char *                 rlres = (char*)NULL;
+  char *                 rlres = readlineRest;
+
+  if (rlres) {
+    readlineRest = 0;
+    return readlineCopy(line, length, rlres);
+  }
 
   current_rl_fid = fid;
   if (!ISINITREADLINE) initreadline();
 
-  // read at most as much as we can buffer
-  rl_num_chars_to_read = length-2;
 #ifdef HAVE_SELECT
   // hook to read from other channels
   rl_event_hook = (OnCharReadHookActiveCheck()) ? charreadhook_rl : 0;
@@ -2202,11 +2255,7 @@ static Char * readlineFgets(Char * line, UInt length, Int fid, UInt block)
   }
   // maybe add to history, we use key 0 for this function
   GAP_rl_func(0, 0);
-  gap_strlcpy(line, rlres, length);
-  // FIXME: handle the case where rlres contains more than length
-  // characters better?
-  free(rlres);
-  gap_strlcat(line, "\n", length);
+  readlineCopy(line, length, rlres);
 
   // send the whole line (unclipped) to the window handler
   syWinPut( fid, (*line != '\0' ? "@r" : "@x"), line );
@@ -2254,7 +2303,8 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
     Int                 ch,  ch2,  ch3, last;
     Char                * p,  * q,  * r,  * s,  * t;
     static Char         yank [32768];
-    Char                old [512],  new [512];
+    UInt4               old [512],  new [512];
+    UInt4               * o,  * n;
     Int                 oldc,  newc;
     Int                 rep, len;
     Char                buffer [512];
@@ -2308,7 +2358,7 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
 
     // the line starts out blank
     line[0] = '\0';  p = line;
-    for ( q = old; q < old+sizeof(old); ++q )  *q = ' ';
+    for ( o = old; o < old+ARRAY_SIZE(old); ++o )  *o = ' ';
     oldc = 0;
     last = 0;
     ch = 0;
@@ -2430,11 +2480,13 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
                 break;
 
             case CTR('B'): // move cursor one character to the left
-                if ( p > line )  --p;
+                if ( p > line )
+                    do --p; while ( p > line && IS_UTF8_CONT(*p) );
                 break;
 
             case CTR('F'): // move cursor one character to the right
-                if ( *p != '\0' )  ++p;
+                if ( *p != '\0' )
+                    do ++p; while ( IS_UTF8_CONT(*p) );
                 break;
 
             case Esc('F'): // move cursor one word to the right
@@ -2451,7 +2503,7 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
             case CTR('H'): // delete the character left of the cursor
             case 127:
                 if ( p == line ) break;
-                --p;
+                do --p; while ( p > line && IS_UTF8_CONT(*p) );
                 // let '<ctr>-D' do the work
 
             case CTR('D'): // delete the character at the cursor
@@ -2460,9 +2512,9 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
                     ch = EOF; rep = 0; break;
                 }
                 if ( *p != '\0' ) {
-                    for ( q = p; *(q+1) != '\0'; ++q )
-                        *q = *(q+1);
-                    *q = '\0';
+                    q = p;
+                    do ++q; while ( IS_UTF8_CONT(*q) );
+                    memmove( p, q, strlen(q)+1 );
                 }
                 break;
 
@@ -2519,7 +2571,7 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
                 break;
 
             case CTR('Y'): // insert (yank) deleted text
-                if (strlen(yank) + strlen(line) - 2 > length) {
+                if (strlen(yank) + strlen(line) > length + 2) {
                     syEchoch(CTR('G'), fid);
                     break;
                 }
@@ -2559,7 +2611,7 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
                 syEchoch('\n',fid);
                 for ( q = syPrompt; q < syPrompt+syNrchar; ++q )
                     syEchoch( *q, fid );
-                for ( q = old; q < old+sizeof(old); ++q )  *q = ' ';
+                for ( o = old; o < old+ARRAY_SIZE(old); ++o )  *o = ' ';
                 oldc = 0;
                 break;
 
@@ -2632,8 +2684,8 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
                         // Reprint the prompt and input line so far
                         for ( q=syPrompt; q<syPrompt+syNrchar; ++q )
                           syEchoch( *q, fid );
-                        for ( q = old; q < old+sizeof(old); ++q )
-                          *q = ' ';
+                        for ( o = old; o < old+ARRAY_SIZE(old); ++o )
+                          *o = ' ';
                         oldc = 0;
                         syWinPut( fid, (fid == 0 ? "@i" : "@e"), "" );
                       }
@@ -2654,8 +2706,8 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
                                   fid);
                           for ( q=syPrompt; q<syPrompt+syNrchar; ++q )
                             syEchoch( *q, fid );
-                          for ( q = old; q < old+sizeof(old); ++q )
-                            *q = ' ';
+                          for ( o = old; o < old+ARRAY_SIZE(old); ++o )
+                            *o = ' ';
                           oldc = 0;
                           syWinPut( fid, (fid == 0 ? "@i" : "@e"), "" );
                         }
@@ -2721,8 +2773,8 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
                                 syEchos( "\n", fid );
                                 for ( q=syPrompt; q<syPrompt+syNrchar; ++q )
                                     syEchoch( *q, fid );
-                                for ( q = old; q < old+sizeof(old); ++q )
-                                    *q = ' ';
+                                for ( o = old; o < old+ARRAY_SIZE(old); ++o )
+                                    *o = ' ';
                                 oldc = 0;
                                 syWinPut( fid, (fid == 0 ? "@i" : "@e"), "");
                             }
@@ -2752,39 +2804,47 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
             syEchoch('\r',fid);  syEchoch('\n',fid);  break;
         }
 
+        // wait for the rest of a UTF-8 sequence if it is on its way
+        for ( q = p; q > line && IS_UTF8_CONT(q[-1]); --q ) ;
+        if ( q > line && p-q < UTF8_TAIL(q[-1]) && HasAvailableBytes(fid) > 0 )
+            continue;
+
         // now update the screen line according to the differences
-        for ( q = line, r = new, newc = 0; *q != '\0'; ++q ) {
-            if ( q == p )  newc = r-new;
-            if ( *q==CTR('I') )  { do *r++=' '; while ((r-new+syNrchar)%8); }
-            else if ( *q==0x7F ) { *r++ = '^'; *r++ = '?'; }
-            else if ( /* '\0'<=*q  && */*q<' '  ) { *r++ = '^'; *r++ = *q+'@'; }
-            else if ( ' ' <=*q && *q<0x7F ) { *r++ = *q; }
+        for ( q = line, n = new, newc = 0; *q != '\0'; ++q ) {
+            if ( q == p )  newc = n-new;
+            if ( *q==CTR('I') )  { do *n++=' '; while ((n-new+syNrchar)%8); }
+            else if ( *q==0x7F ) { *n++ = '^'; *n++ = '?'; }
+            else if ( ' ' <=*q && *q<0x7F ) { *n++ = *q; }
+            else if ( !(*q & 0x80) ) { *n++ = '^'; *n++ = *q+'@'; }
             else {
-                *r++ = '\\';                 *r++ = '0'+*(UChar*)q/64%4;
-                *r++ = '0'+*(UChar*)q/8 %8;  *r++ = '0'+*(UChar*)q   %8;
+                // the bytes of a UTF-8 sequence share a cell
+                *n = *(UChar*)q;
+                for ( len = UTF8_TAIL(*q); len>0 && IS_UTF8_CONT(q[1]); --len )
+                    *n = *n << 8 | *(UChar*)++q;
+                n++;
             }
-            if ( r >= new+SyNrCols-syNrchar-2 ) {
+            if ( n >= new+SyNrCols-syNrchar-2 ) {
                 if ( q >= p ) { q++; break; }
-                new[0] = '$';   new[1] = r[-5]; new[2] = r[-4];
-                new[3] = r[-3]; new[4] = r[-2]; new[5] = r[-1];
-                r = new+6;
+                new[0] = '$';   new[1] = n[-5]; new[2] = n[-4];
+                new[3] = n[-3]; new[4] = n[-2]; new[5] = n[-1];
+                n = new+6;
             }
         }
-        if ( q == p )  newc = r-new;
-        for (      ; r < new+sizeof(new); ++r )  *r = ' ';
+        if ( q == p )  newc = n-new;
+        for (      ; n < new+ARRAY_SIZE(new); ++n )  *n = ' ';
         if ( q[0] != '\0' && q[1] != '\0' )
             new[SyNrCols-syNrchar-2] = '$';
         else if ( q[1] == '\0' && ' ' <= *q && *q < 0x7F )
             new[SyNrCols-syNrchar-2] = *q;
         else if ( q[1] == '\0' && q[0] != '\0' )
             new[SyNrCols-syNrchar-2] = '$';
-        for ( q = old, r = new; r < new+sizeof(new); ++r, ++q ) {
-            if ( *q == *r )  continue;
-            while (oldc<(q-old)) { syEchoch(old[oldc],fid);  ++oldc; }
-            while (oldc>(q-old)) { syEchoch('\b',fid);       --oldc; }
-            *q = *r;  syEchoch( *q, fid ); ++oldc;
+        for ( o = old, n = new; n < new+ARRAY_SIZE(new); ++n, ++o ) {
+            if ( *o == *n )  continue;
+            while (oldc<(o-old)) { syEchoCell(old[oldc],fid); ++oldc; }
+            while (oldc>(o-old)) { syEchoch('\b',fid);       --oldc; }
+            *o = *n;  syEchoCell( *o, fid ); ++oldc;
         }
-        while ( oldc < newc ) { syEchoch(old[oldc],fid);  ++oldc; }
+        while ( oldc < newc ) { syEchoCell(old[oldc],fid); ++oldc; }
         while ( oldc > newc ) { syEchoch('\b',fid);       --oldc; }
 
 

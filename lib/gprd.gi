@@ -340,7 +340,7 @@ end);
 ##
 #R  IsPcgsDirectProductRep
 ##
-DeclareRepresentation ("IsPcgsDirectProductRep", IsPcgsDefaultRep, ["pcgs","len"]);
+DeclareRepresentation ("IsPcgsDirectProductRep", IsPcgsDefaultRep);
 
 #############################################################################
 ##
@@ -1145,7 +1145,7 @@ InstallMethod( \in,"generic wreath product", IsCollsElms,
 # semidirect product
 #
 
-##############################################################################
+#############################################################################
 ##
 #M  SemidirectProduct
 ##
@@ -1264,35 +1264,6 @@ InstallMethod( SemidirectProduct,"group with fp",true,
 
 #############################################################################
 ##
-#A Embedding/Projection
-##
-InstallMethod( Embedding,"of semidirect product and integer",true,
-    [ IsGroup and HasSemidirectProductInfo, IsPosInt ], 0,
-function( P, i )
-local info;
-
-  info := SemidirectProductInfo( P );
-  if IsBound( info.embeddings[i] ) then
-    return info.embeddings[i];
-  else
-    TryNextMethod();
-  fi;
-end);
-
-InstallOtherMethod( Projection,"of semidirect product", true,
-    [ IsGroup and HasSemidirectProductInfo ], 0,
-function( P )
-local info;
-  info := SemidirectProductInfo( P );
-  if not IsBool( info.projections ) then
-    return info.projections;
-  else
-    TryNextMethod();
-  fi;
-end);
-
-##############################################################################
-##
 #M  SemidirectProduct: with vector space
 ##
 InstallOtherMethod( SemidirectProduct, "group with vector space: affine", true,
@@ -1403,7 +1374,7 @@ local pm,F,d,b,s,t,pos,i,j,img,m,P,info,Go,bnt,N,pcgs,auts,mapi,ag,phi,imgs;
   return P;
 end);
 
-##############################################################################
+#############################################################################
 ##
 #M  Embedding
 ##
@@ -1413,14 +1384,16 @@ function( S, i )
     local  info, G, genG, imgs, hom,j,k,m,n,d,v,w;
 
     info := SemidirectProductInfo( S );
+    # maps stored by any constructor, e.g. `SemidirectFp'
+    if IsBound( info.embeddings[i] ) then
+      return info.embeddings[i];
+    fi;
+
     if not IsBound(info.vectorspace) then
       # it's not a vectorspace product
       TryNextMethod();
     fi;
 
-    if IsBound( info.embeddings[i] ) then
-      return info.embeddings[i];
-    fi;
     if i=1 then
       G := info.group;
       genG := GeneratorsOfGroup( G );
@@ -1445,6 +1418,10 @@ function( S, i )
         Add(n,ImmutableMatrix(info.field,m));
       od;
       n:=SubgroupNC(S,n);
+      SetSize(n,Size(info.vectorspace));
+      # n acts regularly on the affine points (v,1); the generic nice
+      # monomorphism needs over a minute for GF(9)^3
+      SetSeedFaithfulAction(n,rec(points:=[One(S)[d+1]],ops:=[OnRight]));
       hom:=MappingByFunction(info.vectorspace,n,function(v)
         local m;
         m:=IdentityMat(d+1,info.field);
@@ -1464,6 +1441,55 @@ function( S, i )
 
     SetIsInjective( hom, true );
     info.embeddings[i] := hom;
+    return hom;
+end );
+
+#############################################################################
+##
+#M  Projection
+##
+##  <S> consists of the affine matrices [[A,0],[v,1]], which map to A.
+##
+InstallOtherMethod( Projection, "vectorspace semidirect products",
+    true, [ IsGroup and HasSemidirectProductInfo ], 0,
+function( S )
+    local info, d, F, hom;
+
+    info := SemidirectProductInfo( S );
+    if not IsBool( info.projections ) then
+      return info.projections;
+    fi;
+
+    if not IsBound(info.vectorspace) then
+      TryNextMethod();
+    fi;
+
+    d := info.dimension;
+    F := info.field;
+    hom := GroupHomomorphismByFunction( S, info.group,
+      function( a )
+        a := a{[1..d]}{[1..d]};
+        if IsPermGroup( info.group ) then
+          # undo `PermutationMat'
+          return PermList( List( a, PositionNonZero ) );
+        fi;
+        return ImmutableMatrix( F, a );
+      end,
+      false,
+      function( g )
+        local m;
+        if IsPermGroup( info.group ) then
+          g := PermutationMat( g, d, F );
+        fi;
+        m := IdentityMat( d+1, F );
+        m{[1..d]}{[1..d]} := g;
+        return ImmutableMatrix( F, m );
+      end );
+
+    SetIsSurjective( hom, true );
+    SetImagesSource( hom, info.group );
+    SetKernelOfMultiplicativeGeneralMapping( hom, Image( Embedding( S, 2 ) ) );
+    info.projections := hom;
     return hom;
 end );
 
@@ -1493,7 +1519,7 @@ function( arg )
     end
 );
 
-############################################################################
+#############################################################################
 ##
 #O  FreeProductOp( list, group )                            Robert F. Morse
 ##

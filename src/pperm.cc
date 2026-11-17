@@ -8,7 +8,7 @@
 **  SPDX-License-Identifier: GPL-2.0-or-later
 */
 
-/*****************************************************************************
+/****************************************************************************
  *
  * A partial perm is of the form:
  *
@@ -18,7 +18,7 @@
  * at most 65535 and be of UInt2. The <codegree> is just the degree of
  * the inverse or equivalently the maximum element of the image.
  *
- *****************************************************************************/
+ ****************************************************************************/
 
 extern "C" {
 
@@ -158,9 +158,9 @@ static inline void ResizeTmpPPerm(UInt len)
     }
 }
 
-/*****************************************************************************
+/****************************************************************************
  * Static functions for partial perms
- *****************************************************************************/
+ ****************************************************************************/
 
 template <typename T>
 static inline UInt GET_CODEG_PPERM(Obj f)
@@ -250,7 +250,7 @@ static inline Obj DOM_PPERM(Obj f)
 static inline void SET_IMG_PPERM(Obj f, Obj img)
 {
     GAP_ASSERT(IS_PPERM(f));
-    GAP_ASSERT(IS_PLIST(img) && !IS_PLIST_MUTABLE(img));
+    GAP_ASSERT(IS_PLIST(img) && !IS_MUTABLE_OBJ(img));
     GAP_ASSERT(DOM_PPERM(f) == NULL ||
                LEN_PLIST(img) == LEN_PLIST(DOM_PPERM(f)));
     // TODO check entries of img are valid
@@ -260,7 +260,7 @@ static inline void SET_IMG_PPERM(Obj f, Obj img)
 static inline void SET_DOM_PPERM(Obj f, Obj dom)
 {
     GAP_ASSERT(IS_PPERM(f));
-    GAP_ASSERT(IS_PLIST(dom) && !IS_PLIST_MUTABLE(dom));
+    GAP_ASSERT(IS_PLIST(dom) && !IS_MUTABLE_OBJ(dom));
     GAP_ASSERT(IMG_PPERM(f) == NULL ||
                LEN_PLIST(dom) == LEN_PLIST(IMG_PPERM(f)));
     // TODO check entries of img are valid
@@ -377,9 +377,9 @@ static Obj PreImagePPermInt(Obj pt, Obj f)
     return INTOBJ_INT(i + 1);
 }
 
-/*****************************************************************************
+/****************************************************************************
  * GAP functions for partial perms
- *****************************************************************************/
+ ****************************************************************************/
 
 static Obj FuncEmptyPartialPerm(Obj self)
 {
@@ -918,7 +918,6 @@ static Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
             j = INT_INTOBJ(ELM_PLIST(dom, i));
             if (CONST_ADDR_PPERM4(TmpPPerm)[j - 1] == 0) {
                 SET_ELM_PLIST(out, ++nr, NEW_PLIST(T_PLIST_CYC, 30));
-                CHANGED_BAG(out);
                 len = 0;
                 k = j;
                 do {
@@ -937,7 +936,6 @@ static Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
             j = INT_INTOBJ(ELM_PLIST(dom, i));
             if (CONST_ADDR_PPERM4(TmpPPerm)[j - 1] == 1) {
                 SET_ELM_PLIST(out, ++nr, NEW_PLIST(T_PLIST_CYC, 30));
-                CHANGED_BAG(out);
                 len = 0;
                 k = j;
                 do {
@@ -960,7 +958,6 @@ static Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
             j = INT_INTOBJ(ELM_PLIST(dom, i));
             if (CONST_ADDR_PPERM4(TmpPPerm)[j - 1] == 0) {
                 SET_ELM_PLIST(out, ++nr, NEW_PLIST(T_PLIST_CYC, 30));
-                CHANGED_BAG(out);
                 len = 0;
                 k = j;
                 do {
@@ -979,7 +976,6 @@ static Obj FuncCOMPONENTS_PPERM(Obj self, Obj f)
             j = INT_INTOBJ(ELM_PLIST(dom, i));
             if (CONST_ADDR_PPERM4(TmpPPerm)[j - 1] == 1) {
                 SET_ELM_PLIST(out, ++nr, NEW_PLIST(T_PLIST_CYC, 30));
-                CHANGED_BAG(out);
                 len = 0;
                 k = j;
                 do {

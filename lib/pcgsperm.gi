@@ -17,7 +17,7 @@
 #R  IsMemberPcSeriesPermGroup . . . . . . . . . . . . .  members of pc series
 ##
 DeclareRepresentation( "IsMemberPcSeriesPermGroup",
-    IsPermGroup, [ "noInSeries" ] );
+    IsPermGroup );
 
 #############################################################################
 ##

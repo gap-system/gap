@@ -507,17 +507,16 @@ end );
 
 #############################################################################
 ##
-#R  IsInputTextFileRep  . . . . .  representation of an input text file stream
+#R  IsInputTextFileRep . . . . .  representation of an input text file stream
 ##
 DeclareRepresentation(
     "IsInputTextFileRep",
-    IsPositionalObjectRep,
-    [] );
+    IsPositionalObjectRep );
 
 
 #############################################################################
 ##
-#V  InputTextFileType . . . . . . . . . . .  type of an input text file stream
+#V  InputTextFileType . . . . . . . . . . . type of an input text file stream
 ##
 InputTextFileType := NewType(
     StreamsFamily,
@@ -526,7 +525,7 @@ InputTextFileType := NewType(
 
 #############################################################################
 ##
-#V  InputTextFileStillOpen  . . . . . . . . . . . . . . .  list of open files
+#V  InputTextFileStillOpen . . . . . . . . . . . . . . . . list of open files
 ##
 if IsHPCGAP then
   InputTextFileStillOpen := ShareSpecialObj([]);
@@ -537,7 +536,7 @@ fi;
 
 #############################################################################
 ##
-#M  InputTextFile( <str> )  . . . . . . . . . create an input text file stream
+#M  InputTextFile( <str> ) . . . . . . . . . create an input text file stream
 ##
 InstallMethod( InputTextFile,
     "input text stream from file",
@@ -560,7 +559,7 @@ end );
 
 #############################################################################
 ##
-#M  CloseStream( <input-text-file> )  . . . . . . . . . . . . . .  close file
+#M  CloseStream( <input-text-file> ) . . . . . . . . . . . . . . . close file
 ##
 InstallMethod( CloseStream,
     "input text file",
@@ -705,8 +704,7 @@ end);
 ##
 DeclareRepresentation(
     "IsInputTextNoneRep",
-    IsPositionalObjectRep,
-    [] );
+    IsPositionalObjectRep );
 
 
 #############################################################################
@@ -951,8 +949,7 @@ end);
 ##
 DeclareRepresentation(
     "IsOutputTextFileRep",
-    IsPositionalObjectRep,
-    ["fid", "fname", "format" ] );
+    IsPositionalObjectRep );
 
 
 #############################################################################
@@ -1176,8 +1173,7 @@ end);
 ##
 DeclareRepresentation(
     "IsOutputTextNoneRep",
-    IsPositionalObjectRep,
-    [] );
+    IsPositionalObjectRep );
 
 
 #############################################################################
@@ -1344,8 +1340,7 @@ end );
 ##  Position 4 if boolean -- true for end of file
 ##
 
-DeclareRepresentation("IsInputOutputStreamByPtyRep", IsPositionalObjectRep,
-        []);
+DeclareRepresentation("IsInputOutputStreamByPtyRep", IsPositionalObjectRep);
 
 InputOutputStreamByPtyDefaultType :=
   NewType(StreamsFamily, IsInputOutputStreamByPtyRep and IsInputOutputStream);
@@ -1751,7 +1746,7 @@ BindGlobal( "OnCharReadHookOutFds", [] );
 
 #############################################################################
 ##
-#V  OnCharReadHookOutStreams . . . . . . . . . . streams with writing handlers
+#V  OnCharReadHookOutStreams . . . . . . . . .  streams with writing handlers
 ##
 ##  'OnCharReadHookOutStreams' contains a list of streams for which writing
 ##  handlers are installed.

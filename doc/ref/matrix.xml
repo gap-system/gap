@@ -4,8 +4,9 @@
 <!-- %A                                                           Alexander Hulpke -->
 <!-- %% -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
-<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %Y  Copyright of GAP belongs to its developers, whose names are too -->
+<!-- %Y  numerous to list here. Please refer to the COPYRIGHT file for details. -->
+<!-- %Y  SPDX-License-Identifier: GPL-2.0-or-later -->
 <!-- %% -->
 <Chapter Label="Matrices">
 <Heading>Matrices</Heading>
@@ -78,7 +79,7 @@ and the multiplicative behaviour is defined only for lists in the category
 <Index Subkey="matrices">addition</Index>
 <C><A>mat1</A> + <A>mat2</A></C>
 <P/>
-returns the sum of the two matrices <A>mat1</A> and <A>mat2</A>,
+returns the sum of the two matrices <A>mat1</A> and <A>mat2</A>.
 Probably the most usual situation is that <A>mat1</A> and <A>mat2</A> have the same
 dimensions and are defined over a common field;
 in this case the sum is a new matrix over the same field where each entry
@@ -172,7 +173,7 @@ This form evaluates to the (Cauchy) product of the two matrices <A>mat1</A> and
 <A>mat2</A>.
 Probably the most usual situation is that the number of columns of <A>mat1</A>
 equals the number of rows of <A>mat2</A>,
-and that the elements of <A>mat</A> and <A>vec</A> lie in a common field;
+and that the elements of <A>mat1</A> and <A>mat2</A> lie in a common field;
 if <A>mat1</A> is a matrix with <M>m</M> rows and <M>n</M> columns and <A>mat2</A> is a
 matrix with <M>n</M> rows and <M>o</M> columns, the result is a new matrix with <M>m</M>
 rows and <M>o</M> columns.
@@ -221,7 +222,7 @@ the matrix <C><A>mat2</A>^-1 * <A>mat1</A> * <A>mat2</A></C>.
 <P/>
 Powering a row vector <A>vec</A> by a matrix <A>mat</A> is in every respect equivalent
 to <C><A>vec</A> * <A>mat</A></C>.
-This operations reflects the fact that matrices act naturally on row vectors
+This operation reflects the fact that matrices act naturally on row vectors
 by multiplication from the right, and that the powering operator is &GAP;'s
 standard for group actions.
 <P/>
@@ -281,7 +282,7 @@ evaluates to <C><A>matlist</A> * <A>mat</A>^-1</C>.
 <Index Subkey="vector and matrix list">multiplication</Index>
 <C><A>vec</A> * <A>matlist</A></C>
 <P/>
-returns the product of the vector <A>vec</A> and the list of matrices <A>mat</A>.
+returns the product of the vector <A>vec</A> and the list of matrices <A>matlist</A>.
 The lengths <A>l</A> of <A>vec</A> and <A>matlist</A> must be equal.
 All matrices in <A>matlist</A> must have the same dimensions. The elements of
 <A>vec</A> and the elements of the matrices in <A>matlist</A> must lie in a common
@@ -485,7 +486,7 @@ gap> m := [v,v,v,v];; ConvertToMatrixRep(m,GF(3));; m;
 All compressed matrices over GF(2) are viewed as
 <C>&lt;a <A>n</A>x<A>m</A> matrix over GF2></C>,
 while over fields GF(q) for q between 3 and 256, matrices
-with 25 or more entries are viewed in this way, and smaller ones as
+with more than 25 entries are viewed in this way, and smaller ones as
 lists of lists.
 <P/>
 Matrices can be converted to this special representation via
@@ -540,7 +541,7 @@ if all arguments are compressed matrices written over the same field and
 the result is a matrix then also the result is a compressed matrix
 written over this field.
 <P/>
-There are also two operations that are only available for matrices
+The following operations are mainly intended for matrices
 written over finite fields.
 
 <#Include Label="ImmutableMatrix">

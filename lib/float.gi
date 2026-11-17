@@ -500,7 +500,7 @@ InstallMethod( One, "for floats", [ IsFloat ], -1,
 end);
 #############################################################################
 ##
-#M  Rat( x ) . . . . . . . . . . . . . . . . . . . . . . . . . . . for macfloats
+#M  Rat( x ) . . . . . . . . . . . . . . . . . . . . . . . . .  for macfloats
 ##
 InstallOtherMethod( Rat, "for floats", [ IsFloat ],
         function ( x )

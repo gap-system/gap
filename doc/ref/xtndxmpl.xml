@@ -272,10 +272,10 @@ and the object itself is chosen to be a positional object with this
 residue at the first and only position (see&nbsp;<Ref Sect="Positional Objects"/>).
 <P/>
 <Example><![CDATA[
-gap> DeclareRepresentation("IsMyModulusRep", IsPositionalObjectRep, [1]);
+gap> DeclareRepresentation("IsMyModulusRep", IsPositionalObjectRep);
 ]]></Example>
 <P/>
-The fourth ingredients of a type, <E>attributes</E>, are usually of minor
+The fourth ingredient of a type, <E>attributes</E>, are usually of minor
 importance for element objects.
 In particular,
 we do not need to introduce special attributes for residue classes.
@@ -364,7 +364,7 @@ gap> InstallGlobalFunction( MyZmodnZ, function( n )
 ]]></Example>
 <P/>
 Note that the modulus <C>n</C> is stored in the component <C>modulus</C> of the
-family, as is assumed by <C>MyZmodnZ</C>.
+family, as is assumed by <C>MyZmodnZObj</C>.
 Thus it is not necessary to store the modulus in each element.
 When storing <C>n</C> with the <C>!.</C> operator as value of the component
 <C>modulus</C>, we used that all families are in fact represented as
@@ -463,11 +463,11 @@ gap> InstallMethod( PrintObj,
 So we installed a method for the operation
 <Ref Oper="PrintObj"/> (first argument),
 and we gave it a suitable information message (second argument),
-see&nbsp;<Ref Sect="ApplicableMethod"/> and&nbsp;<Ref Sect="Tracing Methods"/> for applications of
+see&nbsp;<Ref Func="ApplicableMethod"/> and&nbsp;<Ref Sect="Tracing Methods"/> for applications of
 this information string.
 The third argument tells &GAP; that the method is applicable for
 objects that lie in the category <C>IsMyZmodnZObj</C> and in the representation
-<C>IsMyModulusRep</C>.
+<C>IsMyModulusRep</C>,
 and the fourth argument is the method itself.
 More details about <Ref Func="InstallMethod"/> can be found
 in&nbsp;<Ref Sect="Method Installation"/>.
@@ -553,7 +553,7 @@ The method for the operation <Ref Oper="\+"/> allows us
 to use the infix operator <C>+</C> for residue classes.
 The method for <Ref Oper="ZeroOp"/> is used when we call
 this operation or the attribute <Ref Attr="Zero"/> explicitly,
-and <Ref Oper="ZeroOp"/> it is also used when we ask for
+and <Ref Oper="ZeroOp"/> is also used when we ask for
 <C>0 * <A>rescl</A></C>, where <A>rescl</A> is a residue class.
 <P/>
 (Note that <Ref Attr="Zero"/> and
@@ -1027,7 +1027,7 @@ and then repeat the installations with suitable modifications.
 <P/>
 (We should start a new &GAP; session for that, otherwise &GAP; will
 complain that the objects to be declared are already bound;
-additionally, the methods installed above may be not compatible with
+additionally, the methods installed above may not be compatible with
 the ones we want.)
 <P/>
 <Log><![CDATA[
@@ -1037,7 +1037,7 @@ gap> DeclareCategory( "IsMyZmodnZObjNonprime", IsMyZmodnZObj );
 gap> 
 gap> DeclareSynonym( "IsMyZmodpZObj", IsMyZmodnZObj and IsFFE );
 gap> 
-gap> DeclareRepresentation( "IsMyModulusRep", IsPositionalObjectRep, [ 1 ] );
+gap> DeclareRepresentation( "IsMyModulusRep", IsPositionalObjectRep );
 gap> 
 gap> DeclareGlobalFunction( "MyZmodnZObj" );
 gap> 
@@ -1221,8 +1221,7 @@ gap> InstallMethod( \<,
 <P/>
 Now we install the same methods for the arithmetic operations
 <Ref Oper="\+"/>, <Ref Oper="ZeroOp"/>,
-<Ref Oper="AdditiveInverseOp"/>,
-<C>\-</C>, <Ref Oper="\*"/>,
+<Ref Oper="AdditiveInverseOp"/>, <Ref Oper="\*"/>,
 and <Ref Oper="OneOp"/>
 as in the previous section, without listing them below.
 Also the same <Ref Attr="Int"/> method is installed
@@ -1234,8 +1233,7 @@ And of course the same method for <Ref Oper="\mod"/> is
 installed.
 <P/>
 We have to be careful, however, with the methods for
-<Ref Oper="InverseOp"/>,
-<Ref Oper="\/"/>, and <Ref Oper="\^"/>.
+<Ref Oper="InverseOp"/>.
 These methods and the missing methods for arithmetic operations with
 one argument in <C>IsMyModulusRep</C> and the other in
 <Ref Filt="IsInternalRep"/>
@@ -1366,19 +1364,12 @@ There are of course many possibilities to improve the implementation.
 With the setup as described above,
 subsequent calls <C>MyZmodnZ( <A>n</A> )</C> with the same <A>n</A> yield incompatible
 rings in the sense that elements of one ring cannot be added to elements
-of an other one.
+of another one.
 The solution for this problem is to keep a global list of all results of
 <C>MyZmodnZ</C> in the current &GAP; session, and to return the stored values
 whenever possible.
 Note that this approach would admit <Ref Oper="PrintObj"/>
 methods that produce &GAP; readable output.
-<P/>
-One can improve the <Ref Attr="Units"/> method for the full
-ring in such a way
-that a group is returned and not only a list of its elements;
-then the result of <Ref Attr="Units"/> can be used,
-e.&nbsp;g., as input for the operation
-<Ref Oper="SylowSubgroup"/>.
 <P/>
 To make computations more efficient,
 one can install methods for <C>\-</C>,

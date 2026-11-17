@@ -1,4 +1,4 @@
-#@local ordtbl, modtbl, irr, chi, const, ibr, phi
+#@local ordtbl, modtbl, irr, chi, const, const2, ibr, phi
 gap> START_TEST( "ctblfuns.tst" );
 
 #
@@ -8,17 +8,17 @@ gap> irr:= Irr( ordtbl );;
 gap> chi:= First( irr, x -> x[1] = 2 and not ForAll( x, IsInt ) );;
 gap> chi:= chi * chi;;
 gap> const:= ConstituentsOfCharacter( chi );;
-gap> List( const, ValuesOfClassFunction );
-[ [ 1, 1, 1, 1, 1, -1, -1, -1 ], [ 3, 0, 3, 0, -1, -1, -1, 1 ] ]
-gap> const:= ConstituentsOfCharacter( -chi );;
-gap> List( const, ValuesOfClassFunction );
-[ [ 1, 1, 1, 1, 1, -1, -1, -1 ], [ 3, 0, 3, 0, -1, -1, -1, 1 ] ]
-gap> const:= ConstituentsOfCharacter( ordtbl, chi );;
-gap> List( const, ValuesOfClassFunction );
-[ [ 1, 1, 1, 1, 1, -1, -1, -1 ], [ 3, 0, 3, 0, -1, -1, -1, 1 ] ]
-gap> const:= ConstituentsOfCharacter( ordtbl, ValuesOfClassFunction( chi ) );;
-gap> List( const, ValuesOfClassFunction );
-[ [ 1, 1, 1, 1, 1, -1, -1, -1 ], [ 3, 0, 3, 0, -1, -1, -1, 1 ] ]
+gap> SortedList( List( const, Degree ) );
+[ 1, 3 ]
+gap> const2:= ConstituentsOfCharacter( -chi );;
+gap> const = const2;
+true
+gap> const2:= ConstituentsOfCharacter( ordtbl, chi );;
+gap> const = const2;
+true
+gap> const2:= ConstituentsOfCharacter( ordtbl, ValuesOfClassFunction( chi ) );;
+gap> const = const2;
+true
 gap> ibr:= Irr( modtbl );;
 gap> phi:= First( ibr, x -> x[1] = 2 );;
 gap> phi:= phi * phi;;

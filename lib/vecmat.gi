@@ -1033,7 +1033,11 @@ function( mat )
             od;
         fi;
     fi;
-    Objectify( TypeObj(mat), new );
+    if IsMutable(mat) then
+        Objectify( TYPE_LIST_GF2MAT, new );
+    else
+        Objectify( TYPE_LIST_GF2MAT_IMM, new );
+    fi;
     return new;
 end );
 
@@ -1248,6 +1252,20 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
         return 2;
     fi;
 
+    # GF(2) to GF(2^k): the kernel rewrites the bits, the code below converts
+    # entry by entry
+    if IsGF2VectorRep(v) and not IsLockedRepresentationVector(v) then
+        if IsField(arg[2]) then
+            q := Size(arg[2]);
+        else
+            q := arg[2];
+        fi;
+        if q in [ 4, 8, 16, 32, 64, 128, 256 ] then
+            CONV_VEC8BIT(v, q);
+            return q;
+        fi;
+    fi;
+
     if Is8BitVectorRep(v) then
         q0 := Q_VEC8BIT(v);
         if Length(arg) = 1 then
@@ -1321,7 +1339,10 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
     # elements of large finite fields
     #
 
-    if not IS_VECFFE(v) then
+    if IsGF2VectorRep(v) then
+        # the scan below fails for an empty vector
+        common := 2;
+    elif not IS_VECFFE(v) then
         if IsFFECollection(v) then
             # now we might have some elements in a large field representation
             # or possibly a totally bad list
@@ -1401,7 +1422,7 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
             if IsPlistRep(v) and  GcdInt(common,q) > 1  then
                 common := SMALLEST_FIELD_VECFFE(v);
             fi;
-            if common ^ LogInt(q, common) <> q then
+            if q < common or common ^ LogInt(q, common) <> q then
                 Error("ConvertToVectorRepNC: Vector cannot be written over GF(",q,")");
             fi;
         fi;
@@ -1419,13 +1440,9 @@ end);
 #F  CopyToVectorRep( <v>, <q> )
 ##
 InstallGlobalFunction(CopyToVectorRep,function( v, q )
-    local vc, common, res;
+    local vc, common, res, q0;
 
     # Handle fast, certain cases where there is no work. Microseconds count here
-
-    if Length(v) = 0 then
-        return v;
-    fi;
 
     if IsGF2VectorRep(v) and q=2 then
         if IsMutable(v) then
@@ -1443,6 +1460,34 @@ InstallGlobalFunction(CopyToVectorRep,function( v, q )
                 return v;
             fi;
         fi;
+    fi;
+
+    # to a larger field: the kernel rewrites the bits, the code below
+    # converts entry by entry
+    if IsGF2VectorRep(v) then
+        q0 := 2;
+    elif Is8BitVectorRep(v) then
+        q0 := Q_VEC8BIT(v);
+    else
+        q0 := fail;
+    fi;
+    if q0 <> fail and q0 < q and q <= 256 and q0 ^ LogInt(q, q0) = q then
+        return COPY_VEC8BIT(v, q);
+    fi;
+
+    # the code below cannot determine a field for an empty list
+    if Length(v) = 0 then
+        if q = 2 then
+            res := COPY_GF2VEC(v);
+        elif q > 256 then
+            return fail;
+        elif IsPrimePowerInt(q) then
+            res := COPY_VEC8BIT(v, q);
+        else
+            Error("CopyToVectorRep: Vector cannot be written over GF(",q,")");
+        fi;
+        if not IsMutable(v) then MakeImmutable(res); fi;
+        return res;
     fi;
 
     # Ask the kernel to check the list for us.
@@ -1498,7 +1543,8 @@ InstallGlobalFunction(CopyToVectorRep,function( v, q )
             if IsPlistRep(vc) and  GcdInt(common,q) > 1  then
                 common := SMALLEST_FIELD_VECFFE(vc);
             fi;
-            if common ^ LogInt(q, common) <> q then
+            # LogInt(1, common) = 0, so the power test alone accepts q = 1
+            if q < common or common ^ LogInt(q, common) <> q then
                 Error("CopyToVectorRep: Vector cannot be written over GF(",q,")");
             fi;
         fi;
@@ -1520,13 +1566,9 @@ end);
 ##  finite field, and all elements of v lie in this field.
 ##
 InstallGlobalFunction(CopyToVectorRepNC,function( v, q )
-    local common, res;
+    local common, res, q0;
 
     # Handle fast, certain cases where there is no work. Microseconds count here
-
-    if Length(v) = 0 then
-        return v;
-    fi;
 
     if IsGF2VectorRep(v) and q=2 then
         if IsMutable(v) then
@@ -1544,6 +1586,29 @@ InstallGlobalFunction(CopyToVectorRepNC,function( v, q )
                 return v;
             fi;
         fi;
+    fi;
+
+    # to a larger field: the kernel rewrites the bits, the code below handles
+    # only plain lists
+    if IsGF2VectorRep(v) then
+        q0 := 2;
+    elif Is8BitVectorRep(v) then
+        q0 := Q_VEC8BIT(v);
+    else
+        q0 := fail;
+    fi;
+    if q0 <> fail and q0 < q and q <= 256 and q0 ^ LogInt(q, q0) = q then
+        return COPY_VEC8BIT(v, q);
+    fi;
+
+    if Length(v) = 0 then
+        if q = 2 then
+            res := COPY_GF2VEC(v);
+        else
+            res := COPY_VEC8BIT(v, q);
+        fi;
+        if not IsMutable(v) then MakeImmutable(res); fi;
+        return res;
     fi;
 
     # Calling COMMON_FIELD_VECFFE may force a full inspection of the list.
@@ -2378,7 +2443,7 @@ InstallMethod(NestingDepthA, [IsGF2VectorRep], m->1);
 InstallMethod(PostMakeImmutable, [IsGF2MatrixRep],
         function(m)
     local i;
-    for i in [2..m![1]] do
+    for i in [2..m![1]+1] do
         MakeImmutable(m![i]);
     od;
 end);
@@ -2529,12 +2594,16 @@ InstallMethodWithRandomSource( Randomize,
 
 InstallMethod( Unpack, "for a gf2 matrix",
   [IsGF2MatrixRep],
-  function( m )
-    return List(m, PlainListCopy);
-  end );
+  m -> List( m, Unpack ) );
 InstallMethod( Unpack, "for a gf2 vector",
   [IsGF2VectorRep],
-  PlainListCopy );
+  function( v )
+    # converting a copy in the kernel is much faster than 'PlainListCopy',
+    # which fetches the entries one by one
+    v:= ShallowCopy( v );
+    PLAIN_GF2VEC( v );
+    return v;
+  end );
 
 InstallOtherMethod( KroneckerProduct, "for two gf2 matrices",
   [IsGF2MatrixRep and IsMatrix, IsGF2MatrixRep and IsMatrix],

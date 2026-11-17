@@ -139,9 +139,6 @@ DeclareCategoryFamily( "IsElementOfFpSemigroup" );
 ##  <P/>
 ##  Users should be aware that much of the code described in this chapter
 ##  is in need of substantial revision.
-##  In particular, the two functions described here are <E>not</E>
-##  called by the operation <C>\/</C> of the previous subsection,
-##  and so are liable to be removed in due course.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> fm := FreeMonoid( 3 );;
@@ -260,7 +257,7 @@ DeclareAttribute("FreeGeneratorsOfFpSemigroup",  IsFpSemigroup );
 ##
 DeclareAttribute("FreeSemigroupOfFpSemigroup", IsFpSemigroup);
 
-############################################################################
+#############################################################################
 ##
 #A  RelationsOfFpSemigroup(<s>)
 #A  RelationsOfFpMonoid(<m>)
@@ -290,7 +287,7 @@ DeclareAttribute("FreeSemigroupOfFpSemigroup", IsFpSemigroup);
 ##
 DeclareAttribute("RelationsOfFpSemigroup",IsFpSemigroup);
 
-############################################################################
+#############################################################################
 ##
 #A  IsomorphismFpSemigroup( <m> )
 #A  IsomorphismFpMonoid( <g> )
@@ -325,7 +322,7 @@ DeclareAttribute("RelationsOfFpSemigroup",IsFpSemigroup);
 ##
 DeclareAttribute("IsomorphismFpSemigroup",IsSemigroup);
 
-############################################################################
+#############################################################################
 ##
 #O  FpGrpMonSmgOfFpGrpMonSmgElement( <elm> )
 ##

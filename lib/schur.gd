@@ -53,7 +53,7 @@ DeclareInfoClass( "InfoSchur" );
 ##  ]]></Example>
 ##  <P/>
 ##  If the group becomes bigger, Schur Cover calculations might become
-##  unfeasible.
+##  infeasible.
 ##  <P/>
 ##  There is another operation, <Ref Attr="AbelianInvariantsMultiplier"/>,
 ##  which only returns the structure of the Schur Multiplier,
@@ -64,13 +64,14 @@ DeclareInfoClass( "InfoSchur" );
 ##
 DeclareAttribute( "SchurCover", IsGroup );
 
-##############################################################################
+#############################################################################
 ##
 #O  EpimorphismSchurCover(<G>[,<pl>])
 ##
 ##  <#GAPDoc Label="EpimorphismSchurCover">
 ##  <ManSection>
-##  <Attr Name="EpimorphismSchurCover" Arg='G[, pl]'/>
+##  <Attr Name="EpimorphismSchurCover" Arg='G'/>
+##  <Oper Name="EpimorphismSchurCover" Arg='G, pl' Label="for a group and a list of primes"/>
 ##
 ##  <Description>
 ##  returns an epimorphism <M>epi</M> from a group <M>D</M> onto <A>G</A>.
@@ -117,7 +118,7 @@ DeclareAttribute( "SchurCover", IsGroup );
 ##
 DeclareAttribute( "EpimorphismSchurCover", IsGroup );
 
-##############################################################################
+#############################################################################
 ##
 #A  AbelianInvariantsMultiplier(<G>)
 ##
@@ -168,10 +169,10 @@ DeclareAttribute( "EpimorphismSchurCover", IsGroup );
 ##
 DeclareAttribute( "AbelianInvariantsMultiplier", IsGroup );
 
-##############################################################################
+#############################################################################
 ####  Derived functions.                                       Robert F. Morse
 ####
-##############################################################################
+#############################################################################
 ##
 #A  Epicentre(<G>)
 #A  ExteriorCentre(<G>)
@@ -185,7 +186,7 @@ DeclareAttribute( "AbelianInvariantsMultiplier", IsGroup );
 ##  There are various ways of describing the epicentre of a group <A>G</A>.
 ##  It is the smallest normal subgroup <M>N</M> of <A>G</A> such that
 ##  <M><A>G</A>/N</M> is a central quotient of a group.
-##  It is also equal to the Exterior Center of <A>G</A>,
+##  It is also equal to the exterior centre of <A>G</A>,
 ##  see <Cite Key="Ellis98"/>.
 ##  </Description>
 ##  </ManSection>
@@ -196,7 +197,7 @@ DeclareSynonymAttr("Epicenter", Epicentre);
 DeclareSynonymAttr("ExteriorCentre", Epicentre);
 DeclareSynonymAttr("ExteriorCenter", Epicentre);
 
-##############################################################################
+#############################################################################
 ##
 #O  NonabelianExteriorSquare(<G>)
 ##
@@ -215,7 +216,7 @@ DeclareSynonymAttr("ExteriorCenter", Epicentre);
 ##
 DeclareOperation("NonabelianExteriorSquare", [IsGroup]);
 
-##############################################################################
+#############################################################################
 ##
 #O  EpimorphismNonabelianExteriorSquare(<G>)
 ##
@@ -233,7 +234,7 @@ DeclareOperation("NonabelianExteriorSquare", [IsGroup]);
 ##
 DeclareOperation("EpimorphismNonabelianExteriorSquare", [IsGroup]);
 
-##############################################################################
+#############################################################################
 ##
 #P  IsCentralFactor(<G>)
 ##
@@ -254,11 +255,11 @@ DeclareOperation("EpimorphismNonabelianExteriorSquare", [IsGroup]);
 ##
 DeclareProperty("IsCentralFactor", IsGroup);
 
-##############################################################################
+#############################################################################
 ###########################END RFM############################################
 
 
-##############################################################################
+#############################################################################
 ##
 #F  SchuMu(<G>,<p>)
 ##
@@ -279,7 +280,7 @@ DeclareProperty("IsCentralFactor", IsGroup);
 ##
 DeclareGlobalFunction("SchuMu");
 
-##############################################################################
+#############################################################################
 ##
 #F  CorestEval(<FG>,<s>)
 ##
@@ -300,7 +301,7 @@ DeclareGlobalFunction("SchuMu");
 ##
 DeclareGlobalFunction("CorestEval");
 
-##############################################################################
+#############################################################################
 ##
 #F  RelatorFixedMultiplier(<hom>,<p>)
 ##

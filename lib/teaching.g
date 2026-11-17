@@ -42,7 +42,7 @@
 ##  <Func Name="ListOfDigits" Arg='n'/>
 ##
 ##  <Description>
-##  For a positive integer <A>n</A> this function returns a list <A>l</A>,
+##  For a positive integer <A>n</A> this function returns a list,
 ##  consisting of the digits of <A>n</A> in decimal representation.
 ##  <Example><![CDATA[
 ##  gap> ListOfDigits(3142);
@@ -60,13 +60,13 @@ DeclareGlobalFunction("ListOfDigits");
 ##
 ##  <#GAPDoc Label="RootsOfPolynomial">
 ##  <ManSection>
-##  <Func Name="RootsOfPolynomial" Arg='[R,],p'/>
+##  <Func Name="RootsOfPolynomial" Arg='[R, ]p'/>
 ##
 ##  <Description>
 ##  For a univariate polynomial <A>p</A>, this function returns all roots of
 ##  <A>p</A> over the ring <A>R</A>. If the ring is not specified, it defaults
 ##  to the ring specified by the coefficients of <A>p</A> via
-##  <Ref Func="DefaultRing" Label="for ring elements"/>).
+##  <Ref Func="DefaultRing" Label="for ring elements"/>.
 ##  <Example><![CDATA[
 ##  gap> x:=X(Rationals,"x");;p:=x^4-1;
 ##  x^4-1
@@ -139,14 +139,13 @@ DeclareGlobalFunction("ShowGcd");
 ##  Z(2^2)   | Z(2^2)   Z(2^2)^2 0*Z(2)   Z(2)^0
 ##  Z(2^2)^2 | Z(2^2)^2 Z(2^2)   Z(2)^0   0*Z(2)
 ##
-##gap> ShowMultiplicationTable(GF(4));
-##*        | 0*Z(2)   Z(2)^0   Z(2^2)   Z(2^2)^2
-##---------+------------------------------------
-##0*Z(2)   | 0*Z(2)   0*Z(2)   0*Z(2)   0*Z(2)
-##Z(2)^0   | 0*Z(2)   Z(2)^0   Z(2^2)   Z(2^2)^2
-##Z(2^2)   | 0*Z(2)   Z(2^2)   Z(2^2)^2 Z(2)^0
-##Z(2^2)^2 | 0*Z(2)   Z(2^2)^2 Z(2)^0   Z(2^2)
-
+##  gap> ShowMultiplicationTable(GF(4));
+##  *        | 0*Z(2)   Z(2)^0   Z(2^2)   Z(2^2)^2
+##  ---------+------------------------------------
+##  0*Z(2)   | 0*Z(2)   0*Z(2)   0*Z(2)   0*Z(2)
+##  Z(2)^0   | 0*Z(2)   Z(2)^0   Z(2^2)   Z(2^2)^2
+##  Z(2^2)   | 0*Z(2)   Z(2^2)   Z(2^2)^2 Z(2)^0
+##  Z(2^2)^2 | 0*Z(2)   Z(2^2)^2 Z(2)^0   Z(2^2)
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -332,8 +331,8 @@ DeclareGlobalFunction("CheckDigitTestFunction");
 ##  each representing a single digit.
 ##
 ##  The check digits tested are the 10-digit ISBN (International Standard Book
-##  Number) using <Ref Func="CheckDigitISBN"/> (since arithmetic is module 11, a
-##  digit 11 is represented by an X);
+##  Number) using <Ref Func="CheckDigitISBN"/> (since arithmetic is modulo 11, a
+##  check digit 10 is represented by an X);
 ##  the newer 13-digit ISBN-13 using <Ref Func="CheckDigitISBN13"/>;
 ##  the numbers of 11-digit US postal money orders using
 ##  <Ref Func="CheckDigitPostalMoneyOrder"/>; and
@@ -923,7 +922,7 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,sg,c,i;
   fi;
 
   if IsAbelian(G) and not IsAbelian(H) then
-    k:=NaturalHomomorphismByNormalSubgroup(H,DerivedSubgroup(H));
+    k:=MaximalAbelianQuotient(H);
     return List(AllHomomorphismClasses(Image(k),G),x->k*x);
   fi;
 

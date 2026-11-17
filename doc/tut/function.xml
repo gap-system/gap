@@ -6,7 +6,9 @@
 <!-- %W                                                       & Heiko Theißen -->
 <!-- %% -->
 <!-- %% -->
-<!-- %Y  Copyright 1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,   Germany -->
+<!-- %Y  Copyright of GAP belongs to its developers, whose names are too -->
+<!-- %Y  numerous to list here. Please refer to the COPYRIGHT file for details. -->
+<!-- %Y  SPDX-License-Identifier: GPL-2.0-or-later -->
 <!-- %% -->
 <!-- %%  This file contains a tutorial introduction to functions. -->
 <!-- %% -->
@@ -19,11 +21,10 @@
 You  have already  seen how to   use functions in the &GAP;  library,
 i.e., how to apply them to arguments.
 <P/>
-In this section  you will see  how to  write  functions in  the &GAP;
+In this chapter  you will see  how to  write  functions in  the &GAP;
 language.  You will also see how to use the <K>if</K> statement and declare
 local variables with the <K>local</K> statement in the function definition.
-Loop constructions via <K>while</K> and <K>for</K> are discussed further, as are
-recursive functions.
+This chapter also discusses recursive functions.
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
@@ -182,7 +183,7 @@ gap> gcd:= function(a, b)
 >          b:= a mod b;
 >          a:= c;
 >       od;
->       return c;
+>       return a;
 >    end;
 function( a, b ) ... end
 gap> gcd(30, 63);
@@ -232,7 +233,7 @@ in Section&nbsp;<Ref Sect="If Statements"/>.
 Here is another, slightly more complicated example.
 <P/>
 We will now write a function to determine  the number of partitions of
-a positive integer.  A partition of a positive integer is a descending
+a positive integer.  A partition of a positive integer is a non-increasing
 list  of numbers   whose sum   is the   given   integer.  For  example
 <M>[4,2,1,1]</M> is a partition of 8. Note that there is just one partition
 of 0, namely <M>[ ]</M>. The complete set of all  partitions of an integer
@@ -240,8 +241,8 @@ of 0, namely <M>[ ]</M>. The complete set of all  partitions of an integer
 The number  of  partitions of   <M>n</M> therefore  equals  the  sum of the
 numbers of partitions of <M>n-i</M> with elements less than or equal to <M>i</M>
 for all possible <M>i</M>.  More generally the  number of partitions of <M>n</M>
-with elements less than <M>m</M> is the sum of the numbers of partitions of
-<M>n-i</M> with elements less than <M>i</M> for <M>i</M> less than <M>m</M> and <M>n</M>.  This
+with elements at most <M>m</M> is the sum of the numbers of partitions of
+<M>n-i</M> with elements at most <M>i</M> for <M>i</M> at most <M>m</M> and <M>n</M>.  This
 description yields the following function.
 <P/>
 <Example><![CDATA[
@@ -301,7 +302,7 @@ a function call is not very cheap.)
 <Section Label="Further Information about Functions">
 <Heading>Further Information about Functions</Heading>
 
-The function  syntax is described  in Section <Ref Chap="Functions" BookName="ref"/>.   The <K>if</K>
+The function syntax is described in Chapter <Ref Chap="Functions" BookName="ref"/>. The <K>if</K>
 statement is described  in more detail in  Section <Ref Sect="If" BookName="ref"/>.  More  about
 Fibonacci  numbers is found  in  Section <Ref Func="Fibonacci" BookName="ref"/>  and more  about
 partitions in Section <Ref Func="Partitions" BookName="ref"/>.

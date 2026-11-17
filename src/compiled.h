@@ -124,20 +124,21 @@ static inline void CHECK_FUNC(Obj obj)
   else ASSB_LIST(list, p, rhs);
 
 #define C_ASS_LIST_FPL(list,p,rhs) \
- if ( IS_POS_INTOBJ(p) && TNUM_OBJ(list) == T_PLIST ) { \
+ if ( IS_POS_INTOBJ(p) && TNUM_OBJ(list) == T_PLIST && \
+      IS_MUTABLE_OBJ(list) ) { \
   if ( LEN_PLIST(list) < INT_INTOBJ(p) ) { \
    GROW_PLIST( list, (UInt)INT_INTOBJ(p) ); \
    SET_LEN_PLIST( list, INT_INTOBJ(p) ); \
   } \
   SET_ELM_PLIST( list, INT_INTOBJ(p), rhs ); \
-  CHANGED_BAG( list ); \
  } \
  else { \
   C_ASS_LIST( list, p, rhs ) \
  }
 
 #define C_ASS_LIST_FPL_INTOBJ(list,p,rhs) \
- if ( IS_POS_INTOBJ(p) && TNUM_OBJ(list) == T_PLIST) { \
+ if ( IS_POS_INTOBJ(p) && TNUM_OBJ(list) == T_PLIST && \
+      IS_MUTABLE_OBJ(list) ) { \
   if ( LEN_PLIST(list) < INT_INTOBJ(p) ) { \
    GROW_PLIST( list, (UInt)INT_INTOBJ(p) ); \
    SET_LEN_PLIST( list, INT_INTOBJ(p) ); \

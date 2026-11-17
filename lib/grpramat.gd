@@ -186,7 +186,7 @@ DeclareAttribute( "CentralizerInGLnZ", IsCyclotomicMatrixGroup );
 ##  This holds true in particular for quadratic forms invariant under
 ##  a matrix group. In a similar way, the representation of affine
 ##  crystallographic groups, as they are provided by the &GAP; package
-##  <Package>CrystGap</Package>, depends on which action is assumed.
+##  <Package>Cryst</Package>, depends on which action is assumed.
 ##  Crystallographers are used to the action from the left,
 ##  whereas the action from the right is the natural one for &GAP;.
 ##  For this reason, a number of functions which are important in
@@ -259,7 +259,7 @@ DeclareGlobalFunction( "SetCrystGroupDefaultAction" );
 ##  <Prop Name="IsBravaisGroup" Arg='G'/>
 ##
 ##  <Description>
-##  test whether <A>G</A> coincides with its Bravais group
+##  tests whether <A>G</A> coincides with its Bravais group
 ##  (see <Ref Attr="BravaisGroup"/>).
 ##  </Description>
 ##  </ManSection>

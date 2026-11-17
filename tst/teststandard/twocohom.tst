@@ -1,4 +1,7 @@
+#@local g, mo, coh, comp, reps, h, a, pos, gp, p, G, mods, M, mats, map, cp
 gap> START_TEST("twocohom.tst");
+
+#
 gap> g:=PerfectGroup(IsPermGroup,1344,1);;
 gap> mo:=IrreducibleModules(g,GF(2),1);;List(mo[2],x->x.dimension);
 [ 1 ]
@@ -47,17 +50,64 @@ gap> ConfluentMonoidPresentationForGroup(p);;
 gap> Length(ConjugacyClasses(p));
 119
 
+# Extensions for given group homomorphism
+gap> G:= DihedralGroup( 6 );;
+gap> Extensions( G, IdentityMapping( G ) );
+Error, range of <map> must be a matrix group over a finite prime field
+gap> G:= GL(2, 4);;
+gap> Extensions( G, IdentityMapping( G ) );
+Error, range of <map> must be a matrix group over a finite prime field
+gap> G:= GL(2, 2);;
+gap> Length( Extensions( G, IdentityMapping( G ) ) );
+1
+gap> G:= DihedralGroup( 6 );  # pc group
+<pc group of size 6 with 2 generators>
+gap> mods:= IrreducibleModules( G, GF(2) );;
+gap> M:= First( mods[2], x -> x.dimension = 2 );;
+gap> g:= Group( M.generators );;
+gap> map:= GroupHomomorphismByImages( G, g, mods[1], M.generators );;
+gap> Length( Extensions( G, map ) );
+1
+gap> G:= SymmetricGroup( 3 );  # solvable
+Sym( [ 1 .. 3 ] )
+gap> mods:= IrreducibleModules( G, GF(2) );;
+gap> M:= First( mods[2], x -> x.dimension = 2 );;
+gap> g:= Group( M.generators );;
+gap> map:= GroupHomomorphismByImages( G, g, mods[1], M.generators );;
+gap> Length( Extensions( G, map ) );
+1
+gap> G:= AlternatingGroup( 5 );  # nonsolvable
+Alt( [ 1 .. 5 ] )
+gap> mods:= IrreducibleModules( G, GF(2) );;
+gap> M:= First( mods[2], x -> x.dimension = 1 );;
+gap> g:= Group( M.generators );;
+gap> map:= GroupHomomorphismByImages( G, g, mods[1], M.generators );;
+gap> Length( Extensions( G, map ) );
+2
+
+# Extensions for pc groups (documented method)
+gap> G:= DihedralGroup( 6 );
+<pc group of size 6 with 2 generators>
+gap> mods:= IrreducibleModules( G, GF(2) );;
+gap> M:= First( mods[2], x -> x.dimension = 2 );;
+gap> Length( Extensions( G, M ) );
+1
+
 # Extensions nonsolvable
 gap> g:=Group((1,2,3,4,5),(3,4,5));;
 gap> mats:=[[[0,1,0,0],[0,0,1,0],[0,0,0,1],[2,2,2,2]],
-> [[1,0,0,0],[0,1,1,0],[0,0,0,1],[0,0,2,2]]];;
-gap> mo:=GModuleByMats(mats*Z(3)^0,GF(3));;
+> [[1,0,0,0],[0,1,1,0],[0,0,0,1],[0,0,2,2]]] * Z(3)^0;;
+gap> mo:=GModuleByMats(mats,GF(3));;
 gap> Length(Extensions(g,mo));
 3
 gap> cp:=CompatiblePairs(g,mo);
 <group of size 240 with 4 generators>
 gap> Length(ExtensionRepresentatives(g,mo,cp));
 2
+gap> map:= GroupHomomorphismByImages( g, Group( mats ),
+>              GeneratorsOfGroup( g ), mats );;
+gap> Length( Extensions( g, map ) );
+3
 gap> mo:= TrivialGModule( g, GF(3) );;
 gap> Length( Extensions( g, mo ) );
 1

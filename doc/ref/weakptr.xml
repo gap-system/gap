@@ -3,7 +3,9 @@
 <!-- %W  weakptr.tex              GAP documentation               Steve Linton -->
 <!-- %% -->
 <!-- %% -->
-<!-- %Y  Copyright 1997,  The GAP Project -->
+<!-- %Y  Copyright of GAP belongs to its developers, whose names are too -->
+<!-- %Y  numerous to list here. Please refer to the COPYRIGHT file for details. -->
+<!-- %Y  SPDX-License-Identifier: GPL-2.0-or-later -->
 <!-- %% -->
 <!-- %%  This file describes the use of weak pointers -->
 <!-- %% -->

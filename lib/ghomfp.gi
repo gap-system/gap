@@ -40,6 +40,11 @@ InstallMethod( IsSingleValued,
 function(hom)
 local m, fp, s, sg, o, gi;
   m:=MappingGeneratorsImages(hom);
+  # map on the trivial group; IsomorphismFpGroupByGenerators would run a
+  # coset enumeration over the whole group, which may be infinite
+  if Length(m[1])=0 then
+    return true;
+  fi;
   fp:=IsomorphismFpGroupByGenerators(Source(hom),m[1]);
   s:=Image(fp);
   sg:=FreeGeneratorsOfFpGroup(s);
@@ -1268,6 +1273,15 @@ local aug,r,sec,expwrd,rels,ab,s,m,img,gen,i,j,t1,t2,tn,d,pos,seco;
 
   SetIsSurjective(m,true);
 
+  if ValueOption("verifyabelianquotient")=true or AssertionLevel()>=3 then
+    d:=KernelOfMultiplicativeGeneralMapping(m);
+    d:=CosetTableInWholeGroup(d);
+    d:=List(d{[1,3..Length(d)-1]},PermList);
+    r:=FamilyObj(u)!.wholeGroup;
+    img:=List(RelatorsOfFpGroup(r),x->MappedWord(x,FreeGeneratorsOfFpGroup(r),d));
+    if not ForAll(img,IsOne) then Error("not a homomorphism");fi;
+  fi;
+
   return m;
 end);
 
@@ -1364,7 +1378,7 @@ local v,aiu,aiv,G,primes,irrel,ma,mao,mau,a,k,gens,imgs,q,dec,deco,piv,co;
 end);
 
 DeclareRepresentation("IsModuloPcgsFpGroupRep",
-  IsModuloPcgs and IsPcgsDefaultRep, [ "hom", "impcgs", "groups" ] );
+  IsModuloPcgs and IsPcgsDefaultRep );
 
 
 InstallMethod(ModuloPcgs,"subgroups fp",true,

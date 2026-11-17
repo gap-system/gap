@@ -546,7 +546,6 @@ static Obj InnerRecNames(Obj rec)
         name = NAME_RNAM( rnam );
         string = CopyToStringRep( name );
         SET_ELM_PLIST( list, i, string );
-        CHANGED_BAG( list );
     }
 
     // return the list

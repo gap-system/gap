@@ -77,9 +77,9 @@ InstallMethod( PrintObj,
 
 end );
 
-############################################################################
+#############################################################################
 ##
-#M  ExtRepOfObj( <elm> )  . . . . . . . . . . . .  for algebra module elements
+#M  ExtRepOfObj( <elm> ) . . . . . . . . . . . .  for algebra module elements
 ##
 InstallMethod( ExtRepOfObj,
     "for algebra module element in packed element rep",
@@ -89,7 +89,7 @@ InstallMethod( ExtRepOfObj,
 
 #############################################################################
 ##
-#M  ObjByExtRep( <Fam>, <descr> ) . . . . . . . .  for algebra module elements
+#M  ObjByExtRep( <Fam>, <descr> ) . . . . . . . . for algebra module elements
 ##
 ##
 InstallMethod( ObjByExtRep,
@@ -471,15 +471,14 @@ InstallMethod( BiAlgebraModule,
 end );
 
 
-############################################################################
+#############################################################################
 ##
 #R  IsMutableBasisViaUnderlyingMutableBasisRep( <B> )
 ##
 DeclareRepresentation( "IsMutableBasisViaUnderlyingMutableBasisRep",
-    IsComponentObjectRep,
-        [ "moduleElementsFam", "underlyingMutableBasis" ] );
+    IsComponentObjectRep );
 
-############################################################################
+#############################################################################
 ##
 #M  MutableBasis( <R>, <vectors> )
 #M  MutableBasis( <R>, <vectors>, <zero> )
@@ -534,7 +533,7 @@ end );
 
 #############################################################################
 ##
-#M  PrintObj( <MB> ) . . . . . . . . . . . . . . . . . .  view a mutable basis
+#M  PrintObj( <MB> ) . . . . . . . . . . . . . . . . . . view a mutable basis
 ##
 InstallMethod( PrintObj,
     "for mutable basis with underlying mutable basis",
@@ -546,7 +545,7 @@ InstallMethod( PrintObj,
     end );
 
 
-############################################################################
+#############################################################################
 ##
 #M  BasisVectors( <MB> )
 #M  CloseMutableBasis( <MB>, <v> )
@@ -606,7 +605,7 @@ end );
 
 #############################################################################
 ##
-#M  PrintObj( <obj> ) . . . . . . . . . . . . . . . for algebra module element
+#M  PrintObj( <obj> ) . . . . . . . . . . . . . .  for algebra module element
 ##
 InstallMethod( PrintObj,
     "for algebra module element in packed representation",
@@ -615,13 +614,13 @@ InstallMethod( PrintObj,
 
 #############################################################################
 ##
-#M  \=( <u>, <v> ) . . . . . . . . . . . . . . . for algebra module elements
-#M  \<( <u>, <v> ) . . . . . . . . . . . . . . . for algebra module elements
-#M  \+( <u>, <v> ) . . . . . . . . . . . . . . . for algebra module elements
-#M  AdditiveInverseOp( <u> ) . .. . . . . . . . . . . . . . . for an algebra module element
-#M  \*( <u>, <scal> ) . . . . . . for an algebra module element and a scalar
-#M  \*( <scal>, <u> ) . . . . . . for a scalar and an algebra module element
-#M  ZeroOp( <u> ) . . . . . . . . . . . . . . . .for an algebra module element
+#M  \=( <u>, <v> ) . . . . . . . . . . . . . . .  for algebra module elements
+#M  \<( <u>, <v> ) . . . . . . . . . . . . . . .  for algebra module elements
+#M  \+( <u>, <v> ) . . . . . . . . . . . . . . .  for algebra module elements
+#M  AdditiveInverseOp( <u> ) . . . . . . . . .  for an algebra module element
+#M  \*( <u>, <scal> ) . . . . . .  for an algebra module element and a scalar
+#M  \*( <scal>, <u> ) . . . . . .  for a scalar and an algebra module element
+#M  ZeroOp( <u> ) . . . . . . . . . . . . . . . for an algebra module element
 ##
 ##
 
@@ -683,8 +682,8 @@ InstallMethod( ZeroOp,
 
 #############################################################################
 ##
-#M  \*( <obj>, <vec> ) . . . . . . . . . . . for a Lie object and a row vector
-#M  \*( <vec>, <obj> ) . . . . . . . . . . . for a row vector and a Lie object
+#M  \*( <obj>, <vec> ) . . . . . . . . . .  for a Lie object and a row vector
+#M  \*( <vec>, <obj> ) . . . . . . . . . .  for a row vector and a Lie object
 ##
 ##
 InstallMethod( \*,
@@ -844,10 +843,10 @@ end );
 
 
 
-##############################################################################
+#############################################################################
 ##
-#M  Coefficients( <B>, <v> ). . . . . . for basis of a space of algebra
-##                                      module elements and vector
+#M  Coefficients( <B>, <v> ) . . . . . . . .  for basis of a space of algebra
+##                                            module elements and vector
 ##
 InstallMethod( Coefficients,
     "for basis of a space of algebra module elements, and algebra module element",
@@ -858,7 +857,7 @@ InstallMethod( Coefficients,
       return Coefficients( B!.delegateBasis, v![1] );
 end );
 
-##############################################################################
+#############################################################################
 ##
 #M  Basis( <V>, <vecs> )
 #M  BasisNC( <V>, <vecs> )
@@ -895,10 +894,9 @@ InstallMethod( BasisNC,
       return BasisOfAlgebraModule( V, vectors );
 end );
 
-##########################################################################
+#############################################################################
 ##
-#M  IsFiniteDimensional( <V> ) . . . . . . .  . for a space of algebra module
-##                                              elements
+#M  IsFiniteDimensional( <V> ) . . . . for a space of algebra module elements
 ##
 InstallMethod( IsFiniteDimensional,
         "for a space of algebra module elements",
@@ -908,10 +906,9 @@ InstallMethod( IsFiniteDimensional,
     return Length( Basis( V ) ) < infinity;
 end );
 
-##########################################################################
+#############################################################################
 ##
-#M  GeneratorsOfLeftModule( <V> ) . . . . . . .  . for a space of algebra
-##                                                 module elements
+#M  GeneratorsOfLeftModule( <V> ) . .  for a space of algebra module elements
 ##
 InstallMethod( GeneratorsOfLeftModule,
         "for a space of algebra module elements",
@@ -921,7 +918,7 @@ InstallMethod( GeneratorsOfLeftModule,
     return BasisVectors( Basis( V ) );
 end );
 
-############################################################################
+#############################################################################
 ##
 #M  SubAlgebraModule( <V>, <gens> [,<"basis">] )
 ##
@@ -990,7 +987,7 @@ InstallOtherMethod( SubAlgebraModule,
      IsString ],
    _SubAlgebraModuleHelper );
 
-##############################################################################
+#############################################################################
 ##
 #M  LeftModuleByHomomorphismToMatAlg( <A>, <f> ) . . for algebra and hom to
 ##                                                   matrix algebra
@@ -1019,7 +1016,7 @@ InstallMethod( LeftModuleByHomomorphismToMatAlg,
 
    end );
 
-##############################################################################
+#############################################################################
 ##
 #M  RightModuleByHomomorphismToMatAlg( <A>, <f> ) . . for algebra and hom to
 ##                                                    matrix algebra
@@ -1048,7 +1045,7 @@ InstallMethod( RightModuleByHomomorphismToMatAlg,
 
    end );
 
-##############################################################################
+#############################################################################
 ##
 #M  AdjointModule( <A> ) . . . . . . . . . . . . . . . . . . . for an algebra
 ##
@@ -1179,7 +1176,7 @@ InstallOtherMethod( ModuleByRestriction,
 end );
 
 
-########################################################################
+#############################################################################
 ##
 #M  NaturalHomomorphismBySubAlgebraModule( <V>, <W> )
 ##
@@ -1278,7 +1275,7 @@ InstallOtherMethod( \/,
 end );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  MatrixOfAction( <B>, <x> )
 #M  MatrixOfAction( <B>, <x>, <side> )
@@ -1318,7 +1315,7 @@ InstallOtherMethod( MatrixOfAction,
 end );
 
 
-##############################################################################
+#############################################################################
 ##
 #R  IsMonomialElementRep( <obj> )
 ##
@@ -1329,13 +1326,13 @@ end );
 ##  The second component is `true' or `false',
 ##  `true' if the monomial element is in normal form, `false' otherwise.
 ##
-DeclareRepresentation( "IsMonomialElementRep", IsPositionalObjectRep, [1,2] );
+DeclareRepresentation( "IsMonomialElementRep", IsPositionalObjectRep );
 
 
-############################################################################
+#############################################################################
 ##
 #M  ObjByExtRep( <fam>, <list> ) . . . for a MonomialElementFamily and a list
-#M  ExtRepOfObj( <t> )  . . . . . . .  for a monomial element in monomial rep.
+#M  ExtRepOfObj( <t> )  . . . . . . . for a monomial element in monomial rep.
 ##
 InstallMethod( ObjByExtRep,
         "for a family of monomial elements and a list",
@@ -1352,15 +1349,15 @@ InstallMethod( ExtRepOfObj,
         function( t )  return t![1];
 end );
 
-##############################################################################
+#############################################################################
 ##
-#M  ZeroOp( <m> ) . . . . . . . . . . . . . . for a monomial element
-#M  \+( <m1>, <m2> )  . . . . . . . . . . . . for two monomial elements
-#M  AdditiveInverseOp( <m> ) . . . . . . . . . . . . . . . for a monomial element
+#M  ZeroOp( <m> ) . . . . . . . . . . . . . . . . . .  for a monomial element
+#M  \+( <m1>, <m2> )  . . . . . . . . . . . . . . . for two monomial elements
+#M  AdditiveInverseOp( <m> ) . . . . . . . . . . . . . for a monomial element
 #M  \*( <m>, <scal> ) . . . . . . . . . . for a monomial element and a scalar
-#M  \*( <scal>, <m> ) . . . . . . . . . . for scalar and a monomial element
-#M  \<( <m1>, <m2> ) . . . . . . . . . . . .  for two monomial elements
-#M  \=( <m1>, <m2> ) . . . . . . . . . . . .  for two monomial elements
+#M  \*( <scal>, <m> ) . . . . . . . . . . . for scalar and a monomial element
+#M  \<( <m1>, <m2> ) . . . . . . . . . . . . . . .  for two monomial elements
+#M  \=( <m1>, <m2> ) . . . . . . . . . . . . . . .  for two monomial elements
 ##
 InstallMethod( ZeroOp,
         "for monomial elements",
@@ -1486,7 +1483,7 @@ InstallMethod(\=,
     return u1![1] = v1![1];
 end );
 
-############################################################################
+#############################################################################
 ##
 #F  TriangulizeMonomialElementList( <tt>, <zero>, <LM>, <LC> )
 ##
@@ -1600,8 +1597,7 @@ end );
 ##  `TriangulizeMonomialElementList' with its basis vectors as input.
 ##  It also knows the zero of the ground field.
 ##
-DeclareRepresentation( "IsBasisOfMonomialSpaceRep", IsComponentObjectRep,
-        [ "echelonBasis", "heads", "baseChange", "zeroCoefficient" ] );
+DeclareRepresentation( "IsBasisOfMonomialSpaceRep", IsComponentObjectRep );
 
 
 #############################################################################
@@ -1626,7 +1622,7 @@ BindGlobal( "BasisOfMonomialSpace",
 end );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  Basis( <V>, <vecs> )
 #M  BasisNC( <V>, <vecs> )
@@ -1724,7 +1720,7 @@ InstallMethod( Basis,
 end );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  Coefficients( <B>, <v> ). . . . . . for basis of a monomial space
 ##                                      and vector
@@ -1761,7 +1757,7 @@ InstallMethod( Coefficients,
 
 end );
 
-##############################################################################
+#############################################################################
 ##
 #M  PrintObj( <te> ) . . . . . . . . . . . . . for tensor elements
 ##
@@ -1797,7 +1793,7 @@ InstallMethod( PrintObj,
 
 end );
 
-##############################################################################
+#############################################################################
 ##
 #M  ConvertToNormalFormMonomialElement( <te> ) . . for a tensor element
 ##
@@ -1854,7 +1850,7 @@ InstallMethod( ConvertToNormalFormMonomialElement,
 
             is_replaced:= false;
             for j in [1..Length(cf)] do
-                if cf[j] <> 0*cf[j] then
+                if not IsZero( cf[j] ) then
                     if not is_replaced then
                         tt1:= ShallowCopy( tt );
                         tt1[i]:= bases[i][j];
@@ -1887,7 +1883,7 @@ InstallMethod( ConvertToNormalFormMonomialElement,
     for i in [1..Length(tensors)] do
         if len > 0 and tensors[i] = res[len-1] then
             res[len]:= res[len]+cfts[i];
-            if res[len] = 0*res[len] then
+            if IsZero( res[len] ) then
                 Unbind( res[len-1] );
                 Unbind( res[len] );
                 len:= len-2;
@@ -1907,7 +1903,7 @@ InstallMethod( ConvertToNormalFormMonomialElement,
 end );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  TensorProductOp( <list> ) . . . . for a list of vectorspaces.
 ##
@@ -2002,7 +1998,7 @@ InstallGlobalFunction(TensorProduct, function(arg)
     return d;
 end);
 
-##############################################################################
+#############################################################################
 ##
 #M  TensorProductOfAlgebraModules( <list> )  for a list of Lie algebra modules
 ##
@@ -2062,7 +2058,7 @@ InstallMethod( TensorProductOfAlgebraModules,
             if not ForAll( list, V ->
                        IsLeftAlgebraModuleElementCollection(V) and
                        IsRightAlgebraModuleElementCollection(V)) then
-              Error("for all modules the algebra must act om the same side");
+              Error( "all modules must be bi-modules" );
             fi;
 
             A:= LeftActingAlgebra( list[1] );
@@ -2086,32 +2082,33 @@ InstallMethod( TensorProductOfAlgebraModules,
             fi;
 
             Tprod:= BiAlgebraModule( A, B, lefta, righta, VT );
-        fi;
-
-        if not ForAll( list, IsLeftAlgebraModuleElementCollection ) then
-            Error( "for all modules the algebra must act om the same side" );
-        fi;
-
-        A:= LeftActingAlgebra( list[1] );
-        if not ForAll( list, V -> IsIdenticalObj( LeftActingAlgebra(V), A ) )
-           then Error( "all modules must have the same left acting algebra" );
-        fi;
-        if HasIsLieAlgebra( A ) and IsLieAlgebra( A ) then
-            lefta:= left_lie_action;
         else
-            TryNextMethod();
-        fi;
 
-        Tprod:= LeftAlgebraModule( A, lefta, VT );
+            if not ForAll( list, IsLeftAlgebraModuleElementCollection ) then
+                Error( "for all modules the algebra must act on the same side" );
+            fi;
+
+            A:= LeftActingAlgebra( list[1] );
+            if not ForAll( list, V -> IsIdenticalObj( LeftActingAlgebra(V), A ) )
+               then Error( "all modules must have the same left acting algebra" );
+            fi;
+            if HasIsLieAlgebra( A ) and IsLieAlgebra( A ) then
+                lefta:= left_lie_action;
+            else
+                TryNextMethod();
+            fi;
+
+            Tprod:= LeftAlgebraModule( A, lefta, VT );
+        fi;
     else
 
         if not ForAll( list, IsRightAlgebraModuleElementCollection ) then
-            Error( "for all modules the algebra must act om the same side" );
+            Error( "for all modules the algebra must act on the same side" );
         fi;
 
         A:= RightActingAlgebra( list[1] );
         if not ForAll( list, V -> IsIdenticalObj( RightActingAlgebra(V), A ) )
-           then Error( "all modules must have the same left acting algebra" );
+           then Error( "all modules must have the same right acting algebra" );
         fi;
 
         if HasIsLieAlgebra( A ) and IsLieAlgebra( A ) then
@@ -2172,7 +2169,7 @@ InstallMethod( PrintObj,
 
 end );
 
-###########################################################################
+#############################################################################
 ##
 #M  ConvertToNormalFormMonomialElement( <we> ) . . . . for a wedge element
 ##
@@ -2235,7 +2232,7 @@ InstallMethod( ConvertToNormalFormMonomialElement,
 
             is_replaced:= false;
             for j in [1..Length(cf)] do
-                if cf[j] <> 0*cf[j] then
+                if not IsZero( cf[j] ) then
                     if not is_replaced then
                         tt1:= ShallowCopy( tt );
                         tt1[i]:= basis[j];
@@ -2299,7 +2296,7 @@ InstallMethod( ConvertToNormalFormMonomialElement,
 
         if len > 0 and tensors[i] = res[len-1] then
             res[len]:= res[len]+cfts[i];
-            if res[len] = 0*res[len] then
+            if IsZero( res[len] ) then
                 Unbind( res[len-1] );
                 Unbind( res[len] );
                 len:= len-2;
@@ -2473,7 +2470,7 @@ InstallMethod( ExteriorPowerOfAlgebraModule,
 
 end );
 
-############################################################################
+#############################################################################
 ##
 #M  PrintObj( <se> ) . . . . . . . . . . . for symmetric elements
 ##
@@ -2507,7 +2504,7 @@ InstallMethod( PrintObj,
 
 end );
 
-############################################################################
+#############################################################################
 ##
 #M  ConvertToNormalFormMonomialElement( <se> ) . . . for a symmetric element
 ##
@@ -2569,7 +2566,7 @@ InstallMethod( ConvertToNormalFormMonomialElement,
 
             is_replaced:= false;
             for j in [1..Length(cf)] do
-                if cf[j] <> 0*cf[j] then
+                if not IsZero( cf[j] ) then
                     if not is_replaced then
                         tt1:= ShallowCopy( tt );
                         tt1[i]:= basis[j];
@@ -2623,7 +2620,7 @@ InstallMethod( ConvertToNormalFormMonomialElement,
         wed:= tensors[i];
         if len > 0 and wed = res[len-1] then
             res[len]:= res[len]+cfts[i];
-            if res[len] = 0*res[len] then
+            if IsZero( res[len] ) then
                 Unbind( res[len-1] );
                 Unbind( res[len] );
                 len:= len-2;
@@ -2643,7 +2640,7 @@ InstallMethod( ConvertToNormalFormMonomialElement,
 end );
 
 
-############################################################################
+#############################################################################
 ##
 #M  SymmetricPower( <V>, <k> ) . . . . . for a vector space and an integer
 ##
@@ -2690,7 +2687,7 @@ InstallMethod( SymmetricPower,
 end);
 
 
-############################################################################
+#############################################################################
 ##
 #M  SymmetricPowerOfAlgebraModule( <V>, <k> )
 ##
@@ -2792,7 +2789,7 @@ InstallMethod( SymmetricPowerOfAlgebraModule,
 end );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  ObjByExtRep( <fam>, <list> ) . . . for a sparse rowspace elt fam. and list
 #M  ExtRepOfObj( <v> ) . . . . . . . . for a sparse rowspace element.
@@ -2819,7 +2816,7 @@ InstallMethod( ExtRepOfObj,
 end);
 
 
-##############################################################################
+#############################################################################
 ##
 #M  PrintObj( <v> ) . . . . . . for a sparse rowspace element
 ##
@@ -2844,13 +2841,13 @@ end );
 
 #############################################################################
 ##
-#M  ZeroOp( <v> ) . . . . . . . . . . . . . for a sparse rowspace element
-#M  \+( <u>, <v> ) . . . . . . . . . . . .  for sparse rowspace elements
-#M  AdditiveInverseOp( <u> ) . . . . . . . . . . . . . . for a sparse rowspace element
-#M  \*( <scal>, <u> )  . . . . . for a sparse rowspace element and scalar
-#M  \*( <u>, <scal> ) . . . . . .for a scalar and sparse rowspace element
-#M  \<( <u>, <v> )  . . . . . . . . . . . . for sparse rowspace elements
-#M  \=( <u>, <v> ) . . . . . . . . . . . . for sparse rowspace elements
+#M  ZeroOp( <v> ) . . . . . . . . . . . . . . . for a sparse rowspace element
+#M  \+( <u>, <v> ) . . . . . . . . . . . . . . . for sparse rowspace elements
+#M  AdditiveInverseOp( <u> ) . . . . . . . . .  for a sparse rowspace element
+#M  \*( <scal>, <u> ) . . . . . . .  for a sparse rowspace element and scalar
+#M  \*( <u>, <scal> ) . . . . . . .  for a scalar and sparse rowspace element
+#M  \<( <u>, <v> ) . . . . . . . . . . . . . . . for sparse rowspace elements
+#M  \=( <u>, <v> ) . . . . . . . . . . . . . . . for sparse rowspace elements
 ##
 InstallMethod( ZeroOp,
         "for sparse rowspace elements",
@@ -2966,10 +2963,9 @@ end );
 ##  when we loop over the entire list `basechange[i]'.), `zeroCoefficient'
 ##  (the zero of the ground field).
 ##
-DeclareRepresentation( "IsBasisOfSparseRowSpaceRep", IsComponentObjectRep,
-        [ "echelonBasis", "heads", "baseChange", "zeroCoefficient" ] );
+DeclareRepresentation( "IsBasisOfSparseRowSpaceRep", IsComponentObjectRep );
 
-##############################################################################
+#############################################################################
 ##
 #F  BasisOfSparseRowSpace( <V>, <vectors> )  for a sparse row space and a list
 ##
@@ -3137,10 +3133,9 @@ InstallMethod( Basis,
 
 end );
 
-##############################################################################
+#############################################################################
 ##
-#M  Coefficients( <B>, <v> ). . . . . . for basis of a sparse row space
-##                                      and vector
+#M  Coefficients( <B>, <v> ) . . . for basis of a sparse row space and vector
 ##
 InstallMethod( Coefficients,
         "for basis of a sparse rowspace, and a vector",
@@ -3211,7 +3206,7 @@ InstallHandlingByNiceBasis( "IsMonomialElementVectorSpace", rec(
 
 #############################################################################
 ##
-#M  FullSparseRowSpace( <F>, <n> )  . . . . . . for a ring and an integer
+#M  FullSparseRowSpace( <F>, <n> ) . . . . . . . .  for a ring and an integer
 ##
 ##
 InstallMethod( FullSparseRowSpace,
@@ -3248,9 +3243,9 @@ InstallMethod( FullSparseRowSpace,
 end );
 
 
-###############################################################################
+#############################################################################
 ##
-#M  PrintObj( <u> ) . . . . . . . . . . . . . . . . . for a direct sum element
+#M  PrintObj( <u> ) . . . . . . . . . . . . . . . .  for a direct sum element
 ##
 InstallMethod( PrintObj,
         "for direct sum elements",
@@ -3269,10 +3264,10 @@ InstallMethod( PrintObj,
 
 end );
 
-############################################################################
+#############################################################################
 ##
-#M  ObjByExtRep( <fam>, <list> ) . . . for a DirectSumElementFamily and a list
-#M  ExtRepOfObj( <t> )  . . . . . . .  for a direct sum element in packed rep.
+#M  ObjByExtRep( <fam>, <list> ) . .  for a DirectSumElementFamily and a list
+#M  ExtRepOfObj( <t> ) . . . . . . .  for a direct sum element in packed rep.
 ##
 InstallMethod( ObjByExtRep,
         "for a family of direct sum elements and a list",
@@ -3356,8 +3351,8 @@ end );
 #############################################################################
 ##
 #M  NiceFreeLeftModuleInfo( <C> ) . . . . . . .  for a module of dir sum elts
-#M  NiceVector ( <C>, <c> ) . . for a module of dir sum elts and a dir sum elt
-#M  UglyVector( <C>, <v> ) . . .for a module of dir sum elts and a row vector
+#M  NiceVector ( <C>, <c> ) .  for a module of dir sum elts and a dir sum elt
+#M  UglyVector( <C>, <v> ) . .  for a module of dir sum elts and a row vector
 ##
 InstallHandlingByNiceBasis( "IsDirectSumElementsSpace", rec(
     detect:= function( R, gens, V, zero )
@@ -3379,7 +3374,7 @@ InstallHandlingByNiceBasis( "IsDirectSumElementsSpace", rec(
           cf:= Coefficients( Basis(
                        FamilyObj(v)!.constituentModules[i] ), ev[i] );
           for k in [1..Length(cf)] do
-              if cf[k] <> 0*cf[k] then
+              if not IsZero( cf[k] ) then
                   Add( vec, num+k );
                   Add( vec, cf[k] );
               fi;
@@ -3413,7 +3408,7 @@ InstallHandlingByNiceBasis( "IsDirectSumElementsSpace", rec(
       end ) );
 
 
-############################################################################
+#############################################################################
 ##
 #M  DirectSumOfAlgebraModules( <list> )
 #M  DirectSumOfAlgebraModules( <V>, <W> )
@@ -3485,7 +3480,7 @@ InstallMethod( DirectSumOfAlgebraModules,
             if not ForAll( list, V ->
                        IsLeftAlgebraModuleElementCollection(V) and
                        IsRightAlgebraModuleElementCollection(V)) then
-              Error("for all modules the algebra must act om the same side");
+              Error( "all modules must be bi-modules" );
             fi;
 
             A:= LeftActingAlgebra( list[1] );
@@ -3493,32 +3488,33 @@ InstallMethod( DirectSumOfAlgebraModules,
             if not ForAll( list, V ->
                        IsIdenticalObj( LeftActingAlgebra(V), A ) and
                        IsIdenticalObj( RightActingAlgebra(V), B ) )
-             then Error("all modules must have the same left acting algebra" );
+             then Error("all modules must have the same acting algebras" );
             fi;
 
             V:= BiAlgebraModuleByGenerators( A, B, left_action, right_action,
                            gens );
-        fi;
+        else
 
-        if not ForAll( list, IsLeftAlgebraModuleElementCollection ) then
-            Error( "for all modules the algebra must act om the same side" );
-        fi;
+            if not ForAll( list, IsLeftAlgebraModuleElementCollection ) then
+                Error( "for all modules the algebra must act on the same side" );
+            fi;
 
-        A:= LeftActingAlgebra( list[1] );
-        if not ForAll( list, V -> IsIdenticalObj( LeftActingAlgebra(V), A ) )
-           then Error( "all modules must have the same left acting algebra" );
-        fi;
+            A:= LeftActingAlgebra( list[1] );
+            if not ForAll( list, V -> IsIdenticalObj( LeftActingAlgebra(V), A ) )
+               then Error( "all modules must have the same left acting algebra" );
+            fi;
 
-        V:= LeftAlgebraModuleByGenerators( A, left_action, gens );
+            V:= LeftAlgebraModuleByGenerators( A, left_action, gens );
+        fi;
     else
 
         if not ForAll( list, IsRightAlgebraModuleElementCollection ) then
-            Error( "for all modules the algebra must act om the same side" );
+            Error( "for all modules the algebra must act on the same side" );
         fi;
 
         A:= RightActingAlgebra( list[1] );
         if not ForAll( list, V -> IsIdenticalObj( RightActingAlgebra(V), A ) )
-           then Error( "all modules must have the same left acting algebra" );
+           then Error( "all modules must have the same right acting algebra" );
         fi;
 
         V:= RightAlgebraModuleByGenerators( A, right_action, gens );
@@ -3566,7 +3562,7 @@ InstallOtherMethod( DirectSumOfAlgebraModules,
     return DirectSumOfAlgebraModules( [ V, W ] );
 end );
 
-############################################################################
+#############################################################################
 ##
 #M  TranslatorSubalgebra( <M>, <U>, <W> )
 ##

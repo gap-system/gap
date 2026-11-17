@@ -331,6 +331,10 @@ end );
 BindGlobal( "PosVecEnumFF", function( enum, v )
     local i,l;
 
+    # a vector object that is not a list is numbered via its entries
+    if IsVectorObj( v ) and not IsList( v ) then
+      v:= Unpack( v );
+    fi;
     if    not IsCollsElms( FamilyObj( enum ), FamilyObj( v ) )
        or not IsRowVector( v )
        or Length( v ) <> enum!.dimension then

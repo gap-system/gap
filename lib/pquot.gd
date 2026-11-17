@@ -41,7 +41,7 @@ DeclareGlobalFunction( "AbelianPQuotient" );
 ##  <P/>
 ##  For a group <M>G</M> define the exponent-<M>p</M> central series of
 ##  <M>G</M> inductively by <M>{\cal P}_1(G) = G</M> and
-##  <M>{\cal P}_{{i+1}}(G) = [{\cal P}_i(G),G]{\cal P}_{{i+1}}(G)^p</M>.
+##  <M>{\cal P}_{{i+1}}(G) = [{\cal P}_i(G),G]{\cal P}_i(G)^p</M>.
 ##  The factor groups modulo the terms of the lower
 ##  exponent-<M>p</M> central series are <M>p</M>-groups.
 ##  The group <M>G</M> has <M>p</M>-class

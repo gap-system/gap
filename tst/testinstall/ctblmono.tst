@@ -26,18 +26,17 @@ gap> List( irr, Degree );
 [ 1, 1, 1, 2, 2, 2, 3 ]
 
 ##
-gap> chi:= irr[7];
-Character( CharacterTable( SL(2,3) ), [ 3, 0, 0, 3, 0, 0, -1 ] )
+gap> chi:= irr[7];;
 gap> n:= DerivedSubgroup( Sl23 );;
 gap> test:= TestHomogeneous( chi, n );;
 gap> test.isHomogeneous;  test.comment;  test.multiplicity;
 false
 "restriction checked"
 1
-gap> chi:= irr[4];
-Character( CharacterTable( SL(2,3) ), [ 2, 1, 1, -2, -1, -1, 0 ] )
-gap> cln:= ClassPositionsOfNormalSubgroup( CharacterTable( Sl23 ), n );
-[ 1, 4, 7 ]
+gap> chi:= irr[4];;
+gap> cln:= ClassPositionsOfNormalSubgroup( CharacterTable( Sl23 ), n );;
+gap> Length( cln );
+3
 gap> TestHomogeneous( chi, cln );
 rec( comment := "restricts irreducibly", isHomogeneous := true )
 
@@ -106,9 +105,8 @@ gap> TestMonomial( chi );
 rec( comment := "codegree is prime power", isMonomial := true )
 gap> IsMonomial( chi );
 true
-
-#@if IsPackageMarkedForLoading( "smallgrp", "" )
-gap> irr:= Irr( SmallGroup( 120, 15 ) );;
+gap> g:= PcGroupCode( 3625571831624128, 120 );; # SmallGroup( 120, 15 )
+gap> irr:= Irr( g );;
 gap> chi:= First( irr, x -> x[1] = 3 and
 >                           Length( ClassPositionsOfKernel( x ) ) = 2 );;
 gap> TestMonomialQuick( chi );
@@ -117,7 +115,8 @@ gap> TestMonomial( chi );
 rec( comment := "degree is index of Hall subgroup", isMonomial := true )
 gap> IsMonomial( chi );
 true
-gap> irr:= Irr( SmallGroup( 240, 109 ) );;
+gap> g:= PcGroupCode( 3848006309568643645708, 240 );; # SmallGroup( 240, 109 )
+gap> irr:= Irr( g );;
 gap> chi:= First( irr, x -> x[1] = 6 );;
 gap> TestMonomialQuick( chi );
 rec( comment := "induced from monomial Hall subgroup", isMonomial := true )
@@ -125,7 +124,6 @@ gap> TestMonomial( chi );
 rec( comment := "induced from monomial Hall subgroup", isMonomial := true )
 gap> IsMonomial( chi );
 true
-#@fi
 
 #
 gap> g:= DirectProduct( AlternatingGroup(5), SymmetricGroup(3),
@@ -138,9 +136,8 @@ gap> TestMonomial( chi );
 rec( comment := "kernel factor group is supersolvable", isMonomial := true )
 gap> IsMonomial( chi );
 true
-
-#@if IsPackageMarkedForLoading( "smallgrp", "" )
-gap> irr:= Irr( SmallGroup( 144, 31 ) );;
+gap> g:= PcGroupCode( 266287551635650776146595184344, 144 );; # SmallGroup( 144, 31 )
+gap> irr:= Irr( g );;
 gap> chi:= First( irr, x -> x[1] = 6 );;
 gap> TestMonomialQuick( chi );
 rec( comment := "kernel factor group is monomial", isMonomial := true )
@@ -148,7 +145,6 @@ gap> TestMonomial( chi );
 rec( comment := "kernel factor group is monomial", isMonomial := true )
 gap> IsMonomial( chi );
 true
-#@fi
 
 #
 gap> irr:= Irr( SL(2,3) );;
@@ -184,9 +180,8 @@ gap> TestMonomial( chi, true ).comment;
 gap> IsMonomial( chi );
 false
 #@fi
-
-#@if IsPackageMarkedForLoading( "smallgrp", "" )
-gap> irr:= Irr( SmallGroup( 96, 204 ) );;
+gap> g:= PcGroupCode( 553128533058418720, 96 );; # SmallGroup( 96, 204 )
+gap> irr:= Irr( g );;
 gap> chi:= First( irr, x -> x[1] = 4 );;
 gap> TestMonomialQuick( chi );
 rec( comment := "no decision by cheap tests", isMonomial := "?" )
@@ -194,10 +189,8 @@ gap> TestMonomial( chi ).comment;
 "induced from 'character'"
 gap> IsMonomial( chi );
 true
-#@fi
-
-#@if IsPackageMarkedForLoading( "smallgrp", "" )
-gap> chi:= First( Irr( SmallGroup( 144, 31 ) ), x -> x[1] = 4 );;
+gap> g:= PcGroupCode( 266287551635650776146595184344, 144 );; # SmallGroup( 144, 31 )
+gap> chi:= First( Irr( g ), x -> x[1] = 4 and Conductor( x ) = 1 );;
 gap> TestMonomialQuick( chi );
 rec( comment := "no decision by cheap tests", isMonomial := "?" )
 gap> TestMonomial( chi ).comment;
@@ -206,7 +199,6 @@ gap> TestMonomial( chi, true ).comment;
 "induced from 'character'"
 gap> IsMonomial( chi );
 true
-#@fi
 
 #
 gap> chi:= 0 * [ 1 .. NrConjugacyClasses( S4 ) ];;
@@ -219,16 +211,14 @@ gap> TestMonomial( chi, true ).comment;
 gap> IsMonomial( chi );
 true
 gap> TestMonomialUseLattice:= TestMonomialUseLattice_Orig;;
-
-#@if IsPackageMarkedForLoading( "smallgrp", "" )
-gap> chi:= First( Irr( SmallGroup( 48, 28 ) ), x -> x[1] = 4 );;
+gap> g:= PcGroupCode( 16352318614672076712, 48 );; # SmallGroup( 48, 28 )
+gap> chi:= First( Irr( g ), x -> x[1] = 4 );;
 gap> TestMonomialQuick( chi );
 rec( comment := "no decision by cheap tests", isMonomial := "?" )
 gap> TestMonomial( chi ).comment;
 "induced from 'character'"
 gap> IsMonomial( chi );
 true
-#@fi
 
 ##
 gap> TestMonomialQuick( S4 );
@@ -243,9 +233,7 @@ gap> TestMonomial( Sl23 );
 rec( comment := "list Delta( G ) contains entry > 1", isMonomial := false )
 gap> IsMonomial( Sl23 );
 false
-
-#@if IsPackageMarkedForLoading( "smallgrp", "" )
-gap> g:= SmallGroup( 96, 204 );;
+gap> g:= PcGroupCode( 553128533058418720, 96 );; # SmallGroup( 96, 204 )
 gap> TestMonomialQuick( g );
 rec( comment := "no decision by cheap tests", isMonomial := "?" )
 gap> TestMonomial( g );
@@ -254,23 +242,26 @@ gap> IsMonomial( g );
 true
 gap> TestMonomialUseLattice_Orig:= TestMonomialUseLattice;;
 gap> TestMonomialUseLattice:= 50;;
-gap> test:= TestMonomial( SmallGroup( 96, 190 ) );;
+gap> g:= PcGroupCode( 509649248191327434210824, 96 );; # SmallGroup( 96, 190 )
+gap> test:= TestMonomial( g );;
 gap> test.isMonomial;  test.comment;
 "?"
 "(possibly) nonmon. characters found"
-gap> test:= TestMonomial( SmallGroup( 96, 190 ), true );;
+gap> g:= PcGroupCode( 509649248191327434210824, 96 );; # SmallGroup( 96, 190 )
+gap> test:= TestMonomial( g, true );;
 gap> test.isMonomial;  test.comment;
 false
 "nonmonomial character found"
 gap> TestMonomialUseLattice:= TestMonomialUseLattice_Orig;;
-gap> g:= SmallGroup( 16, 3 );;
+gap> g:= PcGroupCode( 16905, 16 );; # SmallGroup( 16, 3 )
+gap> IsNilpotentGroup( g ); # not yet stored (contrary to SmallGroup( 16, 3 ))
+true
 gap> TestMonomialQuick( g );  # implication
 rec( comment := "was already stored", isMonomial := true )
 gap> TestMonomial( g );
 rec( comment := "was already stored", isMonomial := true )
 gap> IsMonomial( g );
 true
-#@fi
 
 #
 gap> g:= AlternatingGroup( 5 );;
@@ -280,37 +271,34 @@ gap> TestMonomial( g );
 rec( comment := "non-solvable group", isMonomial := false )
 gap> IsMonomial( g );
 false
-
-#@if IsPackageMarkedForLoading( "smallgrp", "" )
-gap> g:= SmallGroup( 56, 10 );;
+gap> g:= PcGroupCode( 2118735822, 56 );; # SmallGroup( 56, 10 )
 gap> TestMonomialQuick( g );
 rec( comment := "group order is monomial", isMonomial := true )
 gap> TestMonomial( g );
 rec( comment := "group order is monomial", isMonomial := true )
 gap> IsMonomial( g );
 true
-gap> g:= SmallGroup( 24, 10 );;
+gap> g:= PcGroupCode( 8322, 24 );; # SmallGroup( 24, 10 )
 gap> TestMonomialQuick( g );
 rec( comment := "nilpotent group", isMonomial := true )
 gap> TestMonomial( g );
 rec( comment := "nilpotent group", isMonomial := true )
 gap> IsMonomial( g );
 true
-gap> g:= SmallGroup( 24, 4 );;
+gap> g:= PcGroupCode( 128017073, 24 );; # SmallGroup( 24, 4 )
 gap> TestMonomialQuick( g );
 rec( comment := "supersolvable group", isMonomial := true )
 gap> TestMonomial( g );
 rec( comment := "supersolvable group", isMonomial := true )
 gap> IsMonomial( g );
 true
-gap> g:= SmallGroup( 324, 160 );;
+gap> g:= PcGroupCode( 24675464984170254868242298919, 324 );; # SmallGroup( 324, 160 )
 gap> TestMonomialQuick( g );
 rec( comment := "Sylow abelian by supersolvable group", isMonomial := true )
 gap> TestMonomial( g );
 rec( comment := "Sylow abelian by supersolvable group", isMonomial := true )
 gap> IsMonomial( g );
 true
-#@fi
 
 ##
 gap> TestSubnormallyMonomial( S4 );

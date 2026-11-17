@@ -83,10 +83,14 @@ local newrow;
 end);
 
 BindGlobal("SMTX_NewEqns",function (dim, field)
+local zero;
+  # must be a row vector like the equations, which ZeroVector(field, dim)
+  # is not for fields with more than 256 elements
+  zero := ImmutableVector(field, ListWithIdenticalEntries(dim, Zero(field)));
   return rec(
     dim := dim,         # number of variables
     field := field,     # field over which the equation hold
-    mb := MutableBasis(field, [], ZeroVector(field, dim)),
+    mb := MutableBasis(field, [], zero),
   );
 end);
 
@@ -126,7 +130,11 @@ BindGlobal("SMTX_NullspaceEqns",function(e)
 local mat, n, one, zerovec, i, k, nullspace, row;
 
   # HACK: convert MutableBasis into the "old" format expected by this code
-  e.mat := ShallowCopy(e.mb!.basisVectors);
+  if IsBound( e.mb!.basisVectors ) then
+    e.mat:= ShallowCopy( e.mb!.basisVectors );
+  else
+    e.mat:= List( BasisVectors( e.mb ), ShallowCopy );
+  fi;
   e.pivots := List(e.mat, PositionNonZero);
   SortParallel(e.pivots, e.mat);
 
@@ -190,12 +198,11 @@ local n, coeffs, x, zero, z, i;
 # Note that the pivots of <base> must be set to 1.
 
   n:=Length(base);
+  x:=ShallowCopy(v);
 
   if n = 0 then
     coeffs:=[];
-    x:=v;
   else
-    x:=ShallowCopy(v);
     zero:=x[1]*0;
     coeffs:=ListWithIdenticalEntries(n, zero);
     for i in [1..n] do
@@ -765,7 +772,7 @@ local nv, nw, F, zero, minusone, zeroW, gV, gW, k, U, echu, r, homs, s, work, an
         Add(hom, image);
       od;
       hom:=ImmutableMatrix(F,hom);
-      Assert(1,hom<>0*hom);
+      Assert(1,not IsZero( hom ));
       Add(newhoms, hom);
     od;
 

@@ -250,6 +250,18 @@ jobs:
           ref: main
           path: gap-windows
 
+      # release_gap.sh compiles with ccache into gap-windows/ccache. Most of
+      # the build time goes into packages that rarely change, so reuse the
+      # cache of the latest run. Each run saves a new entry, as a cache entry
+      # cannot be updated. Only branch runs save: a pull request's or tag's
+      # entry can be restored only by runs of that same ref.
+      - name: "Restore the ccache cache"
+        uses: actions/cache/restore@v6
+        with:
+          path: gap-windows/ccache
+          key: ccache-cygwin-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: ccache-cygwin-
+
       - uses: gap-actions/setup-cygwin@v2
 
       # Currently, the gap-windows/release_gap.sh script wraps the GAP
@@ -272,6 +284,13 @@ jobs:
 
         env:
           ARCH: x86_64
+
+      - name: "Save the ccache cache"
+        if: ${{ !cancelled() && startsWith(github.ref, 'refs/heads/') }}
+        uses: actions/cache/save@v6
+        with:
+          path: gap-windows/ccache
+          key: ccache-cygwin-${{ github.run_id }}-${{ github.run_attempt }}
 
       # Artifacts live for 1 day, i.e. until the next cron job runs.
       - name: "Upload the installer as an artifact"

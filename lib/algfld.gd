@@ -195,7 +195,7 @@ DeclareGlobalFunction("AlgExtSquareHensel");
 ##  This function determines such decompositions up to equality of the subfields
 ##  <M>Q(\beta)</M>, thus determining subfields of a given algebraic extension.
 ##  It returns a list of pairs <M>[g,h]</M> (and an empty list if no such
-##  decomposition exists). If the option <A>onlyone</A> is given it returns at
+##  decomposition exists). If the option <C>onlyone</C> is given it returns at
 ##  most one such decomposition (and performs faster).
 ##  <Example><![CDATA[
 ##  gap> x:=X(Rationals,"x");;pol:=x^8-24*x^6+144*x^4-288*x^2+144;;

@@ -543,9 +543,9 @@ DeclareSynonymAttr( "IsRingWithOneHomomorphism",
 ##
 ##  <Description>
 ##  <Ref Filt="IsAlgebraGeneralMapping"/> specifies whether a general
-##  mapping <A>mapp</A> satisfies both properties
+##  mapping <A>mapp</A> satisfies both
 ##  <Ref Filt="IsRingGeneralMapping"/> and
-##  (see <Ref Filt="IsLeftModuleGeneralMapping"/>).
+##  <Ref Filt="IsLeftModuleGeneralMapping"/>.
 ##  <P/>
 ##  <Ref Filt="IsAlgebraHomomorphism"/> is a synonym for the meet of
 ##  <Ref Filt="IsAlgebraGeneralMapping"/> and <Ref Filt="IsMapping"/>.

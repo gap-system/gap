@@ -742,8 +742,8 @@ InstallOtherMethod(EpimorphismSchurCover,"Holt's algorithm, primes",true,
 InstallMethod(SchurCover,"general: Holt's algorithm",true,[IsGroup],0,
   G->Source(EpimorphismSchurCover(G)));
 
-############################################################################
-############################################################################
+#############################################################################
+#############################################################################
 ##
 ##  Additional attributes and properties                     Robert F. Morse
 ##  derived from computing the Schur Cover
@@ -754,7 +754,7 @@ InstallMethod(SchurCover,"general: Holt's algorithm",true,[IsGroup],0,
 ##  O EpimorphismNonabelianExteriorSquare
 ##  P IsCapable
 ##
-############################################################################
+#############################################################################
 ##
 #A  Epicentre(<G>)
 ##

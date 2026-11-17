@@ -12,13 +12,13 @@
 ##
 
 
-###########################################################################
+#############################################################################
 ##
 #R  IsZeroCochainRep( <c> )
 ##
-DeclareRepresentation( "IsZeroCochainRep", IsPackedElementDefaultRep, [1] );
+DeclareRepresentation( "IsZeroCochainRep", IsPackedElementDefaultRep );
 
-##############################################################################
+#############################################################################
 ##
 #M  Cochain( <V>, <s>, <list> )
 ##
@@ -78,7 +78,7 @@ InstallMethod( Cochain,
 
 end );
 
-##############################################################################
+#############################################################################
 ##
 #M  ExtRepOfObj( <coch> ) . . . . . . . . . . . . . . . for a cochain
 ##
@@ -88,7 +88,7 @@ InstallMethod( ExtRepOfObj,
         c -> c![1] );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  PrintObj( <coch> ) . . . . . . . . . . . . . . . for cochains
 ##
@@ -102,10 +102,10 @@ InstallMethod( PrintObj,
 end );
 
 
-##############################################################################
+#############################################################################
 ##
-#M  CochainSpace( <V>, <s> ) . . . . . . . for a module over a Lie algebra and
-##                                         an integer
+#M  CochainSpace( <V>, <s> ) . . . . . .  for a module over a Lie algebra and
+##                                        an integer
 ##
 ##
 InstallMethod( CochainSpace,
@@ -157,15 +157,15 @@ end );
 
 
 
-##############################################################################
+#############################################################################
 ##
-#M  \+( <c1>, <c2> ) . . . . . . . . . . . . . . . . . . . for two cochains
-#M  AdditiveInverseOp( <c> ) . . . . .  . . . . . . . . . . . . . . . . for a cochain
-#M  \*( <scal>, <c> ) . . . . . . . . . . . . . . for a scalar and a cochain
-#M  \*( <c>, <scal> ) . . . . . . . . . . . . . . for a chain and a scalar
-#M  \<( <c1>, <c2> ) . . . . . . . . . . . . . . . . . . . for two cochains
-#M  \=( <c1>, <c2> ) . . . . . . . . . . . . . . . . . . . for two cochains
-#M  ZeroOp( <c> ) . . . . . . . . . . . . . . . . . . . .  for a cochain
+#M  \+( <c1>, <c2> ) . . . . . . . . . . . . . . . . . . . . for two cochains
+#M  AdditiveInverseOp( <c> ) . . . . .  . . . . . . . . . . . . for a cochain
+#M  \*( <scal>, <c> ) . . . . . . . . . . . . . .  for a scalar and a cochain
+#M  \*( <c>, <scal> ) . . . . . . . . . . . . . . .  for a chain and a scalar
+#M  \<( <c1>, <c2> ) . . . . . . . . . . . . . . . . . . . . for two cochains
+#M  \=( <c1>, <c2> ) . . . . . . . . . . . . . . . . . . . . for two cochains
+#M  ZeroOp( <c> ) . . . . . . . . . . . . . . . . . . . . . . . for a cochain
 ##
 InstallMethod( \+,
     "for two cochains",
@@ -199,7 +199,7 @@ InstallMethod( \+,
                i:= i+1;
             fi;
           od;
-          list:= Filtered( list, x -> x[2]<>0*x[2] );
+          list:= Filtered( list, x -> not IsZero( x[2] ) );
           l[k]:= list;
         fi;
       od;
@@ -351,9 +351,9 @@ end );
 
 #############################################################################
 ##
-#M  NiceFreeLeftModuleInfo( <C> ) . . . . . . . . . for a module of cochains
-#M  NiceVector ( <C>, <c> ) . . . . .for a module of cochains and a cochain
-#M  UglyVector( <C>, <v> ) . . . . . for a module of cochains and a row vector
+#M  NiceFreeLeftModuleInfo( <C> ) . . . . . . . . .  for a module of cochains
+#M  NiceVector ( <C>, <c> ) . . . . .  for a module of cochains and a cochain
+#M  UglyVector( <C>, <v> ) . . . .  for a module of cochains and a row vector
 ##
 InstallHandlingByNiceBasis( "IsCochainsSpace", rec(
     detect := function( R, gens, V, zero )
@@ -433,7 +433,7 @@ InstallHandlingByNiceBasis( "IsCochainsSpace", rec(
       while j <> Length( vec ) do
         l[k]:= [ ];
         for i in [j+1..j+Length(tt)] do
-          if vec[i] <> 0*vec[i] then
+          if not IsZero( vec[i] ) then
             Add( l[k], [ tt[i-j], vec[i] ] );
           fi;
         od;
@@ -446,9 +446,9 @@ InstallHandlingByNiceBasis( "IsCochainsSpace", rec(
       end ) );
 
 
-##############################################################################
+#############################################################################
 ##
-#F   ValueCochain( <c>, <y1>, ... ,<ys> )
+#F  ValueCochain( <c>, <y1>, ... ,<ys> )
 ##
 ##
 InstallGlobalFunction( ValueCochain,
@@ -494,7 +494,7 @@ InstallGlobalFunction( ValueCochain,
            cfs1:= [ ];
            for i in [1..Length(cfs)] do
              for j in [1..Length(cfs[i][k])]  do
-               if cfs[i][k][j] <> 0*cfs[i][k][j] then
+               if not IsZero( cfs[i][k][j] ) then
                   cf:= ShallowCopy( cfs[i] );
                   cf[k] := [ cf[k][j], j ];
                   Add( cfs1, cf );
@@ -603,7 +603,7 @@ InstallGlobalFunction( LieCoboundaryOperator,
 
          cfs:= Coefficients( Basis(V), val );
          for k in [1..Length(cfs)] do
-           if cfs[k] <> 0*cfs[k] then
+           if not IsZero( cfs[k] ) then
              Add( list[k], [ t, cfs[k] ] );
            fi;
          od;
@@ -615,9 +615,9 @@ InstallGlobalFunction( LieCoboundaryOperator,
 end );
 
 
-##############################################################################
+#############################################################################
 ##
-#M  Coboundaries( <V>, <s> ) . . . . . . . . . for alg module and integer
+#M  Coboundaries( <V>, <s> ) . . . . . . . . . . . for alg module and integer
 ##
 ##
 InstallMethod( Coboundaries,
@@ -681,7 +681,7 @@ InstallMethod( Cocycles,
 
 end );
 
-############################################################################
+#############################################################################
 ##
 #M  WeylGroup( <R> ) . . . . . . . . . . . . . . . . . . . for a root system
 ##
@@ -751,7 +751,7 @@ function( SC, i, w )
 
 end );
 
-############################################################################
+#############################################################################
 ##
 #M  LongestWeylWordPerm( <W> ) . . . . . . . . . . . . . . . for a Weyl group
 ##
@@ -805,7 +805,7 @@ InstallMethod( ConjugateDominantWeight,
 
 end);
 
-###########################################################################
+#############################################################################
 ##
 #M  ConjugateDominantWeightWithWord( <W>, <wt> )
 ##
@@ -850,14 +850,14 @@ end);
 ##  midLen with the longest Weyl element...
 ##
 
-############################################################################
+#############################################################################
 ##
 #M  IsDoneIterator( <it> ) . . . . . . . . . . . . for Weyl orbit iterator
 ##
 BindGlobal( "IsDoneIterator_WeylOrbit", it -> it!.isDone );
 
 
-############################################################################
+#############################################################################
 ##
 #M  NextIterator( <it> ) . . . . . . . . . . . . for a Weyl orbit iterator
 ##
@@ -873,7 +873,7 @@ BindGlobal( "NextIterator_WeylOrbit", function( it )
     if it!.status = 1 then
         it!.status:= 2;
         mu:= it!.currentWeight;
-        if mu = 0*mu then
+        if IsZero( mu ) then
             it!.isDone:= true;
         fi;
         return mu;
@@ -1262,7 +1262,7 @@ InstallOtherMethod( DominantCharacter,
 end );
 
 
-###############################################################################
+#############################################################################
 ##
 #M  DecomposeTensorProduct( <L>, <w1>, <w2> )
 ##
@@ -1324,7 +1324,7 @@ InstallMethod( DecomposeTensorProduct,
 
 end );
 
-###############################################################################
+#############################################################################
 ##
 #M  DimensionOfHighestWeightModule( <L>, <w> )
 ##
@@ -1359,7 +1359,7 @@ end );
 
 
 
-############################################################################
+#############################################################################
 ##
 #M  ObjByExtRep( <fam>, <list> )
 #M  ExtRepOfObj( <obj> )
@@ -1382,7 +1382,7 @@ InstallMethod( ExtRepOfObj,
 
 end );
 
-###########################################################################
+#############################################################################
 ##
 #M  PrintObj( <m> ) . . . . . . . . . . . . . . . . for an UEALattice element
 ##
@@ -1439,12 +1439,12 @@ end );
 
 #############################################################################
 ##
-#M  OneOp( <m> ) . . . . . . . . . . . . . . . . for a UEALattice element
-#M  ZeroOp( <m> ) . . . . . . . . . . . . . . .  for a UEALattice element
-#M  \<( <m1>, <m2> ) . . . . . . . . . . . . . . for two UEALattice elements
-#M  \=( <m1>, <m2> ) . . . . . . . . . . . . . . for two UEALattice elements
-#M  \+( <m1>, <m2> ) . . . . . . . . . . . . . . for two UEALattice elements
-#M  \AdditiveInverseOp( <m> )     . . . . . . . . . . . . . . for a UEALattice element
+#M  OneOp( <m> ) . . . . . . . . . . . . . . . . . . for a UEALattice element
+#M  ZeroOp( <m> ) . . . . . . . . . . . . . . . . .  for a UEALattice element
+#M  \<( <m1>, <m2> ) . . . . . . . . . . . . . .  for two UEALattice elements
+#M  \=( <m1>, <m2> ) . . . . . . . . . . . . . .  for two UEALattice elements
+#M  \+( <m1>, <m2> ) . . . . . . . . . . . . . .  for two UEALattice elements
+#M  \AdditiveInverseOp( <m> )     . . . . . . . . .  for a UEALattice element
 ##
 ##
 InstallMethod( OneOp,
@@ -1556,7 +1556,9 @@ InstallGlobalFunction( CollectUEALatticeElement,
     function( noPosR, BH, f, vars, Rvecs, RT, posR, lst )
 
     local   i, j, k, l, p, q, r, s,   # loop variables
-            todo,                # list of monomials that still need treatment
+            tmons, tcfs,         # sorted monomials that still need treatment,
+                                 # and their coefficients
+            moncf,               # coefficient of `mon'
             dones,               # list of monomials that don't
             collocc,             # `true' is a collection has occurred
             mon, mon1,           # monomials,
@@ -1642,7 +1644,7 @@ InstallGlobalFunction( CollectUEALatticeElement,
          od;
          Append( res, WriteAsLCOfBinoms( vars, q ) );
          for k in [2,4..Length(res)] do
-             if res[k] = 0*res[k] then
+             if IsZero( res[k] ) then
                  Unbind( res[k-1] ); Unbind( res[k] );
              fi;
          od;
@@ -1660,15 +1662,18 @@ InstallGlobalFunction( CollectUEALatticeElement,
     # same order as the roots), then the Cartan elements, and then the
     # `positive' root vectors.
 
-    todo:= ShallowCopy( lst );
+    tmons:= lst{[1,3..Length(lst)-1]};
+    tcfs:= lst{[2,4..Length(lst)]};
+    SortParallel( tmons, tcfs );
     dones:= [ ];
 
-    while todo <> [] do
+    while tmons <> [] do
 
      # `collocc' will be `true' once a collection has occurred.
 
         collocc:= false;
-        mon:= ShallowCopy(todo[1]);
+        mon:= ShallowCopy( Remove( tmons ) );
+        moncf:= Remove( tcfs );
 
      # We collect `mon'.
 
@@ -1705,7 +1710,6 @@ InstallGlobalFunction( CollectUEALatticeElement,
                     temp:= mon[i+1];
                     mon[i+1]:= mon[i+3];
                     mon[i+3]:= temp;
-                    todo[1]:= mon;
                     i:= 1;
 
                 fi;
@@ -1724,7 +1728,6 @@ InstallGlobalFunction( CollectUEALatticeElement,
                     temp:= mon[i+1];
                     mon[i+1]:= mon[i+3];
                     mon[i+3]:= temp;
-                    todo[1]:= mon;
                     i:= 1;
                 fi;
             elif mon[i] = mon[i+2] then
@@ -1732,11 +1735,10 @@ InstallGlobalFunction( CollectUEALatticeElement,
                 # They are the same; so we take them together. This costs
                 # a binomial factor.
                 mon[i+1]:= mon[i+1]+mon[i+3];
-                todo[2]:= todo[2]*Binomial(mon[i+1],mon[i+3]);
+                moncf:= moncf*Binomial(mon[i+1],mon[i+3]);
 
                 Remove( mon, i+2 );
                 Remove( mon, i+2 );
-                todo[1]:= mon;
             elif mon[i] < mon[i+2] then
 
                 # They are in the right order; we do nothing.
@@ -1750,8 +1752,7 @@ InstallGlobalFunction( CollectUEALatticeElement,
                 # To every element of `rr' we then have to prepend
                 # `start' and to append `tail'.
 
-                cf:= todo[2];
-                Unbind( todo[1] ); Unbind( todo[2] );
+                cf:= moncf;
                 start:= mon{[1..i-1]};
                 tail:= mon{[i+4..Length(mon)]};
                 if posR[mon[i]] = -posR[mon[i+2]] then
@@ -2023,18 +2024,17 @@ InstallGlobalFunction( CollectUEALatticeElement,
                     st1:= List( start, ShallowCopy );
                     Append( st1, rr[j] );
                     Append( st1, List( tail, ShallowCopy ) );
-                    p:= Position( todo, st1 );
-                    if p = fail then
-                        Add( todo, st1 );
-                        Add( todo, rr[j+1]*cf );
+                    p:= PositionSorted( tmons, st1 );
+                    if p > Length( tmons ) or tmons[p] <> st1 then
+                        Add( tmons, st1, p );
+                        Add( tcfs, rr[j+1]*cf, p );
                     else
-                        todo[p+1]:= todo[p+1] + rr[j+1]*cf;
-                        if todo[p+1] = 0 then
-                            Unbind( todo[p+1] ); Unbind( todo[p] );
+                        tcfs[p]:= tcfs[p] + rr[j+1]*cf;
+                        if tcfs[p] = 0 then
+                            Remove( tmons, p ); Remove( tcfs, p );
                         fi;
                     fi;
                 od;
-                todo:= Compacted( todo );
                 collocc:= true;
 
                # We performed one collection step, and we break from
@@ -2045,19 +2045,19 @@ InstallGlobalFunction( CollectUEALatticeElement,
 
         if not collocc then
 
-            # No collection has occurred, so `todo[1]' is in normal form.
+            # No collection has occurred, so `mon' is in normal form.
             # First we check whether the monomial has any Cartan elements.
             # (Those are represented by lists, instead of integers).
 
             has_h:= false;
-            for i in [1,3..Length(todo[1])-1] do
-                if IsList(todo[1][i]) then has_h:= true; break; fi;
+            for i in [1,3..Length(mon)-1] do
+                if IsList(mon[i]) then has_h:= true; break; fi;
             od;
 
             if not has_h then
 
               # No Cartan elements; we do not have to transform the monomial.
-                mons:= [ todo[1], todo[2] ];
+                mons:= [ mon, moncf ];
             else
 
               # Here we do have Cartan elements; those occur as pieces of the
@@ -2070,13 +2070,13 @@ InstallGlobalFunction( CollectUEALatticeElement,
               # write that polynomial as a linear combination of pure
               # binomials, and transform the result back again.
 
-                start:= todo[1]{[1..i-1]};
+                start:= mon{[1..i-1]};
                 j:= i;
                 pol:= vars[1]^0;
 
-                while j <= Length( todo[1] ) and IsList( todo[1][j] ) do
-                    q:= Image( f, todo[1][j][1] ) + todo[1][j][2];
-                    s:= todo[1][j+1];
+                while j <= Length( mon ) and IsList( mon[j] ) do
+                    q:= Image( f, mon[j][1] ) + mon[j][2];
+                    s:= mon[j+1];
                     pol:= pol*
                           Product( List( [0..s-1], x -> q - x ) )/Factorial(s);
                     j:= j+2;
@@ -2084,8 +2084,8 @@ InstallGlobalFunction( CollectUEALatticeElement,
 
               # Now we processed the Cartan elements, we still may have a tail.
 
-                if j <= Length( todo[1] ) then
-                    tail:= todo[1]{[j..Length(todo[1])]};
+                if j <= Length( mon ) then
+                    tail:= mon{[j..Length(mon)]};
                 else
                     tail:= [ ];
                 fi;
@@ -2102,7 +2102,7 @@ InstallGlobalFunction( CollectUEALatticeElement,
                     mm:= ShallowCopy( start );
                     Append( mm, ww[k] ); Append( mm, tail );
                     Add( mons, mm );
-                    cf:= ww[k+1]*todo[2];
+                    cf:= ww[k+1]*moncf;
                     if IsRationalFunction( cf ) then
                         cf:= ExtRepPolynomialRatFun( cf )[2];
                     fi;
@@ -2127,9 +2127,6 @@ InstallGlobalFunction( CollectUEALatticeElement,
                     fi;
                 fi;
             od;
-
-            Remove( todo, 1 );
-            Remove( todo, 1 );
 
         fi;
     od;
@@ -2194,7 +2191,7 @@ InstallMethod( \*,
     for i in [1..Length( mons )] do
         if len > 0 and lst[len-1] = mons[i] then
             lst[len]:= lst[len]+cfs[i];
-            if lst[len] = 0*lst[len] then
+            if IsZero( lst[len] ) then
                 Remove( lst, len-1 );
                 Remove( lst, len-1 );
                 len:= len-2;
@@ -2208,7 +2205,7 @@ InstallMethod( \*,
     return ObjByExtRep( FamilyObj(x), lst );
 end );
 
-############################################################################
+#############################################################################
 ##
 ##
 ##
@@ -2223,8 +2220,7 @@ end );
 #R  IsVectorSearchTableDefaultRep     Representation of vector search tables.
 ##
 DeclareRepresentation( "IsVectorSearchTableDefaultRep",
-    IsVectorSearchTable and IsComponentObjectRep and IsAttributeStoringRep,
-    [ "top" ]);            # the top node of the search data structure
+    IsVectorSearchTable and IsComponentObjectRep and IsAttributeStoringRep);
 
 ## Create a new vector search tree node
 BindGlobal( "VSTNode", function(var, exp, nxt)
@@ -2504,7 +2500,7 @@ InstallMethod(Display,
 
 
 
-############################################################################
+#############################################################################
 ##
 #M  LatticeGeneratorsInUEA( <L> )
 ##
@@ -2515,6 +2511,7 @@ InstallMethod( LatticeGeneratorsInUEA,
         function( L )
 
     local   R,  n,  roots,  fam,  gens,  i, Rvecs, bL, H, vars, P, m, F, j, k,
+            cfs, pos,
             B; # Chevalley basis.
 
     # For every root and every canonical Cartan element, there is a generator.
@@ -2546,12 +2543,14 @@ InstallMethod( LatticeGeneratorsInUEA,
     # a*y_{\alpha_i+\alpha_j}'.
 
     m:= NullMat( 2*n, 2*n );
+    cfs:= List( Rvecs, x -> Coefficients( Basis( L ), x ) );
+    pos:= List( cfs, PositionNonZero );
     for i in [1..2*n] do
         for j in [i+1..2*n] do
             k:= Position( roots, roots[i]+roots[j] );
             if k <> fail then
-                m[i][j]:= Coefficients( Basis( VectorSpace( F, [ Rvecs[k] ]),
-                                      [ Rvecs[k] ] ), Rvecs[i]*Rvecs[j])[1];
+                m[i][j]:= Coefficients( Basis( L ), Rvecs[i]*Rvecs[j] )[pos[k]]
+                          / cfs[k][pos[k]];
                 m[j][i]:= -m[i][j];
             fi;
         od;
@@ -2670,7 +2669,7 @@ InstallGlobalFunction( LeftReduceUEALatticeElement,
     rem:= p;
     res:= 0*p;
 
-    while rem <> 0*rem do
+    while not IsZero( rem ) do
 
         m1:= LeadingUEALatticeMonomial( novar, rem );
         k:= 1;
@@ -2714,7 +2713,7 @@ InstallGlobalFunction( LeftReduceUEALatticeElement,
 end );
 
 
-############################################################################
+#############################################################################
 ##
 #M  ObjByExtRep( <fam>, <list> ) . . . . . . for a WeightRepFamily and a list
 #M  ExtRepOfObj( <wte> ) . . . . . . . . . . for a weight rep element
@@ -2767,13 +2766,13 @@ end );
 
 #############################################################################
 ##
-#M  \+( <u>, <v> ) . . . . . . . . . . . . . . for two weight rep elements
-#M  AdditiveInverseOp( <u> ) . . . . . . . . . . . .  . . . for a weight rep element
-#M  \*( <scal>, <u> ) . . . . . . . . . . . .for a scalar and a weight rep elt
-#M  \*( <u>, <scal> ) . . . . . . . . . . . .for a weight rep elt and a scalar
-#M  ZeroOp( <u> ) . . . . . . . . . . . . .  for a weight rep element
-#M  \=( <u>, <v> ) . . . . . . . . . . . . . for two weight rep elements
-#M  \<( <u>, <v> ) . . . . . . . . . . . . . for two weight rep elements
+#M  \+( <u>, <v> ) . . . . . . . . . . . . . . .  for two weight rep elements
+#M  AdditiveInverseOp( <u> ) . . . . . . . . . . . . for a weight rep element
+#M  \*( <scal>, <u> ) . . . . . . . . . . . for a scalar and a weight rep elt
+#M  \*( <u>, <scal> ) . . . . . . . . . . . for a weight rep elt and a scalar
+#M  ZeroOp( <u> ) . . . . . . . . . . . . . . . . .  for a weight rep element
+#M  \=( <u>, <v> ) . . . . . . . . . . . . . . .  for two weight rep elements
+#M  \<( <u>, <v> ) . . . . . . . . . . . . . . .  for two weight rep elements
 ##
 InstallMethod(\+,
         "for weight rep elements",
@@ -2803,7 +2802,7 @@ InstallMethod(\+,
             lu:= lu0;
         else
             cf:= lu[2*p]+lv[k+1];
-            if cf = 0*cf then
+            if IsZero( cf ) then
                 Remove( lu, 2*p-1 );
                 Remove( lu, 2*p-1 );
                 Remove( vecs, p );
@@ -2977,14 +2976,14 @@ InstallOtherMethod(\^,
                 for k in [j,j+2..len] do
                     cf:= cf*Binomial( hw[ em[i][k]-2*n ], em[i][k+1] );
                 od;
-                if cf <> 0*cf then
+                if not IsZero( cf ) then
                     mon:= em[i]{[1..j-1]};
                     pos:= Position( er, mon );
                     if pos = fail then
                         Add( er, mon ); Add( er, cf );
                     else
                         er[pos+1]:= er[pos+1]+cf;
-                        if er[pos+1] = 0*er[pos+1] then
+                        if IsZero( er[pos+1] ) then
                             Remove( er, pos );
                             Remove( er, pos );
                         fi;
@@ -2999,7 +2998,7 @@ InstallOtherMethod(\^,
                 Add( er, mon ); Add( er, cf );
             else
                 er[pos+1]:= er[pos+1]+cf;
-                if er[pos+1] = 0*er[pos+1] then
+                if IsZero( er[pos+1] ) then
                     Remove( er, pos );
                     Remove( er, pos );
                 fi;
@@ -3122,7 +3121,7 @@ BindGlobal( "TriangulizeWeightRepElementList", function( ww )
     return rec( echelonbas:= ww, heads:= heads, basechange:= basechange );
 end );
 
-##############################################################################
+#############################################################################
 ##
 #M  Basis( <V>, <vecs> )
 #M  BasisNC( <V>, <vecs> )
@@ -3194,7 +3193,7 @@ InstallMethod( Basis,
 end );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  Coefficients( <B>, <v> ). . . . . . for basis of a space of weight rep
 ##                                      elements and vector
@@ -3233,7 +3232,7 @@ end );
 
 
 
-##############################################################################
+#############################################################################
 ##
 #M  HighestWeightModule( <L>, <hw> ) for a Lie algebra and a dominant weight.
 ##
@@ -3252,36 +3251,20 @@ InstallMethod( HighestWeightModule,
             multiplicity,  sps,  sortmn,  we_had_enough,  le,  f,
             m1a,  g,  m2a,  lcm,  pp,  w2,  e1,  e2,  fac1,  fac2,
             comp,  vec,  ecomp,  vecs,  cfsc,  ec,  wvecs,  no,  fam,
-            B,  delmod,  delB, lexord, longmon;
+            B,  delmod,  delB, lexkey, longmon;
 
 
-    lexord:= function( novar, m1, m2 )
+    lexkey:= function( novar, m )
 
-        # m1, m2 are two monomials in extrep, deg lex order...
+        # Sort key of the monomial m in extrep: descending deg lex order.
 
-        local   d1,  d2,  n1,  k,  n2,  o,  pos;
+        local   n,  k;
 
-        d1:= Sum(m1{[2,4..Length(m1)]});
-        d2:= Sum(m2{[2,4..Length(m2)]});
-        if d1<>d2 then
-            return d1<d2;
-        fi;
-
-        n1:= ListWithIdenticalEntries( novar, 0 );
-        for k in [1,3..Length(m1)-1] do
-            n1[m1[k]]:= m1[k+1];
+        n:= ListWithIdenticalEntries( novar, 0 );
+        for k in [1,3..Length(m)-1] do
+            n[m[k]]:= m[k+1];
         od;
-        n2:= ListWithIdenticalEntries( novar, 0 );
-        for k in [1,3..Length(m2)-1] do
-            n2[m2[k]]:= m2[k+1];
-        od;
-
-        o:= n2-n1;
-        pos:= PositionProperty( o, x -> x <> 0 );
-        if pos = fail then
-            return false;
-        fi;
-        return o[pos] < 0;
+        return Concatenation( [ -Sum( n ) ], n );
     end;
 
 
@@ -3293,7 +3276,7 @@ InstallMethod( HighestWeightModule,
         # divide by their greatest common divisor.
 
         res:= LeftReduceUEALatticeElement( novar, G, lms, lmtab, p );
-        if res <> 0*res then
+        if not IsZero( res ) then
             cf:= res![1]{[2,4..Length(res![1])]};
             res:= (Lcm(List(cf,DenominatorRat))/
                                  Gcd(List(cf,NumeratorRat)))*res;
@@ -3564,8 +3547,7 @@ InstallMethod( HighestWeightModule,
                     sps[j]:= MutableBasis( Rationals, [],
                                      [1..Length(mmm[j])]*0 );
                     sortmn[j]:= List( mmm[j], x -> ExtRepOfObj(x)[1] );
-                    Sort( sortmn[j], function(x,y) return
-                             lexord( novar, y, x ); end );
+                    SortBy( sortmn[j], m -> lexkey( novar, m ) );
 
                 fi;
             fi;
@@ -3637,7 +3619,7 @@ InstallMethod( HighestWeightModule,
                            LeadingUEALatticeMonomial(novar,fac1)[3]*fac2;
                     comp:= NormalizedLeftReduction( novar, GB, lms, lmtab,
                                    comp );
-                    if comp <> 0*comp then
+                    if not IsZero( comp ) then
 
                         vec:= ListWithIdenticalEntries( Length( sortmn[pp] ),
                                       0 );
@@ -3681,7 +3663,7 @@ InstallMethod( HighestWeightModule,
                     ecomp:= [ ];
                     cfsc:= [ ];
                     for i in [1..Length(vecs[l])] do
-                        if vecs[l][i] <> 0*vecs[l][i] then
+                        if not IsZero( vecs[l][i] ) then
 
                             Add( ecomp, sortmn[j][i] );
                             Add( cfsc, vecs[l][i] );
@@ -3992,7 +3974,7 @@ InstallGlobalFunction( ExtendRepresentation,
            for s in [1..Length(cij[1])] do
              M:= M - cij[2][s]*mm[cij[1][s]];
            od;
-           if M <> 0*M then return false; fi;
+           if not IsZero( M ) then return false; fi;
          od;
        od;
        return true;

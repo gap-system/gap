@@ -99,9 +99,9 @@ fi;
 ##  At this point, a <K>break</K>-loop
 ##  (see Section&nbsp;<Ref Sect="Break Loops"/>) has been entered.
 ##  The line beginning <C>Error</C> tells you why this occurred.
-##  The next seven lines occur if <Ref Func="OnBreak"/> has its default value
+##  The stack trace that follows occurs if <Ref Func="OnBreak"/> has its default value
 ##  <Ref Func="Where"/>.
-##  They explain, in this case,
+##  It explains, in this case,
 ##  how &GAP; came to be doing a coset enumeration.
 ##  Then you are given a number of options of how to escape the
 ##  <K>break</K>-loop:
@@ -403,24 +403,6 @@ DeclareGlobalFunction("SetReducedMultiplication");
 ##
 DeclareAttribute( "FpElementNFFunction",IsElementOfFpGroupFamily);
 
-# #############################################################################
-# ##
-# #A  FpElmKBRWS(<fam>)
-# ##
-# ##  <ManSection>
-# ##  <Attr Name="FpElmKBRWS" Arg='fam'/>
-# ##
-# ##  <Description>
-# ##  If <A>fam</A> is the elements family of a finitely presented group this
-# ##  attribute returns a list [<A>iso</A>,<A>k</A>,<A>id</A>] where <A>iso</A> is an isomorphism to an
-# ##  fp monoid, <A>k</A> a confluent rewriting system for the image of <A>iso</A> and
-# ##  <A>id</A> the element in the free monoid corresponding to the image of the
-# ##  identity element under <A>iso</A>.
-# ##  </Description>
-# ##  </ManSection>
-# ##
-#DeclareAttribute( "FpElmKBRWS",IsElementOfFpGroupFamily);
-
 
 #############################################################################
 ##
@@ -566,7 +548,7 @@ DeclareGlobalFunction("IndexCosetTab");
 ##
 ##  <#GAPDoc Label="StandardizeTable">
 ##  <ManSection>
-##  <Func Name="StandardizeTable" Arg='table, standard'/>
+##  <Func Name="StandardizeTable" Arg='table[, standard]'/>
 ##
 ##  <Description>
 ##  standardizes the given coset table <A>table</A>. The second argument is
@@ -753,7 +735,7 @@ DeclareGlobalFunction("SubgroupOfWholeGroupByQuotientSubgroup");
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation("IsSubgroupOfWholeGroupByQuotientRep",
-  IsSubgroupFpGroup and IsComponentObjectRep,["quot","sub"]);
+  IsSubgroupFpGroup and IsComponentObjectRep);
 
 #############################################################################
 ##
@@ -784,7 +766,7 @@ DeclareGlobalFunction("DefiningQuotientHomomorphism");
 ##
 ##  <Description>
 ##  returns the same subgroup in the representation
-##  <Ref Attr="AsSubgroupOfWholeGroupByQuotient"/>.
+##  <Ref Filt="IsSubgroupOfWholeGroupByQuotientRep"/>.
 ##  <P/>
 ##  See also <Ref Func="SubgroupOfWholeGroupByCosetTable"/>
 ##  and <Ref Oper="CosetTableBySubgroup"/>.
@@ -805,7 +787,7 @@ DeclareGlobalFunction("DefiningQuotientHomomorphism");
 DeclareAttribute("AsSubgroupOfWholeGroupByQuotient", IsSubgroupFpGroup);
 
 
-############################################################################
+#############################################################################
 ##
 #O  LowIndexSubgroupsFpGroupIterator( <G>[, <H>], <index>[, <excluded>] )
 #O  LowIndexSubgroupsFpGroup( <G>[, <H>], <index>[, <excluded>] )
@@ -883,7 +865,7 @@ DeclareAttribute("AsSubgroupOfWholeGroupByQuotient", IsSubgroupFpGroup);
 ##  compute all conjugacy classes of torsion free subgroups of index at most
 ##  <M>24</M> in the group <M>G =
 ##  \langle x,y,z \mid x^2, y^4, z^3, (xy)^3, (yz)^2, (xz)^3 \rangle</M>.
-##  It is know from theory that each torsion element of this
+##  It is known from theory that each torsion element of this
 ##  group is conjugate to a power of <M>x</M>, <M>y</M>, <M>z</M>, <M>xy</M>,
 ##  <M>xz</M>, or <M>yz</M>.
 ##  (Note that this includes conjugates of <M>y^2</M>.)
@@ -926,7 +908,7 @@ DeclareOperation("LowIndexSubgroupsFpGroup",
   [IsSubgroupFpGroup,IsSubgroupFpGroup,IsPosInt]);
 
 
-############################################################################
+#############################################################################
 ##
 #F  MostFrequentGeneratorFpGroup( <G> )
 ##
@@ -973,7 +955,7 @@ DeclareAttribute( "FreeGeneratorsOfFpGroup",
 DeclareOperation( "FreeGeneratorsOfWholeGroup",
      [IsSubgroupFpGroup]  );
 
-############################################################################
+#############################################################################
 ##
 #A  RelatorsOfFpGroup(<G>)
 ##
@@ -1055,7 +1037,7 @@ DeclareAttribute("FreeGroupOfFpGroup",IsSubgroupFpGroup and IsGroupOfFamily);
 DeclareAttribute("IndicesInvolutaryGenerators",
   IsSubgroupFpGroup and IsGroupOfFamily);
 
-############################################################################
+#############################################################################
 ##
 #F  RelatorRepresentatives(<rels>)
 ##

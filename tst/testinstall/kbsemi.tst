@@ -77,5 +77,16 @@ gap> KnuthBendixRewritingSystem(N, \<);
 Knuth Bendix Rewriting System for Monoid( [ m1, m2 ] ) with rules 
 [ [ m2, m1 ] ]
 
+# the reduced word has the mutability of the given word
+gap> w := ReduceLetterRepWordsRewSys([ [ [ 1, 2 ], [ 3 ] ] ], [ 1, 2, 4 ]);;
+gap> w; IsMutable(w);
+[ 3, 4 ]
+true
+gap> w := MakeImmutable([ 1, 2, 4 ]);;
+gap> w := ReduceLetterRepWordsRewSys([ [ [ 1, 2 ], [ 3 ] ] ], w);;
+gap> w; IsMutable(w);
+[ 3, 4 ]
+false
+
 #
 gap> STOP_TEST("kbsemi.tst");

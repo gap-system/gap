@@ -158,9 +158,9 @@ ReturnFirst );
 ##  This representation is equal to the external representation.
 ##
 if IsHPCGAP then
-DeclareRepresentation( "IsBracketRep", IsAtomicPositionalObjectRep, [] );
+DeclareRepresentation( "IsBracketRep", IsAtomicPositionalObjectRep );
 else
-DeclareRepresentation( "IsBracketRep", IsPositionalObjectRep, [] );
+DeclareRepresentation( "IsBracketRep", IsPositionalObjectRep );
 fi;
 
 #############################################################################

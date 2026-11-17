@@ -118,6 +118,11 @@ fi;
 ##  The routine tests whether <A>supplied</A> is at least as large as
 ##  <A>required</A>, and returns <K>true</K> or <K>false</K> accordingly.
 ##  A version number ending in <C>dev</C> is considered to be infinite.
+##  <P/>
+##  If the third argument <C>"equal"</C> is given, the routine instead
+##  tests whether the two integer lists are equal;
+##  a version number ending in <C>dev</C> is then equal to every
+##  version number ending in <C>dev</C>, and to no other.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -274,7 +279,7 @@ DeclareGlobalFunction( "LinearOrderByPartialWeakOrder" );
 ##  <P/>
 ##  The result is <K>true</K> if the package <A>name</A> is already loaded,
 ##  <K>false</K> if it cannot be loaded in the desired version,
-##  and the string denoting the &GAP; root path where the package resides
+##  and the string denoting the directory where the package resides
 ##  if the package is available, but not yet loaded.
 ##  (In recursive calls, also <K>fail</K> may be returned, which means that
 ##  the decision will be made on an outer level.)
@@ -355,7 +360,7 @@ DeclareGlobalFunction( "PackageAvailabilityInfo" );
 ##  <P/>
 ##  The result is <K>true</K> if the package is already loaded,
 ##  <K>fail</K> if it is not available,
-##  and the string denoting the &GAP; root path where the package resides
+##  and the string denoting the directory where the package resides
 ##  if it is available, but not yet loaded.
 ##  So the package <A>name</A> is available if the result of
 ##  <Ref Func="TestPackageAvailability"/> is not equal to <K>fail</K>.
@@ -640,13 +645,12 @@ DeclareGlobalFunction( "DirectoriesPackagePrograms" );
 ##  functions of the &GAP; package <Package>Example</Package>:
 ##  <P/>
 ##  <Log><![CDATA[
-##  gap> DirectoriesPackageLibrary( "Example", "gap" );
-##  [ dir("/home/werner/gap/4.0/pkg/example/gap/") ]
+##  gap> DirectoriesPackageLibrary( "Example" );
+##  [ Directory("/home/werner/gap/4.0/pkg/example/lib/") ]
 ##  ]]></Log>
 ##  <P/>
-##  Observe that we needed the second argument <C>"gap"</C> here,
-##  since <Package>Example</Package>'s library functions are in the
-##  subdirectory <F>gap</F> rather than <F>lib</F>.
+##  For any subdirectory other than <F>lib</F>, such as the <F>tst</F>
+##  directory of <Package>Example</Package>, the second argument is needed.
 ##  <P/>
 ##  In order to find a subdirectory deeper than one level in a package
 ##  directory, the second argument is again necessary whether or not the
@@ -660,7 +664,7 @@ DeclareGlobalFunction( "DirectoriesPackagePrograms" );
 ##  <P/>
 ##  <Log><![CDATA[
 ##  gap> DirectoriesPackageLibrary( "somepackage", "data/m11" );
-##  [ dir("/home/werner/gap/4.0/pkg/somepackage/data/m11") ]
+##  [ Directory("/home/werner/gap/4.0/pkg/somepackage/data/m11/") ]
 ##  ]]></Log>
 ##  </Description>
 ##  </ManSection>
@@ -704,8 +708,8 @@ DeclareGlobalFunction( "DirectoriesPackageLibrary" );
 ##  package to be loaded.)
 ##  <P/>
 ##  If the file is readable then <K>true</K> is returned,
-##  otherwise a warning is displayed (for <Ref Func="ReadPackage"/>)
-##  or <K>false</K> is returned (for <Ref Func="RereadPackage"/>).
+##  otherwise <K>false</K> is returned,
+##  and <Ref Func="ReadPackage"/> also prints an info message.
 ##  <P/>
 ##  Each of <A>name</A> and <A>file</A> should be a string.
 ##  The <A>name</A> argument is case insensitive.
@@ -806,8 +810,24 @@ DeclareGlobalFunction( "LoadPackageDocumentation" );
 ##  <K>true</K> or <K>false</K>;
 ##  in the latter case, the effect is that no package banner is printed.
 ##  <P/>
+##  <Index Key="OnlyNeeded" Subkey="option"><C>OnlyNeeded</C></Index>
+##  If the global option <C>OnlyNeeded</C> is given, as in
+##  <C>LoadPackage("sonata" : OnlyNeeded)</C>, then the suggested packages
+##  of <A>name</A> and, recursively, of its dependencies are not loaded.
+##  This is meant for checking that a package works without its suggested
+##  packages, see Section&nbsp;<Ref Sect="Package dependencies"/>.
+##  <P/>
 ##  After a package has been loaded, all its code becomes
 ##  available to use with the rest of the &GAP; library.
+##  <P/>
+##  Load all packages you need at the start of a session, before doing any
+##  computations.
+##  Loading a package can install new methods and thus change which methods
+##  get selected, so results can depend on whether they were computed before
+##  or after the package was loaded.
+##  For the same reason, code should not call <Ref Func="LoadPackage"/>
+##  inside its functions,
+##  see Section&nbsp;<Ref Sect="Package dependencies"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -875,12 +895,26 @@ DeclareGlobalFunction( "LoadPackage" );
 ##  <Func Name="LoadAllPackages" Arg=''/>
 ##
 ##  <Description>
-##  loads all installed packages that can be loaded, in alphabetical order.
+##  loads all installed packages that can be loaded.
 ##  This admittedly trivial function is used for example in automatic tests.
 ##  </Description>
 ##  </ManSection>
 ##
 DeclareGlobalFunction( "LoadAllPackages" );
+
+
+#############################################################################
+##
+#F  TestFilesOfPendingPackageExtensions()
+##
+##  returns the sorted list of pairs <C>[ path, needed ]</C> where
+##  <C>path</C> is the absolute path of a file or directory listed in the
+##  <C>testfiles</C> component of a not yet loaded extension of a loaded
+##  package, and <C>needed</C> is the <C>needed</C> component of this
+##  extension.
+##  <Ref Func="TestDirectory"/> skips these paths.
+##
+DeclareGlobalFunction( "TestFilesOfPendingPackageExtensions" );
 
 
 #############################################################################

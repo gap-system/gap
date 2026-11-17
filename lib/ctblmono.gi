@@ -1181,9 +1181,9 @@ InstallMethod( TestMonomialQuick,
     end );
 
 
-##############################################################################
+#############################################################################
 ##
-#M  TestMonomialQuick( <G> )  . . . . . . . . . . . . . . . . . .  for a group
+#M  TestMonomialQuick( <G> ) . . . . . . . . . . . . . . . . . .  for a group
 ##
 ##  The following criteria are used for a group <G>.
 ##

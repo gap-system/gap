@@ -35,7 +35,7 @@ MakeImmutable(PRIMES_COMPACT_FIELDS);
 ##  a vector object (see <Ref Filt="IsVectorObj"/>) with entries in a
 ##  finite field with <M>q</M> elements, for <M>3 \leq q \leq 256</M>.
 ##  The base domain of <A>obj</A> is not necessarily the smallest field that
-##  contains all matrix entries.
+##  contains all vector entries.
 ##  <P/>
 ##  <Ref Filt="Is8BitVectorRep"/> implies <Ref Filt="IsCopyable"/>,
 ##  thus vector objects in this representation can be mutable.

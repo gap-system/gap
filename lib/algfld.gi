@@ -17,15 +17,14 @@
 ##
 DeclareRepresentation(
   "IsAlgebraicExtensionDefaultRep", IsAlgebraicExtension and
-  IsComponentObjectRep and IsAttributeStoringRep,
-  ["extFam"]);
+  IsComponentObjectRep and IsAttributeStoringRep);
 
 #############################################################################
 ##
 #R  IsAlgBFRep        Representation for embedded base field
 ##
 DeclareRepresentation("IsAlgBFRep",
-  IsPositionalObjectRep and IsAlgebraicElement,[]);
+  IsPositionalObjectRep and IsAlgebraicElement);
 
 #############################################################################
 ##
@@ -34,7 +33,7 @@ DeclareRepresentation("IsAlgBFRep",
 ##  This representation describes elements that are represented in a formal
 ##  extension as polynomials modulo an ideal.
 DeclareRepresentation("IsKroneckerConstRep",
-  IsPositionalObjectRep and IsAlgebraicElement,[]);
+  IsPositionalObjectRep and IsAlgebraicElement);
 
 DeclareSynonym("IsAlgExtRep",IsKroneckerConstRep);
 
@@ -256,15 +255,25 @@ InstallMethod(FieldExtension,"generic",true,
 InstallMethod( PrintObj, "for algebraic extension", true,
 [IsNumberField and IsAlgebraicExtension], 0,
 function( F )
-    Print( "<algebraic extension over the Rationals of degree ",
-           DegreeOverPrimeField( F ), ">" );
+    Print( "<algebraic extension over " );
+    if IsRationals( LeftActingDomain( F ) ) then
+      Print( "the Rationals" );
+    else
+      Print( LeftActingDomain( F ) );
+    fi;
+    Print( " of degree ", Dimension( F ), ">" );
 end );
 
 InstallMethod( ViewObj, "for algebraic extension", true,
 [IsNumberField and IsAlgebraicExtension], 0,
 function( F )
-    Print("<algebraic extension over the Rationals of degree ",
-          DegreeOverPrimeField( F ), ">" );
+    Print( "<algebraic extension over " );
+    if IsRationals( LeftActingDomain( F ) ) then
+      Print( "the Rationals" );
+    else
+      View( LeftActingDomain( F ) );
+    fi;
+    Print( " of degree ", Dimension( F ), ">" );
 end );
 
 #############################################################################
@@ -948,7 +957,7 @@ InstallMethod( Basis,
 #R  IsCanonicalBasisAlgebraicExtension( <algext> )
 ##
 DeclareRepresentation( "IsCanonicalBasisAlgebraicExtension",
-    IsBasis and IsCanonicalBasis and IsAttributeStoringRep, [] );
+    IsBasis and IsCanonicalBasis and IsAttributeStoringRep );
 
 
 #############################################################################

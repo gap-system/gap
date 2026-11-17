@@ -43,8 +43,7 @@ BindGlobal( "Refinements", AtomicRecord() );
 ##
 #F  IsSlicedPerm( <perm> )  . . . . . . . . . . . . . . . sliced permutations
 ##
-DeclareRepresentation( "IsSlicedPerm", IsPerm and IsComponentObjectRep,
-                        [ "length", "word", "lftObj","opr" ] );
+DeclareRepresentation( "IsSlicedPerm", IsPerm and IsComponentObjectRep );
 
 #############################################################################
 ##
@@ -96,8 +95,7 @@ InstallMethod( ViewObj,"sliced perm", true, [ IsSlicedPerm ], 0,
     Print( "<perm word of length ", perm!.length, ">" );
 end );
 
-DeclareRepresentation( "IsSlicedPermInv", IsPerm and IsComponentObjectRep,
-                           [ "length", "word", "lftObj", "opr" ] );
+DeclareRepresentation( "IsSlicedPermInv", IsPerm and IsComponentObjectRep );
 
 InstallOtherMethod( \^,"sliced perm", true, [ IsObject, IsSlicedPermInv ], 0,
     function( p, perm )
@@ -720,7 +718,7 @@ local  dom,  # operation domain for the group
                           Length( sub ) ^ ( key[ i ] mod d );
             od;
           else
-            Info(InfoWarning,1,"suborbits variant triggered, check!");
+            Info(InfoBckt,2,"suborbit outside the orbit of the root");
           fi;
         od;
       od;

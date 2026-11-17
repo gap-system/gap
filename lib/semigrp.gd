@@ -30,7 +30,7 @@
 ##
 DeclareSynonymAttr( "IsSemigroup", IsMagma and IsAssociative );
 
-##############################################################################
+#############################################################################
 ##
 #O  InversesOfSemigroupElement( <S>, <x> )
 ##
@@ -84,7 +84,7 @@ DeclareOperation("InversesOfSemigroupElement",
 ##  <#GAPDoc Label="Semigroup">
 ##  <ManSection>
 ##  <Heading>Semigroup</Heading>
-##  <Func Name="Semigroup" Arg='gen1, gen2 ...'
+##  <Func Name="Semigroup" Arg='gen1, gen2, ...'
 ##   Label="for various generators"/>
 ##  <Func Name="Semigroup" Arg='gens' Label="for a list"/>
 ##
@@ -215,7 +215,7 @@ DeclareOperation( "AsSubsemigroup", [ IsDomain, IsCollection ] );
 ##  <Attr Name="GeneratorsOfSemigroup" Arg='S'/>
 ##
 ##  <Description>
-##  Semigroup generators of a semigroup <A>D</A> are the same as magma
+##  Semigroup generators of a semigroup <A>S</A> are the same as magma
 ##  generators, see&nbsp;<Ref Attr="GeneratorsOfMagma"/>.
 ##  <Example><![CDATA[
 ##  gap> GeneratorsOfSemigroup(s);
@@ -487,9 +487,9 @@ InstallTrueMethod( IsSemigroup, IsSimpleSemigroup );
 ##  <Prop Name="IsZeroSimpleSemigroup" Arg='S'/>
 ##
 ##  <Description>
-##  is <K>true</K> if and only if the semigroup has no proper ideals except
-##  for 0, where <A>S</A> is a semigroup with zero.
-##  If the semigroup does not find its zero, then a break-loop is entered.
+##  is <K>true</K> if and only if <A>S</A> has a zero <M>0</M>,
+##  <M><A>S</A>^2 \neq \{ 0 \}</M>, and the only ideals of <A>S</A> are
+##  <M>\{ 0 \}</M> and <A>S</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -498,7 +498,7 @@ DeclareProperty( "IsZeroSimpleSemigroup", IsSemigroup );
 InstallTrueMethod( IsSemigroup, IsZeroSimpleSemigroup );
 
 
-############################################################################
+#############################################################################
 ##
 #A  ANonReesCongruenceOfSemigroup( <S> )
 ##
@@ -514,7 +514,7 @@ InstallTrueMethod( IsSemigroup, IsZeroSimpleSemigroup );
 DeclareAttribute("ANonReesCongruenceOfSemigroup",IsSemigroup);
 
 
-############################################################################
+#############################################################################
 ##
 #P  IsReesCongruenceSemigroup( <S> )
 ##
@@ -678,7 +678,7 @@ DeclareOperation("DisplaySemigroup", [IsSemigroup]);
 
 DeclareAttribute("NilpotencyDegree", IsSemigroup);
 
-##############################################################################
+#############################################################################
 ##
 #O IsSubsemigroup( <S>, <T> )
 ##

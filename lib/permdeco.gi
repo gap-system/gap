@@ -344,7 +344,7 @@ local G,H,tg,th,hom, tga, Gemb, C, outs, auts, ar, Hemb;
   tg:=arg[3];
   th:=arg[4];
   if Length(arg)>4 then
-    outs:=arg[4];
+    outs:=arg[5];
   else
     outs:=fail;
   fi;
@@ -370,7 +370,11 @@ local G,H,tg,th,hom, tga, Gemb, C, outs, auts, ar, Hemb;
     if outs=fail then
       outs:=Size(AutomorphismGroup(tg))/Size(tg);
     fi;
-    if Size(C)/Size(tg)=outs then
+    # The conjugating elements are only determined modulo the centralizer
+    # of tg in the symmetric group. If this centralizer is nontrivial, C
+    # might have the right order but not act faithfully on tg (e.g.
+    # C2 x A6.2 instead of Aut(A6)), so also test faithfulness.
+    if Size(C)/Size(tg)=outs and IsTrivial(Centralizer(C,tg)) then
       Info(InfoHomClass,2,"Automorphisms realize full automorphism group");
       Gemb:=IdentityMapping(G);
       G:=C;

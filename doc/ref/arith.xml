@@ -11,7 +11,7 @@
 In this chapter, we give a &ndash;hopefully typical&ndash;
 example of extending &GAP; by new objects with prescribed
 arithmetic operations (for a simple approach that may be useful
-to get started though does not permit to exploit all potential
+to get started though does not permit exploiting all potential
 features, see also <Ref Func="ArithmeticElementCreator"/>).
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
@@ -122,7 +122,7 @@ We decide to store the data in a list-like structure, at position 1.
 This <E>representation</E> is declared as follows.
 <P/>
 <Log><![CDATA[
-DeclareRepresentation( "IsMyObjectListRep", IsPositionalObjectRep, [ 1 ] );
+DeclareRepresentation( "IsMyObjectListRep", IsPositionalObjectRep );
 ]]></Log>
 <P/>
 Of course we can argue that this declaration is superfluous
@@ -394,6 +394,8 @@ gap> a:= MyObject( Z(7) );
 <Z(7)>
 gap> b:= MyObject( 0*Z(7) );  g:= Group( a, b );
 <0*Z(7)>
+#I  default `IsGeneratorsOfMagmaWithInverses' method returns `true' for
+[ MyObject( Z(7) ), MyObject( 0*Z(7) ) ]
 <group with 2 generators>
 gap> Size( g );
 6
@@ -427,7 +429,7 @@ InstallMethod( ZeroOp,
 InstallMethod( AdditiveInverseOp,
     "for an object in `IsMyObject'",
     [ IsMyObject and IsMyObjectListRep ],
-    a -> MyObject( a![1] / ( a![1] - One( a![1] ) ) ) );
+    a -> MyObject( 2 * One( a![1] ) - a![1] ) );
 ]]></Log>
 <P/>
 Let us try whether the addition works.
@@ -469,7 +471,7 @@ know this in advance,
 for checking with <Ref Oper="AsField"/> whether a domain
 is in fact a field, for computing the closure as a field.)
 <P/>
-It should be emphasized that the mechanism described above may be not
+It should be emphasized that the mechanism described above may not be
 suitable for the situation that one wants to consider many different
 multiplications <Q>on the same set of objects</Q>,
 since the installation of a new multiplication requires the declaration

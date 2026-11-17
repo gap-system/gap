@@ -109,9 +109,7 @@ DeclareGlobalFunction( "PopOptions");
 ##  <E>Note:</E>
 ##  <Ref Func="ResetOptionsStack"/> should <E>not</E> be used within a
 ##  function.
-##  Its intended use is to clean up the options stack in the event
-##  that the user has <K>quit</K> from a <K>break</K> loop,
-##  so leaving a stack of no-longer-needed options
+##  Quitting a <K>break</K> loop empties the options stack automatically
 ##  (see&nbsp;<Ref Subsect="quit"/>).
 ##  </Description>
 ##  </ManSection>

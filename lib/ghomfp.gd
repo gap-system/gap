@@ -9,7 +9,7 @@
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 
-############################################################################
+#############################################################################
 ##
 #R  IsFromFpGroupGeneralMapping(<map>)
 #R  IsFromFpGroupHomomorphism(<map>)
@@ -30,7 +30,7 @@ DeclareCategory( "IsFromFpGroupGeneralMapping", IsGroupGeneralMapping
 DeclareSynonym("IsFromFpGroupHomomorphism",
   IsFromFpGroupGeneralMapping and IsMapping);
 
-############################################################################
+#############################################################################
 ##
 #R  IsFromFpGroupGeneralMappingByImages(<map>)
 #R  IsFromFpGroupHomomorphismByImages(<map>)
@@ -49,12 +49,11 @@ DeclareSynonym("IsFromFpGroupHomomorphism",
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation( "IsFromFpGroupGeneralMappingByImages",
-      IsFromFpGroupGeneralMapping and IsGroupGeneralMappingByImages,
-      [ "generators", "genimages" ] );
+      IsFromFpGroupGeneralMapping and IsGroupGeneralMappingByImages );
 DeclareSynonym("IsFromFpGroupHomomorphismByImages",
   IsFromFpGroupGeneralMappingByImages and IsMapping);
 
-############################################################################
+#############################################################################
 ##
 #R  IsFromFpGroupStdGensGeneralMappingByImages(<map>)
 #R  IsFromFpGroupStdGensHomomorphismByImages(<map>)
@@ -74,12 +73,12 @@ DeclareSynonym("IsFromFpGroupHomomorphismByImages",
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation( "IsFromFpGroupStdGensGeneralMappingByImages",
-      IsFromFpGroupGeneralMappingByImages, [ "generators", "genimages" ] );
+      IsFromFpGroupGeneralMappingByImages );
 DeclareSynonym("IsFromFpGroupStdGensHomomorphismByImages",
   IsFromFpGroupStdGensGeneralMappingByImages and IsMapping);
 
 
-############################################################################
+#############################################################################
 ##
 #R  IsToFpGroupGeneralMappingByImages(<map>)
 #R  IsToFpGroupHomomorphismByImages(<map>)
@@ -93,12 +92,11 @@ DeclareSynonym("IsFromFpGroupStdGensHomomorphismByImages",
 ##  </ManSection>
 ##
 DeclareRepresentation( "IsToFpGroupGeneralMappingByImages",
-      IsGroupGeneralMappingByImages,
-      [ "generators", "genimages" ] );
+      IsGroupGeneralMappingByImages );
 DeclareSynonym("IsToFpGroupHomomorphismByImages",
   IsToFpGroupGeneralMappingByImages and IsMapping);
 
-############################################################################
+#############################################################################
 ##
 #P  IsWordDecompHomomorphism(<map>)
 ##
@@ -180,7 +178,7 @@ DeclareGlobalFunction("TrySecondaryImages");
 ##  <Index>Wreath product embedding</Index>
 ##  If <A>beta</A> is a homomorphism from <A>G</A> into a transitive
 ##  permutation group, <M>U</M> the full preimage of the point stabilizer and
-##  <A>alpha</A> a homomorphism defined on (a superset) of <M>U</M>,
+##  <A>alpha</A> a homomorphism defined on <M>U</M> (or a superset of <M>U</M>),
 ##  this function returns images of the generators of <A>G</A> when mapping
 ##  to the wreath product <M>(U <A>alpha</A>) \wr (<A>G</A> <A>beta</A>)</M>.
 ##  (This is the Krasner-Kaloujnine embedding theorem.)
@@ -299,10 +297,10 @@ DeclareAttribute("EpimorphismFromFreeGroup",IsGroup);
 ##  <Func Name="LargerQuotientBySubgroupAbelianization" Arg='hom, U'/>
 ##
 ##  <Description>
-##  Let <A>hom</A> a homomorphism from a finitely presented group <M>G</M>
+##  Let <A>hom</A> be a homomorphism from a finitely presented group <M>G</M>
 ##  to a finite group <M>H</M> and <M><A>U</A> \leq H</M>.
 ##  This function will &ndash;if it exists&ndash; return a subgroup
-##  <M>S \leq <A>G</A></M>, such that the core of <M>S</M> is properly
+##  <M>S \leq G</M>, such that the core of <M>S</M> is properly
 ##  contained in the kernel of <A>hom</A> as well as in the derived subgroup
 ##  of <M>V</M>,
 ##  where <M>V</M> is the pre-image of <A>U</A> under <A>hom</A>.
@@ -333,12 +331,12 @@ DeclareGlobalFunction("LargerQuotientBySubgroupAbelianization");
 ##
 #F  ProcessEpimorphismToNewFpGroup( <hom> )
 ##
-##  <#GAPDoc Label="ProcessHomomorphismToNewFpGroup">
+##  <#GAPDoc Label="ProcessEpimorphismToNewFpGroup">
 ##  <ManSection>
-##  <Func Name="LargerQuotientBySubgroupAbelianization" Arg='hom'/>
+##  <Func Name="ProcessEpimorphismToNewFpGroup" Arg='hom'/>
 ##
 ##  <Description>
-##  Let <A>hom</A> a homomorphism from a group <A>G</A> to a newly created
+##  Let <A>hom</A> be a homomorphism from a group <A>G</A> to a newly created
 ##  finitely presented group <A>F</A> (in which no calculation yet has taken
 ##  place) such that the inverse of <A>hom</A> can be applied to elements of
 ##  $F$. This function endows <A>F</A> (or, more

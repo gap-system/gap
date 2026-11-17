@@ -166,7 +166,6 @@ static void SCTableProdAdd(Obj res, Obj coeff, Obj basis_coeffs, Int dim)
         c2 = ELM_PLIST( res, INT_INTOBJ(k) );
         c2 = SUM( c2, c1 );
         SET_ELM_PLIST( res, INT_INTOBJ(k), c2 );
-        CHANGED_BAG( res );
     }
 }
 
@@ -207,7 +206,6 @@ static Obj FuncSC_TABLE_PRODUCT(Obj self, Obj table, Obj list1, Obj list2)
     for ( i = 1; i <= dim; i++ ) {
         SET_ELM_PLIST( res, i, zero );
     }
-    CHANGED_BAG( res );
 
     // general case
     if      ( EQ( ELM_LIST( table, dim+1 ), INTOBJ_INT(0) ) ) {

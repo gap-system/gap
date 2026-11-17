@@ -30,7 +30,7 @@
 ##
 
 
-##########################################################################
+#############################################################################
 ##
 #V  InfoNumtheor
 ##
@@ -62,9 +62,6 @@ DeclareInfoClass( "InfoNumtheor" );
 ##  <C>[ 0 .. Abs( <A>m</A> )-1 ]</C>
 ##  that are coprime to the integer <A>m</A>.
 ##  <P/>
-##  <C>Abs(<A>m</A>)</C> must be less than <M>2^{28}</M>,
-##  otherwise the set would probably be too large anyhow.
-##  <P/>
 ##  <Example><![CDATA[
 ##  gap> PrimeResidues( 0 );  PrimeResidues( 1 );  PrimeResidues( 20 );
 ##  [  ]
@@ -91,7 +88,7 @@ DeclareGlobalFunction( "PrimeResidues" );
 ##  <Index Subkey="order">prime residue group</Index>
 ##  <Index>Euler's totient function</Index>
 ##  <Ref Oper="Phi"/> returns the number <M>\phi(<A>m</A>)</M> of positive
-##  integers less than the positive integer <A>m</A>
+##  integers not exceeding the positive integer <A>m</A>
 ##  that are coprime to <A>m</A>.
 ##  <P/>
 ##  Suppose that <M>m = p_1^{{e_1}} p_2^{{e_2}} \cdots p_k^{{e_k}}</M>.
@@ -129,7 +126,7 @@ DeclareOperation( "Phi", [ IsObject ] );
 ##  <P/>
 ##  <M>\lambda(<A>m</A>)</M> is the smallest positive integer <M>l</M> such that for every
 ##  <M>a</M> relatively prime to <A>m</A> we have <M>a^l \equiv 1 \pmod{<A>m</A>}</M>.
-##  Fermat's theorem asserts
+##  Euler's theorem asserts
 ##  <M>a^{{\phi(<A>m</A>)}} \equiv 1 \pmod{<A>m</A>}</M>;
 ##  thus <M>\lambda(<A>m</A>)</M> divides <M>\phi(<A>m</A>)</M> (see&nbsp;<Ref Oper="Phi"/>).
 ##  <P/>
@@ -258,7 +255,7 @@ DeclareGlobalFunction( "IsPrimitiveRootMod" );
 ##  <Ref Func="PrimitiveRootMod"/> returns the smallest primitive root that
 ##  is strictly larger than <A>start</A>.
 ##  <Example><![CDATA[
-##  gap> # largest primitive root for a prime less than 2000:
+##  gap> # largest smallest primitive root of a prime less than 2000:
 ##  gap> PrimitiveRootMod( 409 );
 ##  21
 ##  gap> PrimitiveRootMod( 541, 2 );
@@ -342,7 +339,7 @@ DeclareGlobalFunction( "GeneratorsPrimeResidues" );
 ##  It is defined as follows:
 ##  <P/>
 ##  If <M>n</M> and <M>m</M> are not coprime then <M>J(n,m) = 0</M>.
-##  Furthermore, <M>J(n,1) = 1</M> and <M>J(n,-1) = -1</M> if <M>m &lt; 0</M>
+##  Furthermore, <M>J(n,1) = 1</M> and <M>J(n,-1) = -1</M> if <M>n &lt; 0</M>
 ##  and  <M>+1</M>  otherwise.
 ##  And for odd <M>n</M> it is <M>J(n,2) = (-1)^k</M> with
 ##  <M>k = (n^2-1)/8</M>.
@@ -449,8 +446,9 @@ DeclareGlobalFunction( "Legendre" );
 ##  <P/>
 ##  A square root of <A>n</A> exists only if <C>Legendre(<A>n</A>,<A>m</A>) = 1</C>
 ##  (see&nbsp;<Ref Func="Legendre"/>).
-##  If <A>m</A> has <M>r</M> different prime factors then  there are <M>2^r</M>  different
-##  roots of <A>n</A> mod  <A>m</A>.
+##  If <A>m</A> is odd and coprime to <A>n</A>, has <M>r</M> different prime
+##  factors, and a square root of <A>n</A> exists, then there are <M>2^r</M>
+##  different square roots of <A>n</A> mod <A>m</A>.
 ##  It is unspecified which one <Ref Func="RootMod"/> returns.
 ##  You can, however, use <Ref Func="RootsMod"/> to compute the full set
 ##  of roots.
@@ -523,19 +521,17 @@ DeclareGlobalFunction( "RootsMod" );
 ##  <Ref Func="RootsUnityMod"/> returns the set of <A>k</A>-th roots of unity
 ##  modulo the positive integer <A>m</A>, i.e.,
 ##  the list of all solutions <M>r</M> of
-##  <M>r^{<A>k</A>} \equiv <A>n</A> \pmod{<A>m</A>}</M>.
+##  <M>r^{<A>k</A>} \equiv 1 \pmod{<A>m</A>}</M>.
 ##  If only the argument <A>m</A> is given,
 ##  the default value for <A>k</A> is <M>2</M>.
 ##  <P/>
-##  In general there are <M><A>k</A>^n</M> such roots if the modulus <A>m</A>
-##  has  <M>n</M> different prime factors <M>p</M> such that
+##  For a prime <A>k</A> there are <M><A>k</A>^n</M> such roots
+##  if the modulus <A>m</A> has <M>n</M> different prime factors <M>p</M> such that
 ##  <M>p \equiv 1 \pmod{<A>k</A>}</M>.
 ##  If <M><A>k</A>^2</M> divides <A>m</A> then there are
 ##  <M><A>k</A>^{{n+1}}</M> such roots;
 ##  and especially if <M><A>k</A> = 2</M> and 8 divides <A>m</A>
 ##  there are <M>2^{{n+2}}</M> such roots.
-##  <P/>
-##  In the current implementation <A>k</A> must be a prime.
 ##  <Example><![CDATA[
 ##  gap> RootsUnityMod( 7*31 );  RootsUnityMod( 3, 7*31 );
 ##  [ 1, 92, 125, 216 ]
@@ -660,7 +656,7 @@ DeclareOperation( "Sigma", [ IsObject ] );
 ##  nonzero integer <A>n</A>.
 ##  <P/>
 ##  <Ref Oper="Tau"/> is a multiplicative arithmetic function, i.e.,
-##  if <M>n</M> and  <M>m</M> are relative prime we have
+##  if <M>n</M> and <M>m</M> are relatively prime we have
 ##  <M>\tau(n \cdot m) = \tau(n) \tau(m)</M>.
 ##  Together with the formula <M>\tau(p^k) = k+1</M> this allows us
 ##  to compute <M>\tau(<A>n</A>)</M>.
@@ -694,10 +690,10 @@ DeclareOperation( "Tau", [ IsObject ] );
 ##  <Func Name="MoebiusMu" Arg='n'/>
 ##
 ##  <Description>
-##  <Ref Func="MoebiusMu"/> computes the value of Moebius inversion function
+##  <Ref Func="MoebiusMu"/> computes the value of the Moebius function
 ##  for the nonzero integer <A>n</A>.
 ##  This is 0 for integers which are not squarefree, i.e.,
-##  which are divided by a square <M>r^2</M>.
+##  which are divisible by a square <M>r^2</M> with <M>r > 1</M>.
 ##  Otherwise it is 1 if <A>n</A> has an even number and <M>-1</M> if <A>n</A>
 ##  has an odd number of prime factors.
 ##  <P/>
@@ -754,7 +750,7 @@ DeclareGlobalFunction( "MoebiusMu" );
 ##  half, whichever is a perfect square.
 ##  Then the minimal possible gcd of <M>x</M> and <M>y</M> is the square root
 ##  <M>c</M> of <M>a \cdot b</M>.
-##  The number of different minimal representation with <M>x \leq y</M> is
+##  The number of different minimal representations with <M>x \leq y</M> is
 ##  <M>2^{{l-1}}</M>, where <M>l</M> is the number of different prime factors
 ##  of the form <M>4k+1</M> of <A>n</A>.
 ##  <P/>

@@ -14,7 +14,7 @@
 ##  The following functions, if not explicitly stated differently,
 ##  take two arguments, <A>set</A> and <A>obj</A>,
 ##  where <A>set</A> must be a proper set,
-##  otherwise an error is signalled;
+##  otherwise an error is signalled.
 ##  If the second argument <A>obj</A> is a list that is not a proper set
 ##  then <Ref Oper="Set"/> is silently applied to it first.
 ##  <#/GAPDoc>

@@ -305,6 +305,14 @@ end );
 GFCACHE:=[0,0];
 MakeThreadLocal("GFCACHE");
 
+# The cache bypasses GALOIS_FIELDS, so it must not survive a flush of it,
+# or GF( q ) would afterwards return two different objects.
+InstallMethod( FlushCaches, [],
+    function()
+      GFCACHE:= [ 0, 0 ];
+      TryNextMethod();
+    end );
+
 InstallGlobalFunction( GaloisField, function ( arg )
     local F,         # the field, result
           p,         # characteristic

@@ -501,12 +501,12 @@ local schreiertree, cosetrepresentative, flag, schtree, stab, k, p, j,
     flag:= false;
   else
     j:=orbits[k][1];
-    cosetrep:=cosetrepresentative(schtree,1,j);
+    cosetrep:=cosetrepresentative(schtree,pt1,j);
     cosetrep:=cosetrep^(-1);
     neworb:=List(orbits[k],x->x^cosetrep);
     int:=Intersection(orbits[k],neworb);
     Add(int,orbits[k][1]);
-    Add(int,1);
+    Add(int,pt1);
     if Length(int) <> n then
         flag:=false;
     else
@@ -550,17 +550,16 @@ end );
 
 # see Ákos Seress, Permutation group algorithms. Cambridge Tracts in
 # Mathematics, 152. Section 10.2 for the background of this function.
-BindGlobal("DoSnAnGiantTest",function(g,dom,kind)
+BindGlobal("DoSnAnGiantTest",function(g,dom)
 local bound, n, i, p, l, pnt;
   pnt := dom[1];
   n:=Length(dom);
-  # From the above reference we see that with these bounds this function
-  # will fail on a symmetric group with probability < 10^-10.
-  if kind=1 then
-    bound:=10*LogInt(n,2);
-  else
-    bound:=50*LogInt(n,2);
-  fi;
+  # In Sym(n) and Alt(n), the cycle through pnt has each length l <= n-2
+  # with probability 1/n, so one try succeeds with probability about
+  # 1/(2 ln n). With this bound, the test fails on a giant with
+  # probability about e^(-25/ln 2) = 2*10^-16 for large n, and below
+  # 10^-10 for n >= 50.
+  bound:=50*LogInt(n,2);
   i:=0;
   # We are looking for an element with a cycle of prime length > n/2
   # and < n-2. Instead of computing the complete cycle structure we just
@@ -587,7 +586,7 @@ local dom, n, mine, root, d, k, b, m, l,lh;
     return false;
   fi;
 
-  if DoSnAnGiantTest(g,dom,1)=true then
+  if DoSnAnGiantTest(g,dom)=true then
     # we've found elements that prove the group must contain A_n.
     return true;
   fi;
@@ -632,11 +631,6 @@ local dom, n, mine, root, d, k, b, m, l,lh;
         od;
       fi;
     od;
-  fi;
-
-  if DoSnAnGiantTest(g,dom,2)=true then
-    # we've found elements that prove the group must contain A_n.
-    return true;
   fi;
 
   # now the socle is not a power of A_l or n is small. So the group is small

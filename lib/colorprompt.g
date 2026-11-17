@@ -33,10 +33,10 @@ PrintPromptHook := CPROMPT;
 PreInputHook := function() end;
 EndLineHook := function() end;
 
-############################################################################
+#############################################################################
 ##
-#F  ColorPrompt( <bool> ) . . . . . . (un)set using a colored prompt and input
-#F  ColorPrompt( <bool>, <optrec> ) . . . . . . . . .  same with customization
+#F  ColorPrompt( <bool> ) . . . . .  (un)set using a colored prompt and input
+#F  ColorPrompt( <bool>, <optrec> ) . . . . . . . . . same with customization
 ##
 ##  <#GAPDoc Label="ColorPrompt">
 ##  <ManSection>
@@ -52,7 +52,7 @@ EndLineHook := function() end;
 ##  <P/>
 ##  Note that colors will only work  if your terminal emulation  in which
 ##  you run &GAP; understands the so called ANSI color escape sequences
-##  &ndash;almost all  terminal emulations  on current  UNIX/Linux
+##  &ndash; almost all terminal emulations on current UNIX/Linux
 ##  (<C>xterm</C>, <C>rxvt</C>, <C>konsole</C>, ...) systems do so.
 ##  <P/>
 ##  The colors shown depend on  the terminal configuration and cannot be

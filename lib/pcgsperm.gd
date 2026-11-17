@@ -22,15 +22,14 @@
 ##  `IsFiniteOrdersPcgs'.
 ##
 DeclareRepresentation( "IsPcgsPermGroupRep",
-    IsPcgsDefaultRep and IsFiniteOrdersPcgs, [ "group", "stabChain" ] );
+    IsPcgsDefaultRep and IsFiniteOrdersPcgs );
 
 #############################################################################
 ##
 #R  IsModuloPcgsPermGroupRep  . . . . . .  pcgs of factor group of perm group
 ##
 DeclareRepresentation( "IsModuloPcgsPermGroupRep",
-    IsPcgsPermGroupRep,
-    [ "group", "stabChain", "series", "denominator" ] );
+    IsPcgsPermGroupRep );
 
 DeclareGlobalFunction( "AddNormalizingElementPcgs" );
 DeclareGlobalFunction( "ExtendSeriesPermGroup" );

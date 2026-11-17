@@ -604,11 +604,15 @@ InstallMethod( AsDivisionRing,
     fi;
 
     # Construct the prime field.
+    # The generic field over itself cannot test membership of cyclotomics.
     one:= One( Representative( C ) );
     if one = fail then
       return fail;
+    elif IsCyclotomicCollection( C ) then
+      F:= Rationals;
+    else
+      F:= FieldOverItselfByGenerators( [ one ] );
     fi;
-    F:= FieldOverItselfByGenerators( [ one ] );
 
     # Delegate to the two-argument version.
     return AsDivisionRing( F, C );
@@ -1085,7 +1089,7 @@ InstallMethod( PrimitiveRoot,
 
 #############################################################################
 ##
-#M  EuclideanDegree( Integers, <n> )  . . . . . . . . . . . . . absolute value
+#M  EuclideanDegree( Integers, <n> )  . . . . . . . . . . . .  absolute value
 ##
 InstallMethod( EuclideanDegree,
     "for a division ring and a ring element",
@@ -1315,8 +1319,8 @@ InstallMethod( ImagesSet,
 
 #############################################################################
 ##
-#M  PreImagesElmNC( <hom>, <elm> )  . . . . . . . . . . . .  preimage of an elm
-#M  PreImagesElm( <hom>, <elm> )  . . . . . . . . . . . . .  preimage of an elm
+#M  PreImagesElmNC( <hom>, <elm> ) . . . . . . . . . . . . preimage of an elm
+#M  PreImagesElm( <hom>, <elm> ) . . . . . . . . . . . . . preimage of an elm
 ##
 InstallMethod( PreImagesElmNC,
     "for field homomorphism and element",

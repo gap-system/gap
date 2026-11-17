@@ -237,19 +237,44 @@ static void MarkAllSubBagsDefault(Bag bag, void * ref)
     MarkArrayOfBags(CONST_PTR_BAG(bag), SIZE_BAG(bag) / sizeof(Bag), ref);
 }
 
+// Queue `obj` for marking and return whether it is young. Mark functions
+// count the young objects a bag references, so that an old bag stays in
+// the remembered set. The return value of jl_gc_mark_queue_obj is of no
+// use for this: since Julia 1.10 it tells whether the call set the mark
+// bit, which it does not if `obj` was marked before, be it by another GC
+// thread.
+static inline int MarkQueueObj(jl_ptls_t ptls, void * obj)
+{
+    // 2 is GC_OLD
+    int young = !(jl_astaggedvalue(obj)->bits.gc & 2);
+    jl_gc_mark_queue_obj(ptls, (jl_value_t *)obj);
+    return young;
+}
+
 static inline int JMarkTyped(jl_ptls_t ptls, void * obj, jl_datatype_t * ty)
 {
     // only traverse objects internally used by GAP
     if (!jl_typeis(obj, ty))
         return 0;
-    return jl_gc_mark_queue_obj(ptls, (jl_value_t *)obj);
+    return MarkQueueObj(ptls, obj);
+}
+
+// Return whether `v` is never freed, as indicated by bits in its header:
+// it lives in a system or package image, or (since Julia 1.15) was
+// allocated by `jl_gc_permobj`.
+static inline int IsPermanentObj(jl_value_t * v)
+{
+#if JULIA_VERSION_MAJOR == 1 && JULIA_VERSION_MINOR < 15
+    return jl_astaggedvalue(v)->bits.in_image;
+#else
+    return jl_astaggedvalue(v)->bits.perm;
+#endif
 }
 
 // Check that `obj` is still allocated and not on a free list already,
 // by verifying that its type is a valid datatype object. A datatype is
-// either a pool object, or lives in a system or package image (e.g. the
-// types of GAP.jl bags after loading it from a precompiled image), as
-// indicated by the `in_image` bit in its header.
+// either a pool object, or permanent (e.g. the types of GAP.jl bags after
+// loading it from a precompiled image).
 static inline int ValidTypeOfMarkedObj(void * obj)
 {
     jl_value_t * ty = jl_typeof(obj);
@@ -257,19 +282,18 @@ static inline int ValidTypeOfMarkedObj(void * obj)
     // pointer into a pool page; check before dereferencing it
     if (ty == NULL)
         return 0;
-    if (jl_gc_internal_obj_base_ptr(ty) != ty &&
-        !jl_astaggedvalue(ty)->bits.in_image)
+    if (jl_gc_internal_obj_base_ptr(ty) != ty && !IsPermanentObj(ty))
         return 0;
     return jl_typeis(ty, jl_datatype_type);
 }
 
-static inline int JMark(jl_ptls_t ptls, void * obj)
+static inline void JMark(jl_ptls_t ptls, void * obj)
 {
 #ifdef VALIDATE_MARKING
     if (!ValidTypeOfMarkedObj(obj))
         abort();
 #endif
-    return jl_gc_mark_queue_obj(ptls, (jl_value_t *)obj);
+    jl_gc_mark_queue_obj(ptls, (jl_value_t *)obj);
 }
 
 // helper called directly by GAP.jl / JuliaInterface
@@ -279,7 +303,7 @@ void MarkJuliaObjSafe(void * obj, void * ref)
         return;
     if (!ValidTypeOfMarkedObj(obj))
         return;
-    if (jl_gc_mark_queue_obj(((MarkData *)ref)->ptls, (jl_value_t *)obj))
+    if (MarkQueueObj(((MarkData *)ref)->ptls, obj))
         ((MarkData *)ref)->youngRef++;
 }
 
@@ -288,7 +312,11 @@ void MarkJuliaObj(void * obj, void * ref)
 {
     if (!obj)
         return;
-    if (JMark(((MarkData *)ref)->ptls, obj))
+#ifdef VALIDATE_MARKING
+    if (!ValidTypeOfMarkedObj(obj))
+        abort();
+#endif
+    if (MarkQueueObj(((MarkData *)ref)->ptls, obj))
         ((MarkData *)ref)->youngRef++;
 }
 
@@ -410,14 +438,14 @@ static void FindLiveRangeReverse(PtrArray * arr, void * start, void * end)
         }
     }
     char * p = (char *)(align_ptr(start));
-    char * q = (char *)end - sizeof(void *);
+    char * q = (char *)align_ptr((char *)end - sizeof(void *));
     while (!lt_ptr(q, p)) {
         void * addr = *(void **)q;
         if (addr && jl_gc_internal_obj_base_ptr(addr) == addr &&
             jl_typeis(addr, DatatypeGapObj)) {
             PtrArrayAdd(arr, addr);
         }
-        q -= C_STACK_ALIGN;
+        q -= sizeof(void *);
     }
 }
 
@@ -475,8 +503,8 @@ static NOINLINE void TryMarkRange(jl_ptls_t ptls, void * start, void * end)
         SWAP(void *, start, end);
     }
     char * p = (char *)align_ptr(start);
-    char * q = (char *)end - sizeof(void *) + C_STACK_ALIGN;
-    while (lt_ptr(p, q)) {
+    char * q = (char *)end - sizeof(void *);
+    while (!lt_ptr(q, p)) {
         void * addr = *(void **)p;
         if (addr) {
             TryMark(ptls, addr);
@@ -487,7 +515,7 @@ static NOINLINE void TryMarkRange(jl_ptls_t ptls, void * start, void * end)
             }
 #endif
         }
-        p += C_STACK_ALIGN;
+        p += sizeof(void *);
     }
 }
 
@@ -515,6 +543,14 @@ static void GapTaskScanner(jl_task_t * task, int root_task)
         // or a guard page.
         ScanTaskStack(task, active_start, active_end);
     }
+}
+
+// Scan from the frame of this function, which lies below that of its
+// caller, to <stackend>.
+static NOINLINE void ScanStackFromHere(jl_ptls_t ptls, char * stackend)
+{
+    char * top = (char *)&top;
+    TryMarkRange(ptls, top, stackend);
 }
 
 #endif // DISABLE_STACK_SCAN
@@ -553,12 +589,22 @@ static void GapRootScanner(int full)
 #endif
 
     // We scan the stack of the current task from the stack pointer
-    // towards the stack bottom, ensuring that we also scan any
-    // references stored in registers.
-    jmp_buf registers;
-    GAP_SETJMP(registers);
-    TryMarkRange(ptls, registers, (char *)registers + sizeof(jmp_buf));
-    TryMarkRange(ptls, (char *)registers + sizeof(jmp_buf), stackend);
+    // towards the stack bottom. References of our callers held in
+    // callee-saved registers must end up in this frame: setjmp stores
+    // them in a local jmp_buf, but C libraries mangle the frame pointer,
+    // so where available __builtin_unwind_init also spills all of them.
+    // The scan starts in a callee, which must not be a tail call, as the
+    // compiler may place the spilled registers below our locals.
+#ifdef HAVE___BUILTIN_UNWIND_INIT
+    __builtin_unwind_init();
+#endif
+    // jmp_buf can be an int array (macOS); align it for the word-wise scan
+    union {
+        jmp_buf buf;
+        void *  align;
+    } registers;
+    GAP_SETJMP(registers.buf);
+    ScanStackFromHere(ptls, stackend);
 #endif // DISABLE_STACK_SCAN
 
     // Allow installing a custom marking function. This is used for
@@ -642,7 +688,17 @@ static uintptr_t MPtrMarkFunc(jl_ptls_t ptls, jl_value_t * obj)
     void * ty = jl_typeof(header);
     if (ty != DatatypeSmallBag && ty != DatatypeLargeBag)
         return 0;
-    if (JMark(ptls, header))
+    // The tag alone does not prove that a small bag is still allocated:
+    // Julia leaves the cells of a page untouched when it frees the page as
+    // a whole.
+    if (ty == DatatypeSmallBag &&
+        jl_gc_internal_obj_base_ptr(header) != header)
+        return 0;
+#ifdef VALIDATE_MARKING
+    if (!ValidTypeOfMarkedObj(header))
+        abort();
+#endif
+    if (MarkQueueObj(ptls, header))
         return 1;
     return 0;
 }
@@ -850,8 +906,8 @@ void SwapMasterPoint(Bag bag1, Bag bag2)
 {
     SWAP(UInt *, bag1->body, bag2->body);
 
-    jl_gc_wb((void *)bag1, BAG_HEADER(bag1));
-    jl_gc_wb((void *)bag2, BAG_HEADER(bag2));
+    jl_gc_wb_object((void *)bag1);
+    jl_gc_wb_object((void *)bag2);
 }
 
 UInt CollectBags(UInt size, UInt full)
@@ -942,7 +998,7 @@ Bag NewBag(UInt type, UInt size)
 
     // change the masterpointer to reference the new bag memory
     bag->body = header + 1;
-    jl_gc_wb_back((void *)bag);
+    jl_gc_wb_object((void *)bag);
 
     // return the identifier of the new bag
     return bag;
@@ -976,7 +1032,7 @@ UInt ResizeBag(Bag bag, UInt new_size)
 
         // update the master pointer
         bag->body = header + 1;
-        jl_gc_wb_back((void *)bag);
+        jl_gc_wb_object((void *)bag);
     }
 
     // update the size

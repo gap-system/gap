@@ -3,7 +3,9 @@
 <!-- %A  mloop.xml                  GAP documentation             Martin Schönert -->
 <!-- %% -->
 <!-- %% -->
-<!-- %Y Copyright 1990-1992, Lehrstuhl D für Mathematik, RWTH Aachen, Germany -->
+<!-- %Y Copyright of GAP belongs to its developers, whose names are too -->
+<!-- %Y numerous to list here. Please refer to the COPYRIGHT file for details. -->
+<!-- %Y SPDX-License-Identifier: GPL-2.0-or-later -->
 <!-- %% -->
 <Chapter Label="Main Loop and Break Loop">
 <Heading>Main Loop and Break Loop</Heading>
@@ -396,7 +398,7 @@ enclosing quotes, so <Ref Func="Print"/> can be used to produce formatted
 text on the standard output
 (see also chapter&nbsp;<Ref Chap="Strings and Characters"/>).
 Some characters preceded by a backslash, such as <C>\n</C>, are processed
-specially (see chapter&nbsp;<Ref Sect="Special Characters"/>).
+specially (see section&nbsp;<Ref Sect="Special Characters"/>).
 <Ref Func="PrintTo"/> can be used to print to a file.
 <P/>
 <Example><![CDATA[
@@ -522,11 +524,8 @@ If you leave a break loop with <K>quit</K> without completing a command
 it is possible (though not very likely) that data structures
 will be corrupted or incomplete data have been stored in objects.
 Therefore no guarantee can be given that calculations afterwards
-will return correct results! If you have been using options <K>quit</K>ting
-a break loop generally leaves the options stack with options you no
-longer want. The function <Ref Func="ResetOptionsStack"/>
-removes all options on the options stack, and this is the sole intended
-purpose of this function.
+will return correct results! Quitting a break loop also empties the
+options stack (see <Ref Func="OnBreak"/>).
 
 </Subsection>
 
@@ -576,7 +575,7 @@ In cases where a break loop is entered during a function that was  called
 with options (see Chapter&nbsp;<Ref Chap="Options Stack"/>),
 a <C>quit;</C> will also cause the
 options stack to be reset  and  an  <C>Info</C>-ed  warning  stating  this  is
-emitted at <Ref InfoClass="InfoWarning"/> level 1
+emitted at <Ref InfoClass="InfoWarning"/> level 2
 (see Chapter&nbsp;<Ref Sect="Info Functions"/>).
 <!-- %This is actually controlled by -->
 <!-- % -->
@@ -724,11 +723,6 @@ the error occurred. If not given, <A>nr</A> defaults to the value of the
 <C>WhereDepth</C> user preference (initially 5).
 If <A>nr</A> or the <C>WhereDepth</C> preference is not a non-negative integer,
 it is treated as 5.
-(Assume, for the
-following example, that after the last example <Ref Func="OnBreak"/>
-has been set back to its default value.). <Ref Func="WhereWithVars"/> acts the
-same as <Ref Func="Where"/> while also showing the arguments and local
-variables of each function.
 <P/>
 <Ref Func="WhereWithVars"/> acts the same as <Ref Func="Where"/> while also
 showing the arguments and local variables of each function.
@@ -940,7 +934,8 @@ this is done exactly as if <Ref Func="Print"/>
 (see&nbsp;<Ref Sect="View and Print"/>)
 were called with these arguments.
 Then a break loop (see&nbsp;<Ref Sect="Break Loops"/>) is
-entered, unless the standard error output is not connected to a terminal.
+entered, unless &GAP; was started with the command line option <C>-T</C>
+or <C>--quitonbreak</C>.
 You can leave this break loop with <C>return;</C> to continue execution with
 the statement following the call to <Ref Func="Error"/>. <Ref Func="ErrorNoReturn"/>
 operates identically to <Ref Func="Error"/>, except it does not allow using
@@ -958,7 +953,8 @@ this is done exactly as if <Ref Func="Print"/>
 (see&nbsp;<Ref Sect="View and Print"/>)
 were called with these arguments.
 Then a break loop (see&nbsp;<Ref Sect="Break Loops"/>) is
-entered, unless the standard error output is not connected to a terminal.
+entered, unless &GAP; was started with the command line option <C>-T</C>
+or <C>--quitonbreak</C>.
 This break loop can only be exited with <C>quit;</C>. The function differs from
 <Ref Func="Error"/> by not allowing execution to continue.
 </Description>
@@ -1093,7 +1089,7 @@ see <Ref Func="SaveWorkspace"/>.
 <Heading>Line Editing</Heading>
 
 In most installations &GAP; will be compiled to use the
-Gnu readline library (see the line <C>Libs used:</C> on &GAP; startup).
+Gnu readline library (see the line <C>Configuration:</C> on &GAP; startup).
 In that case skip to the next section <Ref Sect="sec:readline"/>.
 (The line editing commands described in the rest of this section were
 available in previous versions of &GAP;, they will work almost the same

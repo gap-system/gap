@@ -191,7 +191,7 @@ DeclareAttribute( "CoefficientsFamily", IsFamily );
 ##  <Description>
 ##  returns the numerator of the rational function <A>ratfun</A>.
 ##  <P/>
-##  As no proper multivariate gcd has been implemented yet, numerators and
+##  As multivariate gcds are not computed automatically, numerators and
 ##  denominators are not guaranteed to be reduced!
 ##  </Description>
 ##  </ManSection>
@@ -210,7 +210,7 @@ DeclareAttribute( "NumeratorOfRationalFunction", IsPolynomialFunction);
 ##  <Description>
 ##  returns the denominator of the rational function <A>ratfun</A>.
 ##  <P/>
-##  As no proper multivariate gcd has been implemented yet, numerators and
+##  As multivariate gcds are not computed automatically, numerators and
 ##  denominators are not guaranteed to be reduced!
 ##  <Example><![CDATA[
 ##  gap> x:=Indeterminate(Rationals,1);;y:=Indeterminate(Rationals,2);;
@@ -394,8 +394,7 @@ InstallTrueMethod( IsConstantRationalFunction,IsZeroRationalFunction );
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation("IsRationalFunctionDefaultRep",
-    IsComponentObjectRep and IsAttributeStoringRep and IsRationalFunction,
-    ["zeroCoefficient","numerator","denominator"] );
+    IsComponentObjectRep and IsAttributeStoringRep and IsRationalFunction );
 
 
 #############################################################################
@@ -408,9 +407,8 @@ DeclareRepresentation("IsRationalFunctionDefaultRep",
 ##
 ##  <Description>
 ##  is the default representation of polynomials. A polynomial
-##  in this representation is defined by the components
-##  and <Ref Attr="ExtRepNumeratorRatFun"/> where
-##  <Ref Attr="ExtRepNumeratorRatFun"/> is the
+##  in this representation is defined by the attribute
+##  <Ref Attr="ExtRepNumeratorRatFun"/>, which is the
 ##  external representation of the polynomial.
 ##  </Description>
 ##  </ManSection>
@@ -418,7 +416,7 @@ DeclareRepresentation("IsRationalFunctionDefaultRep",
 ##
 DeclareRepresentation("IsPolynomialDefaultRep",
     IsComponentObjectRep and IsAttributeStoringRep
-    and IsPolynomialFunction and IsPolynomial,["zeroCoefficient","numerator"]);
+    and IsPolynomialFunction and IsPolynomial);
 
 
 #############################################################################
@@ -440,7 +438,7 @@ DeclareRepresentation("IsPolynomialDefaultRep",
 ##
 DeclareRepresentation("IsLaurentPolynomialDefaultRep",
     IsComponentObjectRep and IsAttributeStoringRep
-    and IsPolynomialFunction and IsLaurentPolynomial, [] );
+    and IsPolynomialFunction and IsLaurentPolynomial );
 
 #############################################################################
 ##
@@ -459,12 +457,12 @@ DeclareRepresentation("IsLaurentPolynomialDefaultRep",
 ##
 DeclareRepresentation("IsUnivariateRationalFunctionDefaultRep",
     IsComponentObjectRep and IsAttributeStoringRep
-    and IsPolynomialFunction and IsUnivariateRationalFunction, [] );
+    and IsPolynomialFunction and IsUnivariateRationalFunction );
 
 
 ##  <#GAPDoc Label="[1]{ratfun}">
 ##  <Index>External representation of polynomials</Index>
-##  The representation of a polynomials is a list of the form
+##  The representation of a polynomial is a list of the form
 ##  <C>[<A>mon</A>,<A>coeff</A>,<A>mon</A>,<A>coeff</A>,...]</C> where <A>mon</A> is a monomial in
 ##  expanded form (that is given as list) and <A>coeff</A> its coefficient. The
 ##  monomials must be sorted according to the total degree/lexicographic
@@ -473,7 +471,7 @@ DeclareRepresentation("IsUnivariateRationalFunctionDefaultRep",
 ##  this the <E>external representation</E> of a polynomial. (The
 ##  reason for ordering is that addition of polynomials becomes linear in
 ##  the number of monomials instead of quadratic; the reason for the
-##  particular ordering chose is that it is compatible with multiplication
+##  particular ordering chosen is that it is compatible with multiplication
 ##  and thus gives acceptable performance for quotient calculations.)
 ##  <#/GAPDoc>
 ##
@@ -610,7 +608,7 @@ DeclareSynonym( "CoefficientsOfUnivariateLaurentPolynomial",
 ##  will default to a value of 1.
 ##  Therefore two univariate polynomials may be considered to be in the same
 ##  univariate polynomial ring if their indeterminates have the same number
-##  or one if of them is constant.  (see also&nbsp;<Ref Func="CIUnivPols"/>
+##  or one of them is constant. (see also&nbsp;<Ref Func="CIUnivPols"/>
 ##  and&nbsp;<Ref Filt="IsLaurentPolynomialDefaultRep"/>).
 ##  </Description>
 ##  </ManSection>
@@ -661,8 +659,8 @@ DeclareSynonym( "UnivariateLaurentPolynomialByCoefficients",
 ##
 ##  <#GAPDoc Label="LaurentPolynomialByExtRep">
 ##  <ManSection>
-##  <Func Name="LaurentPolynomialByExtRep" Arg='fam, cofs,val ,ind'/>
-##  <Func Name="LaurentPolynomialByExtRepNC" Arg='fam, cofs,val ,ind'/>
+##  <Func Name="LaurentPolynomialByExtRep" Arg='fam, cofs, val, ind'/>
+##  <Func Name="LaurentPolynomialByExtRepNC" Arg='fam, cofs, val, ind'/>
 ##
 ##  <Description>
 ##  creates a Laurent polynomial in the family <A>fam</A> with [<A>cofs</A>,<A>val</A>] as
@@ -766,7 +764,7 @@ DeclareGlobalFunction( "RationalFunctionByExtRepNC" );
 ##  univariate rational function but will rely on the coefficients being
 ##  shifted properly. Unless this is
 ##  guaranteed for the parameters,
-##  <Ref Func="UnivariateLaurentPolynomialByCoefficients"/> should be used.
+##  <Ref Oper="LaurentPolynomialByCoefficients"/> should be used.
 ##  No cancellation is performed.
 ##  <P/>
 ##  The variant <Ref Func="UnivariateRationalFunctionByExtRepNC"/> does not
@@ -967,7 +965,7 @@ BindGlobal("DEGREE_ZERO_LAURPOL",Ninfinity);
 ##  <Oper Name="UnivariatePolynomialByCoefficients" Arg='fam, cofs, ind'/>
 ##
 ##  <Description>
-##  constructs an univariate polynomial over the coefficients family
+##  constructs a univariate polynomial over the coefficients family
 ##  <A>fam</A> and in the indeterminate <A>ind</A> with the coefficients given by
 ##  <A>cofs</A>. This function should be used in algorithms to create
 ##  polynomials as it avoids overhead associated with
@@ -989,7 +987,7 @@ DeclareOperation( "UnivariatePolynomialByCoefficients",
 ##  <Oper Name="UnivariatePolynomial" Arg='ring, cofs[, ind]'/>
 ##
 ##  <Description>
-##  constructs an univariate polynomial over the ring <A>ring</A> in the
+##  constructs a univariate polynomial over the ring <A>ring</A> in the
 ##  indeterminate <A>ind</A> with the coefficients given by <A>cofs</A>.
 ##  </Description>
 ##  </ManSection>
@@ -1069,16 +1067,16 @@ DeclareOperation( "UnivariateRationalFunctionByCoefficients",
 ##  <P/>
 ##  A variation is the evaluation at elements of another ring <M>R</M>,
 ##  for which a multiplication with elements of the coefficient ring of
-##  <A>ratfun</A> are defined.
+##  <A>ratfun</A> is defined.
 ##  In this situation the identity element of <M>R</M> may be given by a
 ##  further argument <A>one</A> which will be used for <M>x^0</M> for any
 ##  specialized indeterminate <M>x</M>.
 ##  <P/>
-##  The second version takes an univariate rational function and specializes
-##  the value of its indeterminate to <A>val</A>.
+##  The second version takes a univariate rational function and specializes
+##  the value of its indeterminate to <A>value</A>.
 ##  Again, an optional argument <A>one</A> may be given.
-##  <C>Value( <A>upol</A>, <A>val</A> )</C> can also be expressed as <C>upol(
-##  <A>val</A> )</C>.
+##  <C>Value( <A>upol</A>, <A>value</A> )</C> can also be expressed as <C>upol(
+##  <A>value</A> )</C>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> Value(x*y+y+x^7,[x,y],[5,7]);
@@ -1228,11 +1226,14 @@ DeclareOperation( "LeadingMonomial", [ IsPolynomialFunction ] );
 ##
 ##  <#GAPDoc Label="LeadingCoefficient">
 ##  <ManSection>
-##  <Oper Name="LeadingCoefficient" Arg='pol'/>
+##  <Oper Name="LeadingCoefficient" Arg='pol[, ind]'/>
 ##
 ##  <Description>
 ##  returns the leading coefficient (that is the coefficient of the leading
 ##  monomial, see&nbsp;<Ref Oper="LeadingMonomial"/>) of the polynomial <A>pol</A>.
+##  If the number <A>ind</A> of an indeterminate is given, it returns the
+##  leading coefficient of <A>pol</A> regarded as univariate polynomial in
+##  this indeterminate, with polynomial coefficients.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1299,7 +1300,8 @@ DeclareOperation( "PolynomialCoefficientsOfPolynomial",
 ##
 ##  <Description>
 ##  returns the degree of the polynomial <A>pol</A> in the indeterminate
-##  (or indeterminate number) <A>ind</A>.
+##  (or indeterminate number) <A>ind</A>. The degree of a zero polynomial is
+##  <C>-infinity</C>.
 ##  <Example><![CDATA[
 ##  gap> f:=x^5+3*x*y+9*y^7+4*y^5*x+3*y+2;
 ##  9*y^7+4*x*y^5+x^5+3*x*y+3*y+2
@@ -1324,7 +1326,7 @@ DeclareOperation("DegreeIndeterminate",[IsPolynomial,IsPosInt]);
 ##
 ##  <Description>
 ##  If <A>ratfun</A> is a univariate rational function then
-##  <Ref Attr="Derivative"/> returns the <E>derivative</E> of <A>ufun</A> by
+##  <Ref Attr="Derivative"/> returns the <E>derivative</E> of <A>ratfun</A> by
 ##  its indeterminate.
 ##  For a rational function <A>ratfun</A>,
 ##  the derivative by the indeterminate <A>ind</A> is returned,
@@ -1344,14 +1346,14 @@ DeclareOperation("Derivative",[IsPolynomialFunction,IsPosInt]);
 
 #############################################################################
 ##
-#A  TaylorSeriesRationalFunction( <ratfun>, <at>, <deg> )
+#F  TaylorSeriesRationalFunction( <ratfun>, <at>, <deg> )
 ##
 ##  <#GAPDoc Label="TaylorSeriesRationalFunction">
 ##  <ManSection>
-##  <Attr Name="TaylorSeriesRationalFunction" Arg='ratfun, at, deg]'/>
+##  <Func Name="TaylorSeriesRationalFunction" Arg='ratfun, at, deg'/>
 ##
 ##  <Description>
-##  Computes the taylor series up to degree <A>deg</A> of <A>ratfun</A> at
+##  Computes the Taylor series up to degree <A>deg</A> of <A>ratfun</A> at
 ##  <A>at</A>.
 ##  <Example><![CDATA[
 ##  gap> TaylorSeriesRationalFunction((x^5+3*x+7)/(x^5+x+1),0,11);
@@ -1467,7 +1469,7 @@ DeclareGlobalFunction("CIUnivPols");
 ##  This function tries to cancel common factors between the corresponding
 ##  polynomials and returns a list <M>[ a', b' ]</M> of
 ##  external representations of cancelled polynomials.
-##  As there is no proper multivariate GCD
+##  As no multivariate gcd is computed,
 ##  cancellation is not guaranteed to be optimal.
 ##  </Description>
 ##  </ManSection>
@@ -1505,7 +1507,7 @@ DeclareOperation("HeuristicCancelPolynomialsExtRep",
 ##  <Func Name="QuotientPolynomialsExtRep" Arg='fam,a,b'/>
 ##
 ##  <Description>
-##  Let <A>a</A> and <A>b</A> the external representations of two polynomials
+##  Let <A>a</A> and <A>b</A> be the external representations of two polynomials
 ##  in the rational functions family <A>fam</A>.
 ##  This function computes the external representation of the quotient of
 ##  both polynomials,
@@ -1593,8 +1595,10 @@ DeclareGlobalFunction("GcdCoeffs");
 ##  <Ref Attr="CoefficientsOfUnivariateRationalFunction"/> for <A>f</A>.
 ##  <P/>
 ##  Otherwise, each entry of the returned list is equal to <K>fail</K>.
-##  As there is no proper multivariate gcd, this may also happen for the
-##  rational function which may be reduced to univariate (see example).
+##  As the cancellation of multivariate rational functions only uses a
+##  heuristic gcd, this may also happen for a rational function which could
+##  be reduced to a univariate one, for example if its coefficients are very
+##  large (see example).
 ##  <Example><![CDATA[
 ##  gap> UnivariatenessTestRationalFunction( 50-45*x-6*x^2+x^3 );
 ##  [ true, 1, true, [ [ 50, -45, -6, 1 ], 0 ] ]
@@ -1602,7 +1606,8 @@ DeclareGlobalFunction("GcdCoeffs");
 ##  [ true, 2, false, [ [ -6, 1 ], [ 1, 1 ], 2 ] ]
 ##  gap> UnivariatenessTestRationalFunction( (-6*y^2+y^3) / (x+1));
 ##  [ false, fail, false, fail ]
-##  gap> UnivariatenessTestRationalFunction( ((y+2)*(x+1)) / ((y-1)*(x+1)) );
+##  gap> UnivariatenessTestRationalFunction(
+##  >      ((y+2)*(x+10^6000)) / ((y-1)*(x+10^6000)) );
 ##  [ fail, fail, fail, fail ]
 ##  ]]></Example>
 ##  </Description>
@@ -1787,7 +1792,7 @@ DeclareCategory( "IsUnivariatePolynomialsFamily", IsFamily );
 ##  The basic operations for rational functions  which are univariate Laurent
 ##  polynomials are:
 ##
-##    `UnivariateLaurentPolynomialByCoefficients'
+##    `LaurentPolynomialByCoefficients'
 ##    `CoefficientsOfUnivariateLaurentPolynomial'
 ##    `IndeterminateNumberOfUnivariateLaurentPolynomial'
 ##

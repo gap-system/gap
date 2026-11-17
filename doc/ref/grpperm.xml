@@ -5,8 +5,9 @@
 <!-- %A                                                           Ákos Seress -->
 <!-- %% -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
-<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %Y  Copyright of GAP belongs to its developers, whose names are too -->
+<!-- %Y  numerous to list here. Please refer to the COPYRIGHT file for details. -->
+<!-- %Y  SPDX-License-Identifier: GPL-2.0-or-later -->
 <!-- %% -->
 <Chapter Label="Permutation Groups">
 <Heading>Permutation Groups</Heading>
@@ -334,12 +335,12 @@ Now randomized verification will be used.
 We require that the result is guaranteed correct with probability
 <M>90</M> percent.
 This means that if we would do this calculation many times over,
-&GAP; would <E>guarantee</E> that in least <M>90</M> percent of all
+&GAP; would <E>guarantee</E> that in at least <M>90</M> percent of all
 calculations the result is correct.
 In fact the results are much better than the guarantee,
 but we cannot promise that this will really happen.
-(For the meaning of the <C>random</C> component in the second argument of
-<Ref Func="StabChain" Label="for a group (and a record)"/>.)
+(See <Ref Func="StabChain" Label="for a group (and a record)"/> for the
+meaning of the <C>random</C> component in its second argument.)
 <P/>
 First the group is created anew.
 <P/>
@@ -439,8 +440,9 @@ This structure is itself a record&nbsp;<A>S</A> and it has
 </List>
 <P/>
 This gives a recursive structure where the <Q>outermost</Q> record
-representing the <Q>topmost</Q> stabilizer is bound to
-the group record component <C>stabChain</C> and has the components
+representing the <Q>topmost</Q> stabilizer is the
+<Ref Attr="StabChainMutable" Label="for a group"/> value of the group
+and has the components
 explained below.
 Note: Since the structure is recursive, <E>never print a stabilizer chain!</E>
 (Unless you want to exercise the scrolling capabilities of your terminal.)
@@ -460,7 +462,7 @@ Note: Since the structure is recursive, <E>never print a stabilizer chain!</E>
         components are identical (i.e., the same &GAP; object)
         in every stabilizer of the chain;
         thus the <C>labels</C> of a stabilizer do not necessarily all lie
-        in the this stabilizer (but see <C>genlabels</C> below).
+        in this stabilizer (but see <C>genlabels</C> below).
 </Item>
 <Mark><C>genlabels</C> </Mark>
 <Item>

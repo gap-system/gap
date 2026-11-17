@@ -2334,7 +2334,7 @@ void IntrRecExprBeginElmName(IntrState * intr, UInt rnam)
 
 
     // remember the name on the values stack
-    PushObj(intr, (Obj)rnam);
+    PushObj(intr, ObjInt_UInt(rnam));
 }
 
 void IntrRecExprBeginElmExpr(IntrState * intr)
@@ -2354,7 +2354,7 @@ void IntrRecExprBeginElmExpr(IntrState * intr)
     rnam = RNamObj(PopObj(intr));
 
     // remember the name on the values stack
-    PushObj(intr, (Obj)rnam);
+    PushObj(intr, ObjInt_UInt(rnam));
 }
 
 void IntrRecExprEndElm(IntrState * intr)
@@ -2376,7 +2376,7 @@ void IntrRecExprEndElm(IntrState * intr)
     val = PopObj(intr);
 
     // get the record name
-    rnam = (UInt)PopObj(intr);
+    rnam = UInt_ObjInt(PopObj(intr));
 
     // get the record
     record = PopObj(intr);
@@ -2454,7 +2454,7 @@ void IntrFuncCallOptionsBeginElmName(IntrState * intr, UInt rnam)
 
 
     // remember the name on the values stack
-    PushObj(intr, (Obj)rnam);
+    PushObj(intr, ObjInt_UInt(rnam));
 }
 
 void IntrFuncCallOptionsBeginElmExpr(IntrState * intr)
@@ -2474,7 +2474,7 @@ void IntrFuncCallOptionsBeginElmExpr(IntrState * intr)
     rnam = RNamObj(PopObj(intr));
 
     // remember the name on the values stack
-    PushObj(intr, (Obj)rnam);
+    PushObj(intr, ObjInt_UInt(rnam));
 }
 
 void IntrFuncCallOptionsEndElm(IntrState * intr)
@@ -2496,7 +2496,7 @@ void IntrFuncCallOptionsEndElm(IntrState * intr)
     val = PopObj(intr);
 
     // get the record name
-    rnam = (UInt)PopObj(intr);
+    rnam = UInt_ObjInt(PopObj(intr));
 
     // get the record
     record = PopObj(intr);
@@ -2527,7 +2527,7 @@ void IntrFuncCallOptionsEndElmEmpty(IntrState * intr)
     val = True;
 
     // get the record name
-    rnam = (UInt)PopObj(intr);
+    rnam = UInt_ObjInt(PopObj(intr));
 
     // get the record
     record = PopObj(intr);
@@ -3034,7 +3034,6 @@ void IntrAssListLevel(IntrState * intr, Int narg, UInt level)
         // get and check the position
         pos = PopObj(intr);
         SET_ELM_PLIST(ixs, i, pos);
-        CHANGED_BAG(ixs);
     }
     SET_LEN_PLIST(ixs, narg);
 
@@ -3224,7 +3223,6 @@ void IntrElmListLevel(IntrState * intr, Int narg, UInt level)
     for (i = narg; i > 0; i--) {
         pos = PopObj(intr);
         SET_ELM_PLIST(ixs, i, pos);
-        CHANGED_BAG(ixs);
     }
     SET_LEN_PLIST(ixs, narg);
 

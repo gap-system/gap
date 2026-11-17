@@ -36,8 +36,7 @@
 ##  a positional or a component object.
 ##
 DeclareRepresentation( "IsDefaultGeneralMappingRep",
-    IsGeneralMapping and HasSource and HasRange,
-    [] );
+    IsGeneralMapping and HasSource and HasRange );
 #T methods to handle attributes 'One', 'Inverse', and 'InverseGeneralMapping',
 #T 'ImagesSource', 'PreImagesRange'?
 
@@ -524,8 +523,7 @@ InstallMethod( PrintObj,
 #R  IsMappingByFunctionRep( <map> )
 ##
 DeclareRepresentation( "IsMappingByFunctionRep",
-    IsMapping and IsAttributeStoringRep,
-    [ "fun" ] );
+    IsMapping and IsAttributeStoringRep );
 #T really attribute storing ??
 
 
@@ -535,39 +533,35 @@ DeclareRepresentation( "IsMappingByFunctionRep",
 ##
 DeclareRepresentation( "IsMappingByFunctionWithInverseRep",
         IsMappingByFunctionRep
-    and IsBijective,
-#T 1996/10/10 fceller where to put non-reps, 4th position?
-    [ "fun", "invFun" ] );
+    and IsBijective );
 
 #############################################################################
 ##
 #R  IsNonSPMappingByFunctionRep( <map> )
 ##
 DeclareRepresentation( "IsNonSPMappingByFunctionRep",
-    IsNonSPGeneralMapping and IsMappingByFunctionRep, [] );
+    IsNonSPGeneralMapping and IsMappingByFunctionRep );
 
 #############################################################################
 ##
 #R  IsNonSPMappingByFunctionWithInverseRep( <map> )
 ##
 DeclareRepresentation( "IsNonSPMappingByFunctionWithInverseRep",
-        IsMappingByFunctionWithInverseRep and IsNonSPMappingByFunctionRep,
-    [ "fun", "invFun" ] );
+        IsMappingByFunctionWithInverseRep and IsNonSPMappingByFunctionRep );
 
 #############################################################################
 ##
 #R  IsSPMappingByFunctionRep( <map> )
 ##
 DeclareRepresentation( "IsSPMappingByFunctionRep",
-    IsSPGeneralMapping and IsMappingByFunctionRep, [] );
+    IsSPGeneralMapping and IsMappingByFunctionRep );
 
 #############################################################################
 ##
 #R  IsSPMappingByFunctionWithInverseRep( <map> )
 ##
 DeclareRepresentation( "IsSPMappingByFunctionWithInverseRep",
-        IsMappingByFunctionWithInverseRep and IsSPMappingByFunctionRep,
-    [ "fun", "invFun" ] );
+        IsMappingByFunctionWithInverseRep and IsSPMappingByFunctionRep );
 
 
 #############################################################################
@@ -686,17 +680,56 @@ InstallMethod( PreImagesRepresentativeNC,
     return map!.prefun( elm );
   end );
 
+# The preimage function returns a preimage of each element of the image,
+# so checking its result decides membership in the image without computing
+# the image, which is impossible for an infinite source.
 InstallMethod( PreImagesRepresentative,
     "for mapping by function",
     FamRangeEqFamElm,
     [ IsMappingByFunctionRep, IsObject ], 0,
   function ( map, elm )
+    local pre;
     if not ( elm in Range(map) ) then
       Error( "<elm> is not in the range of <map>" );
-    elif not ( elm in Image(map) ) then
-      return fail;
+    elif not IsBound( map!.prefun ) then
+      if not ( elm in Image(map) ) then
+        return fail;
+      fi;
+      return PreImagesRepresentativeNC( map, elm );
     fi;
-    return PreImagesRepresentativeNC( map, elm );
+    pre:= map!.prefun( elm );
+    if pre in Source( map ) and map!.fun( pre ) = elm then
+      return pre;
+    fi;
+    return fail;
+  end );
+
+InstallMethod( PreImagesElm,
+    "for mapping by function",
+    FamRangeEqFamElm,
+    [ IsMappingByFunctionRep, IsObject ], 0,
+  function ( map, elm )
+    if not IsBound( map!.prefun ) then
+      TryNextMethod();
+    elif PreImagesRepresentative( map, elm ) = fail then
+      return [];
+    fi;
+    return PreImagesElmNC( map, elm );
+  end );
+
+InstallMethod( PreImagesSet,
+    "for mapping by function, and finite list or collection",
+    true,
+    [ IsMappingByFunctionRep, IsListOrCollection ], 0,
+  function ( map, elms )
+    if not IsBound( map!.prefun ) or not IsFinite( elms ) then
+      TryNextMethod();
+    elif not IsSubset( Range( map ), elms ) then
+      Error( "<elms> is not a subset of the range of <map>" );
+    fi;
+    elms:= Filtered( AsList( elms ),
+                     elm -> PreImagesRepresentative( map, elm ) <> fail );
+    return PreImagesSetNC( map, elms );
   end );
 
 
@@ -719,8 +752,8 @@ InstallMethod( PreImageElm,
 
 #############################################################################
 ##
-#M  PreImagesElmNC( <map>, <elm> )  . . . . . . . . . . for mapping by function
-#M  PreImagesElm( <map>, <elm> )  . . . . . . . . . . . for mapping by function
+#M  PreImagesElmNC( <map>, <elm> ) . . . . . . . . .  for mapping by function
+#M  PreImagesElm( <map>, <elm> ) . . . . . . . . . .  for mapping by function
 ##
 InstallMethod( PreImagesElmNC,
     "for mapping by function",
@@ -938,8 +971,7 @@ InstallMethod( PrintObj,
 ##  delegated to the inverse of a mapping.
 ##
 DeclareRepresentation( "IsInverseGeneralMappingRep",
-    IsNonSPGeneralMapping,
-    [] );
+    IsNonSPGeneralMapping );
 
 
 #############################################################################

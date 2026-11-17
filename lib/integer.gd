@@ -385,8 +385,9 @@ DeclareGlobalFunction( "DivisorsInt");
 ##  <Ref Func="FactorsInt"/> is guaranteed to find all factors less than
 ##  <M>10^6</M> and will find most factors less than <M>10^{10}</M>.
 ##  If <A>n</A> contains multiple factors larger than that
-##  <Ref Func="FactorsInt"/> may not be able to factor <A>n</A>
-##  and will then signal an error.
+##  <Ref Func="FactorsInt"/> may not be able to factor <A>n</A>;
+##  it then hands <A>n</A> to the <Package>FactInt</Package> package if that
+##  is loaded, and signals an error otherwise.
 ##  <P/>
 ##  <Ref Func="FactorsInt"/> is used in a method for the general operation
 ##  <Ref Oper="Factors"/>.
@@ -431,7 +432,7 @@ DeclareGlobalFunction( "FactorsInt" );
 ##  <Attr Name="PrimeDivisors" Arg='n'/>
 ##  <Description>
 ##  <Ref Attr="PrimeDivisors"/> returns for a non-zero integer <A>n</A> a set
-##  of its positive (probable) primes divisors. In rare cases the result could
+##  of its positive (probable) prime divisors. In rare cases the result could
 ##  contain a composite number which passed certain primality tests, see
 ##  <Ref Func="IsProbablyPrimeInt"/> and <Ref Func="FactorsInt"/> for more details.
 ##  <Example>
@@ -697,7 +698,7 @@ DeclareGlobalFunction( "LcmInt" );
 ##  <Ref Func="LogInt"/> returns the integer part of the logarithm of the
 ##  positive integer <A>n</A> with respect to the positive integer
 ##  <A>base</A>, i.e.,
-##  the largest positive integer <M>e</M> such that
+##  the largest nonnegative integer <M>e</M> such that
 ##  <M><A>base</A>^e \leq <A>n</A></M>.
 ##  The function
 ##  <Ref Func="LogInt"/>

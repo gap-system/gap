@@ -81,10 +81,10 @@ InstallMethod( IsFullSCAlgebra,
 ##
 if IsHPCGAP then
 DeclareRepresentation( "IsDenseCoeffVectorRep",
-    IsAtomicPositionalObjectRep, [ 1 ] );
+    IsAtomicPositionalObjectRep );
 else
 DeclareRepresentation( "IsDenseCoeffVectorRep",
-    IsPositionalObjectRep, [ 1 ] );
+    IsPositionalObjectRep );
 fi;
 
 
@@ -201,7 +201,7 @@ InstallMethod( PrintObj,
 
 #############################################################################
 ##
-#M  String( <elm> )  . . . . . . . . . . . . . . .  for s.~c. algebra elements
+#M  String( <elm> ) . . . . . . . . . . . . . . .  for s.~c. algebra elements
 ##
 InstallMethod( String,
     "for s. c. algebra element",
@@ -468,15 +468,7 @@ InstallMethod( AdditiveInverseOp,
 InstallOtherMethod( OneOp,
     "for s. c. algebra element",
     [ IsSCAlgebraObj ],
-    function( x )
-    local F, one;
-    F:= FamilyObj( x );
-    one:= IdentityFromSCTable( F!.sctable );
-    if one <> fail then
-      one:= ObjByExtRep( F, one );
-    fi;
-    return one;
-    end );
+    x -> One( FamilyObj( x ) ) );
 
 InstallOtherMethod( InverseOp,
     "for s. c. algebra element",

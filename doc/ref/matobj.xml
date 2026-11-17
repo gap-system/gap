@@ -1,7 +1,11 @@
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!--   matobj.xml               GAP documentation        Max Neunhoeffer  -->
 <!--                                                                      -->
-<!--   Copyright (C) 2011 The GAP Group                                   -->
+<!--   Copyright of GAP belongs to its developers, whose names are too    -->
+<!--   numerous to list here. Please refer to the COPYRIGHT file for      -->
+<!--   details.                                                           -->
+<!--                                                                      -->
+<!--   SPDX-License-Identifier: GPL-2.0-or-later                          -->
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
 <Chapter Label="Vector and Matrix Objects">
@@ -231,7 +235,7 @@ All rows of a matrix must have the same length and the same base domain.
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Implementing New Vector and Matrix Objects Types">
-<Heading>Implementing New Vector and Matrix Objects Types</Heading>
+<Heading>Implementing New Types of Vector and Matrix Objects</Heading>
 
 The first step in the design of a new type of vector or matrix objects
 is to create a new filter that serves as the
@@ -392,7 +396,9 @@ The following conventions hold for such a group <C>G</C>.
 <Item>
   All elements of <C>G</C> have the same
   <Ref Attr="ConstructingFilter" Label="for a matrix object"/>
-  and the same <Ref Attr="BaseDomain" Label="for a matrix object"/>.
+  and the same <Ref Attr="BaseDomain" Label="for a matrix object"/>;
+  &GAP; signals an error if one tries to create a group from generators
+  that violate this, see <Ref Func="CheckMatrixGroupGenerators"/>.
   For a given matrix or matrix object <C>M</C>,
   a matrix object that can be multiplied with elements of <C>G</C>
   can be constructed as <C>Matrix( M, Representative( G ) )</C>,
@@ -401,6 +407,7 @@ The following conventions hold for such a group <C>G</C>.
 </List>
 
 <#Include Label="ConstructingFiltersForMatrixGroupElements">
+<#Include Label="CheckMatrixGroupGenerators">
 
 </Section>
 
@@ -550,7 +557,7 @@ In such cases, the following guidelines may be useful.
 Conversely, do <E>not</E> use functions for vector and matrix objects
 when you want to create an object that shall be used just as a list.
 For example, use <C>ListWithIdenticalEntries( n, Zero( R ) )</C>
-not <C>Vector( R, n )</C> in this case.
+not <C>ZeroVector( R, n )</C> in this case.
 For creating a list with <C>n</C> entries, you can also first call
 <Ref Func="EmptyPlist"/> for creating a big enough list,
 and then enter the values.

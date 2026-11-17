@@ -412,30 +412,23 @@ static Obj FuncLoadedModules(Obj self)
         m = Modules[i].info;
         if (IS_MODULE_BUILTIN(m->type)) {
             SET_ELM_PLIST(list, 3 * i + 1, ObjsChar[(Int)'b']);
-            CHANGED_BAG(list);
             str = MakeImmString(m->name);
             SET_ELM_PLIST(list, 3 * i + 2, str);
             SET_ELM_PLIST(list, 3 * i + 3, INTOBJ_INT(m->version));
         }
         else if (IS_MODULE_DYNAMIC(m->type)) {
             SET_ELM_PLIST(list, 3 * i + 1, ObjsChar[(Int)'d']);
-            CHANGED_BAG(list);
             str = MakeImmString(m->name);
             SET_ELM_PLIST(list, 3 * i + 2, str);
-            CHANGED_BAG(list);
             str = MakeImmString(Modules[i].filename);
             SET_ELM_PLIST(list, 3 * i + 3, str);
-            CHANGED_BAG(list);
         }
         else if (IS_MODULE_STATIC(m->type)) {
             SET_ELM_PLIST(list, 3 * i + 1, ObjsChar[(Int)'s']);
-            CHANGED_BAG(list);
             str = MakeImmString(m->name);
             SET_ELM_PLIST(list, 3 * i + 2, str);
-            CHANGED_BAG(list);
             str = MakeImmString(Modules[i].filename);
             SET_ELM_PLIST(list, 3 * i + 3, str);
-            CHANGED_BAG(list);
         }
     }
     return list;
@@ -639,8 +632,6 @@ static void SetupFuncInfo(Obj func, const Char * cookie)
         SET_FILENAME_BODY(body_bag, filename);
         SET_LOCATION_BODY(body_bag, location);
         SET_BODY_FUNC(func, body_bag);
-        CHANGED_BAG(body_bag);
-        CHANGED_BAG(func);
     }
 }
 

@@ -283,7 +283,7 @@ static Obj FuncUnmarkTree(Obj self, Obj tree)
 }
 
 
-/*****************************************************************************
+/****************************************************************************
 **
 *F  Mark(<tree>, <reftree>, <index>) . . . . . . . . find all nodes of <tree>
 **                                                   which are almost equal
@@ -385,7 +385,7 @@ static Int AlmostEqual(Obj tree1, Int index1, Obj tree2, Int index2)
 }
 
 
-/*****************************************************************************
+/****************************************************************************
 **
 *F  Equal(<tree1>,<index1>,<tree2>,<index2>) . . . . . . . . test of equality
 **
@@ -477,8 +477,6 @@ static Obj Mark2(Obj tree, Int index1, Obj reftree, Int index2)
             {
                 new = NewPlistFromArgs(INTOBJ_INT(i));
                 SET_ELM_PLIST(list, INT_INTOBJ( DT_POS(tree, i) ),  new);
-                // tell gasman that list has changed
-                CHANGED_BAG(list);
             }
             // add i to <list>[ pos(tree(<tree>, i)) ]
             else
@@ -506,7 +504,7 @@ static Obj Mark2(Obj tree, Int index1, Obj reftree, Int index2)
 }
 
 
-/*****************************************************************************
+/****************************************************************************
 **
 *F  FindTree(<tree>, <index>)
 **
@@ -634,8 +632,6 @@ static Obj MakeFormulaVector(Obj tree, Obj pr)
                                    BinomialInt(ELM_PLIST(rel, j+1),
                                             INTOBJ_INT(i)        )        );
                     SET_ELM_PLIST(vec,  2, prod);
-                    // tell gasman that vec has changed
-                    CHANGED_BAG(vec);
                     break;
                 }
                 j+=2;
@@ -711,7 +707,7 @@ static Int Leftof(Obj tree1, Int index1, Obj tree2, Int index2)
 }
 
 
-/*****************************************************************************
+/****************************************************************************
 **
 *F  Leftof2(<tree1>,<index1>,<tree2>,<index2>) . . . . . test if one tree is
 **                                                       left of another tree

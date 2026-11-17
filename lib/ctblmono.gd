@@ -83,8 +83,8 @@
 ##  possible.
 ##  For example, if you need the normal subgroups of <M>G</M> then they can
 ##  be computed more efficiently if the character table of <M>G</M> is known,
-##  and they can be stored compatibly to the contained <M>G</M>-conjugacy
-##  classes.
+##  and they can be stored as lists of positions of the <M>G</M>-conjugacy
+##  classes they contain.
 ##  This correspondence of classes list and normal subgroup can be used very
 ##  often.
 ##  <#/GAPDoc>
@@ -129,7 +129,8 @@ DeclareInfoClass( "InfoMonomial" );
 ##  For a group <A>G</A>, <Ref Attr="Alpha"/> returns a list
 ##  whose <M>i</M>-th entry is the maximal derived length of groups
 ##  <M><A>G</A> / \ker(\chi)</M> for <M>\chi \in Irr(<A>G</A>)</M> with
-##  <M>\chi(1)</M> at most the <M>i</M>-th irreducible degree of <A>G</A>.
+##  <M>\chi(1)</M> at most the <M>i</M>-th smallest of the distinct
+##  irreducible degrees of <A>G</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -147,9 +148,9 @@ DeclareAttribute( "Alpha", IsGroup );
 ##
 ##  <Description>
 ##  For a group <A>G</A>, <Ref Attr="Delta"/> returns the list
-##  <M>[ 1, alp[2] - alp[1], \ldots, alp[<A>n</A>] - alp[<A>n</A>-1] ]</M>,
+##  <M>[ 1, alp[2] - alp[1], \ldots, alp[n] - alp[n-1] ]</M>,
 ##  where <M>alp = </M><C>Alpha( <A>G</A> )</C>
-##  (see&nbsp;<Ref Attr="Alpha"/>).
+##  (see&nbsp;<Ref Attr="Alpha"/>) and <M>n</M> is its length.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -170,14 +171,14 @@ DeclareAttribute( "Delta", IsGroup );
 ##
 ##  <Description>
 ##  Called with an irreducible character <A>chi</A> of a group <M>G</M>,
-##  <Ref Prop="IsBergerCondition" Label="for a group"/> returns <K>true</K>
+##  <Ref Prop="IsBergerCondition" Label="for a character"/> returns <K>true</K>
 ##  if <A>chi</A> satisfies <M>M' \leq \ker(\chi)</M> for every normal
 ##  subgroup <M>M</M> of <M>G</M> with the property that
 ##  <M>M \leq \ker(\psi)</M> holds for all <M>\psi \in Irr(G)</M> with
 ##  <M>\psi(1) &lt; \chi(1)</M>, and <K>false</K> otherwise.
 ##  <P/>
 ##  Called with a group <A>G</A>,
-##  <Ref Prop="IsBergerCondition" Label="for a character"/> returns
+##  <Ref Prop="IsBergerCondition" Label="for a group"/> returns
 ##  <K>true</K> if all irreducible characters of <A>G</A> satisfy the
 ##  inequality above, and <K>false</K> otherwise.
 ##  <P/>
@@ -494,8 +495,9 @@ DeclareProperty( "IsMonomialCharacter", IsClassFunction );
 ##  </Item>
 ##  <Mark>3.</Mark>
 ##  <Item>
-##    there are odd prime divisors <M>p</M> and <M>q</M> of <M>n</M>
-##    such that <M>ord(p,q)</M> is even and <M>ord(p,q) &lt; \nu_p(n)</M>
+##    there are prime divisors <M>p</M> and <M>q</M> of <M>n</M>,
+##    <M>q</M> odd, such that <M>ord(p,q)</M> is even and
+##    <M>ord(p,q) &lt; \nu_p(n)</M>
 ##    (especially <M>\nu_p(n) \geq 3</M>),
 ##  </Item>
 ##  <Mark>4.</Mark>
@@ -506,7 +508,8 @@ DeclareProperty( "IsMonomialCharacter", IsClassFunction );
 ##  </Item>
 ##  <Mark>5.</Mark>
 ##  <Item>
-##    <M>\nu_2(n) \geq 2</M> and there is a <M>p</M> such that
+##    <M>\nu_2(n) \geq 2</M> and there are prime divisors <M>p</M> and
+##    <M>q</M> of <M>n</M>, <M>q</M> odd, such that
 ##    <M>p \equiv  1 \pmod{4}</M>, <M>ord(p,q)</M> is odd,
 ##    and <M>2 ord(p,q) &lt; \nu_p(n)</M>
 ##    (especially <M>\nu_p(n) \geq 3</M>).
@@ -566,13 +569,13 @@ DeclareProperty( "IsMonomialNumber", IsPosInt );
 ##  <Ref Attr="TestMonomialQuick" Label="for a group"/> if
 ##  <A>G</A> is nilpotent or Sylow abelian by supersolvable,
 ##  or if <A>G</A> is solvable and its order is not divisible by the third
-##  power of a prime,
+##  power of a prime.
 ##  Nonsolvable groups are proved to be nonmonomial by
 ##  <Ref Attr="TestMonomialQuick" Label="for a group"/>.
 ##  <P/>
 ##  An irreducible character <A>chi</A> is proved to be monomial if
 ##  it is linear, or if its codegree is a prime power,
-##  or if its group knows to be monomial,
+##  or if its group is known to be monomial,
 ##  or if the factor group modulo the kernel can be proved to be monomial by
 ##  <Ref Attr="TestMonomialQuick" Label="for a group"/>.
 ##  <P/>
@@ -610,10 +613,10 @@ DeclareAttribute( "TestMonomialQuick", IsGroup );
 ##        Label="for a group and a Boolean"/>
 ##
 ##  <Description>
-##  Called with a group character <A>chi</A> of a group <A>G</A>,
+##  Called with a group character <A>chi</A> or a group <A>G</A>,
 ##  <Ref Attr="TestMonomial" Label="for a character"/>
 ##  returns a record containing information about monomiality of the group
-##  <A>G</A> or the group character <A>chi</A>, respectively.
+##  character <A>chi</A> or the group <A>G</A>, respectively.
 ##  <P/>
 ##  If <Ref Attr="TestMonomial" Label="for a character"/> proves
 ##  the character <A>chi</A> to be monomial then the result contains
@@ -779,7 +782,7 @@ DeclareProperty( "IsSubnormallyMonomial", IsClassFunction );
 ##  <Ref Oper="TestRelativelySM" Label="for a group and a normal subgroup"/>
 ##  returns a record with information whether
 ##  the first argument is relatively SM with respect to <A>N</A>,
-##  i.e, whether there is a subnormal subgroup <M>H</M> of <M>G</M> that
+##  i.e., whether there is a subnormal subgroup <M>H</M> of <M>G</M> that
 ##  contains <A>N</A> such that the character <A>chi</A>
 ##  resp.&nbsp;every irreducible character of <M>G</M> is induced from a
 ##  character <M>\psi</M> of <M>H</M> such that the restriction of
@@ -864,7 +867,7 @@ DeclareProperty( "IsMinimalNonmonomial", IsGroup );
 ##  <Description>
 ##  is a solvable minimal nonmonomial group described by the parameters
 ##  <A>factsize</A> and <A>p</A> if such a group exists,
-##  and <K>false</K> otherwise.
+##  and <K>fail</K> otherwise.
 ##  <P/>
 ##  Suppose that the required group <M>K</M> exists.
 ##  Then <A>factsize</A> is the size of the Fitting factor <M>K / F(K)</M>,

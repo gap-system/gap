@@ -605,7 +605,6 @@ void AssBlist (
             SET_LEN_PLIST( list, pos );
         }
         SET_ELM_PLIST( list, pos, val );
-        CHANGED_BAG( list );
     }
 }
 
@@ -1152,7 +1151,6 @@ static Obj FuncLIST_BLIST(Obj self, Obj list, Obj blist)
     for ( i = 1;  nn <= n && i <= len;  i++  ) {
         if (TEST_BIT_BLIST(blist, i)) {
             SET_ELM_PLIST( sub, (Int)nn, ELMW_LIST( list, (Int)i ) );
-            CHANGED_BAG( sub );
             nn++;
         }
     }

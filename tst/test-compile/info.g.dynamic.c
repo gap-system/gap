@@ -61,7 +61,6 @@ static Obj  HdlrFunc2 (
   SET_LEN_PLIST( t_2, 1 );
   t_3 = MakeString( "Do not print" );
   SET_ELM_PLIST( t_2, 1, t_3 );
-  CHANGED_BAG(t_2);
   InfoDoPrint( t_1, INTOBJ_INT(2), t_2 );
  }
  
@@ -74,7 +73,6 @@ static Obj  HdlrFunc2 (
   SET_LEN_PLIST( t_2, 1 );
   t_3 = MakeString( "print this A" );
   SET_ELM_PLIST( t_2, 1, t_3 );
-  CHANGED_BAG(t_2);
   InfoDoPrint( t_1, INTOBJ_INT(1), t_2 );
  }
  
@@ -118,7 +116,6 @@ static Obj  HdlrFunc2 (
   SET_LEN_PLIST( t_2, 1 );
   t_3 = MakeString( "Do not print" );
   SET_ELM_PLIST( t_2, 1, t_3 );
-  CHANGED_BAG(t_2);
   InfoDoPrint( t_1, INTOBJ_INT(3), t_2 );
  }
  
@@ -131,7 +128,6 @@ static Obj  HdlrFunc2 (
   SET_LEN_PLIST( t_2, 1 );
   t_3 = MakeString( "print this B" );
   SET_ELM_PLIST( t_2, 1, t_3 );
-  CHANGED_BAG(t_2);
   InfoDoPrint( t_1, INTOBJ_INT(2), t_2 );
  }
  
@@ -144,13 +140,10 @@ static Obj  HdlrFunc2 (
   SET_LEN_PLIST( t_2, 3 );
   t_3 = MakeString( "print " );
   SET_ELM_PLIST( t_2, 1, t_3 );
-  CHANGED_BAG(t_2);
   t_3 = MakeString( "this " );
   SET_ELM_PLIST( t_2, 2, t_3 );
-  CHANGED_BAG(t_2);
   t_3 = MakeString( "C" );
   SET_ELM_PLIST( t_2, 3, t_3 );
-  CHANGED_BAG(t_2);
   InfoDoPrint( t_1, INTOBJ_INT(1), t_2 );
  }
  
@@ -188,7 +181,6 @@ static Obj  HdlrFunc1 (
  SET_ENDLINE_BODY(t_2, 10);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
- CHANGED_BAG(t_1);
  AssGVar( G_runtest, t_1 );
  
  /* return; */
@@ -255,7 +247,6 @@ static Int InitLibrary ( StructInitInfo * module )
  SET_ENVI_FUNC( func1, STATE(CurrLVars) );
  body1 = NewFunctionBody();
  SET_BODY_FUNC( func1, body1 );
- CHANGED_BAG( func1 );
  CALL_0ARGS( func1 );
  
  return 0;

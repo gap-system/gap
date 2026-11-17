@@ -863,7 +863,6 @@ static ExecStatus ExecInfo(Stat stat)
             // extracted
             arg = EVAL_EXPR(ARGI_INFO(stat, i+2));
             SET_ELM_PLIST(args, i, arg);
-            CHANGED_BAG(args);
         }
 
         // and print them

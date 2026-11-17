@@ -43,33 +43,33 @@ Error, Is8BitMatrixRep only supports base fields with 3 to 256 elements
 # IsPlistMatrixRep
 #
 gap> TestIdentityMatrix(IsPlistMatrixRep, GF(2), 2);
-<2x2-matrix over GF(2)>
+<2x2 plist matrix over GF(2)>
 gap> TestIdentityMatrix(IsPlistMatrixRep, GF(2), 0);
-<0x0-matrix over GF(2)>
+<0x0 plist matrix over GF(2)>
 gap> TestIdentityMatrix(IsPlistMatrixRep, GF(2), -1);
 Error, IdentityMatrix: the dimension must be non-negative
 
 #
 gap> TestIdentityMatrix(IsPlistMatrixRep, Integers, 2);
-<2x2-matrix over Integers>
+<2x2 plist matrix over Integers>
 gap> TestIdentityMatrix(IsPlistMatrixRep, Integers, 0);
-<0x0-matrix over Integers>
+<0x0 plist matrix over Integers>
 gap> TestIdentityMatrix(IsPlistMatrixRep, Integers, -1);
 Error, IdentityMatrix: the dimension must be non-negative
 
 #
 gap> TestIdentityMatrix(IsPlistMatrixRep, Rationals, 2);
-<2x2-matrix over Rationals>
+<2x2 plist matrix over Rationals>
 gap> TestIdentityMatrix(IsPlistMatrixRep, Rationals, 0);
-<0x0-matrix over Rationals>
+<0x0 plist matrix over Rationals>
 gap> TestIdentityMatrix(IsPlistMatrixRep, Rationals, -1);
 Error, IdentityMatrix: the dimension must be non-negative
 
 #
 gap> TestIdentityMatrix(IsPlistMatrixRep, Integers mod 4, 2);
-<2x2-matrix over (Integers mod 4)>
+<2x2 plist matrix over (Integers mod 4)>
 gap> TestIdentityMatrix(IsPlistMatrixRep, Integers mod 4, 0);
-<0x0-matrix over (Integers mod 4)>
+<0x0 plist matrix over (Integers mod 4)>
 gap> TestIdentityMatrix(IsPlistMatrixRep, Integers mod 4, -1);
 Error, IdentityMatrix: the dimension must be non-negative
 
@@ -77,17 +77,17 @@ Error, IdentityMatrix: the dimension must be non-negative
 # IsGenericMatrixRep
 #
 gap> TestIdentityMatrix(IsGenericMatrixRep, GF(2), 2);
-<2x2-matrix over GF(2)>
+<2x2 generic matrix over GF(2)>
 gap> TestIdentityMatrix(IsGenericMatrixRep, GF(2), 0);
-<0x0-matrix over GF(2)>
+<0x0 generic matrix over GF(2)>
 gap> TestIdentityMatrix(IsGenericMatrixRep, GF(2), -1);
 Error, IdentityMatrix: the dimension must be non-negative
 
 #
 gap> TestIdentityMatrix(IsGenericMatrixRep, Integers, 2);
-<2x2-matrix over Integers>
+<2x2 generic matrix over Integers>
 gap> TestIdentityMatrix(IsGenericMatrixRep, Integers, 0);
-<0x0-matrix over Integers>
+<0x0 generic matrix over Integers>
 gap> TestIdentityMatrix(IsGenericMatrixRep, Integers, -1);
 Error, IdentityMatrix: the dimension must be non-negative
 
@@ -98,17 +98,17 @@ Error, IdentityMatrix: the dimension must be non-negative
 
 #
 gap> IdentityMatrix(Integers, 2);
-<2x2-matrix over Integers>
+<2x2 plist matrix over Integers>
 gap> IdentityMatrix(Integers, 0);
-<0x0-matrix over Integers>
+<0x0 plist matrix over Integers>
 gap> IdentityMatrix(Integers, -1);
 Error, IdentityMatrix: the dimension must be non-negative
 
 #
 gap> IdentityMatrix(Integers mod 4, 2);
-<2x2-matrix over (Integers mod 4)>
+<2x2 plist matrix over (Integers mod 4)>
 gap> IdentityMatrix(Integers mod 4, 0);
-<0x0-matrix over (Integers mod 4)>
+<0x0 plist matrix over (Integers mod 4)>
 gap> IdentityMatrix(Integers mod 4, -1);
 Error, IdentityMatrix: the dimension must be non-negative
 

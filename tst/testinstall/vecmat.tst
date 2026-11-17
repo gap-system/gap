@@ -1,5 +1,5 @@
 #@local F,F9,TestReadMatEntry,dim,m,v,w,checkShift,testlens,types,vecs,i,j
-#@local v1,v2,G
+#@local v1,v2,G,lev
 gap> START_TEST("vecmat.tst");
 
 #
@@ -251,15 +251,15 @@ false
 
 # matrix object
 gap> m:= Matrix( IsPlistMatrixRep, GF(2), [ [ Z(2) ] ] );
-<1x1-matrix over GF(2)>
+<1x1 plist matrix over GF(2)>
 gap> w:= ImmutableMatrix( GF(4), m );
-<immutable 1x1-matrix over GF(2^2)>
+<immutable 1x1 plist matrix over GF(2^2)>
 gap> IsMutable( w );
 false
 gap> IsMatrixObj( w );
 true
 gap> w:= ImmutableMatrix( GF(2), m, true );
-<immutable 1x1-matrix over GF(2)>
+<immutable 1x1 plist matrix over GF(2)>
 gap> IsMutable( w );
 false
 gap> IsIdenticalObj( m, w );
@@ -346,6 +346,25 @@ gap> v * v;
 0*Z(2)
 gap> m * m = m;
 true
+
+# GF(2) and GF(4) vectors written over a larger field
+gap> v := [ 1, 0, 1 ] * Z(2);;  ConvertToVectorRep( v, 2 );;
+gap> w := CopyToVectorRep( v, 4 );;  Q_VEC8BIT( w );  w = v;  IsGF2VectorRep( v );
+4
+true
+true
+gap> Q_VEC8BIT( CopyToVectorRep( w, 16 ) );  Q_VEC8BIT( CopyToVectorRep( w, 8 ) );
+16
+8
+gap> IsMutable( CopyToVectorRep( Immutable( v ), 4 ) );
+false
+gap> w := ShallowCopy( v );;  ConvertToVectorRep( w, 4 );  Q_VEC8BIT( w );  w = v;
+4
+4
+true
+gap> w := ShallowCopy( v );;  ConvertToVectorRep( w, GF(256) );  Q_VEC8BIT( w );
+256
+256
 
 # test greased matrix mult
 gap> m := ImmutableMatrix( F, IdentityMat( 150, F ) );
@@ -439,10 +458,60 @@ true
 gap> IsList( ImmutableVector( GF(5^6), v ) );
 true
 
+# CopyToVectorRepNC from compressed vectors to a larger field
+gap> v:= [ Z(2), 0*Z(2) ];;  ConvertToVectorRep( v, 2 );;
+gap> w:= CopyToVectorRepNC( v, 4 );;  Q_VEC8BIT( w );  w = v;
+4
+true
+gap> w:= CopyToVectorRepNC( w, 16 );;  Q_VEC8BIT( w );  w = v;
+16
+true
+gap> IsMutable( CopyToVectorRepNC( Immutable( v ), 4 ) );
+false
+
 # Check that the vector representations fit in the computation of the
 # nice monomorphism.
 gap> G:= Group([ [ [ Z(5^6)^6944, 0*Z(5) ], [ 0*Z(5), Z(5^2)^20 ] ] ]);;
 gap> Size( G );;
+
+# CopyToVectorRep and ConvertToVectorRep with an invalid field size; at
+# assertion level 2 an Assert catches it first
+gap> v:= [ Z(2), 0*Z(2) ];;  ConvertToVectorRep( v, 2 );;
+gap> w:= ShallowCopy( v );;
+gap> lev:= AssertionLevel();;  SetAssertionLevel( 0 );
+gap> CopyToVectorRep( v, 1 );
+Error, CopyToVectorRep: Vector cannot be written over GF(1)
+gap> ConvertToVectorRep( w, 1 );
+Error, ConvertToVectorRepNC: Vector cannot be written over GF(1)
+gap> SetAssertionLevel( lev );
+
+# CopyToVectorRep(NC) must not return a mutable empty input as the copy
+gap> v:= [];;
+gap> w:= CopyToVectorRep( v, 2 );;
+gap> IsIdenticalObj( v, w );
+false
+gap> IsGF2VectorRep( w ) and IsMutable( w );
+true
+gap> Add( w, Z(2) );; v;
+[  ]
+gap> v:= [];;
+gap> w:= CopyToVectorRepNC( v, 4 );;
+gap> IsIdenticalObj( v, w );
+false
+gap> Is8BitVectorRep( w ) and Q_VEC8BIT( w ) = 4 and IsMutable( w );
+true
+gap> Add( w, Z(2) );; v;
+[  ]
+gap> IsMutable( CopyToVectorRep( Immutable( [] ), 3 ) );
+false
+gap> IsMutable( CopyToVectorRepNC( Immutable( [] ), 3 ) );
+false
+gap> CopyToVectorRep( [], 257 );
+fail
+gap> CopyToVectorRep( [], 6 );
+Error, CopyToVectorRep: Vector cannot be written over GF(6)
+gap> IsGF2VectorRep( CopyToVectorRepNC( [], 2 ) );
+true
 
 #
 gap> STOP_TEST("vecmat.tst");

@@ -8,7 +8,7 @@
 ##  to list here. Please refer to the COPYRIGHT file for details.
 ##
 
-############################################################################
+#############################################################################
 #
 # This file is a sample implementation for new style vectors and matrices.
 # It stores matrices as dense lists of lists with wrapping.
@@ -27,7 +27,7 @@
 ##  An object <A>obj</A> in <Ref Filt="IsPlistVectorRep"/> describes
 ##  a vector object (see <Ref Filt="IsVectorObj"/>) that can occur as a row
 ##  in a row list matrix
-##  (see Section <Ref Subsect="Operations for Row List Matrix Objects"/>).
+##  (see Section <Ref Sect="Operations for Row List Matrix Objects"/>).
 ##  <P/>
 ##  <Ref Filt="IsPlistVectorRep"/> implies <Ref Filt="IsCopyable"/>,
 ##  thus vector objects in this representation can be mutable.
@@ -56,8 +56,7 @@ DeclareRepresentation( "IsPlistVectorRep",
         IsVectorObj and IsPositionalObjectRep
     and IsCopyable
     and IsNoImmediateMethodsObject
-    and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain,
-    [] );
+    and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain );
 
 
 #############################################################################
@@ -118,8 +117,7 @@ DeclareRepresentation( "IsPlistMatrixRep",
     and IsCopyable
     and IsNoImmediateMethodsObject
     and HasNumberRows and HasNumberColumns
-    and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain,
-    [] );
+    and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain );
 
 Add( ConstructingFiltersForMatrixGroupElements, IsPlistMatrixRep );
 

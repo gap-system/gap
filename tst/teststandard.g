@@ -5,7 +5,7 @@
 ##
 ##  <#GAPDoc Label="[1]{teststandard.g}">
 ##  If you want to run a more advanced check (this is not required and 
-##  make take up to an hour), you can read <File>teststandard.g</File>
+##  may take up to an hour), you can read <File>teststandard.g</File>
 ##  which is an extended test script performing all tests from the 
 ##  <File>tst</File> directory.
 ##  <P/>

@@ -565,7 +565,7 @@ BindGlobal( "CocycleSQ", function( epi, field )
     od;
 
     # check
-    if c = 0 * c then return 0; fi;
+    if IsZero( c ) then return 0; fi;
     return c;
 end );
 

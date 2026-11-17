@@ -68,7 +68,7 @@ InstallAttributeFunction(
 ##  Any type that is created for <C>fam</C> (see <Ref Func="NewType"/>) will
 ##  describe objects in these filters, and thus
 ##  any object that is created in <C>fam</C> (see <Ref Func="Objectify"/>)
-##  will lie automatically in <A>req</A><C> and </C><A>imp</A>.
+##  will lie automatically in <C><A>req</A> and <A>imp</A></C>.
 ##  (Thus it does not matter whether one uses <A>req</A> or <A>imp</A>
 ##  or both in the call, the distinction has only historical reasons.)
 ##  <P/>
@@ -580,6 +580,41 @@ BIND_GLOBAL( "IsAtomicPositionalObjectRepFlags",
         FLAGS_FILTER(IsAtomicPositionalObjectRep));
 BIND_GLOBAL( "IsReadOnlyPositionalObjectRepFlags",
         FLAGS_FILTER(IsReadOnlyPositionalObjectRep));
+BIND_GLOBAL( "IsInternalRepFlags",
+        FLAGS_FILTER(IsInternalRep));
+BIND_GLOBAL( "IsDataObjectRepFlags",
+        FLAGS_FILTER(IsDataObjectRep));
+BIND_GLOBAL( "IsPositionalObjectRepFlags",
+        FLAGS_FILTER(IsPositionalObjectRep));
+BIND_GLOBAL( "IsComponentObjectRepFlags",
+        FLAGS_FILTER(IsComponentObjectRep));
+
+#############################################################################
+##
+#F  SUBTYPE_WITH_BASE_REP( <type>, <rep> )
+##
+##  <rep> is `IsPositionalObjectRep` or `IsComponentObjectRep` and not
+##  implied by <type>. Return the subtype of <type> which implies <rep>, or
+##  signal an error if <type> implies another of the four base
+##  representations.
+##
+BIND_GLOBAL( "SUBTYPE_WITH_BASE_REP", function ( type, rep )
+    local flags, other;
+    flags := FlagsType(type);
+    if IS_SUBSET_FLAGS(flags, IsInternalRepFlags) then
+        other := IsInternalRep;
+    elif IS_SUBSET_FLAGS(flags, IsDataObjectRepFlags) then
+        other := IsDataObjectRep;
+    elif IS_SUBSET_FLAGS(flags, IsPositionalObjectRepFlags) then
+        other := IsPositionalObjectRep;
+    elif IS_SUBSET_FLAGS(flags, IsComponentObjectRepFlags) then
+        other := IsComponentObjectRep;
+    else
+        return Subtype(type, rep);
+    fi;
+    Error("<type> implies ", NAME_FUNC(other),
+          " but <obj> requires ", NAME_FUNC(rep));
+end );
 
 #############################################################################
 ##
@@ -597,8 +632,8 @@ BIND_GLOBAL( "Objectify", function ( type, obj )
     if not IsType( type )  then
         Error("<type> must be a type");
     fi;
+    flags := type![POS_FLAGS_TYPE];
     if IsHPCGAP then
-        flags := FlagsType(type);
         if IS_LIST( obj )  then
             if IS_SUBSET_FLAGS(flags, IsAtomicPositionalObjectRepFlags) then
                 FORCE_SWITCH_OBJ( obj, FixedAtomicList(obj) );
@@ -614,9 +649,17 @@ BIND_GLOBAL( "Objectify", function ( type, obj )
         fi;
     fi;
     if IS_LIST( obj )  then
+        if not IS_SUBSET_FLAGS(flags, IsPositionalObjectRepFlags) then
+            type := SUBTYPE_WITH_BASE_REP( type, IsPositionalObjectRep );
+        fi;
         SET_TYPE_POSOBJ( obj, type );
     elif IS_REC( obj )  then
+        if not IS_SUBSET_FLAGS(flags, IsComponentObjectRepFlags) then
+            type := SUBTYPE_WITH_BASE_REP( type, IsComponentObjectRep );
+        fi;
         SET_TYPE_COMOBJ( obj, type );
+    else
+        Error("<obj> must be a list or a record");
     fi;
     if not ( IGNORE_IMMEDIATE_METHODS
              or IsNoImmediateMethodsObject(obj) ) then
@@ -684,7 +727,7 @@ end );
 ##  <Description>
 ##  <Ref Func="ResetFilterObj"/> sets the value of <A>filter</A> for
 ##  <A>obj</A> to <K>false</K>.
-##  (Implied filters of <A>filt</A> are not touched.
+##  (Implied filters of <A>filter</A> are not touched.
 ##  This might create inconsistent situations if applied carelessly).
 ##  </Description>
 ##  </ManSection>
@@ -733,7 +776,7 @@ end );
 ##  You can avoid this  by  setting the attributes immediately while the
 ##  object is created, as follows.
 ##  <Ref Func="ObjectifyWithAttributes"/> takes a plain list or record
-##  <A>obj</A> and turns it an object just like <Ref Func="Objectify"/>
+##  <A>obj</A> and turns it into an object just like <Ref Func="Objectify"/>
 ##  and sets attribute <A>attr1</A> to <A>val1</A>,
 ##  sets attribute <A>attr2</A> to <A>val2</A> and so forth.
 ##  <P/>

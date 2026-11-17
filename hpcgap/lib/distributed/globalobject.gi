@@ -44,8 +44,7 @@ BindGlobal ("REQUEST_TYPES", MakeReadOnlyObj( rec (
         ACK := 7)));
 
 DeclareRepresentation( "IsGlobalObjectHandleRep",
-                       IsNonAtomicComponentObjectRep,
-        ["pe", "localId", "owner", "accessType", "immediate", "obj", "control"] );
+                       IsNonAtomicComponentObjectRep );
 
 GlobalObjectHandleDefaultType :=
   NewType( GlobalObjectHandlesFamily,
@@ -73,7 +72,7 @@ DoPushObj := fail;
 ReadLib ("distributed/globalobject_messages.g");
 ReadLib ("distributed/globalobject_io.g");
 
-#################################################################################
+#############################################################################
 # functions that deal with requests (created via calls to <...>NonBlocking
 # functions)
 InstallGlobalFunction (RequestCompleted, atomic function (readonly request)

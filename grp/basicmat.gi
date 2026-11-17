@@ -349,7 +349,7 @@ PermConstructor( SpecialSemilinearGroupCons,
     [ IsPermGroup, IsPosInt, IsPosInt ],
     IsMatrixGroup and IsFinite );
 
-##############################################################################
+#############################################################################
 ##
 #M  SylowSubgroupOp( NaturalGL, p )
 ##

@@ -25,7 +25,7 @@ DeclareInfoClass("InfoRingHom");
 ##  <Oper Name="RingGeneralMappingByImages" Arg='R, S, gens, imgs'/>
 ##
 ##  <Description>
-##  is a general mapping from the ring <A>A</A> to the ring <A>S</A>.
+##  is a general mapping from the ring <A>R</A> to the ring <A>S</A>.
 ##  This general mapping is defined by mapping the entries in the list
 ##  <A>gens</A> (elements of <A>R</A>) to the entries in the list <A>imgs</A>
 ##  (elements of <A>S</A>),

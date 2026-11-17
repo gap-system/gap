@@ -881,7 +881,6 @@ static Int TreeEntryC ( void )
 
         SET_LEN_PLIST( objTree1, treesize );
         SET_ELM_PLIST( objTree1, numgens, objNew );
-        CHANGED_BAG(objTree1);
 
         // copy the word to the new bag
         ptWord = BASE_PTR_PLIST(objTree2) - 1;
@@ -1249,6 +1248,7 @@ static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
                     ptWord[i] = ptTree2[i];
                 }
                 SET_LEN_PLIST( word, LEN_PLIST(objTree2) );
+                CLEAR_FILTS_LIST( word );
             }
         }
 
@@ -1320,6 +1320,7 @@ static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
 
             // save the word length
             SET_LEN_PLIST( word, last );
+            CLEAR_FILTS_LIST( word );
         }
     }
 
@@ -1331,40 +1332,6 @@ static Obj FuncApplyRel2(Obj self, Obj app, Obj rel, Obj nums)
 
     // return true
     return True;
-}
-
-
-/****************************************************************************
-**
-*F  FuncCopyRel( <self>, <rel> )   . . . . . . . . . . . .  copy of a relator
-**
-**  'FuncCopyRel' returns a copy  of the given RRS  relator such that the bag
-**  of the copy does not exceed the minimal required size.
-*/
-static Obj FuncCopyRel(Obj self, Obj rel) // the given relator
-{
-    Obj *               ptRel;          // pointer to the given relator
-    Obj                 copy;           // the copy
-    Obj *               ptCopy;         // pointer to the copy
-    Int                 leng;           // length of the given word
-
-    RequirePlainList(0, rel);
-    leng = LEN_PLIST(rel);
-
-    // Allocate a bag for the copy
-    copy   = NEW_PLIST( T_PLIST, leng );
-    SET_LEN_PLIST( copy, leng );
-    ptRel = BASE_PTR_PLIST(rel);
-    ptCopy = BASE_PTR_PLIST(copy);
-
-    // Copy the relator to the new bag
-    while ( leng > 0 ) {
-        *ptCopy++ = *ptRel++;
-        leng--;
-    }
-
-    // Return the copy
-    return copy;
 }
 
 
@@ -1516,6 +1483,8 @@ static Obj FuncMakeCanonical(Obj self, Obj rel) // the given relator
         }
     }
 
+    CLEAR_FILTS_LIST( rel );
+
     return 0;
 }
 
@@ -1632,7 +1601,6 @@ static Obj FuncTreeEntry(Obj self, Obj tree, Obj word)
 
         SET_ELM_PLIST( objTree, 3, INTOBJ_INT(numgens) );
         SET_ELM_PLIST( objTree1, numgens, new );
-        CHANGED_BAG(objTree1);
 
         // copy the word to the new bag
         ptWord = BASE_PTR_PLIST(objTree2) - 1;
@@ -2062,20 +2030,20 @@ static Obj FuncLOWINDEX_COSET_SCAN(Obj self,
 {
   UInt ok,i,j,d,e,x,y,l,sd;
   Obj  rx;
-  UInt * s1a;
-  UInt * s2a;
+  Obj * s1a;
+  Obj * s2a;
 
   ok=1;
   j=1;
-  // we convert stack entries to c-integers to avoid conversion
+  // the stacks stay filled with immediate integers throughout: GROW_PLIST
+  // below can collect, and the marking loop would follow any raw C integer
+  // that happens to be even (see IS_BAG_REF)
   sd=LEN_PLIST(s1);
-  s1a=(UInt*)ADDR_OBJ(s1);
-  s2a=(UInt*)ADDR_OBJ(s2);
-  s1a[1]=INT_INTOBJ((Obj)s1a[1]);
-  s2a[1]=INT_INTOBJ((Obj)s2a[1]);
+  s1a=ADDR_OBJ(s1);
+  s2a=ADDR_OBJ(s2);
   while ((ok==1) && (j>0)) {
-    d=s1a[j];
-    x=s2a[j];
+    d=INT_INTOBJ(s1a[j]);
+    x=INT_INTOBJ(s2a[j]);
     j--;
     rx=ELM_PLIST(r,x);
     l=LEN_PLIST(rx);
@@ -2092,11 +2060,11 @@ static Obj FuncLOWINDEX_COSET_SCAN(Obj self,
           GROW_PLIST(s2,sd);
           SET_LEN_PLIST(s2,sd);
           CHANGED_BAG(s2);
-          s1a=(UInt*)ADDR_OBJ(s1);
-          s2a=(UInt*)ADDR_OBJ(s2);
+          s1a=ADDR_OBJ(s1);
+          s2a=ADDR_OBJ(s2);
         }
-        s1a[j]=ret1;
-        s2a[j]=ret2;
+        s1a[j]=INTOBJ_INT(ret1);
+        s2a[j]=INTOBJ_INT(ret2);
         ok=1;
       }
       i++;
@@ -2113,21 +2081,25 @@ static Obj FuncLOWINDEX_COSET_SCAN(Obj self,
         if (j>sd) {
           sd=2*sd;
           GROW_PLIST(s1,sd);
+          SET_LEN_PLIST(s1,sd);
+          CHANGED_BAG(s1);
           GROW_PLIST(s2,sd);
-          s1a=(UInt*)ADDR_OBJ(s1);
-          s2a=(UInt*)ADDR_OBJ(s2);
+          SET_LEN_PLIST(s2,sd);
+          CHANGED_BAG(s2);
+          s1a=ADDR_OBJ(s1);
+          s2a=ADDR_OBJ(s2);
         }
-        s1a[j]=ret1;
-        s2a[j]=ret2;
+        s1a[j]=INTOBJ_INT(ret1);
+        s2a[j]=INTOBJ_INT(ret2);
         ok=1;
       }
       i++;
     }
   }
-  // clean up the mess we made
+  // reset the stacks for the next call
   for (i=1;i<=sd;i++) {
-    s1a[i]=(Int)INTOBJ_INT(0);
-    s2a[i]=(Int)INTOBJ_INT(0);
+    s1a[i]=INTOBJ_INT(0);
+    s2a[i]=INTOBJ_INT(0);
   }
   if (ok==1)
     return True;
@@ -2309,7 +2281,6 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_1ARGS(MakeConsequencesPres, list),
     GVAR_FUNC_2ARGS(StandardizeTableC, table, standard),
     GVAR_FUNC_3ARGS(ApplyRel2, app, relators, nums),
-    GVAR_FUNC_1ARGS(CopyRel, relator),
     GVAR_FUNC_1ARGS(MakeCanonical, relator),
     GVAR_FUNC_2ARGS(TreeEntry, relator, word),
     GVAR_FUNC_3ARGS(StandardizeTable2C, table, table, standard),

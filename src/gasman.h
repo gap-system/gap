@@ -377,10 +377,15 @@ extern "C++" {
 }
 #endif
 
+// Julia 1.14 renamed `jl_gc_wb_back` (JuliaLang/julia#63299)
+#if JULIA_VERSION_MAJOR == 1 && JULIA_VERSION_MINOR < 14
+#define jl_gc_wb_object jl_gc_wb_back
+#endif
+
 EXPORT_INLINE void CHANGED_BAG(Bag bag)
 {
-    // The following is a copy of Julia's write barrier `jl_gc_wb_back` and
-    // must be kept in sync with it. We cannot just call `jl_gc_wb_back`, as
+    // The following is a copy of Julia's write barrier `jl_gc_wb_object` and
+    // must be kept in sync with it. We cannot just call `jl_gc_wb_object`, as
     // Julia declares it `static inline`, and C forbids referencing an
     // identifier with internal linkage from an inline function with external
     // linkage. Marking `CHANGED_BAG` as `static inline` instead is not an
@@ -393,7 +398,12 @@ EXPORT_INLINE void CHANGED_BAG(Bag bag)
 
 BOOL IsGapObj(void *);
 
-#elif defined(GAP_MEMORY_CANARY)
+#elif defined(USE_GASMAN)
+
+extern Bag * YoungBags;
+extern Bag   ChangedBags;
+
+#if defined(GAP_MEMORY_CANARY)
 
 /****************************************************************************
 **
@@ -407,10 +417,7 @@ BOOL IsGapObj(void *);
 
 void CHANGED_BAG(Bag b);
 
-#elif defined(USE_GASMAN)
-
-extern Bag * YoungBags;
-extern Bag   ChangedBags;
+#else
 
 #ifdef GAP_KERNEL_DEBUG
 BOOL         InWorkspaceRestore(void);
@@ -424,6 +431,8 @@ EXPORT_INLINE void CHANGED_BAG(Bag bag)
         ChangedBags = bag;
     }
 }
+
+#endif
 
 #else
 

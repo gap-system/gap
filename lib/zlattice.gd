@@ -359,7 +359,7 @@ DeclareGlobalFunction( "LLLReducedBasis" );
 ##  The implementation follows the description in
 ##  <Cite Key="Coh93" Where="p. 94f."/>.
 ##  <P/>
-##  Let <A>G</A> the Gram matrix of the vectors
+##  Let <A>G</A> be the Gram matrix of the vectors
 ##  <M>(b_1, b_2, \ldots, b_n)</M>;
 ##  this means <A>G</A> is either a square symmetric matrix or lower
 ##  triangular matrix (only the entries in the lower triangular half are used

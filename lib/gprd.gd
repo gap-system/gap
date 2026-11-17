@@ -52,7 +52,7 @@
 ##  <M>P</M> and <M>n</M> yields the homomorphism embedding the <M>n</M>-th
 ##  factor into <M>P</M>; calling
 ##  <Ref Oper="Projection" Label="for a domain and a positive integer"/> with
-##  <A>P</A> and <A>n</A> yields the projection of <M>P</M> onto the
+##  <M>P</M> and <M>n</M> yields the projection of <M>P</M> onto the
 ##  <M>n</M>-th factor,
 ##  see&nbsp;<Ref Sect="Embeddings and Projections for Group Products"/>.
 ##  <P/>
@@ -186,14 +186,32 @@ DeclareGlobalFunction("SubdirectDiagonalPerms");
 ##  dimension over a subfield of <A>F</A>, or into a permutation group
 ##  (in this case permutation matrices are taken).
 ##  <P/>
-##  In the second variant, <A>autgp</A> must be a group of automorphism of
+##  In the second variant, <A>autgp</A> must be a group of automorphisms of
 ##  <A>N</A>, it is a shorthand for
 ##  <C>SemidirectProduct(<A>autgp</A>,IdentityMapping(<A>autgp</A>),<A>N</A>)</C>.
-##  Note that (unless <A>autgrp</A> has been obtained by the operation
+##  Note that (unless <A>autgp</A> has been obtained by the operation
 ##  <Ref Attr="AutomorphismGroup"/>)
-##  you have to test <Ref Prop="IsGroupOfAutomorphisms"/> for <A>autgrp</A>
-##  to ensure that &GAP; knows that <A>autgrp</A> consists of
+##  you have to test <Ref Prop="IsGroupOfAutomorphisms"/> for <A>autgp</A>
+##  to ensure that &GAP; knows that <A>autgp</A> consists of
 ##  group automorphisms.
+##  <P/>
+##  <Index Key="Embedding" Subkey="example for semidirect products">
+##  <C>Embedding</C></Index>
+##  <Index Key="Projection" Subkey="example for semidirect products">
+##  <C>Projection</C></Index>
+##  For a semidirect product <M>P</M> of <A>G</A> with <A>N</A>, calling
+##  <Ref Oper="Embedding" Label="for a domain and a positive integer"/> with
+##  <M>P</M> and <C>1</C> yields the embedding of <A>G</A>, calling
+##  <Ref Oper="Embedding" Label="for a domain and a positive integer"/> with
+##  <M>P</M> and <C>2</C> yields the embedding of <A>N</A>; calling
+##  <Ref Oper="Projection" Label="for a domain"/> with
+##  <M>P</M> yields the projection of <M>P</M> onto <A>G</A>,
+##  see&nbsp;<Ref Sect="Embeddings and Projections for Group Products"/>.
+##  If <A>N</A> is a full row space and <A>alpha</A> is injective,
+##  the image of <A>alpha</A> takes the place of <A>G</A> here.
+##  <P/>
+##  We now show the various calling variants.
+##  First, a subgroup of the automorphism group of a pc group acts on it:
 ##  <Example><![CDATA[
 ##  gap> n:=AbelianGroup(IsPcGroup,[5,5]);
 ##  <pc group of size 25 with 2 generators>
@@ -203,6 +221,17 @@ DeclareGlobalFunction("SubdirectDiagonalPerms");
 ##  gap> p:=SemidirectProduct(au,n);;
 ##  gap> Size(p);
 ##  3000
+##  gap> Image(Projection(p)) = au;
+##  true
+##  gap> Kernel(Projection(p)) = Image(Embedding(p,2));
+##  true
+##  ]]></Example>
+##  <P/>
+##  This also works with permutation groups.
+##  Here the group of automorphisms is not obtained from
+##  <Ref Attr="AutomorphismGroup"/>, so we test
+##  <Ref Prop="IsGroupOfAutomorphisms"/> first:
+##  <Example><![CDATA[
 ##  gap> n:=Group((1,2),(3,4));;
 ##  gap> au:=AutomorphismGroup(n);;
 ##  gap> au:=First(AsSet(au),i->Order(i)=3);;
@@ -210,8 +239,15 @@ DeclareGlobalFunction("SubdirectDiagonalPerms");
 ##  <group with 1 generator>
 ##  gap> IsGroupOfAutomorphisms(au);
 ##  true
-##  gap> SemidirectProduct(au,n);
+##  gap> p:=SemidirectProduct(au,n);
 ##  <pc group with 3 generators>
+##  gap> Embedding(p,2);
+##  [ (3,4), (1,2) ] -> [ f2, f3 ]
+##  ]]></Example>
+##  <P/>
+##  Instead of a group of automorphisms, we can give a homomorphism
+##  <A>alpha</A> into one:
+##  <Example><![CDATA[
 ##  gap> n:=AbelianGroup(IsPcGroup,[2,2]);
 ##  <pc group of size 4 with 2 generators>
 ##  gap> au:=AutomorphismGroup(n);;
@@ -225,40 +261,54 @@ DeclareGlobalFunction("SubdirectDiagonalPerms");
 ##  <pc group of size 24 with 4 generators>
 ##  gap> IsomorphismGroups(p,Group((1,2,3,4),(1,2))) <> fail;
 ##  true
-##  gap> SemidirectProduct(SU(3,3),GF(9)^3);
-##  <matrix group of size 4408992 with 3 generators>
-##  gap> SemidirectProduct(Group((1,2,3),(2,3,4)),GF(5)^4);
-##  <matrix group of size 7500 with 3 generators>
-##  gap> g:=Group((3,4,5),(1,2,3));;
-##  gap> mats:=[[[Z(2^2),0*Z(2)],[0*Z(2),Z(2^2)^2]],
-##  >          [[Z(2)^0,Z(2)^0], [Z(2)^0,0*Z(2)]]];;
-##  gap> hom:=GroupHomomorphismByImages(g,Group(mats),[g.1,g.2],mats);;
-##  gap> SemidirectProduct(g,hom,GF(4)^2);
-##  <matrix group of size 960 with 3 generators>
-##  gap> SemidirectProduct(g,hom,GF(16)^2);
-##  <matrix group of size 15360 with 4 generators>
-##  ]]></Example>
-##  <P/>
-##  <Index Key="Embedding" Subkey="example for semidirect products">
-##  <C>Embedding</C></Index>
-##  <Index Key="Projection" Subkey="example for semidirect products">
-##  <C>Projection</C></Index>
-##  For a semidirect product <M>P</M> of <A>G</A> with <A>N</A>, calling
-##  <Ref Oper="Embedding" Label="for a domain and a positive integer"/> with
-##  <M>P</M> and <C>1</C> yields the embedding of <A>G</A>, calling
-##  <Ref Oper="Embedding" Label="for a domain and a positive integer"/> with
-##  <M>P</M> and <C>2</C> yields the embedding of <A>N</A>; calling
-##  <Ref Oper="Projection" Label="for a domain and a positive integer"/> with
-##  <A>P</A> yields the projection of <M>P</M> onto <A>G</A>,
-##  see&nbsp;<Ref Sect="Embeddings and Projections for Group Products"/>.
-##  <P/>
-##  <Example><![CDATA[
 ##  gap> Size(Image(Embedding(p,1)));
 ##  6
 ##  gap> Embedding(p,2);
 ##  [ f1, f2 ] -> [ f3, f4 ]
 ##  gap> Projection(p);
 ##  [ f1, f2, f3, f4 ] -> [ f1, f2, <identity> of ..., <identity> of ... ]
+##  ]]></Example>
+##  <P/>
+##  A matrix group acting on a full row space yields a group of affine
+##  matrices; the projection maps each to its upper left block:
+##  <Example><![CDATA[
+##  gap> p:=SemidirectProduct(SU(3,3),GF(9)^3);
+##  <matrix group of size 4408992 with 3 generators>
+##  gap> Image(Projection(p));
+##  SU(3,3)
+##  ]]></Example>
+##  <P/>
+##  A permutation group acts on a full row space via permutation matrices.
+##  In an element of <M>P</M>, the upper left block comes from <A>G</A>
+##  and the last row from <A>N</A>:
+##  <Example><![CDATA[
+##  gap> p:=SemidirectProduct(Group((1,2,3),(2,3,4)),GF(5)^4);
+##  <matrix group of size 7500 with 3 generators>
+##  gap> x:=Image(Embedding(p,1),(1,2,3));;
+##  gap> v:=Image(Embedding(p,2),[1,2,3,4]*Z(5)^0);;
+##  gap> Display(x*v);
+##   . 1 . . .
+##   . . 1 . .
+##   1 . . . .
+##   . . . 1 .
+##   1 2 3 4 1
+##  gap> Image(Projection(p),x*v);
+##  (1,2,3)
+##  ]]></Example>
+##  <P/>
+##  The matrices in the image of <A>alpha</A> may have entries in a
+##  subfield of <A>F</A>:
+##  <Example><![CDATA[
+##  gap> g:=Group((3,4,5),(1,2,3));;
+##  gap> mats:=[[[Z(2^2),0*Z(2)],[0*Z(2),Z(2^2)^2]],
+##  >          [[Z(2)^0,Z(2)^0], [Z(2)^0,0*Z(2)]]];;
+##  gap> hom:=GroupHomomorphismByImages(g,Group(mats),[g.1,g.2],mats);;
+##  gap> SemidirectProduct(g,hom,GF(4)^2);
+##  <matrix group of size 960 with 3 generators>
+##  gap> p:=SemidirectProduct(g,hom,GF(16)^2);
+##  <matrix group of size 15360 with 4 generators>
+##  gap> Image(Projection(p)) = Image(hom);
+##  true
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -352,7 +402,8 @@ DeclareOperation( "StandardWreathProduct", [ IsGroup, IsGroup ] );
 ##  this action will be on <M>l \cdot m</M> points,
 ##  it will be imprimitive with <M>m</M> blocks of size <M>l</M> each.
 ##  <P/>
-##  The operations <Ref Oper="Embedding" Label="for two domains"/>
+##  The operations
+##  <Ref Oper="Embedding" Label="for a domain and a positive integer"/>
 ##  and <Ref Oper="Projection" Label="for two domains"/>
 ##  operate on this product as described for general wreath products.
 ##  <P/>
@@ -382,7 +433,8 @@ DeclareGlobalFunction( "WreathProductImprimitiveAction" );
 ##  If <A>G</A> acts on <M>l</M> points and <A>H</A> on
 ##  <M>m</M> points this action will be on <M>l^m</M> points.
 ##  <P/>
-##  The operations <Ref Oper="Embedding" Label="for two domains"/>
+##  The operations
+##  <Ref Oper="Embedding" Label="for a domain and a positive integer"/>
 ##  and <Ref Oper="Projection" Label="for two domains"/>
 ##  operate on this product as described for general wreath products.
 ##  <Example><![CDATA[
@@ -437,7 +489,8 @@ DeclareGlobalFunction( "SubdirectProducts" );
 ##  If the group arguments are not finitely presented groups,
 ##  then <Ref Attr="IsomorphismFpGroup"/> must be defined for them.
 ##  <P/>
-##  The operation <Ref Oper="Embedding" Label="for two domains"/>
+##  The operation
+##  <Ref Oper="Embedding" Label="for a domain and a positive integer"/>
 ##  operates on this product.
 ##  <Example><![CDATA[
 ##  gap> g := DihedralGroup(8);;
@@ -565,7 +618,7 @@ InstallTrueMethod(IsGeneratorsOfMagmaWithInverses,
   IsWreathProductElementCollection);
 
 DeclareRepresentation("IsWreathProductElementDefaultRep",
-  IsWreathProductElement and IsPositionalObjectRep,[]);
+  IsWreathProductElement and IsPositionalObjectRep);
 
 #############################################################################
 ##
@@ -588,8 +641,8 @@ DeclareRepresentation("IsWreathProductElementDefaultRep",
 ##  <Ref Func="ListWreathProductElement"/> returns a list <M>[f_1, \ldots, f_m, h]</M>
 ##  containing the components of <A>x</A> or <K>fail</K> if <A>x</A> cannot be decomposed in the wreath product.
 ##  <P/>
-##  If omitted, the argument <A>testDecomposition</A> defaults to true.
-##  If <A>testDecomposition</A> is true, <Ref Func="ListWreathProductElement"/> makes additional tests to ensure
+##  If omitted, the argument <A>testDecomposition</A> defaults to <K>true</K>.
+##  If <A>testDecomposition</A> is <K>true</K>, <Ref Func="ListWreathProductElement"/> makes additional tests to ensure
 ##  that the computed decomposition of <A>x</A> is correct,
 ##  i.e. it checks that <A>x</A> is an element of the parent wreath product of <A>G</A>:
 ##  <P/>

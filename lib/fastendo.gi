@@ -12,7 +12,7 @@
 ##  of EndoMappings.
 ##
 
-############################################################################
+#############################################################################
 ##
 #R  IsTransformationRepOfEndo(<obj>)
 ##
@@ -20,10 +20,9 @@
 ##  represented as transformation on  [1 .. Length(EnumeratorSorted(D))]
 ##
 DeclareRepresentation("IsTransformationRepOfEndo",
-IsComponentObjectRep and IsAttributeStoringRep,
-["transformation"]);
+IsComponentObjectRep and IsAttributeStoringRep);
 
-############################################################################
+#############################################################################
 ##
 #F  EndoMappingByTransformation(<dom>, <gmfam>, <trans>)
 ##
@@ -43,7 +42,7 @@ function(dom, gmfam, trans)
   return tmap;
 end);
 
-############################################################################
+#############################################################################
 ##
 #A  TransformationRepresentation(<obj>)
 ##

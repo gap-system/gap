@@ -22,8 +22,7 @@
 ##  (Of course this representative need not be normalized.)
 ##
 DeclareRepresentation( "IsAdditiveCosetDefaultRep",
-    IsPositionalObjectRep,
-    [ 1, 2 ] );
+    IsPositionalObjectRep );
 
 
 #############################################################################

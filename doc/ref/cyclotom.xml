@@ -4,8 +4,9 @@
 <!-- %A                                                           Alexander Hulpke -->
 <!-- %% -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
-<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %Y  Copyright of GAP belongs to its developers, whose names are too -->
+<!-- %Y  numerous to list here. Please refer to the COPYRIGHT file for details. -->
+<!-- %Y  SPDX-License-Identifier: GPL-2.0-or-later -->
 <!-- %% -->
 <!-- %%  This file is being maintained by Thomas Breuer. -->
 <!-- %%  Please do not make any changes without consulting him. -->
@@ -213,7 +214,7 @@ For example, take a prime integer <M>p</M> and suppose that we want to work
 with a matrix group over the field <M>&QQ;(\sqrt{{p}})</M>.
 Then each matrix entry could be described by two rational coefficients,
 whereas the representation in the smallest cyclotomic field requires
-<M>p-1</M> rational coefficients for each entry.
+at least <M>p-1</M> rational coefficients for each entry.
 So it is worth thinking about using elements in a field constructed with
 <Ref Oper="AlgebraicExtension"/> when natural embeddings
 of cyclotomic fields are not needed.
@@ -224,7 +225,7 @@ of cyclotomic fields are not needed.
 <Func Name="GetCyclotomicsLimit" Arg=""/>
 <Description>
 <Ref Func="GetCyclotomicsLimit"/> returns the current limit on
-conductors of internally represented cyclotomic numbers
+conductors of internally represented cyclotomic numbers.
 <P/>
 <Ref Func="SetCyclotomicsLimit"/> can be called to increase the
 limit on conductors of internally represented cyclotomic numbers. Note that computing in

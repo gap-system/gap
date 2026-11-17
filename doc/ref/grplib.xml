@@ -7,8 +7,9 @@
 <!-- %A                                                         Hans Ulrich Besche -->
 <!-- %% -->
 <!-- %% -->
-<!-- %Y  (C) 1998 School Math and Comp. Sci., University of St Andrews, Scotland -->
-<!-- %Y  Copyright (C) 2002 The GAP Group -->
+<!-- %Y  Copyright of GAP belongs to its developers, whose names are too -->
+<!-- %Y  numerous to list here. Please refer to the COPYRIGHT file for details. -->
+<!-- %Y  SPDX-License-Identifier: GPL-2.0-or-later -->
 <!-- %% -->
 <Chapter Label="Group Libraries">
 <Heading>Group Libraries</Heading>
@@ -39,7 +40,7 @@ initially knows the following groups:
     (see&nbsp;<Ref BookName="perfgrp" Chap="The Perfect Groups Library"/>),
 </Item>
 <Item>
- a library of primitive permutations groups,
+ a library of primitive permutation groups,
     provided by the <Package>PrimGrp</Package> package
     (see&nbsp;<Ref BookName="primgrp" Sect="Primitive Permutation Groups"/>),
 </Item>
@@ -207,7 +208,7 @@ The first argument <A>cat</A> for each method of this constructor must be
 the category for which the method is installed.
 For example the method for constructing a cyclic permutation group
 is installed as follows (see&nbsp;<Ref Func="InstallMethod"/>
-for the meaning of the arguments.
+for the meaning of the arguments).
 <P/>
 <Log><![CDATA[
 InstallMethod( CyclicGroupCons,
@@ -274,7 +275,7 @@ gap> AllTransitiveGroups(NrMovedPoints,[10..15],
 ]]></Log>
 <P/>
 returns a list of all transitive groups with degree between 10 and 15 and
-size less than 100 that are not abelian.
+size at most 100 that are not abelian.
 <P/>
 Thus <C>AllTransitiveGroups</C> behaves as if it was implemented by a
 function similar to the one defined below,
@@ -290,8 +291,8 @@ local    groups, g, i;
   groups := [];
   for i  in [ 1 .. Length( TransitiveGroupsList ) ] do
     g := TransitiveGroupsList[i];
-    if      fun1(g) = val1  or IsList(val1) and fun1(g) in val1
-        and fun2(g) = val2  or IsList(val2) and fun2(g) in val2
+    if      ( fun1(g) = val1  or IsList(val1) and fun1(g) in val1 )
+        and ( fun2(g) = val2  or IsList(val2) and fun2(g) in val2 )
      then
       Add( groups, g );
     fi;
@@ -720,7 +721,7 @@ The resulting record contains six or seven components:
 <Item>
       the elementary divisors of the associated Gram matrix  <A>F</A>  (in the
       same format as the result of the function
-      <Ref Oper="ElementaryDivisorsMat"/>,
+      <Ref Oper="ElementaryDivisorsMat"/>),
 </Item>
 <Mark><C>minimalNorm</C> </Mark>
 <Item>
@@ -816,9 +817,8 @@ gap> for m in GeneratorsOfGroup( G ) do PrintArray( m ); od;
 <P/>
 The attributes <Ref Attr="Size"/> and <C>IsSolvable</C> will be
 properly set in the resulting matrix group <M>G</M>.
-In addition, it has two attributes <C>IsImfMatrixGroup</C> and
-<C>ImfRecord</C> where the first one is just a logical flag set to
-<K>true</K> and the latter one is a record.
+In addition, it lies in the filter <C>IsImfMatrixGroup</C> and has the
+attribute <C>ImfRecord</C>, which is a record.
 Except for the group size and the solvability flag, this record contains the
 same components as the resulting record of the function
 <Ref Func="ImfInvariants"/> described above, namely the components
@@ -886,7 +886,7 @@ to the permutation induced by its action on <M>S</M>.
 <P/>
 Note that in case of a large orbit the construction of <M>\varphi</M> may be
 space and time consuming.
-Fortunately, there are only six <M>&QQ;</M>-classes in the library for which
+Fortunately, there are only six <M>&ZZ;</M>-classes in the library for which
 the smallest orbit of short vectors is of size greater than <M>20000</M>,
 the worst case being the orbit of size <M>196560</M>
 for the Leech lattice (<A>dim</A> <M>= 24</M>, <A>q</A> <M>= 3</M>).

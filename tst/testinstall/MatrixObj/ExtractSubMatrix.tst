@@ -6,9 +6,9 @@ gap> m1 := [ [ 1, 2, 3 ], [ 4, 5, 6 ] ];
 gap> ExtractSubMatrix( m1, [ 2, 1 ], [ 3, 1 ] );
 [ [ 6, 4 ], [ 3, 1 ] ]
 gap> m2 := IdentityMatrix( Integers, 4 );
-<4x4-matrix over Integers>
+<4x4 plist matrix over Integers>
 gap> m3 := ExtractSubMatrix( m2, [ 2, 4 ], [ 4, 2 ] );
-<2x2-matrix over Integers>
+<2x2 plist matrix over Integers>
 gap> Unpack( m3 );
 [ [ 0, 1 ], [ 1, 0 ] ]
 

@@ -454,8 +454,7 @@ local H,T,c,a,e,f,i,j,k,l,m,p,ch,el,ur,s,hom,gens,onc,G;
   G:=D.group;
   onc:=List([1..D.klanz],i->1);
   D.trivialCharacter:=onc;
-  H:=DerivedSubgroup(G);
-  hom:=NaturalHomomorphismByNormalSubgroup(G,H);
+  hom:=MaximalAbelianQuotient(G);
   H:=Image(hom,G);
   e:=ShallowCopy(AsList(H));
   s:=Length(e); # Size(H)
@@ -1006,13 +1005,13 @@ BindGlobal( "SplitTwoSpace", function(D,raum)
       for root in SquareRoots(D.field,(p/2)^2-q) do
         a1:=(-p/2+root);
         n:=v1v2+a1*v2v2;
-        if (n=0*o) then
+        if IsZero( n ) then
           # proceeding would force a division by zero
           NotFailed:=false;
         else
           a2:=-(v1v1+a1*v2v1)/n;
           n:=v1v1+a2*(v1v2+v2v1)+a2^2*v2v2;
-          if n<>0*o then
+          if not IsZero( n ) then
             deg2:=List(SquareRoots(D.field,o/(raum.dim-d)/n),Int);
             for d2 in deg2 do
               if d2 in mdeg2 then
@@ -2330,6 +2329,7 @@ InstallMethod( Irr,
 InstallMethod( Irr,
     "for a group with known `IrrDixonSchneider'",
     [ IsGroup and HasIrrDixonSchneider, IsZeroCyc ],
+    SUM_FLAGS, # above all methods that actually compute something
     function( G, zero )
     local irr, tbl;
     irr:= IrrDixonSchneider( G );
@@ -2599,7 +2599,7 @@ local i,H,r;
 end);
 
 InstallGlobalFunction(IrreducibleRepresentationsDixon,function(arg)
-local G,chi,reps,r,i,gensp;
+local G,chi,reps,r,i,gensp,cl;
   G:=arg[1];
   if Length(arg)=1 then
     chi:=Irr(G);
@@ -2625,8 +2625,10 @@ local G,chi,reps,r,i,gensp;
     if i[1]=1 then
       # linear
       if gensp=fail then
+        # the values of a character belong to the classes of its table
+        cl:=ConjugacyClasses(UnderlyingCharacterTable(i));
         gensp:=List(GeneratorsOfGroup(G),
-          i->PositionProperty(ConjugacyClasses(G),j->i in j));
+          i->PositionProperty(cl,j->i in j));
       fi;
       r:=List(i{gensp},i->[[i]]);
       r:=GroupHomomorphismByImagesNC(G,Group(r),GeneratorsOfGroup(G),r);
@@ -2661,7 +2663,8 @@ local imgs, cl, d, cands, j, t, i;
     Error("inconsistency");
   fi;
   imgs:=[];
-  cl:=ConjugacyClasses(G);
+  # the values of a character belong to the classes of its table
+  cl:=ConjugacyClasses(UnderlyingCharacterTable(chars[1]));
   for i in reps do
     d:=Length(One(Range(i)));
     cands:=Filtered([1..Length(chars)],i->chars[i][1]=d);

@@ -17,7 +17,7 @@
 #R  IsRightCosetDefaultRep
 ##
 DeclareRepresentation( "IsRightCosetDefaultRep",
-    IsComponentObjectRep and IsAttributeStoringRep and IsRightCoset, [] );
+    IsComponentObjectRep and IsAttributeStoringRep and IsRightCoset );
 
 
 #############################################################################
@@ -56,7 +56,7 @@ end );
 #R  IsDoubleCosetDefaultRep
 ##
 DeclareRepresentation( "IsDoubleCosetDefaultRep",
-  IsComponentObjectRep and IsAttributeStoringRep and IsDoubleCoset, [] );
+  IsComponentObjectRep and IsAttributeStoringRep and IsDoubleCoset );
 
 InstallMethod(ComputedAscendingChains,"init",true,[IsGroup],0,G->[]);
 
@@ -1762,8 +1762,7 @@ InstallMethod(DoubleCosetRepsAndSizes,"generic",true,
 #M  RightTransversal   generic
 ##
 DeclareRepresentation( "IsRightTransversalViaCosetsRep",
-    IsRightTransversalRep,
-    [ "group", "subgroup", "cosets" ] );
+    IsRightTransversalRep );
 
 InstallMethod(RightTransversalOp, "generic, use RightCosets",
   IsIdenticalObj,[IsGroup,IsGroup],0,
@@ -1852,8 +1851,7 @@ end);
 ##
 ##  A transversal stored as product of several shorter transversals
 DeclareRepresentation( "IsFactoredTransversalRep",
-    IsRightTransversalRep,
-    [ "transversals", "moduli" ] );
+    IsRightTransversalRep );
 
     # group, subgroup, list of transversals (descending)
 BindGlobal("FactoredTransversal",function(G,S,t)

@@ -321,8 +321,7 @@ InstallHandlingByNiceBasis( "IsNonGaussianRowSpace", rec(
 ##  then the component `heads' is bound.
 ##
 DeclareRepresentation( "IsSemiEchelonBasisOfGaussianRowSpaceRep",
-    IsAttributeStoringRep,
-    [ "heads" ] );
+    IsAttributeStoringRep );
 
 InstallTrueMethod( IsSmallList,
     IsList and IsSemiEchelonBasisOfGaussianRowSpaceRep );
@@ -1319,8 +1318,7 @@ InstallMethod( CanonicalBasis,
 #R  IsSubspacesFullRowSpaceDefaultRep
 ##
 DeclareRepresentation( "IsSubspacesFullRowSpaceDefaultRep",
-    IsSubspacesVectorSpaceDefaultRep,
-    [] );
+    IsSubspacesVectorSpaceDefaultRep );
 
 
 #############################################################################
@@ -1534,8 +1532,7 @@ InstallMethod( Subspaces,
 ##  vector that makes the space non-Gaussian.
 ##
 DeclareRepresentation( "IsMutableBasisOfGaussianRowSpaceRep",
-    IsComponentObjectRep,
-    [ "heads", "basisVectors", "leftActingDomain", "zero" ] );
+    IsComponentObjectRep );
 
 
 #############################################################################

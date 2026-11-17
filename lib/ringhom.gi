@@ -21,10 +21,10 @@
 ##
 DeclareRepresentation( "IsRingGeneralMappingByImagesDefaultRep",
     IsRingGeneralMapping and IsAdditiveElementWithInverse
-    and IsAttributeStoringRep, [] );
+    and IsAttributeStoringRep );
 
 DeclareRepresentation( "IsSCRingGeneralMappingByImagesDefaultRep",
-    IsRingGeneralMappingByImagesDefaultRep,[]);
+    IsRingGeneralMappingByImagesDefaultRep);
 
 
 #############################################################################

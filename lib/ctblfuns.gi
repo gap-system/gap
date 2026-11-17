@@ -1472,7 +1472,7 @@ InstallMethod( PermutationCharacter,
 
 #T #############################################################################
 #T ##
-#T #M  PermutationCharacter( <G>, <U> )  . . . . . . . . .  for two small groups
+#T #M  PermutationCharacter( <G>, <U> ) . . . . . . . . . . for two small groups
 #T ##
 #T InstallMethod( PermutationCharacter,
 #T     "for two small groups",
@@ -2244,7 +2244,7 @@ InstallMethod( CentralCharacter,
     end );
 
 
-##############################################################################
+#############################################################################
 ##
 #M  DeterminantOfCharacter( [<tbl>, ]<chi> )
 ##
@@ -2899,7 +2899,7 @@ InstallMethod( InducedClassFunction,
     function( chi, hom )
     local tbl, suptbl, fus;
     tbl:= UnderlyingCharacterTable( chi );
-    suptbl:= OrdinaryCharacterTable(Image( hom ));
+    suptbl:= OrdinaryCharacterTable( Range( hom ) );
     if UnderlyingCharacteristic( tbl ) <> 0 then
       suptbl:= suptbl mod UnderlyingCharacteristic( tbl );
     fi;
@@ -2912,7 +2912,7 @@ InstallMethod( InducedClassFunction,
     [ IsCharacterTable, IsHomogeneousList, IsGeneralMapping ],
     function( tbl, chi, hom )
     local suptbl, fus;
-    suptbl:= OrdinaryCharacterTable(Image( hom ));
+    suptbl:= OrdinaryCharacterTable( Range( hom ) );
     if UnderlyingCharacteristic( tbl ) <> 0 then
       suptbl:= suptbl mod UnderlyingCharacteristic( tbl );
     fi;
@@ -2975,7 +2975,7 @@ InstallMethod( InducedClassFunctions,
     [ IsCharacterTable, IsHomogeneousList, IsGeneralMapping ],
     function( tbl, chars, hom )
     local suptbl, fus;
-    suptbl:= Image( hom );
+    suptbl:= OrdinaryCharacterTable( Range( hom ) );
     if UnderlyingCharacteristic( tbl ) <> 0 then
       suptbl:= suptbl mod UnderlyingCharacteristic( tbl );
     fi;
@@ -3777,81 +3777,57 @@ InstallOtherMethod( Symmetrizations,
 
 #############################################################################
 ##
+#F  PowersByNewtonIdentities( <tbl>, <chi>, <N>, <sign> )
+##
+##  returns the value lists of the symmetric powers h_0, ..., h_N of <chi>
+##  if <sign> is 1, and of its exterior powers e_0, ..., e_N if <sign> is -1,
+##  by Newton's identities r h_r = sum_{i=1}^r p_i h_{r-i} and
+##  r e_r = sum_{i=1}^r (-1)^(i-1) p_i e_{r-i}, with p_i(g) = chi(g^i).
+##  This takes O(N^2) list operations, summing over the classes of the
+##  symmetric group of degree N would take p(N).
+##
+BindGlobal( "PowersByNewtonIdentities", function( tbl, chi, N, sign )
+    local nccl, powers, result, r, k, i, val;
+
+    if IsClassFunction( chi ) then
+      chi:= ValuesOfClassFunction( chi );
+    fi;
+    nccl:= Length( chi );
+    powers:= List( [ 1 .. N ], i -> sign^(i-1) * chi{ PowerMap( tbl, i ) } );
+
+    result:= [ ListWithIdenticalEntries( nccl, 1 ) ];
+    for r in [ 1 .. N ] do
+      result[ r + 1 ]:= [];
+      for k in [ 1 .. nccl ] do
+        val:= 0;
+        for i in [ 1 .. r ] do
+          val:= val + powers[i][k] * result[ r - i + 1 ][k];
+        od;
+        result[ r + 1 ][k]:= val / r;
+      od;
+    od;
+    return result;
+end );
+
+
+#############################################################################
+##
 #F  SymmetricParts( <tbl>, <characters>, <n> )
 ##
 InstallGlobalFunction( SymmetricParts, function( tbl, characters, n )
-    local i,
-          j,
-          k,
-          nccl,
-          exponents,
-          symcentralizers,   # list of symmetrizations, result
-          symmetricparts,
-          chi,               # loop over 'characters'
-          sym,
-          exp,
-          factor,
-          powermap;          # list of computed power maps of 'tbl'
-
-    if IsEmpty( characters ) then
-      return [];
-    fi;
-
-    nccl:= NrConjugacyClasses( tbl );
-    exponents:= Partitions( n );
-    symcentralizers:= CharTableSymmetric.centralizers[1];
-    symcentralizers:= List( exponents, x -> symcentralizers( n, x ) );
-
-    for i in [ 1 .. Length( exponents ) ] do
-
-      # Transform partitions to exponent vectors.
-      # At position $i$ we store the number of cycles of length $i$.
-      exp:= [];
-      for j in [ 1 .. Maximum( exponents[i] ) ] do exp[j]:= 0; od;
-      for j in exponents[i] do exp[j]:= exp[j] + 1; od;
-      exponents[i]:= exp;
-
-    od;
-
-    # Compute necessary power maps.
-    powermap:= ComputedPowerMaps( tbl );
-    for i in [ 1 .. n ] do
-      if not IsBound( powermap[i] ) then
-        powermap[i]:= MakeImmutable( PowerMap( tbl, i ) );
-      fi;
-    od;
+    local symmetricparts, chi, sym;
 
     symmetricparts:= [];
     for chi in characters do
-
       Info( InfoCharacterTable, 2,
             "SymmetricParts: chi[.]" );
-      sym:= List( chi, x -> 0 );
-
-      # Loop over the conjugacy classes of the symmetric group.
-      for j in [ 1 .. Length( symcentralizers ) ] do
-
-        exp:= exponents[j];
-
-        for k in [ 1 .. nccl ] do
-          factor:= 1;
-          for i in [ 1 .. Length( exp ) ] do
-            if IsBound( exp[i] ) then
-              factor:= factor * chi[ powermap[i][k] ]^exp[i];
-            fi;
-          od;
-          sym[k]:= sym[k] + factor / symcentralizers[j];
-        od;
-
-      od;
+      sym:= PowersByNewtonIdentities( tbl, chi, n, 1 )[ n + 1 ];
       if IsClassFunction( chi ) then
         sym:= ClassFunctionSameType( tbl, chi, sym );
       fi;
       Add( symmetricparts, sym );
-
     od;
 
-    # Return the symmetrizations.
     return symmetricparts;
 end );
 
@@ -3861,74 +3837,13 @@ end );
 #F  AntiSymmetricParts( <tbl>, <character>, <n> )
 ##
 InstallGlobalFunction( AntiSymmetricParts, function( tbl, characters, n )
-    local i,
-          j,
-          k,
-          nccl,
-          exponents,
-          symcentralizers,
-          antisymmetricparts,
-          chi,
-          sym,
-          exp,
-          factor,
-          powermap;
+    local antisymmetricparts, chi, sym;
 
-    if IsEmpty( characters ) then
-      return [];
-    fi;
-
-    nccl:= NrConjugacyClasses( tbl );
-    exponents:= Partitions( n );
-    symcentralizers:= CharTableSymmetric.centralizers[1];
-    symcentralizers:= List( exponents, x -> symcentralizers( n, x ) );
-
-    for i in [ 1 .. Length( exponents ) ] do
-
-      # Transform partitions to exponent vectors.
-      # At position $i$ we store the number of cycles of length $i$.
-
-      exp:= [];
-      for j in [ 1 .. Maximum( exponents[i] ) ] do exp[j]:= 0; od;
-      for j in exponents[i] do exp[j]:= exp[j] + 1; od;
-      exponents[i]:= exp;
-
-    od;
-
-    # Compute necessary power maps.
-    powermap:= ComputedPowerMaps( tbl );
-    for i in [ 1 .. n ] do
-      if not IsBound( powermap[i] ) then
-        powermap[i]:= MakeImmutable( PowerMap( tbl, i ) );
-      fi;
-    od;
-
-    # Compute the symmetrizations.
     antisymmetricparts:= [];
     for chi in characters do
-
       Info( InfoCharacterTable, 2,
             "AntiSymmetricParts: chi[.]" );
-      sym:= List( chi, x -> 0 );
-      for j in [ 1 .. Length( exponents ) ] do
-
-        exp:= exponents[j];
-
-        for k in [ 1 .. nccl ] do
-          factor:= 1;
-          for i in [ 1 .. Length( exp ) ] do
-            if IsBound( exp[i] ) then
-              if i mod 2 = 0 and exp[i] mod 2 = 1 then
-                factor:= -factor * chi[ powermap[i][k] ]^exp[i];
-              else
-                factor:=  factor * chi[ powermap[i][k] ]^exp[i];
-              fi;
-            fi;
-          od;
-          sym[k]:= sym[k] + factor / symcentralizers[j];
-        od;
-
-      od;
+      sym:= PowersByNewtonIdentities( tbl, chi, n, -1 )[ n + 1 ];
       if IsClassFunction( chi ) then
         if IsZero( sym ) then
           sym:= VirtualCharacter( tbl, sym );
@@ -3937,10 +3852,8 @@ InstallGlobalFunction( AntiSymmetricParts, function( tbl, characters, n )
         fi;
       fi;
       Add( antisymmetricparts, sym );
-
     od;
 
-    # Return the symmetrizations.
     return antisymmetricparts;
 end );
 
@@ -4156,7 +4069,7 @@ end );
 ##
 
 
-###############################################################################
+#############################################################################
 ##
 #F  FrobeniusCharacterValue( <value>, <p> )
 ##
@@ -4307,7 +4220,7 @@ InstallGlobalFunction( FrobeniusCharacterValue, function( value, p )
 end );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  ReductionToFiniteField( <value>, <p> )
 ##
@@ -4503,7 +4416,7 @@ end );
 # end;
 
 
-##############################################################################
+#############################################################################
 ##
 #F  SizeOfFieldOfDefinition( <val>, <p> )
 ##
@@ -4805,7 +4718,7 @@ InstallGlobalFunction( ZevData, function( q, n, listofpairs... )
 end );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  RealizableBrauerCharacters( <matrix>, <q> )
 ##
@@ -5020,7 +4933,7 @@ InstallOtherMethod( ScalarProduct,
 ##
 
 
-##############################################################################
+#############################################################################
 ##
 #F  OrbitChar( <chi>, <linear> )
 ##
@@ -5064,7 +4977,7 @@ InstallGlobalFunction( OrbitChar, function( chi, linear )
 end );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  OrbitsCharacters( <irr> )
 ##
@@ -5172,7 +5085,7 @@ InstallGlobalFunction( OrbitsCharacters, function( irr )
 end );
 
 
-##############################################################################
+#############################################################################
 ##
 #F  OrbitRepresentativesCharacters( <irr> )
 ##

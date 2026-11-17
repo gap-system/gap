@@ -38,7 +38,7 @@
 ##
 ##  <Description>
 ##  returns <K>true</K>  if  the  string  <A>str</A>  would  form  a  valid  identifier
-##  consisting of letters,  digits  and  underscores;  otherwise  it  returns
+##  consisting of letters, digits, underscores and <C>@</C>; otherwise it returns
 ##  <K>false</K>. It does not check whether <A>str</A> contains characters escaped by a
 ##  backslash <C>\</C>.
 ##  </Description>

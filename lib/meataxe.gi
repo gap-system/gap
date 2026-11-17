@@ -70,7 +70,7 @@ end);
 InstallGlobalFunction(TrivialGModule, function(g, F)
 local mats;
   mats:=List(GeneratorsOfGroup(g),i->[[One(F)]]);
-  return GModuleByMats(mats,F);
+  return GModuleByMats(mats,1,F);
 end);
 
 #############################################################################
@@ -166,7 +166,7 @@ InstallGlobalFunction(PermutationGModule, function(g, F)
    return GModuleByMats(List(gens,g->PermutationMat(g,deg,F)),F);
 end);
 
-###############################################################################
+#############################################################################
 ##
 #F  TensorProductGModule( module1, module2 )  . . tensor product of two G-modules
 ##
@@ -185,7 +185,7 @@ InstallGlobalFunction(TensorProductGModule, function(module1, module2)
    return GModuleByMats(gens, SMTX.Field(module1));
 end);
 
-###############################################################################
+#############################################################################
 ##
 #F  DirectSumGModule( module1, module2 )  . . direct sum of two G-modules
 ##
@@ -201,7 +201,7 @@ InstallGlobalFunction(DirectSumGModule, function(module1, module2)
                         SMTX.Field(module1));
 end);
 
-###############################################################################
+#############################################################################
 ##
 #F  WedgeGModule( module ) . . . . . wedge product of a G-module
 ##
@@ -291,7 +291,7 @@ SMTX.IsAbsolutelyIrreducible:=function(module)
     if not SMTX.IsIrreducible(module) then
       return false;
     fi;
-    module.IsAbsolutelyIrreducible:=SMTX.AbsoluteIrreducibilityTest(module);
+    SMTX.AbsoluteIrreducibilityTest(module);
   fi;
   return module.IsAbsolutelyIrreducible;
 end;
@@ -604,6 +604,14 @@ local module, sub, typ, matrices, dim, subdim, F,
     sr:=[1..subdim];qr:=[subdim+1..dim];
     for g in matrices do
       g:=sub*g*subi;
+
+      # sub spans a submodule iff the upper right block is zero
+      for i in sr do
+        if PositionNonZero(g[i], subdim) <= dim then
+          return fail;
+        fi;
+      od;
+
       if s then
         h:=ExtractSubMatrix(g,sr,sr);
         h:=ImmutableMatrix(F,h);
@@ -1348,10 +1356,8 @@ local matrices, M, mat,  N, newgenlist, coefflist,
    if not SMTX.IsMTXModule(module) or not SMTX.IsIrreducible(module) then
      ErrorNoReturn("Argument is not an irreducible module.");
    fi;
-   if not SMTX.HasIsAbsolutelyIrreducible(module) then
-      SMTX.IsAbsolutelyIrreducible(module);
-   fi;
    if  SMTX.IsAbsolutelyIrreducible(module) then
+     # The flag may be known without known 'DegreeFieldExt'.
      mindim:=1;
    else
      mindim:=SMTX.DegreeFieldExt(module);
@@ -1621,8 +1627,6 @@ end;
 #F SMTX.AbsoluteIrreducibilityTest( module ) . . decide if an irreducible
 ##                    module over a  finite field is absolutely irreducible
 ##
-## this function does the work for an absolute irreducibility test but does
-## not actually set the flags.
 ## The function calculates the centralizer of the module.
 ## The centralizer should be isomorphic to the multiplicative
 ## group of the field GF(q^e) for some e, or rather to the group of
@@ -1644,11 +1648,11 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
    fi;
 
    if not SMTX.IsIrreducible(module) then
-      Error("Argument of iIsAbsoluteIrreducible s not an irreducible module");
+      Error("Argument of IsAbsoluteIrreducible is not an irreducible module");
    fi;
 
    if not module.IsOverFiniteField then
-      return Error("Argument of IsAbsoluteIrreducible is not over a finite field.");
+      Error("Argument of IsAbsoluteIrreducible is not over a finite field.");
    fi;
    dim:=SMTX.Dimension(module);
    F:=SMTX.Field(module);
@@ -1673,6 +1677,7 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
    Info(InfoMeatAxe,4,"GCD of module and nullspace dimensions = ", gcd, ".");
    if gcd = 1 then
       SMTX.SetDegreeFieldExt(module,1);
+      SMTX.SetIsAbsolutelyIrreducible(module,true);
       return true;
    fi;
    div:=DivisorsInt(gcd);
@@ -1780,6 +1785,7 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
          if ForAll(newmatrices, x -> x * centmat = centmat * x) then
             Info(InfoMeatAxe,2,"It did!");
             SMTX.SetDegreeFieldExt(module, e);
+            SMTX.SetIsAbsolutelyIrreducible(module, false);
             SMTX.SetCentMat(module, Pinv * centmat * P); # get the base right
             # We will also record the minimal polynomial of C0 (and hence of
             # centmat) in case we need it at some future date.
@@ -1795,11 +1801,13 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
    Info(InfoMeatAxe,2,
      "Tried all divisors. Must be absolutely irreducible.");
    SMTX.SetDegreeFieldExt(module, 1);
+   SMTX.SetIsAbsolutelyIrreducible(module, true);
    return true;
 end;
 
 SMTX.DegreeFieldExt:=function(module)
-  if not IsBound(module.smashMeataxe.degreeFieldExt) then
+  if not IsBound(module.smashMeataxe) or
+     not IsBound(module.smashMeataxe.degreeFieldExt) then
     SMTX.AbsoluteIrreducibilityTest( module );
   fi;
   return module.smashMeataxe.degreeFieldExt;
@@ -1817,7 +1825,7 @@ end;
 ##
 ## FieldGenCentMat( ) should only be applied to modules that have already
 ## been proved irreducible using IsIrreducible. It then tests for absolute
-## irreducibility (if not already known) and does nothing if module is
+## irreducibility (if not already known) and raises an error if the module is
 ## absolutely irreducible. Otherwise, it returns a matrix that generates
 ## (multiplicatively) the centralizing field (i.e. its multiplicative order
 ## is q^e - 1, where e is the degree of the centralizing field. This is not
@@ -1837,10 +1845,10 @@ SMTX.FieldGenCentMat:=function(module)
       Error("GModule is not irreducible.");
     fi;
 
-    # enforce absirred knowledge as well.
-    #if not SMTX.IsAbsolutelyIrreducible(module) then
-    #  Error("GModule is not absolutely irreducible.");
-    #fi;
+    # enforce knowledge of absolute irreducibility as well.
+    if SMTX.IsAbsolutelyIrreducible(module) then
+      Error("GModule is absolutely irreducible.");
+    fi;
 
     if SMTX.CentMat(module)=fail then
       Error("No CentMat component!");
@@ -1885,7 +1893,7 @@ SMTX.FieldGenCentMat:=function(module)
   return SMTX.FGCentMat(module);
 end;
 
-###############################################################################
+#############################################################################
 ##
 #F  SMTX.CollectedFactors( module ) . . find composition factors of a module
 ##
@@ -2019,7 +2027,7 @@ SMTX.CompositionFactors:=function(module)
   fi;
 end;
 
-###############################################################################
+#############################################################################
 ##
 #F  SMTX.Distinguish( cf, i )  distinguish a composition factor of a module
 ##
@@ -2165,7 +2173,7 @@ SMTX.Distinguish:=function(cf, i)
 
 end;
 
-###############################################################################
+#############################################################################
 ##
 #F  SMTX.MinimalSubGModule( module, cf, i ) . .  find minimal submodule
 ##                                     containing a given composition factor.
@@ -2351,7 +2359,7 @@ end;
 
 #############################################################################
 ##
-#F  SMTX.Homomorphisms( module1, module2) . . . . homomorphisms from an irreducible
+#F  SMTX.Homomorphisms( module1, module2) . homomorphisms from an irreducible
 ##                         . . . GModule to an arbitrary GModule
 ##
 ## It is assumed that module1 is a module that has been proved irreducible
@@ -2985,7 +2993,7 @@ local gens;
   return module.Dual;
 end;
 
-###############################################################################
+#############################################################################
 ##
 #F  DualGModule( module ) . . . . . dual of a G-module
 ##

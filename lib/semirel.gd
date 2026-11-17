@@ -29,15 +29,15 @@
 ##  and <M>J</M>-related if and only if <M>S^1 xS^1 = S^1 yS^1</M>;
 ##  finally, <M>H = R \wedge L</M>, and <M>D = R \circ L</M>.
 ##  <P/>
-##  Recall that relations <M>R</M>, <M>L</M> and <M>J</M> induce a partial
-##  order among the elements of the semigroup <M>S</M>:
+##  Recall that relations <M>R</M>, <M>L</M> and <M>J</M> induce a
+##  preorder among the elements of the semigroup <M>S</M>:
 ##  for two elements <M>x</M>, <M>y</M> from <M>S</M>,
 ##  we say that <M>x</M> is less than or equal to <M>y</M> in the order on
 ##  <M>R</M> if <M>xS^1 \subseteq yS^1</M>;
 ##  similarly, <M>x</M> is less than or equal to <M>y</M> under <M>L</M> if
 ##  <M>S^1x \subseteq S^1y</M>;
 ##  finally <M>x</M> is less than or equal to <M>y</M> under <M>J</M> if
-##  <M>S^1 xS^1 \subseteq S^1 tS^1</M>.
+##  <M>S^1 xS^1 \subseteq S^1 yS^1</M>.
 ##  We extend this preorder to a partial order on equivalence classes in
 ##  the natural way.
 ##  <#/GAPDoc>
@@ -222,7 +222,7 @@ DeclareSynonymAttr("AssociatedSemigroup", ParentAttr);
 ##  <P/>
 ##  Additionally, if <A>S</A> is a Green's <M>D</M>-class of a semigroup, then
 ##  <C>GreensRClasses</C> and <C>GreensLClasses</C> return the Green's <M>R</M>-
-##  or <M>L-</M>classes of the semigroup, respectively, contained in the
+##  or <M>L</M>-classes of the semigroup, respectively, contained in the
 ##  <M>D</M>-class <A>S</A>;
 ##  if <A>S</A> is a Green's <M>D</M>-, <M>R</M>-, or <M>L</M>-class of a
 ##  semigroup, then <C>GreensHClasses</C> returns the Green's <M>H</M>-classes
@@ -291,7 +291,7 @@ DeclareAttribute("DClassOfHClass", IsGreensHClass);
 DeclareAttribute("DClassOfLClass", IsGreensLClass);
 DeclareAttribute("DClassOfRClass", IsGreensRClass);
 
-############################################################################
+#############################################################################
 ##
 #A  GroupHClassOfGreensDClass( <Dclass> )
 ##
@@ -319,7 +319,7 @@ DeclareAttribute("GroupHClassOfGreensDClass",IsGreensDClass);
 ##  <Prop Name="IsRegularDClass" Arg='Dclass'/>
 ##
 ##  <Description>
-##  returns <K>true</K> if the Greens <M>D</M> class <A>Dclass</A> is
+##  returns <K>true</K> if the Green's <M>D</M>-class <A>Dclass</A> is
 ##  regular.
 ##  A <M>D</M> class is regular if and only if each of its elements is
 ##  regular, which in turn is true if and only if any one element of
@@ -426,7 +426,7 @@ DeclareSynonymAttr( "IsSemigroupHomomorphism",
     IsSemigroupGeneralMapping and IsMapping);
 
 DeclareRepresentation( "IsSemigroupGeneralMappingRep",
-      IsSemigroupGeneralMapping and IsSPGeneralMapping and IsAttributeStoringRep, [] );
+      IsSemigroupGeneralMapping and IsSPGeneralMapping and IsAttributeStoringRep );
 
 #DeclareSynonymAttr( "IsSemigroupGeneralMapping", IsGeneralMapping);
 #DeclareSynonymAttr("IsSemigroupHomomorphism", IsSemigroupGeneralMapping and #RespectsMultiplication and IsTotal and IsSingleValued and #IsEndoGeneralMapping);
@@ -448,7 +448,7 @@ DeclareRepresentation( "IsSemigroupGeneralMappingRep",
 
 #JDM include IsSemigroupGeneralMappingRep?
 
-DeclareRepresentation( "IsSemigroupHomomorphismByImagesRep", IsAttributeStoringRep, ["imgslist"] );
+DeclareRepresentation( "IsSemigroupHomomorphismByImagesRep", IsAttributeStoringRep );
 
 #############################################################################
 ##

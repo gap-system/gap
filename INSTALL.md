@@ -242,6 +242,10 @@ description of each is also available via
 
     ./configure --help
 
+One option not described below is `--with-gc`, which selects the garbage
+collector (GASMAN by default); see Section "Garbage collection in GAP" of the
+GAP Development Manual in `doc/dev`.
+
 GMP
 ---
 

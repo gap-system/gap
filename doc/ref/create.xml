@@ -59,6 +59,15 @@ positional object, if <A>data</A> is a record then
 <Ref Func="Objectify"/> turns it into a component object
 (for examples, see&nbsp;<Ref Sect="Component Objects"/>
 and&nbsp;<Ref Sect="Positional Objects"/>).
+The resulting object lies in <Ref Filt="IsPositionalObjectRep"/>
+resp.&nbsp;<Ref Filt="IsComponentObjectRep"/>:
+if <A>type</A> does not imply this representation then the object gets
+the subtype of <A>type</A> that does,
+which is slower than putting the representation into <A>type</A>.
+An error is signalled if <A>type</A> implies another one of the
+representations <Ref Filt="IsInternalRep"/>, <Ref Filt="IsDataObjectRep"/>,
+<Ref Filt="IsPositionalObjectRep"/>, <Ref Filt="IsComponentObjectRep"/>
+instead.
 <P/>
 <Ref Func="Objectify"/> does also return the object that it made out of
 <A>data</A>.
@@ -94,8 +103,8 @@ and even more careful when using the assignment to components using <C>!.</C>,
 in order to keep the information stored in <A>cobj</A> consistent.
 <P/>
 First of all, in the access or assignment to a component as shown above,
-<A>name</A> must be among the admissible component names
-for the representation of <A>cobj</A>, see&nbsp;<Ref Func="NewRepresentation"/>.
+<A>name</A> must be one of the component names used by
+the representation of <A>cobj</A>.
 Second, preferably only few low level functions should use <C>!.</C>,
 whereas this operator should not occur in <Q>user interactions</Q>.
 <P/>
@@ -119,14 +128,13 @@ and <M>a_n = (1-n)/2</M> otherwise.
 <P/>
 <Log><![CDATA[
 DeclareRepresentation( "IsIntegersIteratorCompRep",
-    IsComponentObjectRep, [ "counter" ] );
+    IsComponentObjectRep );
 ]]></Log>
 <P/>
 The above command creates a new representation (see&nbsp;<Ref Func="NewRepresentation"/>)
 <C>IsIntegersIteratorCompRep</C>,
-as a subrepresentation of <Ref Filt="IsComponentObjectRep"/>,
-and with one admissible component <C>counter</C>.
-So no other components than <C>counter</C> will be needed.
+as a subrepresentation of <Ref Filt="IsComponentObjectRep"/>.
+Its objects will need no other component than <C>counter</C>.
 <P/>
 <Log><![CDATA[
 InstallMethod( Iterator,
@@ -135,6 +143,7 @@ InstallMethod( Iterator,
     function( Integers )
     return Objectify( NewType( IteratorsFamily,
                                    IsIterator
+                               and IsMutable
                                and IsIntegersIteratorCompRep ),
                       rec( counter := 0 ) );
     end );
@@ -147,7 +156,7 @@ the filter <Ref Filt="IsIntegers"/>.
 <P/>
 By the call to <Ref Func="NewType"/>, the returned object lies in the family
 containing all iterators, which is <C>IteratorsFamily</C>,
-it lies in the category <Ref Filt="IsIterator"/>
+it lies in the categories <Ref Filt="IsIterator"/> and <Ref Filt="IsMutable"/>,
 and in the representation <C>IsIntegersIteratorCompRep</C>;
 furthermore, it has the component <C>counter</C> with value <C>0</C>.
 <P/>
@@ -168,7 +177,7 @@ InstallMethod( IsDoneIterator,
 
 InstallMethod( NextIterator,
     "method for iterator of `Integers'",
-    [ IsIntegersIteratorCompRep ],
+    [ IsIterator and IsMutable and IsIntegersIteratorCompRep ],
     function( iter )
     iter!.counter:= iter!.counter + 1;
     if iter!.counter mod 2 = 0 then
@@ -203,8 +212,8 @@ and even more careful when using the assignment to positions using <C>![]</C>,
 in order to keep the information stored in <A>pobj</A> consistent.
 <P/>
 First of all, in the access or assignment to a position as shown above,
-<A>pos</A> must be among the admissible positions
-for the representation of <A>pobj</A>, see&nbsp;<Ref Func="NewRepresentation"/>.
+<A>pos</A> must be one of the positions used by
+the representation of <A>pobj</A>.
 Second, preferably only few low level functions should use <C>![]</C>,
 whereas this operator should not occur in <Q>user interactions</Q>.
 <P/>
@@ -222,13 +231,13 @@ and more details.
 <P/>
 <Log><![CDATA[
 DeclareRepresentation( "IsIntegersIteratorPosRep",
-    IsPositionalObjectRep, [ 1 ] );
+    IsPositionalObjectRep );
 ]]></Log>
 <P/>
 The above command creates a new representation (see&nbsp;<Ref Func="NewRepresentation"/>)
 <C>IsIntegersIteratorPosRep</C>,
-as a subrepresentation of <Ref Filt="IsPositionalObjectRep"/>,
-and with only the first position being admissible for storing data.
+as a subrepresentation of <Ref Filt="IsPositionalObjectRep"/>.
+Its objects will store data only at the first position.
 <P/>
 <Log><![CDATA[
 InstallMethod( Iterator,
@@ -237,6 +246,7 @@ InstallMethod( Iterator,
     function( Integers )
     return Objectify( NewType( IteratorsFamily,
                                    IsIterator
+                               and IsMutable
                                and IsIntegersIteratorPosRep ),
                       [ 0 ] );
     end );
@@ -249,7 +259,7 @@ the filter <Ref Filt="IsIntegers"/>.
 <P/>
 By the call to <Ref Func="NewType"/>, the returned object lies in the family
 containing all iterators, which is <C>IteratorsFamily</C>,
-it lies in the category <Ref Filt="IsIterator"/>
+it lies in the categories <Ref Filt="IsIterator"/> and <Ref Filt="IsMutable"/>,
 and in the representation <C>IsIntegersIteratorPosRep</C>;
 furthermore, the first position has value <C>0</C>.
 <P/>
@@ -270,7 +280,7 @@ InstallMethod( IsDoneIterator,
 
 InstallMethod( NextIterator,
     "method for iterator of `Integers'",
-    [ IsIntegersIteratorPosRep ],
+    [ IsIterator and IsMutable and IsIntegersIteratorPosRep ],
     function( iter )
     iter![1]:= iter![1] + 1;
     if iter![1] mod 2 = 0 then
@@ -493,19 +503,18 @@ function ( set, k )
                 return nn;
             end,
           NumberElement := function ( enum, elm )
-                local  n, i;
-                if not IsList( elm )  then
-                    return fail;
-                fi;
-                elm := List( elm, function ( x )
-                        return Position( enum!.set, x );
-                    end );
-                if fail in elm or Length( elm ) <> enum!.k  then
+                local  n, i, p;
+                if not IsDenseList( elm ) or Length( elm ) <> enum!.k
+                    then
                     return fail;
                 fi;
                 n := 0;
                 for i  in [ 1 .. enum!.k ]  do
-                    n := Length( enum!.set ) * n + elm[i] - 1;
+                    p := Position( enum!.set, elm[i] );
+                    if p = fail  then
+                        return fail;
+                    fi;
+                    n := Length( enum!.set ) * n + p - 1;
                 od;
                 return n + 1;
             end,
@@ -520,6 +529,9 @@ function ( set, k )
           set := Set( set ),
           k := k ) );
     SetIsSSortedList( enum, true );
+    if IsRange( enum!.set ) or ForAll( enum!.set, IsSmallIntRep )  then
+        SetFilterObj( enum, IsEnumeratorOfSmallIntLists );
+    fi;
     return enum;
 end
 ]]></Example>
@@ -527,7 +539,7 @@ end
 We see that the enumerator is a homogeneous list that stores individual
 functions <C>ElementNumber</C>, <C>NumberElement</C>,
 <C>Length</C>, and <C>PrintObj</C>;
-besides that, the data components <M>S</M> and <M>k</M> are contained.
+besides that, the data components <C>set</C> and <C>k</C> are contained.
 
 </Section>
 
@@ -805,7 +817,7 @@ Any &GAP; object is either mutable or immutable. This can be tested
 with the function <Ref Filt="IsMutable"/>.
 The intended meaning of (im)mutability is a mathematical one:
 an immutable object should never change in
-such a way that it represents a different Element. Objects <E>may</E>
+such a way that it represents a different element. Objects <E>may</E>
 change in other ways, for instance to store more information, or
 represent an element in a different way.
 <P/>
@@ -929,7 +941,7 @@ ineligible any methods that might change the object. As a consequence,
 you must allow for the possibility of immutable versions of any
 objects you create.
 <P/>
-So, if you are implementing your own external objects. The rules amount to the
+If you are implementing your own external objects, the rules amount to the
 following:
 <P/>
 <Enum>
