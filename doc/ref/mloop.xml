@@ -1403,7 +1403,8 @@ This can be achieved by turning on a teaching mode:
 <Description>
 When called with a boolean argument <A>switch</A>, this function will turn
 teaching mode respectively on or off.
-Called without argument, it only reports whether teaching mode is on.
+Called without argument, it leaves teaching mode unchanged and prints its
+current state.
 <Example><![CDATA[
 gap> a:=Z(11)^3;
 Z(11)^3
