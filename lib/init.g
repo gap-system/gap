@@ -863,6 +863,21 @@ BindGlobal ("ShowSystemInformation", function ()
 end );
 
 
+BindGlobal( "ProcessInitFiles", function(initFiles)
+    local i, f;
+    for i in [1..Length(initFiles)] do
+        f := initFiles[i];
+        if IsRecord(f) then
+            Read(InputTextString(f.command));
+        elif EndsWith(f, ".tst") then
+            Test(f);
+        else
+            Read(f);
+        fi;
+    od;
+end );
+
+
 #############################################################################
 ##
 ##  Finally, deal with the lists of global variables.
@@ -934,20 +949,6 @@ fi;
 ##
 
 ResumeMethodReordering();
-
-BindGlobal( "ProcessInitFiles", function(initFiles)
-    local i, f;
-    for i in [1..Length(initFiles)] do
-        f := initFiles[i];
-        if IsRecord(f) then
-            Read(InputTextString(f.command));
-        elif EndsWith(f, ".tst") then
-            Test(f);
-        else
-            Read(f);
-        fi;
-    od;
-end );
 
 InstallAndCallPostRestore( function()
     ProcessInitFiles(GAPInfo.InitFiles);

@@ -501,7 +501,7 @@ you can enter <C>NamesUserGVars()</C>.
 <P/>
 <Log><![CDATA[
 gap> NamesUserGVars();
-[ "ProcessInitFiles", "a", "w" ]
+[ "a", "w" ]
 ]]></Log>
 <P/>
 This seems to be the  right place to state the  following rule:
