@@ -107,57 +107,77 @@
 
 // Rooting annotations.
 
-// On a parameter: the root protecting it also protects the return value.
+// Parameter annotation indicating that the root protecting this parameter
+// also protects the function's return value.
 #define GAP_GC_PROPAGATES_ROOT \
     __attribute__((annotate("julia_propagates_root")))
-// On the function: the return value is read from the child of argument <root>
-// at the position given by argument <index>, so the analyzer can track a later
-// overwrite of exactly that child. Non-literal indices degrade to plain
-// GAP_GC_PROPAGATES_ROOT.
+
+// Function annotation indicating that the return value is read from the
+// child of argument <root> at the position given by argument <index>, so the
+// analyzer can track a later overwrite of exactly that child. Non-literal
+// indices degrade to plain GAP_GC_PROPAGATES_ROOT.
 #define GAP_GC_PROPAGATES_ROOT_INDEXED(root, index) \
     __attribute__((annotate("julia_propagates_root_indexed:" #root ":" #index)))
-// On a parameter: it is stored into argument <n>, and inherits its root.
+
+// Parameter annotation indicating that the function stores this parameter
+// into argument <n>, so that it inherits the root of argument <n>.
 #define GAP_GC_ROOTED_BY_ARG(n) \
     __attribute__((annotate("julia_rooted_by_arg:" #n)))
-// On a parameter: like GAP_GC_ROOTED_BY_ARG, but stored into the child of
-// argument <root> at the position given by argument <index>.
+
+// Parameter annotation like GAP_GC_ROOTED_BY_ARG, but indicating that the
+// parameter is stored into the child of argument <root> at the position given
+// by argument <index>.
 #define GAP_GC_ROOTED_BY_ARG_INDEXED(root, index) \
     __attribute__((annotate("julia_rooted_by_arg_indexed:" #root ":" #index)))
-// On an out-parameter: the value written through it is rooted by argument <n>.
+
+// Parameter annotation indicating that the value the function writes through
+// this pointer is rooted by argument <n>.
 #define GAP_GC_OUT_ROOTED_BY_ARG(n) \
     __attribute__((annotate("julia_out_rooted_by_arg:" #n)))
-// On a parameter: it is rooted by the function's return value.
+
+// Parameter annotation indicating that this parameter is rooted by the
+// function's return value.
 #define GAP_GC_ROOTED_BY_RETURN \
     __attribute__((annotate("julia_rooted_by_return")))
-// On a variadic function: its variadic arguments are rooted by the return
-// value. Individual variadic arguments cannot be annotated.
+
+// Function annotation indicating that the variadic arguments are rooted by
+// the return value. Individual variadic arguments cannot be annotated.
 #define GAP_GC_ROOTED_VARARGS \
     __attribute__((annotate("julia_rooted_varargs")))
-// On a parameter: it may be passed even if not rooted.
+
+// Parameter annotation indicating that this parameter may be passed even if
+// it is not rooted.
 #define GAP_GC_MAYBE_UNROOTED \
     __attribute__((annotate("julia_maybe_unrooted")))
-// On a parameter: the caller passes a rooted slot, so values assigned through
-// it count as rooted.
+
+// Parameter annotation indicating that the caller passes a rooted slot, so
+// values assigned through this parameter count as rooted.
 #define GAP_GC_REQUIRE_ROOTED_SLOT \
     __attribute__((annotate("julia_require_rooted_slot")))
-// On a global, or on a function to mean its return value: always rooted.
+
+// Annotation on a global, indicating that its value is always rooted, or on
+// a function, indicating that its return value is.
 #define GAP_GC_GLOBALLY_ROOTED \
     __attribute__((annotate("julia_globally_rooted")))
 
-// Function does not hit GC safepoints.
+// Function annotation indicating that the function never reaches a GC
+// safepoint.
 #define GAP_GC_NOTSAFEPOINT \
     __attribute__((annotate("julia_not_safepoint")))
-// Function may hit a GC safepoint. Julia passes these to the GCChecker too,
-// as "julia_can_safepoint" (a call stays a safepoint even where the inlined
-// body reaches none) and, for the ENTER/LEAVE forms, as region transitions.
-// We do not: Julia's first-declaration check would then demand the annotation
-// on every function-pointer type such a function is stored in. So they only
+
+// Function annotations indicating that the function may reach a GC
+// safepoint. Julia passes these to the GCChecker too, as
+// "julia_can_safepoint" (a call stays a safepoint even where the inlined body
+// reaches none) and, for the ENTER/LEAVE forms, as region transitions. We do
+// not: Julia's first-declaration check would then demand the annotation on
+// every function-pointer type such a function is stored in. So they only
 // matter to the thread safety analysis below.
 #define GAP_GC_CANSAFEPOINT
 #define GAP_GC_CANSAFEPOINT_ENTER
 #define GAP_GC_CANSAFEPOINT_LEAVE
 #define GAP_GC_CANSAFEPOINT_ENTER_LEAVE
 #define GAP_GC_CANCALLBACK
+
 #define GAP_GC_NO_SAFEPOINT_ANALYSIS \
     __attribute__((annotate("julia_no_safepoint_analysis")))
 #define GAP_GC_NOTSAFEPOINT_ENTER \
@@ -167,9 +187,11 @@
 #define GAP_GC_NOTSAFEPOINT_ENTER_CONDITIONAL(success) \
     __attribute__((annotate("julia_notsafepoint_enter_conditional:" #success)))
 
-// Declared as in Julia's analyzer_annotations.h, which julia.h includes in a
-// Julia GC build. Julia before 1.14 takes a `void *`, so the analyzer needs
-// Julia 1.14.
+// GAP_GC_PROMISE_ROOTED(v) makes the analyzer treat `v` as rooted for the
+// rest of the function. It expands to Julia's JL_GC_PROMISE_ROOTED, declared
+// here so that files without julia.h can use it. Files with julia.h also see
+// Julia's declaration, so ours must match it; Julia before 1.14 declares a
+// `void *` parameter, so the analyzer needs Julia 1.14.
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -224,6 +246,7 @@ extern struct GCUNSAFEREGION *jl_gcunsaferegion;
 
 // A function holding nothing is flagged if it reaches a safepoint.
 #define GAP_GC_NOTSAFEPOINT
+
 #define GAP_GC_CANSAFEPOINT \
     __attribute__((requires_capability(jl_gcunsaferegion), \
                    requires_capability(!jl_notsafepoint)))
@@ -234,14 +257,19 @@ extern struct GCUNSAFEREGION *jl_gcunsaferegion;
 #define GAP_GC_CANSAFEPOINT_LEAVE \
     __attribute__((release_capability(jl_gcunsaferegion), \
                    requires_capability(!jl_notsafepoint)))
-// Both enters and leaves the gc-unsafe region in its own body, so the function
-// may be used as a callback from an unknown context.
+
+// Function annotation indicating that the function both enters and leaves
+// the gc-unsafe region in its own body, so it may be used as a callback from
+// an unknown context.
 #define GAP_GC_CANSAFEPOINT_ENTER_LEAVE \
     __attribute__((requires_capability(!jl_gcunsaferegion), \
                    requires_capability(!jl_notsafepoint)))
-// Can call an arbitrary user or foreign callback.
+
+// Function annotation indicating that the function may call an arbitrary
+// user or foreign callback.
 #define GAP_GC_CANCALLBACK \
     __attribute__((requires_capability(!jl_notsafepoint)))
+
 #define GAP_GC_NO_SAFEPOINT_ANALYSIS __attribute__((no_thread_safety_analysis))
 #define GAP_GC_NOTSAFEPOINT_ENTER \
     __attribute__((acquire_capability(jl_notsafepoint)))
