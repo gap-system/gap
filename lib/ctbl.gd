@@ -2752,7 +2752,7 @@ DeclareGlobalFunction( "IsClassFusionOfNormalSubgroup" );
 ##  <P/>
 ##  If <A>tbl</A> is a Brauer table then <A>n</A> must be <M>2</M>,
 ##  and <Ref Oper="Indicator"/> returns the second indicators of
-##  <C>Irr( <A>tbl</A> )</C>, see below.
+##  <C>Irr( <A>tbl</A> )</C> as far as this is possible, see below.
 ##  <P/>
 ##  The default method uses the attribute
 ##  <Ref Attr="ComputedIndicators"/> for storing the computed value at
