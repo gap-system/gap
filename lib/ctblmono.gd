@@ -148,9 +148,9 @@ DeclareAttribute( "Alpha", IsGroup );
 ##
 ##  <Description>
 ##  For a group <A>G</A>, <Ref Attr="Delta"/> returns the list
-##  <M>[ 1, alp[2] - alp[1], \ldots, alp[<A>n</A>] - alp[<A>n</A>-1] ]</M>,
+##  <M>[ 1, alp[2] - alp[1], \ldots, alp[n] - alp[n-1] ]</M>,
 ##  where <M>alp = </M><C>Alpha( <A>G</A> )</C>
-##  (see&nbsp;<Ref Attr="Alpha"/>).
+##  (see&nbsp;<Ref Attr="Alpha"/>) and <M>n</M> is its length.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

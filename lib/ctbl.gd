@@ -2750,9 +2750,9 @@ DeclareGlobalFunction( "IsClassFusionOfNormalSubgroup" );
 ##  ordinary character <M>\chi</M> of the group <M>G</M> is given by
 ##  <M>\nu_n(\chi) = ( \sum_{{g \in G}} \chi(g^n) ) / |G|</M>.
 ##  <P/>
-##  If <A>tbl</A> is a Brauer table in characteristic <M> \neq 2</M> and
-##  <M><A>n</A> = 2</M> then <Ref Oper="Indicator"/> returns the second
-##  indicator.
+##  If <A>tbl</A> is a Brauer table then <A>n</A> must be <M>2</M>,
+##  and <Ref Oper="Indicator"/> returns the second indicators of
+##  <C>Irr( <A>tbl</A> )</C> as far as this is possible, see below.
 ##  <P/>
 ##  The default method uses the attribute
 ##  <Ref Attr="ComputedIndicators"/> for storing the computed value at
@@ -2919,7 +2919,7 @@ DeclareOperation( "ClassMultiplicationCoefficient",
 ##  <P/>
 ##  For an ordinary character table <A>tbl</A> and a class position <A>i</A>,
 ##  <C>MatClassMultCoeffsCharTable</C> returns the matrix
-##  <M>[ a_{ijk} ]_{{j,k}}</M> of structure constants
+##  <M>[ c_{ijk} ]_{{j,k}}</M> of structure constants
 ##  (see&nbsp;<Ref Oper="ClassMultiplicationCoefficient"
 ##  Label="for character tables"/>).
 ##  <P/>
@@ -3557,6 +3557,8 @@ DeclareGlobalFunction( "ConvertToLibraryCharacterTableNC" );
 ##
 ##  <Description>
 ##  <!-- is a more general attribute?-->
+##  is a record of options used by
+##  <Ref Meth="Display" Label="for a character table"/> for <A>tbl</A>.
 ##  There is no default method to compute a value,
 ##  one can set a value with <C>SetDisplayOptions</C>.
 ##  <P/>
