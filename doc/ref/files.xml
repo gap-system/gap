@@ -98,6 +98,10 @@ for more information how to do this.
 After &GAP; has been started, one can add additional root directories
 via the function <Ref Func="ExtendRootDirectories"/>.
 <P/>
+A relative path is made absolute by prefixing the directory that is current
+when the path is given. Absolute paths are kept as given, in particular
+symbolic links in them are not resolved.
+<P/>
 
 </Section>
 
@@ -119,6 +123,10 @@ The order of the directories in <C>GAPInfo.PackageDirectories</C> is as follows:
 first the package directories specified via the command line option <C>--packagedirs</C>,
 then the subdirectories <F>pkg</F> of the &GAP; root directories that were known at startup in the
 same order, and finally the directories added after &GAP; has been started.
+As for root directories, relative paths are made absolute and absolute paths
+are kept as given.
+A directory that is already in the list, also under a different path such as
+via a symbolic link, is not added again.
 <P/>
 &GAP; looks for available packages by examining each of the directories in
 <C>GAPInfo.PackageDirectories</C>.
