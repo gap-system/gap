@@ -686,8 +686,28 @@ static Obj HIDDEN_IMPS;
 static Obj WITH_HIDDEN_IMPS_FLAGS_CACHE;
 enum { HIDDEN_IMPS_CACHE_LENGTH = 20003 };
 
+// HIDDEN_IMPS_BY_FLAG[f+1] lists the positions i of the hidden implications
+// whose requirement HIDDEN_IMPS[2*i] contains flag f, and
+// HIDDEN_IMPS_BY_FLAG[1] those with an empty requirement. Its length exceeds
+// every flag occurring in HIDDEN_IMPS.
+static Obj HIDDEN_IMPS_BY_FLAG;
+
 // Forward declaration of FuncFLAGS_FILTER
 static Obj FuncFLAGS_FILTER(Obj self, Obj oper);
+
+static void AddHiddenImpToIndex(UInt slot, UInt pos)
+{
+    Obj list = ELM_PLIST(HIDDEN_IMPS_BY_FLAG, slot);
+    if (!list) {
+        list = NEW_PLIST(T_PLIST, 1);
+#ifdef HPCGAP
+        MakeBagPublic(list);
+#endif
+        SET_ELM_PLIST(HIDDEN_IMPS_BY_FLAG, slot, list);
+        CHANGED_BAG(HIDDEN_IMPS_BY_FLAG);
+    }
+    PushPlist(list, INTOBJ_INT(pos));
+}
 
 /****************************************************************************
 **
@@ -697,6 +717,7 @@ static Obj FuncInstallHiddenTrueMethod(Obj self, Obj filter, Obj filters)
 {
     Obj imp = FuncFLAGS_FILTER(0, filter);
     Obj imps = FuncFLAGS_FILTER(0, filters);
+    Obj trues = FuncTRUES_FLAGS(0, imps);
 #ifdef HPCGAP
     RegionWriteLock(REGION(HIDDEN_IMPS));
 #endif
@@ -705,6 +726,19 @@ static Obj FuncInstallHiddenTrueMethod(Obj self, Obj filter, Obj filters)
     SET_LEN_PLIST(HIDDEN_IMPS, len + 2);
     SET_ELM_PLIST(HIDDEN_IMPS, len + 1, imp);
     SET_ELM_PLIST(HIDDEN_IMPS, len + 2, imps);
+
+    UInt need = 1 + LEN_FLAGS(imp);
+    if (need < 1 + LEN_FLAGS(imps))
+        need = 1 + LEN_FLAGS(imps);
+    if (LEN_PLIST(HIDDEN_IMPS_BY_FLAG) < need) {
+        GROW_PLIST(HIDDEN_IMPS_BY_FLAG, need);
+        SET_LEN_PLIST(HIDDEN_IMPS_BY_FLAG, need);
+    }
+    UInt pos = len / 2 + 1;
+    if (LEN_PLIST(trues) == 0)
+        AddHiddenImpToIndex(1, pos);
+    for (UInt i = 1; i <= LEN_PLIST(trues); i++)
+        AddHiddenImpToIndex(INT_INTOBJ(ELM_PLIST(trues, i)) + 1, pos);
 #ifdef HPCGAP
     RegionWriteUnlock(REGION(HIDDEN_IMPS));
 #endif
@@ -739,6 +773,86 @@ static Obj FuncCLEAR_HIDDEN_IMP_CACHE(Obj self, Obj filter)
 
 /****************************************************************************
 **
+*F  HiddenImpsClosure( <flags> ) . . . . . . . . . . add hidden imps to flags
+**
+**  Forward chaining: each flag is visited once it is known to be true, and
+**  only the implications whose requirement contains it are checked. So an
+**  implication is applied at the latest when the last flag of its
+**  requirement is visited.
+*/
+static Obj HiddenImpsClosure(Obj flags)
+{
+    UInt len = LEN_FLAGS(flags);
+    if (len < LEN_PLIST(HIDDEN_IMPS_BY_FLAG))
+        len = LEN_PLIST(HIDDEN_IMPS_BY_FLAG);
+
+    // the flags that are true, and among them those not visited yet
+    Obj  with = NEW_FLAGS(len);
+    Obj  todo = NEW_FLAGS(len);
+    UInt nrb = NRB_FLAGS(with);
+    memcpy(BLOCKS_FLAGS(with), BLOCKS_FLAGS(flags),
+           NRB_FLAGS(flags) * sizeof(UInt));
+    memcpy(BLOCKS_FLAGS(todo), BLOCKS_FLAGS(flags),
+           NRB_FLAGS(flags) * sizeof(UInt));
+
+    // number of blocks of the result, as repeated 'AND_FLAGS' would give it
+    UInt resnrb = NRB_FLAGS(flags);
+    BOOL changed = FALSE;
+
+    // no allocations from here on, so the block pointers stay valid
+    UInt * pwith = BLOCKS_FLAGS(with);
+    UInt * ptodo = BLOCKS_FLAGS(todo);
+
+    // start with the pseudo flag 0, for the empty requirements
+    UInt f = 0;
+    UInt w = 0;
+    while (1) {
+        Obj list = f < LEN_PLIST(HIDDEN_IMPS_BY_FLAG)
+                       ? ELM_PLIST(HIDDEN_IMPS_BY_FLAG, f + 1)
+                       : 0;
+        for (UInt j = 1; list && j <= LEN_PLIST(list); j++) {
+            UInt i = INT_INTOBJ(ELM_PLIST(list, j));
+            if (!IS_SUBSET_FLAGS(with, ELM_PLIST(HIDDEN_IMPS, 2 * i)))
+                continue;
+            Obj          imp = ELM_PLIST(HIDDEN_IMPS, 2 * i - 1);
+            const UInt * pimp = BLOCKS_FLAGS(imp);
+            BOOL         grew = FALSE;
+            GAP_ASSERT(NRB_FLAGS(imp) <= nrb);
+            for (UInt k = 0; k < NRB_FLAGS(imp); k++) {
+                UInt new_bits = pimp[k] & ~pwith[k];
+                if (!new_bits)
+                    continue;
+                pwith[k] |= new_bits;
+                ptodo[k] |= new_bits;
+                grew = TRUE;
+                if (k < w)
+                    w = k;
+            }
+            if (grew) {
+                changed = TRUE;
+                if (resnrb < NRB_FLAGS(imp))
+                    resnrb = NRB_FLAGS(imp);
+            }
+        }
+
+        // visit the lowest unvisited flag next
+        while (w < nrb && ptodo[w] == 0)
+            w++;
+        if (w == nrb)
+            break;
+        UInt bit = ptodo[w] & -ptodo[w];
+        ptodo[w] ^= bit;
+        f = w * BIPEB + COUNT_TRUES_BLOCK(bit - 1) + 1;
+    }
+
+    if (!changed)
+        return flags;
+    ResizeBag(with, (3 + resnrb) * sizeof(Obj));
+    return with;
+}
+
+/****************************************************************************
+**
 *F  FuncWITH_HIDDEN_IMP_FLAGS( <self>, <flags> ) . . add hidden imps to flags
 */
 #ifdef COUNT_OPERS
@@ -753,13 +867,10 @@ static Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
 #ifdef HPCGAP
     RegionWriteLock(REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE));
 #endif
-    BOOL changed;
-    Int i, lastand, stop;
-    Int hidden_imps_length = LEN_PLIST(HIDDEN_IMPS) / 2;
     Int hash =
         INT_INTOBJ(FuncHASH_FLAGS(0, flags)) % HIDDEN_IMPS_CACHE_LENGTH;
     Obj cacheval;
-    Obj with = flags;
+    Obj with;
 
     cacheval = LookupHashTable<HIDDEN_IMPS_CACHE_LENGTH>(
         WITH_HIDDEN_IMPS_FLAGS_CACHE, hash, flags);
@@ -776,23 +887,7 @@ static Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
 #ifdef COUNT_OPERS
     WITH_HIDDEN_IMPS_MISS++;
 #endif
-    changed = TRUE;
-    lastand = 0;
-    while (changed)
-    {
-      changed = FALSE;
-      for (i = hidden_imps_length, stop = lastand; i > stop; i--)
-      {
-        if( IS_SUBSET_FLAGS(with, ELM_PLIST(HIDDEN_IMPS, i*2)) &&
-           !IS_SUBSET_FLAGS(with, ELM_PLIST(HIDDEN_IMPS, i*2-1)) )
-        {
-          with = FuncAND_FLAGS(0, with, ELM_PLIST(HIDDEN_IMPS, i*2-1));
-          changed = TRUE;
-          stop = 0;
-          lastand = i;
-        }
-      }
-    }
+    with = HiddenImpsClosure(flags);
 
     StoreHashTable<HIDDEN_IMPS_CACHE_LENGTH>(WITH_HIDDEN_IMPS_FLAGS_CACHE,
                                              hash, with, flags);
@@ -3724,6 +3819,7 @@ static Int InitKernel (
     // register global bags with the garbage collector
     InitGlobalBag( &WITH_HIDDEN_IMPS_FLAGS_CACHE, "src/opers.c:WITH_HIDDEN_IMPS_FLAGS_CACHE");
     InitGlobalBag( &HIDDEN_IMPS, "src/opers.c:HIDDEN_IMPS");
+    InitGlobalBag( &HIDDEN_IMPS_BY_FLAG, "src/opers.c:HIDDEN_IMPS_BY_FLAG");
     InitGlobalBag( &WITH_IMPS_FLAGS_CACHE, "src/opers.c:WITH_IMPS_FLAGS_CACHE");
     InitGlobalBag( &IMPLICATIONS_SIMPLE, "src/opers.c:IMPLICATIONS_SIMPLE");
     InitGlobalBag( &IMPLICATIONS_COMPOSED, "src/opers.c:IMPLICATIONS_COMPOSED");
@@ -3808,6 +3904,7 @@ static Int InitLibrary(StructInitInfo * module)
     ExportAsConstantGVar(BASE_SIZE_METHODS_OPER_ENTRY);
 
     HIDDEN_IMPS = NEW_PLIST(T_PLIST, 0);
+    HIDDEN_IMPS_BY_FLAG = NEW_PLIST(T_PLIST, 0);
     WITH_HIDDEN_IMPS_FLAGS_CACHE = NEW_PLIST(T_PLIST, HIDDEN_IMPS_CACHE_LENGTH * 2);
     SET_LEN_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, HIDDEN_IMPS_CACHE_LENGTH * 2);
     AssGVar(GVarName("HIDDEN_IMPS"), HIDDEN_IMPS);
@@ -3815,6 +3912,7 @@ static Int InitLibrary(StructInitInfo * module)
 #ifdef HPCGAP
     SET_REGION(HIDDEN_IMPS, NewRegion());
     SET_REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE, REGION(HIDDEN_IMPS));
+    SET_REGION(HIDDEN_IMPS_BY_FLAG, REGION(HIDDEN_IMPS));
 #endif
 
     IMPLICATIONS_SIMPLE = NEW_PLIST(T_PLIST, 0);
