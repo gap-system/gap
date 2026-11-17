@@ -983,13 +983,12 @@ DeclareGlobalFunction( "Images" );
 ##  <A>map</A> then <Ref Oper="PreImagesElm"/> returns the set of all
 ##  preimages of <A>elm</A> under <A>map</A>.
 ##  <P/>
-##  From &GAP; version 4.17.0
-##  <C>PreImagesElm</C> was renamed <C>PreImagesElmNC</C>
-##  throughout the library, and the new <C>PreImagesElm</C> checks that
-##  <A>elm</A> is an element of the image before calling <C>PreImagesElmNC</C>.
 ##  If <A>elm</A> is in the range but not in the image then the empty list
 ##  is returned.
 ##  If <A>elm</A> is not even in the range then an error is signalled.
+##  (From &GAP; version 4.17.0, <C>PreImagesElm</C> performs these checks
+##  before calling <C>PreImagesElmNC</C>, which is the former
+##  <C>PreImagesElm</C>.)
 ##  <P/>
 ##  When using <C>PreImagesElmNC</C> anything may happen if <A>elm</A>
 ##  is not an element of the image of <A>map</A>.
@@ -1041,13 +1040,12 @@ DeclareOperation( "PreImageElm",
 ##  <A>map</A> then <Ref Oper="PreImagesRepresentative"/> returns a
 ##  representative of the set of preimages of <A>elm</A> under <A>map</A>.
 ##  <P/>
-##  From &GAP; version 4.17.0 the operation <C>PreImagesRepresentative</C>
-##  was renamed <C>PreImagesRepresentativeNC</C> throughout the library,
-##  and the new <C>PreImagesRepresentative</C> checks that <A>elm</A> is an
-##  element of the image before calling <C>PreImagesRepresentativeNC</C>.
 ##  If <A>elm</A> is in the range but not in the image then <K>fail</K>
 ##  is returned.
 ##  If <A>elm</A> is not even in the range then an error is signalled.
+##  (From &GAP; version 4.17.0, <C>PreImagesRepresentative</C> performs
+##  these checks before calling <C>PreImagesRepresentativeNC</C>, which is
+##  the former <C>PreImagesRepresentative</C>.)
 ##  <P/>
 ##  When using <C>PreImagesRepresentativeNC</C> anything may happen if
 ##  <A>elm</A> is not an element of the image of <A>map</A>.
@@ -1075,14 +1073,13 @@ DeclareOperation( "PreImagesRepresentativeNC", [ IsGeneralMapping, IsObject ] );
 ##  then <Ref Oper="PreImagesSet"/> returns the set of all preimages of
 ##  <A>elms</A> under <A>map</A>.
 ##  <P/>
-##  From &GAP; version 4.17.0 <C>PreImagesSet</C>
-##  has been renamed <C>PreImagesSetNC</C> throughout the library,
-##  and the new <C>PreImagesSet</C> checks that <A>elms</A> is a
-##  subset of the range before calling <C>PreImagesSetNC</C>.
 ##  If <A>elms</A> is a subset of the range but not a subset of the image then
 ##  the returned set is
 ##  <C>PreImagesSetNC( map, Intersection( elms, Image(map) ) )</C>.
 ##  If <A>elms</A> is not a subset of the range then an error is signalled.
+##  (From &GAP; version 4.17.0, <C>PreImagesSet</C> performs these checks
+##  before calling <C>PreImagesSetNC</C>, which is the former
+##  <C>PreImagesSet</C>.)
 ##  <P/>
 ##  When using <C>PreImagesSetNC</C> anything may happen if <A>elms</A>
 ##  is not a subset of the image of <A>map</A>.

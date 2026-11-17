@@ -2339,11 +2339,11 @@ DeclareSynonym("OnSubspacesByCanonicalBasisGF2",OnSubspacesByCanonicalBasis);
 ##  <Ref Attr="CharacteristicPolynomial"/> only  allowed to specify one field
 ##  (corresponding to <A>F</A>) as an argument.
 ##  That usage has been disabled because its definition turned out to be
-##  ambiguous and may have lead to unexpected results. (To ensure
+##  ambiguous and may have led to unexpected results. (To ensure
 ##  backward compatibility, it is still possible to use the old form
 ##  if <A>F</A> contains the default field of the matrix,
-##  see&nbsp;<Ref Attr="DefaultFieldOfMatrix"/>,
-##  but this feature will disappear in future versions of &GAP;.)
+##  see&nbsp;<Ref Attr="DefaultFieldOfMatrix"/>;
+##  this prints a message at <Ref InfoClass="InfoObsolete"/> level 1.)
 ##  <Example><![CDATA[
 ##  gap> CharacteristicPolynomial( [ [ 1, 1 ], [ 0, 1 ] ] );
 ##  x^2-2*x+1

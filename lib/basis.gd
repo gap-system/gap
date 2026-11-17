@@ -36,8 +36,10 @@
 ##  <P/>
 ##  The operations described below make sense only for bases of <E>finite</E>
 ##  dimensional vector spaces.
-##  (In practice this means that the vector spaces must be <E>low</E> dimensional,
-##  that is, the dimension should not exceed a few hundred.)
+##  (In practice, computations with bases get slower as the dimension grows,
+##  at a rate that depends on the field:
+##  over small finite fields, much larger dimensions are feasible than over
+##  the rationals, where the entries tend to grow during the computation.)
 ##  <P/>
 ##  Besides the basic operations for lists
 ##  (see&nbsp;<Ref Sect="Basic Operations for Lists"/>),

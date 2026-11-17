@@ -589,10 +589,6 @@ good performance across a range of processors and matrix sizes, but
 other levels may do even better in some cases. You can control the
 levels exactly using the functions below.
 <P/>
-We plan to include greased blocked matrix multiplication for other
-finite fields, and greased blocked algorithms for inversion and other
-matrix operations in a future release.
-<P/>
 <ManSection>
 <Func Name="PROD_GF2MAT_GF2MAT_SIMPLE" Arg='m1, m2'/>
 

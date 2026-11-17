@@ -156,12 +156,6 @@ DeclareGlobalFunction("PrimalityProof_FindStructure");
 ##  hundreds digits is quite feasible.
 ##  <P/>
 ##  <Ref Func="IsPrimeInt"/> is a method for the general operation <Ref Oper="IsPrime"/>.
-##  <P/>
-##  Remark: In future versions of &GAP; we hope to change the definition of
-##  <Ref Func="IsPrimeInt"/> to return <K>true</K> only for proven primes.
-##  In applications, use
-##  explicitly <Ref Func="IsPrimeInt"/> or <Ref Func="IsProbablyPrimeInt"/>
-##  with this change in mind.
 ##  <Example><![CDATA[
 ##  gap> IsPrimeInt( 2^31 - 1 );
 ##  true

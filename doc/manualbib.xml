@@ -626,6 +626,21 @@
   <other type="fjournal">Mathematics of Computation</other>
 </article></entry>
 
+<entry id="OR12"><article>
+  <author>
+    <name><first>Pascal</first><last>Ochem</last></name>
+    <name><first>Michaël</first><last>Rao</last></name>
+  </author>
+  <title>Odd perfect numbers are greater than <M>10^{1500}</M></title>
+  <journal><value key="mathc3"/></journal>
+  <year>2012</year>
+  <volume>81</volume>
+  <number>279</number>
+  <pages>1869&ndash;1877</pages>
+  <issn>0025-5718</issn>
+  <url>https://doi.org/10.1090/S0025-5718-2012-02563-4</url>
+</article></entry>
+
 <entry id="Bre91"><mastersthesis>
   <author>
     <name><first>Thomas</first><last>Breuer</last></name>

@@ -290,8 +290,7 @@ DeclareInfoClass( "InfoCharacterTable" );
 ##  certain positions,
 ##  the same may happen also for power maps and class fusions
 ##  (see&nbsp;<Ref Sect="Parametrized Maps"/>).
-##  <E>Incomplete tables in this sense are currently not supported and will be
-##  described in a chapter of their own when they become available.</E>
+##  <E>Incomplete tables in this sense are currently not supported.</E>
 ##  Note that the term <Q>incomplete table</Q> shall express that &GAP; cannot
 ##  compute certain values such as irreducible characters or power maps.
 ##  A table with access to its group is therefore always complete,
@@ -3027,8 +3026,7 @@ DeclareGlobalFunction( "ClassStructureCharTable" );
 ##  Several occurrences of 4.&nbsp;are described
 ##  in&nbsp;<Ref Sect="Constructing Character Tables from Others"/>.
 ##  The last of the above possibilities
-##  <E>is currently not supported and will be described in a chapter of its
-##  own when it becomes available</E>.
+##  <E>is currently not supported</E>.
 ##  <P/>
 ##  The operation <Ref Oper="CharacterTable" Label="for a group"/>
 ##  can be used for the cases 1. to 3.
@@ -3738,9 +3736,7 @@ DeclareGlobalFunction( "PrintCharacterTable" );
 ##  and the <Ref Attr="NamesOfFusionSources"/> values are updated.
 ##  <P/>
 ##  (The interactive construction of character tables using character
-##  theoretic methods and incomplete tables is not described here.)
-##  <E>Currently it is not supported and will be described in a chapter of its
-##  own when it becomes available</E>.
+##  theoretic methods and incomplete tables is currently not supported.)
 ##  <#/GAPDoc>
 ##
 
