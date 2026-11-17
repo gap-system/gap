@@ -287,7 +287,8 @@ end);
 ##    In case of `-h' print a help screen and exit.
 ##
 CallAndInstallPostRestore( function()
-    local j, i, CommandLineOptions, opt, InitFiles, line, word, value, padspace;
+    local j, i, CommandLineOptions, opt, InitFiles, line, word, value, padspace,
+          roots, seen, path, real;
 
     GAPInfo.KernelInfo:= KERNEL_INFO();
     GAPInfo.Version := GAPInfo.KernelInfo.KERNEL_VERSION;
@@ -304,8 +305,21 @@ CallAndInstallPostRestore( function()
     # The shell environment in which GAP was called as record
     GAPInfo.SystemEnvironment:= GAPInfo.KernelInfo.ENVIRONMENT;
 
-    # paths
-    GAPInfo.RootPaths:= GAPInfo.KernelInfo.GAP_ROOT_PATHS;
+    # paths; list a root directory given several times, also via a symlink,
+    # only once
+    roots:= [];
+    seen:= [];
+    for path in GAPInfo.KernelInfo.GAP_ROOT_PATHS do
+      real:= GAP_realpath( path );
+      if real = fail then
+        real:= path;
+      fi;
+      if not real in seen then
+        ADD_LIST( seen, real );
+        ADD_LIST( roots, path );
+      fi;
+    od;
+    GAPInfo.RootPaths:= MakeImmutable( roots );
     GAPInfo.PackageDirectories := [];
     if  IsBound(GAPInfo.SystemEnvironment.HOME) then
       GAPInfo.UserHome := GAPInfo.SystemEnvironment.HOME;
