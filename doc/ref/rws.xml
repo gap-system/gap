@@ -195,7 +195,8 @@ gap> CategoriesOfObject(gpelm);
 Note, that the elements <C>red</C> (free monoid) <C>melm</C> (fp monoid) and <C>gpelm</C>
 (group) differ, though they are displayed identically.
 <P/>
-Under Unix, it is possible to use the <Package>kbmag</Package> package
+On systems where its C programs can be compiled, such as Linux and macOS,
+it is possible to use the <Package>kbmag</Package> package
 to replace the built-in rewriting by this package's efficient C implementation.
 You can do this (after loading the <Package>kbmag</Package> package)
 by assigning the variable <Ref Var="KB_REW"/> to <C>KBMAG_REW</C>.

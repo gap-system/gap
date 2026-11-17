@@ -233,6 +233,7 @@ in your <F>gap.ini</F> file (see&nbsp;<Ref Sect="sect:gap.ini"/>).
 </Item>
 <Mark><C>"firefox"</C>, <C>"chrome"</C>, <C>"mozilla"</C>, <C>"netscape"</C>, <C>"konqueror"</C></Mark>
 <Item>
+  (for Linux and other UNIX systems except macOS; not under WSL)
   If a book is available in HTML format this is shown using the
   corresponding web browser.
   How well this works, for example by using a running instance of this
@@ -242,14 +243,17 @@ in your <F>gap.ini</F> file (see&nbsp;<Ref Sect="sect:gap.ini"/>).
 </Item>
 <Mark><C>"browser"</C></Mark>
 <Item>
-  (for MS Windows) If a book is available in HTML format, it will be
-  opened using the Windows default application (typically, a web browser).
+  (for MS Windows, also under WSL) If a book is available in HTML format,
+  it will be opened using the Windows default application
+  (typically, a web browser).
+  Under WSL, <C>"pdf viewer"</C> likewise opens pdf books.
 </Item>
-<Mark><C>"links2"</C>, <C>"w3m"</C>, <C>"lynx"</C></Mark>
+<Mark><C>"links2"</C>, <C>"links2ng"</C>, <C>"elinks"</C>, <C>"w3m"</C>, <C>"lynx"</C></Mark>
 <Item>
   If a book is available in HTML format this is shown using the text based
-  <C>"links2"</C> (in graphics mode), <C>w3m</C> or <C>lynx</C> web browser,
-  respectively, inside the terminal running &GAP;.
+  web browser <C>links2</C> (in graphics mode for <C>"links2"</C>,
+  in text mode for <C>"links2ng"</C>), <C>elinks</C>, <C>w3m</C> or
+  <C>lynx</C>, respectively, inside the terminal running &GAP;.
   (Formulae in some older books which use symbol fonts may be unreadable.)
 </Item>
 <Mark><C>"mac default browser"</C>, <C>"browser"</C>, <C>"safari"</C>, <C>"firefox"</C></Mark>
@@ -299,8 +303,8 @@ in your <F>gap.ini</F> file (see&nbsp;<Ref Sect="sect:gap.ini"/>).
 </Item>
 </List>
 <P/>
-Please, send ideas for further viewer commands to
-<Email>support@gap-system.org</Email>.
+Please suggest further viewer commands on the &GAP; issue tracker
+<URL>https://github.com/gap-system/gap/issues</URL>.
 </Description>
 </ManSection>
 
