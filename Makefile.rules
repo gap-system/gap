@@ -1122,6 +1122,46 @@ testkernel: ${KERNELTESTS}
 
 .PHONY: check citests
 
+# Unit tests of the packed matrix core in src/packmat/, built without GAP's
+# include path. check-packmat-headers rejects other non-system headers in
+# the core and checks that packmat.h is C99. check-packmat runs the tests
+# with the default and with the portable code paths, check-packmat-sanitize
+# under ASan and UBSan.
+PACKMAT_CORE_SOURCES = $(addprefix $(srcdir)/,$(filter src/packmat/%,$(SOURCES)))
+PACKMAT_TEST_SOURCES = $(PACKMAT_CORE_SOURCES) $(srcdir)/src/packmat/test/test.cc
+PACKMAT_TEST_DEPS = $(PACKMAT_TEST_SOURCES) \
+    $(wildcard $(srcdir)/src/packmat/*.h $(srcdir)/src/packmat/test/*.h)
+PACKMAT_TEST_CXXFLAGS = -std=c++11 -O2 -g -Wall -Wextra -pedantic -DPACKMAT_DEBUG
+PACKMAT_SANITIZE_FLAGS = -fsanitize=address,undefined \
+    -fno-sanitize-recover=all -fno-omit-frame-pointer -DPACKMAT_TEST_SANITIZE
+
+build/packmat/test: $(PACKMAT_TEST_DEPS)
+	@$(MKDIR_P) build/packmat
+	$(QUIET_LINK)$(CXX) $(ABI_CFLAGS) $(PACKMAT_TEST_CXXFLAGS) $(PACKMAT_TEST_SOURCES) -o $@
+
+build/packmat/test-portable: $(PACKMAT_TEST_DEPS)
+	@$(MKDIR_P) build/packmat
+	$(QUIET_LINK)$(CXX) $(ABI_CFLAGS) $(PACKMAT_TEST_CXXFLAGS) -DPACKMAT_PORTABLE $(PACKMAT_TEST_SOURCES) -o $@
+
+build/packmat/test-sanitize: $(PACKMAT_TEST_DEPS)
+	@$(MKDIR_P) build/packmat
+	$(QUIET_LINK)$(CXX) $(ABI_CFLAGS) $(PACKMAT_TEST_CXXFLAGS) $(PACKMAT_SANITIZE_FLAGS) $(PACKMAT_TEST_SOURCES) -o $@
+
+check-packmat-headers:
+	@bad=`$(CXX) $(ABI_CFLAGS) -std=c++11 -MM $(PACKMAT_CORE_SOURCES) | tr ' \\' '\n\n' | \
+	    grep '\.h$$' | grep -v 'src/packmat/[a-z0-9_]*\.h$$'` ; \
+	test -z "$$bad" || { echo "packmat core includes $$bad" ; exit 1 ; }
+	$(CC) $(ABI_CFLAGS) -std=c99 -pedantic -fsyntax-only -x c $(srcdir)/src/packmat/packmat.h
+
+check-packmat: check-packmat-headers build/packmat/test build/packmat/test-portable
+	build/packmat/test
+	build/packmat/test-portable
+
+check-packmat-sanitize: build/packmat/test-sanitize
+	build/packmat/test-sanitize
+
+.PHONY: check-packmat check-packmat-headers check-packmat-sanitize
+
 ########################################################################
 # Bootstrap rules
 ########################################################################
