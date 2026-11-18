@@ -215,7 +215,7 @@ ReadGrp( "ree.gd"   );
 ReadGrp( "simple.gd"   );
 ReadGrp( "imf.gd"      );
 ReadGrp( "glzmodmz.gd" );
-ReadGrp( "clasmax.grp" );
+ReadGrp( "clasmax.gi" );
 
 ReadLib( "orders.gd"  );
 
