@@ -95,11 +95,44 @@ il')
 gap> TRUES_FLAGS(WITH_HIDDEN_IMPS_FLAGS(flags));
 [ 1, 2 ]
 
+# CLEAR_HIDDEN_IMP_CACHE and CLEAR_IMP_CACHE must reach the last slot of
+# their caches; flagsInLastSlot returns flags containing <P> that hash to it
+gap> flagsInLastSlot := function(P, len)
+>      local x, y, fl;
+>      for x in FILTERS do
+>        for y in FILTERS do
+>          fl := AND_FLAGS(AND_FLAGS(FLAGS_FILTER(P), FLAGS_FILTER(x)),
+>                          FLAGS_FILTER(y));
+>          if HASH_FLAGS(fl) mod len = len - 1 then return fl; fi;
+>        od;
+>      od;
+>      return fail;
+>    end;;
+gap> P := NewProperty("HiddenImpTestP", IsObject);;
+gap> Q := NewProperty("HiddenImpTestQ", IsObject);;
+gap> fl := flagsInLastSlot(P, 20003);;
+gap> FLAG1_FILTER(Q) in TRUES_FLAGS(WITH_HIDDEN_IMPS_FLAGS(fl));
+false
+gap> InstallHiddenTrueMethod(Q, P);
+gap> CLEAR_HIDDEN_IMP_CACHE(P);
+gap> FLAG1_FILTER(Q) in TRUES_FLAGS(WITH_HIDDEN_IMPS_FLAGS(fl));
+true
+
 #
 gap> WITH_IMPS_FLAGS(fail);
 Error, WITH_IMPS_FLAGS: <flags> must be a flags list (not the value 'fail')
 gap> TRUES_FLAGS(WITH_IMPS_FLAGS(flags));
 [ 1, 2 ]
+
+#
+gap> R := NewProperty("ImpTestR", IsObject);;
+gap> S := NewProperty("ImpTestS", IsObject);;
+gap> fl := flagsInLastSlot(R, 21001);;
+gap> FLAG1_FILTER(S) in TRUES_FLAGS(WITH_IMPS_FLAGS(fl));
+false
+gap> InstallTrueMethod(S, R);
+gap> FLAG1_FILTER(S) in TRUES_FLAGS(WITH_IMPS_FLAGS(fl));
+true
 
 #
 gap> WITH_IMPS_FLAGS_STAT();;
