@@ -81,7 +81,7 @@
 ##  </Item>
 ##  <Mark>(h)</Mark>
 ##  <Item>
-##      <M>\pi(1) |N_G(g)|</M> divides <M>\pi(g) |G|</M>
+##      <M>\pi(1) |N_G(\langle g \rangle)|</M> divides <M>\pi(g) |G|</M>
 ##      for all <M>g \in G</M>,
 ##  </Item>
 ##  <Mark>(i)</Mark>

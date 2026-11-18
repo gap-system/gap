@@ -730,30 +730,26 @@ showing the arguments and local variables of each function.
 The following example assumes that <Ref Func="OnBreak"/> is set to its default
 value.
 <Log><![CDATA[
-gap> StabChain(SymmetricGroup(1000)); # After this we typed ^C
-Error, user interrupt
-*[1] genlabels := Filtered( genlabels, function ( x )
-        return pnt ^ sgs[x] = pnt;
-    end );
-   @ GAPROOT/lib/stbc.gi:426
- [2] StabChainBaseStrongGenerators( dom{[ 1 .. Length( dom ) - 1 ]}, sgs, () )
-   @ GAPROOT/lib/gpprmsya.gi:2006
- [3] StabChainOp( G, rec(
-     ) )
-   @ GAPROOT/lib/stbc.gi:28
- [4] StabChainImmutable( arg[1] )
-   @ GAPROOT/lib/stbc.gi:18
-<function "StabChain">( <arguments> )
- called from read-eval loop at *stdin*:2
-you can enter 'quit;' to quit to outer loop, or
-you can enter 'return;' to continue
-brk> Where(2);
-*[1] genlabels := Filtered( genlabels, function ( x )
-        return pnt ^ sgs[x] = pnt;
-    end );
-   @ GAPROOT/lib/stbc.gi:426
- [2] StabChainBaseStrongGenerators( dom{[ 1 .. Length( dom ) - 1 ]}, sgs, () )
-   @ GAPROOT/lib/gpprmsya.gi:2006
+gap> inv := function( x ) return 1 / x; end;;
+gap> f := function( l ) return List( l, inv ); end;;
+gap> f( [ 2, 1, 0 ] );
+Error, Rational operations: <divisor> must not be zero
+Stack trace:
+*[1] 1 / x
+   @ *stdin*:1
+ [2] func( C[i] )
+   @ GAPROOT/lib/coll.gi:651
+ [3] List( l, inv )
+   @ *stdin*:2
+<function "f">( <arguments> )
+ called from read-eval loop at *stdin*:3
+you can enter 'quit;' to quit to outer loop
+brk> Where( 2 );
+Stack trace:
+*[1] 1 / x
+   @ *stdin*:1
+ [2] func( C[i] )
+   @ GAPROOT/lib/coll.gi:651
 ...  at *errin*:1
 ]]></Log>
 <P/>
@@ -1330,7 +1326,7 @@ Add lines as in the following example:
 <P/>
 <Log><![CDATA[
 if has("syntax")
-  syntax on             " Default to no syntax highlighting
+  syntax on
 endif
 
 " For GAP files
@@ -1407,6 +1403,8 @@ This can be achieved by turning on a teaching mode:
 <Description>
 When called with a boolean argument <A>switch</A>, this function will turn
 teaching mode respectively on or off.
+Called without argument, it leaves teaching mode unchanged and prints its
+current state.
 <Example><![CDATA[
 gap> a:=Z(11)^3;
 Z(11)^3
@@ -1414,6 +1412,8 @@ gap> TeachingMode(true);
 #I  Teaching mode is turned ON
 gap> a;
 ZmodnZObj(8,11)
+gap> TeachingMode();
+#I  Teaching mode is turned ON
 gap> TeachingMode(false);
 #I  Teaching mode is turned OFF
 gap> a;

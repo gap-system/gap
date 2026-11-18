@@ -99,8 +99,10 @@
 ##  of unknowns and cyclotomics.
 ##  The result will be a new unknown except in one of the following cases.
 ##  <P/>
-##  Multiplication with zero yields zero,
-##  and multiplication with one or addition of zero yields the old unknown.
+##  Multiplication with zero and the difference of an unknown with itself
+##  yield zero, the zeroth power yields one,
+##  and multiplication with one, addition or subtraction of zero,
+##  division by one, and the first power yield the old unknown.
 ##  <E>Note</E> that division by an unknown causes an error,
 ##  since an unknown might stand for zero.
 ##  <P/>

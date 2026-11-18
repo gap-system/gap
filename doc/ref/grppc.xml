@@ -498,8 +498,10 @@ gap> G := SmallGroup( 4, 2 );;
 gap> mats := List( Pcgs( G ), x -> IdentityMat( 1, GF(2) ) );;
 gap> M := GModuleByMats( mats, GF(2) );;
 gap> co := TwoCocycles( G, M );;
-gap> Extension( G, M, co[2] );
+gap> ext := Extension( G, M, co[2] );
 <pc group of size 8 with 3 generators>
+gap> ModuleOfExtension( ext );
+Group([ f3 ])
 gap> SplitExtension( G, M );
 <pc group of size 8 with 3 generators>
 gap> Extensions( G, M );

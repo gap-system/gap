@@ -396,12 +396,34 @@ InstallMethod( ClosureLeftModule,
 
 #############################################################################
 ##
+#F  CheckAdditiveGenerators( <name>, <arg> )
+##
+##  Signal an error if the generators or the zero in the argument list <arg>
+##  of a module or algebra constructor cannot be added, e.g., permutations.
+##  Each generator is tested because 'IsAdditiveElementWithInverseCollection'
+##  is false for lists of matrices.
+##
+BindGlobal( "CheckAdditiveGenerators", function( name, arg )
+    if Length( arg ) >= 2 and IsList( arg[2] )
+       and not ForAll( arg[2], IsAdditiveElementWithInverse ) then
+      ErrorNoReturn( name, ": <gens> must be a list of additive elements" );
+    elif Length( arg ) >= 3 and arg[3] <> "basis"
+         and not IsAdditiveElementWithInverse( arg[3] ) then
+      ErrorNoReturn( name, ": <zero> must be an additive element" );
+    fi;
+end );
+
+
+#############################################################################
+##
 #F  FreeLeftModule( <R>, <gens>[, <zero>][, "basis"] )
 ##
 InstallGlobalFunction(FreeLeftModule,function( arg )
 #T check that the families have the same characteristic?
 #T 'CharacteristicFamily' ?
     local V;
+
+    CheckAdditiveGenerators( "FreeLeftModule", arg );
 
     # ring and list of generators
     if Length( arg ) = 2 and IsRing( arg[1] )

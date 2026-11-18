@@ -311,7 +311,7 @@ DeclareGlobalFunction( "DixonInit" );
 ##
 ##  <#GAPDoc Label="DixonSplit">
 ##  <ManSection>
-##  <Func Name="DixonSplit" Arg='D'/>
+##  <Func Name="DixonSplit" Arg='D[, i]'/>
 ##
 ##  <Description>
 ##  This function performs one splitting step in the Dixon-Schneider
@@ -321,7 +321,7 @@ DeclareGlobalFunction( "DixonInit" );
 ##  <P/>
 ##  The class to use for splitting is chosen via
 ##  <Ref Func="BestSplittingMatrix"/> and the options described for this
-##  function apply here.
+##  function apply here, unless the class position <A>i</A> is given.
 ##  <P/>
 ##  <Ref Func="DixonSplit"/> returns the number of the class that was
 ##  used for splitting if a split was performed, and <K>fail</K> otherwise.
