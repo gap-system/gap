@@ -14,27 +14,17 @@
 
 <TitlePage>
     <Title>The &GAP; 4 Development Manual</Title>
-    <Subtitle>Administrating the &GAP; Project</Subtitle>
+    <Version>Release &VERSIONNUMBER;, &RELEASEDAY;</Version>
     <Author>The &GAP; Group
     <Email>support@gap-system.org</Email>
     <Homepage>https://www.gap-system.org</Homepage>
     </Author>
-    <Date>2015</Date>
 <Abstract>
-In this <E>development manual</E> we collect documentation
-of various tasks needed for the further development, maintenance and
-distribution of &GAP;.
-<P/>
-Some sections provide practical howto's and check lists for tasks like,
-e.g.: committing changes, testing, wrapping archives, compiling documentation.
-<P/>
-Other sections document certain conventions which are followed by the
-active members of The &GAP; Group. Some examples: there are several
-mailing lists which are used for different purposes; there is a mechanism
-how larger changes to the &GAP; system should be announced and discussed
-among the developers before they are committed, called <E>proposals</E>;
-there is a concept of <E>modules</E> where  parts of the
-&GAP; system are assigned to specified maintainers.
+This manual is for people working on &GAP; itself: its kernel, library,
+build system, tests and documentation. It is incomplete. Package authors
+should read Chapter
+<Ref Chap="Using and Developing GAP Packages" BookName="ref"/>
+of the reference manual instead.
 </Abstract>
   <Copyright>
     Copyright &copyright; (1987-&RELEASEYEAR;)
@@ -59,7 +49,6 @@ there is a concept of <E>modules</E> where  parts of the
 <TableOfContents/>
 
 <Body>
-<#Include SYSTEM "structure.xml">
 <#Include SYSTEM "kernel.xml">
 <#Include SYSTEM "lib.xml">
 <#Include SYSTEM "documentation.xml">
