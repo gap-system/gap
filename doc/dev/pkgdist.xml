@@ -7,22 +7,28 @@
   numerous to list here. Please refer to the COPYRIGHT file for details.
   SPDX-License-Identifier: GPL-2.0-or-later
 
-Package distribution
+The package distribution
 
 -->
 
 <Chapter Label="Chap-PkgDist">
-<Heading>Distributing packages via the &GAP; sites</Heading>
-
-This chapter describes how to collect information on packages and to
-maintain their re-distribution by The &GAP; Group.
+<Heading>The package distribution</Heading>
 
 <Section Label="Sect-pkgs">
-<Heading>...</Heading>
+<Heading>PackageDistro</Heading>
 
-[Transfer existing READMEs to Manual format]
+The packages shipped with &GAP; are managed in the repository
+<URL>https://github.com/gap-system/PackageDistro</URL>, which holds a
+<F>meta.json</F> file per package, derived from its <F>PackageInfo.g</F>.
+It detects new package versions from their <C>PackageInfoURL</C>, opens a
+pull request for each and tests it; its <F>README.md</F> describes how
+packages are added, updated and removed.
+<P/>
+
+To test a pull request to &GAP; against all packages, a collaborator
+comments <C>@gap-package-distribution-bot test</C> on it; see
+<F>.github/workflows/package-distro-trigger.yml</F>.
 
 </Section>
 
 </Chapter>
-

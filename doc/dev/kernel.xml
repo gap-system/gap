@@ -16,7 +16,7 @@ Here we give an introduction to the &GAP; kernel programming.
 <Section Label="Sect-Kinds">
 <Heading>Overview of the &GAP; kernel</Heading>
 
-The &GAP; kernel consists of more than 150000 lines of &C; code that:
+The &GAP; kernel is written in &C; and
 <List>
 <Item>provides the run-time environment and user interface;</Item>
 <Item>interprets the &GAP; language;</Item>
@@ -98,11 +98,10 @@ called <C>GvarFuncs</C> and add to this list a table entry for <C>HELLO_WORLD</C
 GVAR_FUNC_0ARGS(HELLO_WORLD),
 ]]>
 </Listing>
-containing respectively the string specifying the name of the function at the &GAP;
-level, the number of arguments, the string with the description of arguments,
-corresponding &C; handler and the string (<Q>cookie</Q>) specifying the location
-of this handler (see definition of the structure <C>StructGVarFunc</C>
-in the file <F>system.h</F> ).
+The macro fills in an entry of type <C>StructGVarFunc</C> (see
+<F>src/modules.h</F>): the name of the function at the &GAP; level, the
+number of arguments, their names, the &C; handler <C>FuncHELLO_WORLD</C>,
+and a string (<Q>cookie</Q>) identifying the handler.
 </Item>
 
 <Item>
@@ -327,13 +326,14 @@ in <F>gasman.h</F>).
 as marking function for bags of type <C>type</C>. The application <E>must</E>
 install  a  marking function for a  type before it allocates  any  bag  of  that type.
 <P/>
-A marking function returns nothing. It just takes a single argument of type <C>Bag</C>
-and applies the function <C>MarkBag</C> to each bag identifier that appears in the bag.
+A marking function returns nothing. It takes an argument of type <C>Bag</C>
+and a pointer <C>ref</C>, and applies <C>MarkBag( b, ref )</C> to each bag
+identifier <C>b</C> that appears in the bag.
 During garbage collection marking functions are applied to each marked bag (i.e. to
 all bags that are assumed to be still live), to also mark their subbags. The ability
 to use the correct marking function is the only use that &GASMAN; has for types.
 <P/>
-<C>MarkBag(b)</C> marks the bag <C>b</C> as live so that it is not thrown away during
+<C>MarkBag( b, ref )</C> marks the bag <C>b</C> as live so that it is not thrown away during
 a garbage collection. It tests if <C>bag</C> is a valid identifier of a bag  in the young
 bags  area.  If it is not,  then <C>MarkBag</C> does nothing, so there is no
 harm in  calling it for  something   that is not actually  a  bag identifier.
@@ -341,7 +341,8 @@ It is important that <C>MarkBag</C> should only be called from the marking
 functions installed with <C>InitMarkFuncBags</C>.
 <P/>
 <C>MarkBagWeakly</C> is an alternative to <C>MarkBag</C>, intended to be used by the
-marking functions  of weak pointer objects.  A  bag which is  marked both
+marking functions  of weak pointer objects; it is declared in
+<F>src/gasman_intern.h</F>.  A  bag which is  marked both
 weakly and strongly  is treated as strongly marked.   A bag which is only
 weakly marked will be recovered by garbage collection, but its identifier
 remains, marked      in   a    way    which   can     be   detected    by
@@ -349,30 +350,31 @@ remains, marked      in   a    way    which   can     be   detected    by
 using such an identifier.
 <P/>
 &GASMAN; already provides the following standard
-marking functions defined in <F>gasman.c</F>:
+marking functions, defined in <F>bags.inc</F>, which all three garbage
+collectors include:
 <List>
 <Item>
-<C>MarkNoSubBags( bag )</C> is a marking function   for types whose  bags contain no
+<C>MarkNoSubBags( bag, ref )</C> is a marking function   for types whose  bags contain no
 identifier of other   bags.  It does nothing,  as  its name implies,  and
 simply returns.  For example, the  bags for   large  integers
 contain only the digits and no identifiers of bags.
 </Item>
 <Item>
-<C>MarkOneSubBags( bag )</C> is  a  marking  function for types   whose bags contain
+<C>MarkOneSubBags( bag, ref )</C> is  a  marking  function for types   whose bags contain
 exactly one identifier of another bag as  the first entry.  It marks this
 subbag and returns.  For example, bags for finite field elements
 contain exactly one  bag  identifier  for the  finite field   the element
 belongs to.
 </Item>
 <Item>
-<C>MarkTwoSubBags( bag )</C> is a marking function for types whose bags contain
+<C>MarkTwoSubBags( bag, ref )</C> is a marking function for types whose bags contain
 exactly two identifiers of other bags as  the first and second entry such
 as the binary operations bags.  It marks those  subbags and returns.  For
 example, bags for  rational   numbers contain exactly two  bag
 identifiers for the numerator and the denominator.
 </Item>
 <Item>
-<C>MarkAllSubBags( bag )</C> is the marking function for types whose bags contain
+<C>MarkAllSubBags( bag, ref )</C> is the marking function for types whose bags contain
 only identifiers of other bags (for example, bags  or lists contain  only
 bag identifiers for the elements  of the  list or 0 if an entry has  no
 assigned value). <C>MarkAllSubBags</C>
@@ -396,7 +398,7 @@ which does exactly this.
 <Heading>The GASMAN Interface for Weak Pointer Objects</Heading>
 
 The key support for weak pointers is in the files <F>src/gasman.c</F> and
-<F>src/gasman.h</F>.
+<F>src/gasman_intern.h</F>.
 This document assumes familiarity with the rest of the operation of GASMAN.
 A kernel type (tnum) of bags which are intended to act as weak pointers to
 their subobjects must meet three conditions.
@@ -530,10 +532,11 @@ Objects are actually <E>bags</E> (represented by their handles),
 small integers and small finite field elements (represented by values
 that could not be valid handles).
 
-<C>Bag</C> is the type of bag identifiers, defined in the file <F>system.h</F>:
+<C>Bag</C> is the type of bag identifiers, an opaque pointer type defined
+in the file <F>common.h</F>:
 <Example>
 <![CDATA[
-typedef UInt * *        Bag;
+typedef struct OpaqueBag * Bag;
 ]]>
 </Example>
 Each bag is identified by its <E>bag identifier</E>,
@@ -767,18 +770,17 @@ functions, to operations, attributes and properties and that also deal with
 &GAP; variadic functions given as <C>function(arg)</C>.
 <P/>
 For kernel functions, the handler is the actual function which does the work.
-A typical handler (for 1-argument function) looks like
+A typical handler (for 1-argument function) is that of <C>FAMILY_OBJ</C>
+in <F>src/objects.c</F>:
 <Listing>
 <![CDATA[
-Obj FuncLength(Obj self, Obj list)
+static Obj FuncFAMILY_OBJ(Obj self, Obj obj)
 {
-    return INTOBJ_INT(LEN_LIST(list));
+    return FAMILY_OBJ( obj );
 }
 ]]>
 </Listing>
-Often the handler has to do some checks on arguments as well. In the example
-above <C>LEN_LIST</C> takes care of this (mainly because the jump table
-for <C>LEN_LIST</C> contains error functions for non-lists).
+Often the handler has to check its arguments as well.
 Every handler must be registered (once) with a unique <Q>cookie</Q> by
 calling <C>InitHandlerFunc( handler, cookie )</C> before it is installed in any
 function bag. This is needed so that it can be identified when loading a
@@ -806,7 +808,7 @@ but has two extra arguments that allow to specify  the
 For example, you can make a function object using the code like this:
 <Listing>
 <![CDATA[
-lenfunc = NewFunctionC("Length", 1, "list", FuncLength);
+famfunc = NewFunctionC("FAMILY_OBJ", 1, "obj", FuncFAMILY_OBJ);
 ]]>
 </Listing>
 
@@ -887,6 +889,7 @@ be held across anything that could cause a garbage collection (<E>GC</E>).
 <Item>
 If you add a new object to another one (e.g. put it in a list) you must call
 <C>CHANGED_BAG</C> on the container, otherwise the new object may get lost in a GC.
+<C>SET_ELM_PLIST</C> does this for you, <C>SET_ELM_PLIST_RAW</C> does not.
 </Item>
 <Item>
 Don't use malloc: actually using it a little bit is usually safe,
@@ -909,7 +912,7 @@ More things can cause a garbage collection than you expect:
 Be careful of things like
 <Log>
 <![CDATA[
-ELM_PLIST(l, 3) = something that might cause GC
+ADDR_OBJ(l)[3] = something that might cause GC
 ]]>
 </Log>
 This expands in &C; to <C>*((*l)+3) = something</C>.
@@ -961,10 +964,7 @@ $ gac -d -C foo.g
 ... compilation to C file ...
 $ gac -d foo.g
 ... compilation to .so file ...
-$ ls -l foo.so
--rwxr-xr-x 1 sal 158 4999 2007-09-11 10:19 foo.so*
-$ gap -b
-GAP4, Version: 4.dev of today, ....
+$ gap -q
 gap> LoadDynamicModule("./foo.so");
 gap> Print(foo);
 function ( x )
@@ -1280,9 +1280,9 @@ those variables read-only</Item>
 <Item>They are imported into the kernel using <C>ImportGVarFromLibrary</C> and <C>ImportFuncFromLibrary</C></Item>
 <Item>These are basically just <C>InitCopyGVar</C> and <C>InitFopyGVar</C></Item>
 <Item>They also make the GVars read-only and keep some records</Item>
-<Item>At the end of <C>read1.g</C> the GAP function <C>ExportToKernelFinished</C> is called</Item>
-<Item>This checks that all the imported GVars have actually been read.</Item>
-<Item>Until this is done, some functionality may not be usable yet (e.g. <C>TYPE_OBJ</C>).</Item>
+<Item>After <C>read1.g</C> has been read, <F>init.g</F> calls the GAP function <C>ExportToKernelFinished</C></Item>
+<Item>This checks that all the imported GVars have actually been read</Item>
+<Item>Until this is done, some functionality may not be usable yet (e.g. <C>TYPE_OBJ</C>)</Item>
 </List>
 
 </Subsection>
