@@ -610,6 +610,11 @@ function( obj )
   return ExtRepOfPolynomial_String(FamilyObj(obj),ExtRepPolynomialRatFun(obj));
 end );
 
+# `String' must not be stored, as an indeterminate may be named later
+InstallMethod( SetString, "rational function",
+    [ IsRationalFunction and IsAttributeStoringRep, IsObject ],
+    function( obj, str ) end );
+
 # the print methods don't use `String' because we don't want to collect
 # `String' attributes in memory.
 

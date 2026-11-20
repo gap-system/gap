@@ -373,6 +373,11 @@ InstallMethod( String,
                                    String(IndeterminatesOfPolynomialRing(R)),
                                   " )") );
 
+# `String' must not be stored, as an indeterminate may be named later
+InstallMethod( SetString, "for a polynomial ring",
+    [ IsPolynomialRing and IsAttributeStoringRep, IsObject ],
+    function( R, str ) end );
+
 #############################################################################
 ##
 #M  PrintObj( <pring> )
