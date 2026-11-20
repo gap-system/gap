@@ -1,4 +1,4 @@
-#@local sc
+#@local sc, D, G
 gap> START_TEST("stbc.tst");
 
 #
@@ -18,6 +18,19 @@ gap> sc := StabChainBaseStrongGenerators([1 .. 4], [(1,2), (2,3), (3,4)]);
 gap> sc = StabChainBaseStrongGenerators([1 .. 4], [(1,2), (2,3), (3,4)], ());
 true
 gap> GroupStabChain(sc) = SymmetricGroup(4);
+true
+
+# solvable groups of degree > 100 get their chain from a pcgs
+gap> D := [CycleFromList([1 .. 1009]), PermList(Concatenation([1], [1009, 1008 .. 2]))];;
+gap> G := Group(D);;
+gap> Size(G);
+2018
+gap> HasPcgs(G);
+true
+gap> G := Group(Concatenation(D, [(1010,1011,1012,1013,1014), (1010,1011,1012)]));;
+gap> Size(G);
+121080
+gap> HasIsSolvableGroup(G) and not IsSolvableGroup(G);
 true
 
 #

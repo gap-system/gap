@@ -83,6 +83,15 @@ InstallMethod( StabChainOp,"group and option",
     else
         CopyOptionsDefaults( G, options );
 
+        # Above degree 100, random Schreier-Sims spends most of its time
+        # verifying. The solvability test usually costs a fraction of that and
+        # leaves solvable groups with an exact chain from their pcgs.
+        if     options.tryPcgs and not IsBound( options.base )
+           and not HasIsSolvableGroup( G )
+           and Length( MovedPoints( G ) ) > 100 then
+            IsSolvableGroup( G );
+        fi;
+
         # For solvable groups, use the pcgs algorithm.
         pcgs := [  ];
         if     options.tryPcgs and (not IsBound(options.base))

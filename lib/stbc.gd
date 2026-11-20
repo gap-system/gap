@@ -127,11 +127,14 @@
 ##  </Item>
 ##  <Mark><C>tryPcgs</C> (default <K>true</K>)</Mark>
 ##  <Item>
-##      If this is <K>true</K> and either the degree is at most <M>100</M>
-##      or the group is known to be solvable, &GAP; will first try to
+##      If this is <K>true</K> and <A>G</A> is not known to be non-solvable,
+##      &GAP; will first try to
 ##      construct a pcgs (see Chapter&nbsp;<Ref Chap="Polycyclic Groups"/>)
 ##      for <A>G</A> which will succeed and implicitly construct a
 ##      stabilizer chain if <A>G</A> is solvable.
+##      Above degree <M>100</M>, this happens via
+##      <Ref Prop="IsSolvableGroup"/>, which first runs a randomized
+##      non-solvability test.
 ##      If <A>G</A> turns out non-solvable, one of the other methods will be
 ##      used.
 ##      This solvability check is comparatively fast, even if it fails,
