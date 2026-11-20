@@ -350,7 +350,8 @@ remains, marked      in   a    way    which   can     be   detected    by
 using such an identifier.
 <P/>
 &GASMAN; already provides the following standard
-marking functions defined in <F>gasman.c</F>:
+marking functions, defined in <F>bags.inc</F>, which all three garbage
+collectors include:
 <List>
 <Item>
 <C>MarkNoSubBags( bag, ref )</C> is a marking function   for types whose  bags contain no
@@ -531,10 +532,11 @@ Objects are actually <E>bags</E> (represented by their handles),
 small integers and small finite field elements (represented by values
 that could not be valid handles).
 
-<C>Bag</C> is the type of bag identifiers, defined in the file <F>gasman.h</F>:
+<C>Bag</C> is the type of bag identifiers, an opaque pointer type defined
+in the file <F>common.h</F>:
 <Example>
 <![CDATA[
-typedef UInt * *        Bag;
+typedef struct OpaqueBag * Bag;
 ]]>
 </Example>
 Each bag is identified by its <E>bag identifier</E>,
@@ -1279,8 +1281,8 @@ those variables read-only</Item>
 <Item>These are basically just <C>InitCopyGVar</C> and <C>InitFopyGVar</C></Item>
 <Item>They also make the GVars read-only and keep some records</Item>
 <Item>After <C>read1.g</C> has been read, <F>init.g</F> calls the GAP function <C>ExportToKernelFinished</C></Item>
-<Item>This checks that all the imported GVars have actually been read.</Item>
-<Item>Until this is done, some functionality may not be usable yet (e.g. <C>TYPE_OBJ</C>).</Item>
+<Item>This checks that all the imported GVars have actually been read</Item>
+<Item>Until this is done, some functionality may not be usable yet (e.g. <C>TYPE_OBJ</C>)</Item>
 </List>
 
 </Subsection>

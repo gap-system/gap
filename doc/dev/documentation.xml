@@ -22,13 +22,13 @@ and how to build it.
 The sources of the reference manual, the tutorial, the HPC-GAP manual
 and this manual are in <F>doc/ref</F>, <F>doc/tut</F>, <F>doc/hpc</F> and
 <F>doc/dev</F>, written in the format of the &GAPDoc; package. Parts of the
-reference manual are kept in the <F>.gd</F> files of the library, next to
-the declarations they describe.
+reference manual are kept in the library sources, mostly in <F>.gd</F>
+files next to the declarations they describe.
 <P/>
 
 <C>dev/ci.sh testmanuals</C> extracts the <C>&lt;Example></C> blocks of the
 reference manual and the tutorial and runs those of each chapter in a fresh
-&GAP; without autoloaded packages, with screen width 72 and the user
+&GAP;, with screen width 72 and the user
 preference <C>ReproducibleBehaviour</C> set. An example must therefore fit
 in 72 columns and produce the output shown when run in that order.
 <C>&lt;Log></C> blocks are not run.
