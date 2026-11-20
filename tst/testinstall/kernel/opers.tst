@@ -110,7 +110,7 @@ gap> flagsInLastSlot := function(P, len)
 >    end;;
 gap> P := NewProperty("HiddenImpTestP", IsObject);;
 gap> Q := NewProperty("HiddenImpTestQ", IsObject);;
-gap> fl := flagsInLastSlot(P, 20003);;
+gap> fl := flagsInLastSlot(P, 20003);;  # HIDDEN_IMPS_CACHE_LENGTH in src/opers.cc
 gap> FLAG1_FILTER(Q) in TRUES_FLAGS(WITH_HIDDEN_IMPS_FLAGS(fl));
 false
 gap> InstallHiddenTrueMethod(Q, P);
@@ -127,7 +127,14 @@ gap> TRUES_FLAGS(WITH_IMPS_FLAGS(flags));
 #
 gap> R := NewProperty("ImpTestR", IsObject);;
 gap> S := NewProperty("ImpTestS", IsObject);;
-gap> fl := flagsInLastSlot(R, 21001);;
+gap> impsCacheLength := function()
+>      local len;
+>      atomic readonly IMPLICATIONS_SIMPLE do
+>        len := Length(WITH_IMPS_FLAGS_STAT()[1]) / 2;
+>      od;
+>      return len;
+>    end;;
+gap> fl := flagsInLastSlot(R, impsCacheLength());;
 gap> FLAG1_FILTER(S) in TRUES_FLAGS(WITH_IMPS_FLAGS(fl));
 false
 gap> InstallTrueMethod(S, R);
