@@ -722,13 +722,13 @@ static Obj FuncCLEAR_HIDDEN_IMP_CACHE(Obj self, Obj filter)
 #ifdef HPCGAP
   RegionWriteLock(REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE));
 #endif
-  for(i = 1; i < HIDDEN_IMPS_CACHE_LENGTH * 2 - 1; i += 2)
+  for(i = 0; i < HIDDEN_IMPS_CACHE_LENGTH; i++)
   {
-    if(ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i) &&
-       IS_SUBSET_FLAGS(ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i+1), flags))
+    if(ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, 2 * i + 1) &&
+       IS_SUBSET_FLAGS(ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, 2 * i + 2), flags))
     {
-        SET_ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i, 0);
-        SET_ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, i + 1, 0);
+        SET_ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, 2 * i + 1, 0);
+        SET_ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, 2 * i + 2, 0);
     }
   }
 #ifdef HPCGAP
@@ -819,10 +819,10 @@ static Obj FuncCLEAR_IMP_CACHE(Obj self)
 #ifdef HPCGAP
   RegionWriteLock(REGION(IMPLICATIONS_SIMPLE));
 #endif
-  for(i = 1; i < IMPS_CACHE_LENGTH * 2 - 1; i += 2)
+  for(i = 0; i < IMPS_CACHE_LENGTH; i++)
   {
-    SET_ELM_PLIST(WITH_IMPS_FLAGS_CACHE, i, 0);
-    SET_ELM_PLIST(WITH_IMPS_FLAGS_CACHE, i + 1, 0);
+    SET_ELM_PLIST(WITH_IMPS_FLAGS_CACHE, 2 * i + 1, 0);
+    SET_ELM_PLIST(WITH_IMPS_FLAGS_CACHE, 2 * i + 2, 0);
   }
 #ifdef HPCGAP
   RegionWriteUnlock(REGION(IMPLICATIONS_SIMPLE));
