@@ -493,6 +493,26 @@ left-to-right) or right associative (aka right-to-left) or neither.
 </Row>
 </Table>
 
+<Subsection Label="Tilde Expressions">
+<Heading>Tilde Expressions</Heading>
+
+<Index>tilde</Index>
+In a list or record literal, <C>~</C> refers to the outermost list or
+record being constructed. This lets the literal contain a reference
+to the object it constructs.
+<P/>
+When &GAP; prints a circular reference, <C>~</C> denotes the outermost
+object being printed. A path such as <C>~[1]</C> or <C>~.child</C>
+refers to a component of that object.
+<P/>
+<Example><![CDATA[
+gap> r := rec( child := [ ~ ] );
+rec( child := [ ~ ] )
+gap> IsIdenticalObj( r, r.child[1] );
+true
+]]></Example>
+
+</Subsection>
 
 </Section>
 
