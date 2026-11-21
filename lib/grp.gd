@@ -4468,8 +4468,9 @@ DeclareAttribute( "IsomorphismSpecialPcGroup", IsGroup );
 ##  (1,4)(2,3)
 ##  ]]></Example>
 ##  <P/>
-##  In many cases the permutation representation constructed by
-##  <Ref Attr="IsomorphismPermGroup"/> is regular.
+##  The permutation representation need not be regular, nor of minimal
+##  degree; the regular representation is only the fallback for groups
+##  without a more specific method.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
