@@ -32,7 +32,8 @@ and
 <!--
 <Alt Only="HTML">(see <Ref BookName="hpc" Label="Tasks"/>)</Alt>
 -->
-documenting a multi-threaded version of GAP.
+documenting a multi-threaded version of GAP;
+it belongs to HPC-GAP builds; only their help system includes it.
 <P/>
 
 There is also a document <F>CHANGES.md</F> in the root directory on the

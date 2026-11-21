@@ -838,8 +838,10 @@ DeclareGlobalFunction( "LoadPackage" );
 ##  <Heading>Automatic loading of &GAP; packages</Heading>
 ##  When &GAP; is started some packages are loaded automatically,
 ##  and these belong to two categories.
-##  The first are those packages which are needed to start &GAP;
-##  (at the present time, the only such package is &GAPDoc;).
+##  The first are those packages which &GAP; needs by default:
+##  &GAPDoc; and the data packages <Package>PerfGrp</Package>,
+##  <Package>PrimGrp</Package>, <Package>SmallGrp</Package> and
+##  <Package>TransGrp</Package>.
 ##  Their list is contained in
 ##  <C>GAPInfo.Dependencies.NeededOtherPackages</C>.
 ##  The second are packages which are loaded during &GAP; startup by default.
@@ -851,6 +853,9 @@ DeclareGlobalFunction( "LoadPackage" );
 ##  is missing, loading of the packages from the latter group may be
 ##  suppressed by using the <C>-A</C> command line option
 ##  (see <Ref Sect="Command Line Options" />).
+##  The <C>--bare</C> command line option suppresses both groups;
+##  most of &GAP; then still works, but not the help system,
+##  which needs &GAPDoc;.
 ##  <P/>
 ##  If for some reason you don't want certain packages to be automatically
 ##  loaded, &GAP; provides three levels for disabling autoloading.
@@ -1237,7 +1242,9 @@ DeclareGlobalFunction( "SuggestUpgrades" );
 ##  <Ref Func="BibEntry"/> requires the functions
 ##  <Ref Func="FormatParagraph" BookName="gapdoc"/> and
 ##  <Ref Func="NormalizedNameAndKey" BookName="gapdoc"/>
-##  from the &GAP; package &GAPDoc;.
+##  from the &GAP; package &GAPDoc;,
+##  which is loaded unless &GAP; was started with the <C>--bare</C>
+##  command line option.
 ##  <P/>
 ##  The functions <Ref Func="ParseBibXMLextString" BookName="gapdoc"/>
 ##  and <Ref Func="StringBibXMLEntry" BookName="gapdoc"/>

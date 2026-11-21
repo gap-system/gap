@@ -39,16 +39,17 @@ version 4.1 was released in July 1999.
 A sign of the further internationalization of the project was the
 &GAP;&nbsp;4.4 release in 2004, which has been coordinated from
 Colorado State University, Fort Collins.
+Since 2005, development has been coordinated jointly by several
+<Q>&GAP; Centres</Q>.
 <P/>
 More information on the motivation and development of &GAP; to date,
 can be found on our website in a section entitled
 <Q>Some History of &GAP;</Q>:
 <URL>https://www.gap-system.org/about/history/</URL>.
 <P/>
-For those readers who have used an earlier version of &GAP;, an
-overview of the changes from &GAP;&nbsp;4.4 and a brief
-summary of changes from earlier versions is given in <F>CHANGES.md</F>
-file in the main directory.
+For those readers who have used an earlier version of &GAP;, the
+<F>CHANGES.md</F> file in the main directory summarizes the changes
+from &GAP;&nbsp;3 to &GAP;&nbsp;4 and in each &GAP;&nbsp;4 release.
 <P/>
 The system that you are getting now consists of a <Q>core system</Q> and
 a number of packages. The core system consists of four main parts.
@@ -97,12 +98,16 @@ A much larger <E>library of &GAP; functions</E> that
   it, first for their own use and eventually for the benefit of all &GAP;
   users.
 </Item>
-<!-- Is the following point now out of date? -->
 <Item>
 A <E>library of group theoretical data</E> which contains
   various libraries of groups, including the library of small groups
   (containing all groups of order at most 2000, except those of order
-  1024) and others. Large libraries of ordinary and Brauer character
+  1024) and others. The libraries of perfect, primitive, small and
+  transitive groups are the packages <Package>PerfGrp</Package>,
+  <Package>PrimGrp</Package>, <Package>SmallGrp</Package> and
+  <Package>TransGrp</Package>, which &GAP; loads by default, unless it
+  is started with the <C>--bare</C> command line option.
+  Large libraries of ordinary and Brauer character
   tables and Tables of Marks are included as packages.
 </Item>
 <Item>
@@ -131,16 +136,7 @@ recent versions ready for release at this time, new packages and new
 versions may be released at any time and can be easily installed in
 your copy of &GAP;.
 <P/>
-<!-- TODO update this paragraph -->
-With &GAP; there are two packages (the library of ordinary and
-Brauer character tables, and the library of tables of marks) which
-contain functionality developed from parts of the &GAP; core
-system. These have been moved into packages for ease of maintenance
-and to allow new versions to be released independently of new releases
-of the core system. The library of small groups should also be
-regarded as a package, although it does not currently use the standard
-package mechanism. Other packages contain functionality which has
-never been part of the core system, and may extend it substantially,
+Packages may extend the core system substantially,
 implementing specific algorithms to enhance its capabilities, providing
 data libraries, interfaces to other computer algebra systems and
 data sources such as the electronic version of the Atlas of Finite Group
@@ -148,7 +144,7 @@ Representations; therefore, installation and usage of packages is recommended.
 <P/>
 Further details about &GAP; packages can be found in chapter
 <Ref BookName="ref" Chap="Using and Developing GAP Packages"/>, and on the
-&GAP; website at <URL>https://www.gap-system.org/packages/authors/</URL>.
+&GAP; website at <URL>https://www.gap-system.org/packages/create/</URL>.
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->

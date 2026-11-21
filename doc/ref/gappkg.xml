@@ -481,8 +481,8 @@ The following components of this record are <E>mandatory</E>.
 </Item>
 <Mark><C>ArchiveFormats</C></Mark>
 <Item>
-  a string that lists the supported formats (among <C>.tar.gz</C>,
-  <C>.tar.bz2</C>, <C>-win.zip</C>), separated by whitespace or commas,
+  a string that lists the supported formats, separated by whitespace or
+  commas; <C>.tar.gz</C> is recommended, <C>.zip</C> is an alternative,
 </Item>
 <Mark><C>README_URL</C></Mark>
 <Item>
@@ -1227,18 +1227,15 @@ architecture independent file).
 A &GAP; package  which includes external binaries contains a <F>bin</F>
 subdirectory. This subdirectory in turn contains subdirectories for
 the different architectures on which the &GAP; package binaries are
-installed.  The names of these directories must be the same as the
-names of the architecture dependent subdirectories of the main <F>bin</F>
-directory. Unless you use a tool like <C>autoconf</C> yourself, you must
-obtain the correct name of the binary directory from the main &GAP;
-branch. To help with this, the main &GAP; directory contains a file
-<F>sysinfo.gap</F> which assigns the shell variable <C>GAParch</C> to the
-proper name as determined by &GAP;'s <C>configure</C> process.
-For example on a Linux system, the file <F>sysinfo.gap</F> may look like
-this:
+installed. The name of such a directory is the value of
+<C>GAPInfo.Architecture</C>, which the main &GAP; directory also records
+in its file <F>sysinfo.gap</F> as the shell variable <C>GAParch</C>,
+as determined by &GAP;'s <C>configure</C> process.
+For example on a 64-bit Linux system, <F>sysinfo.gap</F> may contain
+this line:
 <P/>
 <Log><![CDATA[
-GAParch=i586-unknown-linux2.0.31-gcc
+GAParch=x86_64-pc-linux-gnu-default64-kv11
 ]]></Log>
 <P/>
 We suggest that your &GAP; package contains a file <F>configure</F> which
@@ -1314,7 +1311,7 @@ function of the package via <C>Print</C> or <C>Info</C>. Instead one should
 call <Ref Func="LogPackageLoadingMessage"/> to store
 a message which may be viewed later with
 <Ref Func="DisplayPackageLoadingLog"/>
-(the latter two functions have been introduced in &GAP;&nbsp;4.5)
+(the latter two functions have been introduced in &GAP;&nbsp;4.5).
 </Subsection>
 
 
@@ -1351,11 +1348,11 @@ see Section&nbsp;<Ref Sect="Input-Output Streams"/>.
 Some &GAP; packages use a kernel module instead of an external binary.
 A kernel module is implemented in C
 and follows certain conventions to comply with the &GAP; kernel interface,
-which we plan to document later. In the meantime, we advise you to look at
-existing examples of such packages and to get in touch with &GAP; developers
+which is not documented; look at
+existing examples of such packages and get in touch with &GAP; developers
 if you plan to develop such a package.
 <P/>
-A kernel module can be compiled using the <Package>gac</Package> script.
+A kernel module can be compiled using the <C>gac</C> script.
 To produce a dynamically loadable module, call it with the <C>-d</C> option,
 for example:
 <P/>
