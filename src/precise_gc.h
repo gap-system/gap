@@ -7,172 +7,184 @@
 **
 **  SPDX-License-Identifier: GPL-2.0-or-later
 **
-**  This header provides GAP-owned wrappers for precise-GC static analysis
-**  annotations. Runtime rooting macros live in "precise_gc_julia.h", so that
-**  low-level headers can use the annotations without pulling in julia.h.
+**  Annotations that describe to Julia's static analyzers how a function
+**  interacts with the Julia GC: whether it may trigger a collection, and how
+**  the values it takes and returns are rooted. They matter to GAP with the
+**  Julia GC in precise mode (see "precise_gc_julia.h"). In that mode, every
+**  C local that holds a bag across a possible collection must be in a GC
+**  frame; the analyzers find the locals that are not, which tests catch only
+**  if a collection happens at that moment.
 */
 
 #ifndef GAP_PRECISE_GC_H
 #define GAP_PRECISE_GC_H
 
-/*
- * These annotation spellings match Julia's static analysis tooling. We define
- * GAP-local wrapper macros instead of depending on Julia's internal analyzer
- * header so that GAP can control how these are exposed.
- *
- * Nothing here affects a normal build: without one of the defines below every
- * macro expands to nothing, so GASMAN and Boehm builds are unchanged. The
- * runtime rooting macros in "precise_gc_julia.h" behave the same way, and
- * expand to `((void)0)` unless GAP_GC_PRECISE is defined: the Julia GC
- * without its conservative stack scan.
- *
- *
- *  The two analyses
- *  ----------------
- *
- * Two independent checks are modelled, each selected by its own define:
- *
- *   __clang_gcanalyzer__      Julia's GCChecker plugin. It checks that a value
- *                             the GC manages is reachable from a root whenever
- *                             a collection could happen. Run it with
- *                             dev/run-julia-gc-analyzer.sh.
- *
- *   __clang_safetyanalysis__  Clang Thread Safety Analysis, the counterpart to
- *                             Julia's `make -C src safesrc`. It checks the
- *                             safepoint annotations against each other. Run it
- *                             with dev/run-safepoint-check.sh.
- *
- * The two have opposite defaults, which is the main thing to keep straight:
- *
- *   - To the GCChecker an unannotated function may safepoint. Promising it
- *     does not is opting out, and it verifies the promise.
- *   - To the safety analysis an unannotated function may NOT safepoint. Every
- *     function that can must say so, and it is flagged as soon as it calls one
- *     that does without saying so itself.
- *
- * So a function that allocates needs GAP_GC_CANSAFEPOINT, and one that must
- * never allocate -- a marking function, say -- needs GAP_GC_NOTSAFEPOINT.
- * The two must never appear on the same declaration: if the safety analysis
- * asks for GAP_GC_CANSAFEPOINT somewhere that already promises
- * GAP_GC_NOTSAFEPOINT, one of the two is wrong, and adding the second only
- * hides which. See the panic path in "system.h" for the third option: a
- * function that never returns can promise callers no safepoint while its own
- * body opts out of the analysis with GAP_GC_NO_SAFEPOINT_ANALYSIS.
- *
- *
- *  Where an annotation goes
- *  ------------------------
- *
- * Placement is part of each annotation's meaning, and the two are easy to mix
- * up, so the comments below say which of the two each one takes:
- *
- *   void AddList(Obj list, Obj obj GAP_GC_ROOTED_BY_ARG(0)) GAP_GC_CANSAFEPOINT;
- *                          ^ on the parameter                ^ on the function
- *
- * Argument indices are zero-based positions in the parameter list, counting
- * every parameter and not just the `Obj` ones.
- *
- * Put the annotation on a function's FIRST declaration, normally the one in
- * the header. Clang silently ignores an annotation that appears only on a
- * later declaration, so one written on the definition of a function declared
- * in a header does nothing at all, and the mistake is invisible. The
- * julia-first-decl-annotations clang-tidy check catches this; see
- * dev/julia-gc-handoff.md for how to run it.
- *
- *
- *  Rooting, in one example
- *  -----------------------
- *
- * The GCChecker cares about values held in C locals across a possible
- * collection. A local is not a root by itself, so this is wrong:
- *
- *     Obj list = NEW_PLIST(T_PLIST, 2);
- *     Obj elm  = NEW_STRING(10);      // may collect, and may move `list`
- *     SET_ELM_PLIST(list, 1, elm);
- *
- * Rooting `list` with a frame fixes it. Note that the frame stores the
- * ADDRESS of the local, so every rooted local must be initialised before the
- * frame is pushed -- the collector reads it immediately:
- *
- *     Obj list = 0, elm = 0;
- *     GAP_GC_PUSH2(&list, &elm);
- *     list = NEW_PLIST(T_PLIST, 2);
- *     elm  = NEW_STRING(10);
- *     SET_ELM_PLIST(list, 1, elm);
- *     GAP_GC_POP();
- *
- * Use the fixed-arity GAP_GC_PUSH1 .. GAP_GC_PUSH9 for GAP `Obj` locals, and
- * GAP_GC_PUSHARGS for an array of them; the latter stores the values
- * themselves, in a frame it allocates on the C stack. Both kinds may hold
- * GAP's tagged immediates: Julia's root scanner skips those since
- * JuliaLang/julia#62889, which precise mode requires anyway.
- *
- * The annotations below let a callee describe its rooting to the analyzer, so
- * that callers need no frame of their own. `GAP_GC_ROOTED_BY_ARG(0)` on
- * AddList's second parameter, for instance, says the value is stored into the
- * first argument and is rooted by whatever roots that.
- */
+/****************************************************************************
+**
+**  What the annotations are
+**  ------------------------
+**
+**  The annotations change nothing in compiled code: each expands to nothing
+**  unless one of the two analyzers below processes the file, and then to an
+**  attribute that analyzer reads. The attributes are those behind Julia's
+**  own annotations (JL_NOTSAFEPOINT and the others in its
+**  analyzer_annotations.h); GAP defines its own names so that it controls
+**  what they expand to, and so that every header can use them without
+**  including julia.h.
+**
+**  There are two kinds:
+**
+**    - Safepoint annotations say whether a function may reach a safepoint, a
+**      point at which a collection can run: GAP_GC_CANSAFEPOINT on one that
+**      may, for instance because it allocates a bag, and GAP_GC_NOTSAFEPOINT
+**      on one that never does, such as a marking function.
+**    - Rooting annotations say how a callee roots its arguments and return
+**      value, so that its callers need no GC frame of their own; for
+**      example, GAP_GC_ROOTED_BY_ARG on a parameter that the function stores
+**      into another argument.
+**
+**
+**  The two analyses
+**  ----------------
+**
+**  Each is selected by its own define:
+**
+**    __clang_gcanalyzer__      Julia's GCChecker, a plugin for the Clang
+**                              static analyzer in Julia's src/clangsa. It
+**                              checks that a value the GC manages is rooted
+**                              whenever a collection could happen, and that
+**                              a function promising no safepoint keeps it.
+**
+**    __clang_safetyanalysis__  Clang's Thread Safety Analysis, set up as in
+**                              Julia's `make -C src safesrc`. It checks the
+**                              safepoint annotations against each other.
+**
+**  They take opposite views of an unannotated function:
+**
+**    - To the GCChecker it may safepoint. GAP_GC_NOTSAFEPOINT opts out, and
+**      the checker verifies the promise.
+**    - To the safety analysis it may NOT safepoint. Every function that can
+**      must say so with GAP_GC_CANSAFEPOINT, and is flagged as soon as it
+**      calls one that does without saying so itself.
+**
+**  GAP_GC_CANSAFEPOINT and GAP_GC_NOTSAFEPOINT must never appear on the same
+**  declaration: if the safety analysis asks for GAP_GC_CANSAFEPOINT
+**  somewhere that already promises GAP_GC_NOTSAFEPOINT, one of the two is
+**  wrong, and adding the second only hides which.
+**
+**  A third annotation, GAP_GC_NO_SAFEPOINT_ANALYSIS, exempts a function's
+**  body from the safety analysis. It suits a function that never returns but
+**  may reach a safepoint on its way out, such as one that exits GAP: its
+**  callers never resume, so it may promise them GAP_GC_NOTSAFEPOINT, and
+**  GAP_GC_NO_SAFEPOINT_ANALYSIS on its definition keeps the safety analysis
+**  from flagging its body.
+**
+**
+**  Where an annotation goes
+**  ------------------------
+**
+**  Placement is part of each annotation's meaning, and the two are easy to
+**  mix up, so the comments below say which of the two each one takes:
+**
+**      void AddList(Obj list,
+**                   Obj obj GAP_GC_ROOTED_BY_ARG(0))  // on the parameter
+**          GAP_GC_CANSAFEPOINT;                       // on the function
+**
+**  A parameter annotation is about the parameter it is on; an index in it
+**  names another parameter, counted from zero over all parameters, not just
+**  the `Obj` ones. In the example above, the annotations indicate that
+**  AddList may reach a safepoint and that it stores `obj` into argument 0,
+**  `list`, so whatever roots `list` roots `obj` too.
+**
+**  Put the annotation on a function's FIRST declaration, normally the one in
+**  the header. Clang silently ignores an annotation that appears only on a
+**  later declaration, so one written on the definition of a function
+**  declared in a header does nothing at all, and the mistake is invisible.
+**  dev/run-first-decl-check.sh catches this.
+*/
 #if defined(__clang_gcanalyzer__)
 
-/*
- * Rooting annotations. Argument indices are zero-based positions in the
- * parameter list. Note that the placement differs per annotation: some belong
- * on a parameter, others on the function itself.
- */
+// Rooting annotations.
 
-// On a parameter: the root protecting it also protects the return value.
+// Parameter annotation indicating that the root protecting this parameter
+// also protects the function's return value.
 #define GAP_GC_PROPAGATES_ROOT \
     __attribute__((annotate("julia_propagates_root")))
-// On the function: the return value is read from the child of argument <root>
-// at the position given by argument <index>, so the analyzer can track a later
-// overwrite of exactly that child. Non-literal indices degrade to plain
-// GAP_GC_PROPAGATES_ROOT.
+
+// Function annotation indicating that the return value is read from the
+// child of argument <root> at the position given by argument <index>, so the
+// analyzer can track a later overwrite of exactly that child. Non-literal
+// indices degrade to plain GAP_GC_PROPAGATES_ROOT.
 #define GAP_GC_PROPAGATES_ROOT_INDEXED(root, index) \
     __attribute__((annotate("julia_propagates_root_indexed:" #root ":" #index)))
-// On a parameter: it is stored into argument <n>, and inherits its root.
+
+// Parameter annotation indicating that the function stores this parameter
+// into argument <n>, so that it inherits the root of argument <n>.
 #define GAP_GC_ROOTED_BY_ARG(n) \
     __attribute__((annotate("julia_rooted_by_arg:" #n)))
-// On a parameter: like GAP_GC_ROOTED_BY_ARG, but stored into the child of
-// argument <root> at the position given by argument <index>.
+
+// Parameter annotation like GAP_GC_ROOTED_BY_ARG, but indicating that the
+// parameter is stored into the child of argument <root> at the position given
+// by argument <index>.
 #define GAP_GC_ROOTED_BY_ARG_INDEXED(root, index) \
     __attribute__((annotate("julia_rooted_by_arg_indexed:" #root ":" #index)))
-// On an out-parameter: the value written through it is rooted by argument <n>.
+
+// Parameter annotation indicating that the value the function writes through
+// this pointer is rooted by argument <n>.
 #define GAP_GC_OUT_ROOTED_BY_ARG(n) \
     __attribute__((annotate("julia_out_rooted_by_arg:" #n)))
-// On a parameter: it is rooted by the function's return value.
+
+// Parameter annotation indicating that this parameter is rooted by the
+// function's return value.
 #define GAP_GC_ROOTED_BY_RETURN \
     __attribute__((annotate("julia_rooted_by_return")))
-// On a variadic function: its variadic arguments are rooted by the return
-// value. Individual variadic arguments cannot be annotated.
+
+// Function annotation indicating that the variadic arguments are rooted by
+// the return value. Individual variadic arguments cannot be annotated.
 #define GAP_GC_ROOTED_VARARGS \
     __attribute__((annotate("julia_rooted_varargs")))
-// On a parameter: it may be passed even if not rooted.
+
+// Parameter annotation indicating that this parameter may be passed even if
+// it is not rooted.
 #define GAP_GC_MAYBE_UNROOTED \
     __attribute__((annotate("julia_maybe_unrooted")))
-// On a parameter: the caller passes a rooted slot, so values assigned through
-// it count as rooted.
+
+// Parameter annotation indicating that the caller passes a rooted slot, so
+// values assigned through this parameter count as rooted.
 #define GAP_GC_REQUIRE_ROOTED_SLOT \
     __attribute__((annotate("julia_require_rooted_slot")))
-// On a global, or on a function to mean its return value: always rooted.
+
+// Annotation on a global, indicating that its value is always rooted, or on
+// a function, indicating that its return value is.
 #define GAP_GC_GLOBALLY_ROOTED \
     __attribute__((annotate("julia_globally_rooted")))
-// On a struct: values of the type hold a GC-managed object, so the analyzer
-// tracks their rooting. Julia's own types are recognised by name; this is how
-// an embedder declares its own. Annotate every declaration of the struct, its
-// definition included, rather than a typedef, so that every typedef is covered.
+
+// Struct annotation indicating that values of the type refer to objects the
+// GC manages, so that the analyzer checks their rooting. Julia's own types are
+// recognised by name; this is how an embedder declares its own. Put it on
+// every declaration of the struct, its definition included, rather than on a
+// typedef, so that every typedef of the struct is covered.
 #define GAP_GC_TRACKED_TYPE \
     __attribute__((annotate("julia_gc_tracked")))
 
-// Function does not hit GC safepoints.
+// Function annotation indicating that the function never reaches a GC
+// safepoint.
 #define GAP_GC_NOTSAFEPOINT \
     __attribute__((annotate("julia_not_safepoint")))
-// Function may hit a GC safepoint. The GCChecker assumes this by default, so
-// the annotation only matters to the thread safety analysis below.
+
+// Function annotations indicating that the function may reach a GC
+// safepoint. Julia passes these to the GCChecker too, as
+// "julia_can_safepoint" (a call stays a safepoint even where the inlined body
+// reaches none) and, for the ENTER/LEAVE forms, as region transitions. We do
+// not: Julia's first-declaration check would then demand the annotation on
+// every function-pointer type such a function is stored in. So they only
+// matter to the thread safety analysis below.
 #define GAP_GC_CANSAFEPOINT
 #define GAP_GC_CANSAFEPOINT_ENTER
 #define GAP_GC_CANSAFEPOINT_LEAVE
 #define GAP_GC_CANSAFEPOINT_ENTER_LEAVE
 #define GAP_GC_CANCALLBACK
+
 #define GAP_GC_NO_SAFEPOINT_ANALYSIS \
     __attribute__((annotate("julia_no_safepoint_analysis")))
 #define GAP_GC_NOTSAFEPOINT_ENTER \
@@ -182,23 +194,32 @@
 #define GAP_GC_NOTSAFEPOINT_ENTER_CONDITIONAL(success) \
     __attribute__((annotate("julia_notsafepoint_enter_conditional:" #success)))
 
+// GAP_GC_PROMISE_ROOTED(v) makes the analyzer treat `v` as rooted for the
+// rest of the function. It expands to Julia's JL_GC_PROMISE_ROOTED, declared
+// here so that files without julia.h can use it. Files with julia.h also see
+// Julia's declaration, so ours must match it; Julia before 1.14 declares a
+// `void *` parameter, so the analyzer needs Julia 1.14.
+#ifdef __cplusplus
+extern "C" {
+#endif
 void JL_GC_PROMISE_ROOTED(const void * v) GAP_GC_NOTSAFEPOINT;
+#ifdef __cplusplus
+}
+#endif
 #define GAP_GC_PROMISE_ROOTED(v) JL_GC_PROMISE_ROOTED(v)
 
 #elif defined(__clang_safetyanalysis__)
 
-/*
- * The thread safety analysis models the current thread with two token
- * capabilities, mirroring Julia's model:
- *
- *   jl_notsafepoint     reentrant, held while inside a no-safepoint region,
- *   jl_gcunsaferegion   held while the thread is allowed to safepoint.
- *
- * A safepoint is permissible only while gc-unsafe and holding no no-gc lock.
- * The definitions and the guard name below match Julia's
- * src/support/analyzer_annotations.h so that both agree in translation units
- * which also include julia.h.
- */
+// The thread safety analysis models the current thread with two token
+// capabilities:
+//
+//   jl_notsafepoint     reentrant, held while inside a no-safepoint region,
+//   jl_gcunsaferegion   held while the thread is allowed to safepoint.
+//
+// A safepoint is permissible only while gc-unsafe and holding no no-gc lock.
+// The definitions and the guard name below match Julia's
+// src/support/analyzer_annotations.h so that both agree in translation units
+// which also include julia.h.
 #ifndef JL_NOTSAFEPOINT_TOKEN_DEFINED
 #define JL_NOTSAFEPOINT_TOKEN_DEFINED
 struct __attribute__((capability("notsafepoint"), reentrant_capability))
@@ -233,6 +254,7 @@ extern struct GCUNSAFEREGION *jl_gcunsaferegion;
 
 // A function holding nothing is flagged if it reaches a safepoint.
 #define GAP_GC_NOTSAFEPOINT
+
 #define GAP_GC_CANSAFEPOINT \
     __attribute__((requires_capability(jl_gcunsaferegion), \
                    requires_capability(!jl_notsafepoint)))
@@ -243,14 +265,19 @@ extern struct GCUNSAFEREGION *jl_gcunsaferegion;
 #define GAP_GC_CANSAFEPOINT_LEAVE \
     __attribute__((release_capability(jl_gcunsaferegion), \
                    requires_capability(!jl_notsafepoint)))
-// Both enters and leaves the gc-unsafe region in its own body, so the function
-// may be used as a callback from an unknown context.
+
+// Function annotation indicating that the function both enters and leaves
+// the gc-unsafe region in its own body, so it may be used as a callback from
+// an unknown context.
 #define GAP_GC_CANSAFEPOINT_ENTER_LEAVE \
     __attribute__((requires_capability(!jl_gcunsaferegion), \
                    requires_capability(!jl_notsafepoint)))
-// Can call an arbitrary user or foreign callback.
+
+// Function annotation indicating that the function may call an arbitrary
+// user or foreign callback.
 #define GAP_GC_CANCALLBACK \
     __attribute__((requires_capability(!jl_notsafepoint)))
+
 #define GAP_GC_NO_SAFEPOINT_ANALYSIS __attribute__((no_thread_safety_analysis))
 #define GAP_GC_NOTSAFEPOINT_ENTER \
     __attribute__((acquire_capability(jl_notsafepoint)))

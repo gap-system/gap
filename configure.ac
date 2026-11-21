@@ -299,7 +299,7 @@ dnl sysinfo.gap; a -D in CFLAGS would not.
 AS_IF([test "x$enable_precise_gc" != "xno"],
     [AS_IF([test "x$with_gc" != "xjulia"],
         [AC_MSG_ERROR([--enable-precise-gc requires --with-gc=julia])])
-     GAP_DEFINE([DISABLE_STACK_SCAN=1])],
+     GAP_DEFINE([GAP_ENABLE_PRECISE_GC=1])],
 )
 
 dnl

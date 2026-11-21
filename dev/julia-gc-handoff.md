@@ -100,7 +100,7 @@ make -j4
 where `$JULIA` is the Julia installation to build against (its `bin/julia`,
 or the prefix). This is the configuration the analyzer scripts run on:
 `dev/run-julia-gc-analyzer-all.sh out-of-tree/julia-dev`. The precise-mode
-configurations add `--enable-precise-gc`, which defines `DISABLE_STACK_SCAN`
+configurations add `--enable-precise-gc`, which defines `GAP_ENABLE_PRECISE_GC`
 for the kernel and, through `sysinfo.gap`, for kernel extensions:
 
 ```sh
