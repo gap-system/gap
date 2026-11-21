@@ -77,7 +77,7 @@ jobs:
           ok := true;;
           for f in [ "syntaxtree.tst", "list.tst", "listgen.tst", "listindex.tst", "ElmsBlist.tst",
                      "vecmat.tst", "stringobj.tst", "strings.tst", "recordname.tst",
-                     "function.tst", "callfunc.tst" ] do
+                     "function.tst", "callfunc.tst", "kernel/scanner.tst" ] do
             Print("testing ", f, "\n");
             ok := Test(Filename(DirectoriesLibrary("tst/testinstall"), f)) and ok;
           od;

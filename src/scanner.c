@@ -736,6 +736,10 @@ static Char GetStr(ScannerState * s, Char c) GAP_GC_CANSAFEPOINT
     Char buf[1024] = "";
     UInt i = 0;
 
+    // reading the next character may refill the input buffer from a stream,
+    // which allocates, so root the part of the literal read so far
+    GAP_GC_PUSH1(&string);
+
     while (c != '"' && c != '\n' && c != '\377') {
         // copy a run of characters without escapes in one go
         if (c != '\\') {
@@ -758,6 +762,7 @@ static Char GetStr(ScannerState * s, Char c) GAP_GC_CANSAFEPOINT
 
     // append any remaining data to s->ValueObj
     s->ValueObj = AppendBufToString(string, buf, i);
+    GAP_GC_POP();
 
     if (c == '\n')
         SyntaxError(s, "String must not include <newline>");
@@ -777,6 +782,8 @@ static void GetPragma(ScannerState * s, Char c) GAP_GC_CANSAFEPOINT
     Char buf[1024];
     UInt i = 0;
 
+    GAP_GC_PUSH1(&string);
+
     while ( c != '\n' && c != '\r' && c != '\377') {
         i = AddCharToBuf(&string, buf, sizeof(buf), i, c);
 
@@ -786,6 +793,7 @@ static void GetPragma(ScannerState * s, Char c) GAP_GC_CANSAFEPOINT
 
     // append any remaining data to s->ValueObj
     s->ValueObj = AppendBufToString(string, buf, i);
+    GAP_GC_POP();
 
     if (c == '\377') {
         FlushRestOfInputLine(s->input);
@@ -816,6 +824,8 @@ static Char GetTripStr(ScannerState * s, Char c) GAP_GC_CANSAFEPOINT
     // print only a partial prompt while reading a triple string
     SetPrompt("> ");
 
+    GAP_GC_PUSH1(&string);
+
     while (c != '\377') {
         // only thing to check for is a triple quote
         if (c == '"') {
@@ -837,6 +847,7 @@ static Char GetTripStr(ScannerState * s, Char c) GAP_GC_CANSAFEPOINT
 
     // append any remaining data to s->ValueObj
     s->ValueObj = AppendBufToString(string, buf, i);
+    GAP_GC_POP();
 
     if (c == '\377') {
         FlushRestOfInputLine(s->input);
@@ -927,6 +938,8 @@ static void GetHelp(ScannerState * s) GAP_GC_CANSAFEPOINT
     Char buf[1024];
     UInt i = 0;
 
+    GAP_GC_PUSH1(&string);
+
     // Skip the leading '?'
     Char c = GET_NEXT_CHAR();
 
@@ -937,6 +950,7 @@ static void GetHelp(ScannerState * s) GAP_GC_CANSAFEPOINT
 
     // append any remaining data to s->ValueObj
     s->ValueObj = AppendBufToString(string, buf, i);
+    GAP_GC_POP();
 }
 
 

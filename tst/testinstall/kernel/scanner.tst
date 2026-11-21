@@ -405,6 +405,25 @@ gap> Read(InputTextString("1 #% pragma;"));
 Syntax error: ; expected in stream:1
 
 #
+# test long literals read from a file stream, which the scanner holds across
+# refills of its input buffer
+#
+gap> tmp := Filename(DirectoryTemporary(), "literals.g");;
+gap> lines := ListWithIdenticalEntries(2000, ListWithIdenticalEntries(30, 'a'));;
+gap> FileString(tmp, Concatenation("str := \"\"\"",
+>        JoinStringsWithSeparator(lines, "\n"), "\"\"\";\n"));;
+gap> Read(InputTextFile(tmp));
+gap> str = JoinStringsWithSeparator(lines, "\n");
+true
+gap> FileString(tmp, Concatenation("str := \"",
+>        JoinStringsWithSeparator(lines, "\\\n"), "\";\n"));;
+gap> Read(InputTextFile(tmp));
+gap> str = Concatenation(lines);
+true
+gap> FileString(tmp, Concatenation("#% ", Concatenation(lines), "\n"));;
+gap> Read(InputTextFile(tmp));
+
+#
 # cover some border cases in NextSymbol
 #
 gap> [1]![1];
