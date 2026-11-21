@@ -1,4 +1,4 @@
-#@local entry,realroot,equ,pair,sml,oldTermEncoding,pkginfo,info,mockpkgpath,old_warning_level,p,n,filename,IsDateFormatValid,loadinfo,eval_loadinfo
+#@local entry,realroot,equ,pair,sml,oldTermEncoding,pkginfo,info,mockpkgpath,old_warning_level,p,n,filename,IsDateFormatValid,loadinfo,eval_loadinfo,pkgdir
 gap> START_TEST("package.tst");
 
 # CompareVersionNumbers( <supplied>, <required>[, \"equal\"] )
@@ -723,6 +723,25 @@ gap> ExtendPackageDirectories( [ mockpkgpath ] );
 gap> Last( GAPInfo.PackagesInfo.mockpkg ).InstallationPath =
 >      GAPInfo.PackagesLoaded.mockpkg[1];
 true
+
+# paths denoting an already known directory are not added again
+gap> n:= Length( GAPInfo.PackageDirectories );;
+gap> ExtendPackageDirectories( [ Concatenation( Filename( mockpkgpath, "" ),
+>                                               "../mockpkg" ) ] );
+gap> Length( GAPInfo.PackageDirectories ) = n;
+true
+gap> n:= Length( GAPInfo.RootPaths );;
+gap> ExtendRootDirectories( List( Filtered( GAPInfo.RootPaths, IsDirectoryPath ),
+>        path -> Concatenation( path, "./" ) ) );
+gap> Length( GAPInfo.RootPaths ) = n;
+true
+
+# absolute paths are stored as given
+gap> pkgdir:= Filename( DirectoryTemporary(), "./" );;
+gap> ExtendPackageDirectories( [ pkgdir ] );
+gap> Filename( Last( GAPInfo.PackageDirectories ), "" ) = pkgdir;
+true
+gap> Remove( GAPInfo.PackageDirectories );;
 
 #
 gap> SetPackagePath( "mockpkg", Filename( mockpkgpath, "" ) );

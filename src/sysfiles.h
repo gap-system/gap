@@ -353,6 +353,31 @@ Int SyIsExistingFile(const Char * name);
 
 /****************************************************************************
 **
+*F  SyRealpath( <path>, <buf> ) . . . . . . . . . absolute canonical path
+**
+**  'SyRealpath' stores the absolute path of <path> with all symlinks
+**  resolved in <buf>, which must have room for 'GAP_PATH_MAX' characters,
+**  and returns <buf>. On failure, e.g. if <path> does not exist, it returns
+**  NULL and sets 'errno'.
+*/
+Char * SyRealpath(const Char * path, Char * buf);
+
+
+/****************************************************************************
+**
+*F  SyAbsolutePath( <path>, <buf> ) . . . . . . . . . . . . . absolute path
+**
+**  'SyAbsolutePath' stores <path> in <buf>, which must have room for
+**  'GAP_PATH_MAX' characters, and returns <buf>. A relative <path> gets the
+**  current directory prefixed; an absolute one is copied as given, so unlike
+**  'SyRealpath' this does not resolve symlinks. On failure it returns NULL
+**  and sets 'errno'.
+*/
+Char * SyAbsolutePath(const Char * path, Char * buf);
+
+
+/****************************************************************************
+**
 *F  SyIsReadableFile( <name> )  . . . . . . . . . . . is file <name> readable
 **
 **  'SyIsReadableFile'   returns 0  if the   file  <name> is   readable and
