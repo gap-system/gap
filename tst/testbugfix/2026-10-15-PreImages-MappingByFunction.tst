@@ -13,3 +13,9 @@ gap> PreImages(f, 3);
 [  ]
 gap> PreImagesRepresentative(f, 1/2);
 Error, <elm> is not in the range of <map>
+
+# The NC variant and hence the inverse mapping return fail outside the image.
+gap> PreImagesRepresentativeNC(f, 3);
+fail
+gap> ImagesRepresentative(InverseGeneralMapping(f), 3);
+fail
