@@ -128,36 +128,6 @@ containing all examples from the package manual.)
 </Section>
 
 
-<Section Label="Sect-CheckManualRefs">
-<Heading>Checking references and cross-references of manuals</Heading>
-
-This is still to be provided (and then documented here).
-Perhaps the easiest way is a check of cross-references in and between
-the HTML versions of the manuals;
-and perhaps this should be viewed as a part of the more general task
-to check the validity of (in particular cross-references in)
-the &GAP; website.
-<P/>
-
-(Possible ingredients are <F>doc/test/CheckBooks.g</F> and
-<F>dev/LinksOfAllHelpSections.g</F>.)
-<P/>
-
-For the manuals in the formats given by the &GAPDoc; package,
-multiply defined labels and non-resolved references will be
-reported at the manual build stage.
-<P/>
-
-</Section>
-
-
-<Section Label="Sect-NameConflicts">
-<Heading>Detecting potential naming conflicts</Heading>
-
-Also this is still to be provided (and then documented here).
-</Section>
-
-
 <Section Label="Sect-TestSuite">
 <Heading>The standard test suite</Heading>
 
@@ -328,38 +298,5 @@ Note that testing the changed behaviour introduced by another package
 would be an issue for tests that belong to this package.
 </Section>
 
-
-<Section Label="Sect-TestAndRelease">
-<Heading>Test Issues for Releases</Heading>
-
-The following additional issues are related to testing
-when a new version of &GAP; is to be released.
-<List>
-  <Item>
-    Run all tests.
-  </Item>
-</List>
-</Section>
-
-
-<Section Label="Sect-TestToDo">
-<Heading>Open items concerning tests</Heading>
-
-<List>
-  <Item>
-    Add a paragraph about general tests for features:
-    When new documentation is added,
-    add meaningful examples to this documentation,
-    from which users get an idea what typical uses are.
-    In a corresponding file in the <C>tst</C> directory,
-    add examples which cover also pathological input such as empty lists.
-    Add also interesting computations to the tests which are perhaps to be
-    excluded from the regular testing;
-    for features in a package, perhaps distinguish between the tests that are
-    covered by the <C>TestFile</C> component of the <F>PackageInfo.g</F> file
-    and hard tests.
-  </Item>
-</List>
-</Section>
 
 </Chapter>

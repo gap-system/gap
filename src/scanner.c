@@ -30,6 +30,24 @@ static UInt NextSymbol(ScannerState * s) GAP_GC_CANSAFEPOINT;
 
 #define GET_NEXT_CHAR() GetNextChar(s->input)
 
+// 'IsIdent' for ASCII, which every locale classifies the same way; a table
+// beats comparisons in the identifier loop
+static const UInt1 AsciiIdentTable[256] = {
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    // 0x00
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    // 0x10
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    // 0x20
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,    // 0x30  0-9
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,    // 0x40  @ A-O
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1,    // 0x50  P-Z _
+    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,    // 0x60  a-o
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0,    // 0x70  p-z
+};
+
+static inline BOOL IsAsciiIdent(Char c)
+{
+    return AsciiIdentTable[(UChar)c];
+}
+
 /****************************************************************************
 **
 *F  SyntaxErrorOrWarning( <msg> ) . . . . . . raise a syntax error or warning
@@ -281,6 +299,22 @@ static UInt GetIdent(ScannerState * s, Int i, Char c) GAP_GC_CANSAFEPOINT
     // read all characters into 's->Value'
     for (; IsIdent(c) || c == '\\'; i++) {
 
+        // copy a run of ASCII identifier characters in one go
+        if (IsAsciiIdent(c)) {
+            const Char * p = GetInputBufferPos(s->input);
+            GAP_ASSERT(*p == c);
+            UInt n = 1;
+            while (IsAsciiIdent(p[n]))
+                n++;
+            if (i < MAX_VALUE_LEN - 1) {
+                UInt room = MAX_VALUE_LEN - 1 - i;
+                memcpy(s->Value + i, p, n < room ? n : room);
+            }
+            i += n - 1;
+            c = SkipInputChars(s->input, n);
+            continue;
+        }
+
         // handle escape sequences
         if (c == '\\') {
             c = GET_NEXT_CHAR();
@@ -391,6 +425,30 @@ static UInt AddCharToBuf(Obj * string, Char * buf, UInt bufsize, UInt pos, Char 
         pos = 0;
     }
     buf[pos++] = c;
+    return pos;
+}
+
+static UInt AddCharsToBuf(Obj *        string,
+                          Char *       buf,
+                          UInt         bufsize,
+                          UInt         pos,
+                          const Char * src,
+                          UInt         n)
+    GAP_GC_CANSAFEPOINT
+{
+    while (n > 0) {
+        if (pos >= bufsize) {
+            *string = AppendBufToString(*string, buf, pos);
+            pos = 0;
+        }
+        UInt k = bufsize - pos;
+        if (k > n)
+            k = n;
+        memcpy(buf + pos, src, k);
+        pos += k;
+        src += k;
+        n -= k;
+    }
     return pos;
 }
 
@@ -651,6 +709,11 @@ static Char GetEscapedChar(ScannerState * s) GAP_GC_CANSAFEPOINT
 }
 
 
+static BOOL IsPlainStrChar(Char c)
+{
+    return c != '"' && c != '\n' && c != '\377' && c != '\\' && c != 0;
+}
+
 /****************************************************************************
 **
 *F  GetStr()  . . . . . . . . . . . . . . . . . . . . .  get a string, local
@@ -674,9 +737,19 @@ static Char GetStr(ScannerState * s, Char c) GAP_GC_CANSAFEPOINT
     UInt i = 0;
 
     while (c != '"' && c != '\n' && c != '\377') {
-        if (c == '\\') {
-            c = GetEscapedChar(s);
+        // copy a run of characters without escapes in one go
+        if (c != '\\') {
+            const Char * p = GetInputBufferPos(s->input);
+            GAP_ASSERT(*p == c);
+            UInt n = 1;
+            while (IsPlainStrChar(p[n]))
+                n++;
+            i = AddCharsToBuf(&string, buf, sizeof(buf), i, p, n);
+            c = SkipInputChars(s->input, n);
+            continue;
         }
+
+        c = GetEscapedChar(s);
         i = AddCharToBuf(&string, buf, sizeof(buf), i, c);
 
         // read the next character

@@ -412,22 +412,59 @@ EXPORT_INLINE Char GetNextChar(TypInputFile * input) GAP_GC_CANSAFEPOINT
     return GetNextCharSlow(input);
 }
 
+// the buffered input, starting at the current character and terminated by
+// NUL; lets the scanner find a run of plain characters without fetching
+// them one by one
+EXPORT_INLINE const Char * GetInputBufferPos(TypInputFile * input)
+{
+    return input->ptr;
+}
+
+// move past the current character and the 'n - 1' after it, which must all
+// be in the buffered input, and return the next character
+EXPORT_INLINE Char SkipInputChars(TypInputFile * input, UInt n)
+    GAP_GC_CANSAFEPOINT
+{
+    input->ptr += n - 1;
+    return GetNextChar(input);
+}
+
 Char GET_NEXT_CHAR_NO_LC(TypInputFile * input) GAP_GC_CANSAFEPOINT;
 Char PEEK_NEXT_CHAR(TypInputFile * input) GAP_GC_CANSAFEPOINT;
-Char PEEK_CURR_CHAR(TypInputFile * input) GAP_GC_CANSAFEPOINT;
+
+// the scanner calls this once per symbol, so keep it inline
+EXPORT_INLINE Char PEEK_CURR_CHAR(TypInputFile * input) GAP_GC_CANSAFEPOINT
+{
+    Char c = *input->ptr;
+    if (c != 0)
+        return c;
+    return GetNextCharSlow(input);
+}
 
 // skip the rest of the current line, ignoring line continuations
 // (used to handle comments)
 void SKIP_TO_END_OF_LINE(TypInputFile * input) GAP_GC_CANSAFEPOINT;
 
 // get the number of the current line in the current thread's input
-Int GetInputLineNumber(TypInputFile * input);
+EXPORT_INLINE Int GetInputLineNumber(TypInputFile * input)
+{
+    return input ? input->number : 0;
+}
 
 //
-const Char * GetInputLineBuffer(TypInputFile * input);
+EXPORT_INLINE const Char * GetInputLineBuffer(TypInputFile * input)
+{
+    GAP_ASSERT(input);
+    // first byte of Input->line is reserved for the pushback buffer, so add 1
+    return input->line + 1;
+}
 
 //
-Int GetInputLinePosition(TypInputFile * input);
+EXPORT_INLINE Int GetInputLinePosition(TypInputFile * input)
+{
+    GAP_ASSERT(input);
+    return input->ptr - GetInputLineBuffer(input);
+}
 
 // get the filenameid (if any) of the current input
 UInt GetInputFilenameID(TypInputFile * input);

@@ -14,18 +14,6 @@ Hints for writers and referees of new code in library or packages.
 <Chapter Label="Chap-NewCode">
 <Heading>Hints and conventions for writing &GAP; programs</Heading>
 
-Idea: Collect hints or ideas on questions like: name clashes, functions versus
-operations, declaration and implementation files, organising large sets
-of data, ...
-<P/>
-(We certainly don't want to develop <Q>obligatory coding guidelines</Q>,
-but it may be sensible to fix some unwritten conventions to reduce
-clashes between the library and packages and to make the use of &GAP;
-easier.)
-<P/>
-Such a section may also be useful for editors/referees of packages.
-<P/>
-
 <Section Label="Sect-NamingConventions">
 <Heading>Naming conventions</Heading>
 
