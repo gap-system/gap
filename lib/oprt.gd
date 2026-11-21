@@ -947,8 +947,7 @@ end );
 ##  If the optional string argument <C>"surjective"</C> is given,
 ##  a surjective homomorphism is created.
 ##  <P/>
-##  The third version (which is supported only for &GAP;3 compatibility)
-##  returns the action homomorphism that belongs to the image obtained via
+##  The third version returns the action homomorphism that belongs to the image obtained via
 ##  <Ref Func="Action" Label="for a group, an action domain, etc."/>.
 ##  <P/>
 ##  (See Section&nbsp;<Ref Sect="Basic Actions"/>

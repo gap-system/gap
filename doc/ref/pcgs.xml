@@ -383,9 +383,6 @@ series. See also Section <Ref Sect="Special Pcgs"/> for a more explicit possibil
 <Section Label="Sum and Intersection of Pcgs">
 <Heading>Sum and Intersection of Pcgs</Heading>
 
-<!-- %declaration{SumPcgs} -->
-<!-- %declaration{IntersectionSumPcgs} -->
-<!-- %declaration{NormalIntersectionPcgs} -->
 <#Include Label="SumFactorizationFunctionPcgs">
 
 </Section>

@@ -362,12 +362,10 @@ DeclareOperation( "AffineAction",
 #############################################################################
 ##
 #O  LinearAction( <gens>, <basisvectors>, <linear> )
-#O  LinearOperation( <gens>, <basisvectors>, <linear> )
 ##
 ##  <#GAPDoc Label="LinearAction">
 ##  <ManSection>
 ##  <Oper Name="LinearAction" Arg='gens, basisvectors, linear'/>
-##  <Oper Name="LinearOperation" Arg='gens, basisvectors, linear'/>
 ##
 ##  <Description>
 ##  returns a list of matrices, one for each element of <A>gens</A>, which
@@ -454,12 +452,10 @@ DeclareSynonym( "GeneratorsCenterPGroup", GeneratorsCentrePGroup );
 #############################################################################
 ##
 #F  LinearActionLayer( <G>, <gens>, <pcgs> )
-#F  LinearOperationLayer( <G>, <gens>, <pcgs> )
 ##
 ##  <#GAPDoc Label="LinearActionLayer">
 ##  <ManSection>
 ##  <Func Name="LinearActionLayer" Arg='G, gens, pcgs'/>
-##  <Func Name="LinearOperationLayer" Arg='G, gens, pcgs'/>
 ##
 ##  <Description>
 ##  returns a list of matrices, one for each element of <A>gens</A>,

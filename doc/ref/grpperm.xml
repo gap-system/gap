@@ -251,8 +251,7 @@ playing the role of <M>K</M> and <M>L</M>.
 In permutation groups of large degree, the number of Schreier generators
 to be processed becomes too large, and the deterministic Schreier-Sims
 algorithm becomes impractical. Therefore, &GAP; uses randomized
-algorithms. The method selection process, which is quite different
-from Version 3, works the following way.
+algorithms. The method selection process works the following way.
 <P/>
 If a group acts on not more than a hundred points,
 Sims's original deterministic algorithm is applied. In groups of
@@ -320,13 +319,14 @@ gap> NrMovedPoints( op );
 ]]></Example>
 <P/>
 We created a permutation group on <M>400</M> points.
+(The timings below are in milliseconds, measured on an Apple M1 Max in 2026.)
 First we compute a guaranteed correct stabilizer chain
 (see&nbsp;<Ref Func="StabChain" Label="for a group (and a record)"/>).
 <P/>
 <Log><![CDATA[
 gap> h:= Group( GeneratorsOfGroup( op ) );;
 gap> StabChain( h );;  time;
-1120
+11
 gap> Size( h );
 2317591180800
 ]]></Log>
@@ -347,7 +347,7 @@ First the group is created anew.
 <Log><![CDATA[
 gap> h:= Group( GeneratorsOfGroup( op ) );;
 gap> StabChain( h, rec( random:= 900 ) );;  time;
-1410
+15
 gap> Size( h );
 2317591180800
 ]]></Log>
@@ -364,7 +364,7 @@ or by setting the size of the group beforehand with <C>SetSize</C>.
 gap> h:=Group( GeneratorsOfGroup( op ) );;
 gap> SetSize( h, 2317591180800 );
 gap> StabChain( h );;  time;
-170
+2
 ]]></Log>
 <P/>
 The second example gives a typical group when the verification
@@ -379,11 +379,11 @@ gap> p2:=PermList(List([1..400],i->(i*20 mod 401)));;
 gap> d:=DirectProduct(Group(p1,p2),SymmetricGroup(5));;
 gap> h:=Group(GeneratorsOfGroup(d));;
 gap> StabChain(h);;time;Size(h);
-1030
+14
 192480
 gap> h:=Group(GeneratorsOfGroup(d));;
 gap> StabChain(h,rec(random:=900));;time;Size(h);
-570
+6
 192480
 ]]></Log>
 <P/>
@@ -444,8 +444,6 @@ representing the <Q>topmost</Q> stabilizer is the
 <Ref Attr="StabChainMutable" Label="for a group"/> value of the group
 and has the components
 explained below.
-Note: Since the structure is recursive, <E>never print a stabilizer chain!</E>
-(Unless you want to exercise the scrolling capabilities of your terminal.)
 <List>
 <Mark><C>identity</C> </Mark>
 <Item>
@@ -629,9 +627,8 @@ situation it can be useful, to replace the permutations by straight line
 program elements (see&nbsp;<Ref Sect="Straight Line Program Elements"/>).
 <P/>
 The following code gives an example of usage:
-We create a group of degree <M>231000</M>.
-Using straight line program elements,
-one can compute a stabilizer chain in about <M>200</M> MB of memory.
+We create a group of degree <M>231000</M>
+and compute a stabilizer chain using straight line program elements.
 <P/>
 <!-- % don't attempt to run this example through the manual checker - it takes -->
 <!-- % <E>ages</E> to run and <E>lots</E> of memory! -->
@@ -648,7 +645,7 @@ gap> Size(g); # enforce computation of a stabilizer chain
 ]]></Log>
 <P/>
 Without straight line program elements, the same calculation runs into
-memory problems after a while even with 512MB of workspace:
+memory problems after a while:
 <Log><![CDATA[
 gap> h:=Group(permutationlist);
 <permutation group with 5 generators>
