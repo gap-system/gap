@@ -52,14 +52,15 @@ Certain boolean options (<C>-b</C>, <C>-q</C>, <C>-e</C>, <C>-r</C>,
 toggle the current value so that <C>gap -b -b</C> is equivalent to <C>gap</C>
 and to <C>gap -b -q -b -q</C> etc.
 <P/>
-&GAP; for UNIX will distinguish between upper and lower case options.
+Options are case sensitive on all systems, also on macOS and Windows,
+whose filenames by default are not;
+for example, <C>-l</C> and <C>-L</C> are different options.
 <P/>
-As described in the &GAP; installation instructions (see the
-<F>INSTALL.md</F> file in the &GAP; root directory),
-usually you will not execute &GAP; directly. Instead  you  will
-call a (shell) script, with the name <C>gap</C>, which in turn executes  &GAP;.
-This  script sets some options which are necessary  to  make  &GAP;
-work on your system. This means that the default settings mentioned below
+Building &GAP; as described in the <F>INSTALL.md</F> file in the &GAP; root
+directory produces an executable named <C>gap</C>.
+Some installations instead provide a shell script of that name,
+which sets some options and then executes &GAP;.
+In that case the default settings mentioned below
 may not be what you experience when you execute &GAP; on your system.
 <P/>
 During a &GAP; session, one can find the current values of command line options
@@ -619,13 +620,12 @@ see Section <Ref Sect="Command Line Options"/>.
 One purpose of workspace files is of course the possibility
 to save a <Q>snapshot</Q> image of the current &GAP; workspace in a file.
 <P/>
-The recommended way to start &GAP; is to load an existing workspace file,
-because this reduces the startup time of &GAP; drastically.
-So if you have installed &GAP; yourself then you should think about creating
-a workspace file immediately after you have started &GAP;,
-and then using this workspace file later on, whenever you start &GAP;.
+Loading a workspace file is faster than a normal start of &GAP;.
+So if you always work with the same set of packages,
+you may save a workspace after loading them,
+and start &GAP; with this workspace later on.
 If your &GAP; installation is shared between several users,
-the system administrator should think about providing such a workspace file.
+the system administrator may provide such a workspace file.
 
 <ManSection>
 <Func Name="SaveWorkspace" Arg='filename'/>

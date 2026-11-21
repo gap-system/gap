@@ -802,7 +802,6 @@ end );
 ##  <C>SetUserPreference("Editor", <A>path</A>);</C>
 ##  where <A>path</A> is the  path to your editor,
 ##  e.g., <F>/usr/bin/vim</F>.
-##  On Windows you can use <C>edit.com</C>.
 ##  <P/>
 ##  Under macOS, you should use
 ##  <C>SetUserPreference("Editor", "open");</C>, this will open

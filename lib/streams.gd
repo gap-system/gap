@@ -837,8 +837,7 @@ DeclareGlobalFunction( "OutputTextUser" );
 
 ##  <#GAPDoc Label="[2]{streams}">
 ##  Input-output streams capture bidirectional
-##  communications between &GAP; and another process, either locally
-##  or (@as yet unimplemented@) remotely.
+##  communications between &GAP; and another local process.
 ##  <P/>
 ##  Such streams support the basic operations of both input and output
 ##  streams. They should provide some buffering, allowing output data to be
