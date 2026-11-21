@@ -49,6 +49,8 @@ rec(
 <P/>
 Records usually contain elements of various types, i.e., they are usually
 not homogeneous like lists.
+See <Ref Subsect="Tilde Expressions"/> for constructing a record
+that contains a reference to itself.
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->

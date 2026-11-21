@@ -61,6 +61,8 @@ gap> [ [], [ 1 ], [ 1, 2 ] ];  # a list may contain other lists
 <P/>
 Each list constructed this way is mutable
 (see&nbsp;<Ref Sect="Mutability and Copyability"/>).
+See <Ref Subsect="Tilde Expressions"/> for constructing a list
+that contains a reference to itself.
 
 <#Include Label="IsList">
 <#Include Label="IsDenseList">
