@@ -17,8 +17,9 @@
 
 // The following functions should not be called directly. They are provided
 // so the macros below function correctly
-void ReportWrappedOperation1(const char *, Obj op);
-void ReportWrappedOperation2(const char *, Obj op1, Obj op2);
+void ReportWrappedOperation1(const char *, Obj op) GAP_GC_CANSAFEPOINT;
+void ReportWrappedOperation2(const char *, Obj op1, Obj op2)
+    GAP_GC_CANSAFEPOINT;
 void InstallOpWrapper(void (*activate)(void), void (*deactivate)(void));
 
 
@@ -52,7 +53,7 @@ void InstallOpWrapper(void (*activate)(void), void (*deactivate)(void));
 
 #define DEFINE_OP_WRAPPER1(Array)                                            \
     static ObjFunc_0ARGS Wrap##Array[LAST_REAL_TNUM + 1];                    \
-    Obj                  Wrap##Array##Func(Obj op)                           \
+    Obj Wrap##Array##Func(Obj op) GAP_GC_CANSAFEPOINT                        \
     {                                                                        \
         ReportWrappedOperation1(#Array, op);                                 \
         return Wrap##Array[TNUM_OBJ(op)](op);                                \
@@ -75,7 +76,7 @@ void InstallOpWrapper(void (*activate)(void), void (*deactivate)(void));
 #define DEFINE_OP_WRAPPER2(Array)                                            \
     static ObjFunc_1ARGS Wrap##Array[LAST_REAL_TNUM + 1]                     \
                                     [LAST_REAL_TNUM + 1];                    \
-    Obj Wrap##Array##Func(Obj op1, Obj op2)                                  \
+    Obj Wrap##Array##Func(Obj op1, Obj op2) GAP_GC_CANSAFEPOINT              \
     {                                                                        \
         ReportWrappedOperation2(#Array, op1, op2);                           \
         return Wrap##Array[TNUM_OBJ(op1)][TNUM_OBJ(op2)](op1, op2);          \

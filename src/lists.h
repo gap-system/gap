@@ -189,9 +189,9 @@ EXPORT_INLINE BOOL ISB_LIST(Obj list, Int pos)
     return (*IsbListFuncs[TNUM_OBJ(list)])(list, pos);
 }
 
-BOOL ISBB_LIST(Obj list, Obj pos);
+BOOL ISBB_LIST(Obj list, Obj pos) GAP_GC_CANSAFEPOINT;
 
-BOOL ISB_MAT(Obj list, Obj row, Obj col);
+BOOL ISB_MAT(Obj list, Obj row, Obj col) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -219,7 +219,8 @@ extern Obj (*Elm0ListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **  signalled if <list>  is  not a list.  It   is the responsibility   of the
 **  caller to ensure that <pos> is a positive integer.
 */
-EXPORT_INLINE Obj ELM0_LIST(Obj list, Int pos)
+EXPORT_INLINE Obj ELM0_LIST(Obj list GAP_GC_PROPAGATES_ROOT, Int pos)
+    GAP_GC_PROPAGATES_ROOT_INDEXED(0, 1)
 {
     return (*Elm0ListFuncs[TNUM_OBJ(list)])(list, pos);
 }
@@ -270,7 +271,8 @@ extern  Obj (*Elm0vListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **  that <list> is a list and that <pos> is less than  or equal to the length
 **  of <list>.
 */
-EXPORT_INLINE Obj ELMV0_LIST(Obj list, Int pos)
+EXPORT_INLINE Obj ELMV0_LIST(Obj list GAP_GC_PROPAGATES_ROOT, Int pos)
+    GAP_GC_PROPAGATES_ROOT_INDEXED(0, 1)
 {
     GAP_ASSERT(pos > 0);
     GAP_ASSERT(pos <= LEN_LIST(list));
@@ -306,9 +308,10 @@ extern Obj (*ElmListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **  It is intended as an interface for access to elements of large external
 **  lists, on the rare occasions when the kernel needs to do this.
 */
-Obj ELMB_LIST(Obj list, Obj pos);
+Obj ELMB_LIST(Obj list, Obj pos) GAP_GC_CANSAFEPOINT;
 
-EXPORT_INLINE Obj ELM_LIST(Obj list, Int pos)
+EXPORT_INLINE Obj ELM_LIST(Obj list GAP_GC_PROPAGATES_ROOT, Int pos)
+    GAP_GC_PROPAGATES_ROOT_INDEXED(0, 1)
 {
     Obj ret = (*ElmListFuncs[TNUM_OBJ(list)])(list, pos);
     GAP_ASSERT(ret != 0);
@@ -325,7 +328,7 @@ EXPORT_INLINE Obj ELM_LIST(Obj list, Int pos)
 **  by method dispatch through the GAP operation 'ELM_LIST' with three
 **  arguments.
 */
-Obj ELM_MAT(Obj list, Obj row, Obj col);
+Obj ELM_MAT(Obj list, Obj row, Obj col) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -349,7 +352,8 @@ extern Obj (*ElmvListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **  that <list> is a list and that <pos> is less  than or equal to the length
 **  of <list>.
 */
-EXPORT_INLINE Obj ELMV_LIST(Obj list, Int pos)
+EXPORT_INLINE Obj ELMV_LIST(Obj list GAP_GC_PROPAGATES_ROOT, Int pos)
+    GAP_GC_PROPAGATES_ROOT_INDEXED(0, 1)
 {
     GAP_ASSERT(pos > 0);
     GAP_ASSERT(pos <= LEN_LIST(list));
@@ -376,7 +380,8 @@ extern Obj (*ElmwListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 **  'ELMW_LIST' does the same as 'ELMV_LIST', but  the caller also guarantees
 **  that <list> has an assigned object at the position <pos>.
 */
-EXPORT_INLINE Obj ELMW_LIST(Obj list, Int pos)
+EXPORT_INLINE Obj ELMW_LIST(Obj list GAP_GC_PROPAGATES_ROOT, Int pos)
+    GAP_GC_PROPAGATES_ROOT_INDEXED(0, 1)
 {
     GAP_ASSERT(pos > 0);
     GAP_ASSERT(pos <= LEN_LIST(list));
@@ -426,21 +431,21 @@ EXPORT_INLINE Obj ELMS_LIST(Obj list, Obj poss)
 **
 *F  ElmsListDefault( <list>, <poss> ) . . .  default function for 'ELMS_LIST'
 */
-Obj ElmsListDefault(Obj list, Obj poss);
+Obj ElmsListDefault(Obj list, Obj poss) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  ElmsListCheck( <list>, <poss> ) . . . . . . . . .  'ELMS_LIST' with check
 */
-Obj ElmsListCheck(Obj list, Obj poss);
+Obj ElmsListCheck(Obj list, Obj poss) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  ElmsListLevelCheck( <lists>, <poss>, <level> ) 'ElmsListLevel' with check
 */
-void ElmsListLevelCheck(Obj lists, Obj poss, Int level);
+void ElmsListLevelCheck(Obj lists, Obj poss, Int level) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -460,9 +465,9 @@ void ElmsListLevelCheck(Obj lists, Obj poss, Int level);
 
 extern void             (*UnbListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
-void UNBB_LIST(Obj list, Obj pos);
+void UNBB_LIST(Obj list, Obj pos) GAP_GC_CANSAFEPOINT;
 
-EXPORT_INLINE void UNB_LIST(Obj list, Int pos)
+EXPORT_INLINE void UNB_LIST(Obj list, Int pos) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(pos > 0);
     UInt tnum = TNUM_OBJ(list);
@@ -473,7 +478,7 @@ EXPORT_INLINE void UNB_LIST(Obj list, Int pos)
     (*UnbListFuncs[TNUM_OBJ(list)])(list, pos);
 }
 
-void UNB_MAT(Obj list, Obj row, Obj col);
+void UNB_MAT(Obj list, Obj row, Obj col) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -496,9 +501,11 @@ void UNB_MAT(Obj list, Obj row, Obj col);
 
 extern  void            (*AssListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos, Obj obj );
 
-void ASSB_LIST(Obj list, Obj pos, Obj obj);
+void ASSB_LIST(Obj list, Obj pos, Obj obj) GAP_GC_CANSAFEPOINT;
 
-EXPORT_INLINE void ASS_LIST(Obj list, Int pos, Obj obj)
+EXPORT_INLINE void ASS_LIST(Obj list, Int pos,
+                            Obj obj GAP_GC_ROOTED_BY_ARG_INDEXED(0, 1))
+    GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(pos > 0);
     GAP_ASSERT(obj != 0);
@@ -520,7 +527,7 @@ EXPORT_INLINE void ASS_LIST(Obj list, Int pos, Obj obj)
 **  handled by method dispatch through the GAP operation 'ASS_LIST' with
 **  three arguments.
 */
-void ASS_MAT(Obj list, Obj row, Obj col, Obj obj);
+void ASS_MAT(Obj list, Obj row, Obj col, Obj obj) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -543,9 +550,9 @@ void ASS_MAT(Obj list, Obj row, Obj col, Obj obj);
 */
 extern  void            (*AsssListFuncs[LAST_REAL_TNUM+1]) (Obj list, Obj poss, Obj objs);
 
-void AsssListDefault(Obj list, Obj poss, Obj objs);
+void AsssListDefault(Obj list, Obj poss, Obj objs) GAP_GC_CANSAFEPOINT;
 
-EXPORT_INLINE void ASSS_LIST(Obj list, Obj poss, Obj objs)
+EXPORT_INLINE void ASSS_LIST(Obj list, Obj poss, Obj objs) GAP_GC_CANSAFEPOINT
 {
     GAP_ASSERT(IS_POSS_LIST(poss));
     GAP_ASSERT(IS_DENSE_LIST(objs));
@@ -562,7 +569,7 @@ EXPORT_INLINE void ASSS_LIST(Obj list, Obj poss, Obj objs)
 **
 *F  AssListObject( <list>, <pos>, <obj> ) . . . . . . . assign to list object
 */
-void AssListObject(Obj list, Int pos, Obj obj);
+void AssListObject(Obj list, Int pos, Obj obj) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -651,7 +658,7 @@ EXPORT_INLINE Obj POS_LIST(Obj list, Obj obj, Obj start)
 **  require 'ELMS_LIST' (resp.  the   functions implementing 'ELMS_LIST')  to
 **  satisfy this requirements.
 */
-void ElmListLevel(Obj lists, Obj pos, Int level);
+void ElmListLevel(Obj lists, Obj pos, Int level) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -675,7 +682,7 @@ void ElmListLevel(Obj lists, Obj pos, Int level);
 **  require 'ELMS_LIST' (resp.  the   functions implementing 'ELMS_LIST')  to
 **  satisfy this requirements.
 */
-void ElmsListLevel(Obj lists, Obj poss, Int level);
+void ElmsListLevel(Obj lists, Obj poss, Int level) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -699,7 +706,7 @@ void ElmsListLevel(Obj lists, Obj poss, Int level);
 **  require  'ELMS_LIST'  (resp.  the functions implementing  'ELMS_LIST') to
 **  satisfy this requirements.
 */
-void AssListLevel(Obj lists, Obj pos, Obj objs, Int level);
+void AssListLevel(Obj lists, Obj pos, Obj objs, Int level) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -724,7 +731,7 @@ void AssListLevel(Obj lists, Obj pos, Obj objs, Int level);
 **  require 'ELMS_LIST' (resp.   the functions  implementing 'ELMS_LIST')  to
 **  satisfy this requirements.
 */
-void AsssListLevel(Obj lists, Obj poss, Obj objs, Int lev);
+void AsssListLevel(Obj lists, Obj poss, Obj objs, Int lev) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -751,14 +758,14 @@ EXPORT_INLINE void PLAIN_LIST(Obj list)
 **
 *F  PLAIN_LIST_COPY(<list>) . . . . . . . copy a list to a mutable plain list
 */
-Obj PLAIN_LIST_COPY(Obj list);
+Obj PLAIN_LIST_COPY(Obj list) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  TYPES_LIST_FAM(<fam>) . . . . . . .  list of types of lists over a family
 */
-Obj TYPES_LIST_FAM(Obj fam);
+Obj TYPES_LIST_FAM(Obj fam) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
@@ -836,7 +843,7 @@ EXPORT_INLINE void SET_FILT_LIST(Obj list, FilterNumber fn)
 **
 *F  SET_FILTER_LIST( <list>, <filter> ) . . . . . . . . . . . . .  set filter
 */
-Obj SET_FILTER_LIST(Obj list, Obj filter);
+Obj SET_FILTER_LIST(Obj list, Obj filter) GAP_GC_CANSAFEPOINT;
 
 /****************************************************************************
 **
@@ -923,14 +930,15 @@ EXPORT_INLINE void CLEAR_FILTS_LIST(Obj list)
 **
 *F  AsssListCheck( <list>, <poss>, <rhss> ) . . . . . . . . . . . . ASSS_LIST
 */
-void AsssListCheck(Obj list, Obj poss, Obj rhss);
+void AsssListCheck(Obj list, Obj poss, Obj rhss) GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************
 **
 *F  AsssListLevelCheck( <lists>, <poss>, <rhss>, <level> )  . . AsssListLevel
 */
-void AsssListLevelCheck(Obj lists, Obj poss, Obj rhss, Int level);
+void AsssListLevelCheck(Obj lists, Obj poss, Obj rhss, Int level)
+    GAP_GC_CANSAFEPOINT;
 
 
 /****************************************************************************

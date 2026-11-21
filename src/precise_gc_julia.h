@@ -82,6 +82,21 @@ extern "C++" {
 #define GAP_GC_PRECISE 1
 #endif
 
+// Under memory checking, every push is recorded with its source location and
+// every pop checked against the record, so that a frame pushed and never
+// popped, or popped from the wrong place, is reported at the pop that finds
+// the mismatch, not at a later collection walking a frame on dead stack.
+#ifdef GAP_MEM_CHECK
+void GAP_GC_LedgerPush(void * frame, const char * file, int line);
+void GAP_GC_LedgerPop(void * frame, const char * file, int line);
+void GAP_GC_LedgerUnwind(void * frame);
+#define GAP_GC_LEDGER_PUSH_() GAP_GC_LedgerPush(jl_pgcstack, __FILE__, __LINE__)
+#define GAP_GC_LEDGER_POP_() GAP_GC_LedgerPop(jl_pgcstack, __FILE__, __LINE__)
+#else
+#define GAP_GC_LEDGER_PUSH_() ((void)0)
+#define GAP_GC_LEDGER_POP_() ((void)0)
+#endif
+
 #endif    // USE_JULIA_GC
 
 
@@ -93,31 +108,42 @@ extern "C++" {
 // `volatile`, which GCC rejects with -Werror; the explicit cast is allowed.
 #define GAP_GC_ROOT_(a) ((void *)(a))
 
-#define GAP_GC_PUSH1(arg1) JL_GC_PUSH1(GAP_GC_ROOT_(arg1))
-#define GAP_GC_PUSH2(arg1, arg2) JL_GC_PUSH2(GAP_GC_ROOT_(arg1), GAP_GC_ROOT_(arg2))
+#define GAP_GC_PUSH1(arg1) \
+    JL_GC_PUSH1(GAP_GC_ROOT_(arg1)); \
+    GAP_GC_LEDGER_PUSH_()
+#define GAP_GC_PUSH2(arg1, arg2) \
+    JL_GC_PUSH2(GAP_GC_ROOT_(arg1), GAP_GC_ROOT_(arg2)); \
+    GAP_GC_LEDGER_PUSH_()
 #define GAP_GC_PUSH3(arg1, arg2, arg3) \
-    JL_GC_PUSH3(GAP_GC_ROOT_(arg1), GAP_GC_ROOT_(arg2), GAP_GC_ROOT_(arg3))
+    JL_GC_PUSH3(GAP_GC_ROOT_(arg1), GAP_GC_ROOT_(arg2), GAP_GC_ROOT_(arg3)); \
+    GAP_GC_LEDGER_PUSH_()
 #define GAP_GC_PUSH4(arg1, arg2, arg3, arg4) \
     JL_GC_PUSH4(GAP_GC_ROOT_(arg1), GAP_GC_ROOT_(arg2), GAP_GC_ROOT_(arg3), \
-                GAP_GC_ROOT_(arg4))
+                GAP_GC_ROOT_(arg4)); \
+    GAP_GC_LEDGER_PUSH_()
 #define GAP_GC_PUSH5(arg1, arg2, arg3, arg4, arg5) \
     JL_GC_PUSH5(GAP_GC_ROOT_(arg1), GAP_GC_ROOT_(arg2), GAP_GC_ROOT_(arg3), \
-                GAP_GC_ROOT_(arg4), GAP_GC_ROOT_(arg5))
+                GAP_GC_ROOT_(arg4), GAP_GC_ROOT_(arg5)); \
+    GAP_GC_LEDGER_PUSH_()
 #define GAP_GC_PUSH6(arg1, arg2, arg3, arg4, arg5, arg6) \
     JL_GC_PUSH6(GAP_GC_ROOT_(arg1), GAP_GC_ROOT_(arg2), GAP_GC_ROOT_(arg3), \
-                GAP_GC_ROOT_(arg4), GAP_GC_ROOT_(arg5), GAP_GC_ROOT_(arg6))
+                GAP_GC_ROOT_(arg4), GAP_GC_ROOT_(arg5), GAP_GC_ROOT_(arg6)); \
+    GAP_GC_LEDGER_PUSH_()
 #define GAP_GC_PUSH7(arg1, arg2, arg3, arg4, arg5, arg6, arg7) \
     JL_GC_PUSH7(GAP_GC_ROOT_(arg1), GAP_GC_ROOT_(arg2), GAP_GC_ROOT_(arg3), \
                 GAP_GC_ROOT_(arg4), GAP_GC_ROOT_(arg5), GAP_GC_ROOT_(arg6), \
-                GAP_GC_ROOT_(arg7))
+                GAP_GC_ROOT_(arg7)); \
+    GAP_GC_LEDGER_PUSH_()
 #define GAP_GC_PUSH8(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) \
     JL_GC_PUSH8(GAP_GC_ROOT_(arg1), GAP_GC_ROOT_(arg2), GAP_GC_ROOT_(arg3), \
                 GAP_GC_ROOT_(arg4), GAP_GC_ROOT_(arg5), GAP_GC_ROOT_(arg6), \
-                GAP_GC_ROOT_(arg7), GAP_GC_ROOT_(arg8))
+                GAP_GC_ROOT_(arg7), GAP_GC_ROOT_(arg8)); \
+    GAP_GC_LEDGER_PUSH_()
 #define GAP_GC_PUSH9(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9) \
     JL_GC_PUSH9(GAP_GC_ROOT_(arg1), GAP_GC_ROOT_(arg2), GAP_GC_ROOT_(arg3), \
                 GAP_GC_ROOT_(arg4), GAP_GC_ROOT_(arg5), GAP_GC_ROOT_(arg6), \
-                GAP_GC_ROOT_(arg7), GAP_GC_ROOT_(arg8), GAP_GC_ROOT_(arg9))
+                GAP_GC_ROOT_(arg7), GAP_GC_ROOT_(arg8), GAP_GC_ROOT_(arg9)); \
+    GAP_GC_LEDGER_PUSH_()
 
 // JL_GC_PUSHARGS(rts, n) assigns a `jl_value_t **` to `rts`, which does not
 // compile if `rts` has another type, such as `Obj *`. So let it assign to a
@@ -127,9 +153,39 @@ extern "C++" {
     do { \
         jl_value_t ** gap_gc_pushargs_; \
         JL_GC_PUSHARGS(gap_gc_pushargs_, n); \
+        GAP_GC_LEDGER_PUSH_(); \
         (rts) = (__typeof__(rts))gap_gc_pushargs_; \
     } while (0)
-#define GAP_GC_POP() JL_GC_POP()
+#define GAP_GC_POP() (GAP_GC_LEDGER_POP_(), JL_GC_POP())
+
+#ifdef GAP_KERNEL_DEBUG
+/****************************************************************************
+**
+*F  GAP_IsRootedSlot(<slot>) . . . is a slot registered in a live GC frame?
+**
+**  For asserting that a state struct on the C stack was rooted by whoever
+**  created it. Neither the compiler nor the GC analyzer points out a missing
+**  root there: the analyzer checks rooting within a function, not whether a
+**  struct on the stack holds GAP objects.
+**
+**  Only frames pushed by GAP_GC_PUSH1 to GAP_GC_PUSH9 are considered: those
+**  hold slot addresses, which is what we are looking for. GAP_GC_PUSHARGS
+**  frames hold values instead and are skipped.
+*/
+static inline BOOL GAP_IsRootedSlot(const void * slot) GAP_GC_NOTSAFEPOINT
+{
+    for (jl_gcframe_t * f = jl_pgcstack; f; f = f->prev) {
+        size_t nroots = f->nroots;
+        if (!(nroots & 1))
+            continue;
+        void ** roots = ((void **)f) + 2;
+        for (size_t i = 0; i < (nroots >> 2); i++)
+            if (roots[i] == slot)
+                return TRUE;
+    }
+    return FALSE;
+}
+#endif
 
 #else    // !GAP_GC_PRECISE
 
@@ -157,5 +213,28 @@ extern "C++" {
 #define GAP_GC_POP() ((void)0)
 
 #endif    // GAP_GC_PRECISE
+
+
+/****************************************************************************
+**
+*F  GAP_GC_PUSH_ROOTS( <n>, (<roots>) ) . . . . . . . . root a list of slots
+**
+**  A state struct on the C stack, such as CodeState in "code.h", comes with
+**  a macro listing the addresses of its `Obj` fields, separated by commas:
+**  CODE_STATE_ROOTS(p) for CodeState. To root these together with other
+**  locals, pass the whole list in parentheses, and its length <n>:
+**
+**      GAP_GC_PUSH_ROOTS(6, (&func, &name, CODE_STATE_ROOTS(&cs)));
+**
+**  This becomes GAP_GC_PUSH6(&func, &name, ...) with all six addresses.
+**  Calling GAP_GC_PUSH6 directly fails, because the preprocessor counts its
+**  arguments before expanding CODE_STATE_ROOTS, and so sees three.
+**
+**  <n> must be a literal from 1 to 9, since it is pasted onto the macro
+**  name. If a struct's list gains or loses a slot, every call site using it
+**  then fails to compile, instead of rooting the wrong number of slots.
+*/
+#define GAP_GC_PUSH_ROOTS(n, roots) GAP_GC_PUSH_ROOTS_(n, roots)
+#define GAP_GC_PUSH_ROOTS_(n, roots) GAP_GC_PUSH##n roots
 
 #endif    // GAP_PRECISE_GC_JULIA_H

@@ -18,7 +18,7 @@
 /* link between Mersenne Twister randim numbers and
    representation specific large integer codes */
 
-UInt4 nextrandMT_int32(UInt4 * mt);
+UInt4 nextrandMT_int32(UInt4 * mt) GAP_GC_NOTSAFEPOINT;
 
 /* High quality and speed hash functions -- not currently used
    elsewhere in the kernel but might be a good idea */

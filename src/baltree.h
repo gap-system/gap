@@ -126,7 +126,7 @@ enum {
   ALPHA_NUM = 2,
 };
 
-static inline void InitBalancedTrees(void)
+static inline void InitBalancedTrees(void) GAP_GC_NOTSAFEPOINT
 {
     if (!min_nodes_for_height_init) {
         min_nodes_for_height_init = 1;
@@ -151,7 +151,7 @@ typedef struct {
     Node * root;
 } Tree;
 
-static inline void FN(DeleteNodes)(Node * node)
+static inline void FN(DeleteNodes)(Node * node) GAP_GC_NOTSAFEPOINT
 {
     if (node != NULL) {
         FN(DeleteNodes)(node->left);
@@ -161,6 +161,7 @@ static inline void FN(DeleteNodes)(Node * node)
 }
 
 static inline Node * FN(Linearize)(Node * subtree, Node * list)
+    GAP_GC_NOTSAFEPOINT
 {
     // Linearize subtree; returns `subtree` in list form with right
     // pointers connecting them and `list` appended to the right.
@@ -170,7 +171,7 @@ static inline Node * FN(Linearize)(Node * subtree, Node * list)
     return FN(Linearize)(subtree->left, subtree);
 }
 
-static inline Node * FN(Treeify)(Node * list, Int n)
+static inline Node * FN(Treeify)(Node * list, Int n) GAP_GC_NOTSAFEPOINT
 {
     // Turn a linked list into a tree.
     //
@@ -205,6 +206,7 @@ static inline Node * FN(Treeify)(Node * list, Int n)
 // stack space for recursion, which again is bounded by O(log(nodes)).
 
 static inline void FN(Rebalance)(Node ** nodeaddr, Int size)
+    GAP_GC_NOTSAFEPOINT
 {
     Node * subtree = *nodeaddr;
     Node   pseudoroot;
@@ -213,7 +215,7 @@ static inline void FN(Rebalance)(Node ** nodeaddr, Int size)
     *nodeaddr = FN(Treeify)(linearized, size)->left;
 }
 
-static inline Int FN(CountAux)(Node * node)
+static inline Int FN(CountAux)(Node * node) GAP_GC_NOTSAFEPOINT
 {
     if (node == NULL)
         return 0;
@@ -221,12 +223,13 @@ static inline Int FN(CountAux)(Node * node)
         return 1 + FN(CountAux)(node->left) + FN(CountAux)(node->right);
 }
 
-static inline Int FN(Count)(Tree * tree)
+static inline Int FN(Count)(Tree * tree) GAP_GC_NOTSAFEPOINT
 {
     return FN(CountAux)(tree->root);
 }
 
 static inline ELEM_TYPE * FN(FindAux)(Node * node, ELEM_TYPE item)
+    GAP_GC_NOTSAFEPOINT
 {
     if (node == NULL)
         return NULL;
@@ -249,6 +252,7 @@ static inline ELEM_TYPE * FN(FindAux)(Node * node, ELEM_TYPE item)
 
 static inline Int
     FN(InsertAux)(Tree * tree, Node ** nodeaddr, ELEM_TYPE item, int d)
+    GAP_GC_NOTSAFEPOINT
 {
     // This function returns 0 if no further rebalancing is needed and
     // the number of nodes in the subtree rooted at `*nodeaddr` if
@@ -310,6 +314,7 @@ static inline Int
 // different from the normal height balance property.)
 
 static inline void FN(RemoveNode)(Tree * tree, Node ** nodeaddr)
+    GAP_GC_NOTSAFEPOINT
 {
     Node * node = *nodeaddr;
     Node * del = node;
@@ -341,6 +346,7 @@ static inline void FN(RemoveNode)(Tree * tree, Node ** nodeaddr)
 
 static inline void
     FN(RemoveAux)(Tree * tree, Node ** nodeaddr, ELEM_TYPE item)
+    GAP_GC_NOTSAFEPOINT
 {
     Node * node = *nodeaddr;
     if (!node)
@@ -355,7 +361,7 @@ static inline void
     }
 }
 
-static inline Tree * FN(Make)(void)
+static inline Tree * FN(Make)(void) GAP_GC_NOTSAFEPOINT
 {
     Tree * tree = ALLOC(Tree, 1);
     tree->nodes = tree->maxnodes = 0;
@@ -364,14 +370,14 @@ static inline Tree * FN(Make)(void)
     return tree;
 }
 
-static inline void FN(Delete)(Tree * tree)
+static inline void FN(Delete)(Tree * tree) GAP_GC_NOTSAFEPOINT
 {
     FN(DeleteNodes)(tree->root);
     DEALLOC(tree);
 }
 
 
-static inline void FN(Insert)(Tree * tree, ELEM_TYPE item)
+static inline void FN(Insert)(Tree * tree, ELEM_TYPE item) GAP_GC_NOTSAFEPOINT
 {
     Int rebalance = FN(InsertAux)(tree, &tree->root, item, 0);
     // GAP_ASSERT(rebalance == 0);
@@ -399,23 +405,24 @@ static inline void FN(Insert)(Tree * tree, ELEM_TYPE item)
 }
 
 static inline ELEM_TYPE * FN(Find)(Tree * tree, ELEM_TYPE item)
+    GAP_GC_NOTSAFEPOINT
 {
     return FN(FindAux)(tree->root, item);
 }
 
-static inline void FN(Remove)(Tree * tree, ELEM_TYPE item)
+static inline void FN(Remove)(Tree * tree, ELEM_TYPE item) GAP_GC_NOTSAFEPOINT
 {
     FN(RemoveAux)(tree, &tree->root, item);
 }
 
-static inline void FN(Clear)(Tree * tree)
+static inline void FN(Clear)(Tree * tree) GAP_GC_NOTSAFEPOINT
 {
     FN(DeleteNodes)(tree->root);
     tree->root = NULL;
     tree->nodes = tree->maxnodes = 0;
 }
 
-static inline Int FN(DepthAux)(Node * node)
+static inline Int FN(DepthAux)(Node * node) GAP_GC_NOTSAFEPOINT
 {
     if (node == NULL)
         return 0;
@@ -424,7 +431,7 @@ static inline Int FN(DepthAux)(Node * node)
     return (m1 < m2 ? m2 : m1) + 1;
 }
 
-static inline Int FN(Depth)(Tree * tree)
+static inline Int FN(Depth)(Tree * tree) GAP_GC_NOTSAFEPOINT
 {
     return FN(DepthAux)(tree->root);
 }
