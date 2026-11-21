@@ -491,7 +491,7 @@ static const struct optInfo options[] = {
   { 0, 'C',  "", processCompilerArgs, 0, 4}, // must handle in kernel
   { 0, 'D',  "debug-loading", toggle, &SyDebugLoading, 0}, // must handle in kernel
 #if defined(USE_GASMAN) || defined(USE_BOEHM_GC)
-  { 0, 'K',  "maximal-workspace", storeMemory2, &SyStorKill, 1}, // could handle from library with new interface
+  { 0, 'K',  "limitworkspace", storeMemory2, &SyStorKill, 1}, // could handle from library with new interface
 #endif
 #ifdef GAP_ENABLE_SAVELOAD
   { 0, 'L', "", storeString, &SyRestoring, 1}, // must be handled in kernel
@@ -500,10 +500,12 @@ static const struct optInfo options[] = {
   { 0, 'M', "", toggle, &SyUseModule, 0}, // must be handled in kernel
   { 0, 'e', "", toggle, &SyCTRD, 0 }, // kernel
   { 0, 'f', "", forceLineEditing, (void *)2, 0 }, // probably library now
-  { 0, 'E', "", toggle, &SyUseReadline, 0 }, // kernel
+#ifdef HAVE_LIBREADLINE
+  { 0, 'E', "readline", toggle, &SyUseReadline, 0 }, // kernel
+#endif
   { 1, 'l', "roots", setGapRootPath, 0, 1}, // kernel
 #ifdef USE_GASMAN
-  { 0, 'm', "", storeMemory2, &SyStorMin, 1 }, // kernel
+  { 0, 'm', "minworkspace", storeMemory2, &SyStorMin, 1 }, // kernel
 #endif
   { 0, 'r', "", toggle, &IgnoreGapRC, 0 }, // kernel
 #ifdef USE_GASMAN
@@ -511,7 +513,7 @@ static const struct optInfo options[] = {
 #endif
   { 0, 'n', "", forceLineEditing, 0, 0}, // prob library
 #ifdef USE_GASMAN
-  { 0, 'o', "", storeMemory2, &SyStorMax, 1 }, // library with new interface
+  { 0, 'o', "maxworkspace", storeMemory2, &SyStorMax, 1 }, // library with new interface
 #endif
   { 0, 'p', "", toggle, &SyWindow, 0 }, // ??
   { 0, 'q', "quiet", toggle, &SyQuiet, 0 }, // ??
@@ -611,6 +613,7 @@ static void ParseCommandLineOptions(int argc, const char * argv[], int phase)
 
         // check our table of options for a match...
         int i = 0;
+        BOOL isLong = FALSE;
         while (options[i].handler != 0) {
             GAP_ASSERT(options[i].shortkey != 0 ||
                        options[i].longkey[0] != 0);
@@ -622,6 +625,7 @@ static void ParseCommandLineOptions(int argc, const char * argv[], int phase)
             // matching long key?
             if (opt[1] == '-' && opt[2] != 0 &&
                 !strcmp(options[i].longkey, opt + 2)) {
+                isLong = TRUE;
                 break;
             }
 
@@ -646,8 +650,13 @@ static void ParseCommandLineOptions(int argc, const char * argv[], int phase)
             usage();
         }
 
-        if (options[i].phase == phase)
-            (*options[i].handler)(argv + 1, options[i].otherArg);
+        // as in the library, `-x` toggles but `--long-x` switches on
+        if (options[i].phase == phase) {
+            if (isLong && options[i].handler == toggle)
+                *(UInt *)options[i].otherArg = 1;
+            else
+                (*options[i].handler)(argv + 1, options[i].otherArg);
+        }
 
         argv += options[i].minargs;
         argc -= options[i].minargs;
