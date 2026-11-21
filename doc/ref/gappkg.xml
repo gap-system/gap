@@ -61,19 +61,16 @@ For example,
 gap> InstallPackage( "digraphs" );
 ]]></Log>
 <P/>
+This call of <Ref Func="InstallPackage" BookName="PackageManager"/>
 downloads the current version of the package <Package>Digraphs</Package>,
 installs it together with the packages it needs,
 and compiles it if necessary.
-Instead of a package name,
-<Ref Func="InstallPackage" BookName="PackageManager"/> also accepts
-the URL of a package archive, of a git repository,
-or of a <F>PackageInfo.g</F> file.
-<Ref Func="UpdatePackage" BookName="PackageManager"/> and
-<Ref Func="RemovePackage" BookName="PackageManager"/> update and remove
-a package installed this way.
-The packages are installed in the <F>pkg</F> subdirectory of
+By default, the packages are installed in the <F>pkg</F> subdirectory of
 <C>GAPInfo.UserGapRoot</C> (see <Ref Sect="GAP Root Directories"/>),
 so no write access to the main &GAP; installation is needed.
+For updating and removing packages and for further options,
+see the manual of <Package>PackageManager</Package>
+(enter <C>?PackageManager</C> in &GAP;).
 <P/>
 A package can also be installed by hand.
 It consists of a collection  of files within a single directory
