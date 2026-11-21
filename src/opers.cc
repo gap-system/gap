@@ -3486,6 +3486,9 @@ static Obj FuncOPERS_CACHE_INFO(Obj self) GAP_GC_CANSAFEPOINT
     list = NEW_PLIST_IMM(T_PLIST, 13);
     SET_LEN_PLIST(list, 13);
 #ifdef COUNT_OPERS
+    // each new list goes into 'list' before the next allocation, so rooting
+    // 'list' keeps them all alive
+    GAP_GC_PUSH1(&list);
     SET_ELM_PLIST(list, 1, INTOBJ_INT(AndFlagsCacheHit));
     SET_ELM_PLIST(list, 2, INTOBJ_INT(AndFlagsCacheMiss));
     SET_ELM_PLIST(list, 3, INTOBJ_INT(AndFlagsCacheLost));
@@ -3503,6 +3506,7 @@ static Obj FuncOPERS_CACHE_INFO(Obj self) GAP_GC_CANSAFEPOINT
     // dimensional GAP matrix (tensor)
     Obj tensor = NEW_PLIST_IMM(T_PLIST, CACHE_SIZE);
     SET_LEN_PLIST(tensor, CACHE_SIZE);
+    SET_ELM_PLIST(list, 12, tensor);
     for (i = 1; i <= CACHE_SIZE; i++) {
         Obj mat = NEW_PLIST_IMM(T_PLIST, CACHE_SIZE);
         SET_LEN_PLIST(mat, CACHE_SIZE);
@@ -3517,12 +3521,12 @@ static Obj FuncOPERS_CACHE_INFO(Obj self) GAP_GC_CANSAFEPOINT
                     INTOBJ_INT(CacheHitStatistics[i - 1][j - 1][k]));
         }
     }
-    SET_ELM_PLIST(list, 12, tensor);
 
     // and similarly the 2D matrix of cache miss information (by
     // precedence and number of arguments)
     Obj mat = NEW_PLIST_IMM(T_PLIST, CACHE_SIZE + 1);
     SET_LEN_PLIST(mat, CACHE_SIZE + 1);
+    SET_ELM_PLIST(list, 13, mat);
     for (Int j = 1; j <= CACHE_SIZE + 1; j++) {
         Obj vec = NEW_PLIST_IMM(T_PLIST, 7);
         SET_LEN_PLIST(vec, 7);
@@ -3531,7 +3535,7 @@ static Obj FuncOPERS_CACHE_INFO(Obj self) GAP_GC_CANSAFEPOINT
             SET_ELM_PLIST(vec, k + 1,
                           INTOBJ_INT(CacheMissStatistics[j - 1][k]));
     }
-    SET_ELM_PLIST(list, 13, mat);
+    GAP_GC_POP();
 #else
     for (i = 1; i <= 13; i++)
         SET_ELM_PLIST(list, i, INTOBJ_INT(0));
