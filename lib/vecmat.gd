@@ -162,6 +162,8 @@ DeclareSynonym( "ConvertToVectorRep",ConvertToVectorRepNC);
 # unbound global variables.
 DeclareGlobalFunction( "CopyToVectorRep");
 DeclareGlobalFunction( "CopyToVectorRepNC");
+DeclareGlobalFunction( "COMMON_FIELD_VECTORS" );
+DeclareGlobalFunction( "COPY_TO_COMMON_FIELD" );
 
 
 #############################################################################

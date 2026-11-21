@@ -262,6 +262,71 @@ InstallMethod( \-, "for two 8 bit matrices in same characteristic",
 
 #############################################################################
 ##
+#F  COMMON_FIELD_VECTORS( <vecs>[, <q>] )
+##
+##  returns the size of the smallest field containing GF(<q>) and the field
+##  of each vector in <vecs>: the field it is compressed over, or else the
+##  smallest one containing its entries. Returns fail unless <vecs> is a
+##  nonempty list of vectors over finite fields of one characteristic, that
+##  of <q> if given.
+##
+##  Arithmetic between vectors compressed over different fields uses slow
+##  generic methods, so vectors that meet should be written over this field.
+##
+InstallGlobalFunction(COMMON_FIELD_VECTORS, function( vecs, q... )
+    local p, d, v;
+
+    if not IsFFECollColl(vecs) then
+        return fail;
+    fi;
+    p := Characteristic(vecs[1]);
+    d := 1;
+    if Length(q) = 1 then
+        if Characteristic(Z(q[1])) <> p then
+            return fail;
+        fi;
+        d := DegreeFFE(Z(q[1]));
+    fi;
+
+    for v in vecs do
+        if Is8BitVectorRep(v) then
+            d := LcmInt(d, LogInt(Q_VEC8BIT(v), p));
+        elif not IsGF2VectorRep(v) then
+            d := LcmInt(d, DegreeFFE(v));
+        fi;
+    od;
+    return p^d;
+end);
+
+
+#############################################################################
+##
+#F  COPY_TO_COMMON_FIELD( <vecs> )
+##
+##  returns mutable copies of the vectors in <vecs>, compressed over the
+##  field from COMMON_FIELD_VECTORS if it has at most 256 elements.
+##
+InstallGlobalFunction(COPY_TO_COMMON_FIELD, function( vecs )
+    local q;
+
+    q := COMMON_FIELD_VECTORS(vecs);
+    if q = fail or q > 256 then
+        return List(vecs, ShallowCopy);
+    fi;
+
+    # CopyToVectorRep returns an immutable vector for an immutable one
+    return List(vecs, function( v )
+        v := CopyToVectorRep(v, q);
+        if not IsMutable(v) then
+            v := ShallowCopy(v);
+        fi;
+        return v;
+    end);
+end);
+
+
+#############################################################################
+##
 #M  ConvertToMatrixRepNC( <list>, <fieldsize )
 #M  ConvertToMatrixRep( <list>[, <fieldsize> | <field>])
 ##
@@ -269,24 +334,7 @@ InstallMethod( \-, "for two 8 bit matrices in same characteristic",
 
 InstallGlobalFunction(ConvertToMatrixRep,
         function( arg )
-    local m,qs, v,  q, givenq, q1, LeastCommonPower, lens, d;
-
-    LeastCommonPower := function(qs)
-        local p, d, x, i;
-        Assert(1, Length(qs) > 0);
-
-        x := Z(qs[1]);
-        p := Characteristic(x);
-        d := DegreeFFE(x);
-        for i in [2..Length(qs)] do
-            x := Z(qs[i]);
-            if p <> Characteristic(x) then
-                return fail;
-            fi;
-            d := Lcm(d, DegreeFFE(x));
-        od;
-        return p^d;
-    end;
+    local m,qs, v,  q, givenq, q1, lens, d;
 
     qs := [];
 
@@ -382,7 +430,11 @@ InstallGlobalFunction(ConvertToMatrixRep,
         #
         # Now work out the common field
         #
-        q := LeastCommonPower(qs);
+        if givenq then
+            q := COMMON_FIELD_VECTORS(m, q1);
+        else
+            q := COMMON_FIELD_VECTORS(m);
+        fi;
 
         if q = fail then
             return fail;
