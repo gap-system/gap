@@ -37,6 +37,7 @@
 #define GAP_GASMAN_H
 
 #include "common.h"
+#include "precise_gc_julia.h"
 
 
 /****************************************************************************

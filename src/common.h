@@ -15,6 +15,7 @@
 #include <stdint.h>
 
 #include "debug.h"
+#include "precise_gc.h"
 
 // check if we are on a 64 or 32 bit machine; in the former
 // case, define SYS_IS_64_BIT.
