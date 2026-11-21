@@ -615,15 +615,15 @@ DeclareGlobalFunction( "DoLogModRho" );
 ##  where <M>2^{<A>n</A>}-1</M> is prime.
 ##  Primes of the form <M>2^{<A>n</A>}-1</M> are called
 ##  <E>Mersenne primes</E>, and
-##  42 among the known Mersenne primes are obtained for <A>n</A> <M>=</M> 2, 3, 5, 7, 13, 17, 19,
+##  the first 42 Mersenne primes are obtained for <A>n</A> <M>=</M> 2, 3, 5, 7, 13, 17, 19,
 ##  31, 61, 89, 107, 127, 521, 607, 1279, 2203, 2281, 3217, 4253, 4423, 9689,
 ##  9941, 11213, 19937, 21701, 23209, 44497, 86243, 110503, 132049, 216091,
 ##  756839, 859433, 1257787, 1398269, 2976221, 3021377, 6972593, 13466917,
 ##  20996011, 24036583 and 25964951. Please find more up to date information
 ##  about Mersenne primes at <URL>https://www.mersenne.org</URL>.
 ##  It is not known whether odd perfect integers exist,
-##  however&nbsp;<Cite Key="BC89"/> show that any such integer must have
-##  at least 300 decimal digits.
+##  however&nbsp;<Cite Key="OR12"/> show that any such integer must exceed
+##  <M>10^{1500}</M>.
 ##  <P/>
 ##  <Ref Oper="Sigma"/> usually spends most of its time factoring <A>n</A>
 ##  (see&nbsp;<Ref Func="FactorsInt"/>).

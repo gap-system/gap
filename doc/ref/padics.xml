@@ -8,7 +8,7 @@
 <!-- %Y  SPDX-License-Identifier: GPL-2.0-or-later -->
 <!-- %% -->
 <Chapter Label="p-adic Numbers">
-<Heading>p-adic Numbers (preliminary)</Heading>
+<Heading>p-adic Numbers</Heading>
 
 In this chapter <M>p</M> is always a (fixed) prime integer.
 <P/>
