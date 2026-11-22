@@ -93,6 +93,14 @@ gap> mat := NewMatrix(IsGenericMatrixRep, GF(9), 3,
 >                     Z(9) * [ [ 1, 0, 1 ], [ 1, 1, 0 ], [ 0, 1, 1 ] ] );;
 gap> TestElementaryTransforms( mat, Z(9)^3 );
 gap> TestElementaryTransforms( mat, 2 );
+gap> TestWholeMatrixTransforms( mat, Z(9)^3 );
+
+# rows stored as a GF(2) matrix
+gap> mat := NewMatrix(IsGenericMatrixRep, GF(2), 3,
+>                     Z(2) * [ [ 1, 0, 1 ], [ 1, 1, 0 ], [ 0, 1, 1 ] ] );;
+gap> TestElementaryTransforms( mat, Z(2) );
+gap> TestElementaryTransforms( mat, 3 );
+gap> TestWholeMatrixTransforms( mat, Z(2) );
 
 # non-commutative base domain, to distinguish left from right
 gap> Q := QuaternionAlgebra( Rationals );;
