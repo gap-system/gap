@@ -583,6 +583,10 @@ DeclareOperation( "ProductSpace", [ IsFreeLeftModule, IsFreeLeftModule ] );
 ##  If all involved algebras are matrix algebras, and either both are Lie
 ##  algebras or both are associative then the result is again a
 ##  matrix algebra of the appropriate type.
+##  <P/>
+##  Experimental methods for <C>Embedding</C> and <C>Projection</C>
+##  for direct sums of algebras are included in version 1.26 of package
+##  <Package>XModAlg</Package>.
 ##  <Example><![CDATA[
 ##  gap> c3 := Group( (1,2,3) );;
 ##  gap> A3 := GroupRing( Rationals, c3 );;
