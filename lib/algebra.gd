@@ -1548,7 +1548,8 @@ DeclareOperation( "AsLieAlgebra", [ IsDivisionRing, IsCollection ] );
 ##  <Description>
 ##  is a free (nonassociative) algebra of rank <A>rank</A>
 ##  over the division ring <A>R</A>.
-##  Here <A>name</A>, and <A>name1</A>, <A>name2</A>, ... are optional strings
+##  Here <A>name</A>, and <A>name1</A>, <A>name2</A>, ... are optional
+##  distinct nonempty strings
 ##  that can be used to provide names for the generators.
 ##  <Example><![CDATA[
 ##  gap> A:= FreeAlgebra( Rationals, "a", "b" );
@@ -1580,7 +1581,8 @@ DeclareGlobalFunction( "FreeAlgebra" );
 ##  <Description>
 ##  is a free (nonassociative) algebra-with-one of rank <A>rank</A>
 ##  over the division ring <A>R</A>.
-##  Here <A>name</A>, and <A>name1</A>, <A>name2</A>, ... are optional strings
+##  Here <A>name</A>, and <A>name1</A>, <A>name2</A>, ... are optional
+##  distinct nonempty strings
 ##  that can be used to provide names for the generators.
 ##  <Example><![CDATA[
 ##  gap> A:= FreeAlgebraWithOne( Rationals, 4, "q" );
@@ -1612,7 +1614,8 @@ DeclareGlobalFunction( "FreeAlgebraWithOne" );
 ##  <Description>
 ##  is a free associative algebra of rank <A>rank</A> over the
 ##  division ring <A>R</A>.
-##  Here <A>name</A>, and <A>name1</A>, <A>name2</A>, ... are optional strings
+##  Here <A>name</A>, and <A>name1</A>, <A>name2</A>, ... are optional
+##  distinct nonempty strings
 ##  that can be used to provide names for the generators.
 ##  <Example><![CDATA[
 ##  gap> A:= FreeAssociativeAlgebra( GF( 5 ), 4, "a" );
@@ -1640,7 +1643,8 @@ DeclareGlobalFunction( "FreeAssociativeAlgebra" );
 ##  <Description>
 ##  is a free associative algebra-with-one of rank <A>rank</A> over the
 ##  division ring <A>R</A>.
-##  Here <A>name</A>, and <A>name1</A>, <A>name2</A>, ... are optional strings
+##  Here <A>name</A>, and <A>name1</A>, <A>name2</A>, ... are optional
+##  distinct nonempty strings
 ##  that can be used to provide names for the generators.
 ##  <Example><![CDATA[
 ##  gap> A:= FreeAssociativeAlgebraWithOne( Rationals, "a", "b", "c" );
