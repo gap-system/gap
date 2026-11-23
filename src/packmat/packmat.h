@@ -16,22 +16,22 @@
 **  and fills them with packmat_field_init(); every other function takes
 **  the context as its first argument f.
 **
-**  Objects. A matrix is an array of uint64_t words that holds only its
-**  entries; the caller keeps nrows and ncols and passes them to every
-**  call. The caller allocates packmat_matrix_words(f, nrows, ncols) words
-**  (in GAP: the data part of a bag) and passes a pointer to word 0 as m,
-**  a, b, dst or src. A vector of length len is a 1 x len matrix: v points
-**  to its packmat_vector_words(f, len) words, and the whole-object
-**  functions take nrows = 1, ncols = len.
+**  Objects. The entries of a matrix live in packmat_matrix_words(f, nrows,
+**  ncols) words of uint64_t that the caller allocates (in GAP: the data
+**  part of a bag). Functions see them through a view, a packmat_mat of
+**  context, words and dimensions, passed by value. Build views right
+**  before a call, since GAP bags move. A vector of length len is a 1 x len
+**  view, made by packmat_vec_view.
 **
 **      // a 3 x 4 matrix over Z/7Z, with malloc in place of GAP bags
 **      packmat_field * f = malloc(packmat_field_size(PACKMAT_M64, 7, 0));
 **      packmat_field_init(f, PACKMAT_M64, 7, 0);
-**      uint64_t * m =
+**      uint64_t * w =
 **          malloc(packmat_matrix_words(f, 3, 4) * sizeof(uint64_t));
-**      packmat_zero(f, m, 3, 4);
-**      packmat_mat_set(f, m, 4, 1, 2, 5);              // m[1,2] := 5
-**      uint64_t x = packmat_mat_get(f, m, 4, 1, 2);    // 5
+**      packmat_mat m = packmat_mat_view(f, w, 3, 4);
+**      packmat_zero(m);
+**      packmat_mat_set(m, 1, 2, 5);              // m[1,2] := 5
+**      uint64_t x = packmat_mat_get(m, 1, 2);    // 5
 **
 **  Contract:
 **  - Contexts, word buffers and scratch are 8-byte aligned. On 32-bit
@@ -40,10 +40,11 @@
 **  - Functions trust f: f->kind indexes a table, checked only in debug
 **    builds. Validate a context of unknown origin, such as one from a
 **    workspace, with packmat_field_check().
-**  - The caller checks every index: i < nrows, j < ncols, x < n. Debug
-**    builds assert j < ncols and x < n. Nothing can check i < nrows, and a
-**    row beyond nrows in a shared word silently sets unused bits.
-**  - Two-operand functions need equal dimensions; buffers do not overlap.
+**  - The caller checks every index: i < nrows, j < ncols, x < n. Only
+**    debug builds assert them; otherwise a row beyond nrows in a shared
+**    word silently sets unused bits.
+**  - Two-operand functions need views with the same context and equal
+**    dimensions, asserted in debug builds; their words do not overlap.
 **  - Dimensions are uint32_t; the caller checks that sizes fit in memory.
 **  - A routine that needs scratch memory takes `void *scratch`, sized in
 **    bytes by `size_t packmat_<op>_scratch(...)`. No routine needs it yet.
@@ -146,35 +147,53 @@ uint64_t packmat_vector_words(const packmat_field * f, uint32_t len);
 
 /****************************************************************************
 **
+**  Views
+*/
+
+// A matrix as functions see it. The words belong to the caller.
+typedef struct packmat_mat {
+    const packmat_field * f;
+    uint64_t *            w;    // word 0 of the entries
+    uint32_t              nrows;
+    uint32_t              ncols;
+} packmat_mat;
+
+static inline packmat_mat packmat_mat_view(const packmat_field * f,
+                                           uint64_t *            w,
+                                           uint32_t              nrows,
+                                           uint32_t              ncols)
+{
+    packmat_mat m;
+    m.f = f;
+    m.w = w;
+    m.nrows = nrows;
+    m.ncols = ncols;
+    return m;
+}
+
+// A vector of length len, as a 1 x len view
+static inline packmat_mat
+packmat_vec_view(const packmat_field * f, uint64_t * w, uint32_t len)
+{
+    return packmat_mat_view(f, w, 1, len);
+}
+
+/****************************************************************************
+**
 **  Entries, as residues 0..n-1
 */
 
-// Entry (i, j) of matrix m. Only ncols is needed: it fixes where row i
-// starts.
-uint64_t packmat_mat_get(const packmat_field * f,
-                         const uint64_t *      m,
-                         uint32_t              ncols,
-                         uint32_t              i,
-                         uint32_t              j);
+// Entry (i, j) of m.
+uint64_t packmat_mat_get(packmat_mat m, uint32_t i, uint32_t j);
 
-// Set entry (i, j) of matrix m to x.
-void     packmat_mat_set(const packmat_field * f,
-                         uint64_t *            m,
-                         uint32_t              ncols,
-                         uint32_t              i,
-                         uint32_t              j,
-                         uint64_t              x);
+// Set entry (i, j) of m to x.
+void packmat_mat_set(packmat_mat m, uint32_t i, uint32_t j, uint64_t x);
 
-// Entry i of vector v. Its position does not depend on the length.
-uint64_t packmat_vec_get(const packmat_field * f,
-                         const uint64_t *      v,
-                         uint32_t              i);
+// Entry i of the vector view v (nrows = 1).
+uint64_t packmat_vec_get(packmat_mat v, uint32_t i);
 
-// Set entry i of vector v to x.
-void     packmat_vec_set(const packmat_field * f,
-                         uint64_t *            v,
-                         uint32_t              i,
-                         uint64_t              x);
+// Set entry i of the vector view v to x.
+void packmat_vec_set(packmat_mat v, uint32_t i, uint64_t x);
 
 /****************************************************************************
 **
@@ -182,66 +201,36 @@ void     packmat_vec_set(const packmat_field * f,
 */
 
 // Fill with zeros.
-void packmat_zero(const packmat_field * f,
-                  uint64_t *            m,
-                  uint32_t              nrows,
-                  uint32_t              ncols);
+void packmat_zero(packmat_mat m);
 
 // Fill with ones on the diagonal, zeros elsewhere; any shape.
-void packmat_identity(const packmat_field * f,
-                      uint64_t *            m,
-                      uint32_t              nrows,
-                      uint32_t              ncols);
+void packmat_identity(packmat_mat m);
 
-// Copy src to dst.
-void packmat_copy(const packmat_field * f,
-                  uint64_t *            dst,
-                  const uint64_t *      src,
-                  uint32_t              nrows,
-                  uint32_t              ncols);
+// Copy the entries of src to dst.
+void packmat_copy(packmat_mat dst, packmat_mat src);
 
 // 1 if equal, else 0.
-int packmat_equal(const packmat_field * f,
-                  const uint64_t *      a,
-                  const uint64_t *      b,
-                  uint32_t              nrows,
-                  uint32_t              ncols);
+int packmat_equal(packmat_mat a, packmat_mat b);
 
 // -1, 0 or 1: a against b, lexicographically in row-major entry order,
 // entries ordered by the rank table, or as residues without one. For
-// vectors of different lengths pass the shorter length: a nonzero result
-// is the answer, and 0 means the shorter one sorts first.
-int packmat_compare(const packmat_field * f,
-                    const uint64_t *      a,
-                    const uint64_t *      b,
-                    uint32_t              nrows,
-                    uint32_t              ncols);
+// vectors of different lengths compare views of the shorter length: a
+// nonzero result is the answer, and 0 means the shorter one sorts first.
+int packmat_compare(packmat_mat a, packmat_mat b);
 
 // 64-bit hash of (nrows, ncols, words), the same on every platform; the
 // formula is in matrix.cc.
-uint64_t packmat_hash(const packmat_field * f,
-                      const uint64_t *      m,
-                      uint32_t              nrows,
-                      uint32_t              ncols);
+uint64_t packmat_hash(packmat_mat m);
 
 // 1 if every entry is zero.
-int packmat_is_zero(const packmat_field * f,
-                    const uint64_t *      m,
-                    uint32_t              nrows,
-                    uint32_t              ncols);
+int packmat_is_zero(packmat_mat m);
 
 // 1 if square with ones on the diagonal and zeros elsewhere (also 0 x 0).
-int packmat_is_one(const packmat_field * f,
-                   const uint64_t *      m,
-                   uint32_t              nrows,
-                   uint32_t              ncols);
+int packmat_is_one(packmat_mat m);
 
 // 1 if unused cells and bits are zero and all cells are below n. For
 // debugging and tests.
-int packmat_check_invariants(const packmat_field * f,
-                             const uint64_t *      m,
-                             uint32_t              nrows,
-                             uint32_t              ncols);
+int packmat_check_invariants(packmat_mat m);
 
 /****************************************************************************
 **

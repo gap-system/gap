@@ -93,6 +93,10 @@ struct Buf {
     {
         return mem + GUARD;
     }
+    packmat_mat view(const packmat_field * f, uint32_t nrows, uint32_t ncols)
+    {
+        return packmat_mat_view(f, data(), nrows, ncols);
+    }
     bool guards_ok() const
     {
         for (size_t k = 0; k < GUARD; k++)
@@ -334,10 +338,11 @@ static ref::Mat random_mat(uint64_t n, uint32_t nrows, uint32_t ncols)
 
 static void fill(const packmat_field * f, Buf & b, const ref::Mat & m)
 {
-    packmat_zero(f, b.data(), m.nrows, m.ncols);
+    const packmat_mat v = b.view(f, m.nrows, m.ncols);
+    packmat_zero(v);
     for (uint32_t i = 0; i < m.nrows; i++)
         for (uint32_t j = 0; j < m.ncols; j++)
-            packmat_mat_set(f, b.data(), m.ncols, i, j, m.at(i, j));
+            packmat_mat_set(v, i, j, m.at(i, j));
 }
 
 // Compare a and b under each rank table, the given one first
@@ -347,13 +352,14 @@ static void check_compare(packmat_field *  f,
                           const ref::Mat & ra,
                           const ref::Mat & rb)
 {
-    const uint32_t nr = ra.nrows, nc = ra.ncols;
-    uint16_t *     rank = packmat_field_rank(f);
-    const int      want = ref::compare(ra, rb, rank);
-    CHECK(packmat_compare(f, a.data(), b.data(), nr, nc) == want);
-    CHECK(packmat_compare(f, b.data(), a.data(), nr, nc) == -want);
-    CHECK(packmat_compare(f, a.data(), a.data(), nr, nc) == 0);
-    CHECK(packmat_equal(f, a.data(), b.data(), nr, nc) == (want == 0));
+    const packmat_mat va = a.view(f, ra.nrows, ra.ncols);
+    const packmat_mat vb = b.view(f, rb.nrows, rb.ncols);
+    uint16_t *        rank = packmat_field_rank(f);
+    const int         want = ref::compare(ra, rb, rank);
+    CHECK(packmat_compare(va, vb) == want);
+    CHECK(packmat_compare(vb, va) == -want);
+    CHECK(packmat_compare(va, va) == 0);
+    CHECK(packmat_equal(va, vb) == (want == 0));
     if (!rank)
         return;
     const vector<uint16_t> saved(rank, rank + f->n);
@@ -362,8 +368,8 @@ static void check_compare(packmat_field *  f,
         memcpy(rank, &r[0], f->n * sizeof(uint16_t));
         CHECK(packmat_field_check(f));
         const int w = ref::compare(ra, rb, rank);
-        CHECK(packmat_compare(f, a.data(), b.data(), nr, nc) == w);
-        CHECK(packmat_compare(f, b.data(), a.data(), nr, nc) == -w);
+        CHECK(packmat_compare(va, vb) == w);
+        CHECK(packmat_compare(vb, va) == -w);
     }
     memcpy(rank, &saved[0], f->n * sizeof(uint16_t));
 }
@@ -390,11 +396,12 @@ static void test_shape(packmat_field * f, uint32_t nrows, uint32_t ncols)
         CHECK(packmat_vector_words(f, ncols) == words);
 
     // zero, over garbage
-    Buf a(words);
-    packmat_zero(f, a.data(), nrows, ncols);
+    Buf               a(words);
+    const packmat_mat va = a.view(f, nrows, ncols);
+    packmat_zero(va);
     CHECK(a.same(vector<uint64_t>(words, 0)) && a.guards_ok());
-    CHECK(packmat_is_zero(f, a.data(), nrows, ncols));
-    CHECK(packmat_check_invariants(f, a.data(), nrows, ncols));
+    CHECK(packmat_is_zero(va));
+    CHECK(packmat_check_invariants(va));
 
     // set from a second matrix, then overwrite with A in shuffled order
     const ref::Mat B = random_mat(n, nrows, ncols);
@@ -410,64 +417,64 @@ static void test_shape(packmat_field * f, uint32_t nrows, uint32_t ncols)
     for (size_t k = 0; k < order.size(); k++) {
         const uint32_t i = (uint32_t)(order[k] / ncols);
         const uint32_t j = (uint32_t)(order[k] % ncols);
-        packmat_mat_set(f, a.data(), ncols, i, j, A.at(i, j));
+        packmat_mat_set(va, i, j, A.at(i, j));
     }
     CHECK(a.same(packed) && a.guards_ok());
-    CHECK(packmat_check_invariants(f, a.data(), nrows, ncols));
+    CHECK(packmat_check_invariants(va));
     bool all_get = true;
     for (uint32_t i = 0; i < nrows; i++)
         for (uint32_t j = 0; j < ncols; j++)
-            all_get &=
-                packmat_mat_get(f, a.data(), ncols, i, j) == A.at(i, j);
+            all_get &= packmat_mat_get(va, i, j) == A.at(i, j);
     CHECK(all_get);
     bool a_zero = true;
     for (size_t k = 0; k < A.e.size(); k++)
         a_zero &= A.e[k] == 0;
-    CHECK(packmat_is_zero(f, a.data(), nrows, ncols) == a_zero);
-    CHECK(packmat_is_one(f, a.data(), nrows, ncols) == ref::is_one(A));
+    CHECK(packmat_is_zero(va) == a_zero);
+    CHECK(packmat_is_one(va) == ref::is_one(A));
 
-    // vectors: a 1 x len matrix
+    // vectors: a 1 x len view
     if (nrows == 1) {
-        Buf v(words);
-        packmat_zero(f, v.data(), 1, ncols);
+        Buf               v(words);
+        const packmat_mat vv = packmat_vec_view(f, v.data(), ncols);
+        packmat_zero(vv);
         for (uint32_t j = 0; j < ncols; j++)
-            packmat_vec_set(f, v.data(), j, B.at(0, j));
+            packmat_vec_set(vv, j, B.at(0, j));
         for (uint32_t j = 0; j < ncols; j++)
-            packmat_vec_set(f, v.data(), j, A.at(0, j));
+            packmat_vec_set(vv, j, A.at(0, j));
         CHECK(v.same(packed) && v.guards_ok());
         bool vec_get = true;
         for (uint32_t j = 0; j < ncols; j++)
-            vec_get &= packmat_vec_get(f, v.data(), j) == A.at(0, j);
+            vec_get &= packmat_vec_get(vv, j) == A.at(0, j);
         CHECK(vec_get);
     }
 
     // identity, over garbage
-    Buf id(words);
-    packmat_identity(f, id.data(), nrows, ncols);
+    Buf               id(words);
+    const packmat_mat vid = id.view(f, nrows, ncols);
+    packmat_identity(vid);
     CHECK(id.same(ref::pack(ref::identity(nrows, ncols), f->bits)));
     CHECK(id.guards_ok());
-    CHECK(packmat_check_invariants(f, id.data(), nrows, ncols));
-    CHECK(packmat_is_one(f, id.data(), nrows, ncols) == (nrows == ncols));
-    CHECK(packmat_is_zero(f, id.data(), nrows, ncols) ==
-          (nrows == 0 || ncols == 0));
+    CHECK(packmat_check_invariants(vid));
+    CHECK(packmat_is_one(vid) == (nrows == ncols));
+    CHECK(packmat_is_zero(vid) == (nrows == 0 || ncols == 0));
 
     // identity with one entry changed
     if (nrows == ncols && nrows > 0) {
         const uint32_t i = (uint32_t)(rnd() % nrows);
         const uint32_t j = (uint32_t)(rnd() % ncols);
-        const uint64_t x = packmat_mat_get(f, id.data(), ncols, i, j);
-        packmat_mat_set(f, id.data(), ncols, i, j, x == 0 ? 1 : 0);
-        CHECK(!packmat_is_one(f, id.data(), nrows, ncols));
+        const uint64_t x = packmat_mat_get(vid, i, j);
+        packmat_mat_set(vid, i, j, x == 0 ? 1 : 0);
+        CHECK(!packmat_is_one(vid));
     }
 
     // copy, equal, hash
-    Buf c(words);
-    packmat_copy(f, c.data(), a.data(), nrows, ncols);
+    Buf               c(words);
+    const packmat_mat vc = c.view(f, nrows, ncols);
+    packmat_copy(vc, va);
     CHECK(c.same(packed) && c.guards_ok());
-    CHECK(packmat_equal(f, a.data(), c.data(), nrows, ncols));
-    CHECK(packmat_compare(f, a.data(), c.data(), nrows, ncols) == 0);
-    CHECK(packmat_hash(f, a.data(), nrows, ncols) ==
-          packmat_hash(f, c.data(), nrows, ncols));
+    CHECK(packmat_equal(va, vc));
+    CHECK(packmat_compare(va, vc) == 0);
+    CHECK(packmat_hash(va) == packmat_hash(vc));
 
     // compare: first difference at a random entry, random entries after
     const size_t entries = A.e.size();
@@ -481,8 +488,7 @@ static void test_shape(packmat_field * f, uint32_t nrows, uint32_t ncols)
         fill(f, d, D);
         CHECK(d.same(ref::pack(D, f->bits)));
         check_compare(f, a, d, A, D);
-        CHECK(packmat_hash(f, a.data(), nrows, ncols) !=
-              packmat_hash(f, d.data(), nrows, ncols));
+        CHECK(packmat_hash(va) != packmat_hash(d.view(f, nrows, ncols)));
     }
 
     // invariant violations: a stray bit in unused space; a cell >= n
@@ -497,17 +503,19 @@ static void test_shape(packmat_field * f, uint32_t nrows, uint32_t ncols)
         CHECK(spare >> 63);    // unused bits are the top ones
         const uint64_t stray[2] = { spare & (0 - spare), 1ull << 63 };
         for (int t = 0; t < 2; t++) {
-            Buf e(words);
-            packmat_copy(f, e.data(), a.data(), nrows, ncols);
+            Buf               e(words);
+            const packmat_mat ve = e.view(f, nrows, ncols);
+            packmat_copy(ve, va);
             e.data()[k] |= stray[t];
-            CHECK(!packmat_check_invariants(f, e.data(), nrows, ncols));
+            CHECK(!packmat_check_invariants(ve));
         }
     }
     if (f->bits == 64 && words > 0) {
-        Buf e(words);
-        packmat_copy(f, e.data(), a.data(), nrows, ncols);
+        Buf               e(words);
+        const packmat_mat ve = e.view(f, nrows, ncols);
+        packmat_copy(ve, va);
         e.data()[rnd() % words] = n + (rnd() % (~0ull - n + 1));
-        CHECK(!packmat_check_invariants(f, e.data(), nrows, ncols));
+        CHECK(!packmat_check_invariants(ve));
     }
 }
 
@@ -566,9 +574,10 @@ static void test_orders()
     const uint64_t sorted[] = { 0, 1, 3, 2, 6, 4, 5 };
     for (int x = 0; x < 7; x++)
         for (int y = 0; y < 7; y++) {
-            const uint64_t a = sorted[x], b = sorted[y];
-            const int      want = x < y ? -1 : x > y ? 1 : 0;
-            CHECK(packmat_compare(f, &a, &b, 1, 1) == want);
+            uint64_t  a = sorted[x], b = sorted[y];
+            const int want = x < y ? -1 : x > y ? 1 : 0;
+            CHECK(packmat_compare(packmat_vec_view(f, &a, 1),
+                                  packmat_vec_view(f, &b, 1)) == want);
         }
 
     snprintf(where, sizeof(where), "GF(65521) order");
@@ -577,22 +586,27 @@ static void test_orders()
     log_rank(packmat_field_rank(g), 65521, 17);    // 17 is primitive
     CHECK(packmat_field_check(g));
     // 17 = z^1 sorts before 2 = z^41608; residue order says otherwise
-    const uint64_t a[2] = { 5, 2 }, b[2] = { 5, 17 };
-    CHECK(packmat_compare(g, a, b, 1, 2) == 1);
+    uint64_t a[2] = { 5, 2 }, b[2] = { 5, 17 };
+    CHECK(packmat_compare(packmat_vec_view(g, a, 2),
+                          packmat_vec_view(g, b, 2)) == 1);
     Field P(PACKMAT_M64, 65521, 0);
-    CHECK(packmat_compare(P.f, a, b, 1, 2) == -1);
+    CHECK(packmat_compare(packmat_vec_view(P.f, a, 2),
+                          packmat_vec_view(P.f, b, 2)) == -1);
 
-    // Vectors of different lengths, as packmat.h says: compare the
-    // shorter length, then break ties by length. Over GF(2) both share a
-    // word, so cell 2 of the longer one takes part.
+    // Vectors of different lengths, as packmat.h says: compare views of
+    // the shorter length, then break ties by length. Over GF(2) both share
+    // a word, so cell 2 of the longer one takes part.
     snprintf(where, sizeof(where), "GF(2) prefix order");
     packmat_field h;
     packmat_field_init(&h, PACKMAT_GF2, 2, 0);
     // u = [0, 1], w = [0, 1, 1], x = [0, 1, 0]
-    const uint64_t u = 0x2, w = 0x6, x = 0x2;
-    CHECK(packmat_compare(&h, &u, &w, 1, 2) == -1);
-    CHECK(packmat_compare(&h, &w, &u, 1, 2) == 1);
-    CHECK(packmat_compare(&h, &u, &x, 1, 2) == 0);    // tie: shorter first
+    uint64_t          u = 0x2, w = 0x6, x = 0x2;
+    const packmat_mat vu = packmat_vec_view(&h, &u, 2);
+    const packmat_mat vw = packmat_vec_view(&h, &w, 2);
+    const packmat_mat vx = packmat_vec_view(&h, &x, 2);
+    CHECK(packmat_compare(vu, vw) == -1);
+    CHECK(packmat_compare(vw, vu) == 1);
+    CHECK(packmat_compare(vu, vx) == 0);    // tie: shorter first
 }
 
 // Known answers for packmat_hash, computed from the formula in matrix.cc
@@ -606,35 +620,41 @@ static void test_hash_values()
     Field           F(PACKMAT_M64, (1ull << 61) - 1, 0);
     packmat_field * f = F.f;
 
-    const uint64_t none = 0;
-    CHECK(packmat_hash(&g, &none, 0, 0) == 0x9ca066f1a4ab2eeaull);
-    CHECK(packmat_hash(&g, &none, 3, 0) == 0xbff027065cb11f97ull);
-    CHECK(packmat_hash(&g, &none, 0, 3) == 0xb47229bfc36a0ee2ull);
+    uint64_t none = 0;
+    CHECK(packmat_hash(packmat_mat_view(&g, &none, 0, 0)) ==
+          0x9ca066f1a4ab2eeaull);
+    CHECK(packmat_hash(packmat_mat_view(&g, &none, 3, 0)) ==
+          0xbff027065cb11f97ull);
+    CHECK(packmat_hash(packmat_mat_view(&g, &none, 0, 3)) ==
+          0xb47229bfc36a0ee2ull);
 
     // 8 x 8 identity over GF(2): 8 rows in one word, (i, i) at bit 9i
-    uint64_t id8;
-    packmat_identity(&g, &id8, 8, 8);
+    uint64_t          id8;
+    const packmat_mat v8 = packmat_mat_view(&g, &id8, 8, 8);
+    packmat_identity(v8);
     CHECK(id8 == 0x8040201008040201ull);
-    CHECK(packmat_hash(&g, &id8, 8, 8) == 0x3eb1d94890a28ff2ull);
+    CHECK(packmat_hash(v8) == 0x3eb1d94890a28ff2ull);
 
     // 20 x 20 over GF(2), entry (i, j) = i(j + 1) mod 2: 3 rows per word
-    uint64_t m20[7];
-    packmat_zero(&g, m20, 20, 20);
+    uint64_t          m20[7];
+    const packmat_mat v20 = packmat_mat_view(&g, m20, 20, 20);
+    packmat_zero(v20);
     for (uint32_t i = 0; i < 20; i++)
         for (uint32_t j = 0; j < 20; j++)
-            packmat_mat_set(&g, m20, 20, i, j, (i * j + i) % 2);
+            packmat_mat_set(v20, i, j, (i * j + i) % 2);
     CHECK(packmat_matrix_words(&g, 20, 20) == 7);
     CHECK(m20[0] == 0x5555500000ull && m20[1] == 0x0555550000055555ull);
-    CHECK(packmat_hash(&g, m20, 20, 20) == 0x6c7df6836a68dfe3ull);
+    CHECK(packmat_hash(v20) == 0x6c7df6836a68dfe3ull);
 
     // 3 x 3 over Z/(2^61 - 1), entries 1..9
-    uint64_t m3[9];
-    packmat_zero(f, m3, 3, 3);
+    uint64_t          m3[9];
+    const packmat_mat v3 = packmat_mat_view(f, m3, 3, 3);
+    packmat_zero(v3);
     for (uint32_t i = 0; i < 3; i++)
         for (uint32_t j = 0; j < 3; j++)
-            packmat_mat_set(f, m3, 3, i, j, 3 * i + j + 1);
+            packmat_mat_set(v3, i, j, 3 * i + j + 1);
     CHECK(m3[0] == 1 && m3[8] == 9);
-    CHECK(packmat_hash(f, m3, 3, 3) == 0xc76841a332add821ull);
+    CHECK(packmat_hash(v3) == 0xc76841a332add821ull);
 }
 
 /****************************************************************************

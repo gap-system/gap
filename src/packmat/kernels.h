@@ -55,8 +55,8 @@ inline const uint16_t * rank_table(const packmat_field * f)
 **  layout. Word passes that the invariants make kind-independent (zero,
 **  copy, equal, hash, is_zero) live in matrix.cc. Every entry takes the
 **  context first, so that later kinds can read run-time parameters from
-**  it. Arguments mean what they mean for the packmat_* function of the
-**  same name in packmat.h.
+**  it. The functions in matrix.cc unpack the views of packmat.h into the
+**  words and the dimensions an entry needs.
 */
 
 struct Kernels {

@@ -29,10 +29,15 @@ static inline const Kernels & kernels(const packmat_field * f)
     return *KERNEL_TABLE[f->kind];
 }
 
-static inline size_t
-num_words(const packmat_field * f, uint32_t nrows, uint32_t ncols)
+static inline size_t num_words(packmat_mat m)
 {
-    return (size_t)layout_words(f->cpw, nrows, ncols);
+    return (size_t)layout_words(m.f->cpw, m.nrows, m.ncols);
+}
+
+// Two operands need the same context and equal dimensions
+static inline void assert_same_shape(packmat_mat a, packmat_mat b)
+{
+    PACKMAT_ASSERT(a.f == b.f && a.nrows == b.nrows && a.ncols == b.ncols);
 }
 
 // MurmurHash64A multiplier, MurmurHash3 finaliser constants, and a fixed
@@ -44,89 +49,65 @@ static const uint64_t HASH_SEED = 0x9e3779b97f4a7c15ull;
 
 extern "C" {
 
-uint64_t packmat_mat_get(const packmat_field * f,
-                         const uint64_t *      m,
-                         uint32_t              ncols,
-                         uint32_t              i,
-                         uint32_t              j)
+uint64_t packmat_mat_get(packmat_mat m, uint32_t i, uint32_t j)
 {
-    return kernels(f).mat_get(f, m, ncols, i, j);
+    PACKMAT_ASSERT(i < m.nrows && j < m.ncols);
+    return kernels(m.f).mat_get(m.f, m.w, m.ncols, i, j);
 }
 
-void packmat_mat_set(const packmat_field * f,
-                     uint64_t *            m,
-                     uint32_t              ncols,
-                     uint32_t              i,
-                     uint32_t              j,
-                     uint64_t              x)
+void packmat_mat_set(packmat_mat m, uint32_t i, uint32_t j, uint64_t x)
 {
-    kernels(f).mat_set(f, m, ncols, i, j, x);
+    PACKMAT_ASSERT(i < m.nrows && j < m.ncols);
+    kernels(m.f).mat_set(m.f, m.w, m.ncols, i, j, x);
 }
 
-uint64_t
-packmat_vec_get(const packmat_field * f, const uint64_t * v, uint32_t i)
+uint64_t packmat_vec_get(packmat_mat v, uint32_t i)
 {
-    return kernels(f).vec_get(f, v, i);
+    PACKMAT_ASSERT(v.nrows == 1 && i < v.ncols);
+    return kernels(v.f).vec_get(v.f, v.w, i);
 }
 
-void packmat_vec_set(const packmat_field * f,
-                     uint64_t *            v,
-                     uint32_t              i,
-                     uint64_t              x)
+void packmat_vec_set(packmat_mat v, uint32_t i, uint64_t x)
 {
-    kernels(f).vec_set(f, v, i, x);
+    PACKMAT_ASSERT(v.nrows == 1 && i < v.ncols);
+    kernels(v.f).vec_set(v.f, v.w, i, x);
 }
 
-void packmat_zero(const packmat_field * f,
-                  uint64_t *            m,
-                  uint32_t              nrows,
-                  uint32_t              ncols)
+void packmat_zero(packmat_mat m)
 {
-    const size_t words = num_words(f, nrows, ncols);
+    const size_t words = num_words(m);
     if (words)
-        memset(m, 0, words * sizeof(uint64_t));
+        memset(m.w, 0, words * sizeof(uint64_t));
 }
 
-void packmat_identity(const packmat_field * f,
-                      uint64_t *            m,
-                      uint32_t              nrows,
-                      uint32_t              ncols)
+void packmat_identity(packmat_mat m)
 {
-    kernels(f).identity(f, m, nrows, ncols);
+    kernels(m.f).identity(m.f, m.w, m.nrows, m.ncols);
 }
 
-void packmat_copy(const packmat_field * f,
-                  uint64_t *            dst,
-                  const uint64_t *      src,
-                  uint32_t              nrows,
-                  uint32_t              ncols)
+void packmat_copy(packmat_mat dst, packmat_mat src)
 {
-    const size_t words = num_words(f, nrows, ncols);
-    if (words && dst != src)
-        memcpy(dst, src, words * sizeof(uint64_t));
+    assert_same_shape(dst, src);
+    const size_t words = num_words(src);
+    if (words && dst.w != src.w)
+        memcpy(dst.w, src.w, words * sizeof(uint64_t));
 }
 
-int packmat_equal(const packmat_field * f,
-                  const uint64_t *      a,
-                  const uint64_t *      b,
-                  uint32_t              nrows,
-                  uint32_t              ncols)
+int packmat_equal(packmat_mat a, packmat_mat b)
 {
-    const size_t words = num_words(f, nrows, ncols);
+    assert_same_shape(a, b);
+    const size_t words = num_words(a);
     for (size_t k = 0; k < words; k++) {
-        if (a[k] != b[k])
+        if (a.w[k] != b.w[k])
             return 0;
     }
     return 1;
 }
 
-int packmat_compare(const packmat_field * f,
-                    const uint64_t *      a,
-                    const uint64_t *      b,
-                    uint32_t              nrows,
-                    uint32_t              ncols)
+int packmat_compare(packmat_mat a, packmat_mat b)
 {
-    return kernels(f).compare(f, a, b, num_words(f, nrows, ncols));
+    assert_same_shape(a, b);
+    return kernels(a.f).compare(a.f, a.w, b.w, num_words(a));
 }
 
 // h = SEED ^ (D * M) with D = nrows * 2^32 + ncols; for each word w:
@@ -134,16 +115,13 @@ int packmat_compare(const packmat_field * f,
 // then h ^= h >> 33; h *= F1; h ^= h >> 33; h *= F2; h ^= h >> 33
 // (MurmurHash3 fmix64). All arithmetic is on 64-bit word values, so the
 // result depends neither on the word size nor on the byte order.
-uint64_t packmat_hash(const packmat_field * f,
-                      const uint64_t *      m,
-                      uint32_t              nrows,
-                      uint32_t              ncols)
+uint64_t packmat_hash(packmat_mat m)
 {
-    const size_t   words = num_words(f, nrows, ncols);
-    const uint64_t dims = ((uint64_t)nrows << 32) | ncols;
+    const size_t   words = num_words(m);
+    const uint64_t dims = ((uint64_t)m.nrows << 32) | m.ncols;
     uint64_t       h = HASH_SEED ^ (dims * HASH_M);
     for (size_t k = 0; k < words; k++) {
-        uint64_t w = m[k] * HASH_M;
+        uint64_t w = m.w[k] * HASH_M;
         w ^= w >> 47;
         w *= HASH_M;
         h ^= w;
@@ -157,33 +135,24 @@ uint64_t packmat_hash(const packmat_field * f,
     return h;
 }
 
-int packmat_is_zero(const packmat_field * f,
-                    const uint64_t *      m,
-                    uint32_t              nrows,
-                    uint32_t              ncols)
+int packmat_is_zero(packmat_mat m)
 {
-    const size_t words = num_words(f, nrows, ncols);
+    const size_t words = num_words(m);
     for (size_t k = 0; k < words; k++) {
-        if (m[k])
+        if (m.w[k])
             return 0;
     }
     return 1;
 }
 
-int packmat_is_one(const packmat_field * f,
-                   const uint64_t *      m,
-                   uint32_t              nrows,
-                   uint32_t              ncols)
+int packmat_is_one(packmat_mat m)
 {
-    return kernels(f).is_one(f, m, nrows, ncols);
+    return kernels(m.f).is_one(m.f, m.w, m.nrows, m.ncols);
 }
 
-int packmat_check_invariants(const packmat_field * f,
-                             const uint64_t *      m,
-                             uint32_t              nrows,
-                             uint32_t              ncols)
+int packmat_check_invariants(packmat_mat m)
 {
-    return kernels(f).check(f, m, nrows, ncols);
+    return kernels(m.f).check(m.f, m.w, m.nrows, m.ncols);
 }
 
 }    // extern "C"

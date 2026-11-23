@@ -37,15 +37,17 @@ static packmat_field * new_field(uint64_t n, int ranked)
     return f;
 }
 
-// A matrix is just its words; the caller keeps the dimensions.
-static uint64_t * new_matrix(const packmat_field * f,
-                             uint32_t              nrows,
-                             uint32_t              ncols)
+// Words for a zero matrix, and a view of them. The words are the matrix;
+// the view adds context and dimensions for the calls.
+static packmat_mat new_matrix(const packmat_field * f,
+                              uint32_t              nrows,
+                              uint32_t              ncols)
 {
-    uint64_t * m =
+    uint64_t * w =
         malloc(packmat_matrix_words(f, nrows, ncols) * sizeof(uint64_t));
-    CHECK(m != NULL);
-    packmat_zero(f, m, nrows, ncols);
+    CHECK(w != NULL);
+    const packmat_mat m = packmat_mat_view(f, w, nrows, ncols);
+    packmat_zero(m);
     return m;
 }
 
@@ -59,22 +61,22 @@ static void gf2_matrix(void)
     CHECK(packmat_rows_per_word(f, 5) == 12);
     CHECK(packmat_matrix_words(f, 3, 5) == 1);
 
-    uint64_t * m = new_matrix(f, 3, 5);
-    packmat_mat_set(f, m, 5, 0, 0, 1);    // bit 0
-    packmat_mat_set(f, m, 5, 1, 2, 1);    // bit 5 + 2
-    packmat_mat_set(f, m, 5, 2, 4, 1);    // bit 10 + 4
-    CHECK(m[0] == (1u << 0 | 1u << 7 | 1u << 14));
-    CHECK(packmat_mat_get(f, m, 5, 1, 2) == 1);
-    CHECK(packmat_mat_get(f, m, 5, 1, 3) == 0);
-    CHECK(!packmat_is_zero(f, m, 3, 5));
-    CHECK(packmat_check_invariants(f, m, 3, 5));
+    const packmat_mat m = new_matrix(f, 3, 5);
+    packmat_mat_set(m, 0, 0, 1);    // bit 0
+    packmat_mat_set(m, 1, 2, 1);    // bit 5 + 2
+    packmat_mat_set(m, 2, 4, 1);    // bit 10 + 4
+    CHECK(m.w[0] == (1u << 0 | 1u << 7 | 1u << 14));
+    CHECK(packmat_mat_get(m, 1, 2) == 1);
+    CHECK(packmat_mat_get(m, 1, 3) == 0);
+    CHECK(!packmat_is_zero(m));
+    CHECK(packmat_check_invariants(m));
 
     // 100 entries need two words per row
     CHECK(packmat_rows_per_word(f, 100) == 1);
     CHECK(packmat_stride(f, 100) == 2);
     CHECK(packmat_matrix_words(f, 3, 100) == 6);
 
-    free(m);
+    free(m.w);
     free(f);
 }
 
@@ -84,23 +86,23 @@ static void zmod7_matrices(void)
     packmat_field * f = new_field(7, 0);
     CHECK(f->kind == PACKMAT_M64 && f->cpw == 1);
 
-    uint64_t * a = new_matrix(f, 2, 2);
-    uint64_t * b = new_matrix(f, 2, 2);
-    packmat_identity(f, a, 2, 2);
-    CHECK(a[0] == 1 && a[1] == 0 && a[2] == 0 && a[3] == 1);
-    CHECK(packmat_is_one(f, a, 2, 2));
+    const packmat_mat a = new_matrix(f, 2, 2);
+    const packmat_mat b = new_matrix(f, 2, 2);
+    packmat_identity(a);
+    CHECK(a.w[0] == 1 && a.w[1] == 0 && a.w[2] == 0 && a.w[3] == 1);
+    CHECK(packmat_is_one(a));
 
-    packmat_copy(f, b, a, 2, 2);
-    CHECK(packmat_equal(f, a, b, 2, 2));
-    CHECK(packmat_hash(f, a, 2, 2) == packmat_hash(f, b, 2, 2));
+    packmat_copy(b, a);
+    CHECK(packmat_equal(a, b));
+    CHECK(packmat_hash(a) == packmat_hash(b));
 
-    packmat_mat_set(f, b, 2, 0, 1, 3);    // b = [[1, 3], [0, 1]]
-    CHECK(!packmat_equal(f, a, b, 2, 2));
-    CHECK(!packmat_is_one(f, b, 2, 2));
-    CHECK(packmat_compare(f, a, b, 2, 2) == -1);    // a[0,1] = 0 < 3
+    packmat_mat_set(b, 0, 1, 3);    // b = [[1, 3], [0, 1]]
+    CHECK(!packmat_equal(a, b));
+    CHECK(!packmat_is_one(b));
+    CHECK(packmat_compare(a, b) == -1);    // a[0,1] = 0 < 3
 
-    free(a);
-    free(b);
+    free(a.w);
+    free(b.w);
     free(f);
 }
 
@@ -118,26 +120,28 @@ static void gf7_order(void)
     }
     CHECK(packmat_field_check(f));
 
-    const uint64_t two[1] = { 2 }, three[1] = { 3 };    // 1 x 1 matrices
-    CHECK(packmat_compare(f, two, three, 1, 1) == 1);
+    uint64_t two = 2, three = 3;
+    CHECK(packmat_compare(packmat_vec_view(f, &two, 1),
+                          packmat_vec_view(f, &three, 1)) == 1);
 
     free(f);
 }
 
-// A vector of length len is a 1 x len matrix. Over GF(2), entry i is bit
+// A vector of length len is a 1 x len view. Over GF(2), entry i is bit
 // i mod 64 of word i / 64.
 static void gf2_vector(void)
 {
     packmat_field * f = new_field(2, 0);
     CHECK(packmat_vector_words(f, 70) == 2);
 
-    uint64_t * v = new_matrix(f, 1, 70);
-    packmat_vec_set(f, v, 65, 1);
-    CHECK(v[0] == 0 && v[1] == 2);
-    CHECK(packmat_vec_get(f, v, 65) == 1);
-    CHECK(!packmat_is_zero(f, v, 1, 70));
+    uint64_t          w[2];
+    const packmat_mat v = packmat_vec_view(f, w, 70);
+    packmat_zero(v);
+    packmat_vec_set(v, 65, 1);
+    CHECK(w[0] == 0 && w[1] == 2);
+    CHECK(packmat_vec_get(v, 65) == 1);
+    CHECK(!packmat_is_zero(v));
 
-    free(v);
     free(f);
 }
 
