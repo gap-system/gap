@@ -256,12 +256,10 @@ static Obj FuncHASH_FLAGS(Obj self, Obj flags)
 static Obj FuncTRUES_FLAGS(Obj self, Obj flags)
 {
     Obj                 sub;            // handle of the result
-    Int                 len;            // logical length of the list
-    UInt *              ptr;            // pointer to flags
+    const UInt *        ptr;            // pointer to flags
     UInt                nrb;            // number of blocks in flags
     UInt                n;              // number of bits in flags
     UInt                nn;
-    UInt                i;              // loop variable
 
     RequireFlags(SELF_NAME, flags);
     if ( TRUES_FLAGS(flags) != 0 ) {
@@ -277,12 +275,14 @@ static Obj FuncTRUES_FLAGS(Obj self, Obj flags)
     sub = NEW_PLIST_IMM( T_PLIST, n );
     SET_LEN_PLIST( sub, n );
 
-    // loop over the boolean list and stuff elements into <sub>
-    len = LEN_FLAGS( flags );
-    nn  = 1;
-    for ( i = 1; nn <= n && i <= len;  i++ ) {
-        if ( C_ELM_FLAGS( flags, i ) ) {
-            SET_ELM_PLIST( sub, nn, INTOBJ_INT(i) );
+    // visit the set bits only, lowest first; the allocation above may have
+    // moved the blocks
+    ptr = BLOCKS_FLAGS(flags);
+    nn = 1;
+    for (UInt b = 0; b < nrb; b++) {
+        for (UInt block = ptr[b]; block; block &= block - 1) {
+            UInt bit = COUNT_TRUES_BLOCK((block & -block) - 1);
+            SET_ELM_PLIST_RAW(sub, nn, INTOBJ_INT(b * BIPEB + bit + 1));
             nn++;
         }
     }

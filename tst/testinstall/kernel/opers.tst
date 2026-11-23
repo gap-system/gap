@@ -21,6 +21,14 @@ Error, TRUES_FLAGS: <flags> must be a flags list (not the value 'fail')
 gap> TRUES_FLAGS(flags);
 [ 1 ]
 
+# flags spanning all blocks; a filter with a single flag has its number
+gap> singles := Filtered([1 .. Length(FILTERS)], i -> IsBound(FILTERS[i])
+>                and SIZE_FLAGS(FLAGS_FILTER(FILTERS[i])) = 1);;
+gap> all := FLAGS_FILTER(IsObject);;
+gap> for i in singles do all := AND_FLAGS(all, FLAGS_FILTER(FILTERS[i])); od;
+gap> TRUES_FLAGS(all) = singles;
+true
+
 #
 gap> SIZE_FLAGS(fail);
 Error, SIZE_FLAGS: <flags> must be a flags list (not the value 'fail')
