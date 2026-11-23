@@ -331,6 +331,11 @@ ifneq (,$(findstring cygwin,$(host_os)))
   # sure we care about "make install" on Cygwin, so I am not going to work on
   # this until someone specifically asks for it (and even then I'll require
   # that person to help test it)
+else ifneq (,$(findstring mingw,$(host_os)))
+  GAC_CFLAGS =
+  # link against libgap.dll itself: unlike its import library, the linker
+  # takes it in any argument order (same install caveat as Cygwin)
+  GAC_LDFLAGS = -shared -static-libgcc -Wl,$(abs_builddir)/libgap.dll
 else
   ifneq (,$(findstring darwin,$(host_os)))
     GAC_CFLAGS = -fno-common

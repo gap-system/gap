@@ -439,7 +439,7 @@ jobs:
         run: rm tst/testinstall/read.tst
 
       - name: Run tests
-        run: NO_COVERAGE=1 dev/ci.sh testinstall
+        run: NO_COVERAGE=1 dev/ci.sh testinstall testmockpkg
 
   openbsd:
     runs-on: ubuntu-latest
