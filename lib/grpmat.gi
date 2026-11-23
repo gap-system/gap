@@ -1430,6 +1430,21 @@ InstallMethod( ConjugateGroup, "<G>, <g>", IsCollsElms,
       fi;
       SetInvariantQuadraticForm( H, rec( matrix := m, baseDomain := D ) );
     fi;
+    if HasInvariantBilinearFormUpToScalars( G ) then
+      if not IsBound( ginv ) then
+        ginv := g^-1;
+      fi;
+      form := InvariantBilinearFormUpToScalars( G );
+      m := ginv * form.matrix * TransposedMat( ginv );
+      if not IsBound( D ) then
+        D:= form.baseDomain;
+        if not IsSubset( D, F ) then
+          D:= ClosureField( D, F );
+        fi;
+      fi;
+      SetInvariantBilinearFormUpToScalars( H,
+          rec( matrix := m, baseDomain := D ) );
+    fi;
     if IsSubset( FieldOfMatrixGroup( G ), F ) then
       if HasIsNaturalGL( G ) then
         SetIsNaturalGL( H, IsNaturalGL( G ) );
@@ -1447,6 +1462,10 @@ InstallMethod( ConjugateGroup, "<G>, <g>", IsCollsElms,
       if HasIsFullSubgroupGLorSLRespectingQuadraticForm( G )
           and IsFullSubgroupGLorSLRespectingQuadraticForm( G ) then
         SetIsFullSubgroupGLorSLRespectingQuadraticForm( H, true );
+      fi;
+      if HasIsFullSubgroupGLRespectingBilinearFormUpToScalars( G )
+          and IsFullSubgroupGLRespectingBilinearFormUpToScalars( G ) then
+        SetIsFullSubgroupGLRespectingBilinearFormUpToScalars( H, true );
       fi;
 
       # For a stored sesquilinear form, we have to keep the meaning

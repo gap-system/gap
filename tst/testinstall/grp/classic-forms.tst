@@ -379,7 +379,7 @@ gap> ForAll(grps, CheckGeneratorsInvertible);
 true
 gap> ForAll(grps, CheckField);
 true
-gap> ForAll(grps1, CheckBilinearFormUpToScalars);
+gap> ForAll(grps, CheckBilinearFormUpToScalars);
 true
 gap> ForAll(grps, CheckSize);
 true
