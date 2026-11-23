@@ -8,10 +8,49 @@
 **  SPDX-License-Identifier: GPL-2.0-or-later
 **
 **  C API of the packed matrix core: dense matrices and vectors over GF(2)
-**  and Z/nZ (2 <= n < 2^64) in caller-owned word buffers. The core
-**  includes no GAP headers, allocates no memory and keeps no global state.
+**  and Z/nZ (2 <= n < 2^64). The core includes no GAP headers, allocates
+**  no memory and keeps no global state. test/example.c shows its use in C.
 **
-**  Conventions:
+**  Contexts. A packmat_field describes the base ring: kind, n and
+**  precomputed constants. The caller provides packmat_field_size() bytes
+**  and fills them with packmat_field_init(); every other function takes
+**  the context as its first argument f.
+**
+**  Objects. A matrix is an array of uint64_t words that holds only its
+**  entries; the caller keeps nrows and ncols and passes them to every
+**  call. The caller allocates packmat_matrix_words(f, nrows, ncols) words
+**  (in GAP: the data part of a bag) and passes a pointer to word 0 as m,
+**  a, b, dst or src. A vector of length len is a 1 x len matrix: v points
+**  to its packmat_vector_words(f, len) words, and the whole-object
+**  functions take nrows = 1, ncols = len.
+**
+**      // a 3 x 4 matrix over Z/7Z, with malloc in place of GAP bags
+**      packmat_field * f = malloc(packmat_field_size(PACKMAT_M64, 7, 0));
+**      packmat_field_init(f, PACKMAT_M64, 7, 0);
+**      uint64_t * m =
+**          malloc(packmat_matrix_words(f, 3, 4) * sizeof(uint64_t));
+**      packmat_zero(f, m, 3, 4);
+**      packmat_mat_set(f, m, 4, 1, 2, 5);              // m[1,2] := 5
+**      uint64_t x = packmat_mat_get(f, m, 4, 1, 2);    // 5
+**
+**  Contract:
+**  - Contexts, word buffers and scratch are 8-byte aligned. On 32-bit
+**    builds GAP bag data is only 4-byte aligned, which i386 tolerates and
+**    other 32-bit targets may not.
+**  - Functions trust f: f->kind indexes a table, checked only in debug
+**    builds. Validate a context of unknown origin, such as one from a
+**    workspace, with packmat_field_check().
+**  - The caller checks every index: i < nrows, j < ncols, x < n. Debug
+**    builds assert j < ncols and x < n. Nothing can check i < nrows, and a
+**    row beyond nrows in a shared word silently sets unused bits.
+**  - Two-operand functions need equal dimensions; buffers do not overlap.
+**  - Dimensions are uint32_t; the caller checks that sizes fit in memory.
+**  - A routine that needs scratch memory takes `void *scratch`, sized in
+**    bytes by `size_t packmat_<op>_scratch(...)`. No routine needs it yet.
+**  - Debug builds (PACKMAT_DEBUG or GAP_KERNEL_DEBUG defined) assert the
+**    preconditions they can check.
+**
+**  Layout:
 **  - A word is a uint64_t on every platform. A cell holds one entry; bits
 **    per cell and cells per word (cpw) depend on the kind of the field.
 **    Cell j of a word occupies bits [j*bits, (j+1)*bits).
@@ -19,16 +58,8 @@
 **    0 < ncols <= cpw/2, r = floor(cpw/ncols) rows share a word: row i
 **    starts at cell (i mod r)*ncols of word i/r. Otherwise row i starts at
 **    word i*stride, with stride = ceil(ncols/cpw).
-**  - A vector of length len is laid out as a 1 x len matrix; pass
-**    nrows = 1, ncols = len to the whole-object functions.
 **  - Unused cells and bits are zero, and every cell holds a residue in
 **    0..n-1. Functions expect and preserve this.
-**  - Dimensions are uint32_t; the caller checks that sizes fit in memory.
-**  - Scratch memory: a routine that needs it takes `void *scratch`, sized
-**    in bytes by `size_t packmat_<op>_scratch(...)`. The core never calls
-**    malloc. No routine needs scratch yet.
-**  - Preconditions are asserted if PACKMAT_DEBUG or GAP_KERNEL_DEBUG is
-**    defined.
 */
 
 #ifndef PACKMAT_PACKMAT_H
@@ -83,9 +114,9 @@ int packmat_choose_kind(uint64_t n, uint32_t degree);
 // 0 if the combination is invalid. Rank tables need n <= 2^16.
 size_t packmat_field_size(int kind, uint64_t n, int ranked);
 
-// Initialise a context in packmat_field_size bytes at f (8-byte aligned).
-// The rank table, if any, starts as the identity. Returns PACKMAT_OK or
-// PACKMAT_INVALID.
+// Initialise a context in packmat_field_size bytes at f. Returns
+// PACKMAT_OK or PACKMAT_INVALID. A rank table starts as the identity, so
+// packmat_compare uses residue order until the caller fills it.
 int packmat_field_init(packmat_field * f, int kind, uint64_t n, int ranked);
 
 // Rank table: rank[x] orders residue x for packmat_compare; NULL if none.
@@ -115,25 +146,31 @@ uint64_t packmat_vector_words(const packmat_field * f, uint32_t len);
 
 /****************************************************************************
 **
-**  Entries
-**
-**  Residues go in and out as uint64_t; i < nrows, j < ncols, x < n.
+**  Entries, as residues 0..n-1
 */
 
+// Entry (i, j) of matrix m. Only ncols is needed: it fixes where row i
+// starts.
 uint64_t packmat_mat_get(const packmat_field * f,
                          const uint64_t *      m,
                          uint32_t              ncols,
                          uint32_t              i,
                          uint32_t              j);
+
+// Set entry (i, j) of matrix m to x.
 void     packmat_mat_set(const packmat_field * f,
                          uint64_t *            m,
                          uint32_t              ncols,
                          uint32_t              i,
                          uint32_t              j,
                          uint64_t              x);
+
+// Entry i of vector v. Its position does not depend on the length.
 uint64_t packmat_vec_get(const packmat_field * f,
                          const uint64_t *      v,
                          uint32_t              i);
+
+// Set entry i of vector v to x.
 void     packmat_vec_set(const packmat_field * f,
                          uint64_t *            v,
                          uint32_t              i,
@@ -142,8 +179,6 @@ void     packmat_vec_set(const packmat_field * f,
 /****************************************************************************
 **
 **  Whole objects
-**
-**  Two-operand functions require equal dimensions; buffers do not overlap.
 */
 
 // Fill with zeros.
@@ -158,6 +193,7 @@ void packmat_identity(const packmat_field * f,
                       uint32_t              nrows,
                       uint32_t              ncols);
 
+// Copy src to dst.
 void packmat_copy(const packmat_field * f,
                   uint64_t *            dst,
                   const uint64_t *      src,
@@ -172,7 +208,9 @@ int packmat_equal(const packmat_field * f,
                   uint32_t              ncols);
 
 // -1, 0 or 1: a against b, lexicographically in row-major entry order,
-// entries ordered by the rank table, or as residues without one.
+// entries ordered by the rank table, or as residues without one. For
+// vectors of different lengths pass the shorter length: a nonzero result
+// is the answer, and 0 means the shorter one sorts first.
 int packmat_compare(const packmat_field * f,
                     const uint64_t *      a,
                     const uint64_t *      b,
@@ -186,6 +224,7 @@ uint64_t packmat_hash(const packmat_field * f,
                       uint32_t              nrows,
                       uint32_t              ncols);
 
+// 1 if every entry is zero.
 int packmat_is_zero(const packmat_field * f,
                     const uint64_t *      m,
                     uint32_t              nrows,
@@ -218,6 +257,7 @@ uint64_t packmat_mod_reduce(const packmat_field * f, uint64_t a);
 uint64_t
 packmat_mod_reduce2(const packmat_field * f, uint64_t hi, uint64_t lo);
 
+// a + b, a - b and -a mod n.
 uint64_t packmat_mod_add(const packmat_field * f, uint64_t a, uint64_t b);
 uint64_t packmat_mod_sub(const packmat_field * f, uint64_t a, uint64_t b);
 uint64_t packmat_mod_neg(const packmat_field * f, uint64_t a);

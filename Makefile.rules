@@ -1124,9 +1124,9 @@ testkernel: ${KERNELTESTS}
 
 # Unit tests of the packed matrix core in src/packmat/, built without GAP's
 # include path. check-packmat-headers rejects other non-system headers in
-# the core and checks that packmat.h is C99. check-packmat runs the tests
-# with the default and with the portable code paths, check-packmat-sanitize
-# under ASan and UBSan.
+# the core. check-packmat runs the C example, which also checks that
+# packmat.h is C99, and the tests with the default and with the portable
+# code paths; check-packmat-sanitize runs the tests under ASan and UBSan.
 PACKMAT_CORE_SOURCES = $(addprefix $(srcdir)/,$(filter src/packmat/%,$(SOURCES)))
 PACKMAT_TEST_SOURCES = $(PACKMAT_CORE_SOURCES) $(srcdir)/src/packmat/test/test.cc
 PACKMAT_TEST_DEPS = $(PACKMAT_TEST_SOURCES) \
@@ -1147,13 +1147,18 @@ build/packmat/test-sanitize: $(PACKMAT_TEST_DEPS)
 	@$(MKDIR_P) build/packmat
 	$(QUIET_LINK)$(CXX) $(ABI_CFLAGS) $(PACKMAT_TEST_CXXFLAGS) $(PACKMAT_SANITIZE_FLAGS) $(PACKMAT_TEST_SOURCES) -o $@
 
+build/packmat/example: $(PACKMAT_TEST_DEPS) $(srcdir)/src/packmat/test/example.c
+	@$(MKDIR_P) build/packmat
+	$(QUIET)$(CC) $(ABI_CFLAGS) -std=c99 -pedantic-errors -Wall -Wextra -c $(srcdir)/src/packmat/test/example.c -o build/packmat/example.o
+	$(QUIET_LINK)$(CXX) $(ABI_CFLAGS) $(PACKMAT_TEST_CXXFLAGS) $(PACKMAT_CORE_SOURCES) build/packmat/example.o -o $@
+
 check-packmat-headers:
 	@bad=`$(CXX) $(ABI_CFLAGS) -std=c++11 -MM $(PACKMAT_CORE_SOURCES) | tr ' \\' '\n\n' | \
 	    grep '\.h$$' | grep -v 'src/packmat/[a-z0-9_]*\.h$$'` ; \
 	test -z "$$bad" || { echo "packmat core includes $$bad" ; exit 1 ; }
-	$(CC) $(ABI_CFLAGS) -std=c99 -pedantic -fsyntax-only -x c $(srcdir)/src/packmat/packmat.h
 
-check-packmat: check-packmat-headers build/packmat/test build/packmat/test-portable
+check-packmat: check-packmat-headers build/packmat/example build/packmat/test build/packmat/test-portable
+	build/packmat/example
 	build/packmat/test
 	build/packmat/test-portable
 

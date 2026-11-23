@@ -7,9 +7,7 @@
 **
 **  SPDX-License-Identifier: GPL-2.0-or-later
 **
-**  Kernels of the residue kinds, and the C API of residue arithmetic. The
-**  residue kinds differ only in the cell width; M64 is the only one so
-**  far, M8, M16 and M32 will instantiate CellKernels<8>, <16> and <32>.
+**  Kernels of the residue kind M64, and the C API of residue arithmetic.
 */
 
 #include "kernels.h"

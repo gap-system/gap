@@ -51,43 +51,65 @@ inline const uint16_t * rank_table(const packmat_field * f)
 
 /****************************************************************************
 **
-**  Kernel table, indexed by kind. Every entry takes the context first, so
-**  that later kinds can read run-time parameters from it.
+**  Kernel table, indexed by kind: the operations that depend on the cell
+**  layout. Word passes that the invariants make kind-independent (zero,
+**  copy, equal, hash, is_zero) live in matrix.cc. Every entry takes the
+**  context first, so that later kinds can read run-time parameters from
+**  it. Arguments mean what they mean for the packmat_* function of the
+**  same name in packmat.h.
 */
 
 struct Kernels {
+    // Entry (i, j) of matrix m with ncols columns
     uint64_t (*mat_get)(const packmat_field *,
-                        const uint64_t *,
-                        uint32_t ncols,
-                        uint32_t i,
-                        uint32_t j);
+                        const uint64_t * m,
+                        uint32_t         ncols,
+                        uint32_t         i,
+                        uint32_t         j);
+
+    // Set entry (i, j) of m to x < n; other cells stay unchanged
     void (*mat_set)(const packmat_field *,
-                    uint64_t *,
-                    uint32_t ncols,
-                    uint32_t i,
-                    uint32_t j,
-                    uint64_t x);
-    uint64_t (*vec_get)(const packmat_field *, const uint64_t *, uint32_t i);
+                    uint64_t * m,
+                    uint32_t   ncols,
+                    uint32_t   i,
+                    uint32_t   j,
+                    uint64_t   x);
+
+    // Entry i of vector v
+    uint64_t (*vec_get)(const packmat_field *,
+                        const uint64_t * v,
+                        uint32_t         i);
+
+    // Set entry i of v to x < n
     void (*vec_set)(const packmat_field *,
-                    uint64_t *,
-                    uint32_t i,
-                    uint64_t x);
+                    uint64_t * v,
+                    uint32_t   i,
+                    uint64_t   x);
+
+    // Overwrite m with ones on the diagonal and zeros elsewhere
     void (*identity)(const packmat_field *,
-                     uint64_t *,
-                     uint32_t nrows,
-                     uint32_t ncols);
+                     uint64_t * m,
+                     uint32_t   nrows,
+                     uint32_t   ncols);
+
+    // 1 if m is square and the identity, else 0
     int (*is_one)(const packmat_field *,
-                  const uint64_t *,
-                  uint32_t nrows,
-                  uint32_t ncols);
+                  const uint64_t * m,
+                  uint32_t         nrows,
+                  uint32_t         ncols);
+
+    // -1, 0 or 1: a against b, both `words` long. The word count suffices,
+    // since the first differing word holds the first differing entry.
     int (*compare)(const packmat_field *,
                    const uint64_t * a,
                    const uint64_t * b,
                    size_t           words);
+
+    // 1 if unused bits of m are zero and all cells are below n
     int (*check)(const packmat_field *,
-                 const uint64_t *,
-                 uint32_t nrows,
-                 uint32_t ncols);
+                 const uint64_t * m,
+                 uint32_t         nrows,
+                 uint32_t         ncols);
 };
 
 extern const Kernels gf2_kernels;
