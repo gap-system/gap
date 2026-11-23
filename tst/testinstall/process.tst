@@ -1,10 +1,11 @@
 #############################################################################
 ##
-##  Tests for RunProcess
+##  Tests for RunProcess and Exec
 ##
 gap> START_TEST("process.tst");
 
-#@if ARCH_IS_UNIX()
+# needs POSIX tools, on native Windows e.g. those of MSYS2
+#@if ARCH_IS_UNIX() or (ARCH_IS_NATIVE_WINDOWS() and PathSystemProgram("sh") <> fail)
 
 # the exit code is reported rather than raised as an error
 gap> RunProcess("true").status;
@@ -24,10 +25,6 @@ gap> RunProcess("printf", "[%s]", "a b", "c'd", "e*f").output;
 # integers are accepted and converted
 gap> RunProcess("printf", "[%s]", 42, -7).output;
 "[42][-7]"
-
-# an absolute path is used as-is
-gap> RunProcess("/bin/echo", "hi").output;
-"hi\n"
 
 # input defaults to nothing at all
 gap> RunProcess("cat").output;
@@ -74,6 +71,31 @@ Error, <cmd> must not be empty
 # a record in a non-final position is treated as an argument, and rejected
 gap> RunProcess("echo", rec(), "x");
 Error, arguments must be strings or integers
+
+# Exec passes quoted arguments through to the program; on native Windows
+# it goes through cmd.exe, which quotes differently from a POSIX shell
+gap> dir := DirectoryTemporary();;
+gap> FileString(Filename(dir, "a b"), "x");
+1
+gap> Exec(Concatenation("cp \"", Filename(dir, "a b"), "\" \"", Filename(dir, "c d"), "\""));
+gap> StringFile(Filename(dir, "c d"));
+"x"
+#@fi
+
+# an absolute path is used as-is
+#@if ARCH_IS_UNIX()
+gap> RunProcess("/bin/echo", "hi").output;
+"hi\n"
+#@fi
+
+# on native Windows exit codes are 32 bits wide; 3221225477 is 0xC0000005,
+# the code of a program that crashed with an access violation
+#@if ARCH_IS_NATIVE_WINDOWS()
+gap> cmd := PathSystemProgram("cmd.exe");;
+gap> Process(DirectoryCurrent(), cmd, InputTextNone(), OutputTextNone(), ["/C", "exit 1000"]);
+1000
+gap> Process(DirectoryCurrent(), cmd, InputTextNone(), OutputTextNone(), ["/C", "exit -1073741819"]);
+3221225477
 #@fi
 
 #
