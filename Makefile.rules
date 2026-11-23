@@ -1052,7 +1052,7 @@ check: all
 # citests runs a subset of the tests run by CI -- this is SLOW and still doesn't
 # quite cover everything (e.g. we don't test out-of-tree builds and `make install`)
 citests: all
-	SRCDIR=$(abs_srcdir) dev/ci.sh testmockpkg testspecial test-compile testlibgap testkernel testworkspace
+	SRCDIR=$(abs_srcdir) dev/ci.sh testmockpkg testspecial test-compile testlibgap testkernel testpackmat testworkspace
 
 LIBGAPTESTS := $(addprefix tst/testlibgap/,basic api wscreate wsload trycatch enterstack)
 

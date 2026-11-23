@@ -251,10 +251,10 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled }}
       - name: "Run tests"
         run: ${{ matrix.extra }} dev/ci.sh ${{ matrix.test-suites }}
-      # Unit tests of src/packmat/ in the 32-bit build, where the portable
-      # code paths are the default; a step of its own keeps the job name.
+      # Unit tests of src/packmat/ in a 64-bit build (unsigned __int128) and
+      # in the 32-bit one (portable mulhi); s390x runs them through citests.
       - name: "Run packmat unit tests"
-        if: ${{ contains(matrix.extra, 'ABI=32') }}
+        if: ${{ contains(matrix.extra, 'ABI=32') || contains(matrix.test-suites, 'testkernel') }}
         run: ${{ matrix.extra }} dev/ci.sh testpackmat
       - name: "Upload pdf manuals"
         if: ${{ contains(matrix.test-suites, 'makemanuals') }}
@@ -365,7 +365,7 @@ jobs:
         run: ./configure --host="s390x-linux-gnu"
 
       - name: Cross compile
-        run: make -j2 V=1 all build-testlibgap build-testkernel
+        run: make -j2 V=1 all build-testlibgap build-testkernel build-packmat
 
       - name: Fixup sysinfo.gap
         run: rm sysinfo.gap && make SYSINFO_CC=gcc SYSINFO_CXX=g++ sysinfo.gap
