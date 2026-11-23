@@ -1,6 +1,8 @@
 # Cross-compiling GAP for native Windows (mingw-w64)
 
-Status (issue #4157): experimental. The target is x86_64-w64-mingw32, as in
+Status (issue #4157): experimental. `gap.exe` passes testinstall, with line
+editing, readline, subprocesses (pipes instead of ptys) and kernel
+extensions; see "Open items" below. The target is x86_64-w64-mingw32, as in
 the MSYS2 MINGW64 environment of the CI job.
 
 The instructions below are for macOS; on Linux, install `gcc-mingw-w64`
@@ -81,3 +83,25 @@ Wine (`brew install --cask wine-stable`) runs the result: copy
 ```sh
 wine gap.exe -A -q -c 'Read("../tst/testinstall.g");' < /dev/null
 ```
+
+## Open items
+
+- Non-ASCII paths: the kernel calls the ANSI Windows API and relies on the
+  manifest of `gap.exe` making UTF-8 the code page (Windows 10 1903 and
+  later). `libgap.dll` inside another program gets that program's code page;
+  `julia.exe` uses the legacy one.
+  The console code page is not switched, so non-ASCII output may be garbled.
+- 32-bit builds (MSYS2 MINGW32) and native ARM64 builds (MSYS2 CLANGARM64,
+  `CC=clang CXX=clang++`) pass testinstall but are not in CI.
+- HPC-GAP and Boehm GC: rejected by `configure`.
+- The Julia GC passes testinstall with Julia 1.12 but is not in CI. The
+  directory of `libjulia.dll` must be in PATH, also during the build. GAP
+  inside Julia is untested.
+- `make install`, and a distribution; the Windows installer ships Cygwin.
+- CI runs testinstall and testmockpkg only. `tst/testinstall/read.tst`
+  expects POSIX semantics for opening a directory and is removed there.
+- `InputOutputLocalProcess` polls its pipe every 10 ms; `UNIXSelect` is
+  unavailable. Children see no terminal and must flush their output.
+- Windows refuses to delete open files; library code doing so fails there.
+- `longjmp` unwinds via SEH on Windows, see the TODO in `src/common.h`.
+- IO package: no `fork`, no sockets.
