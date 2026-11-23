@@ -709,6 +709,22 @@ void InitSystem(int argc, const char * argv[], BOOL handleSignals)
     _setmode(fileno(stdin), _O_BINARY);
     _setmode(fileno(stdout), _O_BINARY);
     _setmode(fileno(stderr), _O_BINARY);
+
+    // GAP relies on HOME (tilde expansion, ~/.gap, history): derive it from
+    // USERPROFILE when unset, and use slashes
+    {
+        const char * home = getenv("HOME");
+        if (home == NULL || *home == '\0')
+            home = getenv("USERPROFILE");
+        if (home != NULL && *home != '\0') {
+            static char homebuf[GAP_PATH_MAX + 6] = "HOME=";
+            strxcat(homebuf, home, sizeof(homebuf));
+            for (char * p = homebuf; *p; p++)
+                if (*p == '\\')
+                    *p = '/';
+            _putenv(homebuf);
+        }
+    }
 #endif
 
     InitSysOpts();
