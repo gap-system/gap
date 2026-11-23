@@ -56,6 +56,9 @@
 ##    for example <M>-9</M> for <C>SIGKILL</C>.
 ##  </Item>
 ##  </List>
+##  On native Windows the exit code of the program is returned, a non-negative
+##  integer less than <M>2^{32}</M>; a program that crashed has a large one,
+##  such as 3221225477.
 ##  <P/>
 ##  The first argument <A>dir</A> is a directory object (see&nbsp;<Ref Sect="Directories"/>)
 ##  which will be the current directory (in the usual UNIX or MS-DOS sense)

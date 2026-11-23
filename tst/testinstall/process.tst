@@ -87,5 +87,15 @@ gap> RunProcess("/bin/echo", "hi").output;
 "hi\n"
 #@fi
 
+# on native Windows exit codes are 32 bits wide; 3221225477 is 0xC0000005,
+# the code of a program that crashed with an access violation
+#@if PositionSublist(GAPInfo.Architecture, "mingw") <> fail
+gap> cmd := PathSystemProgram("cmd.exe");;
+gap> Process(DirectoryCurrent(), cmd, InputTextNone(), OutputTextNone(), ["/C", "exit 1000"]);
+1000
+gap> Process(DirectoryCurrent(), cmd, InputTextNone(), OutputTextNone(), ["/C", "exit -1073741819"]);
+3221225477
+#@fi
+
 #
 gap> STOP_TEST("process.tst");

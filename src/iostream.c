@@ -58,7 +58,7 @@
 // How a child process ended. At most one of <termSignal> and <execError> is
 // nonzero, and <exitCode> is meaningful only if both are zero.
 typedef struct {
-    int exitCode;
+    UInt4 exitCode;    // Windows exit codes use all 32 bits
     int termSignal;    // signal that killed the child
     int execError;     // errno if the child could not be started
 } SyProcessResult;
@@ -1610,10 +1610,6 @@ static BOOL syWinIsCmd(const char * prg)
     return _stricmp(base, "cmd.exe") == 0;
 }
 
-// Windows exit codes are 32 bits wide; larger ones than this do not fit a
-// small integer on 32 bit systems
-enum { SY_WIN_MAX_EXIT_CODE = (1 << 28) - 1 };
-
 static SyProcessResult
 SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[])
 {
@@ -1697,13 +1693,14 @@ SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[])
             FreezeStdin = 0;
 
             // there are no signals; a crashed program exits with an NTSTATUS
-            // value such as 0xC0000005, reported as -1
-            result.execError = 0;
-            if (GetExitCodeProcess(pi.hProcess, &code) &&
-                code <= SY_WIN_MAX_EXIT_CODE)
+            // value such as 0xC0000005
+            if (GetExitCodeProcess(pi.hProcess, &code)) {
+                result.execError = 0;
                 result.exitCode = code;
-            else
-                result.exitCode = -1;
+            }
+            else {
+                result.execError = EIO;
+            }
             CloseHandle(pi.hProcess);
             CloseHandle(pi.hThread);
         }
@@ -1786,7 +1783,7 @@ FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
     if (res.termSignal != 0)
         return INTOBJ_INT(-res.termSignal);
 
-    return INTOBJ_INT(res.exitCode);
+    return ObjInt_UInt(res.exitCode);
 }
 
 
