@@ -28,9 +28,12 @@ inline uint32_t layout_rpw(uint32_t cpw, uint32_t ncols)
     return (ncols > 0 && ncols <= cpw / 2) ? cpw / ncols : 1;
 }
 
+// ceil(ncols / cpw) without the wrap of ncols + cpw - 1 near 2^32
 inline uint32_t layout_stride(uint32_t cpw, uint32_t ncols)
 {
-    return (ncols > 0 && ncols <= cpw / 2) ? 0 : (ncols + (cpw - 1)) / cpw;
+    if (ncols > 0 && ncols <= cpw / 2)
+        return 0;
+    return ncols / cpw + (ncols % cpw != 0);
 }
 
 inline uint64_t layout_words(uint32_t cpw, uint32_t nrows, uint32_t ncols)

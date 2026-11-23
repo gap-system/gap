@@ -481,6 +481,32 @@ static void test_shape(packmat_field * f, uint32_t nrows, uint32_t ncols)
 
 /****************************************************************************
 **
+**  Dimensions near 2^32: word counts must not wrap
+*/
+
+static void test_huge()
+{
+    snprintf(where, sizeof(where), "huge dimensions");
+    packmat_field g;
+    packmat_field_init(&g, PACKMAT_GF2, 2, 0);
+    Field           F(PACKMAT_M64, 7, 0);
+    const uint32_t  big[] = { 0xffffffbf, 0xffffffc0, 0xffffffc1, 0xfffffffe,
+                              0xffffffff };
+    const uint64_t  maxrows = 0xffffffff;
+    for (size_t k = 0; k < sizeof(big) / sizeof(big[0]); k++) {
+        const uint64_t len = big[k];
+        CHECK(packmat_stride(&g, big[k]) == (len + 63) / 64);
+        CHECK(packmat_vector_words(&g, big[k]) == (len + 63) / 64);
+        CHECK(packmat_matrix_words(&g, 0xffffffff, big[k]) ==
+              maxrows * ((len + 63) / 64));
+        CHECK(packmat_stride(F.f, big[k]) == len);
+        CHECK(packmat_matrix_words(F.f, 0xffffffff, big[k]) == maxrows * len);
+    }
+    CHECK(packmat_matrix_words(&g, 0xffffffff, 1) == (maxrows + 63) / 64);
+}
+
+/****************************************************************************
+**
 **  Orders and hashes with known answers
 */
 
@@ -625,6 +651,7 @@ int main()
                 test_shape(F.f, m64_dims[r], m64_dims[c]);
     }
 
+    test_huge();
     test_orders();
     test_hash_values();
 
