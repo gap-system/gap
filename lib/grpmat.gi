@@ -935,6 +935,68 @@ end );
 
 #############################################################################
 ##
+#F  RespectsQuadraticFormUpToScalars( <Q>, <M> )
+##
+##  The analogue of 'RespectsQuadraticForm',
+##  comparing the upper triangular matrices that describe the forms.
+##
+BindGlobal( "RespectsQuadraticFormUpToScalars", function( Q, M )
+    local upper;
+
+    upper:= function( A )
+      local n;
+
+      n:= NumberRows( A );
+      return List( [ 1 .. n ], i -> List( [ 1 .. n ], function( j )
+                 if j < i then
+                   return Zero( A[i,i] );
+                 elif j = i then
+                   return A[i,i];
+                 fi;
+                 return A[i,j] + A[j,i];
+               end ) );
+    end;
+
+    return _IsEqualModScalars_GAP( upper( Q ),
+                                   upper( M * Q * TransposedMat( M ) ) );
+end );
+
+InstallMethod( \in, "respecting quadratic form up to scalars", IsElmsColls,
+  [ IsMatrixOrMatrixObj,
+    IsFullSubgroupGLRespectingQuadraticFormUpToScalars ],
+  {} -> RankFilter( IsHandledByNiceMonomorphism ), # override nice mon. method
+function( mat, G )
+    # We may use `FieldOfMatrixGroup( G )` instead of `baseDomain` of the form,
+    # see the comment for the '\in' method above.
+    return IsSubset( FieldOfMatrixGroup( G ), FieldOfMatrixList( [ mat ] ) )
+       and RespectsQuadraticFormUpToScalars(
+               InvariantQuadraticFormUpToScalars( G ).matrix, mat );
+end );
+
+InstallMethod( \in, "respecting sesquilinear form up to scalars",
+  IsElmsColls,
+  [ IsMatrixOrMatrixObj,
+    IsFullSubgroupGLRespectingSesquilinearFormUpToScalars ],
+  {} -> RankFilter( IsHandledByNiceMonomorphism ), # override nice mon. method
+function( mat, G )
+    local form, pow, inv;
+    # We may use `FieldOfMatrixGroup( G )` instead of `baseDomain` of the form,
+    # see the comment for the '\in' method above.
+    if not IsSubset( FieldOfMatrixGroup( G ),
+                     FieldOfMatrixList( [ mat ] ) ) then
+      return false;
+    fi;
+    form:= InvariantSesquilinearFormUpToScalars( G );
+    pow:= RootInt( Size( form.baseDomain ) );
+    inv:= form.matrix;
+    return _IsEqualModScalars_GAP( inv,
+               mat * inv * List( TransposedMat( mat ),
+                                 row -> List( row, x -> x^pow ) ) );
+end );
+
+
+#############################################################################
+##
 #M  IsGeneratorsOfMagmaWithInverses( <matlist> )
 ##
 ##  Check that all entries are matrices of the same dimension, and that they
@@ -1445,6 +1507,21 @@ InstallMethod( ConjugateGroup, "<G>, <g>", IsCollsElms,
       SetInvariantBilinearFormUpToScalars( H,
           rec( matrix := m, baseDomain := D ) );
     fi;
+    if HasInvariantQuadraticFormUpToScalars( G ) then
+      if not IsBound( ginv ) then
+        ginv := g^-1;
+      fi;
+      form := InvariantQuadraticFormUpToScalars( G );
+      m := ginv * form.matrix * TransposedMat( ginv );
+      if not IsBound( D ) then
+        D:= form.baseDomain;
+        if not IsSubset( D, F ) then
+          D:= ClosureField( D, F );
+        fi;
+      fi;
+      SetInvariantQuadraticFormUpToScalars( H,
+          rec( matrix := m, baseDomain := D ) );
+    fi;
     if IsSubset( FieldOfMatrixGroup( G ), F ) then
       if HasIsNaturalGL( G ) then
         SetIsNaturalGL( H, IsNaturalGL( G ) );
@@ -1467,6 +1544,10 @@ InstallMethod( ConjugateGroup, "<G>, <g>", IsCollsElms,
           and IsFullSubgroupGLRespectingBilinearFormUpToScalars( G ) then
         SetIsFullSubgroupGLRespectingBilinearFormUpToScalars( H, true );
       fi;
+      if HasIsFullSubgroupGLRespectingQuadraticFormUpToScalars( G )
+          and IsFullSubgroupGLRespectingQuadraticFormUpToScalars( G ) then
+        SetIsFullSubgroupGLRespectingQuadraticFormUpToScalars( H, true );
+      fi;
 
       # For a stored sesquilinear form, we have to keep the meaning
       # of the involutory field automorphism,
@@ -1482,6 +1563,18 @@ InstallMethod( ConjugateGroup, "<G>, <g>", IsCollsElms,
         m:= ginv * form.matrix * List( TransposedMat( ginv ),
                                        row -> List( row, x -> x^pow ) );
         SetInvariantSesquilinearForm( H, rec( matrix:= m, baseDomain:= D ) );
+      fi;
+      if HasInvariantSesquilinearFormUpToScalars( G ) then
+        if not IsBound( ginv ) then
+          ginv:= g^-1;
+        fi;
+        form:= InvariantSesquilinearFormUpToScalars( G );
+        D:= form.baseDomain;
+        pow:= RootInt( Size( D ) );
+        m:= ginv * form.matrix * List( TransposedMat( ginv ),
+                                       row -> List( row, x -> x^pow ) );
+        SetInvariantSesquilinearFormUpToScalars( H,
+            rec( matrix:= m, baseDomain:= D ) );
       fi;
     fi;
     return H;
