@@ -266,6 +266,11 @@ static void test_contexts()
     rank[3] = 7;    // out of range
     CHECK(!packmat_field_check(f));
     rank[3] = 3;
+    rank[0] = 1;    // zero must rank first
+    rank[1] = 0;
+    CHECK(!packmat_field_check(f));
+    rank[0] = 0;
+    rank[1] = 1;
     f->ninv ^= 1;
     CHECK(!packmat_field_check(f));
     f->ninv ^= 1;
@@ -280,14 +285,14 @@ static void test_contexts()
 **  Layout and whole objects
 */
 
-// Random permutation of 0..n-1
+// Random permutation of 0..n-1 that fixes 0
 static vector<uint16_t> random_rank(uint64_t n)
 {
     vector<uint16_t> r(n);
     for (uint64_t x = 0; x < n; x++)
         r[x] = (uint16_t)x;
-    for (uint64_t x = n - 1; x > 0; x--) {
-        const uint64_t y = rnd() % (x + 1);
+    for (uint64_t x = n - 1; x > 1; x--) {
+        const uint64_t y = 1 + rnd() % x;
         const uint16_t t = r[x];
         r[x] = r[y];
         r[y] = t;
@@ -550,15 +555,16 @@ static void test_orders()
     Field P(PACKMAT_M64, 65521, 0);
     CHECK(packmat_compare(P.f, a, b, 1, 2) == -1);
 
-    snprintf(where, sizeof(where), "GF(2) reversed order");
-    Field           H(PACKMAT_GF2, 2, 1);
-    packmat_field * h = H.f;
-    uint16_t *      hr = packmat_field_rank(h);
-    hr[0] = 1;
-    hr[1] = 0;
-    CHECK(packmat_field_check(h));
-    const uint64_t u = 0x1, w = 0x2;    // [1, 0] against [0, 1]
-    CHECK(packmat_compare(h, &u, &w, 1, 2) == -1);
+    // Vectors of different lengths, as packmat.h says: compare the
+    // shorter length, then break ties by length. Over GF(2) both share a
+    // word, so cell 2 of the longer one takes part.
+    snprintf(where, sizeof(where), "GF(2) prefix order");
+    packmat_field h;
+    packmat_field_init(&h, PACKMAT_GF2, 2, 0);
+    const uint64_t u = 0x2, w = 0x6, x = 0x2;    // [0, 1], [0, 1, 1], [0, 1, 0]
+    CHECK(packmat_compare(&h, &u, &w, 1, 2) == -1);
+    CHECK(packmat_compare(&h, &w, &u, 1, 2) == 1);
+    CHECK(packmat_compare(&h, &u, &x, 1, 2) == 0);    // tie: shorter first
 }
 
 // Known answers for packmat_hash, computed from the formula in matrix.cc

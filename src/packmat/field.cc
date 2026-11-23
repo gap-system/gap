@@ -84,6 +84,8 @@ int packmat_field_check(const packmat_field * f)
     const uint16_t * rank = rank_table(f);
     if (!rank)
         return 1;
+    if (rank[0] != 0)
+        return 0;
 
     // permutation test with a bitmap of MAX_RANKED_N bits (8 KiB)
     uint64_t seen[MAX_RANKED_N / 64] = { 0 };

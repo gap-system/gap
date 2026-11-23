@@ -89,10 +89,11 @@ size_t packmat_field_size(int kind, uint64_t n, int ranked);
 int packmat_field_init(packmat_field * f, int kind, uint64_t n, int ranked);
 
 // Rank table: rank[x] orders residue x for packmat_compare; NULL if none.
-// The caller may overwrite it with any permutation of 0..n-1.
+// The caller may overwrite it with any permutation of 0..n-1 that keeps
+// rank[0] = 0, i.e. zero sorts first.
 uint16_t * packmat_field_rank(packmat_field * f);
 
-// 1 if f is a consistent context (constants, rank table a permutation).
+// 1 if f is a consistent context: constants, and a rank table as above.
 int packmat_field_check(const packmat_field * f);
 
 /****************************************************************************
