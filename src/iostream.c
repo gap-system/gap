@@ -40,10 +40,19 @@
 
 #include "config.h"
 
+#include <errno.h>
+
+// How a child process ended. At most one of <termSignal> and <execError> is
+// nonzero, and <exitCode> is meaningful only if both are zero.
+typedef struct {
+    int exitCode;
+    int termSignal;    // signal that killed the child
+    int execError;     // errno if the child could not be started
+} SyProcessResult;
+
 // the POSIX implementation, on top of fork and pseudo terminals
 #if !defined(GAP_DISABLE_SUBPROCESS_CODE) && !defined(SYS_IS_MINGW)
 
-#include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <termios.h>
@@ -586,14 +595,6 @@ cleanup:
 
 
 #ifndef GAP_DISABLE_SUBPROCESS_CODE
-
-// How a child process ended. At most one of <termSignal> and <execError> is
-// nonzero, and <exitCode> is meaningful only if both are zero.
-typedef struct {
-    int exitCode;
-    int termSignal;    // signal that killed the child
-    int execError;     // errno if the child could not be started
-} SyProcessResult;
 
 /****************************************************************************
 **
@@ -1170,56 +1171,6 @@ static Obj FuncFD_OF_IOSTREAM(Obj self, Obj stream)
     return result;
 }
 
-static Obj
-FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
-{
-    Obj    ExecArgs[1024];
-    Char * ExecCArgs[1024];
-
-    Obj tmp;
-    Int i;
-
-    RequireStringRep(SELF_NAME, dir);
-    RequireStringRep(SELF_NAME, prg);
-    Int iin = GetSmallInt(SELF_NAME, in);
-    Int iout = GetSmallInt(SELF_NAME, out);
-    RequirePlainList(SELF_NAME, args);
-
-    // create an argument array
-    for (i = 1; i <= LEN_PLIST(args); i++) {
-        if (i == 1023)
-            break;
-        tmp = ELM_PLIST(args, i);
-        RequireStringRep(SELF_NAME, tmp);
-        ExecArgs[i] = tmp;
-    }
-    ExecCArgs[0] = CSTR_STRING(prg);
-    ExecCArgs[i] = 0;
-    for (i--; 0 < i; i--) {
-        ExecCArgs[i] = CSTR_STRING(ExecArgs[i]);
-    }
-    if (SyWindow && out == INTOBJ_INT(1))    // standard output
-        syWinPut(INT_INTOBJ(out), "@z", "");
-
-    // execute the process
-    SyProcessResult res = SyExecuteProcess(CSTR_STRING(dir), CSTR_STRING(prg),
-                                           iin, iout, ExecCArgs);
-
-    if (SyWindow && out == INTOBJ_INT(1))    // standard output
-        syWinPut(INT_INTOBJ(out), "@mAgIc", "");
-
-    // the program never ran
-    if (res.execError != 0)
-        return Fail;
-
-    // killed by a signal: report it as a negative value, so that it cannot be
-    // mistaken for an exit code
-    if (res.termSignal != 0)
-        return INTOBJ_INT(-res.termSignal);
-
-    return INTOBJ_INT(res.exitCode);
-}
-
 #else // !defined(GAP_DISABLE_SUBPROCESS_CODE) && !defined(SYS_IS_MINGW)
 
 int CheckChildStatusChanged(int childPID, int status)
@@ -1272,23 +1223,68 @@ static Obj FuncFD_OF_IOSTREAM(Obj self, Obj stream)
     return Fail;
 }
 
+#endif
+
+#if defined(GAP_DISABLE_SUBPROCESS_CODE) || defined(SYS_IS_MINGW) ||          \
+    !(defined(HAVE_FORK) || defined(HAVE_VFORK))
+// no way to start a subprocess: signal failure
+static SyProcessResult
+SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[])
+{
+    SyProcessResult result = { 0, 0, ENOSYS };
+    return result;
+}
+#endif
+
 static Obj
 FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
 {
-    // validate the arguments exactly as the real implementation does
+    Obj    ExecArgs[1024];
+    Char * ExecCArgs[1024];
+
+    Obj tmp;
+    Int i;
+
     RequireStringRep(SELF_NAME, dir);
     RequireStringRep(SELF_NAME, prg);
-    GetSmallInt(SELF_NAME, in);
-    GetSmallInt(SELF_NAME, out);
+    Int iin = GetSmallInt(SELF_NAME, in);
+    Int iout = GetSmallInt(SELF_NAME, out);
     RequirePlainList(SELF_NAME, args);
-    for (Int i = 1; i <= LEN_PLIST(args); i++) {
-        Obj tmp = ELM_PLIST(args, i);
-        RequireStringRep(SELF_NAME, tmp);
-    }
-    return Fail;
-}
 
-#endif
+    // create an argument array
+    for (i = 1; i <= LEN_PLIST(args); i++) {
+        if (i == 1023)
+            break;
+        tmp = ELM_PLIST(args, i);
+        RequireStringRep(SELF_NAME, tmp);
+        ExecArgs[i] = tmp;
+    }
+    ExecCArgs[0] = CSTR_STRING(prg);
+    ExecCArgs[i] = 0;
+    for (i--; 0 < i; i--) {
+        ExecCArgs[i] = CSTR_STRING(ExecArgs[i]);
+    }
+    if (SyWindow && out == INTOBJ_INT(1))    // standard output
+        syWinPut(INT_INTOBJ(out), "@z", "");
+
+    // execute the process
+    SyProcessResult res = SyExecuteProcess(CSTR_STRING(dir), CSTR_STRING(prg),
+                                           iin, iout, ExecCArgs);
+
+    if (SyWindow && out == INTOBJ_INT(1))    // standard output
+        syWinPut(INT_INTOBJ(out), "@mAgIc", "");
+
+    // the program never ran
+    if (res.execError != 0)
+        return Fail;
+
+    // killed by a signal: report it as a negative value, so that it cannot be
+    // mistaken for an exit code
+    if (res.termSignal != 0)
+        return INTOBJ_INT(-res.termSignal);
+
+    return INTOBJ_INT(res.exitCode);
+}
 
 
 /****************************************************************************
