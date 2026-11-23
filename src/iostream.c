@@ -45,7 +45,7 @@
 // How a child process ended. At most one of <termSignal> and <execError> is
 // nonzero, and <exitCode> is meaningful only if both are zero.
 typedef struct {
-    int exitCode;
+    UInt4 exitCode;    // Windows exit codes use all 32 bits
     int termSignal;    // signal that killed the child
     int execError;     // errno if the child could not be started
 } SyProcessResult;
@@ -1283,7 +1283,7 @@ FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
     if (res.termSignal != 0)
         return INTOBJ_INT(-res.termSignal);
 
-    return INTOBJ_INT(res.exitCode);
+    return ObjInt_UInt(res.exitCode);
 }
 
 
