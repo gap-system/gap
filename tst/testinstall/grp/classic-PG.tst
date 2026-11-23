@@ -1,6 +1,6 @@
 #
 # Tests for the "projective general" group constructors:
-# PGL, PGO, POmega, PGU, PGammaL
+# PGL, PGO, POmega, PGU, PCSp, PCO, PCU, PGammaL
 #
 gap> START_TEST("classic-PG.tst");
 
@@ -119,6 +119,61 @@ gap> PGU(3);
 Error, usage: ProjectiveGeneralUnitaryGroup( [<filter>, ]<d>, <q> )
 gap> PGU(3,6);
 Error, <subfield> must be a prime or a finite field
+
+# PCSp, PCO, PCU contain PSp, PGO, PGU with index 1 or 2
+gap> for q in [ 2, 3, 4, 5, 7, 8, 9 ] do
+>      for d in [ 2, 4 ] do
+>        G:= PCSp( d, q );
+>        if Size( G ) <> Size( GroupByGenerators( GeneratorsOfGroup( G ),
+>                                                 One( G ) ) ) or
+>           not IsSubset( G, PSp( d, q ) ) or
+>           Size( G ) <> Size( PSp( d, q ) ) * Gcd( 2, q-1 ) then
+>          Error( "problem with PCSp", [ d, q ], "\n" );
+>        fi;
+>      od;
+>    od;
+gap> for q in [ 2, 3, 4, 5 ] do
+>      for d in [ 1 .. 5 ] do
+>        for e in [ -1, 0, 1 ] do
+>          if ( e = 0 ) <> IsOddInt( d ) then
+>            continue;
+>          fi;
+>          G:= PCO( e, d, q );
+>          if Size( G ) <> Size( GroupByGenerators( GeneratorsOfGroup( G ),
+>                                                   One( G ) ) ) or
+>             not IsSubset( G, PGO( e, d, q ) ) or
+>             Size( G ) <> Size( PGO( e, d, q ) )
+>                          * Gcd( 2, q-1 )^( 1 - d mod 2 ) then
+>            Error( "problem with PCO", [ e, d, q ], "\n" );
+>          fi;
+>        od;
+>      od;
+>    od;
+gap> for q in [ 2, 3, 4 ] do
+>      for d in [ 1 .. 4 ] do
+>        G:= PCU( d, q );
+>        if Size( G ) <> Size( GroupByGenerators( GeneratorsOfGroup( G ),
+>                                                 One( G ) ) ) or
+>           G <> PGU( d, q ) then
+>          Error( "problem with PCU", [ d, q ], "\n" );
+>        fi;
+>      od;
+>    od;
+gap> PCSp( IsPermGroup, 4, 3 ) = PCSp( 4, 3 );
+true
+gap> PCO( IsPermGroup, 3, 5 ) = PCO( 0, 3, 5 );
+true
+gap> PCO( IsPermGroup, -1, 4, 3 ) = PCO( -1, 4, 3 );
+true
+gap> PCU( IsPermGroup, 3, 3 ) = PCU( 3, 3 );
+true
+gap> PCSp( 3 );
+Error, usage: ProjectiveConformalSymplecticGroup( [<filter>, ]<d>, <q> )
+gap> PCO( 3 );
+Error, usage: ProjectiveConformalOrthogonalGroup( [<filter>, ][<e>, ]<d>, <q> \
+)
+gap> PCU( 3 );
+Error, usage: ProjectiveConformalUnitaryGroup( [<filter>, ]<d>, <q> )
 
 #
 gap> PGammaL( 2, 5 ) = PGL( 2, 5 );

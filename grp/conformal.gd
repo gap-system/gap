@@ -362,3 +362,93 @@ DeclareConstructor( "ConformalUnitaryGroupCons",
 DeclareGlobalFunction( "ConformalUnitaryGroup" );
 
 DeclareSynonym( "CU", ConformalUnitaryGroup );
+
+
+#############################################################################
+##
+#F  ProjectiveConformalSymplecticGroup( [<filt>, ]<d>, <q> )
+#F  PCSp( [<filt>, ]<d>, <q> )
+##
+##  <#GAPDoc Label="ProjectiveConformalSymplecticGroup">
+##  <ManSection>
+##  <Func Name="ProjectiveConformalSymplecticGroup" Arg='[filt, ]d, q'/>
+##  <Func Name="PCSp" Arg='[filt, ]d, q'/>
+##
+##  <Description>
+##  constructs a group isomorphic to the projective group
+##  PCSp( <A>d</A>, <A>q</A> )
+##  of CSp( <A>d</A>, <A>q</A> ) modulo the scalar matrices
+##  (see <Ref Func="ConformalSymplecticGroup"
+##  Label="for dimension and field size"/>),
+##  in the category given by the filter <A>filt</A>.
+##  It equals PSp( <A>d</A>, <A>q</A> ) for even <A>q</A>
+##  and contains it with index <M>2</M> for odd <A>q</A>.
+##  <P/>
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsPermGroup"/>,
+##  and the returned group is the action on lines of the underlying vector
+##  space.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DECLARE_PROJECTIVE_GROUPS_OPERATION( "ConformalSymplecticGroup", "CSp", 1,
+  { n, q, g } -> Size( g ) / ( q - 1 ) );
+
+
+#############################################################################
+##
+#F  ProjectiveConformalOrthogonalGroup( [<filt>, ][<e>, ]<d>, <q> )
+#F  PCO( [<filt>, ][<e>, ]<d>, <q> )
+##
+##  <#GAPDoc Label="ProjectiveConformalOrthogonalGroup">
+##  <ManSection>
+##  <Func Name="ProjectiveConformalOrthogonalGroup" Arg='[filt, ][e, ]d, q'/>
+##  <Func Name="PCO" Arg='[filt, ][e, ]d, q'/>
+##
+##  <Description>
+##  constructs a group isomorphic to the projective group
+##  PCO( <A>e</A>, <A>d</A>, <A>q</A> )
+##  of CO( <A>e</A>, <A>d</A>, <A>q</A> ) modulo the scalar matrices
+##  (see <Ref Func="ConformalOrthogonalGroup"/>),
+##  in the category given by the filter <A>filt</A>.
+##  It contains PGO( <A>e</A>, <A>d</A>, <A>q</A> ) with index <M>2</M>
+##  if <A>d</A> is even and <A>q</A> is odd, and equals it otherwise.
+##  <P/>
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsPermGroup"/>,
+##  and the returned group is the action on lines of the underlying vector
+##  space.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DECLARE_PROJECTIVE_ORTHOGONAL_GROUPS_OPERATION( "ConformalOrthogonalGroup",
+  "CO", { e, n, q, g } -> Size( g ) / ( q - 1 ) );
+
+
+#############################################################################
+##
+#F  ProjectiveConformalUnitaryGroup( [<filt>, ]<d>, <q> )
+#F  PCU( [<filt>, ]<d>, <q> )
+##
+##  <#GAPDoc Label="ProjectiveConformalUnitaryGroup">
+##  <ManSection>
+##  <Func Name="ProjectiveConformalUnitaryGroup" Arg='[filt, ]d, q'/>
+##  <Func Name="PCU" Arg='[filt, ]d, q'/>
+##
+##  <Description>
+##  constructs a group isomorphic to the projective group
+##  PCU( <A>d</A>, <A>q</A> )
+##  of CU( <A>d</A>, <A>q</A> ) modulo the scalar matrices
+##  (see <Ref Func="ConformalUnitaryGroup"/>),
+##  in the category given by the filter <A>filt</A>.
+##  It equals PGU( <A>d</A>, <A>q</A> ).
+##  <P/>
+##  If <A>filt</A> is not given it defaults to <Ref Filt="IsPermGroup"/>,
+##  and the returned group is the action on lines of the underlying vector
+##  space.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DECLARE_PROJECTIVE_GROUPS_OPERATION( "ConformalUnitaryGroup", "CU", 2,
+  { n, q, g } -> Size( g ) / ( q^2 - 1 ) );

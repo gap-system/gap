@@ -159,6 +159,9 @@ gap> AsSSortedList(DihedralGroup(12:generatorNames:=["a","b","c"]));
 <#Include Label="ProjectiveGeneralOrthogonalGroup">
 <#Include Label="ProjectiveSpecialOrthogonalGroup">
 <#Include Label="ProjectiveOmega">
+<#Include Label="ProjectiveConformalSymplecticGroup">
+<#Include Label="ProjectiveConformalOrthogonalGroup">
+<#Include Label="ProjectiveConformalUnitaryGroup">
 <#Include Label="ProjectiveGeneralSemilinearGroup">
 <#Include Label="ProjectiveSpecialSemilinearGroup">
 
