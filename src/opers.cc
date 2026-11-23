@@ -325,6 +325,33 @@ static Obj FuncSIZE_FLAGS(Obj self, Obj flags)
 
 /****************************************************************************
 **
+*F  FuncSUM_LIST_FLAGS( <self>, <list>, <flags> ) . sum of list at flags trues
+**
+**  returns the sum of '<list>[i]' over the true positions 'i' of <flags>.
+**  'RankFilter' uses it to add up filter ranks.
+*/
+static Obj FuncSUM_LIST_FLAGS(Obj self, Obj list, Obj flags)
+{
+    RequireSmallList(SELF_NAME, list);
+    RequireFlags(SELF_NAME, flags);
+
+    Obj  sum = INTOBJ_INT(0);
+    UInt nrb = NRB_FLAGS(flags);
+    for (UInt b = 0; b < nrb; b++) {
+        // 'ELM_LIST' and 'SUM' may run GAP code and move the blocks
+        for (UInt block = BLOCKS_FLAGS(flags)[b]; block; block &= block - 1) {
+            UInt bit = COUNT_TRUES_BLOCK((block & -block) - 1);
+            Obj  val = ELM_LIST(list, b * BIPEB + bit + 1);
+            if (!ARE_INTOBJS(sum, val) || !SUM_INTOBJS(sum, sum, val))
+                sum = SUM(sum, val);
+        }
+    }
+    return sum;
+}
+
+
+/****************************************************************************
+**
 *F  EqFlags( <flags1>, <flags2> ) . . . . . . . . . . equality of flags lists
 */
 static Int EqFlags(Obj flags1, Obj flags2)
@@ -3707,6 +3734,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_2ARGS(IS_SUBSET_FLAGS, flags1, flags2),
     GVAR_FUNC_1ARGS(TRUES_FLAGS, flags),
     GVAR_FUNC_1ARGS(SIZE_FLAGS, flags),
+    GVAR_FUNC_2ARGS(SUM_LIST_FLAGS, list, flags),
     GVAR_FUNC_1ARGS(FLAG1_FILTER, oper),
     GVAR_FUNC_1ARGS(FLAG2_FILTER, oper),
     GVAR_FUNC_1ARGS(FLAGS_FILTER, oper),
