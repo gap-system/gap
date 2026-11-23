@@ -145,9 +145,9 @@ int packmat_is_zero(packmat_mat m)
     return 1;
 }
 
-int packmat_is_one(packmat_mat m)
+int packmat_is_identity(packmat_mat m)
 {
-    return kernels(m.f).is_one(m.f, m.w, m.nrows, m.ncols);
+    return kernels(m.f).is_identity(m.f, m.w, m.nrows, m.ncols);
 }
 
 int packmat_check_invariants(packmat_mat m)

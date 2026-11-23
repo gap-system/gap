@@ -90,7 +90,7 @@ static void zmod7_matrices(void)
     const packmat_mat b = new_matrix(f, 2, 2);
     packmat_identity(a);
     CHECK(a.w[0] == 1 && a.w[1] == 0 && a.w[2] == 0 && a.w[3] == 1);
-    CHECK(packmat_is_one(a));
+    CHECK(packmat_is_identity(a));
 
     packmat_copy(b, a);
     CHECK(packmat_equal(a, b));
@@ -98,7 +98,7 @@ static void zmod7_matrices(void)
 
     packmat_mat_set(b, 0, 1, 3);    // b = [[1, 3], [0, 1]]
     CHECK(!packmat_equal(a, b));
-    CHECK(!packmat_is_one(b));
+    CHECK(!packmat_is_identity(b));
     CHECK(packmat_compare(a, b) == -1);    // a[0,1] = 0 < 3
 
     free(a.w);

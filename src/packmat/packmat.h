@@ -226,7 +226,7 @@ uint64_t packmat_hash(packmat_mat m);
 int packmat_is_zero(packmat_mat m);
 
 // 1 if square with ones on the diagonal and zeros elsewhere (also 0 x 0).
-int packmat_is_one(packmat_mat m);
+int packmat_is_identity(packmat_mat m);
 
 // 1 if unused cells and bits are zero and all cells are below n. For
 // debugging and tests.

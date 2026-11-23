@@ -430,7 +430,7 @@ static void test_shape(packmat_field * f, uint32_t nrows, uint32_t ncols)
     for (size_t k = 0; k < A.e.size(); k++)
         a_zero &= A.e[k] == 0;
     CHECK(packmat_is_zero(va) == a_zero);
-    CHECK(packmat_is_one(va) == ref::is_one(A));
+    CHECK(packmat_is_identity(va) == ref::is_identity(A));
 
     // vectors: a 1 x len view
     if (nrows == 1) {
@@ -455,7 +455,7 @@ static void test_shape(packmat_field * f, uint32_t nrows, uint32_t ncols)
     CHECK(id.same(ref::pack(ref::identity(nrows, ncols), f->bits)));
     CHECK(id.guards_ok());
     CHECK(packmat_check_invariants(vid));
-    CHECK(packmat_is_one(vid) == (nrows == ncols));
+    CHECK(packmat_is_identity(vid) == (nrows == ncols));
     CHECK(packmat_is_zero(vid) == (nrows == 0 || ncols == 0));
 
     // identity with one entry changed
@@ -464,7 +464,7 @@ static void test_shape(packmat_field * f, uint32_t nrows, uint32_t ncols)
         const uint32_t j = (uint32_t)(rnd() % ncols);
         const uint64_t x = packmat_mat_get(vid, i, j);
         packmat_mat_set(vid, i, j, x == 0 ? 1 : 0);
-        CHECK(!packmat_is_one(vid));
+        CHECK(!packmat_is_identity(vid));
     }
 
     // copy, equal, hash

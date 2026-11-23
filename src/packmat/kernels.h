@@ -93,10 +93,10 @@ struct Kernels {
                      uint32_t   ncols);
 
     // 1 if m is square and the identity, else 0
-    int (*is_one)(const packmat_field *,
-                  const uint64_t * m,
-                  uint32_t         nrows,
-                  uint32_t         ncols);
+    int (*is_identity)(const packmat_field *,
+                       const uint64_t * m,
+                       uint32_t         nrows,
+                       uint32_t         ncols);
 
     // -1, 0 or 1: a against b, both `words` long. The word count suffices,
     // since the first differing word holds the first differing entry.
@@ -205,10 +205,10 @@ struct CellKernels {
             mat_set(f, m, ncols, i, i, 1);
     }
 
-    static int is_one(const packmat_field *,
-                      const uint64_t * m,
-                      uint32_t         nrows,
-                      uint32_t         ncols)
+    static int is_identity(const packmat_field *,
+                           const uint64_t * m,
+                           uint32_t         nrows,
+                           uint32_t         ncols)
     {
         if (nrows != ncols)
             return 0;
@@ -325,7 +325,7 @@ constexpr Kernels cell_kernels()
 {
     return Kernels{ &CellKernels<B>::mat_get,  &CellKernels<B>::mat_set,
                     &CellKernels<B>::vec_get,  &CellKernels<B>::vec_set,
-                    &CellKernels<B>::identity, &CellKernels<B>::is_one,
+                    &CellKernels<B>::identity, &CellKernels<B>::is_identity,
                     &CellKernels<B>::compare,  &CellKernels<B>::check };
 }
 

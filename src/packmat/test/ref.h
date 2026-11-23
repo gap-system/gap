@@ -111,7 +111,7 @@ inline Mat identity(uint32_t nrows, uint32_t ncols)
     return m;
 }
 
-inline bool is_one(const Mat & m)
+inline bool is_identity(const Mat & m)
 {
     if (m.nrows != m.ncols)
         return false;
