@@ -191,6 +191,10 @@ Perm_CU(3,4)
 gap> CU(1,3); Size(last);
 CU(1,3)
 8
+gap> Z(5^4) * One(CU(3,5)) in CU(3,5);
+false
+gap> Z(25) * One(CO(3,5)) in CO(3,5);
+false
 gap> CU(3);
 Error, usage: ConformalUnitaryGroup( [<filt>, ]<d>, <q>[, <form>] )
 or ConformalUnitaryGroup( [<filt>, ]<form> )

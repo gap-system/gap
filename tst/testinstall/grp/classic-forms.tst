@@ -395,6 +395,20 @@ true
 gap> ForAll(grps2, CheckMembershipBilinearUpToScalars2);
 true
 
+# a group storing only the quadratic form up to scalars
+gap> G:= CO(-1,4,3);;
+gap> m:= GroupWithGenerators(GeneratorsOfGroup(G));;
+gap> SetInvariantQuadraticFormUpToScalars(m,
+>        InvariantQuadraticFormUpToScalars(G));
+gap> m:= m ^ ([[1,Z(9),0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]] * Z(3)^0);;
+gap> HasInvariantBilinearFormUpToScalars(m);
+false
+gap> InvariantQuadraticFormUpToScalars(m).baseDomain;
+GF(3^2)
+gap> ForAll(GeneratorsOfGroup(m), g -> RespectsQuadraticFormUpToScalars(
+>        InvariantQuadraticFormUpToScalars(m).matrix, g));
+true
+
 #
 # unitary groups
 #

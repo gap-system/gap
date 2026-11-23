@@ -219,23 +219,18 @@ InstallMethod( ConformalOrthogonalGroupCons,
   Q:= InvariantQuadraticForm( G ).matrix;
 
   # Return a matrix M with f(v M) = z f(v) for the nonsingular binary
-  # quadratic form f(x,y) = a x^2 + b x y + c y^2 over F, for odd q.
+  # quadratic form f(x,y) = a x^2 + b x y + c y^2 over F, for odd q,
+  # where a = c = 0 or a <> 0, as for the forms of GO.
   # If a <> 0 then f = a N for the norm form N(x,y) = x^2 + p x y + s y^2
   # of the algebra F[t]/(t^2 - p t + s), and M describes the
   # multiplication with an element c0 + e0 t of norm z.
   binary:= function( a, b, c )
-    local swap, p, s, e0, r, c0, M;
+    local p, s, e0, r, c0;
 
     if IsZero( a ) and IsZero( c ) then
       return [ [ z, 0*z ], [ 0*z, o ] ];
     fi;
-
-    # If a = 0 then swap the coordinates.
-    swap:= IsZero( a );
-    if swap then
-      a:= c;
-      c:= 0*z;
-    fi;
+    Assert( 1, not IsZero( a ) );
 
     # Since z is not a square, a solution has e0 <> 0.
     p:= b / a;
@@ -248,12 +243,7 @@ InstallMethod( ConformalOrthogonalGroupCons,
       fi;
     until r <> fail;
     c0:= ( r - p * e0 ) / ( 2*o );
-    M:= [ [ c0, e0 ], [ -s * e0, c0 + p * e0 ] ];
-
-    if swap then
-      M:= [ [ M[2,2], M[2,1] ], [ M[1,2], M[1,1] ] ];
-    fi;
-    return M;
+    return [ [ c0, e0 ], [ -s * e0, c0 + p * e0 ] ];
   end;
 
   if IsOddInt( d ) then
