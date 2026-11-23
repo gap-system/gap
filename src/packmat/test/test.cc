@@ -9,7 +9,8 @@
 **
 **  Unit tests of the packed matrix core against the reference in ref.h,
 **  on fixed-seed random data and edge dimensions. Exit status 0 on
-**  success.
+**  success. For how the API is used, read example.c; the helpers here are
+**  Buf, a word buffer with guard words, and Field, storage for a context.
 */
 
 #include "../packmat.h"
@@ -271,13 +272,36 @@ static void test_contexts()
     CHECK(!packmat_field_check(f));
     rank[0] = 0;
     rank[1] = 1;
-    f->ninv ^= 1;
-    CHECK(!packmat_field_check(f));
-    f->ninv ^= 1;
-    f->cpw = 2;
-    CHECK(!packmat_field_check(f));
-    f->cpw = 1;
     CHECK(packmat_field_check(f));
+
+    // one corrupt member at a time, in copies of unranked contexts
+    packmat_field m;
+    packmat_field_init(&m, PACKMAT_M64, 70000, 0);
+    const packmat_field good[2] = { g, m };
+    for (int t = 0; t < 2; t++) {
+        for (int c = 0; c < 11; c++) {
+            snprintf(where, sizeof(where), "context %d, corruption %d", t, c);
+            packmat_field h = good[t];
+            switch (c) {
+            case 0: h.kind = PACKMAT_NUM_KINDS; break;
+            case 1: h.kind = 1 - h.kind; break;
+            case 2: h.degree = 2; break;
+            case 3: h.bits += 1; break;
+            case 4: h.cpw += 1; break;
+            case 5: h.n = 1; break;
+            case 6: h.n += 1; break;
+            case 7: h.ninv ^= 1; break;
+            case 8: h.norm += 1; break;
+            case 9: h.ranked = 2; break;
+            case 10:    // a table needs n <= 2^16, checked before any read
+                if (h.n <= 65536)
+                    continue;
+                h.ranked = 1;
+                break;
+            }
+            CHECK(!packmat_field_check(&h));
+        }
+    }
 }
 
 /****************************************************************************
@@ -467,14 +491,17 @@ static void test_shape(packmat_field * f, uint32_t nrows, uint32_t ncols)
         full.e[k] = (f->bits == 64) ? ~0ull : (1ull << f->bits) - 1;
     const vector<uint64_t> used = ref::pack(full, f->bits);
     for (size_t k = 0; k < words; k++) {
-        if (~used[k] == 0)
-            continue;
-        Buf e(words);
-        packmat_copy(f, e.data(), a.data(), nrows, ncols);
         const uint64_t spare = ~used[k];
-        e.data()[k] |= spare & (0 - spare);    // lowest unused bit
-        CHECK(!packmat_check_invariants(f, e.data(), nrows, ncols));
-        break;
+        if (spare == 0)
+            continue;
+        CHECK(spare >> 63);    // unused bits are the top ones
+        const uint64_t stray[2] = { spare & (0 - spare), 1ull << 63 };
+        for (int t = 0; t < 2; t++) {
+            Buf e(words);
+            packmat_copy(f, e.data(), a.data(), nrows, ncols);
+            e.data()[k] |= stray[t];
+            CHECK(!packmat_check_invariants(f, e.data(), nrows, ncols));
+        }
     }
     if (f->bits == 64 && words > 0) {
         Buf e(words);
@@ -561,7 +588,8 @@ static void test_orders()
     snprintf(where, sizeof(where), "GF(2) prefix order");
     packmat_field h;
     packmat_field_init(&h, PACKMAT_GF2, 2, 0);
-    const uint64_t u = 0x2, w = 0x6, x = 0x2;    // [0, 1], [0, 1, 1], [0, 1, 0]
+    // u = [0, 1], w = [0, 1, 1], x = [0, 1, 0]
+    const uint64_t u = 0x2, w = 0x6, x = 0x2;
     CHECK(packmat_compare(&h, &u, &w, 1, 2) == -1);
     CHECK(packmat_compare(&h, &w, &u, 1, 2) == 1);
     CHECK(packmat_compare(&h, &u, &x, 1, 2) == 0);    // tie: shorter first
@@ -622,11 +650,11 @@ int main()
         ~0ull - 58,             // 2^64 - 59, prime
         ~0ull,                  // 2^64 - 1, composite
         TWO63 + 29,             // >= 2^63: no Shoup
-        TWO63,                  //
+        TWO63,                  // norm 0, composite
         TWO63 - 25,             // largest prime below 2^63
         (1ull << 61) - 1,       // Mersenne prime
-        (1ull << 32) + 15,      //
-        65521, 3, 4, 5, 6, 2    //
+        (1ull << 32) + 15,
+        65521, 3, 4, 5, 6, 2
     };
     const size_t nmod = sizeof(moduli) / sizeof(moduli[0]);
     for (size_t k = 0; k < nmod; k++)

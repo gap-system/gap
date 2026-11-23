@@ -1123,49 +1123,61 @@ testkernel: ${KERNELTESTS}
 .PHONY: check citests
 
 # Unit tests of the packed matrix core in src/packmat/, built without GAP's
-# include path. check-packmat-headers rejects other non-system headers in
-# the core. check-packmat runs the C example, which also checks that
-# packmat.h is C99, and the tests with the default and with the portable
-# code paths; check-packmat-sanitize runs the tests under ASan and UBSan.
+# include path. build-packmat rejects other non-system headers in the core,
+# with and without the debug macros, and builds the C example, which also
+# checks that packmat.h is C99, and the tests: with debug assertions, as
+# shipped without them, and with the portable code paths. check-packmat
+# runs them, check-packmat-sanitize runs the tests under ASan and UBSan.
 PACKMAT_CORE_SOURCES = $(addprefix $(srcdir)/,$(filter src/packmat/%,$(SOURCES)))
 PACKMAT_TEST_SOURCES = $(PACKMAT_CORE_SOURCES) $(srcdir)/src/packmat/test/test.cc
 PACKMAT_TEST_DEPS = $(PACKMAT_TEST_SOURCES) \
     $(wildcard $(srcdir)/src/packmat/*.h $(srcdir)/src/packmat/test/*.h)
-PACKMAT_TEST_CXXFLAGS = -std=c++11 -O2 -g -Wall -Wextra -pedantic -DPACKMAT_DEBUG
+PACKMAT_TEST_CXXFLAGS = -std=c++11 -O2 -g -Wall -Wextra -pedantic-errors -Werror
 PACKMAT_SANITIZE_FLAGS = -fsanitize=address,undefined \
     -fno-sanitize-recover=all -fno-omit-frame-pointer -DPACKMAT_TEST_SANITIZE
 
 build/packmat/test: $(PACKMAT_TEST_DEPS)
 	@$(MKDIR_P) build/packmat
+	$(QUIET_LINK)$(CXX) $(ABI_CFLAGS) $(PACKMAT_TEST_CXXFLAGS) -DPACKMAT_DEBUG $(PACKMAT_TEST_SOURCES) -o $@
+
+build/packmat/test-release: $(PACKMAT_TEST_DEPS)
+	@$(MKDIR_P) build/packmat
 	$(QUIET_LINK)$(CXX) $(ABI_CFLAGS) $(PACKMAT_TEST_CXXFLAGS) $(PACKMAT_TEST_SOURCES) -o $@
 
 build/packmat/test-portable: $(PACKMAT_TEST_DEPS)
 	@$(MKDIR_P) build/packmat
-	$(QUIET_LINK)$(CXX) $(ABI_CFLAGS) $(PACKMAT_TEST_CXXFLAGS) -DPACKMAT_PORTABLE $(PACKMAT_TEST_SOURCES) -o $@
+	$(QUIET_LINK)$(CXX) $(ABI_CFLAGS) $(PACKMAT_TEST_CXXFLAGS) -DPACKMAT_DEBUG -DPACKMAT_PORTABLE $(PACKMAT_TEST_SOURCES) -o $@
 
 build/packmat/test-sanitize: $(PACKMAT_TEST_DEPS)
 	@$(MKDIR_P) build/packmat
-	$(QUIET_LINK)$(CXX) $(ABI_CFLAGS) $(PACKMAT_TEST_CXXFLAGS) $(PACKMAT_SANITIZE_FLAGS) $(PACKMAT_TEST_SOURCES) -o $@
+	$(QUIET_LINK)$(CXX) $(ABI_CFLAGS) $(PACKMAT_TEST_CXXFLAGS) -DPACKMAT_DEBUG $(PACKMAT_SANITIZE_FLAGS) $(PACKMAT_TEST_SOURCES) -o $@
 
 build/packmat/example: $(PACKMAT_TEST_DEPS) $(srcdir)/src/packmat/test/example.c
 	@$(MKDIR_P) build/packmat
-	$(QUIET)$(CC) $(ABI_CFLAGS) -std=c99 -pedantic-errors -Wall -Wextra -c $(srcdir)/src/packmat/test/example.c -o build/packmat/example.o
+	$(QUIET)$(CC) $(ABI_CFLAGS) -std=c99 -pedantic-errors -Wall -Wextra -Werror -c $(srcdir)/src/packmat/test/example.c -o build/packmat/example.o
 	$(QUIET_LINK)$(CXX) $(ABI_CFLAGS) $(PACKMAT_TEST_CXXFLAGS) $(PACKMAT_CORE_SOURCES) build/packmat/example.o -o $@
 
-check-packmat-headers:
-	@bad=`$(CXX) $(ABI_CFLAGS) -std=c++11 -MM $(PACKMAT_CORE_SOURCES) | tr ' \\' '\n\n' | \
-	    grep '\.h$$' | grep -v 'src/packmat/[a-z0-9_]*\.h$$'` ; \
+build/packmat/headers-ok: $(PACKMAT_CORE_SOURCES) $(wildcard $(srcdir)/src/packmat/*.h)
+	@$(MKDIR_P) build/packmat
+	@bad=`for d in "" "-DPACKMAT_DEBUG -DGAP_KERNEL_DEBUG" ; do \
+	    $(CXX) $(ABI_CFLAGS) -std=c++11 $$d -MM $(PACKMAT_CORE_SOURCES) ; done | \
+	    tr ' \\' '\n\n' | grep '\.h$$' | grep -v 'src/packmat/[a-z0-9_]*\.h$$'` ; \
 	test -z "$$bad" || { echo "packmat core includes $$bad" ; exit 1 ; }
+	@touch $@
 
-check-packmat: check-packmat-headers build/packmat/example build/packmat/test build/packmat/test-portable
+build-packmat: build/packmat/headers-ok build/packmat/example build/packmat/test \
+    build/packmat/test-release build/packmat/test-portable
+
+check-packmat: build-packmat
 	build/packmat/example
 	build/packmat/test
+	build/packmat/test-release
 	build/packmat/test-portable
 
 check-packmat-sanitize: build/packmat/test-sanitize
 	build/packmat/test-sanitize
 
-.PHONY: check-packmat check-packmat-headers check-packmat-sanitize
+.PHONY: build-packmat check-packmat check-packmat-sanitize
 
 ########################################################################
 # Bootstrap rules
