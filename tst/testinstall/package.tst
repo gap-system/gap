@@ -39,6 +39,20 @@ gap> for entry in Set( Concatenation( Concatenation( [ sml, equ ] ) ) ) do
 gap> ReadPackage("packagename");
 Error, packagename is not a filename in the form 'package/filepath'
 
+# unknown packages behave like missing files
+gap> ReadPackage("nosuchpkg", "x.g");
+#I  ReadPackage could not read <nosuchpkg>/x.g
+
+false
+gap> ReadPackage("nosuchpkg/x.g");
+#I  ReadPackage could not read <nosuchpkg>/x.g
+
+false
+gap> RereadPackage("nosuchpkg", "x.g");
+false
+gap> RereadPackage("nosuchpkg/x.g");
+false
+
 #
 # Test the default package banner
 #

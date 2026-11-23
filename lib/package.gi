@@ -1358,12 +1358,12 @@ BindGlobal( "_ReadPackage", function( arg, error )
       Error( "expected 1 or 2 arguments" );
     fi;
     pkgname:= LowercaseString( pkgname );
-    namespace := GAPInfo.PackagesInfo.(pkgname)[1].PackageName;
 
     # Note that `DirectoriesPackageLibrary' finds the file relative to the
     # installation path of the info record chosen in `LoadPackage'.
     filename:= Filename( DirectoriesPackageLibrary( pkgname, "" ), relpath );
     if filename <> fail and IsReadableFile( filename ) then
+      namespace:= GAPInfo.PackagesInfo.(pkgname)[1].PackageName;
       ENTER_NAMESPACE(namespace);
       Read( filename );
       LEAVE_NAMESPACE();
