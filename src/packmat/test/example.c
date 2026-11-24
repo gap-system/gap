@@ -166,6 +166,65 @@ static void residues(void)
     free(g);
 }
 
+// The binding's poll callback tests GAP's interrupt flag; here a flag
+// that is never set
+static int poll_flag(void * data)
+{
+    return *(const int *)data;
+}
+
+// Row operations, sub-matrices and products over Z/7Z
+static void zmod7_rows(void)
+{
+    packmat_field *   f = new_field(7, 0);
+    const packmat_mat m = new_matrix(f, 2, 3);
+    packmat_mat_set(m, 0, 0, 1);    // m = [[1, 2, 0], [3, 4, 5]]
+    packmat_mat_set(m, 0, 1, 2);
+    packmat_mat_set(m, 1, 0, 3);
+    packmat_mat_set(m, 1, 1, 4);
+    packmat_mat_set(m, 1, 2, 5);
+
+    packmat_add_rows(m, 1, 0, 4);    // row 1 += 4 * row 0: [0, 5, 5]
+    CHECK(packmat_mat_get(m, 1, 0) == 0 && packmat_mat_get(m, 1, 1) == 5);
+    CHECK(packmat_position_nonzero_in_row(m, 1, 0) == 1);
+    CHECK(packmat_position_nonzero_in_row(m, 0, 2) == 3);    // none
+
+    // column 2 as a 2 x 1 matrix: index lists or ranges select entries
+    const uint32_t    cols[] = { 2 };
+    const packmat_mat c = new_matrix(f, 2, 1);
+    packmat_extract_submatrix(c, m, packmat_range(0, 2),
+                              packmat_indices(cols, 1));
+    CHECK(packmat_mat_get(c, 0, 0) == 0 && packmat_mat_get(c, 1, 0) == 5);
+
+    // m times its transpose: [[5, 10], [10, 50]] mod 7
+    const packmat_mat t = new_matrix(f, 3, 2);
+    const packmat_mat p = new_matrix(f, 2, 2);
+    int               stop = 0;
+    packmat_transpose(t, m);
+    CHECK(packmat_mul(p, m, t, poll_flag, &stop) == PACKMAT_OK);
+    CHECK(packmat_mat_get(p, 0, 0) == 5 && packmat_mat_get(p, 0, 1) == 3);
+    CHECK(packmat_mat_get(p, 1, 0) == 3 && packmat_mat_get(p, 1, 1) == 1);
+
+    // scale a vector so that its first nonzero entry is 1: times 1/3 = 5
+    uint64_t          w[3] = { 0, 3, 6 };
+    const packmat_mat v = packmat_vec_view(f, w, 3);
+    CHECK(packmat_vec_normalize(v) == PACKMAT_OK);
+    CHECK(w[1] == 1 && w[2] == 2);
+
+    free(m.w);
+    free(c.w);
+    free(t.w);
+    free(p.w);
+    free(f);
+
+    // over Z/6Z, 2 has no inverse
+    packmat_field * g = new_field(6, 0);
+    uint64_t        u[2] = { 2, 1 };
+    CHECK(packmat_vec_normalize(packmat_vec_view(g, u, 2)) ==
+          PACKMAT_NOT_UNIT);
+    free(g);
+}
+
 int main(void)
 {
     gf2_matrix();
@@ -173,6 +232,7 @@ int main(void)
     gf7_order();
     gf2_vector();
     residues();
+    zmod7_rows();
     printf("packmat example: ok\n");
     return 0;
 }
