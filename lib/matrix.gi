@@ -1507,6 +1507,37 @@ InstallMethod( Vector,
     return v;
     end );
 
+# Method dispatch on a plain or compressed list matrix costs more than the
+# work itself.
+InstallEarlyMethod( RowOfMatrix,
+    function( M, i )
+    local row;
+
+    if IsList( M ) and IsPosInt( i ) and i <= Length( M ) then
+      row:= M[i];
+      if IsList( row ) then
+        return ShallowCopy( row );
+      fi;
+    fi;
+    TryNextMethod();
+    end );
+
+# 'IsList( <M>[1] )' rejects 'Vector( <R>, <list> )' for a plain <list>.
+InstallEarlyMethod( Vector,
+    function( list, M )
+    local v;
+
+    if IsPlistRep( M ) and IsList( list ) and Length( M ) > 0
+       and IsList( M[1] ) then
+      v:= PlainListCopy( list );
+      if not IsMutable( list ) then
+        MakeImmutable( v );
+      fi;
+      return v;
+    fi;
+    TryNextMethod();
+    end );
+
 InstallMethod( NumberRows,
     "generic method for a (perhaps empty) matrix",
     [ IsMatrix ],
