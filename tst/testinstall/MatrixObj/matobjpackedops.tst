@@ -217,6 +217,12 @@ Error, List Elements: <poss> must be a dense list of positive integers
 gap> v{ [ 2, 4 .. 6 ] };
 Error, ExtractSubVector: <l> must be a list of positions in [1..Length] (not a\
  list (range,ssort))
+gap> v{ [ 2, 4 .. 2 * 10^8 ] };
+Error, ExtractSubVector: <l> must be a list of positions in [1..Length] (not a\
+ list (range,ssort))
+gap> ExtractSubVector( v, [ 3, 1 .. -1 ] );
+Error, ExtractSubVector: <l> must be a list of positions in [1..Length] (not a\
+ list (range,nsort))
 gap> PACKMAT_ROW( M, 3 );
 Error, RowOfMatrix: <i> must be in [1..NrRows(<M>)] (not the integer 3)
 gap> NormedRowVector( Vector( IsPackedVectorRep, R, [ 0, 2, 1 ] * One( R ) ) );

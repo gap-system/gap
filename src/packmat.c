@@ -1176,14 +1176,23 @@ static IndexList GetIndexList(const char * funcname,
                               const char * msg)
 {
     IndexList il = { 0, 0, 0 };
-    if (IS_RANGE(list) &&
-        (GET_LEN_RANGE(list) <= 1 || GET_INC_RANGE(list) == 1)) {
+    if (IS_RANGE(list)) {
+        // checked by its first and last entries, before allocating
         const Int len = GET_LEN_RANGE(list);
-        const Int low = GET_LOW_RANGE(list);
-        if (len > 0 && (low < 1 || (UInt)(low - 1 + len) > max))
+        const Int inc = GET_INC_RANGE(list);
+        const Int a = GET_LOW_RANGE(list);
+        const Int b = a + (len - 1) * inc;
+        if (len > 0 && (a < 1 || b < 1 || (UInt)a > max || (UInt)b > max))
             RequireArgumentEx(funcname, list, argname, msg);
-        il.first = len > 0 ? low - 1 : 0;
         il.len = len;
+        if (len <= 1 || inc == 1) {
+            il.first = len > 0 ? a - 1 : 0;
+            return il;
+        }
+        il.buf = NewKernelBuffer(sizeof(Obj) + len * sizeof(uint32_t));
+        uint32_t * idx = INDICES(il.buf);
+        for (Int k = 0; k < len; k++)
+            idx[k] = (uint32_t)(a - 1 + k * inc);
         return il;
     }
     if (!IS_LIST(list))
