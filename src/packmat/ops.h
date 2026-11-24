@@ -16,9 +16,8 @@
 **  masked word it changes only the cells the mask keeps. K also supplies
 **  inverse, dot, product and mat_mul_vec.
 **
-**  Rows are bit strings: row i of an nrows x ncols matrix is the ncols*B
-**  bits from row_bit(ncols, i) on, in one word if rows share words, else
-**  from the start of its first word. A vector is row 0 of a 1 x len view.
+**  Rows are bit strings (Cells<B> in kernels.h). A vector is row 0 of a
+**  1 x len view.
 */
 
 #ifndef PACKMAT_OPS_H
@@ -272,53 +271,6 @@ inline void copy_bits(
         ss %= 64;
     }
 }
-
-/****************************************************************************
-**
-**  Cells of width B
-*/
-
-template <unsigned B>
-struct Cells {
-    static const uint32_t CPW = 64 / B;
-    static const uint64_t MASK = ~(uint64_t)0 >> (64 - B);
-
-    // First bit of row i of a matrix with ncols columns
-    static uint64_t row_bit(uint32_t ncols, uint32_t i)
-    {
-        const uint32_t r = layout_rpw(CPW, ncols);
-        if (r > 1)
-            return (uint64_t)(i / r) * 64 + (i % r) * ncols * B;
-        return (uint64_t)i * layout_stride(CPW, ncols) * 64;
-    }
-
-    static uint64_t get(const uint64_t * w, uint64_t bit)
-    {
-        return (w[bit / 64] >> (bit % 64)) & MASK;
-    }
-
-    static void put(uint64_t * w, uint64_t bit, uint64_t x)
-    {
-        uint64_t &     d = w[bit / 64];
-        const unsigned s = (unsigned)(bit % 64);
-        d = (d & ~(MASK << s)) | (x << s);
-    }
-
-    // Number of nonzero cells in x: fold each cell into its low bit
-    static unsigned nonzero_cells(uint64_t x)
-    {
-        if (B == 64)
-            return x != 0;
-        for (unsigned s = 1; s < B; s *= 2)
-            x |= x >> s;
-        return popcount64(x & (~(uint64_t)0 / MASK));
-    }
-};
-
-template <unsigned B>
-const uint32_t Cells<B>::CPW;
-template <unsigned B>
-const uint64_t Cells<B>::MASK;
 
 // Rows i, i + 1, ... of a matrix, by first bit, without divisions
 template <unsigned B>

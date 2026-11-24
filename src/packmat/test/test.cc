@@ -213,7 +213,6 @@ static vector<uint16_t> random_rank(uint64_t n)
     return r;
 }
 
-
 // Compare a and b under each rank table, the given one first
 static void check_compare(packmat_field *  f,
                           Buf &            a,
