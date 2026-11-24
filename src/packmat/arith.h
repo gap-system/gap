@@ -106,6 +106,19 @@ inline unsigned clz64(uint64_t x)
 #endif
 }
 
+// Number of set bits
+inline unsigned popcount64(uint64_t x)
+{
+#ifdef PACKMAT_HAVE_BUILTINS
+    return __builtin_popcountll(x);
+#else
+    x -= (x >> 1) & 0x5555555555555555ull;
+    x = (x & 0x3333333333333333ull) + ((x >> 2) & 0x3333333333333333ull);
+    x = (x + (x >> 4)) & 0x0f0f0f0f0f0f0f0full;
+    return (unsigned)((x * 0x0101010101010101ull) >> 56);
+#endif
+}
+
 // (*hi, *lo) = a * b
 inline void mul_wide(uint64_t a, uint64_t b, uint64_t * hi, uint64_t * lo)
 {
@@ -251,6 +264,34 @@ mod_mul_shoup(const packmat_field & f, uint64_t a, uint64_t s, uint64_t sp)
     const uint64_t r = a * s - q * f.n;
     return r >= f.n ? r - f.n : r;
 }
+
+// Sum of products of residues, reduced once at the end: products below
+// 2^128 go into lo + 2^64 hi, carries into top. Exact for up to 2^64
+// products.
+struct DotAcc {
+    uint64_t lo, hi, top;
+
+    DotAcc() : lo(0), hi(0), top(0)
+    {
+    }
+
+    // The high word of a product is at most 2^64 - 2, so ph + carry fits
+    void add(uint64_t a, uint64_t b)
+    {
+        uint64_t ph, pl;
+        mul_wide(a, b, &ph, &pl);
+        lo += pl;
+        ph += lo < pl;
+        hi += ph;
+        top += hi < ph;
+    }
+
+    uint64_t reduce(const packmat_field & f) const
+    {
+        const uint64_t t = mod_reduce(f, top);
+        return mod_reduce2(f, mod_reduce2(f, t, hi), lo);
+    }
+};
 
 // Extended Euclid on (n, a). Only magnitudes of the Bezout coefficients
 // are kept; their signs alternate, and they stay at most n.
