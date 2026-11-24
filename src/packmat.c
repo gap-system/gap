@@ -256,6 +256,10 @@ static Obj EntryObj(Obj tdata, uint64_t r)
     SET_TYPE_POSOBJ(x, TYPE_POSOBJ(one));
     ADDR_OBJ(x)[1] = res;
     CHANGED_BAG(x);
+#ifdef HPCGAP
+    // as Objectify does for IsReadOnlyPositionalObjectRep
+    MakeBagReadOnly(x);
+#endif
     return x;
 }
 
