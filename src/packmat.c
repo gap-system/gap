@@ -98,8 +98,9 @@ enum {
     SIB_LEN = 4,
 };
 
-// Dimensions are uint32_t in the core
-static const UInt MAX_DIM = 0xFFFFFFFFu;
+// Dimensions are uint32_t in the core and small integers in GAP
+static const UInt MAX_DIM =
+    (UInt)INT_INTOBJ_MAX < 0xFFFFFFFFu ? (UInt)INT_INTOBJ_MAX : 0xFFFFFFFFu;
 
 // Largest bag: below GASMAN's 48-bit size field, and far enough below
 // 2^32 on 32-bit that adding the bag header cannot wrap
@@ -1455,10 +1456,16 @@ static Obj FuncPACKMAT_SCALAR_PRODUCT(Obj self, Obj a, Obj b)
     return EntryObj(TDATA(a), packmat_vec_dot(VEC_VIEW(a), VEC_VIEW(b)));
 }
 
+// The 1-based position of the 0-based pos, which can be 2^32 - 1
+static Obj PositionObj(uint32_t pos)
+{
+    return ObjInt_UInt8((uint64_t)pos + 1);
+}
+
 static Obj FuncPACKMAT_POSITION_NONZERO(Obj self, Obj v)
 {
     RequirePackedVec(SELF_NAME, v);
-    return ObjInt_UInt(packmat_vec_position_nonzero(VEC_VIEW(v), 0) + 1);
+    return PositionObj(packmat_vec_position_nonzero(VEC_VIEW(v), 0));
 }
 
 // the first nonzero entry after position <from>
@@ -1467,8 +1474,8 @@ static Obj FuncPACKMAT_POSITION_NONZERO_FROM(Obj self, Obj v, Obj from)
     RequirePackedVec(SELF_NAME, v);
     const UInt len = CONST_DIMS(v)[0];
     const UInt f = GetFrom("PositionNonZero", from, len);
-    return ObjInt_UInt(
-        packmat_vec_position_nonzero(VEC_VIEW(v), (uint32_t)f) + 1);
+    return PositionObj(
+        packmat_vec_position_nonzero(VEC_VIEW(v), (uint32_t)f));
 }
 
 static Obj FuncPACKMAT_POSITION_LAST_NONZERO(Obj self, Obj v)
@@ -1627,9 +1634,8 @@ static Obj PositionNonZeroInRow(Obj M, Obj i, Obj from)
     const uint32_t * d = CONST_DIMS(M);
     const UInt       a = GetIndex(name, i, "<i>", d[0], ROW_RANGE);
     const UInt       f = from ? GetFrom(name, from, d[1]) : 0;
-    return ObjInt_UInt(packmat_position_nonzero_in_row(
-                           MAT_VIEW(M), (uint32_t)a, (uint32_t)f) +
-                       1);
+    return PositionObj(packmat_position_nonzero_in_row(
+        MAT_VIEW(M), (uint32_t)a, (uint32_t)f));
 }
 
 static Obj FuncPACKMAT_POSITION_NONZERO_IN_ROW(Obj self, Obj M, Obj i)
@@ -1713,9 +1719,7 @@ static Obj FuncPACKMAT_ROWS(Obj self, Obj M)
     RequirePackedMat(SELF_NAME, M);
     Obj        type = ResultType(TDATA(M), FALSE, FALSE);
     const UInt nr = CONST_DIMS(M)[0];
-    if (nr > INT_INTOBJ_MAX)
-        ErrorMayQuit("RowsOfMatrix: <M> has too many rows", 0, 0);
-    Obj list = NEW_PLIST_IMM(nr ? T_PLIST_DENSE : T_PLIST_EMPTY, nr);
+    Obj        list = NEW_PLIST_IMM(nr ? T_PLIST_DENSE : T_PLIST_EMPTY, nr);
     for (UInt i = 0; i < nr; i++) {
         Obj v = RowAsVector(M, i, type);
         SET_ELM_PLIST(list, i + 1, v);
@@ -1854,9 +1858,8 @@ static Obj FuncPACKMAT_KRONECKER(Obj self, Obj a, Obj b)
     const uint64_t nc = (uint64_t)CONST_DIMS(a)[1] * CONST_DIMS(b)[1];
     if (nr > MAX_DIM || nc > MAX_DIM)
         ErrorMayQuit(
-            "KroneckerProduct: the result has more than 2^32 - 1 rows "
-            "or columns",
-            0, 0);
+            "KroneckerProduct: the result has too many rows or columns", 0,
+            0);
     return Product(packmat_kronecker,
                    ResultType(TDATA(a), TRUE, MutableResult(a, b)), TRUE,
                    (UInt)nr, (UInt)nc, a, TRUE, b, TRUE);

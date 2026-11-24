@@ -122,9 +122,14 @@ gap> KroneckerProduct( M, M5 );
 Error, KroneckerProduct: the arguments must have the same base domain
 gap> z := ZeroMatrix( IsPackedMatrixRep, GF(2), 2^16, 1 );;
 gap> KroneckerProduct( z, z );
-Error, KroneckerProduct: the result has more than 2^32 - 1 rows or columns
+Error, KroneckerProduct: the result has too many rows or columns
 gap> KroneckerProduct( TransposedMat( z ), TransposedMat( z ) );
-Error, KroneckerProduct: the result has more than 2^32 - 1 rows or columns
+Error, KroneckerProduct: the result has too many rows or columns
+#@if GAPInfo.BytesPerVariable = 4
+gap> z := ZeroMatrix( IsPackedMatrixRep, GF(2), 2^14, 1 );;
+gap> KroneckerProduct( z, z );
+Error, KroneckerProduct: the result has too many rows or columns
+#@fi
 gap> AddMatrix( ShallowCopy( M ), N );
 Error, AddMatrix: <a> and <b> must have the same dimensions
 gap> AddMatrix( ShallowCopy( M ), M5 );
