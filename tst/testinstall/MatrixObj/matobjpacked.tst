@@ -1,4 +1,4 @@
-#@local F, F3, M, N, P, Q, R, v, w, u, l, d, h, x, L, fam, v2
+#@local F, F3, M, N, P, Q, R, v, w, u, l, d, h, x, L, fam, v2, p
 gap> START_TEST( "matobjpacked.tst" );
 gap> ReadGapRoot( "tst/testinstall/MatrixObj/testpacked.g" );
 
@@ -28,6 +28,20 @@ true
 gap> PackedTestRing( Integers mod 6, 1 );
 true
 gap> PackedTestRing( Integers mod (2^64 - 1), 1 );
+true
+
+# Uniform entries, so that GAP's order of FFEs by log, not by residue,
+# decides many comparisons
+gap> PackedTestRing( GF(7), 3 : uniform );
+true
+gap> PackedTestRing( GF(257), 3 : uniform );
+true
+gap> PackedTestRing( GF(65521), 3 : uniform );
+true
+
+# Collections between entry conversions move the bags under construction
+gap> ForAll( [ GF(2), GF(7), GF(NextPrimeInt(2^63)), Integers mod 6 ],
+>            R -> PackedTestGC( R, 1 ) );
 true
 
 #
@@ -186,6 +200,25 @@ Error, <x> must lie in the base domain
 gap> N[1,1] := 2;
 Error, <x> must lie in the base domain
 
+# Conversion between base domains of different moduli
+gap> M := NewMatrix( IsPackedMatrixRep, GF(7), 1, [ [ Z(7) ] ] );;
+gap> Matrix( M, NewZeroMatrix( IsPackedMatrixRep, GF(5), 0, 1 ) );
+Error, <x> must lie in the base domain
+gap> Matrix( IsPackedMatrixRep, GF(5), M );
+Error, <x> must lie in the base domain
+gap> v := NewVector( IsPackedVectorRep, Integers mod 6, [ ZmodnZObj( 1, 6 ) ] );;
+gap> Vector( v, NewZeroVector( IsPackedVectorRep, Integers mod 4, 0 ) );
+Error, <x> must lie in the base domain
+gap> v := NewVector( IsPackedVectorRep, GF(NextPrimeInt(2^61)), [ Z(NextPrimeInt(2^61)) ] );;
+gap> Vector( v, NewZeroVector( IsPackedVectorRep, GF(NextPrimeInt(2^63)), 0 ) );
+Error, <x> must lie in the base domain
+gap> v2 := [ Z(2) ];; ConvertToVectorRep( v2, 2 );;
+gap> NewVector( IsPackedVectorRep, GF(3), v2 );
+Error, <x> must lie in the base domain
+gap> v2 := [ Z(7) ];; ConvertToVectorRep( v2, 7 );;
+gap> NewVector( IsPackedVectorRep, GF(5), v2 );
+Error, <x> must lie in the base domain
+
 #
 # Indices are checked
 #
@@ -259,6 +292,24 @@ gap> R = Integers mod 6 and not IsIdenticalObj( R, Integers mod 6 );
 true
 gap> NewVector( IsPackedVectorRep, R, [ ZmodnZObj( 1, 6 ) ] ) = NewVector( IsPackedVectorRep, Integers mod 6, [ ZmodnZObj( 1, 6 ) ] );
 false
+
+# Integers mod p is an equal copy of GF(p) for p < 2^16, so packed objects
+# over the two are unequal and unordered; from 65537 on it is GF(p) itself
+gap> IsIdenticalObj( Integers mod 7, GF(7) ) or Integers mod 7 <> GF(7);
+false
+gap> M := NewMatrix( IsPackedMatrixRep, Integers mod 7, 1, [ [ Z(7) ] ] );;
+gap> N := NewMatrix( IsPackedMatrixRep, GF(7), 1, [ [ Z(7) ] ] );;
+gap> M = N or Unpack( M ) <> Unpack( N );
+false
+gap> M < N;
+Error, \<: <a> and <b> must have the same base domain
+gap> p := NextPrimeInt( 2^16 );;
+gap> IsIdenticalObj( Integers mod p, GF(p) );
+true
+gap> M := NewMatrix( IsPackedMatrixRep, Integers mod p, 1, [ [ Z(p) ] ] );;
+gap> N := NewMatrix( IsPackedMatrixRep, GF(p), 1, [ [ Z(p) ] ] );;
+gap> M = N and not M < N;
+true
 
 #
 # Constructors check the data of their type, so that forged types raise

@@ -7,10 +7,15 @@ PackedTestFail := function( arg )
   return false;
 end;
 
-# Entries are zero, one, -1 or random, so that equal prefixes are common
+# Entries are zero, one, -1 or random, so that equal prefixes are common;
+# with the option uniform, random, so that the order of FFEs by log, not
+# by residue, decides most comparisons
 PackedTestEntry := function( rs, R )
   local n;
   n := Size( R );
+  if ValueOption( "uniform" ) = true then
+    return Random( rs, 0, n - 1 ) * One( R );
+  fi;
   return Random( rs, [ 0, 0, 1, n - 1, Random( rs, 0, n - 1 ) ] )
          * One( R );
 end;
@@ -163,27 +168,33 @@ PackedTestVector := function( rs, R, l )
   return true;
 end;
 
-# Variants of a list of lists or a list: one entry changed, and prefixes
-# (as for matrices: fewer rows, fewer columns); most pairs then share
-# leading entries
+# Variants of a list of lists or a list: entries changed in the last row,
+# in any row, or in two rows, and prefixes (as for matrices: fewer rows,
+# fewer columns); most pairs then share leading entries
 PackedTestVariants := function( rs, R, L )
-  local res, M, i, j;
+  local res, M, i, j, rows;
   res := [ L ];
   if Length( L ) = 0 then
     return res;
   fi;
   if IsList( L[1] ) then
-    for i in [ 1 .. 3 ] do
+    for rows in [ [ Length( L ) ], [ Length( L ) ],
+                  [ Random( rs, [ 1 .. Length( L ) ] ) ],
+                  [ Random( rs, [ 1 .. Length( L ) ] ),
+                    Random( rs, [ 1 .. Length( L ) ] ) ] ] do
       M := List( L, ShallowCopy );
       if Length( M[1] ) > 0 then
-        j := Random( rs, [ 1 .. Length( M[1] ) ] );
-        M[Length( M )][j] := PackedTestEntry( rs, R );
+        for i in rows do
+          j := Random( rs, [ 1 .. Length( M[1] ) ] );
+          M[i][j] := PackedTestEntry( rs, R );
+        od;
       fi;
       Add( res, M );
     od;
     Add( res, L{ [ 1 .. Length( L ) - 1 ] } );
     Add( res, List( L, r -> r{ [ 1 .. QuoInt( Length( r ), 2 ) ] } ) );
-    Add( res, List( L, r -> Concatenation( r, [ PackedTestEntry( rs, R ) ] ) ) );
+    Add( res, List( L,
+                    r -> Concatenation( r, [ PackedTestEntry( rs, R ) ] ) ) );
   else
     for i in [ 1 .. 3 ] do
       M := ShallowCopy( L );
@@ -260,6 +271,7 @@ PackedTestRing := function( R, seed )
   fi;
 
   vecs := [];
+  gens := [];
   for len in [ 0, 1, 2, 5, 31, 32, 33, 63, 64, 65, 100 ] do
     l := PackedTestList( rs, R, len );
     if PackedTestVector( rs, R, l ) <> true then
@@ -267,7 +279,64 @@ PackedTestRing := function( R, seed )
     fi;
     for V in PackedTestVariants( rs, R, l ) do
       Add( vecs, NewVector( IsPackedVectorRep, R, V ) );
+      Add( gens, NewVector( IsPlistVectorRep, R, V ) );
     od;
   od;
-  return PackedTestOrder( vecs, fail );
+  return PackedTestOrder( vecs, gens );
+end;
+
+# A base domain equal to R, but not identical
+PackedTestEqualCopy := function( R )
+  if IsField( R ) then
+    return Field( One( R ) );
+  fi;
+  return RingWithOne( One( R ) );
+end;
+
+# A row whose every entry access collects garbage, so that bags move while
+# the kernel converts it
+PackedTestGCRow := function( R, l )
+  return EnumeratorByFunctions( R, rec(
+    ElementNumber := function( e, i )
+      local junk;
+      junk := List( [ 1 .. 50 ], k -> k * 2^70 );
+      GASMAN( "partial" );
+      return l[i];
+    end,
+    NumberElement := { e, x } -> Position( l, x ),
+    Length := e -> Length( l ) ) );
+end;
+
+# Construction, assignment and conversion while collections move bags
+PackedTestGC := function( R, seed )
+  local rs, L, M, v, i, j, x, R2;
+  rs := RandomSource( IsMersenneTwister, seed );
+  L := List( [ 1 .. 2 ], i -> List( [ 1 .. 3 ], j -> Random( rs, R ) ) );
+  M := PACKMAT_MATRIX( PackedRepContext( R ).matrix, 3,
+                       List( L, r -> PackedTestGCRow( R, r ) ) );
+  v := PACKMAT_VECTOR( PackedRepContext( R ).vector,
+                       PackedTestGCRow( R, L[1] ) );
+  if Unpack( M ) <> L or Unpack( v ) <> L[1] then
+    return PackedTestFail( "construction under GC over ", R );
+  fi;
+  for i in [ 1 .. 2 ] do
+    for j in [ 1 .. 3 ] do
+      x := Random( rs, R );
+      M[i,j] := x;
+      L[i][j] := x;
+    od;
+  od;
+  GASMAN( "partial" );
+  if Unpack( M ) <> L then
+    return PackedTestFail( "assignment under GC over ", R );
+  fi;
+
+  # between base domains, entries go through EntryObj and EntryResidue
+  R2 := PackedTestEqualCopy( R );
+  if Unpack( Matrix( M, ZeroMatrix( IsPackedMatrixRep, R2, 0, 0 ) ) ) <> L
+     or Unpack( Vector( v, ZeroVector( IsPackedVectorRep, R2, 0 ) ) )
+        <> Unpack( v ) then
+    return PackedTestFail( "conversion between copies of ", R );
+  fi;
+  return true;
 end;
