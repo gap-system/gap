@@ -192,16 +192,18 @@ inline void for_words(uint64_t lo, uint64_t hi, Fn fn)
     fn(b, mb);
 }
 
-// Calls fn(t) for each set bit lo + t of w in [lo, hi)
-template <class Fn>
-inline void for_set_bits(const uint64_t * w, uint64_t lo, uint64_t hi, Fn fn)
+// Calls fn(t) for each nonzero one of the `cells` cells of B bits from
+// bit lo of w on, with t the index of the cell
+template <unsigned B, class Fn>
+inline void
+for_nonzero_cells(const uint64_t * w, uint64_t lo, uint64_t cells, Fn fn)
 {
-    if (lo >= hi)
+    if (cells == 0)
         return;
-    for_words(lo, hi, [&](size_t k, uint64_t m) {
-        uint64_t x = w[k] & m;
+    for_words(lo, lo + cells * B, [&](size_t k, uint64_t m) {
+        uint64_t x = Cells<B>::nonzero_marks(w[k] & m);
         while (x) {
-            fn((uint64_t)k * 64 + ctz64(x) - lo);
+            fn(((uint64_t)k * 64 + ctz64(x) - lo) / B);
             x &= x - 1;
         }
     });
@@ -690,7 +692,9 @@ struct Generic {
                           packmat_mat_view(v.f, v.w, v.ncols, 1), poll, data);
     }
 
-    // Each block of b.ncols cells: a copy of a row of b, then scaled
+    // Each nonzero a[i,j] gives a block of b.nrows times b.ncols cells:
+    // copies of the rows of b, then scaled. Polls count the zeroing of d,
+    // the scan of each row of a and every row of a block.
     static int kronecker(packmat_mat  d,
                          packmat_mat  a,
                          packmat_mat  b,
@@ -698,29 +702,36 @@ struct Generic {
                          void *       data)
     {
         zero(d);
+        Poll p(poll, data);
+        if (p.tick(num_words(d)))
+            return PACKMAT_INTERRUPTED;
         const packmat_field f = *d.f;
         const uint64_t      len = (uint64_t)b.ncols * B;
-        Poll                p(poll, data);
+        const uint64_t      scan = 1 + (uint64_t)a.ncols * B / 64;
+        bool                stop = false;
         RowWalk<B>          ra(a.ncols, 0);
-        for (uint32_t i = 0; i < a.nrows; i++, ra.next()) {
-            for (uint32_t j = 0; j < a.ncols; j++) {
-                const uint64_t x = C::get(a.w, ra.bit + (uint64_t)j * B);
-                if (x == 0)
-                    continue;
-                const Scalar c = K::scalar(f, x);
-                RowWalk<B>   rd(d.ncols, i * b.nrows);
-                RowWalk<B>   rb(b.ncols, 0);
+        for (uint32_t i = 0; i < a.nrows && !stop; i++, ra.next()) {
+            for_nonzero_cells<B>(a.w, ra.bit, a.ncols, [&](uint64_t j) {
+                if (stop)
+                    return;
+                const uint64_t x = C::get(a.w, ra.bit + j * B);
+                const Scalar   c = K::scalar(f, x);
+                RowWalk<B>     rd(d.ncols, i * b.nrows);
+                RowWalk<B>     rb(b.ncols, 0);
                 for (uint32_t k = 0; k < b.nrows; k++, rd.next(), rb.next()) {
                     const uint64_t db = rd.bit + j * len;
                     copy_bits(d.w, db, b.w, rb.bit, len);
                     if (x != 1)
                         scale_bits(f, d.w, db, db + len, c);
-                    if (p.tick(1 + len / 64))
-                        return PACKMAT_INTERRUPTED;
+                    if (p.tick(1 + len / 64)) {
+                        stop = true;
+                        return;
+                    }
                 }
-            }
+            });
+            stop = stop || p.tick(scan);
         }
-        return PACKMAT_OK;
+        return stop ? PACKMAT_INTERRUPTED : PACKMAT_OK;
     }
 };
 

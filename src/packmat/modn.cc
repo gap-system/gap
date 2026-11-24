@@ -82,9 +82,11 @@ struct M64 {
                        void *       data)
     {
         Generic<M64>::zero(d);
+        Poll p(poll, data);
+        if (p.tick(num_words(d)))
+            return PACKMAT_INTERRUPTED;
         const packmat_field f = *d.f;
         const uint32_t      m = a.nrows, k = a.ncols, n = b.ncols;
-        Poll                p(poll, data);
         for (uint32_t i = 0; i < m; i++) {
             const uint64_t * ar = a.w + (size_t)i * k;
             uint64_t *       dr = d.w + (size_t)i * n;
