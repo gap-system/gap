@@ -73,6 +73,74 @@ struct Gf2 {
             x ^= a.w[k] & b.w[k];
         return popcount64(x) & 1;
     }
+
+    // Row i of d is the XOR of the rows k of b with a[i,k] = 1. If rows
+    // of b share words, they are at most 32 bits and add up in a register.
+    static int product(packmat_mat  d,
+                       packmat_mat  a,
+                       packmat_mat  b,
+                       packmat_poll poll,
+                       void *       data)
+    {
+        Generic<Gf2>::zero(d);
+        const uint32_t n = b.ncols;
+        const uint32_t r = layout_rpw(64, n);
+        const size_t   stride = layout_stride(64, n);
+        const uint64_t mask = r > 1 ? bit_range(0, n) : 0;
+        Poll           p(poll, data);
+        bool           stop = false;
+        for (uint32_t i = 0; i < a.nrows && !stop; i++) {
+            const uint64_t lo = C::row_bit(a.ncols, i);
+            if (r > 1) {
+                uint64_t acc = 0;
+                for_set_bits(a.w, lo, lo + a.ncols, [&](uint64_t k) {
+                    acc ^= (b.w[k / r] >> ((k % r) * n)) & mask;
+                });
+                d.w[i / r] |= acc << ((i % r) * n);
+                stop = p.tick(1 + a.ncols);
+                continue;
+            }
+            uint64_t * dr = d.w + i * stride;
+            for_set_bits(a.w, lo, lo + a.ncols, [&](uint64_t k) {
+                if (stop)
+                    return;
+                const uint64_t * br = b.w + k * stride;
+                for (size_t t = 0; t < stride; t++)
+                    dr[t] ^= br[t];
+                stop = p.tick(stride);
+            });
+            stop = stop || p.tick(1);
+        }
+        return stop ? PACKMAT_INTERRUPTED : PACKMAT_OK;
+    }
+
+    // Entry i of d is the parity of row i of m AND v
+    static int mat_mul_vec(packmat_mat  d,
+                           packmat_mat  m,
+                           packmat_mat  v,
+                           packmat_poll poll,
+                           void *       data)
+    {
+        Generic<Gf2>::zero(d);
+        const uint32_t n = m.ncols;
+        const uint32_t r = layout_rpw(64, n);
+        const size_t   stride = layout_stride(64, n);
+        Poll           p(poll, data);
+        for (uint32_t i = 0; i < m.nrows; i++) {
+            uint64_t x = 0;
+            if (r > 1)
+                x = (m.w[i / r] >> ((i % r) * n)) & v.w[0];
+            else {
+                const uint64_t * row = m.w + i * stride;
+                for (size_t t = 0; t < stride; t++)
+                    x ^= row[t] & v.w[t];
+            }
+            d.w[i / 64] |= (uint64_t)(popcount64(x) & 1) << (i % 64);
+            if (p.tick(1 + stride))
+                return PACKMAT_INTERRUPTED;
+        }
+        return PACKMAT_OK;
+    }
 };
 
 const Ops gf2_ops = make_ops<Gf2>();

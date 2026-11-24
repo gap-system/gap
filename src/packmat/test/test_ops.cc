@@ -7,8 +7,8 @@
 **
 **  SPDX-License-Identifier: GPL-2.0-or-later
 **
-**  Unit tests of the arithmetic, row, column and copy functions of
-**  packmat.h (from packmat_add on) against ref.h. Destinations start as
+**  Unit tests of the arithmetic, row, column, copy and product functions
+**  of packmat.h (from packmat_add on) against ref.h. Destinations start as
 **  guard-word garbage wherever the functions do not read them.
 */
 
@@ -534,6 +534,172 @@ static void test_vectors(const packmat_field * f, uint32_t len)
 
 /****************************************************************************
 **
+**  Products
+*/
+
+// Counts calls; asks to stop from call number `stop` on (0: never)
+struct Poller {
+    unsigned calls, stop;
+};
+
+static int count_poll(void * data)
+{
+    Poller * p = static_cast<Poller *>(data);
+    p->calls++;
+    return p->stop && p->calls >= p->stop;
+}
+
+static ref::Mat column(const ref::Mat & v)
+{
+    return ref::transpose(v);
+}
+
+static void
+test_product(const packmat_field * f, uint32_t m, uint32_t k, uint32_t nc)
+{
+    snprintf(where, sizeof(where), "product: kind %u, n = %llu, %u x %u x %u",
+             f->kind, (unsigned long long)f->n, m, k, nc);
+    const uint64_t    n = f->n;
+    const ref::Mat    A = random_mat(n, m, k), B = random_mat(n, k, nc);
+    Buf               a(words(f, m, k)), b(words(f, k, nc));
+    const packmat_mat va = load(f, a, A), vb = load(f, b, B);
+
+    const ref::Mat AB = ref::product(n, A, B);
+    Buf            d(words(f, m, nc));
+    CHECK(packmat_mul(d.view(f, m, nc), va, vb, 0, 0) == PACKMAT_OK);
+    CHECK(holds(f, d, AB));
+    Poller p = { 0, 0 };
+    Buf    e(words(f, m, nc));
+    CHECK(packmat_mul(e.view(f, m, nc), va, vb, count_poll, &p) ==
+          PACKMAT_OK);
+    CHECK(holds(f, e, AB));
+    if (m == k && k == nc) {
+        Buf s(words(f, m, m));
+        CHECK(packmat_mul(s.view(f, m, m), va, va, 0, 0) == PACKMAT_OK);
+        CHECK(holds(f, s, ref::product(n, A, A)));
+    }
+    CHECK(holds(f, a, A) && holds(f, b, B));
+
+    // v*B for v of length k, and A*w for w of length k
+    const ref::Mat    V = random_mat(n, 1, k);
+    Buf               v((size_t)packmat_vector_words(f, k));
+    const packmat_mat vv = load(f, v, V);
+    Buf               x((size_t)packmat_vector_words(f, nc));
+    CHECK(packmat_vec_mul_mat(x.view(f, 1, nc), vv, vb, 0, 0) == PACKMAT_OK);
+    CHECK(holds(f, x, ref::product(n, V, B)));
+    Buf y((size_t)packmat_vector_words(f, m));
+    CHECK(packmat_mat_mul_vec(y.view(f, 1, m), va, vv, 0, 0) == PACKMAT_OK);
+    CHECK(holds(f, y, ref::transpose(ref::product(n, A, column(V)))));
+}
+
+static void test_kronecker(const packmat_field * f,
+                           uint32_t              ar,
+                           uint32_t              ac,
+                           uint32_t              br,
+                           uint32_t              bc)
+{
+    snprintf(where, sizeof(where),
+             "kronecker: kind %u, n = %llu, %u x %u by %u x %u", f->kind,
+             (unsigned long long)f->n, ar, ac, br, bc);
+    const uint64_t    n = f->n;
+    const ref::Mat    A = random_mat(n, ar, ac), B = random_mat(n, br, bc);
+    Buf               a(words(f, ar, ac)), b(words(f, br, bc));
+    const packmat_mat va = load(f, a, A), vb = load(f, b, B);
+    Buf               d(words(f, ar * br, ac * bc));
+    CHECK(packmat_kronecker(d.view(f, ar * br, ac * bc), va, vb, 0, 0) ==
+          PACKMAT_OK);
+    CHECK(holds(f, d, ref::kronecker(n, A, B)));
+    if (ar == br && ac == bc) {
+        Buf s(words(f, ar * ar, ac * ac));
+        CHECK(packmat_kronecker(s.view(f, ar * ar, ac * ac), va, va, 0, 0) ==
+              PACKMAT_OK);
+        CHECK(holds(f, s, ref::kronecker(n, A, A)));
+    }
+}
+
+/****************************************************************************
+**
+**  Interruption: each product big enough for several polls; stopping at
+**  the first and the second leaves a valid object, never stopping the
+**  right one.
+*/
+
+enum { MUL, VEC_MUL_MAT, MAT_MUL_VEC, KRONECKER };
+
+static void test_interrupt(const packmat_field * f,
+                           int                   op,
+                           uint32_t              ar,
+                           uint32_t              ac,
+                           uint32_t              br,
+                           uint32_t              bc)
+{
+    snprintf(where, sizeof(where),
+             "interrupt: kind %u, n = %llu, op %d, %u x %u, %u x %u", f->kind,
+             (unsigned long long)f->n, op, ar, ac, br, bc);
+    const uint64_t    n = f->n;
+    const ref::Mat    A = random_mat(n, ar, ac), B = random_mat(n, br, bc);
+    Buf               a(words(f, ar, ac)), b(words(f, br, bc));
+    const packmat_mat va = load(f, a, A), vb = load(f, b, B);
+
+    ref::Mat want(0, 0);
+    switch (op) {
+    case MUL:
+    case VEC_MUL_MAT:
+        want = ref::product(n, A, B);
+        break;
+    case MAT_MUL_VEC:
+        want = ref::transpose(ref::product(n, A, column(B)));
+        break;
+    default:
+        want = ref::kronecker(n, A, B);
+    }
+    const uint32_t dr = want.nrows, dc = want.ncols;
+
+    for (unsigned stop = 0; stop < 3; stop++) {
+        Buf               d(words(f, dr, dc));
+        const packmat_mat vd = d.view(f, dr, dc);
+        Poller            p = { 0, stop };
+        int               st;
+        switch (op) {
+        case MUL:
+            st = packmat_mul(vd, va, vb, count_poll, &p);
+            break;
+        case VEC_MUL_MAT:
+            st = packmat_vec_mul_mat(vd, va, vb, count_poll, &p);
+            break;
+        case MAT_MUL_VEC:
+            st = packmat_mat_mul_vec(vd, va, vb, count_poll, &p);
+            break;
+        default:
+            st = packmat_kronecker(vd, va, vb, count_poll, &p);
+        }
+        if (stop == 0) {
+            CHECK(st == PACKMAT_OK && p.calls >= 2);
+            CHECK(holds(f, d, want));
+        }
+        else {
+            CHECK(st == PACKMAT_INTERRUPTED && p.calls == stop);
+            CHECK(packmat_check_invariants(vd) && d.guards_ok());
+        }
+    }
+}
+
+static void test_interrupts()
+{
+    Field G(PACKMAT_GF2, 2, 0), M(PACKMAT_M64, (1ull << 61) - 1, 0);
+    test_interrupt(G.f, MUL, 300, 300, 300, 300);
+    test_interrupt(G.f, MUL, 2000, 200, 200, 20);    // rows share words
+    test_interrupt(G.f, VEC_MUL_MAT, 1, 5000, 5000, 5000);
+    test_interrupt(G.f, MAT_MUL_VEC, 100000, 64, 1, 64);
+    test_interrupt(G.f, KRONECKER, 64, 64, 100, 1);
+    test_interrupt(M.f, MUL, 64, 64, 64, 64);
+    test_interrupt(M.f, VEC_MUL_MAT, 1, 600, 600, 600);
+    test_interrupt(M.f, MAT_MUL_VEC, 1000, 200, 1, 200);
+    test_interrupt(M.f, KRONECKER, 10, 10, 64, 64);
+}
+
+/****************************************************************************
+**
 **  Driver
 */
 
@@ -559,6 +725,21 @@ void test_ops()
         test_vectors(G.f, gf2_cols[c]);
     test_vectors(G.f, 200);
 
+    const uint32_t gf2_m[] = { 0, 1, 2, 5, 65 };
+    const uint32_t gf2_k[] = { 0, 1, 21, 33, 64, 65, 129 };
+    for (size_t x = 0; x < sizeof(gf2_m) / sizeof(gf2_m[0]); x++)
+        for (size_t y = 0; y < sizeof(gf2_k) / sizeof(gf2_k[0]); y++)
+            for (size_t c = 0; c < nc; c++)
+                test_product(G.f, gf2_m[x], gf2_k[y], gf2_cols[c]);
+    test_product(G.f, 64, 64, 64);
+    const uint32_t ka[] = { 0, 1, 2, 3 };
+    const uint32_t kb[] = { 0, 1, 2, 5, 21, 22, 33, 65 };
+    for (size_t w = 0; w < 4; w++)
+        for (size_t x = 0; x < 4; x++)
+            for (size_t y = 0; y < 8; y++)
+                for (size_t z = 0; z < 8; z++)
+                    test_kronecker(G.f, ka[w], ka[x], kb[y], kb[z]);
+
     // M64
     const uint32_t m64_dims[] = { 0, 1, 2, 3, 5 };
     const size_t   nd = sizeof(m64_dims) / sizeof(m64_dims[0]);
@@ -577,5 +758,16 @@ void test_ops()
             }
         for (size_t l = 0; l < sizeof(m64_lens) / sizeof(m64_lens[0]); l++)
             test_vectors(F.f, m64_lens[l]);
+        for (size_t x = 0; x < nd; x++)
+            for (size_t y = 0; y < nd; y++)
+                for (size_t z = 0; z < nd; z++)
+                    test_product(F.f, m64_dims[x], m64_dims[y], m64_dims[z]);
+        for (size_t w = 0; w < 4; w++)
+            for (size_t x = 0; x < 4; x++)
+                for (size_t y = 0; y < 4; y++)
+                    for (size_t z = 0; z < 4; z++)
+                        test_kronecker(F.f, ka[w], ka[x], ka[y], ka[z]);
     }
+
+    test_interrupts();
 }

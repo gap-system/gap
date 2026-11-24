@@ -73,6 +73,42 @@ struct M64 {
             acc.add(a.w[k], b.w[k]);
         return acc.reduce(*a.f);
     }
+
+    // One reduction per output entry; b is read by columns
+    static int product(packmat_mat  d,
+                       packmat_mat  a,
+                       packmat_mat  b,
+                       packmat_poll poll,
+                       void *       data)
+    {
+        Generic<M64>::zero(d);
+        const packmat_field f = *d.f;
+        const uint32_t      m = a.nrows, k = a.ncols, n = b.ncols;
+        Poll                p(poll, data);
+        for (uint32_t i = 0; i < m; i++) {
+            const uint64_t * ar = a.w + (size_t)i * k;
+            uint64_t *       dr = d.w + (size_t)i * n;
+            for (uint32_t j = 0; j < n; j++) {
+                DotAcc           acc;
+                const uint64_t * bc = b.w + j;
+                for (uint32_t t = 0; t < k; t++)
+                    acc.add(ar[t], bc[(size_t)t * n]);
+                dr[j] = acc.reduce(f);
+                if (p.tick(1 + (uint64_t)k))
+                    return PACKMAT_INTERRUPTED;
+            }
+        }
+        return PACKMAT_OK;
+    }
+
+    static int mat_mul_vec(packmat_mat  d,
+                           packmat_mat  m,
+                           packmat_mat  v,
+                           packmat_poll poll,
+                           void *       data)
+    {
+        return Generic<M64>::mat_mul_vec_by_product(d, m, v, poll, data);
+    }
 };
 
 const Ops m64_ops = make_ops<M64>();

@@ -229,6 +229,31 @@ inline Mat transpose(const Mat & a)
     return r;
 }
 
+inline Mat product(uint64_t n, const Mat & a, const Mat & b)
+{
+    Mat r(a.nrows, b.ncols);
+    for (uint32_t i = 0; i < a.nrows; i++)
+        for (uint32_t j = 0; j < b.ncols; j++) {
+            uint64_t x = 0;
+            for (uint32_t k = 0; k < a.ncols; k++)
+                x = add(n, x, mul(n, a.at(i, k), b.at(k, j)));
+            r.at(i, j) = x;
+        }
+    return r;
+}
+
+inline Mat kronecker(uint64_t n, const Mat & a, const Mat & b)
+{
+    Mat r(a.nrows * b.nrows, a.ncols * b.ncols);
+    for (uint32_t i = 0; i < a.nrows; i++)
+        for (uint32_t j = 0; j < a.ncols; j++)
+            for (uint32_t k = 0; k < b.nrows; k++)
+                for (uint32_t l = 0; l < b.ncols; l++)
+                    r.at(i * b.nrows + k, j * b.ncols + l) =
+                        mul(n, a.at(i, j), b.at(k, l));
+    return r;
+}
+
 // a{rows}{cols}
 inline Mat submatrix(const Mat &                   a,
                      const std::vector<uint32_t> & rows,

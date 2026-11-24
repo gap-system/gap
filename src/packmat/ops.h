@@ -7,14 +7,14 @@
 **
 **  SPDX-License-Identifier: GPL-2.0-or-later
 **
-**  Internal to the packed matrix core: the arithmetic, row, column and
-**  copy kernels, generic over the kind, and their table.
+**  Internal to the packed matrix core: the arithmetic, row, column, copy
+**  and product kernels, generic over the kind, and their table.
 **
 **  A kind K supplies its cell width K::B and word arithmetic: add, sub,
 **  neg, and mul and addmul by a scalar that K::scalar prepares. Each acts
 **  on every cell of a word and maps zero cells to zero, so applied to a
 **  masked word it changes only the cells the mask keeps. K also supplies
-**  inverse and dot.
+**  inverse, dot, product and mat_mul_vec.
 **
 **  Rows are bit strings: row i of an nrows x ncols matrix is the ncols*B
 **  bits from row_bit(ncols, i) on, in one word if rows share words, else
@@ -101,6 +101,23 @@ struct Ops {
                            packmat_index scols);
 
     void (*transpose)(packmat_mat dst, packmat_mat src);
+
+    // packmat_mul, packmat_mat_mul_vec, packmat_kronecker
+    int (*mul)(packmat_mat  dst,
+               packmat_mat  a,
+               packmat_mat  b,
+               packmat_poll poll,
+               void *       data);
+    int (*mat_mul_vec)(packmat_mat  dst,
+                       packmat_mat  m,
+                       packmat_mat  v,
+                       packmat_poll poll,
+                       void *       data);
+    int (*kronecker)(packmat_mat  dst,
+                     packmat_mat  a,
+                     packmat_mat  b,
+                     packmat_poll poll,
+                     void *       data);
 };
 
 extern const Ops gf2_ops;
@@ -329,6 +346,34 @@ struct RowWalk {
             c = 0;
             bit = (bit / 64 + 1) * 64;
         }
+    }
+};
+
+/****************************************************************************
+**
+**  Polling in the long kernels
+*/
+
+// Word operations between two polls
+static const uint64_t POLL_WORK = (uint64_t)1 << 16;
+
+struct Poll {
+    packmat_poll poll;
+    void *       data;
+    uint64_t     work;
+
+    Poll(packmat_poll p, void * d) : poll(p), data(d), work(0)
+    {
+    }
+
+    // Count `w` word operations; true if the caller must stop
+    bool tick(uint64_t w)
+    {
+        work += w;
+        if (work < POLL_WORK)
+            return false;
+        work = 0;
+        return poll && poll(data) != 0;
     }
 };
 
@@ -676,6 +721,55 @@ struct Generic {
             }
         }
     }
+
+    /************************************************************************
+    **
+    **  Products
+    */
+
+    // A vector of length len is also a len x 1 matrix
+    static int mat_mul_vec_by_product(packmat_mat  d,
+                                      packmat_mat  m,
+                                      packmat_mat  v,
+                                      packmat_poll poll,
+                                      void *       data)
+    {
+        return K::product(packmat_mat_view(d.f, d.w, d.ncols, 1), m,
+                          packmat_mat_view(v.f, v.w, v.ncols, 1), poll, data);
+    }
+
+    // Each block of b.ncols cells: a copy of a row of b, then scaled
+    static int kronecker(packmat_mat  d,
+                         packmat_mat  a,
+                         packmat_mat  b,
+                         packmat_poll poll,
+                         void *       data)
+    {
+        zero(d);
+        const packmat_field f = *d.f;
+        const uint64_t      len = (uint64_t)b.ncols * B;
+        Poll                p(poll, data);
+        RowWalk<B>          ra(a.ncols, 0);
+        for (uint32_t i = 0; i < a.nrows; i++, ra.next()) {
+            for (uint32_t j = 0; j < a.ncols; j++) {
+                const uint64_t x = C::get(a.w, ra.bit + (uint64_t)j * B);
+                if (x == 0)
+                    continue;
+                const Scalar c = K::scalar(f, x);
+                RowWalk<B>   rd(d.ncols, i * b.nrows);
+                RowWalk<B>   rb(b.ncols, 0);
+                for (uint32_t k = 0; k < b.nrows; k++, rd.next(), rb.next()) {
+                    const uint64_t db = rd.bit + j * len;
+                    copy_bits(d.w, db, b.w, rb.bit, len);
+                    if (x != 1)
+                        scale_bits(f, d.w, db, db + len, c);
+                    if (p.tick(1 + len / 64))
+                        return PACKMAT_INTERRUPTED;
+                }
+            }
+        }
+        return PACKMAT_OK;
+    }
 };
 
 template <class K>
@@ -706,7 +800,10 @@ constexpr Ops make_ops()
                 &Generic<K>::add_cols,
                 &Generic<K>::copy_row,
                 &Generic<K>::copy_submatrix,
-                &Generic<K>::transpose };
+                &Generic<K>::transpose,
+                &K::product,
+                &K::mat_mul_vec,
+                &Generic<K>::kronecker };
 }
 
 }    // namespace packmat
