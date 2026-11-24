@@ -28,9 +28,11 @@
 **      [ base domain, field bag, One( base domain ), Zero( base domain ) ]
 **
 **  so that two objects have the same base domain object iff their types
-**  have identical data. The field bag is a kernel buffer holding the core's
-**  packmat_field at offset 8, then, if the field is ranked, the inverse of
-**  its rank table.
+**  have identical data. The field bag is a kernel buffer: a stamp at offset
+**  8, the core's packmat_field at offset 16, then, if the field is ranked,
+**  the inverse of its rank table. The stamp says the bag was checked in
+**  this session; bags start unchecked, and every workspace load starts a
+**  new session, so a bag is checked once before its first use.
 **
 **  Entries are internal FFEs if One( base domain ) is one; then the rank
 **  table maps residues to FFE values (VAL_FFE), and the inverse table maps
@@ -66,7 +68,8 @@
 enum {
     DIMS_OFFSET = 8,
     CELLS_OFFSET = 16,
-    FIELD_OFFSET = 8,
+    STAMP_OFFSET = 8,
+    FIELD_OFFSET = 16,
 };
 
 // Positions in the type data
@@ -75,10 +78,24 @@ enum {
     TDATA_FIELD = 2,
     TDATA_ONE = 3,
     TDATA_ZERO = 4,
+    TDATA_LEN = 4,
 };
 
 // Dimensions are uint32_t in the core
 static const UInt MAX_DIM = 0xFFFFFFFFu;
+
+// Largest bag: below GASMAN's 48-bit size field, and far enough below
+// 2^32 on 32-bit that adding the bag header cannot wrap
+static const UInt MAX_BAG_SIZE = (UInt)1 << (sizeof(UInt) == 8 ? 47 : 31);
+
+// Stamp of a field bag checked in this session: STAMP_MAGIC ^ the number
+// of the session, which PostRestore increases. GenerationObj is saved in
+// workspaces.
+static const uint64_t STAMP_MAGIC = 0x7061636b6d617421ull;
+static uint64_t       Stamp;
+static Obj            GenerationObj;
+
+static Obj IsKernelDataObjectRepFilt;
 
 static Obj IsPackedMatrixRepFilt;
 static Obj IsPackedVectorRepFilt;
@@ -118,15 +135,31 @@ static inline packmat_field * FIELD_OF_BAG(Obj bag)
     return (packmat_field *)((char *)ADDR_OBJ(bag) + FIELD_OFFSET);
 }
 
-static inline packmat_field * FIELD(Obj tdata)
+static inline uint64_t * STAMP_OF_BAG(Obj bag)
 {
-    return FIELD_OF_BAG(ELM_PLIST(tdata, TDATA_FIELD));
+    return (uint64_t *)((char *)ADDR_OBJ(bag) + STAMP_OFFSET);
 }
 
 // Inverse of the rank table: FFE value -> residue
 static inline uint16_t * INVERSE(packmat_field * f)
 {
     return (uint16_t *)((char *)f + packmat_field_size(f->kind, f->n, 1));
+}
+
+static size_t InverseSize(uint64_t n, int ranked)
+{
+    return ranked ? ((size_t)n * sizeof(uint16_t) + 7) & ~(size_t)7 : 0;
+}
+
+static void CheckField(Obj tdata);
+
+// The field context of a type's data, checked once per session
+static inline packmat_field * FIELD(Obj tdata)
+{
+    Obj bag = ELM_PLIST(tdata, TDATA_FIELD);
+    if (*STAMP_OF_BAG(bag) != Stamp)
+        CheckField(tdata);
+    return FIELD_OF_BAG(bag);
 }
 
 static inline packmat_mat MAT_VIEW(Obj M)
@@ -175,22 +208,37 @@ static packmat_mat RequirePackedView(const char * funcname, Obj obj)
                       "must be a packed matrix or vector");
 }
 
+// 1 if tdata has the shape of packed type data; CheckField does the rest
+static BOOL IsTypeData(Obj tdata)
+{
+    if (!IS_PLIST(tdata) || LEN_PLIST(tdata) != TDATA_LEN)
+        return FALSE;
+    Obj bag = ELM_PLIST(tdata, TDATA_FIELD);
+    Obj one = ELM_PLIST(tdata, TDATA_ONE);
+    return bag && TNUM_OBJ(bag) == T_DATOBJ &&
+           DoFilter(IsKernelDataObjectRepFilt, bag) == True &&
+           SIZE_OBJ(bag) >= FIELD_OFFSET + sizeof(packmat_field) && one &&
+           (IS_FFE(one) || TNUM_OBJ(one) == T_POSOBJ) &&
+           ELM_PLIST(tdata, TDATA_BASEDOMAIN) && ELM_PLIST(tdata, TDATA_ZERO);
+}
+
 // Type data of a packed type whose objects lie in <filt>
 static Obj RequirePackedType(const char * funcname, Obj type, Obj filt)
 {
     if (TNUM_OBJ(type) != T_POSOBJ ||
         SIZE_OBJ(type) <= POS_DATA_TYPE * sizeof(Obj) ||
-        !IS_SUBSET_FLAGS(FLAGS_TYPE(type), FLAGS_FILT(filt)))
+        !IS_SUBSET_FLAGS(FLAGS_TYPE(type), FLAGS_FILT(filt)) ||
+        !IsTypeData(DATA_TYPE(type)))
         RequireArgumentEx(funcname, type, "<type>", "must be a packed type");
     return DATA_TYPE(type);
 }
 
-// A dimension: an integer in [0..2^32-1]
+// A dimension: a small nonnegative integer below 2^32
 static UInt GetDim(const char * funcname, Obj n, const char * argname)
 {
     if (!IS_NONNEG_INTOBJ(n) || (UInt)INT_INTOBJ(n) > MAX_DIM)
         RequireArgumentEx(funcname, n, argname,
-                          "must be an integer in [0..2^32-1]");
+                          "must be a small nonnegative integer below 2^32");
     return INT_INTOBJ(n);
 }
 
@@ -213,7 +261,7 @@ static const char POS_RANGE[] = "must be in [1..Length(<v>)]";
 // New object of type <type>; NewBag zeroes the cells
 static Obj NewPacked(Obj type, UInt d0, UInt d1, uint64_t words)
 {
-    if (words > (((UInt)-1) - CELLS_OFFSET) / sizeof(uint64_t))
+    if (words > (MAX_BAG_SIZE - CELLS_OFFSET) / sizeof(uint64_t))
         ErrorMayQuit("packed matrix or vector too large", 0, 0);
     Obj obj = NewBag(T_DATOBJ, CELLS_OFFSET + (UInt)words * sizeof(uint64_t));
     SetTypeDatObj(obj, type);
@@ -345,9 +393,7 @@ static Obj FuncPACKMAT_FIELD_BAG(Obj self, Obj n, Obj one)
     }
 
     const size_t fsize = packmat_field_size(kind, nn, ranked);
-    const size_t isize =
-        ranked ? ((size_t)nn * sizeof(uint16_t) + 7) & ~(size_t)7 : 0;
-    Obj bag = NewKernelBuffer(FIELD_OFFSET + fsize + isize);
+    Obj bag = NewKernelBuffer(FIELD_OFFSET + fsize + InverseSize(nn, ranked));
 
     packmat_field * f = FIELD_OF_BAG(bag);
     packmat_field_init(f, kind, nn, ranked);
@@ -363,8 +409,57 @@ static Obj FuncPACKMAT_FIELD_BAG(Obj self, Obj n, Obj one)
             v = SUM_FFV(v, 1, succ);
         }
     }
-    GAP_ASSERT(packmat_field_check(f));
     return bag;
+}
+
+/****************************************************************************
+**
+*F  CheckField( <tdata> )
+**
+**  Check the field bag of <tdata> against the core's rules and against
+**  One( base domain ), then stamp it; an error if it fails. Allocates
+**  nothing, so callers may hold views.
+*/
+static void CheckField(Obj tdata)
+{
+    Obj             bag = ELM_PLIST(tdata, TDATA_FIELD);
+    Obj             one = ELM_PLIST(tdata, TDATA_ONE);
+    packmat_field * f = FIELD_OF_BAG(bag);
+
+    // the size first, so that the checks below stay inside the bag
+    const size_t fsize =
+        f->ranked > 1 ? 0 : packmat_field_size((int)f->kind, f->n, f->ranked);
+    if (fsize == 0 ||
+        SIZE_OBJ(bag) !=
+            FIELD_OFFSET + fsize + InverseSize(f->n, f->ranked) ||
+        !packmat_field_check(f))
+        goto bad;
+
+    if (IS_FFE(one)) {
+        const FF ff = FLD_FFE(one);
+        if (CHAR_FF(ff) != f->n || DEGR_FF(ff) != 1 ||
+            f->ranked != (f->kind != PACKMAT_GF2))
+            goto bad;
+        if (f->ranked) {
+            const uint16_t * rank = packmat_field_rank(f);
+            const uint16_t * inv = INVERSE(f);
+            const FFV *      succ = SUCC_FF(ff);
+            FFV              v = 0;
+            for (uint64_t r = 0; r < f->n; r++) {
+                if (rank[r] != v || inv[v] != r)
+                    goto bad;
+                v = SUM_FFV(v, 1, succ);
+            }
+        }
+    }
+    else if (f->ranked) {
+        goto bad;
+    }
+    *STAMP_OF_BAG(bag) = Stamp;
+    return;
+
+bad:
+    ErrorMayQuit("packed matrix: invalid field context", 0, 0);
 }
 
 
@@ -408,7 +503,6 @@ static uint64_t GF2VecWord(Obj vec, UInt k)
 #endif
 }
 
-// Word k of the cells of a packed vector
 static uint64_t PackedVecWord(Obj vec, UInt k)
 {
     return CELLS(vec)[k];
@@ -857,12 +951,27 @@ static Int InitKernel(StructInitInfo * module)
     ImportFuncFromLibrary("IsPackedMatrixRep", &IsPackedMatrixRepFilt);
     ImportFuncFromLibrary("IsPackedVectorRep", &IsPackedVectorRepFilt);
     ImportFuncFromLibrary("PACKMAT_EntryResidue", &PackmatEntryResidueFunc);
+    ImportFuncFromLibrary("IsKernelDataObjectRep",
+                          &IsKernelDataObjectRepFilt);
+    InitGlobalBag(&GenerationObj, "src/packmat.c:GenerationObj");
     return 0;
 }
 
 static Int InitLibrary(StructInitInfo * module)
 {
     InitGVarFuncsFromTable(GVarFuncs);
+    GenerationObj = INTOBJ_INT(1);
+    Stamp = STAMP_MAGIC ^ 1;
+    return 0;
+}
+
+// Field bags from the workspace carry the stamp of an older session
+static Int PostRestore(StructInitInfo * module)
+{
+    const Int g =
+        IS_INTOBJ(GenerationObj) ? INT_INTOBJ(GenerationObj) + 1 : 2;
+    GenerationObj = INTOBJ_INT(g);
+    Stamp = STAMP_MAGIC ^ (uint64_t)g;
     return 0;
 }
 
@@ -871,6 +980,7 @@ static StructInitInfo module = {
     .name = "packmat",
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
+    .postRestore = PostRestore,
 };
 
 StructInitInfo * InitInfoPackmat(void)

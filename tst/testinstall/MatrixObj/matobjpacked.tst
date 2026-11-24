@@ -1,4 +1,4 @@
-#@local F, F3, M, N, P, Q, R, v, w, u, l, d, h, x, L
+#@local F, F3, M, N, P, Q, R, v, w, u, l, d, h, x, L, fam, v2
 gap> START_TEST( "matobjpacked.tst" );
 gap> ReadGapRoot( "tst/testinstall/MatrixObj/testpacked.g" );
 
@@ -119,12 +119,16 @@ false
 gap> NewZeroMatrix( IsPackedMatrixRep, GF(2), 2^32 - 1, 0 );
 <4294967295x0 packed matrix over GF(2)>
 gap> NewZeroVector( IsPackedVectorRep, GF(2), -1 );
-Error, PACKMAT_ZERO_VECTOR: <len> must be an integer in [0..2^32-1] (not the i\
-nteger -1)
+Error, PACKMAT_ZERO_VECTOR: <len> must be a small nonnegative integer below 2^\
+32 (not the integer -1)
+gap> NewZeroMatrix( IsPackedMatrixRep, GF(7), 2^28 - 1, 2^28 - 1 );
+Error, packed matrix or vector too large
+gap> NewZeroMatrix( IsPackedMatrixRep, GF(2), 2^28 - 1, 2^28 - 1 );
+Error, packed matrix or vector too large
 #@if GAPInfo.BytesPerVariable = 8
 gap> NewZeroMatrix( IsPackedMatrixRep, GF(2), 2^32, 0 );
-Error, PACKMAT_ZERO_MATRIX: <nrows> must be an integer in [0..2^32-1] (not the\
- integer 4294967296)
+Error, PACKMAT_ZERO_MATRIX: <nrows> must be a small nonnegative integer below \
+2^32 (not the integer 4294967296)
 gap> MemoryUsage( NewZeroMatrix( IsPackedMatrixRep, GF(2), 8, 8 ) );
 48
 #@fi
@@ -255,6 +259,30 @@ gap> R = Integers mod 6 and not IsIdenticalObj( R, Integers mod 6 );
 true
 gap> NewVector( IsPackedVectorRep, R, [ ZmodnZObj( 1, 6 ) ] ) = NewVector( IsPackedVectorRep, Integers mod 6, [ ZmodnZObj( 1, 6 ) ] );
 false
+
+#
+# Constructors check the data of their type, so that forged types raise
+# errors
+#
+gap> fam := CollectionsFamily( FamilyObj( GF(7) ) );;
+gap> PACKMAT_ZERO_MATRIX( NewType( fam, IsPackedMatrixRep and IsMutable ), 3, 3 );
+Error, PACKMAT_ZERO_MATRIX: <type> must be a packed type (not a positional obj\
+ect)
+gap> PACKMAT_ZERO_MATRIX( NewType( fam, IsPackedMatrixRep and IsMutable,
+>        [ GF(7), [], Z(7)^0, 0*Z(7) ] ), 3, 3 );
+Error, PACKMAT_ZERO_MATRIX: <type> must be a packed type (not a positional obj\
+ect)
+gap> v2 := [ Z(2) ];; ConvertToVectorRep( v2, 2 );;
+gap> PACKMAT_ZERO_MATRIX( NewType( fam, IsPackedMatrixRep and IsMutable,
+>        [ GF(7), v2, Z(7)^0, 0*Z(7) ] ), 3, 3 );
+Error, PACKMAT_ZERO_MATRIX: <type> must be a packed type (not a positional obj\
+ect)
+gap> PACKMAT_ZERO_MATRIX( PackedRepContext( GF(7) ).vector, 3, 3 );
+Error, PACKMAT_ZERO_MATRIX: <type> must be a packed type (not a positional obj\
+ect)
+gap> PACKMAT_COPY( NewZeroMatrix( IsPackedMatrixRep, GF(7), 1, 1 ),
+>                  PackedRepContext( GF(5) ).matrix );
+Error, PACKMAT_COPY: <type> must have the base domain of <obj>
 
 #
 # Unsupported base domains
