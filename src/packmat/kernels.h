@@ -117,30 +117,70 @@ extern const Kernels m64_kernels;
 
 /****************************************************************************
 **
-**  Kernels for B-bit cells, CPW = 64/B per word. Correct for any B that
-**  divides 64; kinds may replace entries with faster ones.
+**  Cells of B bits, CPW = 64/B per word, for any B that divides 64. A row
+**  of a matrix is a bit string: row i is the ncols*B bits from
+**  row_bit(ncols, i) on, in one word if rows share words, else from the
+**  start of its first word.
+*/
+
+template <unsigned B>
+struct Cells {
+    static const uint32_t CPW = 64 / B;
+    static const uint64_t MASK = ~(uint64_t)0 >> (64 - B);
+
+    // First bit of row i of a matrix with ncols columns
+    static uint64_t row_bit(uint32_t ncols, uint32_t i)
+    {
+        const uint32_t r = layout_rpw(CPW, ncols);
+        if (r > 1)
+            return (uint64_t)(i / r) * 64 + (i % r) * ncols * B;
+        return (uint64_t)i * layout_stride(CPW, ncols) * 64;
+    }
+
+    static uint64_t get(const uint64_t * w, uint64_t bit)
+    {
+        return (w[bit / 64] >> (bit % 64)) & MASK;
+    }
+
+    static void put(uint64_t * w, uint64_t bit, uint64_t x)
+    {
+        uint64_t &     d = w[bit / 64];
+        const unsigned s = (unsigned)(bit % 64);
+        d = (d & ~(MASK << s)) | (x << s);
+    }
+
+    // The low bit of each nonzero cell of x, folded from its bits
+    static uint64_t nonzero_marks(uint64_t x)
+    {
+        if (B == 64)
+            return x != 0;
+        for (unsigned s = 1; s < B; s *= 2)
+            x |= x >> s;
+        return x & (~(uint64_t)0 / MASK);
+    }
+
+    static unsigned nonzero_cells(uint64_t x)
+    {
+        return popcount64(nonzero_marks(x));
+    }
+};
+
+template <unsigned B>
+const uint32_t Cells<B>::CPW;
+template <unsigned B>
+const uint64_t Cells<B>::MASK;
+
+/****************************************************************************
+**
+**  Kernels for B-bit cells; kinds may replace entries with faster ones.
 */
 
 template <unsigned B>
 struct CellKernels {
-    static const uint32_t CPW = 64 / B;
-    static const uint64_t MASK = ~(uint64_t)0 >> (64 - B);
+    typedef Cells<B> C;
 
-    // Word index and bit shift of cell (i, j)
-    static void
-    locate(uint32_t ncols, uint32_t i, uint32_t j, size_t * w, unsigned * s)
-    {
-        PACKMAT_ASSERT(j < ncols);
-        const uint32_t r = layout_rpw(CPW, ncols);
-        if (r > 1) {
-            *w = i / r;
-            *s = ((i % r) * ncols + j) * B;
-        }
-        else {
-            *w = (size_t)i * layout_stride(CPW, ncols) + j / CPW;
-            *s = (j % CPW) * B;
-        }
-    }
+    static const uint32_t CPW = C::CPW;
+    static const uint64_t MASK = C::MASK;
 
     static uint64_t mat_get(const packmat_field *,
                             const uint64_t * m,
@@ -148,10 +188,8 @@ struct CellKernels {
                             uint32_t         i,
                             uint32_t         j)
     {
-        size_t   w;
-        unsigned s;
-        locate(ncols, i, j, &w, &s);
-        return (m[w] >> s) & MASK;
+        PACKMAT_ASSERT(j < ncols);
+        return C::get(m, C::row_bit(ncols, i) + (uint64_t)j * B);
     }
 
     static void mat_set(const packmat_field * f,
@@ -161,25 +199,21 @@ struct CellKernels {
                         uint32_t              j,
                         uint64_t              x)
     {
-        PACKMAT_ASSERT(x < f->n);
-        size_t   w;
-        unsigned s;
-        locate(ncols, i, j, &w, &s);
-        m[w] = (m[w] & ~(MASK << s)) | (x << s);
+        PACKMAT_ASSERT(j < ncols && x < f->n);
+        C::put(m, C::row_bit(ncols, i) + (uint64_t)j * B, x);
     }
 
     static uint64_t
     vec_get(const packmat_field *, const uint64_t * v, uint32_t i)
     {
-        return (v[i / CPW] >> ((i % CPW) * B)) & MASK;
+        return C::get(v, (uint64_t)i * B);
     }
 
     static void
     vec_set(const packmat_field * f, uint64_t * v, uint32_t i, uint64_t x)
     {
         PACKMAT_ASSERT(x < f->n);
-        const unsigned s = (i % CPW) * B;
-        v[i / CPW] = (v[i / CPW] & ~(MASK << s)) | (x << s);
+        C::put(v, (uint64_t)i * B, x);
     }
 
     // Expected word k of the n x n identity when r > 1 rows share a word
