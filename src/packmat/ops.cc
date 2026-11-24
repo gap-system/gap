@@ -178,7 +178,7 @@ void packmat_copy_row_to_vector(packmat_mat v, packmat_mat m, uint32_t i)
 void packmat_copy_vector_to_row(packmat_mat m, uint32_t i, packmat_mat v)
 {
     PACKMAT_ASSERT(v.f == m.f && v.nrows == 1 && v.ncols == m.ncols);
-    PACKMAT_ASSERT(i < m.nrows && disjoint(v, m));
+    PACKMAT_ASSERT(i < m.nrows && (v.w == m.w ? i > 0 : disjoint(v, m)));
     ops(m.f).copy_row(m, i, v, 0);
 }
 
@@ -203,7 +203,11 @@ void packmat_copy_submatrix(packmat_mat   dst,
                             packmat_index dcols,
                             packmat_index scols)
 {
-    PACKMAT_ASSERT(dst.f == src.f && disjoint(dst, src));
+    PACKMAT_ASSERT(dst.f == src.f);
+    PACKMAT_ASSERT(dst.w == src.w ? same_shape(dst, src) &&
+                                        (indices_disjoint(drows, srows) ||
+                                         indices_disjoint(dcols, scols))
+                                  : disjoint(dst, src));
     PACKMAT_ASSERT(drows.len == srows.len && dcols.len == scols.len);
     PACKMAT_ASSERT(indices_below(drows, dst.nrows));
     PACKMAT_ASSERT(indices_below(srows, src.nrows));

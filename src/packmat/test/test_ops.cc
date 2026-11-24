@@ -116,6 +116,31 @@ static bool can_choose(uint32_t bound, uint32_t len, int kind)
     return kind == 2 ? (bound > 0 || len == 0) : len <= bound;
 }
 
+// choose(bound, len, kind), shifted by off
+static Indices choose_in(uint32_t off, uint32_t bound, uint32_t len, int kind)
+{
+    Indices r = choose(bound, len, kind);
+    for (size_t k = 0; k < r.v.size(); k++)
+        r.v[k] += off;
+    return r;
+}
+
+// Two disjoint parts of [0, total), total >= 2: [s0, s0 + sn) and
+// [t0, t0 + tn), in random order
+struct Split {
+    uint32_t s0, sn, t0, tn;
+
+    explicit Split(uint32_t total)
+    {
+        const uint32_t h = 1 + (uint32_t)(rnd() % (total - 1));
+        const bool     low = rnd() % 2;
+        s0 = low ? 0 : h;
+        sn = low ? h : total - h;
+        t0 = low ? h : 0;
+        tn = low ? total - h : h;
+    }
+};
+
 /****************************************************************************
 **
 **  Whole objects
@@ -345,6 +370,18 @@ test_copies(const packmat_field * f, uint32_t nrows, uint32_t ncols)
         CHECK(holds(f, d, R) && holds(f, v, V));
     }
 
+    // row 0 of a matrix, seen as a vector, into another row
+    if (nrows >= 2) {
+        const uint32_t i = 1 + (uint32_t)(rnd() % (nrows - 1));
+        ref::Mat       R = A;
+        for (uint32_t j = 0; j < ncols; j++)
+            R.at(i, j) = A.at(0, j);
+        load(f, d, A);
+        packmat_copy_vector_to_row(vd, i,
+                                   packmat_vec_view(f, d.data(), ncols));
+        CHECK(holds(f, d, R));
+    }
+
     // sub-matrices: columns by every kind of index list, and lengths
     // around word boundaries
     const uint32_t lens[] = {
@@ -387,6 +424,39 @@ test_copies(const packmat_field * f, uint32_t nrows, uint32_t ncols)
                                    dcols.ix(), cols.ix());
             CHECK(holds(f, g, R));
         }
+    }
+
+    // within one matrix: rows or columns split into a part read and a
+    // part written, any indices in the other dimension
+    for (int t = 0; t < 8; t++) {
+        const bool     by_rows = t % 2 == 0;
+        const uint32_t total = by_rows ? nrows : ncols;
+        const uint32_t other = by_rows ? ncols : nrows;
+        if (total < 2)
+            continue;
+        const Split    sp(total);
+        const uint32_t len =
+            (uint32_t)(rnd() % ((sp.sn < sp.tn ? sp.sn : sp.tn) + 1));
+        const Indices  src = choose_in(sp.s0, sp.sn, len, (int)(rnd() % 3));
+        const Indices  dst = choose_in(sp.t0, sp.tn, len, (int)(rnd() % 3));
+        const int      k1 = (int)(rnd() % 3), k2 = (int)(rnd() % 3);
+        const uint32_t olen = (uint32_t)(rnd() % (other + 1));
+        if (!can_choose(other, olen, k1) || !can_choose(other, olen, k2))
+            continue;
+        const Indices   osrc = choose(other, olen, k1);
+        const Indices   odst = choose(other, olen, k2);
+        const Indices & srows = by_rows ? src : osrc;
+        const Indices & scols = by_rows ? osrc : src;
+        const Indices & drows = by_rows ? dst : odst;
+        const Indices & dcols = by_rows ? odst : dst;
+        ref::Mat        R = A;
+        for (uint32_t i = 0; i < srows.v.size(); i++)
+            for (uint32_t j = 0; j < scols.v.size(); j++)
+                R.at(drows.v[i], dcols.v[j]) = A.at(srows.v[i], scols.v[j]);
+        load(f, d, A);
+        packmat_copy_submatrix(vd, vd, drows.ix(), srows.ix(), dcols.ix(),
+                               scols.ix());
+        CHECK(holds(f, d, R));
     }
 
     Buf t(words(f, ncols, nrows));
@@ -529,6 +599,21 @@ static void test_vectors(const packmat_field * f, uint32_t len)
                                   scols.ix());
         vector<uint32_t> zero(1, 0);
         CHECK(holds(f, e, ref::submatrix(U, zero, scols.v)));
+    }
+
+    // within one vector, between disjoint parts
+    for (int t = 0; t < 3 && len >= 2; t++) {
+        const Split    sp(len);
+        const uint32_t k =
+            (uint32_t)(rnd() % ((sp.sn < sp.tn ? sp.sn : sp.tn) + 1));
+        const Indices scols = choose_in(sp.s0, sp.sn, k, (int)(rnd() % 3));
+        const Indices dcols = choose_in(sp.t0, sp.tn, k, (int)(rnd() % 3));
+        ref::Mat      R = U;
+        for (uint32_t j = 0; j < k; j++)
+            R.at(0, dcols.v[j]) = U.at(0, scols.v[j]);
+        load(f, d, U);
+        packmat_copy_subvector(vd, vd, dcols.ix(), scols.ix());
+        CHECK(holds(f, d, R));
     }
 }
 

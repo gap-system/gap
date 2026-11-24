@@ -150,6 +150,11 @@ inline bool same_or_disjoint(packmat_mat a, packmat_mat b)
     return a.w == b.w || disjoint(a, b);
 }
 
+inline uint32_t index_at(const packmat_index & x, uint32_t k)
+{
+    return x.idx ? x.idx[k] : x.first + k;
+}
+
 // Every index of x is below bound
 inline bool indices_below(packmat_index x, uint32_t bound)
 {
@@ -158,6 +163,23 @@ inline bool indices_below(packmat_index x, uint32_t bound)
     for (uint32_t k = 0; k < x.len; k++) {
         if (x.idx[k] >= bound)
             return false;
+    }
+    return true;
+}
+
+// No index is in both x and y; quadratic unless both are ranges
+inline bool indices_disjoint(packmat_index x, packmat_index y)
+{
+    if (x.len == 0 || y.len == 0)
+        return true;
+    if (!x.idx && !y.idx)
+        return (uint64_t)x.first + x.len <= y.first ||
+               (uint64_t)y.first + y.len <= x.first;
+    for (uint32_t k = 0; k < x.len; k++) {
+        for (uint32_t t = 0; t < y.len; t++) {
+            if (index_at(x, k) == index_at(y, t))
+                return false;
+        }
     }
     return true;
 }
@@ -619,11 +641,6 @@ struct Generic {
                   (uint64_t)a.ncols * B);
     }
 
-    static uint32_t index(const packmat_index & x, uint32_t k)
-    {
-        return x.idx ? x.idx[k] : x.first + k;
-    }
-
     // A range, or an index list of consecutive values; len > 0
     static bool is_run(const packmat_index & x)
     {
@@ -647,18 +664,18 @@ struct Generic {
         if (ncols == 0)
             return;
         const bool     run = is_run(dcols) && is_run(scols);
-        const uint64_t dc = (uint64_t)index(dcols, 0) * B;
-        const uint64_t sc = (uint64_t)index(scols, 0) * B;
+        const uint64_t dc = (uint64_t)index_at(dcols, 0) * B;
+        const uint64_t sc = (uint64_t)index_at(scols, 0) * B;
         for (uint32_t k = 0; k < drows.len; k++) {
-            const uint64_t db = C::row_bit(d.ncols, index(drows, k));
-            const uint64_t sb = C::row_bit(a.ncols, index(srows, k));
+            const uint64_t db = C::row_bit(d.ncols, index_at(drows, k));
+            const uint64_t sb = C::row_bit(a.ncols, index_at(srows, k));
             if (run) {
                 copy_bits(d.w, db + dc, a.w, sb + sc, (uint64_t)ncols * B);
                 continue;
             }
             for (uint32_t t = 0; t < ncols; t++)
-                C::put(d.w, db + (uint64_t)index(dcols, t) * B,
-                       C::get(a.w, sb + (uint64_t)index(scols, t) * B));
+                C::put(d.w, db + (uint64_t)index_at(dcols, t) * B,
+                       C::get(a.w, sb + (uint64_t)index_at(scols, t) * B));
         }
     }
 
