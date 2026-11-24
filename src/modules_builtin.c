@@ -20,6 +20,7 @@
 #include "libgap_intern.h"
 #include "objccoll.h"
 #include "objset.h"
+#include "packmat.h"
 #include "profile.h"
 #include "sha256.h"
 #include "syntaxtree.h"
@@ -99,6 +100,7 @@ const InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoString,
     InitInfoGF2Vec,
     InitInfoVec8bit,
+    InitInfoPackmat,
 
     // free and presented groups
     InitInfoFreeGroupElements,

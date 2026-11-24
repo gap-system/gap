@@ -108,6 +108,7 @@ ReadLib( "wordass.gd"  );
 ReadLib( "matobj2.gd"  );
 ReadLib( "matobjplist.gd" );
 ReadLib( "matobjgeneric.gd" );
+ReadLib( "matobjpacked.gd" );
 ReadLib( "matobjnz.gd" );
 
 # files dealing with rewriting systems
