@@ -1485,6 +1485,28 @@ InstallMethod( RowsOfMatrix,
     [ IsMatrix ],
     PlainListCopy );
 
+InstallMethod( RowOfMatrix,
+    "for a matrix that is a list, and a row number",
+    [ IsMatrix, IsPosInt ],
+    function( M, i )
+    ROW_OF_MATRIX_CHECK( M, i );
+    return ShallowCopy( M[i] );
+    end );
+
+# This avoids computing 'BaseDomain( <M> )'.
+InstallMethod( Vector,
+    "for a list and a plain list matrix",
+    [ IsList, IsMatrix and IsPlistRep ],
+    function( list, M )
+    local v;
+
+    v:= PlainListCopy( list );
+    if not IsMutable( list ) then
+      MakeImmutable( v );
+    fi;
+    return v;
+    end );
+
 InstallMethod( NumberRows,
     "generic method for a (perhaps empty) matrix",
     [ IsMatrix ],

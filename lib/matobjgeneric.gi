@@ -123,7 +123,8 @@ InstallMethod( NumberColumns,
 InstallMethod( \[\],
   [ "IsGenericMatrixRep", "IsPosInt" ],
   function( M, pos )
-    ErrorNoReturn( "row access unsupported; use M[i,j] or RowsOfMatrix(M)" );
+    ErrorNoReturn( "row access unsupported; ",
+                   "use M[i,j], RowOfMatrix(M,i) or RowsOfMatrix(M)" );
   end );
 
 InstallMethod( MatElm,
@@ -159,6 +160,13 @@ InstallMethod( MutableCopyMatrix,
   [ "IsGenericMatrixRep" ],
   M -> MakeIsGenericMatrixRep( BaseDomain(M), NrCols(M),
            List( M![GEN_MAT_REP_ROWS_POS], ShallowCopy ), false ) );
+
+InstallMethod( RowOfMatrix, "for a generic matrix and a row number",
+  [ IsGenericMatrixRep, IsPosInt ],
+  function( M, row )
+    ROW_OF_MATRIX_CHECK( M, row );
+    return Vector( ShallowCopy( M![GEN_MAT_REP_ROWS_POS][row] ), M );
+  end );
 
 InstallMethod( ExtractSubMatrix,
   [ "IsGenericMatrixRep", "IsList", "IsList" ],

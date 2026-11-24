@@ -49,7 +49,7 @@ gap> Unpack( M );
 gap> M[2,1];
 3
 gap> M[1];
-Error, row access unsupported; use M[i,j] or RowsOfMatrix(M)
+Error, row access unsupported; use M[i,j], RowOfMatrix(M,i) or RowsOfMatrix(M)
 gap> M[2,2] := 5;;
 gap> Unpack( M );
 [ [ 1, 2 ], [ 3, 5 ] ]

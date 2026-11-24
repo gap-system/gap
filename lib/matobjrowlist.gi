@@ -81,3 +81,11 @@ InstallMethod( SwapMatrixRows, "for a mutable IsRowListMatrix, and two row numbe
     mat[row2] := temp;
 
   end );
+
+
+InstallMethod( RowOfMatrix, "for a row list matrix and a row number",
+  [ IsRowListMatrix, IsPosInt ],
+  function( mat, row )
+    ROW_OF_MATRIX_CHECK( mat, row );
+    return ShallowCopy( mat[row] );
+  end );
