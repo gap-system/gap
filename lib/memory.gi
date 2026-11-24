@@ -351,6 +351,106 @@ InstallMethod( MatElm,
   [ "IsMatrixOrMatrixObj and IsObjWithMemory", "IsPosInt", "IsPosInt" ],
   { M, i, j } -> M!.el[i,j] );
 
+# Read-only queries delegate to the wrapped matrix; the results carry no
+# memory.
+InstallMethod( ConstructingFilter,
+  [ "IsMatrixOrMatrixObj and IsObjWithMemory" ],
+  M -> ConstructingFilter( M!.el ) );
+
+# beats the method for `IsMatrix', which would claim `IsPlistRep' for
+# compressed matrices
+InstallMethod( CompatibleVectorFilter,
+  [ "IsMatrixOrMatrixObj and IsObjWithMemory" ],
+  M -> CompatibleVectorFilter( M!.el ) );
+
+InstallMethod( Unpack,
+  [ "IsMatrixOrMatrixObj and IsObjWithMemory" ],
+  M -> Unpack( M!.el ) );
+
+InstallMethod( RowsOfMatrix,
+  [ "IsMatrixOrMatrixObj and IsObjWithMemory" ],
+  M -> RowsOfMatrix( M!.el ) );
+
+InstallMethod( MutableCopyMatrix,
+  [ "IsMatrixOrMatrixObj and IsObjWithMemory" ],
+  M -> MutableCopyMatrix( M!.el ) );
+
+InstallMethod( ExtractSubMatrix,
+  [ "IsMatrixOrMatrixObj and IsObjWithMemory", "IsList", "IsList" ],
+  { M, rows, cols } -> ExtractSubMatrix( M!.el, rows, cols ) );
+
+InstallMethod( PositionNonZeroInRow,
+  [ "IsMatrixOrMatrixObj and IsObjWithMemory", "IsPosInt" ],
+  { M, i } -> PositionNonZeroInRow( M!.el, i ) );
+
+InstallMethod( PositionNonZeroInRow,
+  [ "IsMatrixOrMatrixObj and IsObjWithMemory", "IsPosInt", "IsInt" ],
+  { M, i, from } -> PositionNonZeroInRow( M!.el, i, from ) );
+
+# Rows of a mutable wrapped matrix are mutable; the copies keep changes
+# through a row from reaching the wrapped matrix. `Immutable' does not copy
+# an immutable row.
+InstallOtherMethod( ELM_LIST,
+  [ "IsRowListMatrix and IsObjWithMemory", "IsPosInt" ],
+  { M, i } -> Immutable( M!.el[i] ) );
+
+InstallOtherMethod( ELMS_LIST,
+  [ "IsRowListMatrix and IsObjWithMemory", "IsList" ],
+  { M, l } -> Immutable( M!.el{ l } ) );
+
+InstallOtherMethod( ISB_LIST,
+  [ "IsRowListMatrix and IsObjWithMemory", "IsPosInt" ],
+  { M, i } -> IsBound( M!.el[i] ) );
+
+InstallOtherMethod( ListOp,
+  [ "IsRowListMatrix and IsObjWithMemory" ],
+  M -> List( ListOp( M!.el ), Immutable ) );
+
+InstallOtherMethod( ListOp,
+  [ "IsRowListMatrix and IsObjWithMemory", "IsFunction" ],
+  { M, f } -> List( ListOp( M ), f ) );
+
+InstallOtherMethod( \*,
+  [ "IsVectorObj", "IsMatrixObj and IsObjWithMemory" ],
+  { v, M } -> v * M!.el );
+
+# An object with memory records how it was computed from the generators, so
+# operations that change a matrix in place are errors. (`M[i,j]:= x' fails
+# earlier, in the kernel, because the object is immutable.)
+CallFuncList( function()
+  local nochange, M, filts;
+
+  nochange:= function( arg )
+    ErrorNoReturn( "objects with memory cannot be changed" );
+  end;
+
+  M:= IsMatrixOrMatrixObj and IsObjWithMemory;
+  for filts in [
+      [ ASS_LIST, M, IsObject, IsObject ],
+      [ ASSS_LIST, M, IsObject, IsObject ],
+      [ UNB_LIST, M, IsObject ],
+      [ Add, M, IsObject ], [ Add, M, IsObject, IsObject ],
+      [ Remove, M ], [ Remove, M, IsObject ],
+      [ Append, M, IsObject ],
+      [ Randomize, M ], [ Randomize, M, IsRandomSource ],
+      [ Randomize, IsRandomSource, M ],
+      [ MultMatrixRowLeft, M, IsObject, IsObject ],
+      [ MultMatrixRowRight, M, IsObject, IsObject ],
+      [ MultMatrixColumnLeft, M, IsObject, IsObject ],
+      [ MultMatrixColumnRight, M, IsObject, IsObject ],
+      [ AddMatrixRowsLeft, M, IsObject, IsObject, IsObject ],
+      [ AddMatrixRowsRight, M, IsObject, IsObject, IsObject ],
+      [ AddMatrixColumnsLeft, M, IsObject, IsObject, IsObject ],
+      [ AddMatrixColumnsRight, M, IsObject, IsObject, IsObject ],
+      [ SwapMatrixRows, M, IsObject, IsObject ],
+      [ SwapMatrixColumns, M, IsObject, IsObject ],
+      [ AddMatrix, M, IsObject ], [ AddMatrix, M, IsObject, IsObject ],
+      [ MultMatrixLeft, M, IsObject ], [ MultMatrixRight, M, IsObject ],
+      [ CopySubMatrix, IsObject, M, IsObject, IsObject, IsObject, IsObject ] ] do
+    InstallOtherMethod( filts[1], filts{ [ 2 .. Length( filts ) ] }, nochange );
+  od;
+end, [] );
+
 # legacy matrix methods
 
 InstallOtherMethod( Length,
