@@ -13,7 +13,7 @@
 # Packed matrix and vector objects. The kernel functions PACKMAT_* in
 # src/packmat.c do the work and check their arguments; most are installed
 # as methods directly. They find the base domain and the field context in
-# the data of the object's type (PackedRepContext).
+# the data of the object's type; PackedRepContext holds the types.
 #
 
 # n for GF(n), n prime, or Integers mod n; else fail
