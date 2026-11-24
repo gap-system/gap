@@ -258,40 +258,49 @@ Perform( [ [ 20, 501 ], [ 20, 601 ], [ 20, 1001 ], [ 22, 37 ],
 ##
 ##  nonconjugate: subgroups of the same order that are not conjugate
 ##
-##  PBT_NonConjugateCase( <name>, <group>, <other> ) adds one case for the
-##  permutation groups G and H returned by the functions <group> and
+##  PBT_NonConjugateCases( <name>, <group>, <other> ) adds two cases for
+##  the permutation groups G and H returned by the functions <group> and
 ##  <other>, which have the same degree and order. With S and E as in
 ##  PBT_SubgroupCases and F being H ^ x for a random x in S, given by
-##  random generators, it times RepresentativeAction( S, E, F ) and records
-##  whether that returns fail.
+##  random generators, they time
+##
+##      <name>.RepresentativeAction   RepresentativeAction( S, E, F )
+##      <name>.ConjugatorPermGroup    ConjugatorPermGroup( S, E, F )
+##
+##  and record whether the result is fail.
 ##
 
-PBT_NonConjugateCase := function( name, group, other )
-    PBT_AddCase( name,
-        function( )
-            local G, S, E, F;
+PBT_NonConjugateCases := function( name, group, other )
+    local setup;
 
-            G := group( );
-            S := SymmetricGroup( LargestMovedPoint( G ) );
-            E := Group( PBT_RandomGenerators( G ) );
-            F := Group( PBT_RandomGenerators( other( ) ^ Random( S ) ) );
-            return rec( S := S, E := E, F := F );
-        end,
+    setup := function( )
+        local G, S, E, F;
+
+        G := group( );
+        S := SymmetricGroup( LargestMovedPoint( G ) );
+        E := Group( PBT_RandomGenerators( G ) );
+        F := Group( PBT_RandomGenerators( other( ) ^ Random( S ) ) );
+        return rec( S := S, E := E, F := F );
+    end;
+    PBT_AddCase( Concatenation( name, ".RepresentativeAction" ), setup,
         p -> RepresentativeAction( p.S, p.E, p.F ) = fail );
+    PBT_AddCase( Concatenation( name, ".ConjugatorPermGroup" ), setup,
+        p -> ConjugatorPermGroup( p.S, p.E, p.F ) = fail );
 end;
 
-PBT_NonConjugateCase( "nonconjugate/prim26-2-4",
+PBT_NonConjugateCases( "nonconjugate/prim26-2-4",
     {} -> PrimitiveGroup( 26, 2 ), {} -> PrimitiveGroup( 26, 4 ) );
 # AGammaL(1,8) has a regular normal subgroup and PSL(2,7) has none
-PBT_NonConjugateCase( "nonconjugate/prim8-2-4",
+PBT_NonConjugateCases( "nonconjugate/prim8-2-4",
     {} -> PrimitiveGroup( 8, 2 ), {} -> PrimitiveGroup( 8, 4 ) );
 
 # TransitiveGroup( d, i ) and TransitiveGroup( d, j ) as t<d>-<i>-<j>
-Perform( [ [ 24, 2948, 2949 ], [ 27, 581, 582 ], [ 27, 926, 927 ],
-    [ 28, 1481, 1482 ], [ 28, 1510, 1511 ], [ 35, 187, 188 ],
-    [ 42, 4894, 4895 ], [ 44, 1048, 1049 ], [ 45, 5459, 5460 ] ],
+Perform( [ [ 16, 164, 165 ], [ 24, 2948, 2949 ], [ 24, 5193, 5194 ],
+    [ 27, 581, 582 ], [ 27, 926, 927 ], [ 28, 1481, 1482 ],
+    [ 28, 1510, 1511 ], [ 35, 187, 188 ], [ 42, 4894, 4895 ],
+    [ 44, 1048, 1049 ], [ 45, 5459, 5460 ] ],
     function( dij )
-        PBT_NonConjugateCase(
+        PBT_NonConjugateCases(
             StringFormatted( "nonconjugate/t{}-{}-{}", dij[1], dij[2], dij[3] ),
             {} -> TransitiveGroup( dij[1], dij[2] ),
             {} -> TransitiveGroup( dij[1], dij[3] ) );
