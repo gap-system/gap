@@ -9,8 +9,9 @@
 **
 **  Unit tests of the packed matrix core against the reference in ref.h,
 **  on fixed-seed random data and edge dimensions, with the helpers of
-**  common.h. Exit status 0 on success. For how the API is used, read
-**  example.c.
+**  common.h: contexts, layout, entries and whole objects here, the
+**  kernels of ops.h in test_ops.cc. Exit status 0 on success. For how the
+**  API is used, read example.c.
 */
 
 #include "common.h"
@@ -567,6 +568,7 @@ int main()
     test_huge();
     test_orders();
     test_hash_values();
+    test_ops();
 
     printf("packmat: %lu checks, %lu failures\n", checks, failures);
     return failures ? 1 : 0;

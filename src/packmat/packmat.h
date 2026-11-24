@@ -44,7 +44,8 @@
 **    debug builds assert them; otherwise a row beyond nrows in a shared
 **    word silently sets unused bits.
 **  - Two-operand functions need views with the same context and equal
-**    dimensions, asserted in debug builds; their words do not overlap.
+**    dimensions, asserted in debug builds; their words do not overlap
+**    unless the function allows it ("dst may be a": dst.w == a.w).
 **  - Dimensions are uint32_t; the caller checks that sizes fit in memory.
 **  - A routine that needs scratch memory takes `void *scratch`, sized in
 **    bytes by `size_t packmat_<op>_scratch(...)`. No routine needs it yet.
@@ -58,7 +59,8 @@
 **  - Matrices are row-major, and a row never straddles words. If
 **    0 < ncols <= cpw/2, r = floor(cpw/ncols) rows share a word: row i
 **    starts at cell (i mod r)*ncols of word i/r. Otherwise row i starts at
-**    word i*stride, with stride = ceil(ncols/cpw).
+**    word i*stride, with stride = ceil(ncols/cpw). A vector of length len
+**    has the layout of both a 1 x len and a len x 1 matrix.
 **  - Unused cells and bits are zero, and every cell holds a residue in
 **    0..n-1. Functions expect and preserve this.
 */
@@ -85,8 +87,9 @@ enum {
 // Status codes
 enum {
     PACKMAT_OK = 0,
-    PACKMAT_NOT_UNIT = 1,    // the argument has no inverse mod n
-    PACKMAT_INVALID = 2,     // kind, modulus or options do not fit
+    PACKMAT_NOT_UNIT = 1,       // the argument has no inverse mod n
+    PACKMAT_INVALID = 2,        // kind, modulus or options do not fit
+    PACKMAT_ZERO = 3,           // the vector is zero
 };
 
 // Field context: plain data, so that it can live in a GAP bag and survive
@@ -231,6 +234,136 @@ int packmat_is_identity(packmat_mat m);
 // 1 if unused cells and bits are zero and all cells are below n. For
 // debugging and tests.
 int packmat_check_invariants(packmat_mat m);
+
+/****************************************************************************
+**
+**  Arithmetic, rows, columns and copies
+**
+**  Scalars s are residues below n. Ranges of entries are half-open: from
+**  <= i < to; an empty range (from >= to) does nothing, and otherwise
+**  to <= length. Debug builds assert dimensions, indices and scalars.
+*/
+
+// A list of len row or column indices: idx[0..len), or first, first + 1,
+// ..., first + len - 1 if idx is NULL. Copies between column ranges, or
+// index lists of consecutive columns, are word copies; others go by cell.
+typedef struct packmat_index {
+    const uint32_t * idx;
+    uint32_t         first;
+    uint32_t         len;
+} packmat_index;
+
+static inline packmat_index packmat_range(uint32_t first, uint32_t len)
+{
+    packmat_index r;
+    r.idx = 0;
+    r.first = first;
+    r.len = len;
+    return r;
+}
+
+static inline packmat_index packmat_indices(const uint32_t * idx,
+                                            uint32_t         len)
+{
+    packmat_index r;
+    r.idx = idx;
+    r.first = 0;
+    r.len = len;
+    return r;
+}
+
+// Whole objects of equal dimensions: dst = a + b, a - b, -a and s*a;
+// dst may be a or b.
+void packmat_add(packmat_mat dst, packmat_mat a, packmat_mat b);
+void packmat_sub(packmat_mat dst, packmat_mat a, packmat_mat b);
+void packmat_neg(packmat_mat dst, packmat_mat a);
+void packmat_scale(packmat_mat dst, packmat_mat a, uint64_t s);
+
+// dst += s*a; dst may be a.
+void packmat_addmul(packmat_mat dst, packmat_mat a, uint64_t s);
+
+// Number of nonzero entries of m, and of entries in which a and b differ.
+uint64_t packmat_weight(packmat_mat m);
+uint64_t packmat_distance(packmat_mat a, packmat_mat b);
+
+// Vectors. dst[i] += s*src[i] for i in [from, to), and no other entry;
+// dst may be src.
+void packmat_vec_addmul(
+    packmat_mat dst, packmat_mat src, uint64_t s, uint32_t from, uint32_t to);
+
+// v[i] *= s for i in [from, to), and no other entry.
+void packmat_vec_scale(packmat_mat v, uint64_t s, uint32_t from, uint32_t to);
+
+// Sum of a[i]*b[i], for vectors of equal length.
+uint64_t packmat_vec_dot(packmat_mat a, packmat_mat b);
+
+// Index of the first nonzero entry at or after from, or the length if
+// there is none.
+uint32_t packmat_vec_position_nonzero(packmat_mat v, uint32_t from);
+
+// 1 + the index of the last nonzero entry; 0 if v is zero.
+uint32_t packmat_vec_position_last_nonzero(packmat_mat v);
+
+// Scale v so that its first nonzero entry becomes 1: PACKMAT_OK. If v is
+// zero, PACKMAT_ZERO; if that entry is not a unit, PACKMAT_NOT_UNIT; in
+// both cases v is unchanged.
+int packmat_vec_normalize(packmat_mat v);
+
+// Swap rows i and j of m; i may be j.
+void packmat_swap_rows(packmat_mat m, uint32_t i, uint32_t j);
+
+// Row i *= s.
+void packmat_mult_row(packmat_mat m, uint32_t i, uint64_t s);
+
+// Row i += s * row j; i may be j.
+void packmat_add_rows(packmat_mat m, uint32_t i, uint32_t j, uint64_t s);
+
+// Column of the first nonzero entry of row i at or after column from, or
+// ncols if there is none.
+uint32_t
+packmat_position_nonzero_in_row(packmat_mat m, uint32_t i, uint32_t from);
+
+// Columns, cell by cell: swap columns i and j of m; i may be j.
+void packmat_swap_cols(packmat_mat m, uint32_t i, uint32_t j);
+
+// Column i *= s.
+void packmat_mult_col(packmat_mat m, uint32_t i, uint64_t s);
+
+// Column i += s * column j; i may be j.
+void packmat_add_cols(packmat_mat m, uint32_t i, uint32_t j, uint64_t s);
+
+// v = row i of m; v has length m.ncols.
+void packmat_copy_row_to_vector(packmat_mat v, packmat_mat m, uint32_t i);
+
+// Row i of m = v; v has length m.ncols.
+void packmat_copy_vector_to_row(packmat_mat m, uint32_t i, packmat_mat v);
+
+// dst = src{rows}{cols}, of dimensions rows.len x cols.len; dst need not
+// be initialised. Applied to vectors with rows = packmat_range(0, 1), it
+// extracts a sub-vector.
+void packmat_extract_submatrix(packmat_mat   dst,
+                               packmat_mat   src,
+                               packmat_index rows,
+                               packmat_index cols);
+
+// dst{drows}{dcols} = src{srows}{scols}, with drows.len = srows.len and
+// dcols.len = scols.len; other entries of dst are unchanged. Indices may
+// repeat: the last write wins.
+void packmat_copy_submatrix(packmat_mat   dst,
+                            packmat_mat   src,
+                            packmat_index drows,
+                            packmat_index srows,
+                            packmat_index dcols,
+                            packmat_index scols);
+
+// dst{dcols} = src{scols}, for vectors.
+void packmat_copy_subvector(packmat_mat   dst,
+                            packmat_mat   src,
+                            packmat_index dcols,
+                            packmat_index scols);
+
+// dst = the transpose of src, of dimensions src.ncols x src.nrows.
+void packmat_transpose(packmat_mat dst, packmat_mat src);
 
 /****************************************************************************
 **

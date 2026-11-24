@@ -86,6 +86,7 @@ SOURCES += src/packmat/field.cc
 SOURCES += src/packmat/gf2.cc
 SOURCES += src/packmat/matrix.cc
 SOURCES += src/packmat/modn.cc
+SOURCES += src/packmat/ops.cc
 SOURCES += src/permutat.cc
 SOURCES += src/plist.c
 SOURCES += src/pperm.cc
@@ -1129,7 +1130,8 @@ testkernel: ${KERNELTESTS}
 # shipped without them, and with the portable code paths. check-packmat
 # runs them, check-packmat-sanitize runs the tests under ASan and UBSan.
 PACKMAT_CORE_SOURCES = $(addprefix $(srcdir)/,$(filter src/packmat/%,$(SOURCES)))
-PACKMAT_TEST_SOURCES = $(PACKMAT_CORE_SOURCES) $(srcdir)/src/packmat/test/test.cc
+PACKMAT_TEST_SOURCES = $(PACKMAT_CORE_SOURCES) $(srcdir)/src/packmat/test/test.cc \
+    $(srcdir)/src/packmat/test/test_ops.cc
 PACKMAT_TEST_DEPS = $(PACKMAT_TEST_SOURCES) \
     $(wildcard $(srcdir)/src/packmat/*.h $(srcdir)/src/packmat/test/*.h)
 PACKMAT_TEST_CXXFLAGS = -std=c++11 -O2 -g -Wall -Wextra -pedantic-errors -Werror

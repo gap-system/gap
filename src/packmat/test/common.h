@@ -175,4 +175,7 @@ inline void fill(const packmat_field * f, Buf & b, const ref::Mat & m)
             packmat_mat_set(v, i, j, m.at(i, j));
 }
 
+// Defined in test_ops.cc
+void test_ops();
+
 #endif    // PACKMAT_TEST_COMMON_H
