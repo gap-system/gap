@@ -283,7 +283,8 @@ end);
 #F  ARCH_IS_NATIVE_WINDOWS()
 ##
 ##  tests whether this is a native Windows build of GAP (mingw), as opposed
-##  to Cygwin. Undocumented, for the library only.
+##  to Cygwin. Undocumented, for the library only. Bound here as the startup
+##  code below needs it; not cached, as it costs no more than a cache lookup.
 ##
 BIND_GLOBAL("ARCH_IS_NATIVE_WINDOWS",function()
   return POSITION_SUBSTRING( GAPInfo.Architecture, "mingw", 0 ) <> fail;
@@ -309,6 +310,13 @@ CallAndInstallPostRestore( function()
     GAPInfo.BuildVersion:= GAPInfo.KernelInfo.BUILD_VERSION;
     GAPInfo.BuildDateTime := GAPInfo.KernelInfo.BUILD_DATETIME;
     GAPInfo.Architecture:= GAPInfo.KernelInfo.GAP_ARCHITECTURE;
+    # results of the ARCH_IS_* functions; a restored workspace may run on
+    # a system with other tools installed
+    if IsHPCGAP then
+        GAPInfo.ArchitectureTests:= AtomicRecord( rec() );
+    else
+        GAPInfo.ArchitectureTests:= rec();
+    fi;
 
     # The exact command line which called GAP as list of strings;
     # first entry is the executable followed by the options.
@@ -579,6 +587,16 @@ end );
 #T the following functions eventually should be more clever. This however
 #T will require kernel support and thus is something for later.  AH
 
+# wrap <test> so that it runs only once per session; some tests look for files
+ARCH_CACHED:= function( name, test )
+  return function()
+    if not IsBound( GAPInfo.ArchitectureTests.(name) ) then
+      GAPInfo.ArchitectureTests.(name):= test();
+    fi;
+    return GAPInfo.ArchitectureTests.(name);
+  end;
+end;
+
 #############################################################################
 ##
 #F  ARCH_IS_WINDOWS()
@@ -594,7 +612,7 @@ end );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-BIND_GLOBAL("ARCH_IS_WINDOWS",function()
+BIND_GLOBAL("ARCH_IS_WINDOWS",ARCH_CACHED("windows",function()
   # native Windows has no POSIX tools
   if ARCH_IS_NATIVE_WINDOWS() then
     return true;
@@ -606,7 +624,7 @@ BIND_GLOBAL("ARCH_IS_WINDOWS",function()
   # Check if programs we need exist in their standard Cygwin locations
   return not (IsExistingFile("/usr/bin/sh") or IsExistingFile("/bin/sh")) or
          not (IsExistingFile("/usr/bin/xdg-open") or IsExistingFile("/bin/xdg-open"));
-end);
+end));
 
 #############################################################################
 ##
@@ -623,10 +641,10 @@ end);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-BIND_GLOBAL("ARCH_IS_MAC_OS_X",function()
+BIND_GLOBAL("ARCH_IS_MAC_OS_X",ARCH_CACHED("macos",function()
   return POSITION_SUBSTRING (GAPInfo.Architecture, "apple-darwin", 0) <> fail
     and IsReadableFile ("/System/Library/CoreServices/Finder.app");
-end);
+end));
 
 #############################################################################
 ##
@@ -663,7 +681,7 @@ end);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-BIND_GLOBAL("ARCH_IS_WSL",function()
+BIND_GLOBAL("ARCH_IS_WSL",ARCH_CACHED("wsl",function()
   # There is no official way to detect this, but this method is
   # suggested: https://github.com/microsoft/WSL/issues/423
   # Note that at some point the string was changed from 'Microsoft' to
@@ -671,7 +689,9 @@ BIND_GLOBAL("ARCH_IS_WSL",function()
   return ARCH_IS_UNIX() and IsBound(GAPInfo.KernelInfo.uname.release) and (
     POSITION_SUBSTRING(GAPInfo.KernelInfo.uname.release, "Microsoft", 0) <> fail or
     POSITION_SUBSTRING(GAPInfo.KernelInfo.uname.release, "microsoft", 0) <> fail);
-end);
+end));
+
+Unbind( ARCH_CACHED );
 
 #############################################################################
 ##

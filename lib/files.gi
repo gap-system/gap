@@ -99,8 +99,7 @@ InstallMethod( Filename,
     [ IsDirectory,
       IsString ],
 function( dir, name )
-    # on Windows, drive letters and backslashes are part of valid paths;
-    # ARCH_IS_WINDOWS comes last as it checks for files on Cygwin
+    # on Windows, drive letters and backslashes are part of valid paths
     if ( '\\' in name or ':' in name ) and not ARCH_IS_WINDOWS() then
         Error( "<name> must not contain '\\' or ':'" );
     fi;
