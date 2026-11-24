@@ -82,5 +82,35 @@ gap> CopySubVector( l1, l3, [1,2], [1] );
 Error, List Assignments: <rhss> must have the same length as <poss> (lengths a\
 re 2 and 1)
 
+# IsPackedVectorRep
+gap> for one in List( [ GF(2), GF(7), GF(257), Integers mod 6 ], One ) do
+>      v1 := Vector( IsPackedVectorRep, DefaultRing( one ), l1 * one );
+>      v2 := Vector( IsPackedVectorRep, DefaultRing( one ), l2 * one );
+>      CopySubVector( v2, v1, [1,2,4], [2,4,6] );
+>      Print( Unpack( v1 ) = [ 1, 1, 3, 1, 5, 2 ] * one, "\n" );
+>    od;
+true
+true
+true
+true
+gap> one := One(GF(2));;
+gap> src := Vector(IsPackedVectorRep, GF(2), List([1..80], i -> one));;
+gap> for from in [1,2,63,64,65] do
+> for to in [1,2,3,63,64,65] do
+> for len in [1,2,7,8,9,16] do
+>   dst := ZeroVector(90, src);;
+>   expected := List([1..90], i -> 0 * one);;
+>   CopySubVector(src, dst, [from..from+len-1], [to..to+len-1]);
+>   expected{[to..to+len-1]} := List([1..len], i -> one);
+>   if Unpack(dst) <> expected then
+>     Error("unexpected result for from=", from,
+>           ", to=", to, ", len=", len);
+>   fi;
+> od;
+> od;
+> od;
+gap> CopySubVector( v1, v2, [1,2], [1] );
+Error, CopySubVector: <scols> and <dcols> must have the same length
+
 #
 gap> STOP_TEST("CopySubVector.tst");

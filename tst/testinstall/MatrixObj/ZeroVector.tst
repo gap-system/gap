@@ -113,4 +113,20 @@ gap> ZeroVector(GF(4), -1);
 Error, ZeroVector: length must be non-negative
 
 #
+# IsPackedVectorRep
+#
+gap> TestZeroVector(IsPackedVectorRep, GF(2), 3);
+<packed vector over GF(2) of length 3>
+gap> TestZeroVector(IsPackedVectorRep, GF(2), 0);
+<packed vector over GF(2) of length 0>
+gap> TestZeroVector(IsPackedVectorRep, GF(2), -1);
+Error, ZeroVector: length must be non-negative
+gap> TestZeroVector(IsPackedVectorRep, GF(7), 3);
+<packed vector over GF(7) of length 3>
+gap> TestZeroVector(IsPackedVectorRep, GF(257), 3);
+<packed vector over GF(257) of length 3>
+gap> TestZeroVector(IsPackedVectorRep, Integers mod 6, 3);
+<packed vector over (Integers mod 6) of length 3>
+
+#
 gap> STOP_TEST("ZeroVector.tst");

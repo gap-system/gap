@@ -144,4 +144,22 @@ gap> IsOne(Matrix(IsPlistMatrixRep, Integers, m));
 false
 
 #
+# IsPackedMatrixRep
+#
+gap> TestIdentityMatrix(IsPackedMatrixRep, GF(2), 2);
+<2x2 packed matrix over GF(2)>
+gap> TestIdentityMatrix(IsPackedMatrixRep, GF(2), 0);
+<0x0 packed matrix over GF(2)>
+gap> TestIdentityMatrix(IsPackedMatrixRep, GF(2), -1);
+Error, IdentityMatrix: the dimension must be non-negative
+gap> TestIdentityMatrix(IsPackedMatrixRep, GF(7), 2);
+<2x2 packed matrix over GF(7)>
+gap> TestIdentityMatrix(IsPackedMatrixRep, GF(257), 2);
+<2x2 packed matrix over GF(257)>
+gap> TestIdentityMatrix(IsPackedMatrixRep, Integers mod 6, 2);
+<2x2 packed matrix over (Integers mod 6)>
+gap> TestIdentityMatrix(IsPackedMatrixRep, Integers mod 6, 0);
+<0x0 packed matrix over (Integers mod 6)>
+
+#
 gap> STOP_TEST("IdentityMatrix.tst");

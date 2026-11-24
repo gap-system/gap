@@ -233,6 +233,8 @@ TestWholeMatrixTransforms := function(mat, scalar)
         src := NewMatrix(IsPlistMatrixRep, basedomain, NrCols(mat), src);
     elif IsGenericMatrixRep(mat) then
         src := NewMatrix(IsGenericMatrixRep, basedomain, NrCols(mat), src);
+    elif IsPackedMatrixRep(mat) then
+        src := NewMatrix(IsPackedMatrixRep, basedomain, NrCols(mat), src);
     elif Is8BitMatrixRep(mat) then
         ConvertToMatrixRep(src, basedomain);
     fi;

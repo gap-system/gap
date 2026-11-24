@@ -252,4 +252,19 @@ gap> for F in [ Integers mod 6, GF(257), GF( NextPrimeInt( 2^16 ) ) ] do
 >    od;
 
 #
+gap> for F in [ GF(2), GF(7), GF(257), Integers mod 6 ] do
+>      mat := NewMatrix(IsPackedMatrixRep, F, 3,
+>                       [ [ 2, 4, 5 ], [ 1, 3, 4 ], [ 5, 2, 0 ] ] * One(F) );
+>      TestElementaryTransforms( mat, 5 * One(F) );
+>      TestElementaryTransforms( mat, -1 );
+>      TestWholeMatrixTransforms( mat, 5 * One(F) );
+>      TestWholeMatrixTransforms( mat, -1 );
+>      TestPositionNonZeroInRow( mat );
+>    od;
+gap> mat := NewMatrix(IsPackedMatrixRep, GF(2), 40,
+>                     List( [ 1 .. 3 ], i -> List( [ 1 .. 40 ], j -> Z(2)^(i*j) * ((i+j) mod 2) ) ) );;
+gap> TestWholeMatrixTransforms( mat, Z(2) );
+gap> TestPositionNonZeroInRow( mat );
+
+#
 gap> STOP_TEST("ElementaryMatrices.tst");

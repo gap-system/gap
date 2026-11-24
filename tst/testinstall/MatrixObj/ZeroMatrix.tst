@@ -143,4 +143,24 @@ gap> ZeroMatrix(GF(4), 2, 0);
 < mutable compressed matrix 2x0 over GF(4) >
 
 #
+# IsPackedMatrixRep
+#
+gap> TestZeroMatrix(IsPackedMatrixRep, GF(2), 2, 3);
+<2x3 packed matrix over GF(2)>
+gap> TestZeroMatrix(IsPackedMatrixRep, GF(2), 2, 0);
+<2x0 packed matrix over GF(2)>
+gap> TestZeroMatrix(IsPackedMatrixRep, GF(2), 0, 3);
+<0x3 packed matrix over GF(2)>
+gap> TestZeroMatrix(IsPackedMatrixRep, GF(2), -1, 3);
+Error, ZeroMatrix: the number of rows and cols must be non-negative
+gap> TestZeroMatrix(IsPackedMatrixRep, GF(7), 2, 3);
+<2x3 packed matrix over GF(7)>
+gap> TestZeroMatrix(IsPackedMatrixRep, GF(257), 2, 3);
+<2x3 packed matrix over GF(257)>
+gap> TestZeroMatrix(IsPackedMatrixRep, Integers mod 6, 2, 3);
+<2x3 packed matrix over (Integers mod 6)>
+gap> TestZeroMatrix(IsPackedMatrixRep, Integers mod 6, 0, 3);
+<0x3 packed matrix over (Integers mod 6)>
+
+#
 gap> STOP_TEST("ZeroMatrix.tst");

@@ -28,5 +28,17 @@ gap> m2 := ExtractSubMatrix( m1, [ 11..30 ], [ 11..30 ] );
 gap> IsOne(m2);
 true
 
+# IsPackedMatrixRep
+gap> for F in [ GF(2), GF(7), GF(257), Integers mod 6 ] do
+>      m1 := IdentityMatrix( IsPackedMatrixRep, F, 100 );
+>      m2 := ExtractSubMatrix( m1, [ 11..30 ], [ 11..30 ] );
+>      m3 := ExtractSubMatrix( IdentityMatrix( IsPackedMatrixRep, F, 4 ), [ 2, 4 ], [ 4, 2 ] );
+>      Print( NrRows( m2 ), " ", IsOne( m2 ), " ", Unpack( m3 ) = [ [ 0, 1 ], [ 1, 0 ] ] * One( F ), "\n" );
+>    od;
+20 true true
+20 true true
+20 true true
+20 true true
+
 #
 gap> STOP_TEST("ExtractSubMatrix.tst");

@@ -100,5 +100,26 @@ gap> MultVectorLeft(q, Q.2, 3, 4);
 gap> Unpack(q);
 [ (-1)*e, 0*e, i, j ]
 
+# IsPackedVectorRep, against IsPlistVectorRep
+gap> for F in [ GF(2), GF(7), GF(257), Integers mod 6 ] do
+>      for s in [ 3 * One( F ), -1, 2^70 ] do
+>        for r in [ [], [ 3, 4 ], [ 1, 6 ], [ 4, 3 ] ] do
+>          l := [ 1, 2, 1, 4, 0, 3 ] * One( F );
+>          vp := NewVector( IsPackedVectorRep, F, l );
+>          vq := NewVector( IsPlistVectorRep, F, l );
+>          CallFuncList( MultVectorLeft, Concatenation( [ vp, s ], r ) );
+>          CallFuncList( MultVectorLeft, Concatenation( [ vq, s ], r ) );
+>          if Unpack( vp ) <> Unpack( vq ) then Error( "MultVectorLeft ", F, s, r ); fi;
+>          CallFuncList( MultVectorRight, Concatenation( [ vp, s ], r ) );
+>          CallFuncList( MultVectorRight, Concatenation( [ vq, s ], r ) );
+>          if Unpack( vp ) <> Unpack( vq ) then Error( "MultVectorRight ", F, s, r ); fi;
+>        od;
+>      od;
+>    od;
+gap> vp := NewVector( IsPackedVectorRep, GF(7), [ 1, 2, 3 ] * Z(7)^0 );;
+gap> MultVectorLeft(vp, Z(7)^3, 2, 3);
+gap> Unpack(vp);
+[ Z(7)^0, Z(7)^5, Z(7)^4 ]
+
 #
 gap> STOP_TEST("MultVector.tst");

@@ -29,4 +29,11 @@ gap> DistanceOfVectors( v5, v6 );
 3
 gap> DistanceOfVectors( v4, v6 );
 5
+gap> List( [ GF(2), GF(7), GF(257), Integers mod 6 ], F -> List( [ [ l1, l2 ], [ l2, l3 ], [ l1, l3 ] ], p ->
+>      [ DistanceOfVectors( Vector( IsPackedVectorRep, F, p[1] * One( F ) ),
+>                           Vector( IsPackedVectorRep, F, p[2] * One( F ) ) ),
+>        DistanceOfVectors( Vector( IsPlistVectorRep, F, p[1] * One( F ) ),
+>                           Vector( IsPlistVectorRep, F, p[2] * One( F ) ) ) ] ) );
+[ [ [ 1, 1 ], [ 2, 2 ], [ 3, 3 ] ], [ [ 2, 2 ], [ 4, 4 ], [ 6, 6 ] ], 
+  [ [ 2, 2 ], [ 4, 4 ], [ 6, 6 ] ], [ [ 2, 2 ], [ 3, 3 ], [ 5, 5 ] ] ]
 gap> STOP_TEST("DistanceOfVectors.tst");

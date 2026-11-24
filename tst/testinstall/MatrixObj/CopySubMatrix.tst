@@ -1,4 +1,4 @@
-#@local m1, m2, m3, m4, m5, AsDummyMatrix, DummyMatrixAsList
+#@local m1, m2, m3, m4, m5, AsDummyMatrix, DummyMatrixAsList, F
 gap> START_TEST("CopySubMatrix.tst");
 gap> DeclareRepresentation( "IsDummyCopySubMatrixRep6305",
 >      IsComponentObjectRep and IsAttributeStoringRep and IsMatrixObj );
@@ -129,6 +129,33 @@ gap> Display(m2);
  . . . 1 . .
  . . . . 1 .
  . . . . . .
+
+# IsPackedMatrixRep, against IsGenericMatrixRep
+gap> m1 := Matrix( IsPackedMatrixRep, GF(7), [ [ 1, 2, 3 ], [ 4, 5, 6 ] ] * Z(7)^0 );;
+gap> m2 := ZeroMatrix( 3, 4, m1 );;
+gap> CopySubMatrix( m1, m2, [ 2, 1 ], [ 1, 3 ], [ 3, 1 ], [ 2, 4 ] );
+gap> List( Unpack( m2 ), r -> List( r, Int ) );
+[ [ 0, 6, 0, 4 ], [ 0, 0, 0, 0 ], [ 0, 3, 0, 1 ] ]
+gap> CopySubMatrix( m1, m2, [ 1, 2 ], [ 1 ], [ 1 ], [ 1 ] );
+Error, source and destination row lists must be of equal length
+gap> CopySubMatrix( m1, m2, [ 1 ], [ 1 ], [ 1, 2 ], [ 1 ] );
+Error, source and destination column lists must be of equal length
+gap> for F in [ GF(2), GF(7), GF(257), Integers mod 6 ] do
+>      m1 := IdentityMatrix( IsPackedMatrixRep, F, 10 );
+>      m2 := ZeroMatrix( 6, 6, m1 );
+>      CopySubMatrix( m1, m2, [ 1..3 ], [ 3..5 ], [ 2..4 ], [ 4..6 ] );
+>      m3 := IdentityMatrix( IsGenericMatrixRep, F, 10 );
+>      m4 := ZeroMatrix( 6, 6, m3 );
+>      CopySubMatrix( m3, m4, [ 1..3 ], [ 3..5 ], [ 2..4 ], [ 4..6 ] );
+>      Print( IsOne( m1 ), " ", Unpack( m2 ) = Unpack( m4 ), "\n" );
+>    od;
+true true
+true true
+true true
+true true
+gap> List( Unpack( m2 ), r -> List( r, Int ) );
+[ [ 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 1, 0, 0 ], [ 0, 0, 0, 0, 1, 0 ], [ 0, 0, 0, 0, 0, 0 ] ]
 
 #
 gap> STOP_TEST("CopySubMatrix.tst");

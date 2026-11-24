@@ -29,4 +29,9 @@ gap> v6 := Vector(GF(5), l3*One(GF(5)));
 [ 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5) ]
 gap> WeightOfVector( v6 );
 0
+gap> List( [ GF(2), GF(7), GF(257), Integers mod 6 ], F -> List( [ l1, l2, l3 ], l ->
+>      [ WeightOfVector( Vector( IsPackedVectorRep, F, l * One( F ) ) ),
+>        WeightOfVector( Vector( IsPlistVectorRep, F, l * One( F ) ) ) ] ) );
+[ [ [ 3, 3 ], [ 2, 2 ], [ 0, 0 ] ], [ [ 6, 6 ], [ 4, 4 ], [ 0, 0 ] ], 
+  [ [ 6, 6 ], [ 4, 4 ], [ 0, 0 ] ], [ [ 5, 5 ], [ 3, 3 ], [ 0, 0 ] ] ]
 gap> STOP_TEST("WeightOfVector.tst");

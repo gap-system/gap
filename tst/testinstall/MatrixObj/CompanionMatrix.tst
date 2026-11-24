@@ -162,4 +162,24 @@ gap> CompanionMatrix(x^2+x+1, F);
 <2x2 plist matrix over (Integers mod 4)>
 
 #
+# IsPackedMatrixRep
+#
+gap> F:= GF(2);;  x:= X(F);;
+gap> TestCompanionMatrix(IsPackedMatrixRep, x+1, F);
+<1x1 packed matrix over GF(2)>
+gap> TestCompanionMatrix(IsPackedMatrixRep, x^2+x+1, F);
+<2x2 packed matrix over GF(2)>
+gap> F:= GF(7);;  x:= X(F);;
+gap> TestCompanionMatrix(IsPackedMatrixRep, x+1, F);
+<1x1 packed matrix over GF(7)>
+gap> TestCompanionMatrix(IsPackedMatrixRep, x^2+x+1, F);
+<2x2 packed matrix over GF(7)>
+gap> F:= GF(257);;  x:= X(F);;
+gap> TestCompanionMatrix(IsPackedMatrixRep, x^3+x+1, F);
+<3x3 packed matrix over GF(257)>
+gap> F:= Integers mod 6;;  x:= X(F);;
+gap> TestCompanionMatrix(IsPackedMatrixRep, x^2+x+1, F);
+<2x2 packed matrix over (Integers mod 6)>
+
+#
 gap> STOP_TEST("CompanionMatrix.tst");

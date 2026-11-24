@@ -113,4 +113,18 @@ gap> StandardBasisVector(GF(4), 0, 0);
 Error, length and position must be positive
 
 #
+# IsPackedVectorRep
+#
+gap> TestStandardBasisVector(IsPackedVectorRep, GF(2), 3, 2);
+<packed vector over GF(2) of length 3>
+gap> TestStandardBasisVector(IsPackedVectorRep, GF(2), 0, 0);
+Error, length and position must be positive
+gap> TestStandardBasisVector(IsPackedVectorRep, GF(7), 3, 2);
+<packed vector over GF(7) of length 3>
+gap> TestStandardBasisVector(IsPackedVectorRep, GF(257), 3, 3);
+<packed vector over GF(257) of length 3>
+gap> TestStandardBasisVector(IsPackedVectorRep, Integers mod 6, 3, 1);
+<packed vector over (Integers mod 6) of length 3>
+
+#
 gap> STOP_TEST("StandardBasisVector.tst");

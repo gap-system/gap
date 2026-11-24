@@ -29,4 +29,15 @@ gap> v6 := Vector(GF(5), l3*One(GF(5)));
 [ 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5) ]
 gap> PositionNonZero( v6 );
 7
+gap> List( [ GF(2), GF(7), GF(257), Integers mod 6 ], F -> List( [ l1, l2, l3 ], l ->
+>      [ PositionNonZero( Vector( IsPackedVectorRep, F, l * One( F ) ) ),
+>        PositionNonZero( Vector( IsPlistVectorRep, F, l * One( F ) ) ),
+>        PositionNonZero( Vector( IsPackedVectorRep, F, l * One( F ) ), 2 ),
+>        PositionNonZero( l * One( F ), 2 ),
+>        PositionLastNonZero( Vector( IsPackedVectorRep, F, l * One( F ) ) ),
+>        PositionLastNonZero( Vector( IsPlistVectorRep, F, l * One( F ) ) ) ] ) );
+[ [ [ 1, 1, 3, 3, 5, 5 ], [ 3, 3, 3, 3, 5, 5 ], [ 7, 7, 7, 7, 0, 0 ] ], 
+  [ [ 1, 1, 3, 3, 6, 6 ], [ 2, 2, 3, 3, 6, 6 ], [ 7, 7, 7, 7, 0, 0 ] ], 
+  [ [ 1, 1, 3, 3, 6, 6 ], [ 2, 2, 3, 3, 6, 6 ], [ 7, 7, 7, 7, 0, 0 ] ], 
+  [ [ 1, 1, 3, 3, 5, 5 ], [ 2, 2, 3, 3, 5, 5 ], [ 7, 7, 7, 7, 0, 0 ] ] ]
 gap> STOP_TEST("PositionNonZero.tst");
