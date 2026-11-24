@@ -34,6 +34,11 @@
 **  this session; bags start unchecked, and every workspace load starts a
 **  new session, so a bag is checked once before its first use.
 **
+**  The type of the field bag has as data the immutable list of the four
+**  types, [ matrix, immutable matrix, vector, immutable vector ], made after
+**  them (HPC-GAP makes type data read-only), so that C finds the type of any
+**  result.
+**
 **  Entries are internal FFEs if One( base domain ) is one; then the rank
 **  table maps residues to FFE values (VAL_FFE), and the inverse table maps
 **  FFE values back, so that GAP's order of FFEs is the core's rank order.
@@ -50,12 +55,15 @@
 #include "calls.h"
 #include "error.h"
 #include "finfield.h"
+#include "gapstate.h"
 #include "integer.h"
 #include "lists.h"
 #include "modules.h"
 #include "objects.h"
 #include "opers.h"
 #include "plist.h"
+#include "range.h"
+#include "stats.h"
 #include "vec8bit.h"
 #include "vecgf2.h"
 
@@ -81,6 +89,15 @@ enum {
     TDATA_LEN = 4,
 };
 
+// Positions in the data of the field bag's type
+enum {
+    SIB_MAT = 1,
+    SIB_IMM_MAT = 2,
+    SIB_VEC = 3,
+    SIB_IMM_VEC = 4,
+    SIB_LEN = 4,
+};
+
 // Dimensions are uint32_t in the core
 static const UInt MAX_DIM = 0xFFFFFFFFu;
 
@@ -96,6 +113,7 @@ static uint64_t       Stamp;
 static Obj            GenerationObj;
 
 static Obj IsKernelDataObjectRepFilt;
+static Obj IsMutableFilt;
 
 static Obj IsPackedMatrixRepFilt;
 static Obj IsPackedVectorRepFilt;
@@ -208,6 +226,48 @@ static packmat_mat RequirePackedView(const char * funcname, Obj obj)
                       "must be a packed matrix or vector");
 }
 
+// TRUE for a packed matrix, FALSE for a packed vector, else an error
+static BOOL
+RequirePackedObj(const char * funcname, Obj obj, const char * argname)
+{
+    if (IS_PACKED_MAT(obj))
+        return TRUE;
+    if (!IS_PACKED_VEC(obj))
+        RequireArgumentEx(funcname, obj, argname,
+                          "must be a packed matrix or vector");
+    return FALSE;
+}
+
+static inline packmat_mat VIEW(Obj obj, BOOL mat)
+{
+    return mat ? MAT_VIEW(obj) : VEC_VIEW(obj);
+}
+
+static void RequireSameContext(const char * funcname, Obj a, Obj b)
+{
+    if (TDATA(a) != TDATA(b))
+        ErrorMayQuit("%s: the arguments must have the same base domain",
+                     (Int)funcname, 0);
+}
+
+// a and b are both packed matrices or both packed vectors, with the same
+// base domain and dimensions; returns TRUE for matrices
+static BOOL RequireCompatible(const char * funcname, Obj a, Obj b)
+{
+    const BOOL mat = RequirePackedObj(funcname, a, "<a>");
+    if (RequirePackedObj(funcname, b, "<b>") != mat)
+        ErrorMayQuit("%s: <a> and <b> must both be matrices or both vectors",
+                     (Int)funcname, 0);
+    RequireSameContext(funcname, a, b);
+    const uint32_t * da = CONST_DIMS(a);
+    const uint32_t * db = CONST_DIMS(b);
+    if (da[0] != db[0] || da[1] != db[1])
+        ErrorMayQuit(mat ? "%s: <a> and <b> must have the same dimensions"
+                         : "%s: <a> and <b> must have the same length",
+                     (Int)funcname, 0);
+    return mat;
+}
+
 // 1 if tdata has the shape of packed type data; CheckField does the rest
 static BOOL IsTypeData(Obj tdata)
 {
@@ -284,6 +344,45 @@ static Obj NewPackedVec(Obj type, UInt len)
     return NewPacked(type, len, 0, packmat_vector_words(f, len));
 }
 
+// Type number k (SIB_MAT, ...) of the context of tdata
+static Obj SiblingType(Obj tdata, Int k)
+{
+    FIELD(tdata);    // checks the sibling types once per session
+    Obj bag = ELM_PLIST(tdata, TDATA_FIELD);
+    Obj type = ELM_PLIST(DATA_TYPE(TYPE_DATOBJ(bag)), k);
+    // forged type data may share a checked field bag
+    if (DATA_TYPE(type) != tdata)
+        ErrorMayQuit("packed matrix: invalid field context", 0, 0);
+    return type;
+}
+
+static Obj ResultType(Obj tdata, BOOL mat, BOOL mut)
+{
+    return SiblingType(tdata, mat ? (mut ? SIB_MAT : SIB_IMM_MAT)
+                                  : (mut ? SIB_VEC : SIB_IMM_VEC));
+}
+
+// New zero object of type <type> with the dimensions of obj
+static Obj NewLike(Obj obj, Obj type)
+{
+    Obj res = NewBag(T_DATOBJ, SIZE_OBJ(obj));
+    SetTypeDatObj(res, type);
+    memcpy(DIMS(res), CONST_DIMS(obj), 2 * sizeof(uint32_t));
+    return res;
+}
+
+// Copy of obj with type <type>, which must have the data of obj's type
+static Obj CopyAs(Obj obj, Obj type)
+{
+    const UInt size = SIZE_OBJ(obj);
+    Obj        copy = NewBag(T_DATOBJ, size);
+    SetTypeDatObj(copy, type);
+    memcpy((char *)ADDR_OBJ(copy) + DIMS_OFFSET,
+           (const char *)CONST_ADDR_OBJ(obj) + DIMS_OFFSET,
+           size - DIMS_OFFSET);
+    return copy;
+}
+
 
 /****************************************************************************
 **
@@ -349,6 +448,45 @@ static uint64_t EntryResidue(Obj tdata, Obj x)
     return ResidueOfInt(tdata, r);
 }
 
+// Residue of the scalar s in *r: an integer, taken mod n, or an element of
+// the base domain; FALSE for anything else. May run GAP code.
+static BOOL ScalarResidueOrFail(Obj tdata, Obj s, uint64_t * r)
+{
+    const uint64_t n = FIELD(tdata)->n;
+    if (IS_INTOBJ(s)) {
+        const Int x = INT_INTOBJ(s);
+        *r = x >= 0 ? (uint64_t)x % n : n - 1 - (uint64_t)(-(x + 1)) % n;
+        return TRUE;
+    }
+    if (IS_LARGEINT(s)) {
+        *r = UInt8_ObjInt(ModInt(s, ObjInt_UInt8(n)));
+        return TRUE;
+    }
+
+    Obj one = ELM_PLIST(tdata, TDATA_ONE);
+    if (IS_FFE(one)
+            ? IS_FFE(s) && FLD_FFE(s) == FLD_FFE(one)
+            : TNUM_OBJ(s) == T_POSOBJ && TYPE_POSOBJ(s) == TYPE_POSOBJ(one)) {
+        *r = EntryResidue(tdata, s);
+        return TRUE;
+    }
+    Obj x = CALL_2ARGS(PackmatEntryResidueFunc,
+                       ELM_PLIST(tdata, TDATA_BASEDOMAIN), s);
+    if (x == Fail)
+        return FALSE;
+    *r = ResidueOfInt(tdata, x);
+    return TRUE;
+}
+
+static uint64_t ScalarResidue(const char * funcname, Obj tdata, Obj s)
+{
+    uint64_t r;
+    if (!ScalarResidueOrFail(tdata, s, &r))
+        ErrorMayQuit("%s: <s> must be an integer or lie in the base domain",
+                     (Int)funcname, 0);
+    return r;
+}
+
 
 /****************************************************************************
 **
@@ -412,6 +550,69 @@ static Obj FuncPACKMAT_FIELD_BAG(Obj self, Obj n, Obj one)
     return bag;
 }
 
+// 1 if the sibling types in the data of type <type> are made from tdata,
+// with the kind and mutability of their position
+static BOOL SiblingTypesOK(Obj tdata, Obj type)
+{
+    if (TNUM_OBJ(type) != T_POSOBJ ||
+        SIZE_OBJ(type) <= POS_DATA_TYPE * sizeof(Obj))
+        return FALSE;
+    Obj sib = DATA_TYPE(type);
+    if (!sib || !IS_PLIST(sib) || LEN_PLIST(sib) != SIB_LEN)
+        return FALSE;
+    for (Int k = 1; k <= SIB_LEN; k++) {
+        Obj t = ELM_PLIST(sib, k);
+        Obj filt =
+            k <= SIB_IMM_MAT ? IsPackedMatrixRepFilt : IsPackedVectorRepFilt;
+        const BOOL mut = k == SIB_MAT || k == SIB_VEC;
+        if (!t || TNUM_OBJ(t) != T_POSOBJ ||
+            SIZE_OBJ(t) <= POS_DATA_TYPE * sizeof(Obj) ||
+            DATA_TYPE(t) != tdata ||
+            !IS_SUBSET_FLAGS(FLAGS_TYPE(t), FLAGS_FILT(filt)) ||
+            IS_SUBSET_FLAGS(FLAGS_TYPE(t), FLAGS_FILT(IsMutableFilt)) != mut)
+            return FALSE;
+    }
+    return TRUE;
+}
+
+static BOOL SiblingsOK(Obj tdata)
+{
+    return SiblingTypesOK(tdata, TYPE_DATOBJ(ELM_PLIST(tdata, TDATA_FIELD)));
+}
+
+/****************************************************************************
+**
+*F  FuncPACKMAT_SET_SIBLINGS( <self>, <type> )
+**
+**  Give the field bag of the four types in the data of <type> that type;
+**  once per field bag, right after making the types.
+*/
+static Obj FuncPACKMAT_SET_SIBLINGS(Obj self, Obj type)
+{
+    if (TNUM_OBJ(type) != T_POSOBJ ||
+        SIZE_OBJ(type) <= POS_DATA_TYPE * sizeof(Obj) ||
+        !IS_PLIST(DATA_TYPE(type)) || LEN_PLIST(DATA_TYPE(type)) != SIB_LEN)
+        RequireArgumentEx(SELF_NAME, type, "<type>",
+                          "must be a type with four packed types as data");
+    Obj t = ELM_PLIST(DATA_TYPE(type), SIB_MAT);
+    if (!t || TNUM_OBJ(t) != T_POSOBJ ||
+        SIZE_OBJ(t) <= POS_DATA_TYPE * sizeof(Obj) ||
+        !IsTypeData(DATA_TYPE(t)) ||
+        !IS_SUBSET_FLAGS(FLAGS_TYPE(type),
+                         FLAGS_FILT(IsKernelDataObjectRepFilt)))
+        RequireArgumentEx(SELF_NAME, type, "<type>",
+                          "must be a type with four packed types as data");
+    Obj tdata = DATA_TYPE(t);
+    Obj bag = ELM_PLIST(tdata, TDATA_FIELD);
+    if (SiblingsOK(tdata))
+        ErrorMayQuit("PACKMAT_SET_SIBLINGS: the types are set already", 0, 0);
+    if (!SiblingTypesOK(tdata, type))
+        RequireArgumentEx(SELF_NAME, type, "<type>",
+                          "must be a type with four packed types as data");
+    SetTypeDatObj(bag, type);
+    return 0;
+}
+
 /****************************************************************************
 **
 *F  CheckField( <tdata> )
@@ -455,6 +656,8 @@ static void CheckField(Obj tdata)
     else if (f->ranked) {
         goto bad;
     }
+    if (!SiblingsOK(tdata))
+        goto bad;
     *STAMP_OF_BAG(bag) = Stamp;
     return;
 
@@ -884,28 +1087,869 @@ static Obj FuncPACKMAT_IS_ONE(Obj self, Obj M)
     return packmat_is_identity(MAT_VIEW(M)) ? True : False;
 }
 
+static Obj FuncPACKMAT_MUTABLE_COPY(Obj self, Obj obj)
+{
+    const BOOL mat = RequirePackedObj(SELF_NAME, obj, "<obj>");
+    return CopyAs(obj, ResultType(TDATA(obj), mat, TRUE));
+}
+
+
 /****************************************************************************
 **
-*F  FuncPACKMAT_COPY( <self>, <obj>, <type> )
-**
-**  A copy of the packed matrix or vector <obj> with type <type>, which must
-**  have the same base domain and kind of object.
+*F * * * * * * * * * * * * *  positions and ranges * * * * * * * * * * * * *
 */
-static Obj FuncPACKMAT_COPY(Obj self, Obj obj, Obj type)
+
+static void RequireVec(const char * funcname, Obj obj, const char * argname)
 {
-    Obj filt =
-        IS_PACKED_MAT(obj) ? IsPackedMatrixRepFilt : IsPackedVectorRepFilt;
-    RequirePackedView(SELF_NAME, obj);
-    if (RequirePackedType(SELF_NAME, type, filt) != TDATA(obj))
+    if (!IS_PACKED_VEC(obj))
+        RequireArgumentEx(funcname, obj, argname, "must be a packed vector");
+}
+
+static void RequireMat(const char * funcname, Obj obj, const char * argname)
+{
+    if (!IS_PACKED_MAT(obj))
+        RequireArgumentEx(funcname, obj, argname, "must be a packed matrix");
+}
+
+// The integer <from> of a search after position from, clamped to [0..max]
+static UInt GetFrom(const char * funcname, Obj from, UInt max)
+{
+    if (IS_INTOBJ(from)) {
+        const Int x = INT_INTOBJ(from);
+        return x < 0 ? 0 : (UInt)x > max ? max : (UInt)x;
+    }
+    if (!IS_LARGEINT(from))
+        RequireArgumentEx(funcname, from, "<from>", "must be an integer");
+    return TNUM_OBJ(from) == T_INTNEG ? 0 : max;
+}
+
+// [<from>..<to>] as the half-open 0-based range [*lo, *hi); empty if
+// from > to, else inside [1..len]
+static void GetRange(const char * funcname,
+                     Obj          from,
+                     Obj          to,
+                     UInt         len,
+                     uint32_t *   lo,
+                     uint32_t *   hi)
+{
+    if (!IS_INTOBJ(from))
+        RequireArgumentEx(funcname, from, "<from>",
+                          "must be a small integer");
+    if (!IS_INTOBJ(to))
+        RequireArgumentEx(funcname, to, "<to>", "must be a small integer");
+    const Int f = INT_INTOBJ(from);
+    const Int t = INT_INTOBJ(to);
+    if (f > t) {
+        *lo = *hi = 0;
+        return;
+    }
+    if (f < 1 || (UInt)t > len)
+        ErrorMayQuit("%s: [<from>..<to>] must lie in [1..Length(<v>)]",
+                     (Int)funcname, 0);
+    *lo = (uint32_t)(f - 1);
+    *hi = (uint32_t)t;
+}
+
+// The positions of a list in [1..max], for the core: a range with step 1,
+// or the 0-based positions in a kernel buffer, made before any view (D5)
+typedef struct {
+    Obj  buf;      // 0 for a range
+    UInt first;    // 0-based start of a range
+    UInt len;
+} IndexList;
+
+static inline uint32_t * INDICES(Obj buf)
+{
+    return (uint32_t *)(ADDR_OBJ(buf) + 1);
+}
+
+static const char ROWS_LIST_MSG[] = "must be a list of positions of rows";
+static const char COLS_LIST_MSG[] = "must be a list of positions of columns";
+static const char POSS_LIST_MSG[] =
+    "must be a list of positions in [1..Length]";
+
+static IndexList GetIndexList(const char * funcname,
+                              Obj          list,
+                              const char * argname,
+                              UInt         max,
+                              const char * msg)
+{
+    IndexList il = { 0, 0, 0 };
+    if (IS_RANGE(list) &&
+        (GET_LEN_RANGE(list) <= 1 || GET_INC_RANGE(list) == 1)) {
+        const Int len = GET_LEN_RANGE(list);
+        const Int low = GET_LOW_RANGE(list);
+        if (len > 0 && (low < 1 || (UInt)(low - 1 + len) > max))
+            RequireArgumentEx(funcname, list, argname, msg);
+        il.first = len > 0 ? low - 1 : 0;
+        il.len = len;
+        return il;
+    }
+    if (!IS_LIST(list))
+        RequireArgumentEx(funcname, list, argname, msg);
+    const UInt len = LEN_LIST(list);
+    if (len > MAX_DIM)
+        RequireArgumentEx(funcname, list, argname, msg);
+    il.buf = NewKernelBuffer(sizeof(Obj) + len * sizeof(uint32_t));
+    il.len = len;
+    // ELM0_LIST may run GAP code; INDICES is fetched for every entry
+    for (UInt k = 0; k < len; k++) {
+        Obj p =
+            IS_PLIST(list) ? ELM_PLIST(list, k + 1) : ELM0_LIST(list, k + 1);
+        if (!p || !IS_POS_INTOBJ(p) || (UInt)INT_INTOBJ(p) > max)
+            RequireArgumentEx(funcname, list, argname, msg);
+        INDICES(il.buf)[k] = (uint32_t)(INT_INTOBJ(p) - 1);
+    }
+    return il;
+}
+
+static inline packmat_index IndexView(IndexList il)
+{
+    if (!il.buf)
+        return packmat_range((uint32_t)il.first, (uint32_t)il.len);
+    return packmat_indices(INDICES(il.buf), (uint32_t)il.len);
+}
+
+// 0 if a and b have no index in common; exact for two ranges
+static BOOL MayOverlap(IndexList a, IndexList b)
+{
+    if (a.len == 0 || b.len == 0)
+        return FALSE;
+    if (a.buf || b.buf)
+        return TRUE;
+    return a.first < b.first + b.len && b.first < a.first + a.len;
+}
+
+
+/****************************************************************************
+**
+*F * * * * * * * * * * * * * * *  arithmetic  * * * * * * * * * * * * * * * *
+**
+**  Results are immutable iff all operands are (R3 (a)); scalars count as
+**  immutable.
+*/
+
+enum { RES_IMM, RES_MUT, RES_SAME };
+
+static Obj SumDiff(const char * funcname, Obj a, Obj b, BOOL diff)
+{
+    const BOOL mat = RequireCompatible(funcname, a, b);
+    Obj        res = NewLike(
+        a, ResultType(TDATA(a), mat, IS_MUTABLE_OBJ(a) || IS_MUTABLE_OBJ(b)));
+    if (diff)
+        packmat_sub(VIEW(res, mat), VIEW(a, mat), VIEW(b, mat));
+    else
+        packmat_add(VIEW(res, mat), VIEW(a, mat), VIEW(b, mat));
+    return res;
+}
+
+static Obj FuncPACKMAT_SUM(Obj self, Obj a, Obj b)
+{
+    return SumDiff("+", a, b, FALSE);
+}
+
+static Obj FuncPACKMAT_DIFF(Obj self, Obj a, Obj b)
+{
+    return SumDiff("-", a, b, TRUE);
+}
+
+// -obj, or zero if neg is FALSE, with mutability RES_*
+static Obj NegOrZero(const char * funcname, Obj obj, int res, BOOL neg)
+{
+    const BOOL mat = RequirePackedObj(funcname, obj, "<obj>");
+    const BOOL mut = res == RES_SAME ? IS_MUTABLE_OBJ(obj) : res == RES_MUT;
+    Obj        r = NewLike(obj, ResultType(TDATA(obj), mat, mut));
+    if (neg)
+        packmat_neg(VIEW(r, mat), VIEW(obj, mat));
+    return r;
+}
+
+static Obj FuncPACKMAT_AINV_MUT(Obj self, Obj obj)
+{
+    return NegOrZero("AdditiveInverseMutable", obj, RES_MUT, TRUE);
+}
+
+static Obj FuncPACKMAT_AINV_IMM(Obj self, Obj obj)
+{
+    return NegOrZero("AdditiveInverseImmutable", obj, RES_IMM, TRUE);
+}
+
+static Obj FuncPACKMAT_AINV_SAMEMUT(Obj self, Obj obj)
+{
+    return NegOrZero("AdditiveInverseSameMutability", obj, RES_SAME, TRUE);
+}
+
+static Obj FuncPACKMAT_ZERO_MUT(Obj self, Obj obj)
+{
+    return NegOrZero("ZeroMutable", obj, RES_MUT, FALSE);
+}
+
+static Obj FuncPACKMAT_ZERO_IMM(Obj self, Obj obj)
+{
+    return NegOrZero("ZeroImmutable", obj, RES_IMM, FALSE);
+}
+
+static Obj FuncPACKMAT_ZERO_SAMEMUT(Obj self, Obj obj)
+{
+    return NegOrZero("ZeroSameMutability", obj, RES_SAME, FALSE);
+}
+
+// s * obj = obj * s: the base domains are commutative. Other factors, such
+// as list matrices, which are scalars too, go to the next method.
+static Obj ProdScalar(Obj obj, Obj s)
+{
+    const BOOL mat = RequirePackedObj("*", obj, "<obj>");
+    uint64_t   r;
+    if (!ScalarResidueOrFail(TDATA(obj), s, &r))
+        return TRY_NEXT_METHOD;
+    Obj res = NewLike(obj, ResultType(TDATA(obj), mat, IS_MUTABLE_OBJ(obj)));
+    packmat_scale(VIEW(res, mat), VIEW(obj, mat), r);
+    return res;
+}
+
+static Obj FuncPACKMAT_PROD_SCALAR(Obj self, Obj obj, Obj s)
+{
+    return ProdScalar(obj, s);
+}
+
+static Obj FuncPACKMAT_PROD_SCALAR_LEFT(Obj self, Obj s, Obj obj)
+{
+    return ProdScalar(obj, s);
+}
+
+// AddMatrix( dst, src[, s] ), dst += s * src; s is Fail for 1
+static void AddMatrix(Obj dst, Obj src, Obj s)
+{
+    RequireMat("AddMatrix", dst, "<dst>");
+    RequireMutable("AddMatrix", dst, "matrix");
+    RequireCompatible("AddMatrix", dst, src);
+    const uint64_t r =
+        s == Fail ? 1 : ScalarResidue("AddMatrix", TDATA(dst), s);
+    if (r == 1)
+        packmat_add(MAT_VIEW(dst), MAT_VIEW(dst), MAT_VIEW(src));
+    else
+        packmat_addmul(MAT_VIEW(dst), MAT_VIEW(src), r);
+}
+
+static Obj FuncPACKMAT_ADD_MATRIX(Obj self, Obj dst, Obj src)
+{
+    AddMatrix(dst, src, Fail);
+    return 0;
+}
+
+static Obj FuncPACKMAT_ADD_MATRIX_MUL(Obj self, Obj dst, Obj src, Obj s)
+{
+    AddMatrix(dst, src, s);
+    return 0;
+}
+
+// MultMatrixLeft( M, s ) and MultMatrixRight( M, s )
+static Obj FuncPACKMAT_MULT_MATRIX(Obj self, Obj M, Obj s)
+{
+    RequireMat("MultMatrix", M, "<M>");
+    RequireMutable("MultMatrix", M, "matrix");
+    const uint64_t r = ScalarResidue("MultMatrix", TDATA(M), s);
+    packmat_scale(MAT_VIEW(M), MAT_VIEW(M), r);
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F * * * * * * * * * * * * * * * *  vectors * * * * * * * * * * * * * * * * *
+*/
+
+// AddVector( dst, src[, s[, from, to]] ): dst += s * src; s is Fail for
+// 1, from is 0 for the whole vector
+static void AddVectorFull(Obj dst, Obj src, Obj s, Obj from, Obj to)
+{
+    const char * name = "AddVector";
+    RequireVec(name, dst, "<dst>");
+    RequireMutable(name, dst, "vector");
+    RequireVec(name, src, "<src>");
+    RequireSameContext(name, dst, src);
+    const UInt len = CONST_DIMS(dst)[0];
+    if (CONST_DIMS(src)[0] != len)
+        ErrorMayQuit("AddVector: <dst> and <src> must have the same length",
+                     0, 0);
+    uint32_t lo = 0, hi = (uint32_t)len;
+    if (from)
+        GetRange(name, from, to, len, &lo, &hi);
+    const uint64_t r = s == Fail ? 1 : ScalarResidue(name, TDATA(dst), s);
+    if (lo == 0 && hi == len) {
+        if (r == 1)
+            packmat_add(VEC_VIEW(dst), VEC_VIEW(dst), VEC_VIEW(src));
+        else
+            packmat_addmul(VEC_VIEW(dst), VEC_VIEW(src), r);
+        return;
+    }
+    packmat_vec_addmul(VEC_VIEW(dst), VEC_VIEW(src), r, lo, hi);
+}
+
+static Obj FuncPACKMAT_ADD_VECTOR(Obj self, Obj dst, Obj src)
+{
+    AddVectorFull(dst, src, Fail, 0, 0);
+    return 0;
+}
+
+static Obj FuncPACKMAT_ADD_VECTOR_MUL(Obj self, Obj dst, Obj src, Obj s)
+{
+    AddVectorFull(dst, src, s, 0, 0);
+    return 0;
+}
+
+static Obj FuncPACKMAT_ADD_VECTOR_MUL_LEFT(Obj self, Obj dst, Obj s, Obj src)
+{
+    AddVectorFull(dst, src, s, 0, 0);
+    return 0;
+}
+
+static Obj FuncPACKMAT_ADD_VECTOR_RANGE(
+    Obj self, Obj dst, Obj src, Obj s, Obj from, Obj to)
+{
+    AddVectorFull(dst, src, s, from, to);
+    return 0;
+}
+
+static Obj FuncPACKMAT_ADD_VECTOR_RANGE_LEFT(
+    Obj self, Obj dst, Obj s, Obj src, Obj from, Obj to)
+{
+    AddVectorFull(dst, src, s, from, to);
+    return 0;
+}
+
+// MultVectorLeft/Right( v, s[, from, to] ); from is 0 for all of v
+static void MultVectorFull(Obj v, Obj s, Obj from, Obj to)
+{
+    const char * name = "MultVector";
+    RequireVec(name, v, "<v>");
+    RequireMutable(name, v, "vector");
+    const UInt len = CONST_DIMS(v)[0];
+    uint32_t   lo = 0, hi = (uint32_t)len;
+    if (from)
+        GetRange(name, from, to, len, &lo, &hi);
+    const uint64_t r = ScalarResidue(name, TDATA(v), s);
+    if (lo == 0 && hi == len)
+        packmat_scale(VEC_VIEW(v), VEC_VIEW(v), r);
+    else
+        packmat_vec_scale(VEC_VIEW(v), r, lo, hi);
+}
+
+static Obj FuncPACKMAT_MULT_VECTOR(Obj self, Obj v, Obj s)
+{
+    MultVectorFull(v, s, 0, 0);
+    return 0;
+}
+
+static Obj
+FuncPACKMAT_MULT_VECTOR_RANGE(Obj self, Obj v, Obj s, Obj from, Obj to)
+{
+    MultVectorFull(v, s, from, to);
+    return 0;
+}
+
+static Obj FuncPACKMAT_SCALAR_PRODUCT(Obj self, Obj a, Obj b)
+{
+    RequireVec("ScalarProduct", a, "<a>");
+    RequireCompatible("ScalarProduct", a, b);
+    return EntryObj(TDATA(a), packmat_vec_dot(VEC_VIEW(a), VEC_VIEW(b)));
+}
+
+static Obj FuncPACKMAT_POSITION_NONZERO(Obj self, Obj v)
+{
+    RequirePackedVec(SELF_NAME, v);
+    return ObjInt_UInt(packmat_vec_position_nonzero(VEC_VIEW(v), 0) + 1);
+}
+
+// the first nonzero entry after position <from>
+static Obj FuncPACKMAT_POSITION_NONZERO_FROM(Obj self, Obj v, Obj from)
+{
+    RequirePackedVec(SELF_NAME, v);
+    const UInt len = CONST_DIMS(v)[0];
+    const UInt f = GetFrom("PositionNonZero", from, len);
+    return ObjInt_UInt(
+        packmat_vec_position_nonzero(VEC_VIEW(v), (uint32_t)f) + 1);
+}
+
+static Obj FuncPACKMAT_POSITION_LAST_NONZERO(Obj self, Obj v)
+{
+    RequirePackedVec(SELF_NAME, v);
+    return ObjInt_UInt(packmat_vec_position_last_nonzero(VEC_VIEW(v)));
+}
+
+static Obj FuncPACKMAT_WEIGHT(Obj self, Obj v)
+{
+    RequirePackedVec(SELF_NAME, v);
+    return ObjInt_UInt8(packmat_weight(VEC_VIEW(v)));
+}
+
+static Obj FuncPACKMAT_DISTANCE(Obj self, Obj a, Obj b)
+{
+    RequireVec("DistanceOfVectors", a, "<a>");
+    RequireCompatible("DistanceOfVectors", a, b);
+    return ObjInt_UInt8(packmat_distance(VEC_VIEW(a), VEC_VIEW(b)));
+}
+
+// v{l}: a new mutable vector
+static Obj FuncPACKMAT_EXTRACT_SUB_VECTOR(Obj self, Obj v, Obj l)
+{
+    const char * name = "ExtractSubVector";
+    RequireVec(name, v, "<v>");
+    IndexList cols =
+        GetIndexList(name, l, "<l>", CONST_DIMS(v)[0], POSS_LIST_MSG);
+    Obj res = NewPackedVec(ResultType(TDATA(v), FALSE, TRUE), cols.len);
+    packmat_extract_submatrix(VEC_VIEW(res), VEC_VIEW(v), packmat_range(0, 1),
+                              IndexView(cols));
+    return res;
+}
+
+// CopySubVector( src, dst, scols, dcols ): dst{dcols} := src{scols}
+static Obj
+FuncPACKMAT_COPY_SUB_VECTOR(Obj self, Obj src, Obj dst, Obj scols, Obj dcols)
+{
+    const char * name = "CopySubVector";
+    RequireVec(name, src, "<src>");
+    RequireVec(name, dst, "<dst>");
+    RequireMutable(name, dst, "vector");
+    if (TDATA(src) != TDATA(dst))
+        ErrorMayQuit("CopySubVector: <src> and <dst> must have the same base "
+                     "domain",
+                     0, 0);
+    IndexList sc = GetIndexList(name, scols, "<scols>", CONST_DIMS(src)[0],
+                                POSS_LIST_MSG);
+    IndexList dc = GetIndexList(name, dcols, "<dcols>", CONST_DIMS(dst)[0],
+                                POSS_LIST_MSG);
+    if (sc.len != dc.len)
         ErrorMayQuit(
-            "PACKMAT_COPY: <type> must have the base domain of <obj>", 0, 0);
-    const UInt size = SIZE_OBJ(obj);
-    Obj        copy = NewBag(T_DATOBJ, size);
-    SetTypeDatObj(copy, type);
-    memcpy((char *)ADDR_OBJ(copy) + DIMS_OFFSET,
-           (const char *)CONST_ADDR_OBJ(obj) + DIMS_OFFSET,
-           size - DIMS_OFFSET);
-    return copy;
+            "CopySubVector: <scols> and <dcols> must have the same length", 0,
+            0);
+    if (src == dst && MayOverlap(sc, dc))
+        src = CopyAs(src, TYPE_DATOBJ(src));
+    packmat_copy_subvector(VEC_VIEW(dst), VEC_VIEW(src), IndexView(dc),
+                           IndexView(sc));
+    return 0;
+}
+
+// NormedRowVector( v ): v scaled so that its first nonzero entry is one
+static Obj FuncPACKMAT_NORMED_VECTOR(Obj self, Obj v)
+{
+    RequirePackedVec(SELF_NAME, v);
+    Obj res = CopyAs(v, ResultType(TDATA(v), FALSE, IS_MUTABLE_OBJ(v)));
+    if (packmat_vec_normalize(VEC_VIEW(res)) == PACKMAT_NOT_UNIT)
+        ErrorMayQuit("NormedRowVector: the first nonzero entry of <v> must "
+                     "be invertible",
+                     0, 0);
+    return res;
+}
+
+
+/****************************************************************************
+**
+*F * * * * * * * * * * * * * *  rows and columns  * * * * * * * * * * * * * *
+*/
+
+// Swaps; cols selects columns
+static void Swap(const char * name, Obj M, Obj i, Obj j, BOOL cols)
+{
+    RequireMat(name, M, "<M>");
+    RequireMutable(name, M, "matrix");
+    const UInt   max = CONST_DIMS(M)[cols ? 1 : 0];
+    const char * msg = cols ? COL_RANGE : ROW_RANGE;
+    const UInt   a = GetIndex(name, i, "<i>", max, msg);
+    const UInt   b = GetIndex(name, j, "<j>", max, msg);
+    if (cols)
+        packmat_swap_cols(MAT_VIEW(M), (uint32_t)a, (uint32_t)b);
+    else
+        packmat_swap_rows(MAT_VIEW(M), (uint32_t)a, (uint32_t)b);
+}
+
+static Obj FuncPACKMAT_SWAP_ROWS(Obj self, Obj M, Obj i, Obj j)
+{
+    Swap("SwapMatrixRows", M, i, j, FALSE);
+    return 0;
+}
+
+static Obj FuncPACKMAT_SWAP_COLS(Obj self, Obj M, Obj i, Obj j)
+{
+    Swap("SwapMatrixColumns", M, i, j, TRUE);
+    return 0;
+}
+
+// Row or column i *= s, or, with j, row or column i += s * row or column j
+static void RowColOp(const char * name, Obj M, Obj i, Obj j, Obj s, BOOL cols)
+{
+    RequireMat(name, M, "<M>");
+    RequireMutable(name, M, "matrix");
+    const UInt     max = CONST_DIMS(M)[cols ? 1 : 0];
+    const char *   msg = cols ? COL_RANGE : ROW_RANGE;
+    const UInt     a = GetIndex(name, i, "<i>", max, msg);
+    const UInt     b = j ? GetIndex(name, j, "<j>", max, msg) : 0;
+    const uint64_t r = ScalarResidue(name, TDATA(M), s);
+    if (!j && cols)
+        packmat_mult_col(MAT_VIEW(M), (uint32_t)a, r);
+    else if (!j)
+        packmat_mult_row(MAT_VIEW(M), (uint32_t)a, r);
+    else if (cols)
+        packmat_add_cols(MAT_VIEW(M), (uint32_t)a, (uint32_t)b, r);
+    else
+        packmat_add_rows(MAT_VIEW(M), (uint32_t)a, (uint32_t)b, r);
+}
+
+static Obj FuncPACKMAT_MULT_ROW(Obj self, Obj M, Obj i, Obj s)
+{
+    RowColOp("MultMatrixRow", M, i, 0, s, FALSE);
+    return 0;
+}
+
+static Obj FuncPACKMAT_MULT_COL(Obj self, Obj M, Obj i, Obj s)
+{
+    RowColOp("MultMatrixColumn", M, i, 0, s, TRUE);
+    return 0;
+}
+
+static Obj FuncPACKMAT_ADD_ROWS(Obj self, Obj M, Obj i, Obj j, Obj s)
+{
+    RowColOp("AddMatrixRows", M, i, j, s, FALSE);
+    return 0;
+}
+
+static Obj FuncPACKMAT_ADD_COLS(Obj self, Obj M, Obj i, Obj j, Obj s)
+{
+    RowColOp("AddMatrixColumns", M, i, j, s, TRUE);
+    return 0;
+}
+
+// PositionNonZeroInRow( M, i[, from] ); from is 0 if not given
+static Obj PositionNonZeroInRow(Obj M, Obj i, Obj from)
+{
+    const char * name = "PositionNonZeroInRow";
+    RequireMat(name, M, "<M>");
+    const uint32_t * d = CONST_DIMS(M);
+    const UInt       a = GetIndex(name, i, "<i>", d[0], ROW_RANGE);
+    const UInt       f = from ? GetFrom(name, from, d[1]) : 0;
+    return ObjInt_UInt(packmat_position_nonzero_in_row(
+                           MAT_VIEW(M), (uint32_t)a, (uint32_t)f) +
+                       1);
+}
+
+static Obj FuncPACKMAT_POSITION_NONZERO_IN_ROW(Obj self, Obj M, Obj i)
+{
+    return PositionNonZeroInRow(M, i, 0);
+}
+
+static Obj
+FuncPACKMAT_POSITION_NONZERO_IN_ROW_FROM(Obj self, Obj M, Obj i, Obj from)
+{
+    return PositionNonZeroInRow(M, i, from);
+}
+
+
+/****************************************************************************
+**
+*F * * * * * * * * * * * * * * sub-matrices, rows * * * * * * * * * * * * * *
+*/
+
+// M{rows}{cols}: a new mutable matrix
+static Obj FuncPACKMAT_EXTRACT_SUB_MATRIX(Obj self, Obj M, Obj rows, Obj cols)
+{
+    const char * name = "ExtractSubMatrix";
+    RequireMat(name, M, "<M>");
+    IndexList r =
+        GetIndexList(name, rows, "<rows>", CONST_DIMS(M)[0], ROWS_LIST_MSG);
+    IndexList c =
+        GetIndexList(name, cols, "<cols>", CONST_DIMS(M)[1], COLS_LIST_MSG);
+    Obj res = NewPackedMat(ResultType(TDATA(M), TRUE, TRUE), r.len, c.len);
+    packmat_extract_submatrix(MAT_VIEW(res), MAT_VIEW(M), IndexView(r),
+                              IndexView(c));
+    return res;
+}
+
+// CopySubMatrix( src, dst, srows, drows, scols, dcols )
+static Obj FuncPACKMAT_COPY_SUB_MATRIX(
+    Obj self, Obj src, Obj dst, Obj srows, Obj drows, Obj scols, Obj dcols)
+{
+    const char * name = "CopySubMatrix";
+    RequireMat(name, src, "<src>");
+    RequireMat(name, dst, "<dst>");
+    RequireMutable(name, dst, "matrix");
+    if (TDATA(src) != TDATA(dst))
+        ErrorMayQuit("CopySubMatrix: <src> and <dst> must have the same base "
+                     "domain",
+                     0, 0);
+    IndexList sr = GetIndexList(name, srows, "<srows>", CONST_DIMS(src)[0],
+                                ROWS_LIST_MSG);
+    IndexList dr = GetIndexList(name, drows, "<drows>", CONST_DIMS(dst)[0],
+                                ROWS_LIST_MSG);
+    IndexList sc = GetIndexList(name, scols, "<scols>", CONST_DIMS(src)[1],
+                                COLS_LIST_MSG);
+    IndexList dc = GetIndexList(name, dcols, "<dcols>", CONST_DIMS(dst)[1],
+                                COLS_LIST_MSG);
+    if (sr.len != dr.len)
+        ErrorMayQuit("source and destination row lists must be of equal "
+                     "length",
+                     0, 0);
+    if (sc.len != dc.len)
+        ErrorMayQuit("source and destination column lists must be of equal "
+                     "length",
+                     0, 0);
+    if (src == dst && MayOverlap(sr, dr) && MayOverlap(sc, dc))
+        src = CopyAs(src, TYPE_DATOBJ(src));
+    packmat_copy_submatrix(MAT_VIEW(dst), MAT_VIEW(src), IndexView(dr),
+                           IndexView(sr), IndexView(dc), IndexView(sc));
+    return 0;
+}
+
+// Row i of M as a new vector of type <type>
+static Obj RowAsVector(Obj M, UInt i, Obj type)
+{
+    Obj v = NewPackedVec(type, CONST_DIMS(M)[1]);
+    packmat_copy_row_to_vector(VEC_VIEW(v), MAT_VIEW(M), (uint32_t)i);
+    return v;
+}
+
+// RowsOfMatrix( M ): an immutable list of immutable vectors
+static Obj FuncPACKMAT_ROWS(Obj self, Obj M)
+{
+    RequirePackedMat(SELF_NAME, M);
+    Obj        type = ResultType(TDATA(M), FALSE, FALSE);
+    const UInt nr = CONST_DIMS(M)[0];
+    Obj        list = NEW_PLIST_IMM(nr ? T_PLIST_DENSE : T_PLIST_EMPTY, nr);
+    for (UInt i = 0; i < nr; i++) {
+        Obj v = RowAsVector(M, i, type);
+        SET_ELM_PLIST(list, i + 1, v);
+        SET_LEN_PLIST(list, i + 1);
+        CHANGED_BAG(list);
+    }
+    return list;
+}
+
+// RowOfMatrix( M, i ): row i of M as a new mutable vector (P1 (b))
+static Obj FuncPACKMAT_ROW(Obj self, Obj M, Obj i)
+{
+    RequireMat("RowOfMatrix", M, "<M>");
+    const UInt a =
+        GetIndex("RowOfMatrix", i, "<i>", CONST_DIMS(M)[0], ROW_RANGE);
+    return RowAsVector(M, a, ResultType(TDATA(M), FALSE, TRUE));
+}
+
+static Obj Transposed(Obj M, BOOL mut)
+{
+    RequirePackedMat("TransposedMat", M);
+    const uint32_t * d = CONST_DIMS(M);
+    Obj res = NewPackedMat(ResultType(TDATA(M), TRUE, mut), d[1], d[0]);
+    packmat_transpose(MAT_VIEW(res), MAT_VIEW(M));
+    return res;
+}
+
+static Obj FuncPACKMAT_TRANSPOSED_MUT(Obj self, Obj M)
+{
+    return Transposed(M, TRUE);
+}
+
+static Obj FuncPACKMAT_TRANSPOSED_IMM(Obj self, Obj M)
+{
+    return Transposed(M, FALSE);
+}
+
+
+/****************************************************************************
+**
+*F * * * * * * * * * * * * * * * *  products  * * * * * * * * * * * * * * * *
+**
+**  The core polls for interrupts without clearing them: an interrupt is
+**  pending while the statement executor is switched to IntrExecStatFuncs.
+**  An interrupted product is discarded. TakeInterrupt then runs the break
+**  loop; if the user returns from it, the product starts again. If no user
+**  interrupt is pending (the memory limit, say), the product runs without
+**  polls, and the interrupt fires at the next statement.
+*/
+
+static int PollInterrupt(void * data)
+{
+    return STATE(CurrExecStatFuncs) == IntrExecStatFuncs;
+}
+
+typedef int (*ProductFunc)(
+    packmat_mat dst, packmat_mat a, packmat_mat b, packmat_poll, void *);
+
+// res = a*b, with fn and the kinds of all three; dims of res as for NewPacked
+static Obj Product(ProductFunc fn,
+                   Obj         type,
+                   BOOL        resmat,
+                   UInt        d0,
+                   UInt        d1,
+                   Obj         a,
+                   BOOL        amat,
+                   Obj         b,
+                   BOOL        bmat)
+{
+    packmat_poll poll = PollInterrupt;
+    for (;;) {
+        Obj res =
+            resmat ? NewPackedMat(type, d0, d1) : NewPackedVec(type, d0);
+        if (fn(VIEW(res, resmat), VIEW(a, amat), VIEW(b, bmat), poll, 0) !=
+            PACKMAT_INTERRUPTED)
+            return res;
+        if (!TakeInterrupt())
+            poll = 0;
+    }
+}
+
+static BOOL MutableResult(Obj a, Obj b)
+{
+    return IS_MUTABLE_OBJ(a) || IS_MUTABLE_OBJ(b);
+}
+
+static Obj FuncPACKMAT_MAT_MUL(Obj self, Obj a, Obj b)
+{
+    RequireMat("*", a, "<a>");
+    RequireMat("*", b, "<b>");
+    RequireSameContext("*", a, b);
+    const uint32_t * da = CONST_DIMS(a);
+    const uint32_t * db = CONST_DIMS(b);
+    if (da[1] != db[0])
+        ErrorMayQuit("*: <a> must have as many columns as <b> has rows", 0,
+                     0);
+    return Product(packmat_mul,
+                   ResultType(TDATA(a), TRUE, MutableResult(a, b)), TRUE,
+                   da[0], db[1], a, TRUE, b, TRUE);
+}
+
+static Obj FuncPACKMAT_VEC_MUL_MAT(Obj self, Obj v, Obj M)
+{
+    RequireVec("*", v, "<v>");
+    RequireMat("*", M, "<M>");
+    RequireSameContext("*", v, M);
+    if (CONST_DIMS(v)[0] != CONST_DIMS(M)[0])
+        ErrorMayQuit("*: the length of <v> must be the number of rows of <M>",
+                     0, 0);
+    return Product(packmat_vec_mul_mat,
+                   ResultType(TDATA(v), FALSE, MutableResult(v, M)), FALSE,
+                   CONST_DIMS(M)[1], 0, v, FALSE, M, TRUE);
+}
+
+static Obj FuncPACKMAT_MAT_MUL_VEC(Obj self, Obj M, Obj v)
+{
+    RequireMat("*", M, "<M>");
+    RequireVec("*", v, "<v>");
+    RequireSameContext("*", M, v);
+    if (CONST_DIMS(v)[0] != CONST_DIMS(M)[1])
+        ErrorMayQuit(
+            "*: the length of <v> must be the number of columns of <M>", 0,
+            0);
+    return Product(packmat_mat_mul_vec,
+                   ResultType(TDATA(v), FALSE, MutableResult(M, v)), FALSE,
+                   CONST_DIMS(M)[0], 0, M, TRUE, v, FALSE);
+}
+
+static Obj FuncPACKMAT_KRONECKER(Obj self, Obj a, Obj b)
+{
+    const char * name = "KroneckerProduct";
+    RequireMat(name, a, "<a>");
+    RequireMat(name, b, "<b>");
+    RequireSameContext(name, a, b);
+    const uint64_t nr = (uint64_t)CONST_DIMS(a)[0] * CONST_DIMS(b)[0];
+    const uint64_t nc = (uint64_t)CONST_DIMS(a)[1] * CONST_DIMS(b)[1];
+    if (nr > MAX_DIM || nc > MAX_DIM)
+        ErrorMayQuit(
+            "KroneckerProduct: the result has more than 2^32 - 1 rows "
+            "or columns",
+            0, 0);
+    return Product(packmat_kronecker,
+                   ResultType(TDATA(a), TRUE, MutableResult(a, b)), TRUE,
+                   (UInt)nr, (UInt)nc, a, TRUE, b, TRUE);
+}
+
+
+/****************************************************************************
+**
+*F * * * * * * * * * * * * * * * * Randomize  * * * * * * * * * * * * * * * *
+**
+**  The cells take k residues at a time from one random integer in
+**  [0..n^k-1], its base-n digits; n^k < 2^28, so that the integers are small
+**  on every platform, or k = 1.
+*/
+
+static const uint64_t RANDOM_BOUND = (uint64_t)1 << 28;
+
+static UInt NrCells(Obj obj, BOOL mat)
+{
+    const uint32_t * d = CONST_DIMS(obj);
+    return mat ? (UInt)d[0] * d[1] : d[0];
+}
+
+// [ k, n^k, number of integers needed ]
+static Obj FuncPACKMAT_RANDOM_RANGE(Obj self, Obj obj)
+{
+    const BOOL     mat = RequirePackedObj(SELF_NAME, obj, "<obj>");
+    const uint64_t n = FIELD(TDATA(obj))->n;
+    UInt           k = 1;
+    uint64_t       m = n;
+    while (m <= (RANDOM_BOUND - 1) / n) {
+        m *= n;
+        k++;
+    }
+    const UInt cells = NrCells(obj, mat);
+    Obj        res = NEW_PLIST(T_PLIST_CYC, 3);
+    SET_LEN_PLIST(res, 3);
+    SET_ELM_PLIST(res, 1, INTOBJ_INT(k));
+    Obj mm = ObjInt_UInt8(m);
+    SET_ELM_PLIST(res, 2, mm);
+    SET_ELM_PLIST(res, 3, INTOBJ_INT((cells + k - 1) / k));
+    CHANGED_BAG(res);
+    return res;
+}
+
+// Set the cells of obj, row by row, to the base-n digits of the integers in
+// list, k digits each, lowest first
+static Obj FuncPACKMAT_SET_RANDOM(Obj self, Obj obj, Obj list, Obj k)
+{
+    const BOOL mat = RequirePackedObj(SELF_NAME, obj, "<obj>");
+    RequireMutable(SELF_NAME, obj, "matrix or vector");
+    RequirePlainList(SELF_NAME, list);
+    const uint64_t n = FIELD(TDATA(obj))->n;
+    const UInt     cells = NrCells(obj, mat);
+    if (!IS_POS_INTOBJ(k) || (UInt)INT_INTOBJ(k) > 64)
+        RequireArgumentEx(SELF_NAME, k, "<k>", "must be a positive integer");
+    const UInt kk = INT_INTOBJ(k);
+    uint64_t   m = 1;
+    for (UInt t = 0; t < kk; t++) {
+        if (m > UINT64_MAX / n)
+            ErrorMayQuit("PACKMAT_SET_RANDOM: n^<k> must be below 2^64", 0,
+                         0);
+        m *= n;
+    }
+    if (LEN_PLIST(list) != (cells + kk - 1) / kk)
+        ErrorMayQuit("PACKMAT_SET_RANDOM: <list> has the wrong length", 0, 0);
+
+    // the views hold across the loop: nothing allocates
+    const packmat_mat view = VIEW(obj, mat);
+    const uint32_t    nc = mat ? view.ncols : 1;
+    UInt              c = 0;
+    for (UInt t = 1; t <= LEN_PLIST(list); t++) {
+        Obj      x = ELM_PLIST(list, t);
+        uint64_t r;
+        if (x && IS_NONNEG_INTOBJ(x))
+            r = INT_INTOBJ(x);
+        else if (x && TNUM_OBJ(x) == T_INTPOS &&
+                 SIZE_INT(x) * sizeof(UInt) <= sizeof(uint64_t))
+            r = UInt8_ObjInt(x);
+        else
+            r = m;
+        if (r >= m)
+            ErrorMayQuit("PACKMAT_SET_RANDOM: <list> must contain integers "
+                         "in [0..n^<k>-1]",
+                         0, 0);
+        for (UInt u = 0; u < kk && c < cells; u++, c++) {
+            if (mat)
+                packmat_mat_set(view, (uint32_t)(c / nc), (uint32_t)(c % nc),
+                                r % n);
+            else
+                packmat_vec_set(view, (uint32_t)c, r % n);
+            r /= n;
+        }
+    }
+    return 0;
 }
 
 
@@ -940,7 +1984,58 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_1ARGS(PACKMAT_HASH, obj),
     GVAR_FUNC_1ARGS(PACKMAT_IS_ZERO, obj),
     GVAR_FUNC_1ARGS(PACKMAT_IS_ONE, M),
-    GVAR_FUNC_2ARGS(PACKMAT_COPY, obj, type),
+    GVAR_FUNC_1ARGS(PACKMAT_SET_SIBLINGS, type),
+    GVAR_FUNC_1ARGS(PACKMAT_MUTABLE_COPY, obj),
+    GVAR_FUNC_2ARGS(PACKMAT_SUM, a, b),
+    GVAR_FUNC_2ARGS(PACKMAT_DIFF, a, b),
+    GVAR_FUNC_1ARGS(PACKMAT_AINV_MUT, obj),
+    GVAR_FUNC_1ARGS(PACKMAT_AINV_IMM, obj),
+    GVAR_FUNC_1ARGS(PACKMAT_AINV_SAMEMUT, obj),
+    GVAR_FUNC_1ARGS(PACKMAT_ZERO_MUT, obj),
+    GVAR_FUNC_1ARGS(PACKMAT_ZERO_IMM, obj),
+    GVAR_FUNC_1ARGS(PACKMAT_ZERO_SAMEMUT, obj),
+    GVAR_FUNC_2ARGS(PACKMAT_PROD_SCALAR, obj, s),
+    GVAR_FUNC_2ARGS(PACKMAT_PROD_SCALAR_LEFT, s, obj),
+    GVAR_FUNC_2ARGS(PACKMAT_ADD_MATRIX, dst, src),
+    GVAR_FUNC_3ARGS(PACKMAT_ADD_MATRIX_MUL, dst, src, s),
+    GVAR_FUNC_2ARGS(PACKMAT_MULT_MATRIX, M, s),
+    GVAR_FUNC_2ARGS(PACKMAT_ADD_VECTOR, dst, src),
+    GVAR_FUNC_3ARGS(PACKMAT_ADD_VECTOR_MUL, dst, src, s),
+    GVAR_FUNC_3ARGS(PACKMAT_ADD_VECTOR_MUL_LEFT, dst, s, src),
+    GVAR_FUNC_5ARGS(PACKMAT_ADD_VECTOR_RANGE, dst, src, s, from, to),
+    GVAR_FUNC_5ARGS(PACKMAT_ADD_VECTOR_RANGE_LEFT, dst, s, src, from, to),
+    GVAR_FUNC_2ARGS(PACKMAT_MULT_VECTOR, v, s),
+    GVAR_FUNC_4ARGS(PACKMAT_MULT_VECTOR_RANGE, v, s, from, to),
+    GVAR_FUNC_2ARGS(PACKMAT_SCALAR_PRODUCT, a, b),
+    GVAR_FUNC_1ARGS(PACKMAT_POSITION_NONZERO, v),
+    GVAR_FUNC_2ARGS(PACKMAT_POSITION_NONZERO_FROM, v, from),
+    GVAR_FUNC_1ARGS(PACKMAT_POSITION_LAST_NONZERO, v),
+    GVAR_FUNC_1ARGS(PACKMAT_WEIGHT, v),
+    GVAR_FUNC_2ARGS(PACKMAT_DISTANCE, a, b),
+    GVAR_FUNC_2ARGS(PACKMAT_EXTRACT_SUB_VECTOR, v, l),
+    GVAR_FUNC_4ARGS(PACKMAT_COPY_SUB_VECTOR, src, dst, scols, dcols),
+    GVAR_FUNC_1ARGS(PACKMAT_NORMED_VECTOR, v),
+    GVAR_FUNC_3ARGS(PACKMAT_SWAP_ROWS, M, i, j),
+    GVAR_FUNC_3ARGS(PACKMAT_SWAP_COLS, M, i, j),
+    GVAR_FUNC_3ARGS(PACKMAT_MULT_ROW, M, i, s),
+    GVAR_FUNC_3ARGS(PACKMAT_MULT_COL, M, i, s),
+    GVAR_FUNC_4ARGS(PACKMAT_ADD_ROWS, M, i, j, s),
+    GVAR_FUNC_4ARGS(PACKMAT_ADD_COLS, M, i, j, s),
+    GVAR_FUNC_2ARGS(PACKMAT_POSITION_NONZERO_IN_ROW, M, i),
+    GVAR_FUNC_3ARGS(PACKMAT_POSITION_NONZERO_IN_ROW_FROM, M, i, from),
+    GVAR_FUNC_3ARGS(PACKMAT_EXTRACT_SUB_MATRIX, M, rows, cols),
+    GVAR_FUNC_6ARGS(
+        PACKMAT_COPY_SUB_MATRIX, src, dst, srows, drows, scols, dcols),
+    GVAR_FUNC_1ARGS(PACKMAT_ROWS, M),
+    GVAR_FUNC_2ARGS(PACKMAT_ROW, M, i),
+    GVAR_FUNC_1ARGS(PACKMAT_TRANSPOSED_MUT, M),
+    GVAR_FUNC_1ARGS(PACKMAT_TRANSPOSED_IMM, M),
+    GVAR_FUNC_2ARGS(PACKMAT_MAT_MUL, a, b),
+    GVAR_FUNC_2ARGS(PACKMAT_VEC_MUL_MAT, v, M),
+    GVAR_FUNC_2ARGS(PACKMAT_MAT_MUL_VEC, M, v),
+    GVAR_FUNC_2ARGS(PACKMAT_KRONECKER, a, b),
+    GVAR_FUNC_1ARGS(PACKMAT_RANDOM_RANGE, obj),
+    GVAR_FUNC_3ARGS(PACKMAT_SET_RANDOM, obj, list, k),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -953,6 +2048,7 @@ static Int InitKernel(StructInitInfo * module)
     ImportFuncFromLibrary("PACKMAT_EntryResidue", &PackmatEntryResidueFunc);
     ImportFuncFromLibrary("IsKernelDataObjectRep",
                           &IsKernelDataObjectRepFilt);
+    ImportFuncFromLibrary("IsMutable", &IsMutableFilt);
     InitGlobalBag(&GenerationObj, "src/packmat.c:GenerationObj");
     return 0;
 }

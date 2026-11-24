@@ -1,4 +1,4 @@
-#@local F, F3, M, N, P, Q, R, v, w, u, l, d, h, x, L, fam, v2, p
+#@local F, F3, M, N, P, Q, R, v, w, u, l, d, h, x, L, fam, v2, p, t
 gap> START_TEST( "matobjpacked.tst" );
 gap> ReadGapRoot( "tst/testinstall/MatrixObj/testpacked.g" );
 
@@ -331,9 +331,13 @@ ect)
 gap> PACKMAT_ZERO_MATRIX( PackedRepContext( GF(7) ).vector, 3, 3 );
 Error, PACKMAT_ZERO_MATRIX: <type> must be a packed type (not a positional obj\
 ect)
-gap> PACKMAT_COPY( NewZeroMatrix( IsPackedMatrixRep, GF(7), 1, 1 ),
->                  PackedRepContext( GF(5) ).matrix );
-Error, PACKMAT_COPY: <type> must have the base domain of <obj>
+gap> t := PackedRepContext( GF(7) ).matrix;;
+gap> M := PACKMAT_ZERO_MATRIX( NewType( fam, IsPackedMatrixRep and IsMutable,
+>        MakeImmutable( ShallowCopy( DataType( t ) ) ) ), 1, 1 );;
+gap> M + M;
+Error, packed matrix: invalid field context
+gap> PACKMAT_SET_SIBLINGS( TypeObj( DataType( t )[2] ) );
+Error, PACKMAT_SET_SIBLINGS: the types are set already
 
 #
 # Unsupported base domains

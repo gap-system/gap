@@ -44,7 +44,7 @@ BindGlobal( "PACKMAT_EntryResidue", function( R, x )
 InstallMethod( PackedRepContext,
   [ IsSemiring ],
   function( R )
-    local n, data, tdata, efam, mfilter, vfilter, mfam, vfam;
+    local n, data, tdata, efam, mfilter, vfilter, mfam, vfam, types;
 
     # otherwise every call would make a new context
     if not IsAttributeStoringRep( R ) then
@@ -72,11 +72,18 @@ InstallMethod( PackedRepContext,
     fi;
     mfam := CollectionsFamily( FamilyObj( R ) );
     vfam := FamilyObj( R );
-    return rec(
+    types := rec(
       matrix := NewType( mfam, mfilter and IsMutable, tdata ),
       immutableMatrix := NewType( mfam, mfilter, tdata ),
       vector := NewType( vfam, vfilter and IsMutable, tdata ),
       immutableVector := NewType( vfam, vfilter, tdata ) );
+
+    # the kernel finds the types of results through the field bag
+    PACKMAT_SET_SIBLINGS( NewType( FamilyType( TYPE_KERNEL_OBJECT ),
+      IsKernelDataObjectRep,
+      MakeImmutable( [ types.matrix, types.immutableMatrix,
+                       types.vector, types.immutableVector ] ) ) );
+    return types;
   end );
 
 
@@ -226,14 +233,223 @@ InstallMethod( SparseIntKey, [ IsObject, IsPackedVectorRep ],
   {} -> RankFilter( IsFFECollColl and IsGaussianRowSpace ),
   { dom, key } -> PACKMAT_HASH );
 
-InstallMethod( ShallowCopy, [ IsPackedMatrixRep ],
-  M -> PACKMAT_COPY( M, PackedRepContext( BaseDomain( M ) ).matrix ) );
+InstallMethod( ShallowCopy, [ IsPackedMatrixRep ], PACKMAT_MUTABLE_COPY );
+InstallMethod( MutableCopyMatrix, [ IsPackedMatrixRep ], PACKMAT_MUTABLE_COPY );
+InstallMethod( ShallowCopy, [ IsPackedVectorRep ], PACKMAT_MUTABLE_COPY );
 
-InstallMethod( MutableCopyMatrix, [ IsPackedMatrixRep ],
-  M -> PACKMAT_COPY( M, PackedRepContext( BaseDomain( M ) ).matrix ) );
 
-InstallMethod( ShallowCopy, [ IsPackedVectorRep ],
-  v -> PACKMAT_COPY( v, PackedRepContext( BaseDomain( v ) ).vector ) );
+#############################################################################
+##
+##  Arithmetic
+##
+##  Operands need the same base domain and dimensions. Results are
+##  immutable iff all operands are. Scalars are integers or elements of the
+##  base domain.
+##
+InstallMethod( \+, [ IsPackedMatrixRep, IsPackedMatrixRep ], PACKMAT_SUM );
+InstallMethod( \+, [ IsPackedVectorRep, IsPackedVectorRep ], PACKMAT_SUM );
+InstallMethod( \-, [ IsPackedMatrixRep, IsPackedMatrixRep ], PACKMAT_DIFF );
+InstallMethod( \-, [ IsPackedVectorRep, IsPackedVectorRep ], PACKMAT_DIFF );
+
+InstallMethod( AdditiveInverseMutable, [ IsPackedMatrixRep ],
+  PACKMAT_AINV_MUT );
+InstallMethod( AdditiveInverseMutable, [ IsPackedVectorRep ],
+  PACKMAT_AINV_MUT );
+InstallMethod( AdditiveInverseImmutable, [ IsPackedMatrixRep ],
+  PACKMAT_AINV_IMM );
+InstallMethod( AdditiveInverseImmutable, [ IsPackedVectorRep ],
+  PACKMAT_AINV_IMM );
+InstallMethod( AdditiveInverseSameMutability, [ IsPackedMatrixRep ],
+  PACKMAT_AINV_SAMEMUT );
+InstallMethod( AdditiveInverseSameMutability, [ IsPackedVectorRep ],
+  PACKMAT_AINV_SAMEMUT );
+
+InstallMethod( ZeroMutable, [ IsPackedMatrixRep ], PACKMAT_ZERO_MUT );
+InstallMethod( ZeroMutable, [ IsPackedVectorRep ], PACKMAT_ZERO_MUT );
+InstallMethod( ZeroImmutable, [ IsPackedMatrixRep ], PACKMAT_ZERO_IMM );
+InstallMethod( ZeroImmutable, [ IsPackedVectorRep ], PACKMAT_ZERO_IMM );
+InstallMethod( ZeroSameMutability, [ IsPackedMatrixRep ],
+  PACKMAT_ZERO_SAMEMUT );
+InstallMethod( ZeroSameMutability, [ IsPackedVectorRep ],
+  PACKMAT_ZERO_SAMEMUT );
+
+InstallMethod( \*, [ IsPackedMatrixRep, IsScalar ], PACKMAT_PROD_SCALAR );
+InstallMethod( \*, [ IsScalar, IsPackedMatrixRep ], PACKMAT_PROD_SCALAR_LEFT );
+InstallMethod( \*, [ IsPackedVectorRep, IsScalar ], PACKMAT_PROD_SCALAR );
+InstallMethod( \*, [ IsScalar, IsPackedVectorRep ], PACKMAT_PROD_SCALAR_LEFT );
+
+InstallMethod( AddMatrix, [ IsPackedMatrixRep and IsMutable, IsPackedMatrixRep ],
+  PACKMAT_ADD_MATRIX );
+InstallMethod( AddMatrix,
+  [ IsPackedMatrixRep and IsMutable, IsPackedMatrixRep, IsScalar ],
+  PACKMAT_ADD_MATRIX_MUL );
+InstallMethod( MultMatrixLeft, [ IsPackedMatrixRep and IsMutable, IsScalar ],
+  PACKMAT_MULT_MATRIX );
+InstallMethod( MultMatrixRight, [ IsPackedMatrixRep and IsMutable, IsScalar ],
+  PACKMAT_MULT_MATRIX );
+
+
+#############################################################################
+##
+##  Vectors
+##
+InstallMethod( AddVector,
+  [ IsPackedVectorRep and IsMutable, IsPackedVectorRep ],
+  PACKMAT_ADD_VECTOR );
+InstallMethod( AddVector,
+  [ IsPackedVectorRep and IsMutable, IsPackedVectorRep, IsObject ],
+  PACKMAT_ADD_VECTOR_MUL );
+InstallMethod( AddVector,
+  [ IsPackedVectorRep and IsMutable, IsObject, IsPackedVectorRep ],
+  PACKMAT_ADD_VECTOR_MUL_LEFT );
+InstallMethod( AddVector,
+  [ IsPackedVectorRep and IsMutable, IsPackedVectorRep, IsObject,
+    IsPosInt, IsPosInt ],
+  PACKMAT_ADD_VECTOR_RANGE );
+InstallMethod( AddVector,
+  [ IsPackedVectorRep and IsMutable, IsObject, IsPackedVectorRep,
+    IsPosInt, IsPosInt ],
+  PACKMAT_ADD_VECTOR_RANGE_LEFT );
+
+InstallMethod( MultVectorLeft, [ IsPackedVectorRep and IsMutable, IsObject ],
+  PACKMAT_MULT_VECTOR );
+InstallMethod( MultVectorRight, [ IsPackedVectorRep and IsMutable, IsObject ],
+  PACKMAT_MULT_VECTOR );
+InstallMethod( MultVectorLeft,
+  [ IsPackedVectorRep and IsMutable, IsObject, IsInt, IsInt ],
+  PACKMAT_MULT_VECTOR_RANGE );
+InstallMethod( MultVectorRight,
+  [ IsPackedVectorRep and IsMutable, IsObject, IsInt, IsInt ],
+  PACKMAT_MULT_VECTOR_RANGE );
+
+# also declared for Gaussian row spaces
+InstallOtherMethod( ScalarProduct, [ IsPackedVectorRep, IsPackedVectorRep ],
+  PACKMAT_SCALAR_PRODUCT );
+InstallMethod( \*, [ IsPackedVectorRep, IsPackedVectorRep ],
+  PACKMAT_SCALAR_PRODUCT );
+
+InstallMethod( PositionNonZero, [ IsPackedVectorRep ],
+  PACKMAT_POSITION_NONZERO );
+# declared for lists
+InstallOtherMethod( PositionNonZero, [ IsPackedVectorRep, IsInt ],
+  PACKMAT_POSITION_NONZERO_FROM );
+InstallMethod( PositionLastNonZero, [ IsPackedVectorRep ],
+  PACKMAT_POSITION_LAST_NONZERO );
+InstallMethod( WeightOfVector, [ IsPackedVectorRep ], PACKMAT_WEIGHT );
+InstallMethod( DistanceOfVectors, [ IsPackedVectorRep, IsPackedVectorRep ],
+  PACKMAT_DISTANCE );
+
+InstallMethod( ExtractSubVector, [ IsPackedVectorRep, IsList ],
+  PACKMAT_EXTRACT_SUB_VECTOR );
+InstallMethod( \{\}, [ IsPackedVectorRep, IsList ],
+  PACKMAT_EXTRACT_SUB_VECTOR );
+InstallMethod( CopySubVector,
+  [ IsPackedVectorRep, IsPackedVectorRep and IsMutable, IsList, IsList ],
+  PACKMAT_COPY_SUB_VECTOR );
+
+# OnLines calls PositionNonZero, \[\] and \*; this is the same in one call.
+# Declared for row vectors.
+InstallOtherMethod( NormedRowVector, [ IsPackedVectorRep ],
+  PACKMAT_NORMED_VECTOR );
+
+
+#############################################################################
+##
+##  Rows and columns
+##
+InstallMethod( SwapMatrixRows, [ IsPackedMatrixRep and IsMutable, IsInt, IsInt ],
+  PACKMAT_SWAP_ROWS );
+InstallMethod( SwapMatrixColumns,
+  [ IsPackedMatrixRep and IsMutable, IsInt, IsInt ],
+  PACKMAT_SWAP_COLS );
+
+InstallMethod( MultMatrixRowLeft,
+  [ IsPackedMatrixRep and IsMutable, IsInt, IsObject ],
+  PACKMAT_MULT_ROW );
+InstallMethod( MultMatrixRowRight,
+  [ IsPackedMatrixRep and IsMutable, IsInt, IsObject ],
+  PACKMAT_MULT_ROW );
+InstallMethod( MultMatrixColumnLeft,
+  [ IsPackedMatrixRep and IsMutable, IsInt, IsObject ],
+  PACKMAT_MULT_COL );
+InstallMethod( MultMatrixColumnRight,
+  [ IsPackedMatrixRep and IsMutable, IsInt, IsObject ],
+  PACKMAT_MULT_COL );
+
+InstallMethod( AddMatrixRowsLeft,
+  [ IsPackedMatrixRep and IsMutable, IsInt, IsInt, IsObject ],
+  PACKMAT_ADD_ROWS );
+InstallMethod( AddMatrixRowsRight,
+  [ IsPackedMatrixRep and IsMutable, IsInt, IsInt, IsObject ],
+  PACKMAT_ADD_ROWS );
+InstallMethod( AddMatrixColumnsLeft,
+  [ IsPackedMatrixRep and IsMutable, IsInt, IsInt, IsObject ],
+  PACKMAT_ADD_COLS );
+InstallMethod( AddMatrixColumnsRight,
+  [ IsPackedMatrixRep and IsMutable, IsInt, IsInt, IsObject ],
+  PACKMAT_ADD_COLS );
+
+InstallMethod( PositionNonZeroInRow, [ IsPackedMatrixRep, IsPosInt ],
+  PACKMAT_POSITION_NONZERO_IN_ROW );
+InstallMethod( PositionNonZeroInRow, [ IsPackedMatrixRep, IsPosInt, IsInt ],
+  PACKMAT_POSITION_NONZERO_IN_ROW_FROM );
+
+
+#############################################################################
+##
+##  Sub-matrices, rows, transposition
+##
+InstallMethod( ExtractSubMatrix, [ IsPackedMatrixRep, IsList, IsList ],
+  PACKMAT_EXTRACT_SUB_MATRIX );
+InstallMethod( CopySubMatrix,
+  [ IsPackedMatrixRep, IsPackedMatrixRep and IsMutable,
+    IsList, IsList, IsList, IsList ],
+  PACKMAT_COPY_SUB_MATRIX );
+InstallMethod( RowsOfMatrix, [ IsPackedMatrixRep ], PACKMAT_ROWS );
+
+InstallMethod( TransposedMatMutable, [ IsPackedMatrixRep ],
+  PACKMAT_TRANSPOSED_MUT );
+InstallMethod( TransposedMatImmutable, [ IsPackedMatrixRep ],
+  PACKMAT_TRANSPOSED_IMM );
+
+
+#############################################################################
+##
+##  Products
+##
+InstallMethod( \*, [ IsPackedMatrixRep, IsPackedMatrixRep ], PACKMAT_MAT_MUL );
+InstallMethod( \*, [ IsPackedVectorRep, IsPackedMatrixRep ],
+  PACKMAT_VEC_MUL_MAT );
+InstallMethod( \*, [ IsPackedMatrixRep, IsPackedVectorRep ],
+  PACKMAT_MAT_MUL_VEC );
+# OnPoints
+InstallOtherMethod( \^, [ IsPackedVectorRep, IsPackedMatrixRep ],
+  PACKMAT_VEC_MUL_MAT );
+InstallMethod( KroneckerProduct, [ IsPackedMatrixRep, IsPackedMatrixRep ],
+  PACKMAT_KRONECKER );
+
+
+#############################################################################
+##
+##  Randomize: the kernel says how many cells one random integer fills
+##
+BindGlobal( "PACKMAT_Randomize", function( rs, obj )
+    local r;
+    r := PACKMAT_RANDOM_RANGE( obj );
+    PACKMAT_SET_RANDOM( obj,
+      List( [ 1 .. r[3] ], i -> Random( rs, 0, r[2] - 1 ) ), r[1] );
+    return obj;
+  end );
+
+InstallMethodWithRandomSource( Randomize,
+  "for a random source and a mutable packed matrix",
+  [ IsRandomSource, IsPackedMatrixRep and IsMutable ],
+  PACKMAT_Randomize );
+
+InstallMethodWithRandomSource( Randomize,
+  "for a random source and a mutable packed vector",
+  [ IsRandomSource, IsPackedVectorRep and IsMutable ],
+  PACKMAT_Randomize );
 
 
 #############################################################################
