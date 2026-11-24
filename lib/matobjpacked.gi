@@ -122,39 +122,20 @@ InstallTagBasedMethod( NewZeroVector,
   { filter, R, len } ->
     PACKMAT_ZERO_VECTOR( PackedRepContext( R ).vector, len ) );
 
-# The generic methods for matrix and vector objects as input call Unpack;
-# these give compressed and packed input to the kernel as it is.
-BindGlobal( "PACKMAT_MatrixFrom", function( R, M )
+# The generic methods with a matrix or vector object as input call
+# Unpack; with a packed example, compressed and packed input goes to the
+# kernel as it is. Matrix( filt, R, M ) and Vector( filt, R, v ) keep the
+# generic methods, which serve every representation.
+InstallMethod( Matrix,
+  [ IsMatrixObj, IsPackedMatrixRep ],
+  function( M, example )
     local ncols;
     ncols := NumberColumns( M );
     if not ( IsList( M ) or IsPackedMatrixRep( M ) ) then
       M := Unpack( M );
     fi;
-    return PACKMAT_MATRIX( PackedRepContext( R ).matrix, ncols, M );
-  end );
-
-InstallMethod( Matrix,
-  [ IsOperation, IsSemiring, IsMatrixObj ],
-  1,
-  function( filt, R, M )
-    if not IsIdenticalObj( filt, IsPackedMatrixRep ) then
-      TryNextMethod();
-    fi;
-    return PACKMAT_MatrixFrom( R, M );
-  end );
-
-InstallMethod( Matrix,
-  [ IsMatrixObj, IsPackedMatrixRep ],
-  { M, example } -> PACKMAT_MatrixFrom( BaseDomain( example ), M ) );
-
-InstallMethod( Vector,
-  [ IsOperation, IsSemiring, IsVectorObj ],
-  1,
-  function( filt, R, v )
-    if not IsIdenticalObj( filt, IsPackedVectorRep ) then
-      TryNextMethod();
-    fi;
-    return PACKMAT_VECTOR( PackedRepContext( R ).vector, v );
+    return PACKMAT_MATRIX(
+             PackedRepContext( BaseDomain( example ) ).matrix, ncols, M );
   end );
 
 InstallMethod( Vector,
@@ -234,9 +215,10 @@ InstallMethod( IsZero, [ IsPackedMatrixRep ], PACKMAT_IS_ZERO );
 InstallMethod( IsZero, [ IsPackedVectorRep ], PACKMAT_IS_ZERO );
 InstallMethod( IsOne, [ IsPackedMatrixRep ], PACKMAT_IS_ONE );
 
-# rank above the method for row spaces, which expects lists
 InstallMethod( SparseIntKey, [ IsObject, IsPackedMatrixRep ],
   { dom, key } -> PACKMAT_HASH );
+
+# rank above the method for row spaces, which expects lists
 InstallMethod( SparseIntKey, [ IsObject, IsPackedVectorRep ],
   {} -> RankFilter( IsFFECollColl and IsGaussianRowSpace ),
   { dom, key } -> PACKMAT_HASH );
