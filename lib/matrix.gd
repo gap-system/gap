@@ -2166,7 +2166,8 @@ DeclareGlobalFunction( "SimultaneousEigenvalues" );
 ##  <Attr Name="Trace" Arg='mat' Label="of a matrix"/>
 ##
 ##  <Description>
-##  The trace of a square matrix is the sum of its diagonal entries.
+##  The trace of a square matrix or matrix object <A>mat</A> is the sum of
+##  its diagonal entries.
 ##  <Example><![CDATA[
 ##  gap> TraceMatrix([[1,2,3],[4,5,6],[7,8,9]]);
 ##  15

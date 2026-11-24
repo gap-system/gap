@@ -731,6 +731,13 @@ InstallMethod( TraceMat,
     return s;
   end );
 
+# `IsMatrixOrMatrixObj` implies `IsScalar`, so this matches both
+# declarations of `Trace`.
+InstallOtherMethod( Trace,
+    "for a matrix or matrix object",
+    [ IsMatrixOrMatrixObj ],
+    TraceMat );
+
 InstallMethod( PositionNonZero,
     "generic method for a vector object",
     [ IsVectorObj ],
