@@ -7,8 +7,8 @@
 **
 **  SPDX-License-Identifier: GPL-2.0-or-later
 **
-**  Arithmetic, rows, columns and copies: the C API of ops.h, with the
-**  preconditions that debug builds assert.
+**  Arithmetic, rows, columns, copies and products: the C API of ops.h,
+**  with the preconditions that debug builds assert.
 */
 
 #include "ops.h"
@@ -29,6 +29,12 @@ static inline const Ops & ops(const packmat_field * f)
 static inline void assert_range(packmat_mat v, uint32_t from, uint32_t to)
 {
     PACKMAT_ASSERT(v.nrows == 1 && (from >= to || to <= v.ncols));
+}
+
+static inline void assert_product(packmat_mat d, packmat_mat a, packmat_mat b)
+{
+    PACKMAT_ASSERT(d.f == a.f && d.f == b.f);
+    PACKMAT_ASSERT(disjoint(d, a) && disjoint(d, b));
 }
 
 extern "C" {
@@ -221,6 +227,55 @@ void packmat_transpose(packmat_mat dst, packmat_mat src)
     PACKMAT_ASSERT(dst.f == src.f && disjoint(dst, src));
     PACKMAT_ASSERT(dst.nrows == src.ncols && dst.ncols == src.nrows);
     ops(dst.f).transpose(dst, src);
+}
+
+int packmat_mul(packmat_mat  dst,
+                packmat_mat  a,
+                packmat_mat  b,
+                packmat_poll poll,
+                void *       data)
+{
+    assert_product(dst, a, b);
+    PACKMAT_ASSERT(a.ncols == b.nrows);
+    PACKMAT_ASSERT(dst.nrows == a.nrows && dst.ncols == b.ncols);
+    return ops(dst.f).mul(dst, a, b, poll, data);
+}
+
+// v is the only row of a 1 x m.nrows matrix
+int packmat_vec_mul_mat(packmat_mat  dst,
+                        packmat_mat  v,
+                        packmat_mat  m,
+                        packmat_poll poll,
+                        void *       data)
+{
+    assert_product(dst, v, m);
+    PACKMAT_ASSERT(v.nrows == 1 && v.ncols == m.nrows);
+    PACKMAT_ASSERT(dst.nrows == 1 && dst.ncols == m.ncols);
+    return ops(dst.f).mul(dst, v, m, poll, data);
+}
+
+int packmat_mat_mul_vec(packmat_mat  dst,
+                        packmat_mat  m,
+                        packmat_mat  v,
+                        packmat_poll poll,
+                        void *       data)
+{
+    assert_product(dst, m, v);
+    PACKMAT_ASSERT(v.nrows == 1 && v.ncols == m.ncols);
+    PACKMAT_ASSERT(dst.nrows == 1 && dst.ncols == m.nrows);
+    return ops(dst.f).mat_mul_vec(dst, m, v, poll, data);
+}
+
+int packmat_kronecker(packmat_mat  dst,
+                      packmat_mat  a,
+                      packmat_mat  b,
+                      packmat_poll poll,
+                      void *       data)
+{
+    assert_product(dst, a, b);
+    PACKMAT_ASSERT((uint64_t)a.nrows * b.nrows == dst.nrows);
+    PACKMAT_ASSERT((uint64_t)a.ncols * b.ncols == dst.ncols);
+    return ops(dst.f).kronecker(dst, a, b, poll, data);
 }
 
 }    // extern "C"

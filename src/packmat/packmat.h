@@ -90,6 +90,7 @@ enum {
     PACKMAT_NOT_UNIT = 1,       // the argument has no inverse mod n
     PACKMAT_INVALID = 2,        // kind, modulus or options do not fit
     PACKMAT_ZERO = 3,           // the vector is zero
+    PACKMAT_INTERRUPTED = 4,    // the poll callback asked to stop
 };
 
 // Field context: plain data, so that it can live in a GAP bag and survive
@@ -237,12 +238,17 @@ int packmat_check_invariants(packmat_mat m);
 
 /****************************************************************************
 **
-**  Arithmetic, rows, columns and copies
+**  Arithmetic, rows, columns, copies and products
 **
 **  Scalars s are residues below n. Ranges of entries are half-open: from
 **  <= i < to; an empty range (from >= to) does nothing, and otherwise
 **  to <= length. Debug builds assert dimensions, indices and scalars.
 */
+
+// Interrupt check for the products. They call poll(data) after about
+// every 2^16 word operations; a nonzero result makes them return
+// PACKMAT_INTERRUPTED. NULL: no checks.
+typedef int (*packmat_poll)(void * data);
 
 // A list of len row or column indices: idx[0..len), or first, first + 1,
 // ..., first + len - 1 if idx is NULL. Copies between column ranges, or
@@ -364,6 +370,40 @@ void packmat_copy_subvector(packmat_mat   dst,
 
 // dst = the transpose of src, of dimensions src.ncols x src.nrows.
 void packmat_transpose(packmat_mat dst, packmat_mat src);
+
+// Products: dst need not be initialised and may not overlap a factor;
+// the factors may be the same. They return PACKMAT_OK, or
+// PACKMAT_INTERRUPTED with some valid object in dst.
+
+// dst = a*b, with a.ncols = b.nrows; dst is a.nrows x b.ncols.
+int packmat_mul(packmat_mat  dst,
+                packmat_mat  a,
+                packmat_mat  b,
+                packmat_poll poll,
+                void *       data);
+
+// dst = v*m, of length m.ncols; v has length m.nrows.
+int packmat_vec_mul_mat(packmat_mat  dst,
+                        packmat_mat  v,
+                        packmat_mat  m,
+                        packmat_poll poll,
+                        void *       data);
+
+// dst = m*v, v as a column, of length m.nrows; v has length m.ncols.
+int packmat_mat_mul_vec(packmat_mat  dst,
+                        packmat_mat  m,
+                        packmat_mat  v,
+                        packmat_poll poll,
+                        void *       data);
+
+// dst = the Kronecker product, (a.nrows*b.nrows) x (a.ncols*b.ncols),
+// with entry (i*b.nrows + k, j*b.ncols + l) = a[i,j]*b[k,l]. The caller
+// checks that the dimensions fit in uint32_t.
+int packmat_kronecker(packmat_mat  dst,
+                      packmat_mat  a,
+                      packmat_mat  b,
+                      packmat_poll poll,
+                      void *       data);
 
 /****************************************************************************
 **
