@@ -16,15 +16,18 @@
 # the data of the object's type; PackedRepContext holds the types.
 #
 
-# n for GF(n), n prime, or Integers mod n; else fail
+# n for GF(n), n prime, or Integers mod n; else fail. A ring with one
+# inside Integers mod n contains every multiple of 1, so it is the whole
+# ring; its Size may be expensive.
 BindGlobal( "PACKMAT_Modulus", function( R )
     local n;
-    if ( IsFFECollection( R ) and IsField( R ) )
-       or ( IsZmodnZObjNonprimeCollection( R ) and IsRingWithOne( R ) ) then
+    if IsFFECollection( R ) and IsField( R ) then
       n := Characteristic( R );
-      if n > 0 and Size( R ) = n then
+      if Size( R ) = n then
         return n;
       fi;
+    elif IsZmodnZObjNonprimeCollection( R ) and IsRingWithOne( R ) then
+      return Characteristic( R );
     fi;
     return fail;
   end );
