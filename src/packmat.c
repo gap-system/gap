@@ -1713,7 +1713,9 @@ static Obj FuncPACKMAT_ROWS(Obj self, Obj M)
     RequirePackedMat(SELF_NAME, M);
     Obj        type = ResultType(TDATA(M), FALSE, FALSE);
     const UInt nr = CONST_DIMS(M)[0];
-    Obj        list = NEW_PLIST_IMM(nr ? T_PLIST_DENSE : T_PLIST_EMPTY, nr);
+    if (nr > INT_INTOBJ_MAX)
+        ErrorMayQuit("RowsOfMatrix: <M> has too many rows", 0, 0);
+    Obj list = NEW_PLIST_IMM(nr ? T_PLIST_DENSE : T_PLIST_EMPTY, nr);
     for (UInt i = 0; i < nr; i++) {
         Obj v = RowAsVector(M, i, type);
         SET_ELM_PLIST(list, i + 1, v);
@@ -1872,10 +1874,10 @@ static Obj FuncPACKMAT_KRONECKER(Obj self, Obj a, Obj b)
 
 static const uint64_t RANDOM_BOUND = (uint64_t)1 << 28;
 
-static UInt NrCells(Obj obj, BOOL mat)
+static uint64_t NrCells(Obj obj, BOOL mat)
 {
     const uint32_t * d = CONST_DIMS(obj);
-    return mat ? (UInt)d[0] * d[1] : d[0];
+    return mat ? (uint64_t)d[0] * d[1] : d[0];
 }
 
 // [ k, n^k, number of integers needed ]
@@ -1889,13 +1891,15 @@ static Obj FuncPACKMAT_RANDOM_RANGE(Obj self, Obj obj)
         m *= n;
         k++;
     }
-    const UInt cells = NrCells(obj, mat);
+    const uint64_t draws = (NrCells(obj, mat) + k - 1) / k;
+    if (draws > INT_INTOBJ_MAX)
+        ErrorMayQuit("Randomize: <obj> is too large", 0, 0);
     Obj        res = NEW_PLIST(T_PLIST_CYC, 3);
     SET_LEN_PLIST(res, 3);
     SET_ELM_PLIST(res, 1, INTOBJ_INT(k));
     Obj mm = ObjInt_UInt8(m);
     SET_ELM_PLIST(res, 2, mm);
-    SET_ELM_PLIST(res, 3, INTOBJ_INT((cells + k - 1) / k));
+    SET_ELM_PLIST(res, 3, INTOBJ_INT((Int)draws));
     CHANGED_BAG(res);
     return res;
 }
@@ -1908,7 +1912,7 @@ static Obj FuncPACKMAT_SET_RANDOM(Obj self, Obj obj, Obj list, Obj k)
     RequireMutable(SELF_NAME, obj, "matrix or vector");
     RequirePlainList(SELF_NAME, list);
     const uint64_t n = FIELD(TDATA(obj))->n;
-    const UInt     cells = NrCells(obj, mat);
+    const uint64_t cells = NrCells(obj, mat);
     if (!IS_POS_INTOBJ(k) || (UInt)INT_INTOBJ(k) > 64)
         RequireArgumentEx(SELF_NAME, k, "<k>", "must be a positive integer");
     const UInt kk = INT_INTOBJ(k);
@@ -1925,7 +1929,7 @@ static Obj FuncPACKMAT_SET_RANDOM(Obj self, Obj obj, Obj list, Obj k)
     // the views hold across the loop: nothing allocates
     const packmat_mat view = VIEW(obj, mat);
     const uint32_t    nc = mat ? view.ncols : 1;
-    UInt              c = 0;
+    uint64_t          c = 0;
     for (UInt t = 1; t <= LEN_PLIST(list); t++) {
         Obj      x = ELM_PLIST(list, t);
         uint64_t r;
