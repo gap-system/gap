@@ -23,6 +23,9 @@ BindGlobal( "ObjWithMemory", function( slp, n, el )
   # is inherited from their family.
   # This is not the case for matrices, thus we have to work.
   if IsMatrixOrMatrixObj( el ) then
+    # The memory records how `el' was computed, so neither the caller nor
+    # access to its rows may change it.
+    el:= Immutable( el );
     filt:= filt and IsMatrixOrMatrixObj;
     if IsMatrix( el ) then
       filt:= filt and IsMatrix;
@@ -387,16 +390,13 @@ InstallMethod( PositionNonZeroInRow,
   [ "IsMatrixOrMatrixObj and IsObjWithMemory", "IsPosInt", "IsInt" ],
   { M, i, from } -> PositionNonZeroInRow( M!.el, i, from ) );
 
-# Rows of a mutable wrapped matrix are mutable; the copies keep changes
-# through a row from reaching the wrapped matrix. `Immutable' does not copy
-# an immutable row.
 InstallOtherMethod( ELM_LIST,
   [ "IsRowListMatrix and IsObjWithMemory", "IsPosInt" ],
-  { M, i } -> Immutable( M!.el[i] ) );
+  { M, i } -> M!.el[i] );
 
 InstallOtherMethod( ELMS_LIST,
   [ "IsRowListMatrix and IsObjWithMemory", "IsList" ],
-  { M, l } -> Immutable( M!.el{ l } ) );
+  { M, l } -> M!.el{ l } );
 
 InstallOtherMethod( ISB_LIST,
   [ "IsRowListMatrix and IsObjWithMemory", "IsPosInt" ],
@@ -404,7 +404,7 @@ InstallOtherMethod( ISB_LIST,
 
 InstallOtherMethod( ListOp,
   [ "IsRowListMatrix and IsObjWithMemory" ],
-  M -> List( ListOp( M!.el ), Immutable ) );
+  M -> ListOp( M!.el ) );
 
 InstallOtherMethod( ListOp,
   [ "IsRowListMatrix and IsObjWithMemory", "IsFunction" ],

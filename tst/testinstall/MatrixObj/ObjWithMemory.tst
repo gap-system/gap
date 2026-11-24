@@ -141,6 +141,22 @@ gap> for g in mem do
 gap> List( mem, StripMemory ) = orig;
 true
 
+# nor through the wrapped matrix, also for list matrices
+gap> Add( mats, IdentityMat( 3, F ) );
+gap> Add( mats, ImmutableMatrix( F, IdentityMat( 3, F ) ) );
+gap> mats[4]:= MutableCopyMatrix( mats[4] );;
+gap> orig:= List( mats, MutableCopyMatrix );;
+gap> mem:= GeneratorsWithMemory( mats );;
+gap> for x in mats do x[1,1]:= 0 * Z(3); od;
+gap> List( mem, StripMemory ) = orig;
+true
+gap> ForAll( mem, g -> not IsMutable( StripMemory( g ) ) );
+true
+gap> mem[3][1][1]:= 0 * Z(3);
+Error, The list you are trying to assign to is immutable
+gap> mem[4][1][1]:= 0 * Z(3);
+Error, The list you are trying to assign to is immutable
+
 # groups of elements with memory
 gap> H:= GroupWithMemory( groups[1] );;
 gap> g:= H.1^2 * H.2;;
