@@ -333,7 +333,7 @@ Error, PACKMAT_ZERO_MATRIX: <type> must be a packed type (not a positional obj\
 ect)
 gap> t := PackedRepContext( GF(7) ).matrix;;
 gap> M := PACKMAT_ZERO_MATRIX( NewType( fam, IsPackedMatrixRep and IsMutable,
->        MakeImmutable( ShallowCopy( DataType( t ) ) ) ), 1, 1 );;
+>        ShallowCopy( DataType( t ) ) ), 1, 1 );;
 gap> M + M;
 Error, packed matrix: invalid field context
 gap> PACKMAT_SET_SIBLINGS( TypeObj( DataType( t )[2] ) );
