@@ -43,9 +43,10 @@
 **  - The caller checks every index: i < nrows, j < ncols, x < n. Only
 **    debug builds assert them; otherwise a row beyond nrows in a shared
 **    word silently sets unused bits.
-**  - Two-operand functions need views with the same context and equal
-**    dimensions, asserted in debug builds; their words do not overlap
-**    unless the function allows it ("dst may be a": dst.w == a.w).
+**  - Functions of several views need the same context in all of them,
+**    and equal dimensions unless they state others; debug builds assert
+**    both. The words of the views do not overlap unless the function
+**    allows it ("dst may be a": dst.w == a.w).
 **  - Dimensions are uint32_t; the caller checks that sizes fit in memory.
 **  - A routine that needs scratch memory takes `void *scratch`, sized in
 **    bytes by `size_t packmat_<op>_scratch(...)`. No routine needs it yet.
@@ -338,15 +339,17 @@ void packmat_mult_col(packmat_mat m, uint32_t i, uint64_t s);
 // Column i += s * column j; i may be j.
 void packmat_add_cols(packmat_mat m, uint32_t i, uint32_t j, uint64_t s);
 
-// v = row i of m; v has length m.ncols.
+// v = row i of m; v has length m.ncols, need not be initialised and may
+// not overlap m.
 void packmat_copy_row_to_vector(packmat_mat v, packmat_mat m, uint32_t i);
 
-// Row i of m = v; v has length m.ncols.
+// Row i of m = v; v has length m.ncols. If i > 0, v may be row 0 of m
+// (v.w == m.w).
 void packmat_copy_vector_to_row(packmat_mat m, uint32_t i, packmat_mat v);
 
 // dst = src{rows}{cols}, of dimensions rows.len x cols.len; dst need not
-// be initialised. Applied to vectors with rows = packmat_range(0, 1), it
-// extracts a sub-vector.
+// be initialised and may not overlap src. Applied to vectors with rows =
+// packmat_range(0, 1), it extracts a sub-vector.
 void packmat_extract_submatrix(packmat_mat   dst,
                                packmat_mat   src,
                                packmat_index rows,
@@ -354,7 +357,9 @@ void packmat_extract_submatrix(packmat_mat   dst,
 
 // dst{drows}{dcols} = src{srows}{scols}, with drows.len = srows.len and
 // dcols.len = scols.len; other entries of dst are unchanged. Indices may
-// repeat: the last write wins.
+// repeat: the last write wins. dst may be src (the same view) if no entry
+// is both read and written: drows and srows, or dcols and scols, have no
+// index in common.
 void packmat_copy_submatrix(packmat_mat   dst,
                             packmat_mat   src,
                             packmat_index drows,
@@ -362,13 +367,15 @@ void packmat_copy_submatrix(packmat_mat   dst,
                             packmat_index dcols,
                             packmat_index scols);
 
-// dst{dcols} = src{scols}, for vectors.
+// dst{dcols} = src{scols}, for vectors; dst may be src if dcols and scols
+// have no index in common.
 void packmat_copy_subvector(packmat_mat   dst,
                             packmat_mat   src,
                             packmat_index dcols,
                             packmat_index scols);
 
-// dst = the transpose of src, of dimensions src.ncols x src.nrows.
+// dst = the transpose of src, of dimensions src.ncols x src.nrows; dst
+// need not be initialised and may not overlap src.
 void packmat_transpose(packmat_mat dst, packmat_mat src);
 
 // Products: dst need not be initialised and may not overlap a factor;
