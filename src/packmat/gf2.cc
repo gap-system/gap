@@ -83,25 +83,29 @@ struct Gf2 {
                        void *       data)
     {
         Generic<Gf2>::zero(d);
+        Poll p(poll, data);
+        if (p.tick(num_words(d)))
+            return PACKMAT_INTERRUPTED;
         const uint32_t n = b.ncols;
         const uint32_t r = layout_rpw(64, n);
         const size_t   stride = layout_stride(64, n);
         const uint64_t mask = r > 1 ? bit_range(0, n) : 0;
-        Poll           p(poll, data);
+        const uint64_t scan = 1 + (uint64_t)a.ncols / 64;
         bool           stop = false;
         for (uint32_t i = 0; i < a.nrows && !stop; i++) {
             const uint64_t lo = C::row_bit(a.ncols, i);
             if (r > 1) {
-                uint64_t acc = 0;
-                for_set_bits(a.w, lo, lo + a.ncols, [&](uint64_t k) {
+                uint64_t acc = 0, bits = 0;
+                for_nonzero_cells<1>(a.w, lo, a.ncols, [&](uint64_t k) {
                     acc ^= (b.w[k / r] >> ((k % r) * n)) & mask;
+                    bits++;
                 });
                 d.w[i / r] |= acc << ((i % r) * n);
-                stop = p.tick(1 + a.ncols);
+                stop = p.tick(scan + bits);
                 continue;
             }
             uint64_t * dr = d.w + i * stride;
-            for_set_bits(a.w, lo, lo + a.ncols, [&](uint64_t k) {
+            for_nonzero_cells<1>(a.w, lo, a.ncols, [&](uint64_t k) {
                 if (stop)
                     return;
                 const uint64_t * br = b.w + k * stride;
@@ -109,7 +113,7 @@ struct Gf2 {
                     dr[t] ^= br[t];
                 stop = p.tick(stride);
             });
-            stop = stop || p.tick(1);
+            stop = stop || p.tick(scan);
         }
         return stop ? PACKMAT_INTERRUPTED : PACKMAT_OK;
     }
@@ -122,10 +126,12 @@ struct Gf2 {
                            void *       data)
     {
         Generic<Gf2>::zero(d);
+        Poll p(poll, data);
+        if (p.tick(num_words(d)))
+            return PACKMAT_INTERRUPTED;
         const uint32_t n = m.ncols;
         const uint32_t r = layout_rpw(64, n);
         const size_t   stride = layout_stride(64, n);
-        Poll           p(poll, data);
         for (uint32_t i = 0; i < m.nrows; i++) {
             uint64_t x = 0;
             if (r > 1)

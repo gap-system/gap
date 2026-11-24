@@ -698,6 +698,49 @@ static void test_interrupts()
     test_interrupt(M.f, KRONECKER, 10, 10, 64, 64);
 }
 
+// Products that move many words but compute little still poll about every
+// 2^16 word operations (packmat.h): zeroing the destination and scanning
+// a zero factor count too.
+static const uint64_t POLL_WORDS = 1 << 16;
+
+static void test_poll_spacing()
+{
+    snprintf(where, sizeof(where), "poll spacing");
+    Field G(PACKMAT_GF2, 2, 0), M(PACKMAT_M64, (1ull << 61) - 1, 0);
+    const packmat_field * fs[2] = { G.f, M.f };
+    const uint32_t        ns[2] = { 4096, 600 };
+
+    // identity (x) [1] and zero (x) [1] are copies of the left factor
+    for (int t = 0; t < 4; t++) {
+        const packmat_field * f = fs[t / 2];
+        const uint32_t        N = ns[t / 2];
+        const size_t          w = words(f, N, N);
+        vector<uint64_t>      a(w), d(w, ~0ull);
+        uint64_t              one = 1;
+        const packmat_mat     va = packmat_mat_view(f, &a[0], N, N);
+        if (t % 2)
+            packmat_identity(va);
+        Poller p = { 0, 0 };
+        CHECK(packmat_kronecker(packmat_mat_view(f, &d[0], N, N), va,
+                                packmat_mat_view(f, &one, 1, 1), count_poll,
+                                &p) == PACKMAT_OK);
+        CHECK(d == a);
+        CHECK(p.calls >= w / POLL_WORDS);
+    }
+
+    // a zero 16 x 2^19 matrix over GF(2) times a 2^19 x 64 one
+    const uint32_t   m = 16, k = 1 << 19, nc = 64;
+    vector<uint64_t> a(words(G.f, m, k)), b(words(G.f, k, nc));
+    vector<uint64_t> d(words(G.f, m, nc), ~0ull);
+    Poller           p = { 0, 0 };
+    CHECK(packmat_mul(packmat_mat_view(G.f, &d[0], m, nc),
+                      packmat_mat_view(G.f, &a[0], m, k),
+                      packmat_mat_view(G.f, &b[0], k, nc), count_poll,
+                      &p) == PACKMAT_OK);
+    CHECK(d == vector<uint64_t>(d.size(), 0));
+    CHECK(p.calls >= a.size() / POLL_WORDS);
+}
+
 /****************************************************************************
 **
 **  Driver
@@ -770,4 +813,5 @@ void test_ops()
     }
 
     test_interrupts();
+    test_poll_spacing();
 }
