@@ -14,6 +14,8 @@
 
 #include "common.h"
 
+#include <new>
+
 using std::vector;
 
 static size_t words(const packmat_field * f, uint32_t nrows, uint32_t ncols)
@@ -704,9 +706,9 @@ static void test_kronecker(const packmat_field * f,
 
 /****************************************************************************
 **
-**  Interruption: each product big enough for several polls; stopping at
-**  the first and the second leaves a valid object, never stopping the
-**  right one.
+**  Interruption: each product big enough for several polls. Never
+**  stopping gives the right result; stopping at any poll leaves a valid
+**  object.
 */
 
 enum { MUL, VEC_MUL_MAT, MAT_MUL_VEC, KRONECKER };
@@ -740,7 +742,8 @@ static void test_interrupt(const packmat_field * f,
     }
     const uint32_t dr = want.nrows, dc = want.ncols;
 
-    for (unsigned stop = 0; stop < 3; stop++) {
+    unsigned polls = 0;
+    for (unsigned stop = 0; stop == 0 || stop <= polls; stop++) {
         Buf               d(words(f, dr, dc));
         const packmat_mat vd = d.view(f, dr, dc);
         Poller            p = { 0, stop };
@@ -759,7 +762,8 @@ static void test_interrupt(const packmat_field * f,
             st = packmat_kronecker(vd, va, vb, count_poll, &p);
         }
         if (stop == 0) {
-            CHECK(st == PACKMAT_OK && p.calls >= 2);
+            polls = p.calls;
+            CHECK(st == PACKMAT_OK && polls >= 2);
             CHECK(holds(f, d, want));
         }
         else {
@@ -778,9 +782,92 @@ static void test_interrupts()
     test_interrupt(G.f, MAT_MUL_VEC, 100000, 64, 1, 64);
     test_interrupt(G.f, KRONECKER, 64, 64, 100, 1);
     test_interrupt(M.f, MUL, 64, 64, 64, 64);
-    test_interrupt(M.f, VEC_MUL_MAT, 1, 600, 600, 600);
-    test_interrupt(M.f, MAT_MUL_VEC, 1000, 200, 1, 200);
-    test_interrupt(M.f, KRONECKER, 10, 10, 64, 64);
+
+    // with and without Shoup, prime and composite
+    const uint64_t moduli[] = { ~0ull - 58,       ~0ull, TWO63 + 29,
+                                (1ull << 61) - 1, 65521, 6 };
+    for (size_t k = 0; k < sizeof(moduli) / sizeof(moduli[0]); k++) {
+        Field F(PACKMAT_M64, moduli[k], 0);
+        test_interrupt(F.f, MUL, 40, 128, 128, 40);
+        test_interrupt(F.f, VEC_MUL_MAT, 1, 2000, 2000, 100);
+        test_interrupt(F.f, MAT_MUL_VEC, 1000, 200, 1, 200);
+        test_interrupt(F.f, KRONECKER, 10, 10, 64, 32);
+    }
+}
+
+/****************************************************************************
+**
+**  Long sums and huge dimensions
+*/
+
+// Sums of 2^16 + 3 products: with all entries n - 1 the products are near
+// 2^128 and the sum is the length mod n
+static void test_long_sums(const packmat_field * f)
+{
+    snprintf(where, sizeof(where), "long sums: n = %llu",
+             (unsigned long long)f->n);
+    const uint64_t    n = f->n;
+    const uint32_t    k = (1u << 16) + 3;
+    const ref::Mat    A = random_mat(n, 1, k), B = random_mat(n, 1, k);
+    ref::Mat          M(1, k);
+    const size_t      vw = (size_t)packmat_vector_words(f, k);
+    Buf               a(vw), b(vw), m(vw);
+    const packmat_mat va = load(f, a, A), vb = load(f, b, B);
+    for (uint32_t i = 0; i < k; i++)
+        M.at(0, i) = n - 1;
+    const packmat_mat vm = load(f, m, M);
+    uint64_t          dot = 0;
+    for (uint32_t i = 0; i < k; i++)
+        dot = ref::add(n, dot, ref::mul(n, A.at(0, i), B.at(0, i)));
+
+    CHECK(packmat_vec_dot(vm, vm) == k % n);
+    CHECK(packmat_vec_dot(va, vb) == dot);
+    uint64_t x = n;
+    CHECK(packmat_mul(packmat_mat_view(f, &x, 1, 1), vm,
+                      packmat_mat_view(f, m.data(), k, 1), 0,
+                      0) == PACKMAT_OK &&
+          x == k % n);
+    CHECK(packmat_mat_mul_vec(packmat_vec_view(f, &x, 1), va, vb, 0, 0) ==
+              PACKMAT_OK &&
+          x == dot);
+}
+
+// A vector of 2^26 + 5 residues, 512 MiB, has bit positions beyond 2^32.
+// Skipped if the memory is not available.
+static void test_huge_vector()
+{
+    snprintf(where, sizeof(where), "huge vector");
+    Field          M(PACKMAT_M64, (1ull << 61) - 1, 0);
+    const uint32_t L = (1u << 26) + 5;
+    uint64_t *     w = new (std::nothrow) uint64_t[L];
+    if (!w) {
+        printf("packmat: no memory for the huge vector, skipped\n");
+        return;
+    }
+    const packmat_mat v = packmat_vec_view(M.f, w, L);
+    packmat_zero(v);
+    packmat_vec_set(v, L - 1, 3);
+    packmat_vec_set(v, L - 4, 7);
+    CHECK(packmat_vec_position_nonzero(v, 7) == L - 4);
+    CHECK(packmat_vec_position_nonzero(v, L - 3) == L - 1);
+    CHECK(packmat_vec_position_last_nonzero(v) == L);
+    CHECK(packmat_weight(v) == 2);
+
+    packmat_vec_addmul(v, v, 5, L - 2, L);    // v[L - 1] = 3 + 5 * 3
+    packmat_copy_subvector(v, v, packmat_range(L - 3, 1),
+                           packmat_range(L - 1, 1));
+    uint64_t e[8];
+    packmat_extract_submatrix(packmat_vec_view(M.f, e, 8), v,
+                              packmat_range(0, 1), packmat_range(L - 8, 8));
+    CHECK(e[3] == 0 && e[4] == 7 && e[5] == 18 && e[6] == 0 && e[7] == 18);
+
+    CHECK(packmat_vec_normalize(v) == PACKMAT_OK);    // divides by 7
+    CHECK(packmat_vec_get(v, L - 4) == 1);
+    CHECK(packmat_mod_mul(M.f, packmat_vec_get(v, L - 1), 7) == 18);
+    packmat_vec_scale(v, 0, L - 3, L);
+    CHECK(packmat_vec_position_last_nonzero(v) == L - 3);
+    CHECK(packmat_check_invariants(v));
+    delete[] w;
 }
 
 // Products that move many words but compute little still poll about every
@@ -895,8 +982,10 @@ void test_ops()
                 for (size_t y = 0; y < 4; y++)
                     for (size_t z = 0; z < 4; z++)
                         test_kronecker(F.f, ka[w], ka[x], ka[y], ka[z]);
+        test_long_sums(F.f);
     }
 
     test_interrupts();
     test_poll_spacing();
+    test_huge_vector();
 }
