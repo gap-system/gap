@@ -4,20 +4,30 @@
 # testpacked.g. Each test returns true, or prints what failed and returns
 # false.
 
+# The packed object P has the same words as a new one with its entries, so
+# no garbage in padding or in words that rows share
+PackedOpsClean := function( P )
+  if IsPackedMatrixRep( P ) then
+    return P = NewMatrix( IsPackedMatrixRep, BaseDomain( P ), NrCols( P ),
+                          Unpack( P ) );
+  fi;
+  return P = Vector( IsPackedVectorRep, BaseDomain( P ), Unpack( P ) );
+end;
+
 # P packed, G generic or plist (or a plain list): same entries and shape
 PackedOpsSame := function( P, G )
   local R;
   if IsList( G ) then
-    return IsPackedVectorRep( P ) and Unpack( P ) = G;
+    return IsPackedVectorRep( P ) and Unpack( P ) = G and PackedOpsClean( P );
   fi;
   R := BaseDomain( G );
   if IsMatrixObj( G ) then
     return IsPackedMatrixRep( P ) and IsIdenticalObj( BaseDomain( P ), R )
            and NrRows( P ) = NrRows( G ) and NrCols( P ) = NrCols( G )
-           and Unpack( P ) = Unpack( G );
+           and Unpack( P ) = Unpack( G ) and PackedOpsClean( P );
   fi;
   return IsPackedVectorRep( P ) and IsIdenticalObj( BaseDomain( P ), R )
-         and Unpack( P ) = Unpack( G );
+         and Unpack( P ) = Unpack( G ) and PackedOpsClean( P );
 end;
 
 # X has the shape of the packed object P and the entries L; for results
@@ -25,9 +35,10 @@ end;
 PackedOpsShaped := function( X, P, L )
   if IsPackedMatrixRep( P ) then
     return IsPackedMatrixRep( X ) and NrRows( X ) = NrRows( P ) and
-           NrCols( X ) = NrCols( P ) and Unpack( X ) = L;
+           NrCols( X ) = NrCols( P ) and Unpack( X ) = L and
+           PackedOpsClean( X );
   fi;
-  return IsPackedVectorRep( X ) and Unpack( X ) = L;
+  return IsPackedVectorRep( X ) and Unpack( X ) = L and PackedOpsClean( X );
 end;
 
 # Scalars: entries of R, and integers including large ones
@@ -260,10 +271,13 @@ PackedOpsProducts := function( rs, R, P, G, Q, H )
     then
       return PackedTestFail( "product of ", Unpack( G ), " ", Unpack( H ) );
     fi;
-    X := KroneckerProduct( a, b );
-    if not PackedOpsSame( X, KroneckerProduct( G, H ) ) or
-       IsMutable( X ) <> ( mut[1] or mut[2] ) then
-      return PackedTestFail( "Kronecker of ", Unpack( G ), " ", Unpack( H ) );
+    # the generic Kronecker product is slow
+    if NrRows( P ) * NrCols( P ) * NrRows( Q ) * NrCols( Q ) <= 40000 then
+      X := KroneckerProduct( a, b );
+      if not PackedOpsSame( X, KroneckerProduct( G, H ) ) or
+         IsMutable( X ) <> ( mut[1] or mut[2] ) then
+        return PackedTestFail( "Kronecker of ", Unpack( G ), " ", Unpack( H ) );
+      fi;
     fi;
 
     # v * P, P * w
@@ -288,7 +302,8 @@ PackedOpsProducts := function( rs, R, P, G, Q, H )
 
   if NrRows( P ) = NrCols( P ) and NrRows( P ) > 0 then
     for s in [ 0, 1, 2, 5 ] do
-      if Unpack( P ^ s ) <> Unpack( G ) ^ s then
+      X := P ^ s;
+      if Unpack( X ) <> Unpack( G ) ^ s or not PackedOpsClean( X ) then
         return PackedTestFail( "power ", s, " of ", Unpack( G ) );
       fi;
     od;
@@ -441,8 +456,19 @@ PackedOpsDims := function( R )
     # rows per word: 64/ncols up to 32 columns, one row from 33 on
     Append( dims, [ [ 5, 21 ], [ 3, 32 ], [ 3, 33 ], [ 2, 63 ], [ 2, 64 ],
                     [ 3, 65 ] ] );
+  else
+    Add( dims, [ 6, 11 ] );
   fi;
   return dims;
+end;
+
+# Numbers of columns of the right factor of products
+PackedOpsProductCols := function( R )
+  if Size( R ) = 2 then
+    # one row of the product per word, or rows of 2 or 3 words
+    return [ 0, 1, 3, 33, 64, 65, 130 ];
+  fi;
+  return [ 0, 1, 3, 9 ];
 end;
 
 PackedOpsRing := function( R, seed )
@@ -460,7 +486,7 @@ PackedOpsRing := function( R, seed )
        PackedOpsSub( rs, R, P, G, Q, H ) <> true then
       return false;
     fi;
-    for k in [ 0, 1, 3 ] do
+    for k in PackedOpsProductCols( R ) do
       L := List( [ 1 .. d[2] ], i -> PackedTestList( rs, R, k ) );
       N := NewMatrix( IsPackedMatrixRep, R, k, L );
       NG := NewMatrix( IsGenericMatrixRep, R, k, L );

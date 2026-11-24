@@ -1,4 +1,4 @@
-#@local F, M, N, M5, M7, v, w, u, x, l, rs, A, B, P, L, R, z, t
+#@local F, M, N, M5, M7, v, w, u, x, l, rs, A, B, P, L, R, z, t, cat, calls, junk, s, FreshM, FreshV
 gap> START_TEST( "matobjpackedops.tst" );
 gap> ReadGapRoot( "tst/testinstall/MatrixObj/testpacked.g" );
 gap> ReadGapRoot( "tst/testinstall/MatrixObj/testpackedops.g" );
@@ -296,6 +296,42 @@ gap> A := ShallowCopy( M );;
 gap> CopySubMatrix( M, A, [ 1, 2 ], [ 2, 1 ], l, l );
 gap> Unpack( A ) = Unpack( M ){ [ 2, 1 ] };
 true
+
+# s is converted by \in and Int. Each operand follows bags that \in frees
+# before a full collection, so that the operands move.
+gap> R := GF(NextPrimeInt(2^63));;
+gap> cat := NewCategory( "IsPackedTestGCScalar", IsScalar );;
+gap> calls := [ 0 ];;
+gap> junk := [];;
+gap> InstallMethod( \in, [ cat, IsCollection ], 1000,
+>      function( x, C ) local g, i;
+>        calls[1] := calls[1] + 1;
+>        for g in junk do for i in [ 1 .. Length( g ) ] do g[i] := 0; od; od;
+>        GASMAN( "collect" );
+>        return true;
+>      end );
+gap> InstallMethod( Int, [ cat ], 1000, x -> x![1] );
+gap> s := Objectify( NewType( FamilyObj( One( R ) ), cat and IsPositionalObjectRep ), [ 3 ] );;
+gap> FreshM := function( L ) Add( junk, List( [ 1 .. 1000 ], i -> [ i ] ) );
+>      return Matrix( IsPackedMatrixRep, R, L ); end;;
+gap> FreshV := function( l ) Add( junk, List( [ 1 .. 1000 ], i -> [ i ] ) );
+>      return Vector( IsPackedVectorRep, R, l ); end;;
+gap> L := [ [ 1, 2, 3 ], [ 4, 5, 6 ] ] * One( R );;
+gap> Unpack( s * FreshM( L ) ) = 3 * L;
+true
+gap> P := FreshM( L );; AddMatrix( P, FreshM( L ), s ); Unpack( P ) = 4 * L;
+true
+gap> P := FreshM( L );; MultMatrixRow( P, 2, s ); Unpack( P ) = [ L[1], 3 * L[2] ];
+true
+gap> P := FreshM( L );; P[1, 2] := s;; Unpack( P )[1] = [ 1, 3, 3 ] * One( R );
+true
+gap> x := FreshV( L[1] );; AddVector( x, FreshV( L[2] ), s ); Unpack( x ) = L[1] + 3 * L[2];
+true
+gap> x := FreshV( L[1] );; AddVector( x, s, FreshV( L[2] ), 2, 3 );
+gap> Unpack( x ) = [ L[1][1], L[1][2] + 3 * L[2][2], L[1][3] + 3 * L[2][3] ];
+true
+gap> calls[1];
+6
 
 #
 # RowOfMatrix (not yet an operation): a mutable copy of one row
