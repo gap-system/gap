@@ -2763,7 +2763,7 @@ InstallGlobalFunction( NewCompositionOfStraightLinePrograms,
 function(s2,s1)
   local l,la,nr,x,y;
   nr := NrInputsOfStraightLineProgram(s1);
-  x := RewriteStraightLineProgram(s1,[],0,[1..nr],[]);
+  x := RewriteStraightLineProgram(s1,[],nr,[1..nr],[]);
   y := RewriteStraightLineProgram(s2,x.l,x.lsu,x.results,[]);
   l := LinesOfStraightLineProgram(s2);
   la := l[Length(l)];
@@ -2797,7 +2797,7 @@ function(s1,inputs1,s2,inputs2,newnrinputs)
       Error("inputs1 and inputs2 must have the right number of entries");
       return fail;
   fi;
-  x := RewriteStraightLineProgram(s1,[],0,inputs1,inputs2);
+  x := RewriteStraightLineProgram(s1,[],newnrinputs,inputs1,inputs2);
   y := RewriteStraightLineProgram(s2,x.l,x.lsu,inputs2,x.results);
   Add(y.l,[x.results[1],1,y.results[1],1]);
   return StraightLineProgramNC(y.l,newnrinputs);

@@ -77,5 +77,20 @@ gap> prg:= IntegratedStraightLineProgram( [ prg0, prg1, prg2, prg3 ] );;
 gap> ResultOfStraightLineProgram( prg, gens );
 [ x^4*y^-1, x^3*y^4, x, y^2 ]
 
+##  NewProductOfStraightLinePrograms, NewCompositionOfStraightLinePrograms
+##  with a program that overwrites its inputs
+gap> over:= StraightLineProgram( [ [ [ 1, 2 ], 1 ], [ [ 1, 1, 2, 1 ], 2 ] ], 2 );;
+gap> ResultOfStraightLineProgram( over, gens );
+x^2*y
+gap> prg:= NewCompositionOfStraightLinePrograms(
+>               StraightLineProgram( [ [ 1, 2 ] ], 1 ), over );;
+gap> ResultOfStraightLineProgram( prg, gens );
+(x^2*y)^2
+gap> f4:= FreeGroup( "a", "b", "c", "d" );;
+gap> prg:= NewProductOfStraightLinePrograms( over, [ 3, 4 ],
+>               StraightLineProgram( [ [ 1, 1 ] ], 2 ), [ 1, 2 ], 4 );;
+gap> ResultOfStraightLineProgram( prg, GeneratorsOfGroup( f4 ) );
+c^2*d*a
+
 #
 gap> STOP_TEST( "straight.tst" );
