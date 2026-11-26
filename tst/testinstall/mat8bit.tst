@@ -624,6 +624,11 @@ gap> mm := SumIntersectionMat(IdentityMat(3, GF(2)){[1, 2]}, m{[2, 3]});
 gap> List(Concatenation(mm), ConvertToVectorRep);
 [ 4, 4, 4, 4 ]
 
+# a compressed matrix can lose all its rows and stay in IsFFECollColl
+gap> m := [ [ Z(2) ] ];;  ConvertToMatrixRep( m );;  Unbind( m[1] );
+gap> COMMON_FIELD_VECTORS( m );
+fail
+
 # TriangulizeMat
 gap> m := [[1, 0, 1, 1], [0, 1, 1, 1], [0, 1, 0, 0], [1, 1, 1, 1]] * Z(4);;
 gap> ConvertToMatrixRepNC(m);;

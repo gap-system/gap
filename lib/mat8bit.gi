@@ -276,7 +276,7 @@ InstallMethod( \-, "for two 8 bit matrices in same characteristic",
 InstallGlobalFunction(COMMON_FIELD_VECTORS, function( vecs, q... )
     local p, d, v;
 
-    if not IsFFECollColl(vecs) then
+    if not IsFFECollColl(vecs) or IsEmpty(vecs) then
         return fail;
     fi;
     p := Characteristic(vecs[1]);
