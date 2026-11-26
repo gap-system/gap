@@ -629,7 +629,7 @@ DeclareOperation( "Norm", [ IsField, IsField, IsScalar ] );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "Trace", IsScalar );
-DeclareAttribute( "Trace", IsMatrix );
+DeclareAttribute( "Trace", IsMatrixOrMatrixObj );
 DeclareOperation( "Trace", [ IsField, IsScalar ] );
 DeclareOperation( "Trace", [ IsField, IsField, IsScalar ] );
 

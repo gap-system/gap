@@ -4455,16 +4455,6 @@ end );
 
 #############################################################################
 ##
-#M  Trace( <mat> )  . . . . . . . . . . . . . . . . . . . . . .  for a matrix
-##
-InstallOtherMethod( Trace,
-    "generic method for matrices",
-    [ IsMatrix ],
-    TraceMat );
-
-
-#############################################################################
-##
 #M  JordanDecomposition( <mat> )
 ##
 InstallMethod( JordanDecomposition,
