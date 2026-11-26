@@ -1,4 +1,4 @@
-#@local l, m1, m2, m3, mats, M
+#@local l, m1, m2, m3, mats, M, filt
 gap> START_TEST( "TraceMat.tst" );
 gap> l := [[1,2],[3,4]];
 [ [ 1, 2 ], [ 3, 4 ] ]
@@ -34,6 +34,10 @@ gap> Trace( Matrix( IsPlistMatrixRep, Integers, l ) );
 Error, matrix <M> must be square
 gap> Trace( Matrix( IsGenericMatrixRep, Rationals, l ) );
 Error, matrix <M> must be square
+
+# a package method for its own matrix objects matches a single declaration
+gap> filt := NewCategory( "IsTraceTestMatrixObj", IsMatrixObj );;
+gap> InstallMethod( Trace, [ filt ], TraceMat );
 
 #
 gap> STOP_TEST("TraceMat.tst");

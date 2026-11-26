@@ -628,8 +628,8 @@ DeclareOperation( "Norm", [ IsField, IsField, IsScalar ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+# also covers matrices: `IsMatrixOrMatrixObj` implies `IsScalar`
 DeclareAttribute( "Trace", IsScalar );
-DeclareAttribute( "Trace", IsMatrixOrMatrixObj );
 DeclareOperation( "Trace", [ IsField, IsScalar ] );
 DeclareOperation( "Trace", [ IsField, IsField, IsScalar ] );
 

@@ -731,9 +731,7 @@ InstallMethod( TraceMat,
     return s;
   end );
 
-# `IsMatrixOrMatrixObj` implies `IsScalar`, so this matches both
-# declarations of `Trace`.
-InstallOtherMethod( Trace,
+InstallMethod( Trace,
     "for a matrix or matrix object",
     [ IsMatrixOrMatrixObj ],
     TraceMat );
