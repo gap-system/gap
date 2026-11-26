@@ -19,6 +19,22 @@ local i;
   od;
 end);
 
+# A new plain list of the residues of the integers in <l>; the kernel row
+# operations misread ranges.
+BindGlobal("ZNZRESIDUES",function(l,n)
+local i,x;
+  l:=PlainListCopy(l);
+  for i in [1..Length(l)] do
+    x:=l[i];
+    if not IsInt(x) then
+      Error( "<l> must be a list of integers or of elements in <basedomain>" );
+    elif x<0 or x>=n then
+      l[i]:=x mod n;
+    fi;
+  od;
+  return l;
+end);
+
 # Types for new vectors and matrices. Reusing the type of an existing
 # object would also copy the properties stored in it, such as 'IsZero'.
 BindGlobal("ZMODNZVECTYPE",function(basedomain,mutable)
@@ -81,10 +97,8 @@ InstallTagBasedMethod( NewVector,
     # force list of integers
     if FamilyObj(basedomain)=FamilyObj(l) then
       l:=List(l,Int);
-    elif check and not ForAll( l, IsInt ) then
-      Error( "<l> must be a list of integers or of elements in <basedomain>" );
     else
-      l:=ShallowCopy(l);
+      l:=ZNZRESIDUES(l,Size(basedomain));
     fi;
     v := [basedomain,l];
     Objectify(ZMODNZVECTYPE(basedomain,true),v);
@@ -213,14 +227,12 @@ InstallMethod( Vector, "for a plain list and a zmodnz vector",IsIdenticalObj,
 InstallMethod( Vector, "for a list and a zmodnz vector",
   [ IsList, IsZmodnZVectorRep ],
   function( l, t )
-    local v;
-    v := ShallowCopy(l);
-    if IsGF2VectorRep(l) then
-        PLAIN_GF2VEC(v);
-    elif Is8BitVectorRep(l) then
-        PLAIN_VEC8BIT(v);
+    if FamilyObj(t![BDPOS])=FamilyObj(l) then
+      l:=List(l,Int);
+    else
+      l:=ZNZRESIDUES(l,Size(t![BDPOS]));
     fi;
-    return Objectify(ZMODNZVECTYPE(t![BDPOS],true),[t![BDPOS],v]);
+    return Objectify(ZMODNZVECTYPE(t![BDPOS],true),[t![BDPOS],l]);
   end );
 
 
@@ -237,7 +249,19 @@ InstallMethod( \[\], "for a zmodnz vector and a positive integer",
 InstallMethod( \[\]\:\=, "for a zmodnz vector, a positive integer, and an obj",
   [ IsZmodnZVectorRep, IsPosInt, IsObject ],
   function( v, p, ob )
-    v![ELSPOS][p] := Int(ob);
+    if ValueOption( "check" ) <> false then
+      if Length( v![ELSPOS] ) < p then
+        Error( "<p> is out of bounds" );
+      elif not ( IsInt( ob ) or ob in v![BDPOS] ) then
+        Error( "<ob> must be an integer or in the base domain of <v>" );
+      fi;
+    fi;
+    if IsInt(ob) then
+      ob:=ob mod Size(v![BDPOS]);
+    else
+      ob:=Int(ob);
+    fi;
+    v![ELSPOS][p] := ob;
   end );
 
 InstallMethod( \{\}, "for a zmodnz vector and a list",
@@ -293,10 +317,24 @@ end );
 # Arithmetical operations:
 #############################################################################
 
+# The scalar as an integer in [0..n-1], see 'ZNZMATSCALAR'.
+BindGlobal( "ZNZVECSCALAR", function( v, s )
+  if IsInt( s ) then
+    return s mod Size( v![BDPOS] );
+  elif ValueOption( "check" ) <> false and not s in v![BDPOS] then
+    Error( "<s> must be an integer or in the base domain of <v>" );
+  fi;
+  return Int( s );
+end );
+
 InstallMethod( \+, "for two zmodnz vectors",IsIdenticalObj,
   [ IsZmodnZVectorRep, IsZmodnZVectorRep ],
 function( a, b )
 local ty,i,m,mu;
+  if ValueOption( "check" ) <> false and
+     Length( a![ELSPOS] ) <> Length( b![ELSPOS] ) then
+    Error( "<a> and <b> are not compatible" );
+  fi;
   ty := ZMODNZVECTYPE(a![BDPOS],IsMutable(a) or IsMutable(b));
   m:=Size(a![BDPOS]);
   b:=SUM_LIST_LIST_DEFAULT(a![ELSPOS],b![ELSPOS]);
@@ -323,6 +361,10 @@ InstallMethod( \-, "for two zmodnz vectors",IsIdenticalObj,
   [ IsZmodnZVectorRep, IsZmodnZVectorRep ],
 function( a, b )
 local ty,i,m,mu;
+  if ValueOption( "check" ) <> false and
+     Length( a![ELSPOS] ) <> Length( b![ELSPOS] ) then
+    Error( "<a> and <b> are not compatible" );
+  fi;
   ty := ZMODNZVECTYPE(a![BDPOS],IsMutable(a) or IsMutable(b));
   m:=Size(a![BDPOS]);
   b:=a![ELSPOS] - b![ELSPOS];
@@ -374,6 +416,10 @@ InstallMethod( AddRowVector, "for two zmodnz vectors",
   [ IsZmodnZVectorRep and IsMutable, IsZmodnZVectorRep ],
 function( a, b )
 local i,m;
+  if ValueOption( "check" ) <> false and
+     not IsIdenticalObj( a![BDPOS], b![BDPOS] ) then
+    Error( "<a> and <b> are not compatible" );
+  fi;
   a:=a![ELSPOS];
   ADD_ROW_VECTOR_2_FAST( a, b![ELSPOS] );
   m:=Size(b![BDPOS]);
@@ -384,7 +430,11 @@ InstallMethod( AddRowVector, "for two zmodnz vectors, and a scalar",
   [ IsZmodnZVectorRep and IsMutable, IsZmodnZVectorRep, IsObject ],
 function( a, b, s )
 local i,m;
-  if IsFFE(s) or IsZmodnZObj(s) then s:=Int(s);fi;
+  if ValueOption( "check" ) <> false and
+     not IsIdenticalObj( a![BDPOS], b![BDPOS] ) then
+    Error( "<a> and <b> are not compatible" );
+  fi;
+  s:=ZNZVECSCALAR(a,s);
   a:=a![ELSPOS];
   if IsSmallIntRep(s) then
       ADD_ROW_VECTOR_3_FAST( a, b![ELSPOS], s );
@@ -404,7 +454,11 @@ InstallOtherMethod( AddRowVector, "for zmodnz vector, plist, and a scalar",
 function( a, b, s )
 local i,m;
   if not ForAll(b,IsModulusRep) then TryNextMethod();fi;
-  if IsFFE(s) or IsZmodnZObj(s) then s:=Int(s);fi;
+  if ValueOption( "check" ) <> false and
+     not IsIdenticalObj( FamilyObj( a ), FamilyObj( b ) ) then
+    Error( "<a> and <b> are not compatible" );
+  fi;
+  s:=ZNZVECSCALAR(a,s);
   m:=Size(a![BDPOS]);
   a:=a![ELSPOS];
   b:=List(b,x->x![1]);
@@ -446,7 +500,11 @@ InstallMethod( AddRowVector,
     IsObject, IsPosInt, IsPosInt ],
 function( a, b, s, from, to )
 local i,m;
-  if IsFFE(s) or IsZmodnZObj(s) then s:=Int(s);fi;
+  if ValueOption( "check" ) <> false and
+     not IsIdenticalObj( a![BDPOS], b![BDPOS] ) then
+    Error( "<a> and <b> are not compatible" );
+  fi;
+  s:=ZNZVECSCALAR(a,s);
   a:=a![ELSPOS];
   if IsSmallIntRep(s) then
       ADD_ROW_VECTOR_5_FAST( a, b![ELSPOS], s, from, to );
@@ -467,7 +525,7 @@ InstallMethod( MultVectorLeft,
 function( v, s )
 local i,m;
   m:=Size(v![BDPOS]);
-  if IsFFE(s) or IsZmodnZObj(s) then s:=Int(s);fi;
+  s:=ZNZVECSCALAR(v,s);
   v:=v![ELSPOS];
   MULT_VECTOR_2_FAST(v,s);
   if s>=0 then
@@ -486,7 +544,7 @@ local i,m,t,b,v;
   t:=ZMODNZVECTYPE(w![BDPOS],IsMutable(w));
   b:=w![BDPOS];
   m:=Size(b);
-  if IsFFE(s) or IsZmodnZObj(s) then s:=Int(s);fi;
+  s:=ZNZVECSCALAR(w,s);
   v:=PROD_LIST_SCL_DEFAULT(w![ELSPOS],s);
   if not IsMutable(v) then
     v:=ShallowCopy(v);
@@ -512,6 +570,8 @@ end );
 InstallMethod( \/, "for a zmodnz vector and a scalar",
   [ IsZmodnZVectorRep, IsScalar ],
 function( v, s )
+  # the inverse in the base domain, not in the rationals
+  if IsInt(s) then s:=s*One(v![BDPOS]);fi;
   return ZMODNZVECSCAMULT(v,s^-1);
 end );
 
@@ -611,6 +671,17 @@ end);
 # Matrices
 #############################################################################
 
+BindGlobal( "ZNZMAT_CHECK_ROWS", function( basedomain, ncols, rows )
+  local row;
+  for row in rows do
+    if not IsIdenticalObj( row![BDPOS], basedomain ) then
+      Error( "the entries of <list> must have the given base domain" );
+    elif Length( row![ELSPOS] ) <> ncols then
+      Error( "the entries of <list> must have length <ncols>" );
+    fi;
+  od;
+end );
+
 InstallTagBasedMethod( NewMatrix,
   IsZmodnZMatrixRep,
   function( filter, basedomain, rl, l )
@@ -643,6 +714,9 @@ InstallTagBasedMethod( NewMatrix,
             m[i] := NewVector( filterVectors, basedomain, l[i] );
         fi;
     od;
+    if check then
+      ZNZMAT_CHECK_ROWS( basedomain, rl, m );
+    fi;
     e := NewVector(filterVectors, basedomain, []);
     m := [basedomain,e,rl,m];
     Objectify( ZMODNZMATTYPE(basedomain,true), m );
@@ -754,6 +828,9 @@ InstallMethod( Matrix, "for a list and a zmodnz matrix",
         l := [];
         nrrows := 0;
     fi;
+    if ValueOption( "check" ) <> false then
+      ZNZMAT_CHECK_ROWS( m![BDPOS], rowlen, l );
+    fi;
     return Objectify( ZMODNZMATTYPE(m![BDPOS],true), [m![BDPOS],t,rowlen,l] );
   end );
 
@@ -840,6 +917,11 @@ InstallOtherMethod( \[\]\:\=,
   "for a zmodnz matrix, a positive integer, and a zmodnz vector",
   [ IsZmodnZMatrixRep and IsMutable, IsPosInt, IsZmodnZVectorRep ],
   function( m, p, v )
+    if ValueOption( "check" ) <> false and
+       ( not IsIdenticalObj( m![BDPOS], v![BDPOS] ) or
+         Length( v![ELSPOS] ) <> m![RLPOS] ) then
+      Error( "<M> and <v> are not compatible" );
+    fi;
     m![ROWSPOS][p] := v;
   end );
 
@@ -855,12 +937,22 @@ InstallOtherMethod( \{\}, "for a zmodnz matrix and a list",
 InstallMethod( Add, "for a zmodnz matrix and a zmodnz vector",
   [ IsZmodnZMatrixRep and IsMutable, IsZmodnZVectorRep ],
   function( m, v )
+    if ValueOption( "check" ) <> false and
+       ( not IsIdenticalObj( m![BDPOS], v![BDPOS] ) or
+         Length( v![ELSPOS] ) <> m![RLPOS] ) then
+      Error( "<M> and <v> are not compatible" );
+    fi;
     Add(m![ROWSPOS],v);
   end );
 
 InstallMethod( Add, "for a zmodnz matrix, a zmodnz vector, and a pos. int",
   [ IsZmodnZMatrixRep and IsMutable, IsZmodnZVectorRep, IsPosInt ],
   function( m, v, p )
+    if ValueOption( "check" ) <> false and
+       ( not IsIdenticalObj( m![BDPOS], v![BDPOS] ) or
+         Length( v![ELSPOS] ) <> m![RLPOS] ) then
+      Error( "<M> and <v> are not compatible" );
+    fi;
     Add(m![ROWSPOS],v,p);
   end );
 
@@ -900,6 +992,11 @@ InstallMethod( \{\}\:\=, "for a zmodnz matrix, a list, and a zmodnz matrix",
 InstallMethod( Append, "for two zmodnz matrices",
   [ IsZmodnZMatrixRep and IsMutable, IsZmodnZMatrixRep ],
   function( m, n )
+    if ValueOption( "check" ) <> false and
+       ( not IsIdenticalObj( m![BDPOS], n![BDPOS] ) or
+         m![RLPOS] <> n![RLPOS] ) then
+      Error( "<M> and <N> are not compatible" );
+    fi;
     Append(m![ROWSPOS],n![ROWSPOS]);
   end );
 
@@ -1000,11 +1097,19 @@ InstallMethod( MatElm, "for a zmodnz matrix and two positions",
 InstallMethod( SetMatElm, "for a zmodnz matrix, two positions, and an object",
   [ IsZmodnZMatrixRep and IsMutable, IsPosInt, IsPosInt, IsObject ],
   function( m, row, col, ob )
-    if ValueOption( "check" ) <> false and
-       not ( IsInt( ob ) or ob in BaseDomain( m ) ) then
-      Error( "<ob> must be an integer or in the base domain of <m>" );
+    if ValueOption( "check" ) <> false then
+      if not ( IsInt( ob ) or ob in BaseDomain( m ) ) then
+        Error( "<ob> must be an integer or in the base domain of <m>" );
+      elif col > m![RLPOS] then
+        Error( "<col> must be at most <M>![RLPOS]" );
+      fi;
     fi;
-    m![ROWSPOS][row]![ELSPOS][col] := Int(ob);
+    if IsInt(ob) then
+      ob:=ob mod Size(m![BDPOS]);
+    else
+      ob:=Int(ob);
+    fi;
+    m![ROWSPOS][row]![ELSPOS][col] := ob;
   end );
 
 
@@ -1141,6 +1246,12 @@ InstallMethod( \+, "for two zmodnz matrices",
   [ IsZmodnZMatrixRep, IsZmodnZMatrixRep ],
   function( a, b )
     local ty;
+    if ValueOption( "check" ) <> false and
+       ( not IsIdenticalObj( a![BDPOS], b![BDPOS] ) or
+         Length( a![ROWSPOS] ) <> Length( b![ROWSPOS] ) or
+         a![RLPOS] <> b![RLPOS] ) then
+      Error( "<a> and <b> are not compatible" );
+    fi;
     ty := ZMODNZMATTYPE(a![BDPOS],IsMutable(a) or IsMutable(b));
     return Objectify(ty,[a![BDPOS],a![EMPOS],a![RLPOS],
                          SUM_LIST_LIST_DEFAULT(a![ROWSPOS],b![ROWSPOS])]);
@@ -1150,6 +1261,12 @@ InstallMethod( \-, "for two zmodnz matrices",
   [ IsZmodnZMatrixRep, IsZmodnZMatrixRep ],
   function( a, b )
     local ty;
+    if ValueOption( "check" ) <> false and
+       ( not IsIdenticalObj( a![BDPOS], b![BDPOS] ) or
+         Length( a![ROWSPOS] ) <> Length( b![ROWSPOS] ) or
+         a![RLPOS] <> b![RLPOS] ) then
+      Error( "<a> and <b> are not compatible" );
+    fi;
     ty := ZMODNZMATTYPE(a![BDPOS],IsMutable(a) or IsMutable(b));
     return Objectify(ty,[a![BDPOS],a![EMPOS],a![RLPOS],
                          DIFF_LIST_LIST_DEFAULT(a![ROWSPOS],b![ROWSPOS])]);
@@ -1186,7 +1303,7 @@ InstallMethod( \*, "for two zmodnz matrices",IsIdenticalObj,
               #fi;
             od;
             ZNZVECREDUCE(w,b![RLPOS],m);
-            w:=Vector(w,b![EMPOS]);
+            w:=Objectify(ZMODNZVECTYPE(r,true),[r,w]);
 
             l[i] := w;
         fi;
@@ -1425,7 +1542,8 @@ InstallMethod( TransposedMatMutable, "for a zmodnz matrix",
     local i,n,v;
     n := ListWithIdenticalEntries(m![RLPOS],0);
     for i in [1..m![RLPOS]] do
-        v := Vector(List(m![ROWSPOS],v->v![ELSPOS][i]),m![EMPOS]);
+        v := Objectify(ZMODNZVECTYPE(m![BDPOS],true),
+                       [m![BDPOS],List(m![ROWSPOS],v->v![ELSPOS][i])]);
         n[i] := v;
     od;
     return Objectify(ZMODNZMATTYPE(m![BDPOS],true),
@@ -1456,7 +1574,7 @@ BindGlobal( "ZMZVECMAT", function( v, m )
       fi;
     od;
     ZNZVECREDUCE(res,Length(res),Size(r));
-    res:=Vector(res,v);
+    res:=Objectify(ZMODNZVECTYPE(r,true),[r,res]);
 
     if not IsMutable(v) and not IsMutable(m) then
         MakeImmutable(res);
@@ -1487,7 +1605,7 @@ BindGlobal( "PLISTVECZMZMAT", function( v, m )
       fi;
     od;
     ZNZVECREDUCE(res,Length(res),Size(r));
-    res:=Vector(res,m![EMPOS]);
+    res:=Objectify(ZMODNZVECTYPE(r,true),[r,res]);
 
     if not IsMutable(v) and not IsMutable(m) then
         MakeImmutable(res);
