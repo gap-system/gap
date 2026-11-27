@@ -396,6 +396,11 @@ BIND_GLOBAL( "InstallOtherMethod",
 ##  If an early method determines that it is not applicable, it can resume
 ##  regular method dispatch by invoking <Ref Func="TryNextMethod"/>.
 ##  <P/>
+##  If <A>opr</A> is an attribute or property, a stored value takes
+##  precedence over the early method, except for internal objects such as
+##  plain lists: for them the early method is called before their type is
+##  computed, as that can be expensive.
+##  <P/>
 ##  For an example application of early methods, they are used by
 ##  <Ref Oper="First"/> to deal with internal lists, for which computing
 ##  the exact type (needed for method selection) can be very expensive.

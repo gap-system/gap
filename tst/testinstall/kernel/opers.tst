@@ -317,6 +317,42 @@ r 7)
 gap> List([0..6], n -> EARLY_METHOD(oper, n));
 [ fail, function( l ) ... end, fail, fail, fail, fail, fail ]
 
+# attributes and properties call the early method before computing the type
+# of an internal object, which would mark this list as dense; when it
+# declines, method dispatch does not call it again; a stored value bypasses it
+gap> calls := 0;;
+gap> early := function(val)
+>      return function(x)
+>        calls := calls + 1;
+>        if IS_PLIST_REP(x) then return val; fi;
+>        TryNextMethod();
+>      end;
+>    end;;
+gap> prop := NewProperty("prop", IsObject);;
+gap> attr := NewAttribute("attr", IsObject);;
+gap> mattr := NewAttribute("mattr", IsObject, "mutable");;
+gap> InstallMethod(prop, [IsObject], ReturnFalse);
+gap> InstallMethod(attr, [IsObject], x -> 17);
+gap> InstallMethod(mattr, [IsObject], x -> 17);
+gap> INSTALL_EARLY_METHOD(prop, early(true));
+gap> INSTALL_EARLY_METHOD(attr, early(42));
+gap> INSTALL_EARLY_METHOD(mattr, early(42));
+gap> G := Group((1,2));;
+gap> for f in [prop, attr, mattr] do
+>      l := List([1..3], IdentityMat);
+>      calls := 0;
+>      Print([f(l), TNAM_OBJ(l), calls], " ");
+>      calls := 0;
+>      Print([f(5), calls], " ");
+>      calls := 0;
+>      Print([f(G), calls], " ");
+>      calls := 0;
+>      Print([f(G), calls], "\n");
+>    od;
+[ true, "plain list", 1 ] [ false, 1 ] [ false, 1 ] [ false, 0 ]
+[ 42, "plain list", 1 ] [ 17, 1 ] [ 17, 1 ] [ 17, 0 ]
+[ 42, "plain list", 1 ] [ 17, 1 ] [ 17, 1 ] [ 17, 0 ]
+
 #
 gap> f:=SETTER_FUNCTION("foobar", IsPGroup);;
 gap> f(fail, false);
