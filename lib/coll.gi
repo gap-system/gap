@@ -102,6 +102,18 @@ InstallMethod( IsEmpty,
     [ IsList ],
     list -> Length( list ) = 0 );
 
+# avoid computing the type of internal lists, which for a mutable plain list
+# scans its entries
+InstallEarlyMethod( IsEmpty,
+    function( C )
+    local tnum;
+    tnum:= TNUM_OBJ( C );
+    if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
+      return Length( C ) = 0;
+    fi;
+    TryNextMethod();
+    end );
+
 
 #############################################################################
 ##

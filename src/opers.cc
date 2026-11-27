@@ -1830,7 +1830,7 @@ CallNArgs(Obj method, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
     return 0; // redundant, but silences a warning
 }
 
-template <Int n, BOOL verbose, BOOL constructor>
+template <Int n, BOOL verbose, BOOL constructor, BOOL early = TRUE>
 static Obj
 DoOperationNArgs(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
 {
@@ -1844,7 +1844,7 @@ DoOperationNArgs(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
     Obj method;
     Obj res;
 
-    Obj earlyMethod = CONST_OPER(oper)->earlyMethod[n];
+    Obj earlyMethod = early ? CONST_OPER(oper)->earlyMethod[n] : 0;
     if (earlyMethod) {
         res = CallNArgs<n>(earlyMethod, a1, a2, a3, a4, a5, a6);
         if (res != TRY_NEXT_METHOD)
@@ -2263,6 +2263,35 @@ static Obj NewConstructor(Obj name)
 
 /****************************************************************************
 **
+**  EarlyMethodBeforeType( <attr>, <obj> )
+**
+**  returns the early method of the attribute or property <attr> if it is to
+**  run before the type of <obj> is computed, else 0. That is the case for
+**  internal objects: attributes store no values in them, and their type can
+**  be expensive, a mutable plain list scans its entries every time. For
+**  other objects a stored value takes precedence over the early method.
+**  Either way, method dispatch then skips the early method.
+*/
+static inline Obj EarlyMethodBeforeType(Obj attr, Obj obj)
+{
+    if (TNUM_OBJ(obj) >= FIRST_EXTERNAL_TNUM)
+        return 0;
+    return CONST_OPER(attr)->earlyMethod[1];
+}
+
+static Obj DoOperation1ArgsSkipEarly(Obj oper, Obj a1)
+{
+    return DoOperationNArgs<1, FALSE, FALSE, FALSE>(oper, a1, 0, 0, 0, 0, 0);
+}
+
+static Obj DoVerboseOperation1ArgsSkipEarly(Obj oper, Obj a1)
+{
+    return DoOperationNArgs<1, TRUE, FALSE, FALSE>(oper, a1, 0, 0, 0, 0, 0);
+}
+
+
+/****************************************************************************
+**
 **  DoTestAttribute( <attr>, <obj> )
 */
 Obj DoTestAttribute (
@@ -2303,17 +2332,23 @@ Obj DoAttribute (
     // get the flag for the tester
     flag2 = INT_INTOBJ( FLAG2_FILT( self ) );
 
-    // get type of the object and its flags
-    type  = TYPE_OBJ_FEO( obj );
-    flags = FLAGS_TYPE( type );
+    // try the early method first, see 'EarlyMethodBeforeType'
+    Obj early = EarlyMethodBeforeType(self, obj);
+    val = early ? CALL_1ARGS(early, obj) : TRY_NEXT_METHOD;
+    if (val == TRY_NEXT_METHOD) {
+        // get type of the object and its flags
+        type = TYPE_OBJ_FEO(obj);
+        flags = FLAGS_TYPE(type);
 
-    // if the value of the attribute is already known, simply return it
-    if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
-        return DoOperation1Args( self, obj );
+        // if the value of the attribute is already known, simply return it
+        if (SAFE_C_ELM_FLAGS(flags, flag2)) {
+            return DoOperation1ArgsSkipEarly(self, obj);
+        }
+
+        // call the operation to compute the value
+        val = early ? DoOperation1ArgsSkipEarly(self, obj)
+                    : DoOperation1Args(self, obj);
     }
-
-    // call the operation to compute the value
-    val = DoOperation1Args( self, obj );
     if (val == 0) {
         ErrorMayQuit("Method for an attribute must return a value", 0, 0);
     }
@@ -2354,17 +2389,23 @@ static Obj DoVerboseAttribute(Obj self, Obj obj)
     // get the flag for the tester
     flag2 = INT_INTOBJ( FLAG2_FILT( self ) );
 
-    // get type of the object and its flags
-    type  = TYPE_OBJ_FEO( obj );
-    flags = FLAGS_TYPE( type );
+    // try the early method first, see 'EarlyMethodBeforeType'
+    Obj early = EarlyMethodBeforeType(self, obj);
+    val = early ? CALL_1ARGS(early, obj) : TRY_NEXT_METHOD;
+    if (val == TRY_NEXT_METHOD) {
+        // get type of the object and its flags
+        type = TYPE_OBJ_FEO(obj);
+        flags = FLAGS_TYPE(type);
 
-    // if the value of the attribute is already known, simply return it
-    if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
-        return DoVerboseOperation1Args( self, obj );
+        // if the value of the attribute is already known, simply return it
+        if (SAFE_C_ELM_FLAGS(flags, flag2)) {
+            return DoVerboseOperation1ArgsSkipEarly(self, obj);
+        }
+
+        // call the operation to compute the value
+        val = early ? DoVerboseOperation1ArgsSkipEarly(self, obj)
+                    : DoVerboseOperation1Args(self, obj);
     }
-
-    // call the operation to compute the value
-    val = DoVerboseOperation1Args( self, obj );
     if (val == (Obj)0) {
         ErrorMayQuit("Method for an attribute must return a value", 0, 0);
     }
@@ -2403,17 +2444,23 @@ static Obj DoMutableAttribute(Obj self, Obj obj)
     // get the flag for the tester
     flag2 = INT_INTOBJ( FLAG2_FILT( self ) );
 
-    // get type of the object and its flags
-    type  = TYPE_OBJ_FEO( obj );
-    flags = FLAGS_TYPE( type );
+    // try the early method first, see 'EarlyMethodBeforeType'
+    Obj early = EarlyMethodBeforeType(self, obj);
+    val = early ? CALL_1ARGS(early, obj) : TRY_NEXT_METHOD;
+    if (val == TRY_NEXT_METHOD) {
+        // get type of the object and its flags
+        type = TYPE_OBJ_FEO(obj);
+        flags = FLAGS_TYPE(type);
 
-    // if the value of the attribute is already known, simply return it
-    if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
-        return DoOperation1Args( self, obj );
+        // if the value of the attribute is already known, simply return it
+        if (SAFE_C_ELM_FLAGS(flags, flag2)) {
+            return DoOperation1ArgsSkipEarly(self, obj);
+        }
+
+        // call the operation to compute the value
+        val = early ? DoOperation1ArgsSkipEarly(self, obj)
+                    : DoOperation1Args(self, obj);
     }
-
-    // call the operation to compute the value
-    val = DoOperation1Args( self, obj );
     if (val == 0) {
         ErrorMayQuit("Method for an attribute must return a value", 0, 0);
     }
@@ -2450,17 +2497,23 @@ static Obj DoVerboseMutableAttribute(Obj self, Obj obj)
     // get the flag for the tester
     flag2 = INT_INTOBJ( FLAG2_FILT( self ) );
 
-    // get type of the object and its flags
-    type  = TYPE_OBJ_FEO( obj );
-    flags = FLAGS_TYPE( type );
+    // try the early method first, see 'EarlyMethodBeforeType'
+    Obj early = EarlyMethodBeforeType(self, obj);
+    val = early ? CALL_1ARGS(early, obj) : TRY_NEXT_METHOD;
+    if (val == TRY_NEXT_METHOD) {
+        // get type of the object and its flags
+        type = TYPE_OBJ_FEO(obj);
+        flags = FLAGS_TYPE(type);
 
-    // if the value of the attribute is already known, simply return it
-    if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
-        return DoVerboseOperation1Args( self, obj );
+        // if the value of the attribute is already known, simply return it
+        if (SAFE_C_ELM_FLAGS(flags, flag2)) {
+            return DoVerboseOperation1ArgsSkipEarly(self, obj);
+        }
+
+        // call the operation to compute the value
+        val = early ? DoVerboseOperation1ArgsSkipEarly(self, obj)
+                    : DoVerboseOperation1Args(self, obj);
     }
-
-    // call the operation to compute the value
-    val = DoVerboseOperation1Args( self, obj );
     if (val == 0) {
         ErrorMayQuit("Method for an attribute must return a value", 0, 0);
     }
@@ -2704,17 +2757,23 @@ Obj DoProperty (
     flag1 = INT_INTOBJ( FLAG1_FILT( self ) );
     flag2 = INT_INTOBJ( FLAG2_FILT( self ) );
 
-    // get type of the object and its flags
-    type  = TYPE_OBJ_FEO( obj );
-    flags = FLAGS_TYPE( type );
+    // try the early method first, see 'EarlyMethodBeforeType'
+    Obj early = EarlyMethodBeforeType(self, obj);
+    val = early ? CALL_1ARGS(early, obj) : TRY_NEXT_METHOD;
+    if (val == TRY_NEXT_METHOD) {
+        // get type of the object and its flags
+        type = TYPE_OBJ_FEO(obj);
+        flags = FLAGS_TYPE(type);
 
-    // if the value of the property is already known, simply return it
-    if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
-        return ELM_FLAGS( flags, flag1 );
+        // if the value of the property is already known, simply return it
+        if (SAFE_C_ELM_FLAGS(flags, flag2)) {
+            return ELM_FLAGS(flags, flag1);
+        }
+
+        // call the operation to compute the value
+        val = early ? DoOperation1ArgsSkipEarly(self, obj)
+                    : DoOperation1Args(self, obj);
     }
-
-    // call the operation to compute the value
-    val = DoOperation1Args( self, obj );
     if (val != True && val != False) {
         ErrorMayQuit("Method for a property did not return true or false", 0,
                      0);
@@ -2756,17 +2815,23 @@ static Obj DoVerboseProperty(Obj self, Obj obj)
     flag1 = INT_INTOBJ( FLAG1_FILT( self ) );
     flag2 = INT_INTOBJ( FLAG2_FILT( self ) );
 
-    // get type of the object and its flags
-    type  = TYPE_OBJ_FEO( obj );
-    flags = FLAGS_TYPE( type );
+    // try the early method first, see 'EarlyMethodBeforeType'
+    Obj early = EarlyMethodBeforeType(self, obj);
+    val = early ? CALL_1ARGS(early, obj) : TRY_NEXT_METHOD;
+    if (val == TRY_NEXT_METHOD) {
+        // get type of the object and its flags
+        type = TYPE_OBJ_FEO(obj);
+        flags = FLAGS_TYPE(type);
 
-    // if the value of the property is already known, simply return it
-    if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
-        return ELM_FLAGS( flags, flag1 );
+        // if the value of the property is already known, simply return it
+        if (SAFE_C_ELM_FLAGS(flags, flag2)) {
+            return ELM_FLAGS(flags, flag1);
+        }
+
+        // call the operation to compute the value
+        val = early ? DoVerboseOperation1ArgsSkipEarly(self, obj)
+                    : DoVerboseOperation1Args(self, obj);
     }
-
-    // call the operation to compute the value
-    val = DoVerboseOperation1Args( self, obj );
     if (val != True && val != False) {
         ErrorMayQuit("Method for a property did not return true or false", 0,
                      0);
