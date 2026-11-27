@@ -239,7 +239,7 @@ InstallGlobalFunction( PrimitiveRootMod, function ( arg )
     # handle the trivial cases
     if m = 2 and start = 1   then return 1;     fi;
     if m = 2                 then return fail;  fi;
-    if m = 4 and start <= 3  then return 3;     fi;
+    if m = 4 and start < 3   then return 3;     fi;
     if m mod 4 = 0           then return fail;  fi;
 
     # handle even numbers
