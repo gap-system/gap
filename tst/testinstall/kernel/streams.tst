@@ -361,6 +361,35 @@ true
 gap> List(recs, r -> r.status);
 [ "ok", "QUIT" ]
 
+# Top-level return has its own status; the callback controls continuation.
+gap> recs := [];;
+gap> READ_EVAL_COMMANDS(InputTextString("return 3; return; return 5;; 7;"),
+>        rec(), collect);
+true
+gap> List(recs, r -> r.status);
+[ "return", "return", "return", "ok" ]
+gap> recs[1].value; IsBound(recs[2].value); recs[3].value; recs[4].value;
+3
+false
+5
+7
+gap> List(recs, r -> r.dualSemicolon);
+[ false, false, true, false ]
+gap> recs := [];;
+gap> READ_EVAL_COMMANDS(InputTextString("return 3; return_marker := 1;"), rec(),
+>        function(r) Add(recs, r); return r.status <> "return"; end);
+true
+gap> List(recs, r -> r.status); IsBound(return_marker);
+[ "return" ]
+false
+gap> recs := [];;
+gap> READ_EVAL_COMMANDS(InputTextString("(function() return 11; end)();"),
+>        rec(), collect);
+true
+gap> recs[1].status; recs[1].value;
+"ok"
+11
+
 # ERROR_OUTPUT is restored, also when the callback fails
 gap> old := ERROR_OUTPUT;;
 gap> READ_EVAL_COMMANDS(InputTextString("1;"), rec(captureErrors := true),

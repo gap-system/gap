@@ -256,10 +256,11 @@ static Obj FuncREAD_ALL_COMMANDS(
 **  Reads and executes the statements in <instream> one at a time. After each
 **  statement, <callback> is called with a record with these components:
 **
-**  - 'status': "ok", "error", "quit" or "QUIT"; after "quit" or "QUIT",
-**    nothing more is read.
-**  - 'value': the value of the statement, if it is "ok" and has one.
-**  - 'dualSemicolon': whether an "ok" statement ended in ';;'.
+**  - 'status': "ok", "error", "return", "quit" or "QUIT". A top-level
+**    'return' is reported to the callback, which decides whether to continue;
+**    after "quit" or "QUIT", nothing more is read.
+**  - 'value': the value of an "ok" or "return" statement, if it has one.
+**  - 'dualSemicolon': whether an "ok" or "return" statement ended in ';;'.
 **  - 'output': if <options>.captureOutput is 'true', what the statement
 **    printed.
 **  - 'errors': if <options>.captureErrors is 'true', what the statement
@@ -389,6 +390,8 @@ FuncREAD_EVAL_COMMANDS(Obj self, Obj instream, Obj options, Obj callback)
             const char * statusName;
             if (status == STATUS_ERROR)
                 statusName = "error";
+            else if (status == STATUS_RETURN)
+                statusName = "return";
             else if (status == STATUS_QUIT)
                 statusName = "quit";
             else if (status == STATUS_QQUIT)
