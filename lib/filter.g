@@ -535,9 +535,8 @@ BIND_GLOBAL( "CANONICAL_BASIS_FLAGS", QUO_INT(SUM_FLAGS,5) );
 ##  Compute the rank including the hidden implications.
 ##
 BIND_GLOBAL( "RankFilter", function( filter )
-    local   rank,  flags,  all,  i;
+    local   flags,  all;
 
-    rank  := 0;
     if IS_FUNCTION(filter)  then
         flags := FLAGS_FILTER(filter);
     else
@@ -549,9 +548,6 @@ BIND_GLOBAL( "RankFilter", function( filter )
       all := WITH_IMPS_FLAGS(flags);
     fi;
     atomic readonly FILTER_REGION do
-      for i  in TRUES_FLAGS(all)  do
-          rank := rank + RANK_FILTERS[i];
-      od;
+      return SUM_LIST_FLAGS( RANK_FILTERS, all );
     od;
-    return rank;
 end );

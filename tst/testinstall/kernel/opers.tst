@@ -142,6 +142,23 @@ gap> FLAG1_FILTER(S) in TRUES_FLAGS(WITH_IMPS_FLAGS(fl));
 true
 
 #
+gap> SUM_LIST_FLAGS(fail, flags);
+Error, SUM_LIST_FLAGS: <list> must be a small list (not the value 'fail')
+gap> SUM_LIST_FLAGS([], fail);
+Error, SUM_LIST_FLAGS: <flags> must be a flags list (not the value 'fail')
+gap> SUM_LIST_FLAGS([], emptyFlags);
+0
+gap> fl := WITH_IMPS_FLAGS(flags);;
+gap> SUM_LIST_FLAGS([3, 4, 5], fl);
+7
+gap> SUM_LIST_FLAGS([2^62, 2^62], fl);
+9223372036854775808
+gap> SUM_LIST_FLAGS([1/2, 1/3], fl);
+5/6
+gap> SUM_LIST_FLAGS([1], fl);
+Error, List Element: <list>[2] must have an assigned value
+
+#
 gap> WITH_IMPS_FLAGS_STAT();;
 
 # test DoSetAndFilter
