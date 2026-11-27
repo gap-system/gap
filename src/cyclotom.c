@@ -1912,22 +1912,29 @@ static Obj FuncCycList(Obj self, Obj list)
         RequireArgument(SELF_NAME, list, "must be a dense plain list");
     }
 
-    // enlarge the buffer if necessary
+    // check all entries before writing any: the other functions rely on the
+    // buffer holding only zeros between calls
     n = LEN_PLIST( list );
+    for (i = 1; i <= n; i++) {
+        val = ELM_PLIST(list, i);
+        if (!IS_INT(val) && TNUM_OBJ(val) != T_RAT) {
+            RequireArgumentEx(SELF_NAME, val, 0,
+                              "each entry must be a rational");
+        }
+    }
+
+    // the empty sum; 'ConvertToBase' does not terminate for n = 0
+    if (n == 0) {
+        return INTOBJ_INT(0);
+    }
+
+    // enlarge the buffer if necessary
     GrowResultCyc(n);
 
     // transfer the coefficients into the buffer
     res = BASE_PTR_PLIST(ResultCyc);
     for ( i = 0; i < n; i++ ) {
-        val = ELM_PLIST( list, i+1 );
-        if ( !IS_INT(val) && TNUM_OBJ(val) != T_RAT ) {
-            // reset ResultCyc, otherwise the next operation using it will see
-            // our left-over garbage data
-            SET_LEN_PLIST( ResultCyc, 0 );
-            RequireArgumentEx(SELF_NAME, val, 0,
-                              "each entry must be a rational");
-        }
-        res[i] = val;
+        res[i] = ELM_PLIST(list, i + 1);
     }
 
     // return the base reduced packed cyclotomic
