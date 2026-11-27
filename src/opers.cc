@@ -928,15 +928,11 @@ enum { IMPS_CACHE_LENGTH = 21001 };
 */
 static Obj FuncCLEAR_IMP_CACHE(Obj self)
 {
-  Int i;
 #ifdef HPCGAP
   RegionWriteLock(REGION(IMPLICATIONS_SIMPLE));
 #endif
-  for(i = 0; i < IMPS_CACHE_LENGTH; i++)
-  {
-    SET_ELM_PLIST(WITH_IMPS_FLAGS_CACHE, 2 * i + 1, 0);
-    SET_ELM_PLIST(WITH_IMPS_FLAGS_CACHE, 2 * i + 2, 0);
-  }
+  memset(ADDR_OBJ(WITH_IMPS_FLAGS_CACHE) + 1, 0,
+         2 * IMPS_CACHE_LENGTH * sizeof(Obj));
 #ifdef HPCGAP
   RegionWriteUnlock(REGION(IMPLICATIONS_SIMPLE));
 #endif
