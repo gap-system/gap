@@ -410,9 +410,8 @@ gap> recs[1].status; recs[1].value;
 "ok"
 11
 
-# The callback runs after ERROR_OUTPUT has been restored. This does not test
-# ReadEvalCaptured's cleanup when SIGINT throws out of reading or evaluation;
-# ordinary statement errors are handled by TRY_IF_NO_ERROR.
+# The callback runs after ERROR_OUTPUT has been restored. The SIGINT cleanup
+# path is exercised separately in tst/testspecial/read-eval-interrupt.g.
 gap> old := ERROR_OUTPUT;;
 gap> READ_EVAL_COMMANDS(InputTextString("1;"), rec(captureErrors := true),
 >        function(r) Error("in callback"); end);
@@ -430,6 +429,7 @@ il')
 gap> READ_EVAL_COMMANDS(InputTextString("1;"), rec(), fail);
 Error, READ_EVAL_COMMANDS: <callback> must be a function (not the value 'fail'\
 )
+
 # Unknown option names are ignored.
 gap> READ_EVAL_COMMANDS(InputTextString("1;"), rec(capture := true), collect);
 true

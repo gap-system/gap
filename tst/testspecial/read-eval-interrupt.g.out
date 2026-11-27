@@ -1,0 +1,42 @@
+gap> #GAPOPTS -T
+gap> # Interrupt ReadLine while the reader's capture streams are still installed,
+gap> # outside the TRY_IF_NO_ERROR that handles ordinary statement errors.
+gap> DeclareCategory("IsInterruptReadTestStream", IsInputTextStream);;
+gap> streamType := NewType(StreamsFamily,
+>     IsInterruptReadTestStream and IsComponentObjectRep);;
+gap> savedErrorOutput := ERROR_OUTPUT;;
+gap> sawCapture := false;;
+gap> timedOut := false;;
+gap> callbacks := 0;;
+gap> trigger := InputOutputLocalProcess(DirectoryCurrent(),
+>     Filename(DirectoriesSystemPrograms(), "sh"),
+>     ["-c", "read ready; kill -INT $PPID"]);;
+gap> InstallMethod(PositionStream, [IsInterruptReadTestStream], s -> 0);;
+gap> InstallMethod(SeekPositionStream, [IsInterruptReadTestStream, IsInt],
+>     function(s, pos) return true; end);;
+gap> InstallMethod(ReadLine, [IsInterruptReadTestStream], function(s)
+>     local deadline;
+>     sawCapture := not IsIdenticalObj(ERROR_OUTPUT, savedErrorOutput);
+>     WriteLine(trigger, "ready");
+>     deadline := Runtime() + 5000;
+>     while Runtime() < deadline do od;
+>     timedOut := true;
+>     return fail;
+> end);;
+gap> stream := Objectify(streamType, rec());;
+gap> caught := CALL_WITH_CATCH(READ_EVAL_COMMANDS,
+>     [stream, rec(captureErrors := true, captureOutput := true),
+>      function(r) callbacks := callbacks + 1; return false; end]);;
+gap> CloseStream(trigger);
+gap> Print("interrupted while capturing: ",
+>       not caught[1] and sawCapture and not timedOut and callbacks = 0, "\n");
+interrupted while capturing: true
+gap> Print("error stream restored: ",
+>       IsIdenticalObj(ERROR_OUTPUT, savedErrorOutput), "\n");
+error stream restored: true
+gap> results := [];;
+gap> READ_EVAL_COMMANDS(InputTextString("6*7;"), rec(),
+>     function(r) Add(results, r); return true; end);;
+gap> Print("reader recovered: ", results[1].value = 42, "\n");
+reader recovered: true
+gap> QUIT;
