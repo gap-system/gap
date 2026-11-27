@@ -440,5 +440,18 @@ gap> UntraceMethods([ 1 ]);
 Error, UNTRACE_METHODS: <oper> must be an operation (not the integer 1)
 gap> UntraceMethods( [ IsCyclic ] );
 
+# NEW_TYPE calls COMPACT_TYPE_IDS when it runs out of type IDs
+#@if GAPInfo.KernelInfo.GC = "GASMAN"
+gap> fam := NewFamily("CompactTypeIDsFamily");;
+gap> limit := NEW_TYPE_ID_LIMIT;;
+gap> NEW_TYPE_ID_LIMIT := NEW_TYPE_NEXT_ID + 1;;
+gap> t := NewType(fam, IsObject);;
+gap> NEW_TYPE_ID_LIMIT := limit;;
+gap> TypeObj(())![POS_NUMB_TYPE] < t![POS_NUMB_TYPE];
+true
+gap> Size(Group((1,2)));
+2
+#@fi
+
 #
 gap> STOP_TEST("kernel/opers.tst");
