@@ -630,7 +630,21 @@ function( l1, n1, l2, n2 )
         n1 := n1 - 1;
     od;
 
-    # reduce coeffs
+    # reduce coeffs; for 32 or more coefficients one slice per step is
+    # faster than a loop
+    if n2 >= 32  then
+        l2 := l2{[ 1 .. n2 ]};
+        while n1 >= n2  do
+            q := -l1[n1]/l2[n2];
+            l := [ n1-n2+1 .. n1 ];
+            l1{l} := l1{l} + q*l2;
+            n1 := n1 - 1;
+            while 0 < n1 and l1[n1] = zero  do
+                n1 := n1 - 1;
+            od;
+        od;
+        return n1;
+    fi;
     while n1 >= n2  do
         q := -l1[n1]/l2[n2];
         l := n1-n2;
