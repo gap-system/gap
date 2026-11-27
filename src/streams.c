@@ -1087,9 +1087,9 @@ static Obj FuncRemoveFile(Obj self, Obj filename)
 
 /****************************************************************************
 **
-*F  FuncCreateDir( <self>, <name> )  . . . . . . . . . . . . create directory
+*F  FuncCREATE_DIR( <self>, <name> ) . . . . . . . . . . . . create directory
 */
-static Obj FuncCreateDir(Obj self, Obj filename)
+static Obj FuncCREATE_DIR(Obj self, Obj filename)
 {
     RequireStringRep(SELF_NAME, filename);
 
@@ -1099,9 +1099,9 @@ static Obj FuncCreateDir(Obj self, Obj filename)
 
 /****************************************************************************
 **
-*F  FuncRemoveDir( <self>, <name> )  . . . . . . . . . . . . remove directory
+*F  FuncREMOVE_DIR( <self>, <name> ) . . . . . . . . . . . . remove directory
 */
-static Obj FuncRemoveDir(Obj self, Obj filename)
+static Obj FuncREMOVE_DIR(Obj self, Obj filename)
 {
     RequireStringRep(SELF_NAME, filename);
 
@@ -1802,8 +1802,8 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_0ARGS(TmpName),
     GVAR_FUNC_0ARGS(TmpDirectory),
     GVAR_FUNC_1ARGS(RemoveFile, filename),
-    GVAR_FUNC_1ARGS(CreateDir, filename),
-    GVAR_FUNC_1ARGS(RemoveDir, filename),
+    GVAR_FUNC_1ARGS(CREATE_DIR, filename),
+    GVAR_FUNC_1ARGS(REMOVE_DIR, filename),
     GVAR_FUNC_1ARGS(IS_DIR, path),
     GVAR_FUNC_0ARGS(GAP_getcwd),
     GVAR_FUNC_1ARGS(GAP_chdir, path),

@@ -327,6 +327,25 @@ end);
 
 #############################################################################
 ##
+#F  CreateDir(<name>)
+#F  RemoveDir(<name>)
+##
+BIND_GLOBAL("CreateDir", function(dirname)
+  if IsDirectory(dirname) then
+    dirname := dirname![1];
+  fi;
+  return CREATE_DIR(dirname);
+end);
+
+BIND_GLOBAL("RemoveDir", function(dirname)
+  if IsDirectory(dirname) then
+    dirname := dirname![1];
+  fi;
+  return REMOVE_DIR(dirname);
+end);
+
+#############################################################################
+##
 #F  DirectoriesLibrary( [<name>] )  . . . . . . .  directories of the library
 ##
 ##  <#GAPDoc Label="DirectoriesLibrary">
