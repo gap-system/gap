@@ -13,6 +13,7 @@ gap> orb :=  Orbit( m11 , [1,2], OnSets );;
 gap> g := Image( ActionHomomorphism( m11 , orb, OnSets ) );;
 gap> V := PermutationGModule( g, GF(3) );;
 gap> comps := Set( MTX.CompositionFactors(V) );;
+gap> SortBy( comps, W -> -W.dimension );
 gap> List(comps, W -> W.dimension);
 [ 24, 10, 10, 5, 5, 1 ]
 gap> List( comps, W -> MTX.IsAbsolutelyIrreducible(W) );

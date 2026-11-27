@@ -79,12 +79,14 @@ gap> Set( List( c2, x -> x{[1..5]}) );  Set( List( c3, x -> x{[1..5]}) );
 ######################################################################
 gap> V := PermutationGModule( MathieuGroup(22), GF(4) );;
 gap> comps := Set( MTX.CompositionFactors(V) );;
+gap> SortBy( comps, W -> W.dimension );
 gap> ibr := List( comps, W -> W.dimension );
 [ 1, 1, 10, 10 ]
 gap> V100 :=  TensorProductGModule( comps[3] , comps[4] );;
 gap> compsV100 :=  Set( MTX.CompositionFactors(V100) );;
+gap> SortBy( compsV100, W -> W.dimension );
 gap> List( compsV100, W -> W.dimension );
-[ 1, 98, 1 ]
+[ 1, 1, 98 ]
 
 ######################################################################
 gap> A{[2,3,4]} := [A[2]-A[5], A[3]-A[5], A[4] - 2*A[5]];; Display(A);
@@ -104,7 +106,7 @@ gap> MatScalarProducts(ct , Psis, [psiG] );
 [ [ 4, 0, 0, 3, 0, 1, 1 ] ]
 
 ######################################################################
-gap> W := TensorProductGModule( comps[3], compsV100[3] );;
+gap> W := TensorProductGModule( comps[3], compsV100[1] );;
 gap> compsW := Set( MTX.CompositionFactors(W) );;
 gap> ForAll( compsW , U -> MTX.IsAbsolutelyIrreducible(U) );
 true
