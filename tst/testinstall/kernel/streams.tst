@@ -298,4 +298,147 @@ gap> ExecuteProcess("","",0,0,[1]);
 Error, ExecuteProcess: <tmp> must be a string (not the integer 1)
 
 #
+# READ_EVAL_COMMANDS
+#
+gap> recs := [];;
+gap> collect := function(r) Add(recs, r); return true; end;;
+gap> READ_EVAL_COMMANDS(InputTextString("1+1; x := 5;; Print(\"hi\\n\"); 1/0; 3;"),
+>        rec(captureOutput := true, captureErrors := true), collect);
+true
+gap> List(recs, r -> r.status);
+[ "ok", "ok", "ok", "error", "ok" ]
+gap> List(recs, r -> IsBound(r.value));
+[ true, true, false, false, true ]
+gap> recs[1].value; recs[2].value; recs[5].value;
+2
+5
+3
+gap> List(recs{[1, 2, 3, 5]}, r -> r.dualSemicolon);
+[ false, true, false, false ]
+gap> recs[3].output;
+"hi\n"
+gap> recs[4].errors;
+"Error, Rational operations: <divisor> must not be zero\n"
+gap> ForAll(recs, r -> IsBound(r.output) and IsBound(r.errors));
+true
+
+# The raw first token distinguishes help, pragmas and ordinary statements.
+gap> symbols := GAPInfo.KernelInfo.ScannerSymbols;;
+gap> recs := [];;
+gap> READ_EVAL_COMMANDS(InputTextString(Concatenation(
+>        "# comment\n?__read_eval_symbol_test__\n#% pragma\n",
+>        "symbol_test := 1; return 2; quit;")),
+>        rec(captureOutput := true, captureErrors := true), collect);
+true
+gap> List(recs, r -> r.symbol) = [symbols.S_HELP, symbols.S_PRAGMA,
+>        symbols.S_IDENT, symbols.S_RETURN, symbols.S_QUIT];
+true
+gap> List(recs, r -> r.status);
+[ "ok", "ok", "ok", "return", "quit" ]
+gap> recs := [];;
+gap> READ_EVAL_COMMANDS(InputTextString("/1;"), rec(captureErrors := true), collect);
+true
+gap> recs[1].symbol = symbols.S_DIV; recs[1].status;
+true
+"error"
+
+# without capture, output and errors go where they normally do
+gap> recs := [];;
+gap> READ_EVAL_COMMANDS(InputTextString("Print(\"hi\\n\"); 1/0;"), rec(), collect);
+hi
+Error, Rational operations: <divisor> must not be zero
+true
+gap> ForAny(recs, r -> IsBound(r.output) or IsBound(r.errors));
+false
+
+# syntax errors are captured too, without line breaking
+gap> recs := [];;
+gap> READ_EVAL_COMMANDS(InputTextString("y := ; 4;"), rec(captureErrors := true), collect);
+true
+gap> List(recs, r -> r.status);
+[ "error", "ok" ]
+gap> StartsWith(recs[1].errors, "Syntax error: expression expected");
+true
+
+# returning false stops reading
+gap> recs := [];;
+gap> READ_EVAL_COMMANDS(InputTextString("1; 1/0; marker := 1;"), rec(captureErrors := true),
+>        function(r) Add(recs, r); return r.status <> "error"; end);
+true
+gap> List(recs, r -> r.status); IsBound(marker);
+[ "ok", "error" ]
+false
+
+# quit and QUIT are reported, then reading stops
+gap> recs := [];;
+gap> READ_EVAL_COMMANDS(InputTextString("1; quit; 2;"), rec(), collect);
+true
+gap> List(recs, r -> r.status);
+[ "ok", "quit" ]
+gap> recs := [];;
+gap> READ_EVAL_COMMANDS(InputTextString("1; QUIT; 2;"), rec(), collect);
+true
+gap> List(recs, r -> r.status);
+[ "ok", "QUIT" ]
+
+# Top-level return has its own status; the callback controls continuation.
+gap> recs := [];;
+gap> READ_EVAL_COMMANDS(InputTextString("return 3; return; return 5;; 7;"),
+>        rec(), collect);
+true
+gap> List(recs, r -> r.status);
+[ "return", "return", "return", "ok" ]
+gap> recs[1].value; IsBound(recs[2].value); recs[3].value; recs[4].value;
+3
+false
+5
+7
+gap> List(recs, r -> r.dualSemicolon);
+[ false, false, true, false ]
+gap> recs := [];;
+gap> READ_EVAL_COMMANDS(InputTextString("return 3; return_marker := 1;"), rec(),
+>        function(r) Add(recs, r); return r.status <> "return"; end);
+true
+gap> List(recs, r -> r.status); IsBound(return_marker);
+[ "return" ]
+false
+gap> recs := [];;
+gap> READ_EVAL_COMMANDS(InputTextString("(function() return 11; end)();"),
+>        rec(), collect);
+true
+gap> recs[1].status; recs[1].value;
+"ok"
+11
+
+# The callback runs after ERROR_OUTPUT has been restored. The SIGINT cleanup
+# path is exercised separately in tst/testspecial/read-eval-interrupt.g.
+gap> old := ERROR_OUTPUT;;
+gap> READ_EVAL_COMMANDS(InputTextString("1;"), rec(captureErrors := true),
+>        function(r) Error("in callback"); end);
+Error, in callback
+gap> IsIdenticalObj(ERROR_OUTPUT, old);
+true
+
+# argument checking
+gap> READ_EVAL_COMMANDS(fail, rec(), collect);
+Error, READ_EVAL_COMMANDS: <instream> must be an input stream (not the value '\
+fail')
+gap> READ_EVAL_COMMANDS(InputTextString("1;"), fail, collect);
+Error, READ_EVAL_COMMANDS: <options> must be a plain record (not the value 'fa\
+il')
+gap> READ_EVAL_COMMANDS(InputTextString("1;"), rec(), fail);
+Error, READ_EVAL_COMMANDS: <callback> must be a function (not the value 'fail'\
+)
+
+# Unknown option names are ignored.
+gap> READ_EVAL_COMMANDS(InputTextString("1;"), rec(capture := true), collect);
+true
+gap> READ_EVAL_COMMANDS(InputTextString("1;"), rec(echo := 1), collect);
+Error, READ_EVAL_COMMANDS: <options>.echo must be 'true' or 'false' (not the i\
+nteger 1)
+gap> READ_EVAL_COMMANDS(InputTextString("1;"), rec(), r -> 7);
+Error, READ_EVAL_COMMANDS: <callback> must return 'true' or 'false' (not the i\
+nteger 7)
+
+#
 gap> STOP_TEST("kernel/streams.tst");
