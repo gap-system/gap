@@ -2,6 +2,12 @@
 gap> START_TEST("numtheor.tst");
 
 # PrimitiveRootMod
+gap> PrimitiveRootMod( 2 );
+1
+gap> PrimitiveRootMod( 2, 0 );
+1
+gap> PrimitiveRootMod( 2, 1 );
+fail
 gap> PrimitiveRootMod( 4, 2 );
 3
 gap> PrimitiveRootMod( 4, 3 );

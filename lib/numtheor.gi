@@ -227,7 +227,7 @@ InstallGlobalFunction( PrimitiveRootMod, function ( arg )
 
     # get and check the arguments
     if   Length(arg) = 1  then
-        m := arg[1];  start := 1;
+        m := arg[1];  start := 0;
         if m <= 0  then Error("<m> must be positive");  fi;
     elif Length(arg) = 2  then
         m := arg[1];  start := arg[2];
@@ -237,7 +237,7 @@ InstallGlobalFunction( PrimitiveRootMod, function ( arg )
     fi;
 
     # handle the trivial cases
-    if m = 2 and start = 1   then return 1;     fi;
+    if m = 2 and start < 1   then return 1;     fi;
     if m = 2                 then return fail;  fi;
     if m = 4 and start < 3   then return 3;     fi;
     if m mod 4 = 0           then return fail;  fi;
