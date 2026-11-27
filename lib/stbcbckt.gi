@@ -389,39 +389,54 @@ end);
 
 #############################################################################
 ##
-#F  Suborbits( <G>, <tofix>, <b>, <Omega> ) . . . . . . . . . . . . suborbits
+#F  Suborbits( <H>, <tofix>, <b>, <Omega> ) . . . . . . . . . . . . suborbits
+##
+##  Computes the orbits on <Omega> of the stabilizer of <tofix> and <b> in
+##  the permutation group <H>, mapped by an element `conj' of <H> that takes
+##  <tofix> to an initial segment of the base of `StabChainMutable( <H> )'.
+##
+##  <tofix> must be the image of such a segment under an element of <H>, as
+##  `image.bimg{ [ 1 .. i ] }' is. Let <K> be the pointwise stabilizer of the
+##  segment. <b> is a point of <Omega>, or 0, which stands for <Omega>[1] and
+##  skips computing `byLengths' and `partition'. <Omega> is a set of points,
+##  invariant under <H>; if it is a range, it is converted to range rep.
 ##
 ##  Returns a record with the following components:
 ##
-##     domain: the set <Omega>
-##  stabChainTop: top level of stabilizer chain for  $G_tofix$ (pointwise stabilizer)  with
-##             base point <a> (may be different from <b>)
-##       conj: an element mapping <b> to <a>
+##     domain: <Omega>
+##       conj: an element of <H> mapping <tofix> to the base segment and <b>
+##             to <a>, the smallest image of <b> under such elements
+##  stabChainTop: top level of a stabilizer chain for <K> with base point <a>,
+##             fit only for `InverseRepresentative'
+##  The remaining components describe the orbits of the stabilizer of <a> in
+##  <K>, the suborbits, numbered so that the suborbit {<a>} is the first.
 ##      which: a list  whose  <p>th entry   is the  number   of the  suborbit
-##             containing <p>
-##    lengths: a (not strictly) sorted list of suborbit lengths (subdegrees)
+##             containing <p>, or 0 if <p> is not in <Omega>
+##   sublilen: the number of suborbits
+##    lengths: the suborbit lengths, negated for suborbits outside the orbit
+##             of <a> under <K>; sorted, hence no longer in suborbit order,
+##             once `partition' is computed
 ##  byLengths: a list whose <i>th entry is the set of numbers of suborbits of
 ##             the <i>th distinct length appearing in `lengths'
 ##  partition: the partition into unions of suborbits of equal length
 ##  The  next three entries  are lists  whose <k>  entry refers  to the <k>th
 ##  suborbit.
-##     blists: the suborbits as boolean lists
-##       reps: a transversal  in  <G> s.t.   $a.reps[k]$  lies in  the  <k>th
-##             suborbit (reps[k] = `false' if this is impossible)
-##  orbitalPartitions:
-##             a list to store the `OrbitalPartition' for each suborbit in
+##     blists: the suborbit as boolean list, set or single point (see
+##             `SuboLiBli')
+##       reps: an element of <K> mapping <a> into the suborbit; `true' until
+##             `OrbitalPartition' computes it, `false' if there is none
+##  orbitalPartitions: the cached `OrbitalPartition( <subs>, <k> )'
 ##
-InstallGlobalFunction( Suborbits, function( arg )
-    local   H,  tofix,  b,  Omega,  suborbits,  len,  bylen,
+##  If <tofix> is empty, the result is cached in `<H>!.suborbits', keyed by
+##  <a> and <Omega>, for at most one more root than the base length. All
+##  components except `conj' are shared with the cache.
+##
+InstallGlobalFunction( Suborbits, function( H, tofix, b, Omega )
+    local   suborbits,  len,  bylen,
             G,  GG,  a,  conj,  ran,  subs,  all,  k,  pnt,  orb,  gen,
             perm,  omega,  P,  cell,  part,  p,  i, la,bl,
             rep,rep2,te,stabgens;
 
-    # Get the arguments.
-    H := arg[ 1 ];
-    tofix := arg[ 2 ];
-    b     := arg[ 3 ];
-    Omega := arg[ 4 ];
     IsRange(Omega);
     if b = 0  then  part := false;  b := Omega[ 1 ];
               else  part := true;   fi;
