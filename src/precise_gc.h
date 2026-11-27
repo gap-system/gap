@@ -100,8 +100,7 @@
 **  the header. Clang silently ignores an annotation that appears only on a
 **  later declaration, so one written on the definition of a function
 **  declared in a header does nothing at all, and the mistake is invisible.
-**  A check that catches this will come with the code that uses the
-**  annotations.
+**  dev/run-first-decl-check.sh catches this.
 */
 #if defined(__clang_gcanalyzer__)
 
@@ -159,6 +158,14 @@
 // a function, indicating that its return value is.
 #define GAP_GC_GLOBALLY_ROOTED \
     __attribute__((annotate("julia_globally_rooted")))
+
+// Struct annotation indicating that values of the type refer to objects the
+// GC manages, so that the analyzer checks their rooting. Julia's own types are
+// recognised by name; this is how an embedder declares its own. Put it on
+// every declaration of the struct, its definition included, rather than on a
+// typedef, so that every typedef of the struct is covered.
+#define GAP_GC_TRACKED_TYPE \
+    __attribute__((annotate("julia_gc_tracked")))
 
 // Function annotation indicating that the function never reaches a GC
 // safepoint.
@@ -243,6 +250,7 @@ extern struct GCUNSAFEREGION *jl_gcunsaferegion;
 #define GAP_GC_MAYBE_UNROOTED
 #define GAP_GC_REQUIRE_ROOTED_SLOT
 #define GAP_GC_GLOBALLY_ROOTED
+#define GAP_GC_TRACKED_TYPE
 
 // A function holding nothing is flagged if it reaches a safepoint.
 #define GAP_GC_NOTSAFEPOINT
@@ -293,6 +301,7 @@ extern struct GCUNSAFEREGION *jl_gcunsaferegion;
 #define GAP_GC_MAYBE_UNROOTED
 #define GAP_GC_REQUIRE_ROOTED_SLOT
 #define GAP_GC_GLOBALLY_ROOTED
+#define GAP_GC_TRACKED_TYPE
 #define GAP_GC_NOTSAFEPOINT
 #define GAP_GC_CANSAFEPOINT
 #define GAP_GC_CANSAFEPOINT_ENTER

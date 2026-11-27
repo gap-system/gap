@@ -169,7 +169,13 @@ enum { FALSE = 0, TRUE = 1 };
 *T  Bag . . . . . . . . . . . . . . . . . . . type of the identifier of a bag
 **
 **  (The documentation of 'Bag' is contained in 'gasman.h'.)
+**
+**  The annotation tells the Julia GC analyzer that values of this type refer
+**  to collectable objects, so it checks their rooting. It sits on the struct
+**  rather than on the typedef so that 'Obj' below is covered too.
 */
+struct GAP_GC_TRACKED_TYPE OpaqueBag;
+
 typedef struct OpaqueBag * Bag;
 
 
