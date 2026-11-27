@@ -261,6 +261,8 @@ static Obj FuncREAD_ALL_COMMANDS(
 **    after "quit" or "QUIT", nothing more is read.
 **  - 'value': the value of an "ok" or "return" statement, if it has one.
 **  - 'dualSemicolon': whether an "ok" or "return" statement ended in ';;'.
+**  - 'symbol': the first scanner symbol, as an integer. Named values are in
+**    'GAPInfo.KernelInfo.ScannerSymbols'; they may change between versions.
 **  - 'output': if <options>.captureOutput is 'true', what the statement
 **    printed.
 **  - 'errors': if <options>.captureErrors is 'true', what the statement
@@ -300,7 +302,8 @@ static ExecStatus ReadEvalCaptured(TypInputFile * input,
                                    Obj            outStream,
                                    Obj            errStream,
                                    Obj *          evalResult,
-                                   BOOL *         dualSemicolon)
+                                   BOOL *         dualSemicolon,
+                                   UInt *         symbol)
 {
     TypOutputFile output;
     if (outStream && !OpenOutputStream(&output, outStream))
@@ -318,7 +321,7 @@ static ExecStatus ReadEvalCaptured(TypInputFile * input,
     {
         Obj  res;
         BOOL d;
-        status = ReadEvalCommand(0, input, &res, &d);
+        status = ReadEvalCommandWithSymbol(0, input, &res, &d, symbol);
         result = res;
         dual = d;
     }
@@ -385,13 +388,15 @@ FuncREAD_EVAL_COMMANDS(Obj self, Obj instream, Obj options, Obj callback)
                 SET_LEN_STRING(errString, 0);
             Obj        evalResult;
             BOOL       dualSemicolon;
+            UInt       symbol;
             ExecStatus status = ReadEvalCaptured(&input, outStream, errStream,
-                                                 &evalResult, &dualSemicolon);
+                                                 &evalResult, &dualSemicolon,
+                                                 &symbol);
 
             if (status == STATUS_EOF)
                 break;
 
-            Obj          record = NEW_PREC(5);
+            Obj          record = NEW_PREC(6);
             const char * statusName;
             if (status == STATUS_ERROR)
                 statusName = "error";
@@ -404,6 +409,7 @@ FuncREAD_EVAL_COMMANDS(Obj self, Obj instream, Obj options, Obj callback)
             else
                 statusName = "ok";
             AssPRec(record, RNamName("status"), MakeImmString(statusName));
+            AssPRec(record, RNamName("symbol"), ObjInt_UInt(symbol));
             if (status == STATUS_END || status == STATUS_RETURN) {
                 if (evalResult)
                     AssPRec(record, RNamName("value"), evalResult);

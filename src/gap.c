@@ -33,6 +33,7 @@
 #include "read.h"
 #include "records.h"
 #include "saveload.h"
+#include "scanner.h"
 #include "streams.h"
 #include "stringobj.h"
 #include "sysenv.h"
@@ -1102,6 +1103,7 @@ static Obj FuncKERNEL_INFO(Obj self)
     AssPRec(res, RNamName("RELEASEDAY"), MakeImmString(SyReleaseDay));
     AssPRec(res, RNamName("GAP_ROOT_PATHS"), SyGetGapRootPaths());
     AssPRec(res, RNamName("DOT_GAP_PATH"), MakeImmString(SyDotGapPath()));
+    AssPRec(res, RNamName("ScannerSymbols"), ScannerSymbolInfo());
 
     // Get OS Kernel Release info
     AssPRec(res, RNamName("uname"), SyGetOsRelease());

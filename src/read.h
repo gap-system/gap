@@ -39,6 +39,13 @@ ExecStatus ReadEvalCommand(Obj            context,
                            Obj *          evalResult,
                            BOOL *         dualSemicolon);
 
+// Also returns the first scanner symbol through <symbol>, if non-zero.
+ExecStatus ReadEvalCommandWithSymbol(Obj            context,
+                                    TypInputFile * input,
+                                    Obj *          evalResult,
+                                    BOOL *         dualSemicolon,
+                                    UInt *         symbol);
+
 
 /****************************************************************************
 **

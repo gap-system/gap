@@ -125,6 +125,9 @@ enum SCANNER_SYMBOLS {
     S_EOF               = (1<<31),
 };
 
+// Record mapping scanner symbol names to their current numeric values.
+Obj ScannerSymbolInfo(void);
+
 
 /****************************************************************************
 **

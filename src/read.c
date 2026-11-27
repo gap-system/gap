@@ -2495,6 +2495,16 @@ ExecStatus ReadEvalCommand(Obj            context,
                            Obj *          evalResult,
                            BOOL *         dualSemicolon)
 {
+    return ReadEvalCommandWithSymbol(context, input, evalResult,
+                                     dualSemicolon, 0);
+}
+
+ExecStatus ReadEvalCommandWithSymbol(Obj            context,
+                                    TypInputFile * input,
+                                    Obj *          evalResult,
+                                    BOOL *         dualSemicolon,
+                                    UInt *         symbol)
+{
     volatile ExecStatus status;
     volatile Obj        tilde;
     volatile Obj        errorLVars;
@@ -2514,6 +2524,9 @@ ExecStatus ReadEvalCommand(Obj            context,
 
     // get the first symbol from the input
     Match_(rs, rs->s.Symbol, "", 0);
+
+    if (symbol)
+        *symbol = rs->s.Symbol;
 
     // if scanning the first symbol produced a syntax error, abort
     if (rs->s.NrError) {

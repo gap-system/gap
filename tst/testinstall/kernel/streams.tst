@@ -322,6 +322,26 @@ gap> recs[4].errors;
 gap> ForAll(recs, r -> IsBound(r.output) and IsBound(r.errors));
 true
 
+# The raw first token distinguishes help, pragmas and ordinary statements.
+gap> symbols := GAPInfo.KernelInfo.ScannerSymbols;;
+gap> recs := [];;
+gap> READ_EVAL_COMMANDS(InputTextString(Concatenation(
+>        "# comment\n?__read_eval_symbol_test__\n#% pragma\n",
+>        "symbol_test := 1; return 2; quit;")),
+>        rec(captureOutput := true, captureErrors := true), collect);
+true
+gap> List(recs, r -> r.symbol) = [symbols.S_HELP, symbols.S_PRAGMA,
+>        symbols.S_IDENT, symbols.S_RETURN, symbols.S_QUIT];
+true
+gap> List(recs, r -> r.status);
+[ "ok", "ok", "ok", "return", "quit" ]
+gap> recs := [];;
+gap> READ_EVAL_COMMANDS(InputTextString("/1;"), rec(captureErrors := true), collect);
+true
+gap> recs[1].symbol = symbols.S_DIV; recs[1].status;
+true
+"error"
+
 # without capture, output and errors go where they normally do
 gap> recs := [];;
 gap> READ_EVAL_COMMANDS(InputTextString("Print(\"hi\\n\"); 1/0;"), rec(), collect);
