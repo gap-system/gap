@@ -3743,7 +3743,7 @@ static Int InitKernel (
     ImportFuncFromLibrary("CHECK_REPEATED_ATTRIBUTE_SET",
                           &CHECK_REPEATED_ATTRIBUTE_SET);
 
-#ifdef GASMAN
+#ifdef USE_GASMAN
     ImportGVarFromLibrary( "IsType", &IsType );
     ImportFuncFromLibrary( "FLUSH_ALL_METHOD_CACHES", &FLUSH_ALL_METHOD_CACHES );
 #endif
