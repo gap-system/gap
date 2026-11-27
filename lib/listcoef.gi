@@ -904,8 +904,14 @@ InstallMethod( PowerModCoeffs,
 function( l1, n1, exp, l2, n2 )
     local   c,  n3;
 
-    if exp <= 0  then
-        Error( "power <exp> must be positive" );
+    if exp < 0  then
+        Error( "power <exp> must be nonnegative" );
+    elif exp = 0  then
+        # the constant 1 modulo <l2>, in the representation of <l2>
+        c := l2{[1]};
+        c[1] := One(c[1]);
+        n3 := ReduceCoeffs( c, 1, l2, n2 );
+        return c{[1..n3]};
     fi;
     l1 := ShallowCopy(l1);
     n1 := ReduceCoeffs( l1, n1, l2, n2 );
