@@ -1,6 +1,18 @@
 #@local JACOBI_INT_GAP,c,d,jac,k,m,n,oldLevel,t
 gap> START_TEST("numtheor.tst");
 
+# PrimitiveRootMod
+gap> PrimitiveRootMod( 2 );
+1
+gap> PrimitiveRootMod( 2, 0 );
+1
+gap> PrimitiveRootMod( 2, 1 );
+fail
+gap> PrimitiveRootMod( 4, 2 );
+3
+gap> PrimitiveRootMod( 4, 3 );
+fail
+
 # RootMod, RootsMod
 #
 # Check issue #758: do not force full factorization for RootMod.
