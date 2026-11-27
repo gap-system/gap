@@ -379,8 +379,9 @@ il')
 gap> READ_EVAL_COMMANDS(InputTextString("1;"), rec(), fail);
 Error, READ_EVAL_COMMANDS: <callback> must be a function (not the value 'fail'\
 )
+# Unknown option names are ignored.
 gap> READ_EVAL_COMMANDS(InputTextString("1;"), rec(capture := true), collect);
-Error, READ_EVAL_COMMANDS: unknown option 'capture'
+true
 gap> READ_EVAL_COMMANDS(InputTextString("1;"), rec(echo := 1), collect);
 Error, READ_EVAL_COMMANDS: <options>.echo must be 'true' or 'false' (not the i\
 nteger 1)

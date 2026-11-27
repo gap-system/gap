@@ -342,14 +342,6 @@ FuncREAD_EVAL_COMMANDS(Obj self, Obj instream, Obj options, Obj callback)
                              "must be a plain record");
     RequireFunction(SELF_NAME, callback);
 
-    for (UInt i = 1; i <= LEN_PREC(options); i++) {
-        const char * name =
-            CONST_CSTR_STRING(NAME_RNAM(labs(GET_RNAM_PREC(options, i))));
-        if (strcmp(name, "echo") != 0 && strcmp(name, "captureOutput") != 0 &&
-            strcmp(name, "captureErrors") != 0)
-            ErrorQuit("READ_EVAL_COMMANDS: unknown option '%s'", (Int)name,
-                      0);
-    }
     BOOL echo = ReadEvalCommandsOption(options, "echo");
     BOOL captureOutput = ReadEvalCommandsOption(options, "captureOutput");
     BOOL captureErrors = ReadEvalCommandsOption(options, "captureErrors");
