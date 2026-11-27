@@ -51,12 +51,8 @@ For a fresh git checkout, generate `configure` first:
 make
 ```
 
-If `configure` already exists and you just need to rebuild, use:
-
-```sh
-./configure
-make
-```
+To rebuild, run `make` alone: it reruns `configure`, with its original options,
+when its inputs change.
 
 ### Installing packages
 
@@ -113,9 +109,12 @@ To run a specific test file, pass it to `./gap`, for example:
 Use `tst/testspecial/` for tests that exercise the interactive REPL,
 break loops, or other output that depends on GAP's terminal handling.
 
-- `./tst/testspecial/run_gap.sh ./gap tst/testspecial/<name>.g [outfile]`
+- `./tst/testspecial/run_gap.sh ./gap tst/testspecial/<name>.g <outfile>`
   runs a single special test, captures combined output, prevents GAP from
-  attaching to the terminal, and rewrites local paths in the transcript.
+  attaching to the terminal, and rewrites local paths in the transcript. It
+  does not compare; do that with
+  `diff -b tst/testspecial/<name>.g.out <outfile>`. Without `<outfile>`, it
+  overwrites the expected output `<name>.g.out`.
 - From `tst/testspecial/`, `GAPDIR=../.. ./run_all.sh` runs the full special
   test suite.
 - From `tst/testspecial/`, `./regenerate_tests.sh` regenerates all expected
@@ -123,30 +122,28 @@ break loops, or other output that depends on GAP's terminal handling.
 
 ## Commit messages and pull requests
 
-When writing commit messages, use the title format `component: Brief summary`.
-In the body, give a brief prose summary of the purpose of the change. Do not
-specifically call out added tests, comments, documentation, and similar
-supporting edits unless that is the main purpose of the change. Do not include
-the test plan unless it differs from the instructions in this file. If the
-change fixes one or more issues, add `Fixes #...` at the end of the commit
-message body, not in the title.
+In the body of a commit message, give a brief prose summary of the purpose of
+the change, unless the title says it all. Do not specifically call out added
+tests, comments, documentation, and similar supporting edits unless that is the
+main purpose of the change. Do not include the test plan unless it differs from
+the instructions in this file.
 
 Pull request descriptions should follow the same style: a short summary up top,
-concise prose describing the change, issue references when applicable, and an
-explicit AI-disclosure note if AI tools were used.
+concise prose describing the change, and an explicit AI-disclosure note if AI
+tools were used. If the change fixes one or more issues, write `Fixes #...` in
+the description, not in the title.
 
-A pull request *title*, however, is not a commit title: for pull requests
-labelled `release notes: use title` it is used verbatim as their release notes
-entry. Write it as a self-contained sentence describing the change from a user
-perspective, and in particular do not use the `component:` prefix there. See
-`CHANGES.md` for the expected style, for example "Add `IsSquareMat` and
-`IsAntisymmetricMat`" or "Speed up `IsSubset` for cyclotomic domains". Note
-that GitHub derives the title of a pull request from the commit title if the
-branch contains a single commit, so in that case the commit title should
-already be written this way.
+For pull requests labelled `release notes: use title`, the pull request title
+is used verbatim as their release notes entry. Write it as a self-contained
+sentence describing the change from a user perspective, without a prefix such
+as `lib:`. See `CHANGES.md` for the expected style, for example "Add
+`IsSquareMat` and `IsAntisymmetricMat`" or "Speed up `IsSubset` for cyclotomic
+domains". Note that GitHub derives the title of a pull request from the commit
+title if the branch contains a single commit, so in that case the commit title
+should already be written this way.
 
-Pull requests should normally target `master`. Changes intended only for the
-current stable release series may target `stable-4.X` when appropriate.
+Pull requests target `master`. A fix that also belongs in the current stable
+release series gets the label `backport-to-4.X` and is cherry-picked later.
 
 ## Pull request labels
 
@@ -159,8 +156,8 @@ merged pull requests and their labels, so every pull request should be labelled:
   irrelevant to users, `to be added` if an entry is needed but neither title
   nor body suffices, and additionally `highlight` for changes prominent enough
   to be listed at the very top;
-- a `kind: ...` label, such as `kind: new feature`, `kind: enhancement` or one
-  of the `kind: bug...` labels;
+- if it gets a release notes entry, a `kind: ...` label, such as
+  `kind: new feature`, `kind: enhancement` or one of the `kind: bug...` labels;
 - one or more `topic: ...` labels naming the affected part of GAP, such as
   `topic: library`, `topic: kernel`, `topic: documentation` or
   `topic: performance`.
@@ -176,7 +173,7 @@ several pull requests. Use `use body` only if a pull request must contain
 several changes that deserve their own entries, such as two bug fixes. List the
 entries under `## Text for release notes` in the pull request description, one
 item each; labels in braces at the end of an item replace those of the pull
-request for that entry:
+request for that entry, and must be in `prioritylist`:
 
 ```md
 ## Text for release notes
