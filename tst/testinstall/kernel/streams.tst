@@ -297,5 +297,20 @@ Error, ExecuteProcess: <args> must be a plain list (not the value 'fail')
 gap> ExecuteProcess("","",0,0,[1]);
 Error, ExecuteProcess: <tmp> must be a string (not the integer 1)
 
+# GAP_abspath
+gap> GAP_abspath(fail);
+Error, GAP_abspath: <path> must be a string (not the value 'fail')
+gap> GAP_abspath("/a/./b/../c");
+"/a/./b/../c"
+gap> GAP_abspath("~/a");
+"~/a"
+gap> cwd := Filename(Directory(GAP_getcwd()), "");;
+gap> GAP_abspath("a/b") = Concatenation(cwd, "a/b");
+true
+gap> GAP_abspath("./a/b") = Concatenation(cwd, "a/b");
+true
+gap> GAP_abspath("") = cwd;
+true
+
 #
 gap> STOP_TEST("kernel/streams.tst");

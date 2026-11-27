@@ -1163,15 +1163,28 @@ static Obj FuncGAP_realpath(Obj self, Obj path)
     RequireStringRep(SELF_NAME, path);
     char resolved_path[GAP_PATH_MAX];
 
-#ifdef SYS_IS_MINGW
-    if (NULL == _fullpath(resolved_path, CONST_CSTR_STRING(path), sizeof(resolved_path))) {
-#else
-    if (NULL == realpath(CONST_CSTR_STRING(path), resolved_path)) {
-#endif
+    if (NULL == SyRealpath(CONST_CSTR_STRING(path), resolved_path)) {
         SySetErrorNo();
         return Fail;
     }
     return MakeString(resolved_path);
+}
+
+
+/****************************************************************************
+**
+*F  FuncGAP_abspath( <self>, <path> ) . . . . . make a relative path absolute
+*/
+static Obj FuncGAP_abspath(Obj self, Obj path)
+{
+    RequireStringRep(SELF_NAME, path);
+    char buf[GAP_PATH_MAX];
+
+    if (NULL == SyAbsolutePath(CONST_CSTR_STRING(path), buf)) {
+        SySetErrorNo();
+        return Fail;
+    }
+    return MakeString(buf);
 }
 
 
@@ -1808,6 +1821,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_0ARGS(GAP_getcwd),
     GVAR_FUNC_1ARGS(GAP_chdir, path),
     GVAR_FUNC_1ARGS(GAP_realpath, path),
+    GVAR_FUNC_1ARGS(GAP_abspath, path),
     GVAR_FUNC_0ARGS(LastSystemError),
     GVAR_FUNC_1ARGS(IsExistingFile, filename),
     GVAR_FUNC_1ARGS(IsReadableFile, filename),
