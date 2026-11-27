@@ -271,6 +271,11 @@ static Obj FuncREAD_ALL_COMMANDS(
 **  <options>.echo is 'true', the statements are echoed as for
 **  'READ_ALL_COMMANDS'.
 **
+**  This function does not suppress the break loop. The caller must start
+**  GAP with '-T' or set 'BreakOnError := false' (restoring its previous value
+**  afterwards). 'CALL_WITH_CATCH' catches escaping errors but does not
+**  disable the break loop. '--quitonbreak' instead exits GAP on an error.
+**
 **  Returns 'fail' if <instream> cannot be opened, and 'true' otherwise.
 */
 static BOOL ReadEvalCommandsOption(Obj options, const char * name)

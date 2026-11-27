@@ -390,7 +390,9 @@ gap> recs[1].status; recs[1].value;
 "ok"
 11
 
-# ERROR_OUTPUT is restored, also when the callback fails
+# The callback runs after ERROR_OUTPUT has been restored. This does not test
+# ReadEvalCaptured's cleanup when SIGINT throws out of reading or evaluation;
+# ordinary statement errors are handled by TRY_IF_NO_ERROR.
 gap> old := ERROR_OUTPUT;;
 gap> READ_EVAL_COMMANDS(InputTextString("1;"), rec(captureErrors := true),
 >        function(r) Error("in callback"); end);
