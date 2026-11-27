@@ -896,23 +896,42 @@ local w;
 end );
 
 # This function is destructive on the first argument!
+# <gc> must have a nonzero last entry. The quotient has Length(fc)-Length(gc)+1
+# entries, the remainder Length(fc).
 BindGlobal( "QUOTREM_LAURPOLS_LISTS", function(fc,gc)
 local q,m,n,i,c,k,f,z;
   # try to divide
   q:=[];
   n:=Length(gc);
   m:=Length(fc)-n;
-  # try to keep a compressed field
+  if m<0 then
+    return [q,fc];
+  fi;
+
+  # the kernel divides compressed coefficients, those over different fields
+  # or with one plain list after compressing both over a common field
   if IsGF2VectorRep(fc) and IsGF2VectorRep(gc) then
     f:=2;
-  elif Is8BitVectorRep(fc) then
+  elif Is8BitVectorRep(fc) and Is8BitVectorRep(gc)
+       and Q_VEC8BIT(fc)=Q_VEC8BIT(gc) then
     f:=Q_VEC8BIT(fc);
-    if (not Is8BitVectorRep(gc)) or Q_VEC8BIT(gc)<>f then
-      f:=0;
+  elif IsGF2VectorRep(fc) or Is8BitVectorRep(fc)
+       or IsGF2VectorRep(gc) or Is8BitVectorRep(gc) then
+    f:=COMMON_FIELD_VECTORS([fc,gc]);
+    if f<>fail and f<=256 then
+      fc:=CopyToVectorRep(fc,f);
+      gc:=CopyToVectorRep(gc,f);
     fi;
   else
-    f:=0;
+    f:=fail;
   fi;
+  if f=2 then
+    return QUOTREM_COEFFS_GF2VEC(fc,Length(fc),gc,n);
+  elif f<>fail and f<=256 then
+    return QUOTREM_COEFFS_VEC8BIT(fc,Length(fc),
+                                  MAKE_SHIFTED_COEFFS_VEC8BIT(gc,n));
+  fi;
+
   z:=Zero(gc[n]);
   for i in [0..m] do
     c := fc[m-i+n];
@@ -923,9 +942,6 @@ local q,m,n,i,c,k,f,z;
     fi;
     q[m-i+1]:=c;
   od;
-  if f>0 then
-    ConvertToVectorRep(q,f);
-  fi;
   return [q,fc];
 end );
 
