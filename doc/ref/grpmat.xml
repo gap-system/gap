@@ -93,8 +93,12 @@ that represent a faithful action on vectors.
 <#Include Label="IsFullSubgroupGLRespectingBilinearFormUpToScalars">
 <#Include Label="InvariantSesquilinearForm">
 <#Include Label="IsFullSubgroupGLorSLRespectingSesquilinearForm">
+<#Include Label="InvariantSesquilinearFormUpToScalars">
+<#Include Label="IsFullSubgroupGLRespectingSesquilinearFormUpToScalars">
 <#Include Label="InvariantQuadraticForm">
 <#Include Label="IsFullSubgroupGLorSLRespectingQuadraticForm">
+<#Include Label="InvariantQuadraticFormUpToScalars">
+<#Include Label="IsFullSubgroupGLRespectingQuadraticFormUpToScalars">
 
 </Section>
 

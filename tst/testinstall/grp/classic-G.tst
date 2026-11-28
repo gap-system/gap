@@ -139,6 +139,69 @@ gap> GU(3,6);
 Error, <subfield> must be a prime or a finite field
 
 #
+gap> G := CO(3,5);
+CO(0,3,5)
+gap> G = CO(0,3,5);
+true
+gap> G = CO(3,GF(5));
+true
+gap> G = CO(0,3,GF(5));
+true
+gap> Size(G) = Size(GO(3,5)) * 2;
+true
+gap> CO(IsPermGroup,3,5);
+Perm_CO(0,3,5)
+gap> CO(-1,4,9);
+CO(-1,4,9)
+gap> last = CO(-1,4,GF(9));
+true
+gap> Size(last2) = Size(GO(-1,4,9)) * 8;
+true
+gap> CO(1,4,9);
+CO(+1,4,9)
+gap> CO(IsPermGroup,1,4,9);
+Perm_CO(+1,4,9)
+gap> CO(1,2); Size(last);
+CO(0,1,2)
+1
+gap> CO(1,5); Size(last);
+CO(0,1,5)
+4
+
+#
+gap> CO(3);
+Error, usage: ConformalOrthogonalGroup( [<filt>, ][<e>, ]<d>, <q>[, <form>] )
+or ConformalOrthogonalGroup( [<filt>, ]<form> )
+gap> CO(3,6);
+Error, <subfield> must be a prime or a finite field
+gap> CO(-1,3,5);
+Error, sign <e> <> 0 but dimension <d> is odd
+gap> CO(2,3,5);
+Error, sign <e> must be -1, 0, +1
+gap> CO(4,9);
+Error, sign <e> = 0 but dimension <d> is even
+
+#
+gap> CU(3,5);
+CU(3,5)
+gap> Size(last) = Size(GU(3,5)) * 4;
+true
+gap> CU(IsPermGroup,3,4);
+Perm_CU(3,4)
+gap> CU(1,3); Size(last);
+CU(1,3)
+8
+gap> Z(5^4) * One(CU(3,5)) in CU(3,5);
+false
+gap> Z(25) * One(CO(3,5)) in CO(3,5);
+false
+gap> CU(3);
+Error, usage: ConformalUnitaryGroup( [<filt>, ]<d>, <q>[, <form>] )
+or ConformalUnitaryGroup( [<filt>, ]<form> )
+gap> CU(3,6);
+Error, <subfield> must be a prime or a finite field
+
+#
 gap> GammaL(1,5);
 GL(1,5)
 gap> GammaL(2,5);
@@ -247,8 +310,9 @@ gap> g[4,4] := w^(-3);;
 gap> SpinorNorm(form,GF(3),g);
 Z(3)
 
-# Membership tests in GL, SL, GO, SO, GU, SU, Sp can be delegated
-# to the tests of the stored respected forms and therefore are cheap.
+# Membership tests in GL, SL, GO, SO, GU, SU, Sp, and the conformal groups
+# can be delegated to the tests of the stored respected forms and therefore
+# are cheap.
 gap> for d in [ 1 .. 10 ] do
 >   for q in Filtered( [ 2 .. 30 ], IsPrimePowerInt ) do
 >     G:= GL(d,q);
@@ -259,13 +323,14 @@ gap> for d in [ 1 .. 10 ] do
 >     fi;
 >     grps:= [];
 >     if Length( Factors( q ) ) mod 2 = 0 then
->       Append( grps, [ GU(d, RootInt( q )), SU(d, RootInt( q )) ] );
+>       Append( grps, [ GU(d, RootInt( q )), SU(d, RootInt( q )),
+>                       CU(d, RootInt( q )) ] );
 >     fi;
 >     if d mod 2 = 0 then
->       Append( grps, [ GO(-1,d,q), GO(1,d,q) ] );
->       Add( grps, Sp(d,q) );
+>       Append( grps, [ GO(-1,d,q), GO(1,d,q), CO(-1,d,q), CO(1,d,q) ] );
+>       Append( grps, [ Sp(d,q), CSp(d,q) ] );
 >     else
->       Add( grps, GO(d,q) );
+>       Append( grps, [ GO(d,q), CO(d,q) ] );
 >     fi;
 >     if ForAny( grps,
 >            U -> ( Size( U ) < Size( G ) and

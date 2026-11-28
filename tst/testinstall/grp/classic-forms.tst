@@ -1,12 +1,15 @@
 #@local CheckGeneratorsInvertible, CheckGeneratorsSpecial, CheckField
 #@local CheckBilinearForm, CheckBilinearFormUpToScalars
-#@local CheckQuadraticForm, frob, CheckSesquilinearForm
+#@local CheckQuadraticForm, CheckQuadraticFormUpToScalars
+#@local frob, CheckSesquilinearForm, CheckSesquilinearFormUpToScalars
 #@local CheckSize, CheckClasses, CheckMembershipFromForm
 #@local CheckMembershipBilinear, CheckMembershipBilinear2
 #@local CheckMembershipBilinearUpToScalars
 #@local CheckMembershipBilinearUpToScalars2
-#@local CheckMembershipSesquilinear
+#@local CheckMembershipSesquilinear, CheckMembershipSesquilinearUpToScalars
 #@local CheckMembershipQuadratic, CheckMembershipQuadratic2
+#@local CheckMembershipQuadraticUpToScalars
+#@local CheckMembershipQuadraticUpToScalars2
 #@local grps1, grps2, grps, d, q, G, m
 #
 # Tests invariant forms of classic groups
@@ -50,6 +53,14 @@ gap> CheckQuadraticForm := function(G)
 >          ForAll(GeneratorsOfGroup(G),
 >            g -> RespectsQuadraticForm(Q, g));
 > end;;
+gap> CheckQuadraticFormUpToScalars := function(G)
+>   local M, Q;
+>   M := InvariantBilinearFormUpToScalars(G).matrix;
+>   Q := InvariantQuadraticFormUpToScalars(G).matrix;
+>   return (Q+TransposedMat(Q) = M) and
+>          ForAll(GeneratorsOfGroup(G),
+>            g -> RespectsQuadraticFormUpToScalars(Q, g));
+> end;;
 gap> frob := function(g,aut)
 >   return List(g,row->List(row,x->x^aut));
 > end;;
@@ -61,6 +72,15 @@ gap> CheckSesquilinearForm := function(G)
 >   aut := aut^(DegreeOverPrimeField(F)/2);
 >   return ForAll(GeneratorsOfGroup(G),
 >               g -> g*M*TransposedMat(frob(g,aut)) = M);
+> end;;
+gap> CheckSesquilinearFormUpToScalars := function(G)
+>   local M, F, aut;
+>   M := InvariantSesquilinearFormUpToScalars(G).matrix;
+>   F := InvariantSesquilinearFormUpToScalars(G).baseDomain;
+>   aut := FrobeniusAutomorphism(F);
+>   aut := aut^(DegreeOverPrimeField(F)/2);
+>   return ForAll(GeneratorsOfGroup(G),
+>            g -> _IsEqualModScalars_GAP(g*M*TransposedMat(frob(g,aut)), M));
 > end;;
 
 # verify group size if the underlying module is small
@@ -120,6 +140,12 @@ gap> CheckMembershipSesquilinear:= function( G )
 >           and IsFullSubgroupGLorSLRespectingSesquilinearForm( G )
 >           and CheckMembershipFromForm( G, InvariantSesquilinearForm( G ) );
 > end;;
+gap> CheckMembershipSesquilinearUpToScalars:= function( G )
+>    return HasIsFullSubgroupGLRespectingSesquilinearFormUpToScalars( G )
+>           and IsFullSubgroupGLRespectingSesquilinearFormUpToScalars( G )
+>           and CheckMembershipFromForm( G,
+>                 InvariantSesquilinearFormUpToScalars( G ) );
+> end;;
 gap> CheckMembershipQuadratic:= function( G )
 >    return HasIsFullSubgroupGLorSLRespectingQuadraticForm( G )
 >           and IsFullSubgroupGLorSLRespectingQuadraticForm( G )
@@ -129,6 +155,20 @@ gap> CheckMembershipQuadratic2:= function( G )
 >    if HasIsFullSubgroupGLorSLRespectingQuadraticForm( G )
 >       and IsFullSubgroupGLorSLRespectingQuadraticForm( G ) then
 >      return CheckMembershipFromForm( G, InvariantQuadraticForm( G ) );
+>    fi;
+>    return true;
+> end;;
+gap> CheckMembershipQuadraticUpToScalars:= function( G )
+>    return HasIsFullSubgroupGLRespectingQuadraticFormUpToScalars( G )
+>           and IsFullSubgroupGLRespectingQuadraticFormUpToScalars( G )
+>           and CheckMembershipFromForm( G,
+>                 InvariantQuadraticFormUpToScalars( G ) );
+> end;;
+gap> CheckMembershipQuadraticUpToScalars2:= function( G )
+>    if HasIsFullSubgroupGLRespectingQuadraticFormUpToScalars( G )
+>       and IsFullSubgroupGLRespectingQuadraticFormUpToScalars( G ) then
+>      return CheckMembershipFromForm( G,
+>               InvariantQuadraticFormUpToScalars( G ) );
 >    fi;
 >    return true;
 > end;;
@@ -291,6 +331,85 @@ gap> ForAll(grps, CheckSize);
 true
 
 #
+# conformal orthogonal groups
+#
+
+# odd-dimensional
+gap> grps1:=[];;
+gap> grps2:=[];;
+gap> for d in [1,3,5,7] do
+>   for q in [2,3,4,5,7,8,9,16,17,25,27] do
+>     Add(grps1, CO(d,q));
+>     Add(grps2, CO(d,q) ^ RandomInvertibleMat(d,GF(q)));
+>     Add(grps2, CO(d,q) ^ RandomInvertibleMat(d,GF(q^2)));
+>   od;
+> od;
+gap> grps:= Concatenation( grps1, grps2 );;
+gap> ForAll(grps, CheckGeneratorsInvertible);
+true
+gap> ForAll(grps, CheckField);
+true
+gap> ForAll(grps, CheckQuadraticFormUpToScalars);
+true
+gap> ForAll(grps, CheckSize);
+true
+gap> ForAll(grps1, CheckMembershipQuadraticUpToScalars);
+true
+gap> ForAll(grps2, CheckMembershipQuadraticUpToScalars2);
+true
+gap> ForAll(Filtered(grps1, G -> IsOddInt(Characteristic(G))),
+>           CheckMembershipBilinearUpToScalars);
+true
+gap> ForAll(grps2, CheckMembershipBilinearUpToScalars2);
+true
+
+# even-dimensional
+gap> grps1:=[];;
+gap> grps2:=[];;
+gap> for d in [2,4,6,8] do
+>   for q in [2,3,4,5,7,8,9,16,17,25,27] do
+>     Add(grps1, CO(+1,d,q));
+>     Add(grps1, CO(-1,d,q));
+>     Add(grps2, CO(+1,d,q) ^ RandomInvertibleMat(d,GF(q)));
+>     Add(grps2, CO(-1,d,q) ^ RandomInvertibleMat(d,GF(q)));
+>     Add(grps2, CO(+1,d,q) ^ RandomInvertibleMat(d,GF(q^2)));
+>     Add(grps2, CO(-1,d,q) ^ RandomInvertibleMat(d,GF(q^2)));
+>   od;
+> od;
+gap> grps:= Concatenation( grps1, grps2 );;
+gap> ForAll(grps, CheckGeneratorsInvertible);
+true
+gap> ForAll(grps, CheckField);
+true
+gap> ForAll(grps, CheckQuadraticFormUpToScalars);
+true
+gap> ForAll(grps, CheckSize);
+true
+gap> ForAll(grps1, CheckMembershipQuadraticUpToScalars);
+true
+gap> ForAll(grps2, CheckMembershipQuadraticUpToScalars2);
+true
+gap> ForAll(Filtered(grps1, G -> IsOddInt(Characteristic(G))),
+>           CheckMembershipBilinearUpToScalars);
+true
+gap> ForAll(grps2, CheckMembershipBilinearUpToScalars2);
+true
+
+# a group storing only the quadratic form up to scalars
+gap> G:= CO(-1,4,3);;
+gap> m:= GroupWithGenerators(GeneratorsOfGroup(G));;
+gap> SetInvariantQuadraticFormUpToScalars(m,
+>        InvariantQuadraticFormUpToScalars(G));
+gap> m:= m ^ ([[1,Z(9),0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]] * Z(3)^0);;
+gap> HasInvariantBilinearFormUpToScalars(m);
+false
+gap> InvariantQuadraticFormUpToScalars(m).baseDomain;
+GF(3^2)
+gap> ForAll(GeneratorsOfGroup(m), g -> RespectsQuadraticFormUpToScalars(
+>        InvariantQuadraticFormUpToScalars(m).matrix, g));
+true
+
+#
 # unitary groups
 #
 
@@ -336,6 +455,29 @@ true
 gap> ForAll(grps, CheckMembershipSesquilinear);
 true
 
+# conformal unitary groups
+gap> grps1:=[];;
+gap> grps2:=[];;
+gap> for d in [1..6] do
+>   for q in [2,3,4,5,7,8,9,16,17,25,27] do
+>     Add(grps1, CU(d,q));
+>     Add(grps1, CU(d,q) ^ RandomInvertibleMat(d,GF(q^2)));
+>     Add(grps2, CU(d,q) ^ RandomInvertibleMat(d,GF(q^4)));
+>   od;
+> od;
+gap> grps:= Concatenation( grps1, grps2 );;
+gap> ForAll(grps, CheckGeneratorsInvertible);
+true
+gap> ForAll(grps, CheckField);
+true
+gap> ForAll(grps1, CheckSesquilinearFormUpToScalars);
+true
+gap> ForAll(grps, CheckSize);
+true
+gap> ForAll(Cartesian([1..6], [2,3,4,5,7,8,9,16,17,25,27]),
+>           p -> CheckMembershipSesquilinearUpToScalars(CU(p[1], p[2])));
+true
+
 #
 # symplectic groups
 #
@@ -379,7 +521,7 @@ gap> ForAll(grps, CheckGeneratorsInvertible);
 true
 gap> ForAll(grps, CheckField);
 true
-gap> ForAll(grps1, CheckBilinearFormUpToScalars);
+gap> ForAll(grps, CheckBilinearFormUpToScalars);
 true
 gap> ForAll(grps, CheckSize);
 true
