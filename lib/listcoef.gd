@@ -224,7 +224,7 @@ DeclareOperation(
 ##  <A>list1</A> and <A>list2</A>, respectively.
 ##  If <A>len1</A> and <A>len2</A> are omitted, they default to the lengths
 ##  of <A>list1</A> and <A>list2</A>.
-##  Let <A>exp</A> be a positive integer.
+##  Let <A>exp</A> be a nonnegative integer.
 ##  <Ref Oper="PowerModCoeffs"/> returns the coefficient list of the
 ##  remainder when dividing the <A>exp</A>-th power of <M>p1</M> by
 ##  <M>p2</M>.
