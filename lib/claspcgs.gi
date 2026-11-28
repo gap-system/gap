@@ -546,6 +546,7 @@ local  G,  home,  # the group and the home pcgs
        step,    # counter looping over <eas>
        K,  L,   # members of <eas>
        indstep, # indice normal steps
+       info,    # pcgs and indices of the series used
        Ldep,    # depth of L in pcgs
        Kp,mK,Lp,mL, # induced and modulo pcgs's
        LcapH,KcapH, # intersections
@@ -627,17 +628,22 @@ local  G,  home,  # the group and the home pcgs
     # we prescribed a series
     home:=opt.pcgs;
     eas:=EANormalSeriesByPcgs(home);
+    indstep:=IndicesEANormalSteps(home);
 
     cent:=false;
 
   elif IsPGroup(G) then
-    home:=PcgsPCentralSeriesPGroup(G);
+    info:=PcgsPCentralSeriesPGroupInfo(G);
+    home:=info.pcgs;
     eas:=PCentralNormalSeriesByPcgsPGroup(home);
+    indstep:=info.indices;
 
     cent:=ReturnTrue;
   else
-    home:=PcgsElementaryAbelianSeries(G);
+    info:=PcgsElementaryAbelianSeriesInfo(G);
+    home:=info.pcgs;
     eas:=EANormalSeriesByPcgs(home);
+    indstep:=info.indices;
 
     cent:=function(cl, N, L)
       return ForAll(N, k -> ForAll
@@ -657,10 +663,9 @@ local  G,  home,  # the group and the home pcgs
   if cent=false then
     cent:=PcClassFactorCentralityTest;
   fi;
-  indstep:=IndicesEANormalSteps(home);
 
   # is the series large (but can be rectified)?
-  step:=IndicesEANormalStepsBounded(home,2^15);
+  step:=IndicesNormalStepsBounded(home,indstep,2^15);
   if indstep<>step then
     indstep:=step;
     eas:=List(indstep,x->SubgroupByPcgs(GroupOfPcgs(home),
@@ -990,6 +995,7 @@ local  G,home,  # the group and the home pcgs
        step,    # counter looping over <eas>
        K,  L,   # members of <eas>
        indstep, # indice normal steps
+       info,    # pcgs and indices of the series used
        Ldep,    # depth of L in pcgs
        Kp,Lp,mL, # induced and modulo pcgs's
        N,   cent,   # elementary abelian factor, for affine action
@@ -1024,21 +1030,23 @@ local  G,home,  # the group and the home pcgs
     # w.r.t. <homepcgs>.
 
     if IsPGroup(G) then
-      home:=PcgsPCentralSeriesPGroup(G);
+      info:=PcgsPCentralSeriesPGroupInfo(G);
+      home:=info.pcgs;
       eas:=PCentralNormalSeriesByPcgsPGroup(home);
 
       cent:=ReturnTrue;
     else
-      home:=PcgsElementaryAbelianSeries(G);
+      info:=PcgsElementaryAbelianSeriesInfo(G);
+      home:=info.pcgs;
       eas:=EANormalSeriesByPcgs(home);
 
       cent:=PcClassFactorCentralityTest;
     fi;
 
-    indstep:=IndicesEANormalSteps(home);
+    indstep:=info.indices;
 
     # is the series large (but can be rectified)?
-    step:=IndicesEANormalStepsBounded(home,2^15);
+    step:=IndicesNormalStepsBounded(home,indstep,2^15);
     if indstep<>step then
       indstep:=step;
       eas:=List(indstep,x->SubgroupByPcgs(GroupOfPcgs(home),
