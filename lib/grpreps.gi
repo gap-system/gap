@@ -185,11 +185,76 @@ local modu, modus,gens,v,subs,sub,ser,i,j,a,si,dims,cf,mats,hom;
   return [gens,modus];
 end);
 
+# Helper function for the 'IrreducibleModules' method below:
+# (Thus we assume that 'G' is a permutation group.)
+# The number of irreducible representations of the group 'G' over the finite
+# field 'F' is equal to the number of 'p'-regular 'F'-conjugacy classes
+# of 'G', where 'p' is the characteristic of 'F'.
+# Two 'p'-regular elements 'g', 'h' of 'G' lie in the same 'F'-conjugacy class
+# of 'G' if and only if 'g' is 'G'-conjugate to 'h^q' where 'q' is some power
+# of 'Size( F )'.
+# In other words, the 'F'-conjugacy classes are unions of orbits under the
+# action of the Frobenius automorphism with fixed field 'F'.
+BindGlobal( "NumberOfFConjugacyClasses", function( G, F )
+  local p, q, reps, invs, C, g, n, res, start, i, e, cand, l, done, j, img, k;
+
+  p:= Characteristic( F );
+  q:= Size( F );
+  reps:= [];
+  invs:= [];
+  for C in ConjugacyClasses( G ) do
+    g:= Representative( C );
+    if Order( g ) mod p <> 0 then
+      Add( reps, g );
+      Add( invs, [ CycleStructurePerm( g ), Size( C ) ] );
+    fi;
+  od;
+  SortParallel( invs, reps );
+  n:= Length( reps );
+  res:= 0;
+  start:= 1;
+  while start <= n do
+    i:= start + 1;
+    while i <= n and invs[i] = invs[ start ] do
+      i:= i+1;
+    od;
+    if i = start + 1 then
+      # fixed point
+      res:= res + 1;
+    else
+      # distribute to orbits
+      e:= q mod Order( reps[ start ] );
+      cand:= reps{ [ start .. i-1 ] };
+      l:= Length( cand );
+      done:= ListWithIdenticalEntries( l, false );
+      for j in [ 1 .. l ] do
+        if not done[j] then
+          # compute the orbit of 'cand[j]'
+          res:= res + 1;
+          img:= cand[j]^e;
+          while not IsConjugate( G, img, cand[j] ) do
+            for k in [ j+1 .. l ] do
+              if not done[k] and IsConjugate( G, img, cand[k] ) then
+                done[k]:= true;
+                img:= cand[k]^e;
+                break;
+              fi;
+            od;
+          od;
+        fi;
+      od;
+    fi;
+    start:= i;
+  od;
+
+  return res;
+end );
+
 InstallMethod(IrreducibleModules,
   "permutation group, finite field, Burnside-Brauer",
     true, [ IsPermGroup, IsField and IsFinite, IsInt ], 2,
 function(G,field,dim)
-local n,mats,mo,moduln,i,j,k,t,cnt,p,ext,emo,hom,words;
+local n,mats,mo,moduln,i,j,k,t,cnt,p,hom,words;
   if dim=1 then TryNextMethod();fi; # special abelian case
 
   p:=Characteristic(field);
@@ -214,33 +279,22 @@ local n,mats,mo,moduln,i,j,k,t,cnt,p,ext,emo,hom,words;
     return [GeneratorsOfGroup(G),moduln];
   fi;
 
-
-  # how many should we expect
-  t:=List(ConjugacyClasses(G),Representative);
-  t:=Filtered(t,x->Order(x) mod p<>0);
-  cnt:=Length(t);
-  Info(InfoMeatAxe,1,"Expect ",cnt," absolute irreps");
-
   n:=LargestMovedPoint(G);
-  if n<=1 then
+  if n = 0 then
     # trivial group
-    return [GeneratorsOfGroup(G),
-            [GModuleByMats(List(GeneratorsOfGroup(G),x->IdentityMat(1,field)),
-              field)]];
+    return [ GeneratorsOfGroup( G ), [ TrivialGModule( G, field ) ] ];
   fi;
+
+  # Count those irreducible representations we have not yet found.
+  cnt:= NumberOfFConjugacyClasses( G, field );
+  Info(InfoMeatAxe,1,"Expect ",cnt," irreps");
+
   mats:=List(GeneratorsOfGroup(G),x->PermutationMat(x,n,field));
   n:=Length(mats);
   mo:=GModuleByMats(mats,field);
   moduln:=List(MTX.CollectedFactors(mo),x->x[1]);
   for k in moduln do
-    if MTX.IsAbsolutelyIrreducible(k) then
-      cnt:=cnt-1;
-    else
-      ext:=GF(p^(LogInt(Size(field),p)*MTX.DegreeSplittingField(k)));
-      emo:=GModuleByMats(k.generators,ext);
-      emo:=MTX.CollectedFactors(emo);
-      cnt:=cnt-Length(emo);
-    fi;
+    cnt:= cnt - 1;
   od;
   i:=1;
   while i<=Length(moduln) and cnt>0 do
@@ -265,16 +319,11 @@ local n,mats,mo,moduln,i,j,k,t,cnt,p,ext,emo,hom,words;
       t:=List(MTX.CollectedFactors(t),x->x[1]);
       Info(InfoMeatAxe,1,i," ",j," yields  ",List(t,x->x.dimension));
       for k in t do
-        MTX.IsIrreducible(k);
-        if ForAll(moduln,x->MTX.Isomorphism(k,x)=fail) then
+        if ForAll(moduln,x-> not MTX.IsEquivalent(k,x)) then
           Add(moduln,k);
-          if MTX.IsAbsolutelyIrreducible(k) then
-            cnt:=cnt-1;
-          else
-            ext:=GF(p^(LogInt(Size(field),p)*MTX.DegreeSplittingField(k)));
-            emo:=GModuleByMats(k.generators,ext);
-            emo:=MTX.CollectedFactors(emo);
-            cnt:=cnt-Length(emo);
+          cnt:= cnt - 1;
+          if cnt = 0 then
+            break;
           fi;
         fi;
         Info(InfoMeatAxe,1,"left are ",cnt," irreps");
@@ -283,8 +332,9 @@ local n,mats,mo,moduln,i,j,k,t,cnt,p,ext,emo,hom,words;
     od;
     i:=i+1;
   od;
-  SortBy(moduln,x->x.dimension);
+
   if dim>0 then moduln:=Filtered(moduln,x->MTX.Dimension(x)<=dim);fi;
+  SortBy(moduln,MTX.Dimension);
   return [GeneratorsOfGroup(G),moduln];
 end);
 
