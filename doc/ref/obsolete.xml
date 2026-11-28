@@ -33,23 +33,23 @@ Here are some examples of such name changes.
 </Row>
 <HorLine/>
 <Row>
-  <Item><C>Operation</C><Index Key="Operation"><C>Operation</C></Index></Item>
+  <Item><C>Operation</C><Index Key="Operation"><C>Operation</C></Index> (removed in &GAP;&nbsp;4.4)</Item>
   <Item><Ref Func="Action" Label="for a group, an action domain, etc."/></Item>
 </Row>
 <Row>
-  <Item><C>RepresentativeOperation</C><Index Key="RepresentativeOperation"><C>RepresentativeOperation</C></Index></Item>
+  <Item><C>RepresentativeOperation</C><Index Key="RepresentativeOperation"><C>RepresentativeOperation</C></Index> (removed in &GAP;&nbsp;4.4)</Item>
   <Item><Ref Func="RepresentativeAction"/></Item>
 </Row>
 <Row>
-  <Item><C>OperationHomomorphism</C><Index Key="OperationHomomorphism"><C>OperationHomomorphism</C></Index></Item>
+  <Item><C>OperationHomomorphism</C><Index Key="OperationHomomorphism"><C>OperationHomomorphism</C></Index> (removed in &GAP;&nbsp;4.4)</Item>
   <Item><Ref Func="ActionHomomorphism" Label="for a group, an action domain, etc."/></Item>
 </Row>
 <Row>
-  <Item><C>FunctionOperation</C><Index Key="FunctionOperation"><C>FunctionOperation</C></Index></Item>
+  <Item><C>FunctionOperation</C><Index Key="FunctionOperation"><C>FunctionOperation</C></Index> (removed in &GAP;&nbsp;4.4)</Item>
   <Item><Ref Attr="FunctionAction"/></Item>
 </Row>
 <Row>
-  <Item><C>IsLexicographicallyLess</C><Index Key="IsLexicographicallyLess"><C>IsLexicographicallyLess</C></Index></Item>
+  <Item><C>IsLexicographicallyLess</C><Index Key="IsLexicographicallyLess"><C>IsLexicographicallyLess</C></Index> (removed in &GAP;&nbsp;4.15)</Item>
   <Item><Ref Oper="\&lt;"/></Item>
 </Row>
 </Table>
@@ -76,12 +76,14 @@ The following functions are no longer needed:
 <C>DeclarePackageDocumentation</C> and
 <C>DeclarePackageAutoDocumentation</C>.
 They are substituted by entries in the packages' <F>PackageInfo.g</F> files,
-see <Ref Sect="The PackageInfo.g File"/>.
+see <Ref Sect="The PackageInfo.g File"/>,
+and were removed in &GAP;&nbsp;4.15.
 <P/>
 Furthermore, the global variable <C>PACKAGES_VERSIONS</C> is no longer needed,
 since this information is now contained in the <C>GAPInfo.PackagesInfo</C> record
-(see <Ref Subsect="GAPInfo"/>). The global variable <C>Revisions</C> is also
-no longer needed, since the function <C>DisplayRevision</C> was made obsolete in
+(see <Ref Subsect="GAPInfo"/>); it was removed in &GAP;&nbsp;4.15.
+The global variable <C>Revisions</C> was removed in &GAP;&nbsp;4.5,
+since the function <C>DisplayRevision</C> was made obsolete in
 &GAP;&nbsp;4.5 and removed in &GAP;&nbsp;4.7.
 <P/>
 
@@ -97,15 +99,15 @@ The following function names were changed.
 </Row>
 <HorLine/>
 <Row>
-  <Item><C>RequirePackage</C></Item>
+  <Item><C>RequirePackage</C> (removed in &GAP;&nbsp;4.15)</Item>
   <Item><Ref Func="LoadPackage"/></Item>
 </Row>
 <Row>
-  <Item><C>ReadPkg</C></Item>
+  <Item><C>ReadPkg</C> (removed in &GAP;&nbsp;4.15)</Item>
   <Item><Ref Func="ReadPackage"/></Item>
 </Row>
 <Row>
-  <Item><C>RereadPkg</C></Item>
+  <Item><C>RereadPkg</C> (removed in &GAP;&nbsp;4.6)</Item>
   <Item><Ref Func="RereadPackage"/></Item>
 </Row>
 </Table>
@@ -141,11 +143,12 @@ bound to general information about the running &GAP;,
 such as path names or command line options.
 Although they were not officially documented they were used by several users
 and in some packages.
-We mention here <C>BANNER</C> and <C>QUIET</C>.
+We mention here <C>BANNER</C> and <C>QUIET</C>,
+which were removed in &GAP;&nbsp;4.15.
 This type of information is now collected in the global record
 <Ref Var="GAPInfo"/>.
 <P/>
-Here are some further name changes.
+Here are some further obsolete names.
 <P/>
 <Table Align="l|l">
 <Row>
@@ -154,7 +157,23 @@ Here are some further name changes.
 </Row>
 <HorLine/>
 <Row>
-  <Item><C>MonomialTotalDegreeLess</C><Index Key="MonomialTotalDegreeLess"><C>MonomialTotalDegreeLess</C></Index></Item>
+  <Item><C>FirstOp</C><Index Key="FirstOp"><C>FirstOp</C></Index></Item>
+  <Item><Ref Oper="First"/></Item>
+</Row>
+<Row>
+  <Item><C>FORCE_QUIT_GAP</C><Index Key="FORCE_QUIT_GAP"><C>FORCE_QUIT_GAP</C></Index></Item>
+  <Item><Ref Func="ForceQuitGap"/></Item>
+</Row>
+<Row>
+  <Item><C>GAP_EXIT_CODE</C><Index Key="GAP_EXIT_CODE"><C>GAP_EXIT_CODE</C></Index></Item>
+  <Item><Ref Func="GapExitCode"/></Item>
+</Row>
+<Row>
+  <Item><C>HideGlobalVariables</C><Index Key="HideGlobalVariables"><C>HideGlobalVariables</C></Index></Item>
+  <Item>no replacement</Item>
+</Row>
+<Row>
+  <Item><C>MonomialTotalDegreeLess</C><Index Key="MonomialTotalDegreeLess"><C>MonomialTotalDegreeLess</C></Index> (removed in &GAP;&nbsp;4.5)</Item>
   <Item><Ref Func="MonomialExtGrlexLess"/></Item>
 </Row>
 <Row>
@@ -166,20 +185,68 @@ Here are some further name changes.
   <Item><Ref Oper="MutableCopyMatrix" Label="for a matrix object"/></Item>
 </Row>
 <Row>
-  <Item><C>MutableIdentityMat</C><Index Key="MutableIdentityMat"><C>MutableIdentityMat</C></Index></Item>
+  <Item><C>MutableIdentityMat</C><Index Key="MutableIdentityMat"><C>MutableIdentityMat</C></Index> (removed in &GAP;&nbsp;4.15)</Item>
   <Item><Ref Func="IdentityMat"/></Item>
 </Row>
 <Row>
-  <Item><C>MutableNullMat</C><Index Key="MutableNullMat"><C>MutableNullMat</C></Index></Item>
+  <Item><C>MutableNullMat</C><Index Key="MutableNullMat"><C>MutableNullMat</C></Index> (removed in &GAP;&nbsp;4.15)</Item>
   <Item><Ref Func="NullMat"/></Item>
 </Row>
 <Row>
-  <Item><C>NormedVectors</C><Index Key="NormedVectors"><C>NormedVectors</C></Index></Item>
+  <Item><C>NormedVectors</C><Index Key="NormedVectors"><C>NormedVectors</C></Index> (removed in &GAP;&nbsp;4.15)</Item>
   <Item><Ref Attr="NormedRowVectors"/></Item>
+</Row>
+<Row>
+  <Item><C>OVERRIDENICE</C><Index Key="OVERRIDENICE"><C>OVERRIDENICE</C></Index></Item>
+  <Item><C>OverrideNice()</C></Item>
+</Row>
+<Row>
+  <Item><C>QUIT_GAP</C><Index Key="QUIT_GAP"><C>QUIT_GAP</C></Index></Item>
+  <Item><Ref Func="QuitGap"/></Item>
 </Row>
 <Row>
   <Item><C>RadicalGroup</C><Index Key="RadicalGroup"><C>RadicalGroup</C></Index></Item>
   <Item><Ref Attr="SolvableRadical"/></Item>
+</Row>
+<Row>
+  <Item><C>RANDOM_SEED( n )</C><Index Key="RANDOM_SEED"><C>RANDOM_SEED</C></Index></Item>
+  <Item><C>Reset( GlobalRandomSource, n )</C>, see <Ref Oper="Reset"/></Item>
+</Row>
+<Row>
+  <Item><C>ReadTest</C><Index Key="ReadTest"><C>ReadTest</C></Index></Item>
+  <Item><Ref Func="Test"/></Item>
+</Row>
+<Row>
+  <Item><C>RowLength</C><Index Key="RowLength"><C>RowLength</C></Index></Item>
+  <Item><Ref Attr="NumberColumns" Label="for a matrix object"/></Item>
+</Row>
+<Row>
+  <Item><C>SCRSiftOld</C><Index Key="SCRSiftOld"><C>SCRSiftOld</C></Index></Item>
+  <Item><Ref Func="SiftedPermutation"/></Item>
+</Row>
+<Row>
+  <Item><C>SetUserPreferences</C><Index Key="SetUserPreferences"><C>SetUserPreferences</C></Index></Item>
+  <Item><Ref Func="SetUserPreference"/></Item>
+</Row>
+<Row>
+  <Item><C>TmpNameAllArchs</C><Index Key="TmpNameAllArchs"><C>TmpNameAllArchs</C></Index></Item>
+  <Item><C>TmpName</C></Item>
+</Row>
+<Row>
+  <Item><C>TransposedMatAttr</C><Index Key="TransposedMatAttr"><C>TransposedMatAttr</C></Index></Item>
+  <Item><Ref Attr="TransposedMatImmutable"/></Item>
+</Row>
+<Row>
+  <Item><C>Tuple</C><Index Key="Tuple"><C>Tuple</C></Index></Item>
+  <Item><Ref Oper="DirectProductElement"/></Item>
+</Row>
+<Row>
+  <Item><C>UnhideGlobalVariables</C><Index Key="UnhideGlobalVariables"><C>UnhideGlobalVariables</C></Index></Item>
+  <Item>no replacement</Item>
+</Row>
+<Row>
+  <Item><C>USER_HOME_EXPAND</C><Index Key="USER_HOME_EXPAND"><C>USER_HOME_EXPAND</C></Index></Item>
+  <Item><Ref Func="UserHomeExpand"/></Item>
 </Row>
 </Table>
 
