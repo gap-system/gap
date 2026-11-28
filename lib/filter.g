@@ -114,6 +114,16 @@ BIND_GLOBAL( "Tester", TESTER_FILTER );
 
 #############################################################################
 ##
+#V  IMPLICATIONS_MAX_FILTER
+##
+##  is the largest filter number occurring in 'IMPLICATIONS_SIMPLE' or
+##  'IMPLICATIONS_COMPOSED'.
+##
+IMPLICATIONS_MAX_FILTER := 0;
+
+
+#############################################################################
+##
 #F  InstallTrueMethodNewFilter( <tofilt>, <from> )
 ##
 ##  If <from> is a new filter then  it cannot occur in  the cache.  Therefore
@@ -121,7 +131,7 @@ BIND_GLOBAL( "Tester", TESTER_FILTER );
 ##  from. This should only be used in the file "type.g".
 ##
 BIND_GLOBAL( "InstallTrueMethodNewFilter", function ( tofilt, from )
-    local   imp, found, imp2;
+    local   imp, found, imp2, trues;
 
     # Check that no filter implies `IsMutable'.
     # (If this would be allowed then `Immutable' would be able
@@ -145,25 +155,39 @@ BIND_GLOBAL( "InstallTrueMethodNewFilter", function ( tofilt, from )
 
     atomic IMPLICATIONS_SIMPLE do
       # Extend available implications by the new one if applicable.
+      # An implication applies only if it contains every flag of 'from';
+      # none contains a flag above IMPLICATIONS_MAX_FILTER, such as the
+      # flag of a filter just created.
       found:= false;
-      for imp2 in IMPLICATIONS_SIMPLE do
-        if IS_SUBSET_FLAGS( imp2[2], imp[2] )
-           or IS_SUBSET_FLAGS( imp2[1], imp[2] ) then
-          imp2[1]:= AND_FLAGS( imp2[1], imp[1] );
-          if IS_EQUAL_FLAGS( imp2[2], imp[2] ) then
-            found:= true;
+      trues:= TRUES_FLAGS( imp[2] );
+      if LENGTH( trues ) = 0
+         or trues[ LENGTH( trues ) ] <= IMPLICATIONS_MAX_FILTER then
+        for imp2 in IMPLICATIONS_SIMPLE do
+          if IS_SUBSET_FLAGS( imp2[2], imp[2] )
+             or IS_SUBSET_FLAGS( imp2[1], imp[2] ) then
+            imp2[1]:= AND_FLAGS( imp2[1], imp[1] );
+            if IS_EQUAL_FLAGS( imp2[2], imp[2] ) then
+              found:= true;
+            fi;
           fi;
-        fi;
-      od;
-      for imp2 in IMPLICATIONS_COMPOSED do
-        if IS_SUBSET_FLAGS( imp2[2], imp[2] )
-           or IS_SUBSET_FLAGS( imp2[1], imp[2] ) then
-          imp2[1]:= AND_FLAGS( imp2[1], imp[1] );
-          if IS_EQUAL_FLAGS( imp2[2], imp[2] ) then
-            found:= true;
+        od;
+        for imp2 in IMPLICATIONS_COMPOSED do
+          if IS_SUBSET_FLAGS( imp2[2], imp[2] )
+             or IS_SUBSET_FLAGS( imp2[1], imp[2] ) then
+            imp2[1]:= AND_FLAGS( imp2[1], imp[1] );
+            if IS_EQUAL_FLAGS( imp2[2], imp[2] ) then
+              found:= true;
+            fi;
           fi;
-        fi;
-      od;
+        od;
+      fi;
+
+      # 'imp[1]' contains 'imp[2]' and the flags added to any 'imp2[1]'
+      trues:= TRUES_FLAGS( imp[1] );
+      if LENGTH( trues ) > 0
+         and IMPLICATIONS_MAX_FILTER < trues[ LENGTH( trues ) ] then
+        IMPLICATIONS_MAX_FILTER:= trues[ LENGTH( trues ) ];
+      fi;
 
       if not found then
         # Extend the list of implications.
