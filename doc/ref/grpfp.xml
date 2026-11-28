@@ -400,17 +400,13 @@ the empty word <M>w_1</M>. A coset table is standard if and only
 if the words <M>w_1, w_2, \ldots</M> are length-plus-lexicographic ordered
 (as defined in <Cite Key="Sims94"/>), for short: <E>lenlex</E>.
 <P/>
-This standardization of coset tables is
-different from that used in &GAP; versions 4.2 and earlier. Before
-that, we ignored the columns that correspond to inverse generators and
-hence only considered words in the generators of <M>G</M>. We call
-this older ordering the <E>semilenlex</E> standard as it
+A second standardization ignores the columns that correspond to inverse
+generators and hence only considers words in the generators of <M>G</M>.
+We call this ordering the <E>semilenlex</E> standard as it
 also applies to the case of semigroups where no inverses of the generators are known.
 <P/>
-We changed our default from the semilenlex standard to the lenlex
-standard to be consistent with <Cite Key="Sims94"/>. However, the
-semilenlex standardisation remains available and the convention used
-for all implicit standardisations can be selected by setting the value of the global variable
+The default is the lenlex standard, consistent with <Cite Key="Sims94"/>.
+The convention used for all implicit standardisations can be selected by setting the value of the global variable
 <Ref Var="CosetTableStandard"/> to either <C>"lenlex"</C> or
 <C>"semilenlex"</C>.
 

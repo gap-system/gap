@@ -66,9 +66,14 @@ There   is usually no   relation  between the   groups  in the  different
 libraries and a group may occur in different libraries in different
 incarnations.
 <P/>
-Note that a system administrator may choose to install all, or
-only a  few,  or even  none of the  libraries.  So some  of the libraries
-mentioned below may not be available on your installation.
+The <Package>TransGrp</Package>, <Package>SmallGrp</Package>,
+<Package>PerfGrp</Package> and <Package>PrimGrp</Package> packages are
+loaded at startup, unless &GAP; is started with the command line option
+<C>--bare</C>.
+The library of irreducible maximal finite integral matrix groups is part
+of &GAP; itself.
+<Package>IRREDSOL</Package> and <Package>CrystCat</Package> are optional
+packages, which may be missing from an installation.
 <P/>
 &GAP; might use data libraries that are available to speed up calculations,
 for example in using a classification to determine that groups must be
@@ -174,8 +179,7 @@ For  general  and   special  linear  groups
 and&nbsp;<Ref Func="SpecialLinearGroup" Label="for dimension and a ring"/>)
 &GAP;  has an efficient method  to generate
 representatives  of  the conjugacy  classes.  This  uses results  from
-linear algebra on normal forms of matrices. If you know how to do this
-for other types of classical groups, please, tell us.
+linear algebra on normal forms of matrices.
 <P/>
 <Example><![CDATA[
 gap> g := SL(4,9);
@@ -307,8 +311,10 @@ to improve the efficiency. Most  important, each recognizes a certain set
 of properties which are precomputed for the library without having to
 compute them anew for each group. This will substantially speed up the
 selection process.
-In the description of each library we will
-list the properties that are stored for this library.
+The manuals of the library packages list the properties stored for each
+library, see for example
+<Ref BookName="transgrp" Sect="Selection Functions"/> and
+<Ref BookName="primgrp" Sect="Primitive Permutation Groups"/>.
 <P/>
 <Index Key="OnePrimitiveGroup"><C>OnePrimitiveGroup</C></Index>
 <Index Key="OneTransitiveGroup"><C>OneTransitiveGroup</C></Index>
@@ -784,8 +790,7 @@ C2 x PGL(2,23)
 
 <Description>
 <Ref Func="ImfMatrixGroup"/> is the essential extraction function of this
-library (note that its name has been changed from <C>ImfMatGroup</C>
-in &GAP;&nbsp;3 to <Ref Func="ImfMatrixGroup"/> in &GAP;&nbsp;4).
+library.
 It returns a representative group, <M>G</M> say,
 of the <A>z</A>-th <M>&ZZ;</M>-class in the <A>q</A>-th <M>&QQ;</M>-class of
 i.m.f.&nbsp;integral matrix groups of dimension <A>dim</A>.
@@ -869,8 +874,7 @@ in the isomorphic permutation group which is induced by the action of
 You may call one of the following functions
 <Ref Meth="IsomorphismPermGroup" Label="for Imf matrix groups"/> or
 <Ref Func="IsomorphismPermGroupImfGroup"/> to get an isomorphism to such a
-permutation group (note that these &GAP;&nbsp;4 functions have replaced the
-&GAP;&nbsp;3 functions <C>PermGroup</C> and <C>PermGroupImfGroup</C>).
+permutation group.
 </Description>
 </ManSection>
 

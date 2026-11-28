@@ -241,8 +241,7 @@ DeclareGlobalFunction("NaturalActedSpace");
 ##  <Description>
 ##  The General Linear group is the group of all invertible matrices over a
 ##  ring. This property tests, whether a group is isomorphic to a General
-##  Linear group. (Note that currently only a few trivial methods are
-##  available for this operation. We hope to improve this in the future.)
+##  Linear group. A method is available for finite groups.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -264,8 +263,9 @@ InstallTrueMethod( IsGroup, IsGeneralLinearGroup );
 ##  <Description>
 ##  This property tests, whether a matrix group is the General Linear group
 ##  in the right dimension over the (smallest) ring which contains all
-##  entries of its elements. (Currently, only a trivial test that computes
-##  the order of the group is available.)
+##  entries of its elements. For finite fields, the test checks that the
+##  group acts absolutely irreducibly and has the order of the General
+##  Linear group.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -286,9 +286,8 @@ InstallTrueMethod(IsGeneralLinearGroup,IsNaturalGL);
 ##  <Description>
 ##  The Special Linear group is the group of all invertible matrices over a
 ##  ring, whose determinant is equal to 1. This property tests, whether a
-##  group is isomorphic to a Special Linear group. (Note that currently
-##  only a few trivial methods are available for this operation. We hope
-##  to improve this in the future.)
+##  group is isomorphic to a Special Linear group.
+##  A method is available for finite groups.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -309,8 +308,9 @@ InstallTrueMethod( IsGroup, IsSpecialLinearGroup );
 ##  <Description>
 ##  This property tests, whether a matrix group is the Special Linear group
 ##  in the right dimension over the (smallest) ring which contains all
-##  entries of its elements. (Currently, only a trivial test that computes
-##  the order of the group is available.)
+##  entries of its elements. For finite fields, the test checks that the
+##  group acts absolutely irreducibly, that its generators have determinant
+##  one, and that it has the order of the Special Linear group.
 ##  <Example><![CDATA[
 ##  gap> IsNaturalGL(m);
 ##  false

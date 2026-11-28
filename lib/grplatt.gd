@@ -77,10 +77,7 @@ DeclareRepresentation("IsConjugacyClassSubgroupsByStabilizerRep",
 ##  <Ref Attr="StabilizerOfExternalSet"/> (which returns the normalizer of
 ##  <A>U</A>), and <Ref Attr="AsList"/> work for it.
 ##  <P/>
-##  (The use of the <C>[]</C>
-##  list access to select elements of the class is considered obsolescent
-##  and will be removed in future versions.
-##  Use <Ref Oper="ClassElementLattice"/> instead.)
+##  Use <Ref Oper="ClassElementLattice"/> to select elements of the class.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,2,3,4),(1,2));;IsNaturalSymmetricGroup(g);;
@@ -329,12 +326,10 @@ DeclareAttribute("MinimalSupergroupsLattice",IsLatticeSubgroupsRep);
 ##  <Description>
 ##  <Index>dot-file</Index>
 ##  <Index>graphviz</Index>
-##  <Index>OmniGraffle</Index>
 ##  This function produces a graphical representation of the subgroup
 ##  lattice <A>L</A> in file <A>file</A>. The output is in <C>.dot</C> (also known as
 ##  <C>GraphViz</C> format). For details on the format, and information about how to
-##  display or edit this format see <URL>https://www.graphviz.org</URL>. (On the
-##  Macintosh, the program <C>OmniGraffle</C> is also able to read this format.)
+##  display or edit this format see <URL>https://www.graphviz.org</URL>.
 ##  <P/>
 ##  Subgroups are labelled in the form <C><A>i</A>-<A>j</A></C> where <A>i</A> is the number of
 ##  the class of subgroups and <A>j</A> the number within this class. Normal
