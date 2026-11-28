@@ -154,6 +154,7 @@ also for vector objects.
 <#Include Label="CopySubMatrix">
 <#Include Label="CompatibleVector">
 <#Include Label="RowsOfMatrix">
+<#Include Label="RowOfMatrix">
 <#Include Label="MatObj_CompanionMatrix">
 
 </Section>

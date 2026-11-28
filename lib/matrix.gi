@@ -1485,6 +1485,59 @@ InstallMethod( RowsOfMatrix,
     [ IsMatrix ],
     PlainListCopy );
 
+InstallMethod( RowOfMatrix,
+    "for a matrix that is a list, and a row number",
+    [ IsMatrix, IsPosInt ],
+    function( M, i )
+    ROW_OF_MATRIX_CHECK( M, i );
+    return ShallowCopy( M[i] );
+    end );
+
+# This avoids computing 'BaseDomain( <M> )'.
+InstallMethod( Vector,
+    "for a list and a plain list matrix",
+    [ IsList, IsMatrix and IsPlistRep ],
+    function( list, M )
+    local v;
+
+    v:= PlainListCopy( list );
+    if not IsMutable( list ) then
+      MakeImmutable( v );
+    fi;
+    return v;
+    end );
+
+# Method dispatch on a plain or compressed list matrix costs more than the
+# work itself.
+InstallEarlyMethod( RowOfMatrix,
+    function( M, i )
+    local row;
+
+    if IsList( M ) and IsPosInt( i ) and i <= Length( M ) then
+      row:= M[i];
+      if IsList( row ) then
+        return ShallowCopy( row );
+      fi;
+    fi;
+    TryNextMethod();
+    end );
+
+# 'IsList( <M>[1] )' rejects 'Vector( <R>, <list> )' for a plain <list>.
+InstallEarlyMethod( Vector,
+    function( list, M )
+    local v;
+
+    if IsPlistRep( M ) and IsList( list ) and Length( M ) > 0
+       and IsList( M[1] ) then
+      v:= PlainListCopy( list );
+      if not IsMutable( list ) then
+        MakeImmutable( v );
+      fi;
+      return v;
+    fi;
+    TryNextMethod();
+    end );
+
 InstallMethod( NumberRows,
     "generic method for a (perhaps empty) matrix",
     [ IsMatrix ],

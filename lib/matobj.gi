@@ -233,6 +233,36 @@ InstallMethod( Vector,
                       BaseDomain( example ), Unpack( v ) );
     end );
 
+# The result fits to <M>, as 'ZeroVector( <len>, <M> )' does.
+InstallMethod( Vector,
+    "for a list and a matrix or matrix object",
+    [ IsList, IsMatrixOrMatrixObj ],
+    function( list, M )
+    local v;
+
+    v:= NewVector( CompatibleVectorFilter( M ), BaseDomain( M ), list );
+    # mutable iff <list> is; 'NewVector' may return <list> itself
+    if IsMutable( list ) and not IsMutable( v ) then
+      v:= ShallowCopy( v );
+    elif not IsMutable( list ) and IsMutable( v ) then
+      MakeImmutable( v );
+    fi;
+    return v;
+    end );
+
+InstallMethod( Vector,
+    "for a vector object and a matrix or matrix object",
+    [ IsVectorObj, IsMatrixOrMatrixObj ],
+    function( v, M )
+    local w;
+
+    w:= Vector( Unpack( v ), M );
+    if not IsMutable( v ) then
+      MakeImmutable( w );
+    fi;
+    return w;
+    end );
+
 InstallMethod( Vector,
     [ IsList ],
 function(l)
@@ -1672,6 +1702,19 @@ InstallMethod( RowsOfMatrix,
     R:= BaseDomain( M );
     f:= CompatibleVectorFilter( M );
     return List( Unpack( M ), row -> Vector( f, R, row ) );
+    end );
+
+
+#############################################################################
+##
+#M  RowOfMatrix( <M>, <i> )
+##
+InstallMethod( RowOfMatrix,
+    "for a matrix or matrix object, and a row number",
+    [ IsMatrixOrMatrixObj, IsPosInt ],
+    function( M, i )
+    ROW_OF_MATRIX_CHECK( M, i );
+    return Vector( List( [ 1 .. NumberColumns( M ) ], j -> M[ i, j ] ), M );
     end );
 
 

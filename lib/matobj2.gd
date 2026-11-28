@@ -682,6 +682,8 @@ DeclareOperation( "StandardBasisVector",
 #O  Vector( <R>, <v> )
 #O  Vector( <list>, <v> )
 #O  Vector( <v1>, <v2> )
+#O  Vector( <list>, <M> )
+#O  Vector( <v>, <M> )
 ##
 ##  <#GAPDoc Label="Vector">
 ##  <ManSection>
@@ -690,6 +692,10 @@ DeclareOperation( "StandardBasisVector",
 ##   Label="for a list and a vector object"/>
 ##  <Oper Name="Vector" Arg='vecobj,example_vecobj'
 ##   Label="for two vector objects"/>
+##  <Oper Name="Vector" Arg='list,example_mat'
+##   Label="for a list and a matrix"/>
+##  <Oper Name="Vector" Arg='vecobj,example_mat'
+##   Label="for a vector object and a matrix"/>
 ##  <Oper Name="Vector" Arg='[filt,]R,list'
 ##   Label="for filter, base domain, and list"/>
 ##  <Oper Name="Vector" Arg='[filt,]R,vecobj'
@@ -707,8 +713,18 @@ DeclareOperation( "StandardBasisVector",
 ##  <Ref Attr="BaseDomain" Label="for a vector object"/> are taken from
 ##  <A>example_vecobj</A>.
 ##  <P/>
-##  The variants without a given <A>example_vecobj</A> are intended only for
-##  situations where no such example object is available.
+##  If a matrix or matrix object <A>example_mat</A> is given as the second
+##  argument, then the result has the entries defined by the first argument,
+##  the <Ref Attr="BaseDomain" Label="for a matrix object"/> of
+##  <A>example_mat</A>, and the
+##  <Ref Attr="CompatibleVectorFilter" Label="for a matrix object"/> value of
+##  <A>example_mat</A> as its
+##  <Ref Attr="ConstructingFilter" Label="for a vector object"/>,
+##  so that it can be multiplied with <A>example_mat</A>.
+##  This works also for matrices in <Ref Filt="IsMatrix"/>.
+##  <P/>
+##  The variants without an example object are intended only for situations
+##  where no such example object is available.
 ##  In these cases, the entries of the result are described by the given
 ##  list <A>list</A> or vector object <A>vecobj</A>.
 ##  The <Ref Attr="BaseDomain" Label="for a vector object"/> of the result
@@ -757,6 +773,11 @@ DeclareOperation( "StandardBasisVector",
 ##  <vector mod 8: [ 4, 5, 6 ]>
 ##  gap> Vector( BaseDomain( v ), [ 4, 5, 6 ] * One( R ) );
 ##  <plist vector over (Integers mod 8) of length 3>
+##  gap> M:= Matrix( IsGenericMatrixRep, GF(5), Z(5)^0 * [ [ 1, 2 ], [ 3, 4 ] ] );;
+##  gap> w:= Vector( Z(5)^0 * [ 1, 0 ], M );
+##  <plist vector over GF(5) of length 2>
+##  gap> Unpack( w * M );
+##  [ Z(5)^0, Z(5) ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -768,6 +789,8 @@ DeclareOperation( "Vector", [ IsSemiring, IsList ] );
 DeclareOperation( "Vector", [ IsSemiring, IsVectorObj ] );
 DeclareOperation( "Vector", [ IsList, IsVectorObj ] );
 DeclareOperation( "Vector", [ IsVectorObj, IsVectorObj ] );
+DeclareOperation( "Vector", [ IsList, IsMatrixOrMatrixObj ] );
+DeclareOperation( "Vector", [ IsVectorObj, IsMatrixOrMatrixObj ] );
 DeclareOperation( "Vector", [ IsList ] );
 
 
@@ -1478,6 +1501,54 @@ DeclareOperation( "CompatibleVector", [ IsMatrixOrMatrixObj ] );
 ##  in this situation.
 ##
 DeclareAttribute( "RowsOfMatrix", IsMatrixOrMatrixObj );
+
+
+#############################################################################
+##
+#O  RowOfMatrix( <M>, <i> )
+##
+##  <#GAPDoc Label="RowOfMatrix">
+##  <ManSection>
+##  <Oper Name="RowOfMatrix" Arg='M, i'/>
+##
+##  <Returns>a mutable vector</Returns>
+##
+##  <Description>
+##  For a matrix or matrix object <A>M</A> and a row number <A>i</A>,
+##  this operation returns a new mutable vector with the entries of the
+##  <A>i</A>-th row of <A>M</A>, which can be multiplied with <A>M</A>.
+##  Changing it does not change <A>M</A>.
+##  For a matrix object <A>M</A>, the result has the
+##  <Ref Attr="BaseDomain" Label="for a matrix object"/> of <A>M</A> and
+##  its <Ref Attr="ConstructingFilter" Label="for a vector object"/> is the
+##  <Ref Attr="CompatibleVectorFilter" Label="for a matrix object"/> value
+##  of <A>M</A>; for a matrix in <Ref Filt="IsMatrix"/>, it is a shallow
+##  copy of <A>M</A><C>[</C><A>i</A><C>]</C>.
+##  <P/>
+##  Unlike <A>M</A><C>[</C><A>i</A><C>]</C>, this works also for matrix
+##  objects that are not in <Ref Filt="IsRowListMatrix"/>, and unlike
+##  <Ref Attr="RowsOfMatrix" Label="for a matrix object"/> it copies only
+##  one row.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> M:= Matrix( IsGenericMatrixRep, GF(5), Z(5)^0 * [ [ 1, 2 ], [ 3, 4 ] ] );;
+##  gap> v:= RowOfMatrix( M, 2 );
+##  <plist vector over GF(5) of length 2>
+##  gap> Unpack( v );
+##  [ Z(5)^3, Z(5)^2 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "RowOfMatrix", [ IsMatrixOrMatrixObj, IsPosInt ] );
+
+BindGlobal( "ROW_OF_MATRIX_CHECK", function( M, i )
+    if i > NumberRows( M ) then
+      ErrorNoReturn( "RowOfMatrix: <i> must be at most NrRows( <M> ) = ",
+                     NumberRows( M ) );
+    fi;
+    end );
 
 
 #############################################################################
