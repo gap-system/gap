@@ -67,6 +67,18 @@ struct TypInputFile {
     // pointer to the current character within the current line
     char * ptr;
 
+    // start of the current line within 'line'; the byte before it is the
+    // pushback buffer
+    char * lineStart;
+
+    // if 'inPlace' is set, 'line' holds the data read from the file so far,
+    // up to 'dataEnd', and the scanner reads the current line in place: it
+    // ends with a NUL at 'lineEnd', which hides the character 'lineEndChar'
+    BOOL   inPlace;
+    char * lineEnd;
+    char * dataEnd;
+    char   lineEndChar;
+
     // the number of the current line; used in error messages
     UInt number;
 
@@ -444,8 +456,7 @@ EXPORT_INLINE Int GetInputLineNumber(TypInputFile * input)
 EXPORT_INLINE const Char * GetInputLineBuffer(TypInputFile * input)
 {
     GAP_ASSERT(input);
-    // first byte of Input->line is reserved for the pushback buffer, so add 1
-    return input->line + 1;
+    return input->lineStart;
 }
 
 //
