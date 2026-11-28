@@ -16,12 +16,15 @@
 
 #include "scanner.h"
 
+#include "bool.h"
 #include "error.h"
 #include "gapstate.h"
 #include "gaputils.h"
 #include "io.h"
 #include "lists.h"
 #include "plist.h"
+#include "precord.h"
+#include "records.h"
 #include "stringobj.h"
 #include "sysstr.h"
 
@@ -50,6 +53,35 @@ static inline BOOL IsAsciiIdent(Char c)
 
 /****************************************************************************
 **
+*F  NewSyntaxErrorRecord( <msg> ) . . . build a record describing a diagnostic
+**
+**  Build a record describing a syntax error or warning, for collection into
+**  'ScannerState.errors'. The positions are those the caret printer in
+**  'SyntaxErrorOrWarning' uses.
+*/
+static Obj NewSyntaxErrorRecord(ScannerState * s,
+                                const Char *   msg,
+                                UInt           error,
+                                Int            tokenoffset)
+{
+    Int pos = (tokenoffset == 0) ? GetInputLinePosition(s->input)
+                                 : s->SymbolStartPos[tokenoffset - 1];
+
+    Obj record = NEW_PREC(6);
+    AssPRec(record, RNamName("message"), MakeImmString(msg));
+    AssPRec(record, RNamName("isError"), error ? True : False);
+    AssPRec(record, RNamName("line"),
+            INTOBJ_INT(s->SymbolStartLine[tokenoffset]));
+    AssPRec(record, RNamName("pos"), INTOBJ_INT(s->SymbolStartPos[tokenoffset]));
+    AssPRec(record, RNamName("endLine"),
+            INTOBJ_INT(GetInputLineNumber(s->input)));
+    AssPRec(record, RNamName("endPos"), INTOBJ_INT(pos));
+    return record;
+}
+
+
+/****************************************************************************
+**
 *F  SyntaxErrorOrWarning( <msg> ) . . . . . . raise a syntax error or warning
 **
 **  Helper function used by 'SyntaxError' and 'SyntaxWarning'.
@@ -61,8 +93,22 @@ static void SyntaxErrorOrWarning(ScannerState * s,
                                  Int            tokenoffset)
 {
     GAP_ASSERT(tokenoffset >= 0 && tokenoffset <= 2);
+
+    // classify the first error: is the input merely truncated, i.e., could
+    // appending more text still produce valid input?
+    if (error && s->NrError == 0)
+        s->firstErrorAtEOF = (s->Symbol == S_EOF) || s->pendingEOFError;
+    s->pendingEOFError = FALSE;
+
+    // if diagnostics are being collected, record instead of printing; honour
+    // the same one-message-per-line gate as the printing branch below
+    if (s->errors) {
+        if (s->input->lastErrorLine != s->input->number)
+            PushPlist(s->errors,
+                      NewSyntaxErrorRecord(s, msg, error, tokenoffset));
+    }
     // do not print a message if we found one already on the current line
-    if (s->input->lastErrorLine != s->input->number) {
+    else if (s->input->lastErrorLine != s->input->number) {
 
         // open error output
         TypOutputFile output = { 0 };
@@ -532,10 +578,13 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
         seenADigit = TRUE;
         c = GET_NEXT_CHAR();
     }
-    if (!seenADigit)
+    if (!seenADigit) {
+        if (c == '\377')
+            s->pendingEOFError = TRUE;
         SyntaxError(s,
                     "Badly formed number: need a digit before or after the "
                     "decimal point");
+    }
     if (c == '\\')
         SyntaxError(s, "Badly formed number");
 
@@ -552,9 +601,12 @@ static UInt GetNumber(ScannerState * s, Int readDecimalPoint, Char c)
 
         // Here we are into the unsigned exponent of a number in scientific
         // notation, so we just read digits
-        if (!IsDigit(c))
+        if (!IsDigit(c)) {
+            if (c == '\377')
+                s->pendingEOFError = TRUE;
             SyntaxError(s, "Badly formed number: need at least one digit in "
                            "the exponent");
+        }
         while (IsDigit(c)) {
             i = AddCharToValue(s, i, c);
             c = GET_NEXT_CHAR();
@@ -618,8 +670,11 @@ static inline Char GetOctalDigits(ScannerState * s, Char c)
     Char result;
     result = 8 * (c - '0');
     c = GET_NEXT_CHAR();
-    if ( c < '0' || c > '7' )
+    if ( c < '0' || c > '7' ) {
+        if (c == '\377')
+            s->pendingEOFError = TRUE;
         SyntaxError(s, "Expecting octal digit");
+    }
     result = result + (c - '0');
 
     return result;
@@ -635,6 +690,8 @@ static inline Char CharHexDigit(ScannerState * s)
 {
     Char c = GET_NEXT_CHAR();
     if (!isxdigit((unsigned int)c)) {
+        if (c == '\377')
+            s->pendingEOFError = TRUE;
         SyntaxError(s, "Expecting hexadecimal digit");
     }
     if (c >= 'a') {
@@ -679,6 +736,8 @@ static Char GetEscapedChar(ScannerState * s)
     } else if (c >= '0' && c <= '7') {
         result += GetOctalDigits(s, c);
     } else {
+        if (c == '\377')
+            s->pendingEOFError = TRUE;
         SyntaxError(s, "Expecting hexadecimal escape, or two more octal digits");
     }
   } else if ( c >= '1' && c <= '7' ) {
@@ -755,6 +814,7 @@ static Char GetStr(ScannerState * s, Char c)
 
     if (c == '\377') {
         FlushRestOfInputLine(s->input);
+        s->pendingEOFError = TRUE;
         SyntaxError(s, "String must end with \" before end of file");
     }
 
@@ -831,6 +891,7 @@ static Char GetTripStr(ScannerState * s, Char c)
 
     if (c == '\377') {
         FlushRestOfInputLine(s->input);
+        s->pendingEOFError = TRUE;
         SyntaxError(s, "String must end with \"\"\" before end of file");
     }
 
@@ -907,6 +968,8 @@ static void GetChar(ScannerState * s)
     if ( c == '\'' ) {
       c = GET_NEXT_CHAR();
     } else {
+      if (c == '\377')
+        s->pendingEOFError = TRUE;
       SyntaxError(s, "Missing single quote in character constant");
     }
   }
