@@ -110,16 +110,12 @@ DeclareCategory( "IsVectorObj", IsVector and IsVecOrMatObj and IsRowVectorOrVect
 ##  argument.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> m:= IdentityMat( 2, GF(2) );;
-##  gap> IsMatrix( m );  IsMatrixObj( m ); IsMatrixOrMatrixObj( m );
-##  true
-##  false
-##  true
-##  gap> m:= NewIdentityMatrix( IsPlistMatrixRep, GF(2), 2 );;
-##  gap> IsMatrix( m );  IsMatrixObj( m ); IsMatrixOrMatrixObj( m );
-##  false
-##  true
-##  true
+##  gap> m := [ [1,2,3,4], [6,7,8,9] ];;
+##  gap> [ IsMatrix( m ), IsMatrixObj( m ), IsMatrixOrMatrixObj( m ) ];
+##  [ true, false, true ]
+##  gap> m1 := Matrix( Integers, [ [1,2,3,4], [6,7,8,9] ] );;
+##  gap> [ IsMatrix( m1 ), IsMatrixObj( m1 ), IsMatrixOrMatrixObj( m1 ) ];
+##  [ false, true, true ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -246,7 +242,7 @@ DeclareCategory( "IsMatrixObj", IsMatrixOrMatrixObj );
 ##  the <M>i</M>-th row of <M>M</M>,
 ##  for <M>1 \leq i \leq</M> <C>NumberRows( </C><M>M</M><C> )</C>.
 ##  <P/>
-##  All rows are <Ref Filt="IsVectorObj"/> objects in the same
+##  All rows are <Ref Filt="IsVectorObj"/> objects in the compatible
 ##  representation.
 ##  Several rows of a row list matrix object can be identical objects,
 ##  and different row list matrices may share rows.
@@ -256,6 +252,14 @@ DeclareCategory( "IsMatrixObj", IsMatrixOrMatrixObj );
 ##  Matrix objects in <Ref Filt="IsRowListMatrix"/> are <E>not</E>
 ##  necessarily in <Ref Filt="IsList"/>,
 ##  and then they need not obey the general rules for lists.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Integers, [ [1,2,3,4], [6,7,8,9] ] );;
+##  gap> IsRowListMatrix( m1 );
+##  true
+##  gap> Print( m1[2] );
+##  NewVector(IsPlistVectorRep,Integers,[ 6, 7, 8, 9 ])
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -283,6 +287,12 @@ DeclareCategory( "IsRowListMatrix", IsMatrixObj );
 ##  its base domain with respect to
 ##  <Ref Oper="\in" Label="for a collection"/>, see Section
 ##  <Ref Sect="Concepts and Rules for Vector and Matrix Objects"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> v := Vector( Rationals, [ 3, 4, 7, 8 ] );;
+##  gap> BaseDomain( v );
+##  Rationals
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -290,44 +300,6 @@ DeclareCategory( "IsRowListMatrix", IsMatrixObj );
 DeclareAttribute( "BaseDomain", IsVecOrMatObj );
 #DeclareAttribute( "BaseDomain", IsVectorObj );
 #DeclareAttribute( "BaseDomain", IsMatrixOrMatrixObj );
-
-
-#############################################################################
-##
-#A  NumberRows( <M> )
-#A  NrRows( <M> )
-#A  NumberColumns( <M> )
-#A  NrCols( <M> )
-##
-##  <#GAPDoc Label="NumberRowsNumberColumns">
-##  <ManSection>
-##  <Heading>NumberRows and NumberColumns</Heading>
-##  <Attr Name="NumberRows" Arg='M' Label="for a matrix object"/>
-##  <Attr Name="NrRows" Arg='M' Label="for a matrix object"/>
-##  <Attr Name="NumberColumns" Arg='M' Label="for a matrix object"/>
-##  <Attr Name="NrCols" Arg='M' Label="for a matrix object"/>
-##
-##  <Description>
-##  For a matrix object <A>M</A>,
-##  <Ref Attr="NumberRows" Label="for a matrix object"/> and
-##  <Ref Attr="NumberColumns" Label="for a matrix object"/> store the
-##  number of rows and columns of <A>M</A>, respectively.
-##  <P/>
-##  <Ref Attr="NrRows" Label="for a matrix object"/> and
-##  <Ref Attr="NrCols" Label="for a matrix object"/> are synonyms of
-##  <Ref Attr="NumberRows" Label="for a matrix object"/> and
-##  <Ref Attr="NumberColumns" Label="for a matrix object"/>, respectively.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareAttributeKernel( "NumberRows", IsMatrixOrMatrixObj, NUMBER_ROWS );
-DeclareSynonymAttr( "NrRows", NumberRows );
-InstallTrueMethod( HasNumberRows, IsMatrixOrMatrixObj and IsPlistRep);
-
-DeclareAttributeKernel( "NumberColumns", IsMatrixOrMatrixObj, NUMBER_COLUMNS );
-DeclareSynonymAttr( "NrCols", NumberColumns );
-InstallTrueMethod( HasNumberColumns, IsMatrixOrMatrixObj and IsPlistRep );
 
 
 #############################################################################
@@ -372,6 +344,52 @@ DeclareAttribute( "OneOfBaseDomain", IsVecOrMatObj );
 DeclareAttribute( "ZeroOfBaseDomain", IsVecOrMatObj );
 #DeclareAttribute( "ZeroOfBaseDomain", IsVectorObj );
 #DeclareAttribute( "ZeroOfBaseDomain", IsMatrixOrMatrixObj );
+
+
+#############################################################################
+##
+#A  NumberRows( <M> )
+#A  NrRows( <M> )
+#A  NumberColumns( <M> )
+#A  NrCols( <M> )
+##
+##  <#GAPDoc Label="NumberRowsNumberColumns">
+##  <ManSection>
+##  <Heading>NumberRows and NumberColumns</Heading>
+##  <Attr Name="NumberRows" Arg='M' Label="for a matrix object"/>
+##  <Attr Name="NrRows" Arg='M' Label="for a matrix object"/>
+##  <Attr Name="NumberColumns" Arg='M' Label="for a matrix object"/>
+##  <Attr Name="NrCols" Arg='M' Label="for a matrix object"/>
+##
+##  <Description>
+##  For a matrix object <A>M</A>,
+##  <Ref Attr="NumberRows" Label="for a matrix object"/> and
+##  <Ref Attr="NumberColumns" Label="for a matrix object"/> store the
+##  number of rows and columns of <A>M</A>, respectively.
+##  <P/>
+##  <Ref Attr="NrRows" Label="for a matrix object"/> and
+##  <Ref Attr="NrCols" Label="for a matrix object"/> are synonyms of
+##  <Ref Attr="NumberRows" Label="for a matrix object"/> and
+##  <Ref Attr="NumberColumns" Label="for a matrix object"/>, respectively.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Integers, [ [1,2,3,4], [6,7,8,9] ] );;
+##  gap> NumberRows( m1 );
+##  2
+##  gap> NrCols( m1 );
+##  4
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttributeKernel( "NumberRows", IsMatrixOrMatrixObj, NUMBER_ROWS );
+DeclareSynonymAttr( "NrRows", NumberRows );
+InstallTrueMethod( HasNumberRows, IsMatrixOrMatrixObj and IsPlistRep);
+
+DeclareAttributeKernel( "NumberColumns", IsMatrixOrMatrixObj, NUMBER_COLUMNS );
+DeclareSynonymAttr( "NrCols", NumberColumns );
+InstallTrueMethod( HasNumberColumns, IsMatrixOrMatrixObj and IsPlistRep );
 
 
 #############################################################################
