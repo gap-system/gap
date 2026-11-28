@@ -668,40 +668,37 @@ end );
 #M  PreImagesRepresentativeNC( <map>, <elm> ) . . . . for mapping by function
 #M  PreImagesRepresentative( <map>, <elm> ) . . . . . for mapping by function
 ##
+# The preimage function returns a preimage of each element of the image,
+# so checking its result decides membership in the image without computing
+# the image, which is impossible for an infinite source.
 InstallMethod( PreImagesRepresentativeNC,
     "for mapping by function",
     FamRangeEqFamElm,
     [ IsMappingByFunctionRep, IsObject ], 0,
   function ( map, elm )
+    local pre;
     if not IsBound(map!.prefun) then
       # no quick way known
       TryNextMethod();
-    fi;
-    return map!.prefun( elm );
-  end );
-
-# The preimage function returns a preimage of each element of the image,
-# so checking its result decides membership in the image without computing
-# the image, which is impossible for an infinite source.
-InstallMethod( PreImagesRepresentative,
-    "for mapping by function",
-    FamRangeEqFamElm,
-    [ IsMappingByFunctionRep, IsObject ], 0,
-  function ( map, elm )
-    local pre;
-    if not ( elm in Range(map) ) then
-      Error( "<elm> is not in the range of <map>" );
-    elif not IsBound( map!.prefun ) then
-      if not ( elm in Image(map) ) then
-        return fail;
-      fi;
-      return PreImagesRepresentativeNC( map, elm );
     fi;
     pre:= map!.prefun( elm );
     if pre in Source( map ) and map!.fun( pre ) = elm then
       return pre;
     fi;
     return fail;
+  end );
+
+InstallMethod( PreImagesRepresentative,
+    "for mapping by function",
+    FamRangeEqFamElm,
+    [ IsMappingByFunctionRep, IsObject ], 0,
+  function ( map, elm )
+    if not ( elm in Range(map) ) then
+      Error( "<elm> is not in the range of <map>" );
+    elif not IsBound( map!.prefun ) and not ( elm in Image(map) ) then
+      return fail;
+    fi;
+    return PreImagesRepresentativeNC( map, elm );
   end );
 
 InstallMethod( PreImagesElm,
