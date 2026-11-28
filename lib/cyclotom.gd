@@ -650,7 +650,7 @@ DeclareGlobalFunction( "NK" );
 ##  the sections <Ref Subsect="EB"/>, <Ref Subsect="EI"/>,
 ##  <Ref Subsect="EY"/>, <Ref Subsect="EM"/>.
 ##  These irrational values are defined in
-##  <Cite Key="CCN85" Where="Chapter 6, Section 10"/>, and the following
+##  <Cite Key="CCN85" Where="Chapter 7, Section 10"/>, and the following
 ##  description is mainly copied from there.
 ##  If <M>q_N</M> is such a value (e.g. <M>y_{24}^{\prime\prime}</M>)
 ##  then linear combinations of algebraic conjugates of <M>q_N</M> are
