@@ -58,15 +58,14 @@
 ##  </List>
 ##  <P/>
 ##  The first argument <A>dir</A> is a directory object (see&nbsp;<Ref Sect="Directories"/>)
-##  which will be the current directory (in the usual UNIX or MS-DOS sense)
+##  which will be the current directory
 ##  when the program is run.
 ##  This will only matter if the program accesses files (including running
 ##  other programs) via relative path names.
 ##  In particular, it has nothing to do with finding the binary to run.
 ##  <P/>
 ##  In general the directory will either be the current directory, which is
-##  returned by <Ref Func="DirectoryCurrent"/>
-##  &ndash;this was the behaviour of &GAP;&nbsp;3&ndash;
+##  returned by <Ref Func="DirectoryCurrent"/>,
 ##  or a temporary directory returned by <Ref Func="DirectoryTemporary"/>.
 ##  If one expects that the process creates temporary or log files the latter
 ##  should be used because &GAP; will attempt to remove these directories

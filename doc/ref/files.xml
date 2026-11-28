@@ -26,8 +26,7 @@ using the following functions.  This is done by first getting a directory
 object for the directory the file shall  reside in, and then constructing
 the filename.  However, it is  sometimes necessary to construct filenames
 of files in subdirectories relative to a given directory object.  In this
-case the directory separator is <E>always</E> <C>/</C> even under DOS or
-MacOS.
+case the directory separator is <E>always</E> <C>/</C>, also on Windows.
 <P/>
 Section <Ref Sect="Directories"/> describes how to construct directory objects
 for the common &GAP; and system directories.
@@ -42,13 +41,10 @@ see&nbsp;<Ref Sect="File Access"/>.
 <Section Label="Portability">
 <Heading>Portability</Heading>
 
-For portability filenames and directory  names should be restricted to at
-most   8 alphanumerical characters  optionally followed  by a dot <C>.</C>
-and between 1 and 3 alphanumerical characters.  Upper case letters should
-be  avoided because some  operating systems  do  not make any distinction
-between case,  so that <C>NaMe</C>, <C>Name</C>  and  <C>name</C> all  refer to the same
-file  whereas  some   operating  systems are case   sensitive.   To avoid
-problems only lower case characters should be used.
+Linux file systems usually distinguish upper and lower case in filenames,
+whereas by default those of macOS and Windows do not, so that <C>NaMe</C>,
+<C>Name</C> and <C>name</C> refer to the same file there.
+Portable code should therefore not use filenames that differ only in case.
 <P/>
 Another function which is system-dependent is <Ref Func="LastSystemError"/>.
 
