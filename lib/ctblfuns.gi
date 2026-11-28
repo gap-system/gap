@@ -3884,6 +3884,62 @@ InstallMethod( SymmetricPower,
 
 #############################################################################
 ##
+#M  SchurPower( <chi>, <lambda> )
+##
+InstallMethod( SchurPower,
+    "for a class function and a homogeneous list",
+    [ IsClassFunction, IsHomogeneousList ],
+    function( chi, lambda )
+    local tbl, m, l, nccl, values, h, entry;
+
+    if not ( ForAll( lambda, IsInt )
+             and IsSortedList( Reversed( lambda ) ) ) then
+      Error( "<lambda> must be a weakly decreasing list of integers" );
+    fi;
+
+    tbl:= UnderlyingCharacterTable( chi );
+
+    # Adding m to all n entries of a weight multiplies by det^m.
+    if not IsEmpty( lambda ) and Last( lambda ) < 0 then
+      if Length( lambda ) <> chi[1] then
+        Error( "<lambda> with a negative entry must have length ", chi[1] );
+      fi;
+      m:= Last( lambda );
+      return SchurPower( chi, lambda - m )
+             * ComplexConjugate( DeterminantOfCharacter( chi ) )^(-m);
+    fi;
+
+    lambda:= Filtered( lambda, IsPosInt );
+    if IsEmpty( lambda ) then
+      return TrivialCharacter( tbl );
+    fi;
+
+    # h[ r+1 ] is the symmetric power h_r
+    l:= Length( lambda );
+    nccl:= Length( chi );
+    h:= PowersByNewtonIdentities( tbl, chi, lambda[1] + l - 1, 1 );
+
+    entry:= function( r, c )
+      if r < 0 then
+        return 0;
+      fi;
+      return h[ r + 1 ][c];
+    end;
+
+    # Jacobi-Trudi: s_lambda = det( h_{lambda_i - i + j} ).
+    values:= List( [ 1 .. nccl ], c -> DeterminantMat(
+                 List( [ 1 .. l ], i -> List( [ 1 .. l ],
+                     j -> entry( lambda[i] - i + j, c ) ) ) ) );
+
+    if IsZero( values ) then
+      return VirtualCharacter( tbl, values );
+    fi;
+    return ClassFunctionSameType( tbl, chi, values );
+    end );
+
+
+#############################################################################
+##
 #F  RefinedSymmetrizations( <tbl>, <chars>, <m>, <func> )
 ##
 ##  (Note: It suffices to change `F2' and `F4' in order to get the
