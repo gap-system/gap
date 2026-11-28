@@ -14,6 +14,97 @@
 
 #############################################################################
 ##
+#F  ELEMENT_ENUMERATION_POLYFINF( <F> ) . . . . . . .  numbering of a field
+##
+##  Returns a bijection from [0..q-1] to the finite field <F> with q elements.
+##
+BindGlobal( "ELEMENT_ENUMERATION_POLYFINF", function( F )
+local one, omega;
+
+  one := One(F);
+  if IsPrimeInt(Size(F)) then
+    return i -> i * one;
+  fi;
+  omega := PrimitiveRoot(F);
+  return function( i )
+    if i = 0 then
+      return Zero(F);
+    fi;
+    return omega^(i-1);
+  end;
+end );
+
+
+#############################################################################
+##
+#F  EQUAL_DEGREE_FACTORS_POLYFINF( <F>, <fc>, <d> ) . . equal degree factors
+##
+##  <fc> is the coefficient list of a monic squarefree product of
+##  irreducible polynomials of degree <d> over the finite field <F>,
+##  compressed if |F| <= 256. Returns the coefficient lists of the factors.
+##
+##  For random u of degree less than 2d and odd q, gcd(g, u^((q^d-1)/2) - 1)
+##  is a proper divisor of g with probability about 1/2; for q = 2^k the
+##  trace u + u^2 + ... + u^(2^(kd-1)) takes the place of the power. The
+##  random numbers come from a source of their own, so that the results do
+##  not depend on, and do not change, the global random state.
+##
+BindGlobal( "EQUAL_DEGREE_FACTORS_POLYFINF", function( F, fc, d )
+local q, one, elm, rs, todo, res, g, u, t, w, i, h;
+
+  if Length(fc) - 1 <= d then
+    return [fc];
+  fi;
+  q := Size(F);
+  one := One(F);
+  elm := ELEMENT_ENUMERATION_POLYFINF(F);
+  rs := RandomSource(IsMersenneTwister, 1);
+  todo := [fc];
+  res := [];
+  while Length(todo) > 0 do
+    g := Remove(todo);
+    if Length(g) - 1 <= d then
+      Add(res, g);
+      continue;
+    fi;
+
+    u := List([1..2*d], i -> elm(Random(rs, 0, q-1)));
+    if q <= 256 and IsFFECollection(u) then
+      ConvertToVectorRep(u, q);
+    fi;
+    ShrinkRowVector(u);
+    if IsOddInt(q) then
+      t := ShallowCopy(PowerModCoeffs(u, (q^d-1)/2, g));
+      if Length(t) > 0 then
+        t[1] := t[1] - one;
+      fi;
+    else
+      t := u;
+      w := ShallowCopy(u);
+      for i in [2..Log2Int(q)*d] do
+        t := ProductCoeffs(t, t);
+        ReduceCoeffs(t, g);
+        ShrinkRowVector(t);
+        AddCoeffs(w, t);
+      od;
+      t := w;
+    fi;
+    ShrinkRowVector(t);
+
+    h := GcdCoeffs(g, t);
+    if 1 < Length(h) and Length(h) < Length(g) then
+      Add(todo, h);
+      g := QUOTREM_LAURPOLS_LISTS(ShallowCopy(g), h)[1];
+      ShrinkRowVector(g);
+    fi;
+    Add(todo, g);
+  od;
+  return res;
+end );
+
+
+#############################################################################
+##
 #F  FactorsCommonDegreePol( <R>, <f>, <d> ) . . . . . . . . . . . . . factors
 ##
 ##  <f> must be a  square free product of  irreducible factors of  degree <d>
@@ -21,7 +112,7 @@
 ##  field of size p^k.
 ##
 InstallGlobalFunction(FactorsCommonDegreePol,function( R, f, d )
-local   c,  ind,  br,  g,  h,  k,  i,dou;
+local   c,  br,  fc,  fam,  ind,  dou;
 
   # if <f> has degree 0, return f
   dou:=DegreeOfLaurentPolynomial(f);
@@ -41,38 +132,13 @@ local   c,  ind,  br,  g,  h,  k,  i,dou;
       Error("<f> must have a non-trivial constant term");
   fi;
 
-  # choose a random polynomial <g> of degree less than 2*<d>
-  repeat
-    g := RandomPol(br,2*d-1,ind);
-  until DegreeOfLaurentPolynomial(g)<>DEGREE_ZERO_LAURPOL;
-
-  # if p = 2 take <g> + <g>^2 + <g>^(2^2) + ... + <g>^(2^(k*<d>-1))
-  if Characteristic(br) = 2  then
-      g := CoefficientsOfLaurentPolynomial(g);
-      h := ShiftedCoeffs(g[1],g[2]);
-      k := ShiftedCoeffs(c[1],c[2]);
-      # square <g> itself, not <g> divided by its lowest power of x
-      g := ShallowCopy(h);
-      for i  in [1..DegreeOverPrimeField(br)*d-1]  do
-          g := ProductCoeffs(g,g);
-          ReduceCoeffs(g,k);
-          ShrinkRowVector(g);
-          AddCoeffs(h,g);
-      od;
-      h := LaurentPolynomialByCoefficients(
-                FamilyObj(h[1]), h, 0, ind );
-
-  # if p > 2 take <g> ^ ((p ^ (k*<d>) - 1) / 2) - 1
-  else
-      h:=PowerMod(g,(Characteristic(br)^(DegreeOverPrimeField(br)*d)-1)/2,f)
-            - One(br);
+  fc := ShallowCopy(c[1]);
+  if Size(br) <= 256 and IsFFECollection(fc) then
+    ConvertToVectorRep(fc, Size(br));
   fi;
-
-  # gcd of <f> and <h> is with probability > 1/2 a proper factor
-  g := GcdOp(f,h);
-  return Concatenation(
-      FactorsCommonDegreePol( R, Quotient(R,f,g), d ),
-      FactorsCommonDegreePol( R, g, d ) );
+  fam := FamilyObj(One(br));
+  return List(EQUAL_DEGREE_FACTORS_POLYFINF(br, fc, d),
+              h -> LaurentPolynomialByCoefficients(fam, h, 0, ind));
 end);
 
 
@@ -83,10 +149,16 @@ end);
 ##  <f> must be square free and must have  leading coefficient 1. <R> must be
 ##  a polynomial ring over a finite field of size q.
 ##
+##  After the factors of degree less than d are removed from f, those of
+##  degree d are the gcd of f and x^(q^d) - x. With opt.onlydegs, this is
+##  done for d up to its maximum, so that the factors of these degrees are
+##  irreducible and their product with the rest, of larger degrees, is f.
+##
 InstallMethod( FactorsSquarefree,"univariate polynomial over finite field",
     true, [ IsFiniteFieldPolynomialRing, IsUnivariatePolynomial, IsRecord ],0,
 function( R, f, opt )
-local   br,  ind,  c,  facs,  deg,  px, cyc,  gcd,d,powc,fc,fam;
+local   br,  q,  one,  ind,  c,  fc,  maxdeg,  x,  pow,  facs,  d,  w,
+        g,  fam;
 
   br  := CoefficientsRing(R);
   ind := IndeterminateNumberOfLaurentPolynomial(f);
@@ -97,56 +169,47 @@ local   br,  ind,  c,  facs,  deg,  px, cyc,  gcd,d,powc,fc,fam;
       Error("<f> must have a non-trivial constant term");
   fi;
 
-  # <facs> will contain factorisation
-  facs := [];
-
-  # in the following <pow> = x ^ (q ^ (<deg>+1))
-  deg := 0;
-  #px  := LaurentPolynomialByExtRepNC(
-  #           FamilyObj(f), [One(br)],1, ind );
-  #  pow := px;
-  if IsFinite(br) and IsField(br) and Size(br)>MAXSIZE_GF_INTERNAL then
-    px:=Immutable([Zero(br),-One(br)]);
-  else
-    px:=ImmutableVector(br, [Zero(br),-One(br)]);
+  q   := Size(br);
+  one := One(br);
+  fc  := ShallowCopy(c[1]);
+  if q <= 256 and IsFFECollection(fc) then
+    ConvertToVectorRep(fc, q);
   fi;
-  powc:=-px;
-  fc:=CoefficientsOfLaurentPolynomial(f)[1];
-  fam:=FamilyObj(One(br));
 
-  # while <f> could still have two irreducible factors
-  while 2*(deg+1) <= DegreeOfLaurentPolynomial(f)  do
+  maxdeg := infinity;
+  if IsBound(opt.onlydegs) then
+    maxdeg := Maximum(Concatenation([0], opt.onlydegs));
+  fi;
 
-      #pow := PowerMod(pow,Size(br),f);
-      powc:=PowerModCoeffs(powc,Length(powc),Size(br),fc,Length(fc));
-      # next degree and next cyclotomic polynomial x^(q^(<deg>+1))-x
-      deg := deg + 1;
-      if not IsBound(opt.onlydegs) or deg in opt.onlydegs  then
-        #cyc := pow - px;
-        cyc:=ShallowCopy(powc);
-        AddCoeffs(cyc,px);
-        cyc:=LaurentPolynomialByCoefficients(fam,cyc,0,ind);
-        # compute the gcd of <f> and <cyc>
-        gcd := GcdOp( f, cyc );
-
-        # split the gcd with 'FactorsCommonDegree'
-        d:=DegreeOfLaurentPolynomial(gcd);
-        if 0<d and d>=deg then
-            Info(InfoPoly,3,"Factor Common Deg.",deg );
-            Append(facs,FactorsCommonDegreePol(R,gcd,deg));
-            f := Quotient(f,gcd);
-        fi;
-      fi;
+  # <pow> = x^(q^d) modulo the current <fc>
+  x   := ShiftedCoeffs(fc{[Length(fc)]}, 1);
+  pow := x;
+  facs := [];
+  d := 0;
+  while d < maxdeg and 2*(d+1) <= Length(fc)-1  do
+    d := d + 1;
+    pow := PowerModCoeffs(pow, q, fc);
+    w := ShallowCopy(pow);
+    AddCoeffs(w, x, -one);
+    ShrinkRowVector(w);
+    g := GcdCoeffs(fc, w);
+    if Length(g) > 1 then
+      Info(InfoPoly,3,"Factor Common Deg.",d);
+      Append(facs, EQUAL_DEGREE_FACTORS_POLYFINF(br, g, d));
+      fc := QUOTREM_LAURPOLS_LISTS(ShallowCopy(fc), g)[1];
+      ShrinkRowVector(fc);
+      pow := ShallowCopy(pow);
+      ReduceCoeffs(pow, fc);
+      ShrinkRowVector(pow);
+    fi;
   od;
 
-  # if necessary add irreducible <f> to the list of factors
-  if 0 < DegreeOfLaurentPolynomial(f)  then
-      Add(facs,f);
+  # <fc> has no factors of degree d or less
+  if Length(fc) > 1 then
+    Add(facs, fc);
   fi;
-
-  # return the factorisation
-  return facs;
-
+  fam := FamilyObj(one);
+  return List(facs, h -> LaurentPolynomialByCoefficients(fam, h, 0, ind));
 end );
 
 #############################################################################
