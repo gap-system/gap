@@ -1,0 +1,4 @@
+// resources of gap.exe on native Windows
+#include <winuser.h>
+
+CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "gap.exe.manifest"
