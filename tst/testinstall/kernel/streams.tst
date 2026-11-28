@@ -165,10 +165,10 @@ Error, READ_GAP_ROOT: <filename> must be a string (not the value 'fail')
 #
 gap> RemoveFile(fail);
 Error, RemoveFile: <filename> must be a string (not the value 'fail')
-gap> CreateDir(fail);
-Error, CreateDir: <filename> must be a string (not the value 'fail')
-gap> RemoveDir(fail);
-Error, RemoveDir: <filename> must be a string (not the value 'fail')
+gap> CREATE_DIR(fail);
+Error, CREATE_DIR: <filename> must be a string (not the value 'fail')
+gap> REMOVE_DIR(fail);
+Error, REMOVE_DIR: <filename> must be a string (not the value 'fail')
 gap> IS_DIR(fail);
 Error, IS_DIR: <path> must be a string (not the value 'fail')
 
