@@ -827,3 +827,55 @@ local c,b,l;
   fi;
   return GF(Characteristic(f)^(l*DegreeOverPrimeField(b)));
 end);
+
+#############################################################################
+##
+#M  Resultant( <f>, <g>, <ind> )  . . . . . . . . . . . . over a finite field
+##
+##  Euclid on the coefficient lists: for f of degree m and g of degree n > 0
+##  with leading coefficient b, and r = f mod g, the resultant of f and g is
+##  (-1)^(mn) b^(m - deg r) times that of g and r.
+##
+InstallMethod( Resultant, "univariate polynomials over a finite field",
+    IsFamFamX, [ IsUnivariatePolynomial, IsUnivariatePolynomial, IsPosInt ],
+    0,
+function( f, g, ind )
+local one, fc, gc, l, res, m, n, r;
+
+  one := FamilyObj(f)!.oneCoefficient;
+  if not IsFFE(one)
+     or ( DegreeOfLaurentPolynomial(f) > 0 and
+          IndeterminateNumberOfUnivariateRationalFunction(f) <> ind )
+     or ( DegreeOfLaurentPolynomial(g) > 0 and
+          IndeterminateNumberOfUnivariateRationalFunction(g) <> ind ) then
+    TryNextMethod();
+  fi;
+
+  fc := CoefficientsOfUnivariatePolynomial(f);
+  gc := CoefficientsOfUnivariatePolynomial(g);
+  if Length(fc) = 0 or Length(gc) = 0 then
+    return Zero(one);
+  fi;
+  l := COPY_TO_COMMON_FIELD([fc, gc]);
+  fc := l[1];
+  gc := l[2];
+
+  res := one;
+  while Length(gc) > 1 do
+    m := Length(fc) - 1;
+    n := Length(gc) - 1;
+    r := ShallowCopy(fc);
+    ReduceCoeffs(r, gc);
+    ShrinkRowVector(r);
+    if Length(r) = 0 then
+      return Zero(one);
+    fi;
+    res := res * gc[n+1]^(m - Length(r) + 1);
+    if IsOddInt(m*n) then
+      res := -res;
+    fi;
+    fc := gc;
+    gc := r;
+  od;
+  return res * gc[1]^(Length(fc) - 1);
+end );
