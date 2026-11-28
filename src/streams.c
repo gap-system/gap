@@ -1014,7 +1014,7 @@ static Obj FuncREAD_GAP_ROOT(Obj self, Obj filename)
 */
 static Obj FuncTmpName(Obj self)
 {
-    char name[100] = "/tmp/gaptempfile.XXXXXX";
+    char name[GAP_PATH_MAX] = "/tmp/gaptempfile.XXXXXX";
 #ifdef SYS_IS_WINDOWS
     // If /tmp is missing, write into Window's temp directory
     DIR* dir = opendir("/tmp");

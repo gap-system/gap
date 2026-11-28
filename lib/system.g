@@ -280,6 +280,19 @@ end);
 
 #############################################################################
 ##
+#F  ARCH_IS_NATIVE_WINDOWS()
+##
+##  tests whether this is a native Windows build of GAP (mingw), as opposed
+##  to Cygwin. Undocumented, for the library only. Bound here as the startup
+##  code below needs it; not cached, as it costs no more than a cache lookup.
+##
+BIND_GLOBAL("ARCH_IS_NATIVE_WINDOWS",function()
+  return POSITION_SUBSTRING( GAPInfo.Architecture, "mingw", 0 ) <> fail;
+end);
+
+
+#############################################################################
+##
 ##  - Set/adjust the kernel specific components.
 ##  - Compute `GAPInfo.DirectoriesSystemPrograms' from
 ##    `GAPInfo.SystemEnvironment.PATH'.
@@ -287,7 +300,8 @@ end);
 ##    In case of `-h' print a help screen and exit.
 ##
 CallAndInstallPostRestore( function()
-    local j, i, CommandLineOptions, opt, InitFiles, line, word, value, padspace;
+    local j, i, path, sep, addpathentry, CommandLineOptions, opt, InitFiles,
+          line, word, value, padspace;
 
     GAPInfo.KernelInfo:= KERNEL_INFO();
     GAPInfo.Version := GAPInfo.KernelInfo.KERNEL_VERSION;
@@ -296,6 +310,13 @@ CallAndInstallPostRestore( function()
     GAPInfo.BuildVersion:= GAPInfo.KernelInfo.BUILD_VERSION;
     GAPInfo.BuildDateTime := GAPInfo.KernelInfo.BUILD_DATETIME;
     GAPInfo.Architecture:= GAPInfo.KernelInfo.GAP_ARCHITECTURE;
+    # results of the ARCH_IS_* functions; a restored workspace may run on
+    # a system with other tools installed
+    if IsHPCGAP then
+        GAPInfo.ArchitectureTests:= AtomicRecord( rec() );
+    else
+        GAPInfo.ArchitectureTests:= rec();
+    fi;
 
     # The exact command line which called GAP as list of strings;
     # first entry is the executable followed by the options.
@@ -330,21 +351,42 @@ CallAndInstallPostRestore( function()
         GAPInfo.DirectoriesTemporary:= [];
         GAPInfo.DirectoriesSystemPrograms:= [];
     fi;
+    # the PATH environment variable; on Windows its name usually is "Path"
+    path:= fail;
     if IsBound(GAPInfo.SystemEnvironment.PATH) then
+      path:= GAPInfo.SystemEnvironment.PATH;
+    elif IsBound(GAPInfo.SystemEnvironment.Path) then
+      path:= GAPInfo.SystemEnvironment.Path;
+    fi;
+    if path <> fail then
+      # on native Windows, PATH is ';' separated and entries use backslashes
+      if ARCH_IS_NATIVE_WINDOWS() then
+        sep:= ';';
+      else
+        sep:= ':';
+      fi;
+      addpathentry:= function( entry )
+        local k;
+        if sep = ';' then
+          for k in [ 1 .. LENGTH( entry ) ] do
+            if entry[k] = '\\' then
+              entry[k]:= '/';
+            fi;
+          od;
+        fi;
+        ADD_LIST( GAPInfo.DirectoriesSystemPrograms, MakeImmutable( entry ) );
+      end;
       j:= 1;
-      for i in [1..LENGTH(GAPInfo.SystemEnvironment.PATH)] do
-        if GAPInfo.SystemEnvironment.PATH[i] = ':' then
+      for i in [1..LENGTH(path)] do
+        if path[i] = sep then
           if i > j then
-            ADD_LIST(GAPInfo.DirectoriesSystemPrograms,
-                  MakeImmutable(GAPInfo.SystemEnvironment.PATH{[j..i-1]}));
+            addpathentry(path{[j..i-1]});
           fi;
           j := i+1;
         fi;
       od;
-      if j <= LENGTH( GAPInfo.SystemEnvironment.PATH ) then
-        ADD_LIST( GAPInfo.DirectoriesSystemPrograms,
-            MakeImmutable(GAPInfo.SystemEnvironment.PATH{ [ j ..
-                LENGTH( GAPInfo.SystemEnvironment.PATH ) ] } ));
+      if j <= LENGTH( path ) then
+        addpathentry( path{ [ j .. LENGTH( path ) ] } );
       fi;
     fi;
 
@@ -545,6 +587,16 @@ end );
 #T the following functions eventually should be more clever. This however
 #T will require kernel support and thus is something for later.  AH
 
+# wrap <test> so that it runs only once per session; some tests look for files
+ARCH_CACHED:= function( name, test )
+  return function()
+    if not IsBound( GAPInfo.ArchitectureTests.(name) ) then
+      GAPInfo.ArchitectureTests.(name):= test();
+    fi;
+    return GAPInfo.ArchitectureTests.(name);
+  end;
+end;
+
 #############################################################################
 ##
 #F  ARCH_IS_WINDOWS()
@@ -560,9 +612,9 @@ end );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-BIND_GLOBAL("ARCH_IS_WINDOWS",function()
-  # native Windows (mingw) has no POSIX tools
-  if POSITION_SUBSTRING (GAPInfo.Architecture, "mingw", 0) <> fail then
+BIND_GLOBAL("ARCH_IS_WINDOWS",ARCH_CACHED("windows",function()
+  # native Windows has no POSIX tools
+  if ARCH_IS_NATIVE_WINDOWS() then
     return true;
   fi;
   # Exit early if we are not in Cygwin
@@ -572,7 +624,7 @@ BIND_GLOBAL("ARCH_IS_WINDOWS",function()
   # Check if programs we need exist in their standard Cygwin locations
   return not (IsExistingFile("/usr/bin/sh") or IsExistingFile("/bin/sh")) or
          not (IsExistingFile("/usr/bin/xdg-open") or IsExistingFile("/bin/xdg-open"));
-end);
+end));
 
 #############################################################################
 ##
@@ -589,10 +641,10 @@ end);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-BIND_GLOBAL("ARCH_IS_MAC_OS_X",function()
+BIND_GLOBAL("ARCH_IS_MAC_OS_X",ARCH_CACHED("macos",function()
   return POSITION_SUBSTRING (GAPInfo.Architecture, "apple-darwin", 0) <> fail
     and IsReadableFile ("/System/Library/CoreServices/Finder.app");
-end);
+end));
 
 #############################################################################
 ##
@@ -629,7 +681,7 @@ end);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-BIND_GLOBAL("ARCH_IS_WSL",function()
+BIND_GLOBAL("ARCH_IS_WSL",ARCH_CACHED("wsl",function()
   # There is no official way to detect this, but this method is
   # suggested: https://github.com/microsoft/WSL/issues/423
   # Note that at some point the string was changed from 'Microsoft' to
@@ -637,7 +689,9 @@ BIND_GLOBAL("ARCH_IS_WSL",function()
   return ARCH_IS_UNIX() and IsBound(GAPInfo.KernelInfo.uname.release) and (
     POSITION_SUBSTRING(GAPInfo.KernelInfo.uname.release, "Microsoft", 0) <> fail or
     POSITION_SUBSTRING(GAPInfo.KernelInfo.uname.release, "microsoft", 0) <> fail);
-end);
+end));
+
+Unbind( ARCH_CACHED );
 
 #############################################################################
 ##

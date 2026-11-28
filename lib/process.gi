@@ -320,9 +320,6 @@ InstallGlobalFunction( RunProcess, function( arg )
     # resolve the command name via the system PATH, unless it already is a path
     if not '/' in cmd and not (ARCH_IS_WINDOWS() and '\\' in cmd) then
         a := PathSystemProgram( cmd );
-        if a = fail and ARCH_IS_WINDOWS() then
-            a := PathSystemProgram( Concatenation( cmd, ".exe" ) );
-        fi;
         if a = fail then
             Error("could not locate executable for '", cmd, "'");
         fi;

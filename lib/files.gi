@@ -99,7 +99,8 @@ InstallMethod( Filename,
     [ IsDirectory,
       IsString ],
 function( dir, name )
-    if '\\' in name or ':' in name  then
+    # on Windows, drive letters and backslashes are part of valid paths
+    if ( '\\' in name or ':' in name ) and not ARCH_IS_WINDOWS() then
         Error( "<name> must not contain '\\' or ':'" );
     fi;
     return Immutable( Concatenation( dir![1], name ) );
@@ -114,13 +115,18 @@ InstallMethod( Filename,
     "for a list and a string",
     [ IsList, IsString ],
 function( dirs, name )
-    local   dir,  new, newgz;
+    local   dir,  new, newgz, native;
 
+    # native Windows executables carry .exe; Cygwin resolves that itself
+    native := ARCH_IS_NATIVE_WINDOWS();
     for dir  in dirs  do
         new := Filename( dir, name );
         newgz := Concatenation(new,".gz");
         if IsExistingFile(new) = true or IsExistingFile(newgz) = true then
             return new;
+        fi;
+        if native and IsExistingFile(Concatenation(new, ".exe")) = true then
+            return Concatenation(new, ".exe");
         fi;
     od;
     return fail;
