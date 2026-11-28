@@ -686,6 +686,9 @@ static Obj HIDDEN_IMPS;
 static Obj WITH_HIDDEN_IMPS_FLAGS_CACHE;
 enum { HIDDEN_IMPS_CACHE_LENGTH = 20003 };
 
+// contains every value ever stored in WITH_HIDDEN_IMPS_FLAGS_CACHE
+static Obj HIDDEN_IMPS_CACHE_UNION;
+
 // HIDDEN_IMPS_BY_FLAG[f+1] lists the positions i of the hidden implications
 // whose requirement HIDDEN_IMPS[2*i] contains flag f, and
 // HIDDEN_IMPS_BY_FLAG[1] those with an empty requirement. Its length exceeds
@@ -745,6 +748,17 @@ static Obj FuncInstallHiddenTrueMethod(Obj self, Obj filter, Obj filters)
     return 0;
 }
 
+static void AddToHiddenImpsCacheUnion(Obj flags)
+{
+    UInt nrb = NRB_FLAGS(flags);
+    if (NRB_FLAGS(HIDDEN_IMPS_CACHE_UNION) < nrb)
+        ResizeBag(HIDDEN_IMPS_CACHE_UNION, (3 + nrb) * sizeof(Obj));
+    UInt *       pu = BLOCKS_FLAGS(HIDDEN_IMPS_CACHE_UNION);
+    const UInt * pf = BLOCKS_FLAGS(flags);
+    for (UInt k = 0; k < nrb; k++)
+        pu[k] |= pf[k];
+}
+
 /****************************************************************************
 **
 *F  FuncCLEAR_HIDDEN_IMP_CACHE( <self>, <flags> ) . . . .clear cache of flags
@@ -756,13 +770,16 @@ static Obj FuncCLEAR_HIDDEN_IMP_CACHE(Obj self, Obj filter)
 #ifdef HPCGAP
   RegionWriteLock(REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE));
 #endif
-  for(i = 0; i < HIDDEN_IMPS_CACHE_LENGTH; i++)
-  {
-    if(ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, 2 * i + 1) &&
-       IS_SUBSET_FLAGS(ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, 2 * i + 2), flags))
+  // most calls are for filters that occur in no cached value
+  if (IS_SUBSET_FLAGS(HIDDEN_IMPS_CACHE_UNION, flags)) {
+    for(i = 0; i < HIDDEN_IMPS_CACHE_LENGTH; i++)
     {
-        SET_ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, 2 * i + 1, 0);
-        SET_ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, 2 * i + 2, 0);
+      if(ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, 2 * i + 1) &&
+         IS_SUBSET_FLAGS(ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, 2 * i + 2), flags))
+      {
+          SET_ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, 2 * i + 1, 0);
+          SET_ELM_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, 2 * i + 2, 0);
+      }
     }
   }
 #ifdef HPCGAP
@@ -891,6 +908,7 @@ static Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
 
     StoreHashTable<HIDDEN_IMPS_CACHE_LENGTH>(WITH_HIDDEN_IMPS_FLAGS_CACHE,
                                              hash, with, flags);
+    AddToHiddenImpsCacheUnion(with);
 
 #ifdef HPCGAP
     RegionWriteUnlock(REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE));
@@ -3885,6 +3903,7 @@ static Int InitKernel (
     InitGlobalBag( &WITH_HIDDEN_IMPS_FLAGS_CACHE, "src/opers.c:WITH_HIDDEN_IMPS_FLAGS_CACHE");
     InitGlobalBag( &HIDDEN_IMPS, "src/opers.c:HIDDEN_IMPS");
     InitGlobalBag( &HIDDEN_IMPS_BY_FLAG, "src/opers.c:HIDDEN_IMPS_BY_FLAG");
+    InitGlobalBag( &HIDDEN_IMPS_CACHE_UNION, "src/opers.c:HIDDEN_IMPS_CACHE_UNION");
     InitGlobalBag( &WITH_IMPS_FLAGS_CACHE, "src/opers.c:WITH_IMPS_FLAGS_CACHE");
     InitGlobalBag( &IMPLICATIONS_SIMPLE, "src/opers.c:IMPLICATIONS_SIMPLE");
     InitGlobalBag( &IMPLICATIONS_COMPOSED, "src/opers.c:IMPLICATIONS_COMPOSED");
@@ -3972,6 +3991,7 @@ static Int InitLibrary(StructInitInfo * module)
     HIDDEN_IMPS_BY_FLAG = NEW_PLIST(T_PLIST, 0);
     WITH_HIDDEN_IMPS_FLAGS_CACHE = NEW_PLIST(T_PLIST, HIDDEN_IMPS_CACHE_LENGTH * 2);
     SET_LEN_PLIST(WITH_HIDDEN_IMPS_FLAGS_CACHE, HIDDEN_IMPS_CACHE_LENGTH * 2);
+    HIDDEN_IMPS_CACHE_UNION = NEW_FLAGS(0);
     AssGVar(GVarName("HIDDEN_IMPS"), HIDDEN_IMPS);
 
 #ifdef HPCGAP
