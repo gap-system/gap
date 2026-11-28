@@ -1,4 +1,4 @@
-#@local dict,enum,f,i
+#@local dict,enum,f,i,v
 gap> START_TEST("dict.tst");
 gap> dict := NewDictionary(1, false);
 <dictionary>
@@ -44,4 +44,45 @@ gap> f( [ 1 .. 3 ] ) = f( [ 1, 2, 3 ] );
 true
 gap> SparseIntKey( EnumeratorOfTuples( [ 2^70, 2^71 ], 2 ), [ 2^70, 2^70 ] );
 fail
+
+# Size
+gap> dict := NewDictionary( [ 1, 2 ], true );;
+gap> IsSortLookupDictionary( dict );
+true
+gap> Size( dict );
+0
+gap> AddDictionary( dict, [ 1, 2 ], 1 );; AddDictionary( dict, [ 3 ], 2 );;
+gap> Size( dict );
+2
+gap> dict := NewDictionary( [ 1, 2 ], false );;
+gap> AddDictionary( dict, [ 1, 2 ] );; AddDictionary( dict, [ 3 ] );;
+gap> Size( dict );
+2
+gap> dict := NewDictionary( "abc", true );;
+gap> IsListLookupDictionary( dict ) and not IsSortLookupDictionary( dict );
+true
+gap> AddDictionary( dict, "abc", 1 );; AddDictionary( dict, "de", 2 );;
+gap> Size( dict );
+2
+gap> RemoveDictionary( dict, "abc" );; Size( dict );
+1
+gap> v := Z(3)^0 * [ 1, 0, 1 ];;
+gap> dict := NewDictionary( v, true, GF(3)^3 );;
+gap> IsPositionLookupDictionary( dict );
+true
+gap> Size( dict );
+0
+gap> AddDictionary( dict, v, 1 );; AddDictionary( dict, 2 * v, 2 );;
+gap> Size( dict );
+2
+gap> dict := NewDictionary( v, false, GF(3)^3 );;
+gap> AddDictionary( dict, v );; AddDictionary( dict, 2 * v );;
+gap> Size( dict );
+2
+gap> dict := NewDictionary( 1, true, [ 1 .. 100 ] );;
+gap> IsHash( dict );
+true
+gap> AddDictionary( dict, 5, 1 );; AddDictionary( dict, 6, 2 );;
+gap> Size( dict );
+2
 gap> STOP_TEST("dict.tst");

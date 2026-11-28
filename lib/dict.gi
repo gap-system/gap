@@ -383,6 +383,27 @@ InstallMethod( Enumerator, "for list dictionaries",
 
 #############################################################################
 ##
+#M  Size( <dict> ) for list dictionaries
+##
+InstallMethod( Size, "for list dictionaries",
+    [ IsListDictionary ],
+    function( dict )
+      if IsListLookupDictionary(dict) then
+        return Length(dict!.entries);
+      fi;
+      return Length(dict!.list);
+    end );
+
+#############################################################################
+##
+#M  Size( <dict> ) for position dictionaries
+##
+InstallMethod( Size, "for position dictionaries",
+    [ IsPositionDictionary ],
+    dict -> SizeBlist(dict!.blist) );
+
+#############################################################################
+##
 #M  ListKeyEnumerator( <dict> ) for list dictionaries
 ##
 InstallMethod( ListKeyEnumerator, "for list dictionaries",
