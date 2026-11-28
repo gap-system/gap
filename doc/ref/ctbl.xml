@@ -134,12 +134,14 @@ Alexander Hulpke (code related to his implementation of the Dixon-Schneider
 algorithm) and Thomas Breuer.
 <P/>
 <!-- % D. Bauten? -->
-Currently &GAP; does not provide special functionality for computing
-Brauer character tables,
-but there is an interface to the <Package>MOC</Package> system
-(see&nbsp;<Cite Key="HJLP92"/>),
-and the &GAP; Character Table Library contains many
-known Brauer character tables.
+&GAP; computes Brauer character tables in some cases, for example for
+<M>p</M>-solvable groups
+(see&nbsp;<Ref Oper="BrauerTable"
+Label="for a character table, and a prime integer"/>).
+The &GAP; Character Table Library contains many
+known Brauer character tables
+and provides an interface to the <Package>MOC</Package> system
+(see&nbsp;<Cite Key="HJLP92"/>).
 
 </Section>
 
